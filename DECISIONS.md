@@ -126,3 +126,87 @@ contact.
 **Q2. Is EGLC's observation record complete enough** over the chosen period?
 Confirm on the first pull; apply the drop-count-report rule (D11) to whatever
 gaps appear.
+
+---
+
+## 2026-08-16 — Session 01 findings (first real data pull)
+
+Both sources were pulled for real. Q1 and Q2 above are now answered and
+closed. Nothing was filled, cleaned, or joined.
+
+**F1. Q1 answered — yes, the forecast archive reaches March 2021, but it
+starts on 24 March 2021, not 1 March.** A request for 1–7 March 2021 came
+back HTTP 200 with all 168 hourly values null. Stepping the date forward
+found the first hour with a real value: **2021-03-24 00:00 UTC**. Spot checks
+at 15 April 2021, 1 May, 15 May, 15 June, 15 September, 15 December 2021,
+15 March 2022, 15 March 2023 and 15 March 2025 all came back complete, so the
+archive is continuous from that start. This refines D5 rather than
+contradicting it: the floor is real, and about 5 years 5 months of history is
+available up to today. SPEC 3.2 and 4.3 say "March 2021", which is still
+true; the owner may want to write the exact date in.
+
+**F2. Q2 answered — EGLC's observation record is good.** Counting a whole
+hour as covered only if it has a routine report carrying a real temperature:
+- Recent sample, 1–21 July 2026: 504 hours expected, **504 covered, 0 gaps**.
+- Early sample, 18 March – 1 April 2021: 336 hours expected, **333 covered,
+  3 gaps (0.89%)**. The missing hours are 2021-03-20 06:00, 2021-03-30 05:00
+  and 2021-03-30 06:00 UTC.
+All three gaps are whole reports that were never filed, not rows with a blank
+temperature. They sit in the early-morning hours, and two of the three are
+next to each other, which looks like a short outage rather than a pattern.
+Nothing was filled (SPEC 2.2). On this evidence the gap rate is low enough
+that dropping unpaired rows will cost very little data, but that is a
+two-week snapshot, not proof about the whole period.
+
+**F3. EGLC reports twice an hour, not once.** IEM splits its reports into
+"routine" (report_type=3) and "special" (report_type=4). Normally "special"
+means an unscheduled extra report. At EGLC it is not: over 1–21 July 2026
+there were exactly 504 reports at :50 and exactly 504 at :20 — one of each
+per hour, none missing. So EGLC files a scheduled half-hourly report. This
+session used the routine :50 report as the hourly observation and kept the
+combined pull as a second raw file for the record. The extra :20 report is
+spare data available later if it is ever useful.
+
+**F4. The 24-hour-ahead forecast variable is
+`temperature_2m_previous_day1`.** This is the value from the model run one
+day earlier, which is what SPEC 3.2 asks for. The endpoint also offers a
+plain `temperature_2m`, which on this API is the freshest-run series — the
+leakage trap SPEC 2.1b warns about. It was deliberately not requested, so it
+is not in any raw file. The model name used was `gfs_seamless`.
+
+---
+
+## 2026-08-16 — Open questions raised by session 01 (not acted on)
+
+These came up during session 01 and are outside its scope. Logged for the
+owner, per CLAUDE.md.
+
+**Q3. How should an observation timed at :50 be lined up with a forecast
+valid on the hour?** The forecast series is stamped on the hour (12:00). The
+observation is stamped at :50 (11:50 or 12:50). They are 10 minutes apart
+either way, so something has to be chosen and written down before the join.
+The obvious candidates are "use the :50 report from the same hour" or "use
+the nearest report". This needs deciding before any pairing happens.
+
+**Q4. What exactly does "previous_day1" mean in lead-time hours?** It is the
+run from one day earlier, but whether every hour of the day is a clean
+24 hours ahead, or whether the lead time drifts across the day depending on
+which run cycle is used, was not verified in this session. It matters because
+SPEC 3.2 and D8 fix stage 1 at a 24-hour lead time. Worth confirming against
+Open-Meteo's documentation before training.
+
+**Q5. The model grid point is about 4 km from the airport.** EGLC is at lat
+51.505, lon 0.055. The API returned the nearest GFS cell at lat 51.487137,
+lon 0.0, elevation 4 m — about 4.3 km away. The station's own record puts it
+at lat 51.5053, lon 0.0553, elevation 5 m. The elevations nearly match, so
+there is no height mismatch to worry about, and a fixed distance offset is
+exactly the kind of steady local error this project is built to learn. Noted
+so it is a known fact rather than a surprise later.
+
+**Q6. Should raw data files go into version control?** The repo has no
+`.gitignore`. The session 01 pulls are small (126 KB in total), so
+committing them is easy and makes the snapshot rule (SPEC 2.3) very concrete.
+A full multi-year pull will be much bigger. The owner decides at commit time;
+nothing was committed or ignored this session. There is also an untracked
+`.DS_Store` file that macOS created.
+

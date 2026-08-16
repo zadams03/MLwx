@@ -1,0 +1,28 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_EGLC_2021-03-18_2021-04-01_routine.csv
+purpose     : session 01, step 5 - check the observation record also exists,
+              and is complete, back at the start of the usable period.
+pulled at   : 2026-08-16 13:03:02 BST (2026-08-16 12:03:02 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2021&month1=3&day1=18&year2=2021&month2=4&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = EGLC
+  data        = tmpc, dwpc
+  date range  = 2021-03-18 to 2021-04-01
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M
+  trace       = T
+  report_type = 3   (routine METAR only)
+
+result:
+- HTTP status 200. 333 data rows plus one header row.
+- 336 hours expected in the window, so 3 hours have no report at all.
+- No row has a missing temperature; the gaps are whole absent reports.

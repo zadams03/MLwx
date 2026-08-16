@@ -1,0 +1,29 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_EGLC_2026-07-01_2026-07-22_routine.csv
+purpose     : session 01, step 4 - truth sample for the same recent period as
+              the forecast sample.
+pulled at   : 2026-08-16 13:00:51 BST (2026-08-16 12:00:51 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=22&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = EGLC
+  data        = tmpc (air temperature, degC), dwpc (dew point, degC)
+  date range  = 2026-07-01 to 2026-07-22 (end date exclusive in practice;
+                the last row is 2026-07-21 23:50)
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M, not blank)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+result:
+- HTTP status 200. 504 data rows plus one header row.
+- Station coordinates in the file: lon 0.0553, lat 51.5053, elevation 5 m.
+- Every row is at :50 past the hour. No missing temperatures.

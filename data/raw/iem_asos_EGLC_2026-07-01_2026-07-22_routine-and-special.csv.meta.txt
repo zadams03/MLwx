@@ -1,0 +1,24 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_EGLC_2026-07-01_2026-07-22_routine-and-special.csv
+purpose     : session 01, step 4 - the first truth pull, made before the
+              report types were separated. Kept because it shows that EGLC
+              also files a second report at :20 past every hour.
+pulled at   : 2026-08-16 13:00:15 BST (2026-08-16 12:00:15 UTC)
+              (the file was first written at 12:57 BST under the shorter name
+              iem_asos_EGLC_2026-07-01_2026-07-22.csv and was renamed, not
+              edited; the timestamp above is the rename)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=22&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3&report_type=4
+
+parameters: as the routine-only file, except
+  report_type = 3 and 4 (routine METAR plus IEM's "special" SPECI type)
+
+result:
+- HTTP status 200. 1008 data rows plus one header row.
+- Exactly 504 rows at :50 and 504 rows at :20 - one of each per hour, none
+  missing. So at EGLC the "special" type is not an irregular extra report;
+  it is a second scheduled half-hourly report.

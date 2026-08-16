@@ -1,0 +1,33 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_EGLC_2021-03-18_2021-03-26.json
+purpose     : session 01, step 3 - pin down the exact first date the forecast
+              archive starts, after 1 March 2021 came back empty.
+pulled at   : 2026-08-16 12:59:44 BST (2026-08-16 11:59:44 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.505&longitude=0.055&start_date=2021-03-18&end_date=2021-03-26&hourly=temperature_2m_previous_day1&models=gfs_seamless&timezone=UTC
+
+parameters:
+  latitude   = 51.505
+  longitude  = 0.055
+  start_date = 2021-03-18
+  end_date   = 2021-03-26
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_seamless
+  timezone   = UTC
+
+result:
+- HTTP status 200. 216 hourly rows; 144 null, 72 with values.
+- First hour with a value: 2021-03-24 00:00 UTC. Everything before that in
+  the window is null.
+
+how the search got here (probe requests, same endpoint and parameters, only
+the dates changed; these probes were not saved as files):
+  2021-03-15 (+2 days) -> all null
+  2021-03-20 (+1 day)  -> all null
+  2021-03-25 (+1 day)  -> all present
+  2021-04-15, 2021-05-01, 2021-05-15, 2021-06-15, 2021-09-15, 2021-12-15,
+  2022-03-15, 2023-03-15, 2025-03-15 -> all present

@@ -1,0 +1,75 @@
+
+======================================================================
+STEP 2 - forecast sample, recent period (Open-Meteo Previous Runs, GFS)
+======================================================================
+file            : openmeteo_previousruns_gfs_EGLC_2026-07-01_2026-07-21.json
+requested point : lat 51.505, lon 0.055 (EGLC)
+model grid point: lat 51.487137, lon 0.0, elevation 4.0 m
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 504
+date range (UTC): 2026-07-01T00:00 -> 2026-07-21T23:00
+values present  : 504   missing (null): 0
+value range     : 12.6 to 35.4 degC
+first non-null  : 2026-07-01T00:00
+
+======================================================================
+STEP 3 / Q1 - forecast archive at the early date (March 2021)
+======================================================================
+file            : openmeteo_previousruns_gfs_EGLC_2021-03-01_2021-03-07.json
+requested point : lat 51.505, lon 0.055 (EGLC)
+model grid point: lat 51.487137, lon 0.0, elevation 4.0 m
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 168
+date range (UTC): 2021-03-01T00:00 -> 2021-03-07T23:00
+values present  : 0   missing (null): 168
+
+-- boundary probe --
+file            : openmeteo_previousruns_gfs_EGLC_2021-03-18_2021-03-26.json
+requested point : lat 51.505, lon 0.055 (EGLC)
+model grid point: lat 51.487137, lon 0.0, elevation 4.0 m
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 216
+date range (UTC): 2021-03-18T00:00 -> 2021-03-26T23:00
+values present  : 72   missing (null): 144
+value range     : 4.3 to 13.1 degC
+first non-null  : 2021-03-24T00:00
+
+======================================================================
+STEP 4 / Q2 - truth sample, same recent period (IEM ASOS, routine METARs)
+======================================================================
+file             : iem_asos_EGLC_2026-07-01_2026-07-22_routine.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 504
+minute-past-hour : :50 x504
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 504
+hours MISSING    : 0   (0.00% of the window)
+
+======================================================================
+STEP 5 / Q2 - truth sample, early period (IEM ASOS, routine METARs)
+======================================================================
+file             : iem_asos_EGLC_2021-03-18_2021-04-01_routine.csv
+window (UTC)     : 2021-03-18 00:00:00 -> 2021-04-01 00:00:00 (end exclusive)
+reports in file  : 333
+minute-past-hour : :50 x333
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 333
+hours MISSING    : 3   (0.89% of the window)
+missing hours    :
+  2021-03-20 06:00 UTC
+  2021-03-30 05:00 UTC
+  2021-03-30 06:00 UTC
+
+======================================================================
+SIDE FILE - same recent period including special (SPECI) reports
+======================================================================
+file             : iem_asos_EGLC_2026-07-01_2026-07-22_routine-and-special.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 1008
+minute-past-hour : :20 x504, :50 x504
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 504
+hours MISSING    : 0   (0.00% of the window)

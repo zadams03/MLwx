@@ -1,0 +1,26 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_EGLC_2021-03-01_2021-03-07.json
+purpose     : session 01, step 3 - open question Q1, does the archive reach
+              back to March 2021?
+pulled at   : 2026-08-16 12:55:45 BST (2026-08-16 11:55:45 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.505&longitude=0.055&start_date=2021-03-01&end_date=2021-03-07&hourly=temperature_2m_previous_day1&models=gfs_seamless&timezone=UTC
+
+parameters:
+  latitude   = 51.505
+  longitude  = 0.055
+  start_date = 2021-03-01
+  end_date   = 2021-03-07
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_seamless
+  timezone   = UTC
+
+result:
+- HTTP status 200, but every one of the 168 hourly values is null.
+- So: no forecast data exists at this location for 1-7 March 2021.
+- See the companion file for 2021-03-18 to 2021-03-26, which locates the
+  first date that does return data.

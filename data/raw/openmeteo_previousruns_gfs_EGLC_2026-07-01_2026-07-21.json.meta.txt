@@ -1,0 +1,30 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_EGLC_2026-07-01_2026-07-21.json
+purpose     : session 01, step 2 - recent forecast sample
+pulled at   : 2026-08-16 12:55:38 BST (2026-08-16 11:55:38 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.505&longitude=0.055&start_date=2026-07-01&end_date=2026-07-21&hourly=temperature_2m_previous_day1&models=gfs_seamless&timezone=UTC
+
+parameters:
+  latitude   = 51.505          (EGLC, London City)
+  longitude  = 0.055           (EGLC, London City)
+  start_date = 2026-07-01
+  end_date   = 2026-07-21
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_seamless
+  timezone   = UTC
+
+notes:
+- temperature_2m_previous_day1 is the value predicted by the model run from
+  one day earlier. That is the 24-hour-ahead forecast this project needs
+  (SPEC 3.2, DECISIONS D8).
+- The plain temperature_2m variable was deliberately NOT requested. On this
+  endpoint it is the freshest-run series, which is the leakage risk SPEC 2.1b
+  warns about.
+- The API returned grid point lat 51.487137, lon 0.0, elevation 4 m. That is
+  the nearest model cell, not the airport itself.
+- HTTP status 200. 504 hourly rows, no missing values.
