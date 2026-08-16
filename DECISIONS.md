@@ -210,3 +210,195 @@ A full multi-year pull will be much bigger. The owner decides at commit time;
 nothing was committed or ignored this session. There is also an untracked
 `.DS_Store` file that macOS created.
 
+---
+
+## 2026-08-16 — Session 02 decisions (owner's choices, now locked)
+
+**D13. The train/test split is now a fixed pair of dates.**
+- **Training period: 2021-03-24 to 2025-07-31** (inclusive).
+- **Test period: 2025-08-01 to 2026-07-31** (inclusive) — held out and
+  untouched until the final evaluation. That is a clean 12 months, so the
+  result is judged across all four seasons.
+- Data after 2025-07-31 that falls outside the test period — that is, anything
+  from 2026-08-01 to today — is simply not used. This keeps the test set
+  exactly one calendar year.
+- Reason it is fixed now: the evaluation bar must be frozen before any model
+  runs (SPEC 2.4), and the split date is part of that bar. Fixing it now means
+  it cannot be chosen later to flatter the result.
+
+**D14. Observation-to-forecast pairing rule (answers Q3).**
+- The routine `:50` report is the hourly truth observation (per F3).
+- Each forecast valid at `HH:00` is paired with the observation nearest that
+  hour — in practice the `:50` report ten minutes before it.
+- If no report exists within 15 minutes of the hour, that hour is dropped and
+  counted (SPEC 2.2). Nothing is filled in.
+- Reason: ten minutes is a negligible gap for temperature, so this adds no
+  meaningful error, and a single written rule stops the pairing being decided
+  ad hoc later.
+
+**D15. Raw data is committed to version control (answers Q6).**
+- Raw pulls are small for one station and one variable, so they go into the
+  repository. That makes the immutable-snapshot rule (SPEC 2.3) concrete and
+  the project reproducible from the history alone.
+- If the data volume ever grows a lot — many stations, many variables — this
+  is revisited.
+- A `.gitignore` was added for operating-system and Python clutter. It
+  deliberately does **not** ignore `data/raw/`.
+
+---
+
+## 2026-08-16 — Session 02 findings (documentation checks)
+
+Both checks below were done against Open-Meteo's own documentation. F6 also
+used a small throwaway request to the live API to test which model names are
+accepted; nothing from it was saved to `data/raw/`, and the exact query is
+written out below so it can be repeated.
+
+**F5. Q4 answered — `previous_day1` is a *nominal* 24-hour lead, not an exact
+one. The real lead runs from about 24 hours up to about 30 hours, and it
+cycles through the day.** This matters, so here is the evidence in order.
+
+The Previous Runs API documentation page states the simple version:
+
+> "`_previous_day0` is the current model run (equivalent to the live Forecast
+> API). `_previous_day1` is the value that was predicted 24 hours before valid
+> time, `_previous_day2` 48 hours before, and so on up to day 7."
+
+and
+
+> "Data from past model runs is aligned to fixed lead-time offsets of 1–7
+> days."
+
+But Open-Meteo's own article on the feature explains how the series is
+actually built, and it is not one run from 24 hours ago:
+
+> "For **Previous Day 1**, with a forecast lead-time offset of 24 hours, it
+> doesn't entail retrieving a single weather model run from 24 hours ago.
+> Instead, the initial 24 hours of each weather model run are disregarded. In
+> models updating every 3 hours, time steps 24, 25, and 26 are utilized to
+> form a continuous time-series."
+
+So each run contributes only the hours it is needed for, starting at its own
+hour 24. GFS updates every 6 hours (00Z, 06Z, 12Z, 18Z), so by the same rule
+each GFS run contributes its time steps 24 to 29 — meaning the effective lead
+time sweeps from 24 hours up to 29 hours and then resets, six hours at a time,
+right through the day. Open-Meteo's documentation gives this worked example
+for a 3-hourly model only; the 6-hourly case is the same rule applied to GFS,
+not a separately published number.
+
+The maintainer confirms the same picture on the project's discussion board,
+and adds the processing delay:
+
+> "a 24 hour lead-time is in reality 24 hours + 5:20 for processing"
+
+and describes the stitching directly — for a model of that update cadence,
+"hours 0-6 from the 00Z run, hours 6-12 from the 06Z run, and so forth".
+
+**Does this match SPEC's "24-hour lead" framing (SPEC 3.2, D8)?** Mostly, but
+not exactly. It matches in the way that matters: every value is a genuine
+forecast made at least 24 hours before the hour it describes, so there is no
+look-ahead leakage (SPEC 2.1b holds). It does not match the literal reading
+that every hour is a clean 24 hours ahead. The honest description is "a
+day-ahead forecast at a 24-to-30-hour lead", and this is exactly the dataset
+Open-Meteo recommends for training bias-correction models. Whether to reword
+SPEC is left to the owner — see Q7.
+
+**F6. C2 answered — at EGLC, `gfs_seamless` is purely NCEP GFS, and it returns
+data identical to the explicit `gfs_global` string.**
+
+What "seamless" means: Open-Meteo's documentation says a seamless model
+"combines all models from a given provider into a seamless prediction", and
+for each location picks the highest-resolution model that covers it. For the
+NCEP provider the candidates are GFS (global) and HRRR/NAM/NBM (all
+CONUS-only, that is the United States). HRRR "data are only available for the
+United States, while for other locations, only GFS is used". EGLC is in
+London, so no CONUS model can ever apply, and nothing non-GFS is in the NCEP
+set to mix in.
+
+That was then checked against the live API. The same request was sent with
+several model names, for EGLC, 1–2 July 2026:
+
+```
+https://previous-runs-api.open-meteo.com/v1/forecast
+  ?latitude=51.505&longitude=0.055
+  &hourly=temperature_2m_previous_day1
+  &models=<NAME>
+  &start_date=2026-07-01&end_date=2026-07-02&timezone=UTC
+```
+
+Results:
+
+| model name            | result                                                    |
+|-----------------------|-----------------------------------------------------------|
+| `gfs_seamless`        | OK — 48 hours, 0 missing, grid 51.487137 / 0.0, elev 4 m  |
+| `gfs_global`          | OK — 48 hours, 0 missing, same grid point                 |
+| `ncep_gfs_seamless`   | OK — 48 hours, 0 missing, same grid point                 |
+| `ncep_gfs_global`     | OK — 48 hours, 0 missing, same grid point                 |
+| `gfs013`              | OK — 48 hours, 0 missing, same grid point                 |
+| `gfs025`              | accepted, but all 48 values null (grid 51.5 / 0.0)        |
+| `gfs_graphcast025`    | accepted, but all 48 values null                          |
+| `gfs_global_011`      | rejected — "invalid String value gfs_global_011"          |
+| `gfs_global_025`      | rejected — "invalid String value gfs_global_025"          |
+| `ncep_gfs_global_011` | rejected — "invalid String value ncep_gfs_global_011"     |
+| `ncep_gfs_global_025` | rejected — "invalid String value ncep_gfs_global_025"     |
+| `gfs_hrrr`            | rejected — HTTP 400                                       |
+
+Note that the names shown on the current documentation page (`ncep_gfs_global_011`,
+`ncep_gfs_global_025`) are **not** accepted by this endpoint. The names that
+work are the shorter ones.
+
+`gfs_seamless` and `gfs_global` were then compared value by value over two
+windows:
+- 1–21 July 2026: 504 hours, **identical, 0 differing values**, 0 missing in
+  either.
+- 24 March – 5 April 2021 (the very start of the archive): 312 hours,
+  **identical, 0 differing values**, 0 missing in either.
+
+Also worth recording: `gfs_graphcast025` returns nothing for this variable and
+period, so Google/DeepMind-style AI output is not quietly entering the series
+even in principle.
+
+**Recommendation (for the owner to confirm — nothing was changed).** Pin the
+explicit string **`gfs_global`** for the session 3 pull, instead of
+`gfs_seamless`. At EGLC the two are provably the same data, so this costs
+nothing, but it makes the claim "this is exactly NCEP GFS" true by
+construction rather than by argument, and it stops a future change to
+Open-Meteo's seamless blending from silently changing the dataset underneath
+us. If the owner prefers to keep `gfs_seamless` for consistency with the
+session 01 raw files, that is also defensible on this evidence — but the
+choice should be written down either way. See Q8. Note for stage 2: CDG is
+also in Europe, so the same reasoning applies there, but it should be
+re-checked rather than assumed.
+
+**Q5 closed — accepted.** The roughly 4 km gap between the airport and the GFS
+grid point (returned again as lat 51.487137, lon 0.0, elevation 4 m in every
+successful probe above) is accepted as-is. A steady distance offset is exactly
+the kind of repeated local error this project exists to learn, and the
+elevations nearly match, so there is no height problem. No action needed.
+
+---
+
+## 2026-08-16 — Open questions raised by session 02 (not acted on)
+
+**Q7. Should SPEC's "24-hour lead" wording be made more precise?** F5 shows
+the real lead is 24 to about 30 hours, sweeping through the day. SPEC 3.2 says
+"a fixed lead-time offset of 1 day (24 hours ahead)" and D8 says "24 hours
+only". Neither is wrong in spirit and neither creates leakage, but a reader
+could take them literally. Session 02's authorised SPEC edits did not cover
+this, so nothing was changed. The owner decides whether to reword SPEC 3.2,
+and whether the varying lead should later become a feature the model can see.
+
+**Q8. Which model string does session 3 pull with — `gfs_global` or
+`gfs_seamless`?** F6 recommends `gfs_global` and shows the two are identical
+at EGLC today. This needs the owner's word before the full historical pull,
+because it is baked into every raw file after that.
+
+**Q9. `.DS_Store` is already tracked, so the new `.gitignore` rule cannot
+take effect on it.** Q6 recorded `.DS_Store` as untracked, but it went into
+the session 01 commit. The `.gitignore` added this session does match it
+(`git check-ignore --no-index` confirms the rule fires), but git ignores
+ignore-rules for files it is already tracking, so the file stays in the
+history until someone runs `git rm --cached .DS_Store`. That is a version-
+control action, which Claude Code never takes (CLAUDE.md), and it is outside
+this session's scope. Left for the owner.
+

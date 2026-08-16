@@ -85,7 +85,9 @@ download service. Free, no account needed.
 **3.2 Forecast data (what GFS predicted).** Past GFS forecasts for the EGLC
 location. Source: Open-Meteo **Previous Runs API**, GFS model, at a fixed
 lead-time offset of 1 day (24 hours ahead). Free, no account needed.
-Confirmed available back to March 2021.
+Confirmed available back to **24 March 2021**. (A request for 1 March 2021
+returns HTTP 200 with every value null; the first hour carrying a real value
+is 2021-03-24 00:00 UTC. See DECISIONS F1.)
 
 **3.3 Verify on contact.** Two things can only be checked by pulling real
 data, and must be checked on the first pull:
@@ -107,12 +109,20 @@ forecast (observation minus forecast). The final corrected forecast is then
 GFS's forecast plus the predicted correction. This keeps the physics model
 doing the hard work and the correction doing only the local clean-up.
 
-**4.3 Training window.** Train on data from March 2021 to roughly mid-2025.
-Hold out the most recent about-12-months as an untouched test period, so the
-result is judged across all four seasons.
+**4.3 Training window (fixed dates).** Train on **2021-03-24 to 2025-07-31**
+(inclusive). Hold out **2025-08-01 to 2026-07-31** (inclusive) as an untouched
+test period — a clean 12 months, so the result is judged across all four
+seasons. Data after 2026-07-31 is not used, which keeps the test set exactly
+one calendar year. These dates are fixed before any model runs (see
+DECISIONS D13).
 
 **4.4 Model type.** A gradient-boosted tree model (a standard model for
 table-shaped data). This runs on a normal laptop CPU; no GPU is needed.
+
+**4.5 Lining up observation and forecast in time.** Each forecast valid at
+`HH:00` is paired with the nearest observation, which in practice is the
+routine `:50` report ten minutes earlier. If no report falls within 15 minutes
+of the hour, that hour is dropped and counted (rule 2.2). See DECISIONS D14.
 
 ---
 
@@ -132,7 +142,10 @@ better.
 
 **5.3 Success bar (qualitative, frozen before running).** Stage 1 succeeds
 if the corrected forecast has a lower MAE than **both raw GFS and
-persistence**, over the held-out test period.
+persistence**, over the held-out test period. The bar itself is unchanged; the
+only thing now made concrete is that the test period is the fixed window
+2025-08-01 to 2026-07-31, set before any model runs (section 4.3, DECISIONS
+D13).
 
 The exact numeric margin is deliberately left qualitative for now. A specific
 figure (for example, a minimum percent improvement over raw GFS) may be fixed

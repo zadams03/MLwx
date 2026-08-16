@@ -1,0 +1,35 @@
+# .gitignore — things that must never enter the project's history.
+#
+# Raw data is NOT ignored. Raw pulls are committed on purpose (DECISIONS D15),
+# because the immutable-snapshot rule (SPEC 2.3) only means something if the
+# snapshot is actually in the history.
+
+# --- macOS clutter ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# --- Python clutter ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- editor and OS odds and ends ---
+.idea/
+.vscode/
+*.swp
+Thumbs.db
