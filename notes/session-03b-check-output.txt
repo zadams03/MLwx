@@ -1,0 +1,143 @@
+
+============================================================================
+FORECAST SERIES - Open-Meteo Previous Runs, gfs_global, temperature only
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6792  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8760  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8760  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8784  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8760  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5088  2026-01-01 00:00 -> 2026-07-31 23:00
+
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,692 usable, 492 missing (1.29%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,760 usable, 0 missing (0.00%)
+
+-- GAP MAP: every gap run, whole period (1 run(s)) --
+    2023-12-30 00:00 -> 2024-01-19 11:00 UTC     492 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    over 7 days         1      492
+
+-- the big gap around the 2023/2024 boundary, pinned down --
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    split across the year end : 48 hours in 2023, 444 hours in 2024
+    (the 2024-only count of 444 seen in the aborted session 03
+     was this same gap, counted from 1 January only.)
+
+-- is it the only sizeable gap? largest runs in order --
+       492 hours   2023-12-30 00:00 -> 2024-01-19 11:00 UTC
+    runs of 24 hours or more: 1
+
+-- TRAINING WINDOW ONLY: temperature value range (sanity) --
+    n = 37,692
+    min = -1.7 degC   max = 40.7 degC   mean = 12.67 degC
+    (Celsius as expected - Kelvin would show roughly 250-310.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, usable 8,760, missing 0
+    gap runs:
+      (none)
+
+============================================================================
+TRUTH SERIES - IEM ASOS routine METARs, EGLC
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6789  2021-03-24 00:50 -> 2021-12-31 23:50
+2022-01-01..2022-12-31      8751  2022-01-01 00:50 -> 2022-12-31 23:50
+2023-01-01..2023-12-31      8753  2023-01-01 00:50 -> 2023-12-31 23:50
+2024-01-01..2024-12-31      8782  2024-01-01 00:50 -> 2024-12-31 23:50
+2025-01-01..2025-12-31      8758  2025-01-01 00:50 -> 2025-12-31 23:50
+2026-01-01..2026-07-31      5086  2026-01-01 00:50 -> 2026-07-31 23:50
+
+reports in files           : 46,919
+minute-past-hour spread    : :20 x8, :50 x46,911
+reports with no temperature: 10
+reports >15 min from any hour, dropped (D14): 8
+
+expected hours in period : 46,944
+hours with an observation: 46,900
+hours missing            : 44 (0.09% of the period)
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 38,146 usable, 38 missing (0.10%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,754 usable, 6 missing (0.07%)
+
+-- GAP MAP: every gap run, whole period (23 run(s)) --
+    2021-03-24 00:00 -> 2021-03-24 00:00 UTC       1 hour
+    2021-03-30 06:00 -> 2021-03-30 07:00 UTC       2 hours
+    2021-09-07 15:00 -> 2021-09-07 15:00 UTC       1 hour
+    2022-02-16 19:00 -> 2022-02-16 19:00 UTC       1 hour
+    2022-03-02 20:00 -> 2022-03-02 20:00 UTC       1 hour
+    2022-04-20 05:00 -> 2022-04-20 05:00 UTC       1 hour
+    2022-06-09 23:00 -> 2022-06-09 23:00 UTC       1 hour
+    2022-07-16 20:00 -> 2022-07-16 20:00 UTC       1 hour
+    2022-07-22 16:00 -> 2022-07-22 19:00 UTC       4 hours
+    2023-03-29 14:00 -> 2023-03-29 14:00 UTC       1 hour
+    2023-05-20 14:00 -> 2023-05-20 20:00 UTC       7 hours
+    2023-06-03 15:00 -> 2023-06-03 17:00 UTC       3 hours
+    2023-06-11 06:00 -> 2023-06-11 13:00 UTC       8 hours
+    2023-06-14 19:00 -> 2023-06-14 19:00 UTC       1 hour
+    2023-08-06 08:00 -> 2023-08-06 08:00 UTC       1 hour
+    2024-08-14 11:00 -> 2024-08-14 12:00 UTC       2 hours
+    2024-10-03 00:00 -> 2024-10-03 00:00 UTC       1 hour
+    2024-10-07 23:00 -> 2024-10-07 23:00 UTC       1 hour
+    2025-09-24 04:00 -> 2025-09-24 04:00 UTC       1 hour
+    2025-11-21 12:00 -> 2025-11-21 13:00 UTC       2 hours
+    2026-04-21 00:00 -> 2026-04-21 00:00 UTC       1 hour
+    2026-05-15 01:00 -> 2026-05-15 01:00 UTC       1 hour
+    2026-06-18 01:00 -> 2026-06-18 01:00 UTC       1 hour
+
+-- gap runs by length --
+    run length       runs    hours
+    1 hour             16       16
+    2-5 hours           5       13
+    6-23 hours          2       15
+
+-- largest gap runs in order --
+         8 hours   2023-06-11 06:00 -> 2023-06-11 13:00 UTC
+         7 hours   2023-05-20 14:00 -> 2023-05-20 20:00 UTC
+         4 hours   2022-07-22 16:00 -> 2022-07-22 19:00 UTC
+         3 hours   2023-06-03 15:00 -> 2023-06-03 17:00 UTC
+         2 hours   2021-03-30 06:00 -> 2021-03-30 07:00 UTC
+         2 hours   2024-08-14 11:00 -> 2024-08-14 12:00 UTC
+         2 hours   2025-11-21 12:00 -> 2025-11-21 13:00 UTC
+         1 hours   2021-03-24 00:00 -> 2021-03-24 00:00 UTC
+         1 hours   2021-09-07 15:00 -> 2021-09-07 15:00 UTC
+         1 hours   2022-02-16 19:00 -> 2022-02-16 19:00 UTC
+    runs of 24 hours or more: 0
+
+-- TRAINING WINDOW ONLY: observed temperature range (sanity) --
+    n = 38,146
+    min = -5.0 degC   max = 39.0 degC   mean = 12.93 degC
+    (Celsius as expected.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, with an observation 8,754, missing 6
+    gap runs:
+      2025-09-24 04:00 -> 2025-09-24 04:00 UTC       1 hour
+      2025-11-21 12:00 -> 2025-11-21 13:00 UTC       2 hours
+      2026-04-21 00:00 -> 2026-04-21 00:00 UTC       1 hour
+      2026-05-15 01:00 -> 2026-05-15 01:00 UTC       1 hour
+      2026-06-18 01:00 -> 2026-06-18 01:00 UTC       1 hour
+
+============================================================================
+Nothing was joined, filled or modelled. Raw files untouched.
+============================================================================

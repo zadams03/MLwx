@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 16 August 2026 (after session 02)._
+_Last updated: 16 August 2026 (after session 03b)._
 
 ---
 
@@ -63,28 +63,55 @@ _Last updated: 16 August 2026 (after session 02)._
     pull, awaiting the owner's confirmation.
   - `.gitignore` added at the project root: macOS and Python clutter ignored,
     `data/raw/` deliberately not ignored.
+- **Session 03 — started, stopped partway, superseded by 03b.** It pulled
+  four forecast chunks carrying five variables, then was stopped. It found two
+  real problems: the extra variables do not exist across the archive, and
+  there is a big gap in the forecast series around the 2023/2024 year end. It
+  did make the authorised SPEC 3.2 edit, which stands. Its partial chunks were
+  never committed and were discarded before the 03b pull.
+- **Session 03b — the full historical pull, temperature-only. Done.**
+  - **Owner's decisions recorded (DECISIONS D16–D17):** the model string is
+    pinned to `gfs_global`; stage 1 is temperature-only on the forecast side,
+    with the extra variables dropped and noted as a possible later
+    enhancement for the recent period only.
+  - **Forecast series pulled:** Open-Meteo Previous Runs API, `gfs_global`,
+    `temperature_2m_previous_day1`, EGLC, 2021-03-24 to 2026-07-31, in six
+    yearly chunks. 46,944 hourly rows returned, 46,452 with a value.
+  - **Truth series pulled:** IEM ASOS routine `:50` METARs for EGLC over the
+    same period, six yearly chunks. 46,919 reports, covering 46,900 hours.
+  - Every one of the 24 new raw files has a `.meta.txt` beside it recording
+    the pull time and the exact request (SPEC 2.3). `data/raw/` is 3.7 MB.
+  - **Full gap map produced** for both series — the session's main deliverable.
+    Saved in `notes/session-03b-check-output.txt`.
+    - **Forecast: exactly one gap**, 492 hours, 2023-12-30 00:00 to
+      2024-01-19 11:00 UTC. All of it falls in the training window; the test
+      window has no forecast gap at all. See DECISIONS F8.
+    - **Observations: 44 missing hours (0.09%)** in 23 short runs, longest
+      8 hours, no run of a day or more. See DECISIONS F9.
+    - Nothing was filled. Counts only (SPEC 2.2).
+  - **Training-window value ranges checked** and sane, both in Celsius
+    (DECISIONS F10). The test window's values were not looked at.
+  - **Q7, Q8 and Q9 all closed.**
 
 ## In progress
 
-- Nothing. Session 02 is finished and awaiting the owner's review.
+- Nothing. Session 03b is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 02.
-2. **Owner confirms Q8 — the model string for the full pull** (`gfs_global`
-   is recommended; `gfs_seamless` is the session 01 status quo). This must be
-   settled before session 3, because it is baked into every raw file.
-3. **Session 3 — the full historical pull.** Pull the forecast series and the
-   observation series across the whole period (2021-03-24 to 2026-07-31),
-   into `data/raw/` with `.meta.txt` beside each file. Still no joining, no
-   model.
-4. Then: build the stage 1 pipeline (join, learn the correction, evaluate
-   against the baselines).
+1. Owner reviews and commits session 03b.
+2. **Build the stage 1 pipeline.** Join the two series using the D14 pairing
+   rule (routine `:50` report to the forecast hour, drop and count anything
+   with no report within 15 minutes), pick the fixed hour of the day for the
+   stage 1 target (SPEC 4.1), then train the correction model and compare it
+   against raw GFS and persistence (SPEC 5).
+3. The test window stays sealed until that final comparison.
 
 ## Notes
 
-- Open questions still with the owner: **Q7** (should SPEC's "24-hour lead"
-  wording be made more precise, given F5?), **Q8** (which model string),
-  **Q9** (`.DS_Store` is already tracked, so the new ignore rule cannot
-  remove it without a `git rm --cached`).
-- Nothing is blocked except the session 3 pull, which waits on Q8.
+- Open questions still with the owner: **Q10** (the 492-hour forecast gap sits
+  entirely in one winter of the training window — dropping it is the default,
+  but the loss is concentrated rather than spread), **Q11** (the forecast never
+  gets as cold as the station does; expected, and it is the bias we are here to
+  correct, but the owner may want a look before modelling).
+- Nothing is blocked. The dataset is complete and ready to join.

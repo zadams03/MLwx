@@ -1,0 +1,33 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv
+purpose     : session 03b, part B - full history truth chunk
+pulled at   : 2026-08-16 15:13:15 BST (2026-08-16 14:13:15 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2021&month1=3&day1=24&year2=2022&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = EGLC
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2021-03-24 to 2021-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2022-01-01.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- The routine :50 report is the hourly truth observation (DECISIONS D14, F3).
+- EGLC also files a second report at :20 past the hour. It is NOT in
+  this file, because report_type=3 asks for routine reports only.
+- Air temperature (tmpc) is the designated truth field. Dew point
+  (dwpc) arrives in the same response and is kept for the record.
+- HTTP status 200.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).

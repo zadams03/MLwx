@@ -83,8 +83,18 @@ airports report in). Source: the Iowa Environmental Mesonet (IEM) ASOS
 download service. Free, no account needed.
 
 **3.2 Forecast data (what GFS predicted).** Past GFS forecasts for the EGLC
-location. Source: Open-Meteo **Previous Runs API**, GFS model, at a fixed
-lead-time offset of 1 day (24 hours ahead). Free, no account needed.
+location. Source: Open-Meteo **Previous Runs API**, model string
+**`gfs_global`** (see DECISIONS D16). Free, no account needed.
+
+The lead time is the API's 1-day offset (`previous_day1`). This is a
+**nominal** 24-hour lead, not an exact one. GFS runs every 6 hours, and
+Open-Meteo builds the series by taking hours 24–29 of each run and stitching
+them together, so the true lead sweeps between about **24 and 30 hours**
+across the day and then resets (see DECISIONS F5).
+
+Every value is nonetheless a genuine forecast made **at least 24 hours before
+its valid time**, so the no-look-ahead rule (2.1b) still holds.
+
 Confirmed available back to **24 March 2021**. (A request for 1 March 2021
 returns HTTP 200 with every value null; the first hour carrying a real value
 is 2021-03-24 00:00 UTC. See DECISIONS F1.)

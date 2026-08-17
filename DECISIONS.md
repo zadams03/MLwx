@@ -402,3 +402,187 @@ history until someone runs `git rm --cached .DS_Store`. That is a version-
 control action, which Claude Code never takes (CLAUDE.md), and it is outside
 this session's scope. Left for the owner.
 
+---
+
+## 2026-08-16 — Session 03b decisions (owner's choices, now locked)
+
+Session 03 was started and stopped partway. Session 03b re-did the pull on a
+corrected basis. The note at the end of this section records what was thrown
+away, so the history is honest.
+
+**D16. The forecast model string is pinned to `gfs_global` (answers Q8).**
+- Every forecast pull uses the explicit string `gfs_global`, not
+  `gfs_seamless`.
+- Reason: session 02 (F6) showed the two return identical data at EGLC over
+  both a 2026 and a 2021 window, so pinning costs nothing. It makes the claim
+  "this is exactly NCEP GFS" true by construction rather than by argument, and
+  it stops a future change to Open-Meteo's seamless blending from quietly
+  changing the dataset underneath us.
+- **Q8 is closed.**
+
+**D17. Stage 1 is temperature-only on the forecast side.**
+- The only forecast variable pulled is `temperature_2m` at the
+  `previous_day1` offset.
+- The four extra candidates tried in the aborted session 03 — cloud cover,
+  10 m wind speed, 2 m dew point and surface pressure — are dropped for
+  stage 1.
+- Reason: they exist only for recent data, not across the archive (F7), and
+  they begin exactly where the big forecast gap ends (F8), so including them
+  would mean a dataset whose columns start at different dates. Temperature
+  covers the whole archive. Stage 1 is meant to be the simplest clean test.
+- Kept as a **possible later enhancement, recent period only**. If the extras
+  are ever used, the training period for a model using them has to start after
+  they begin, and that is a different, shorter dataset.
+
+---
+
+## 2026-08-16 — Session 03b findings (the full historical pull)
+
+The full pull ran for real: 2021-03-24 to 2026-07-31, both sources, six
+yearly chunks each, 24 files in `data/raw/` with a `.meta.txt` beside every
+one. Nothing was joined, filled, cleaned or modelled.
+
+**F7. The extra forecast variables exist only for recent data.** A small
+probe (three days, `gfs_global`, EGLC) was run at each end of the archive
+before the pull. Every candidate returns real values recently; only
+temperature reaches back to the start:
+
+| variable at `_previous_day1` | 2026-08-10..12 | 2021-03-24..26 |
+|------------------------------|----------------|----------------|
+| `temperature_2m`             | 72/72 present  | 72/72 present  |
+| `cloud_cover`                | 72/72 present  | 0/72 — all null |
+| `wind_speed_10m`             | 72/72 present  | 0/72 — all null |
+| `dew_point_2m`               | 72/72 present  | 0/72 — all null |
+| `surface_pressure`           | 72/72 present  | 0/72 — all null |
+| `relative_humidity_2m`       | 72/72 present  | 0/72 — all null |
+| `pressure_msl`               | 72/72 present  | 0/72 — all null |
+
+None was rejected; the early ones come back HTTP 200 with null values, the
+same pattern F1 found for temperature before 24 March 2021. A coarse scan of
+single days showed the extras still absent on 2023-07-01 and present on
+2024-07-01. This finding is what D17 rests on.
+
+**F8. There is exactly one sizeable gap in the forecast series, and it
+straddles the 2023/2024 year end.** Pinned down exactly:
+
+```
+last hour with data       : 2023-12-29 23:00 UTC
+first missing hour        : 2023-12-30 00:00 UTC
+last missing hour         : 2024-01-19 11:00 UTC
+first hour with data again: 2024-01-19 12:00 UTC
+length                    : 492 hours (20.5 days)
+split across the year end : 48 hours in 2023, 444 hours in 2024
+```
+
+The aborted session 03 reported "about 444 null hours in early 2024". That was
+the same gap seen from inside the 2024 file only; counting from 30 December
+2023 gives the true 492.
+
+It is genuinely one continuous gap, not an artefact of how the requests were
+chunked: the 2023 file and the 2024 file were requested separately, and each
+holds its own side of it (2023 file: 48 nulls, 2023-12-30 00:00 to 2023-12-31
+23:00; 2024 file: 444 nulls, 2024-01-01 00:00 to 2024-01-19 11:00). They join
+end to end.
+
+**It is the only gap in the forecast series.** Over the whole period there is
+exactly **one** gap run. Every hour was returned as a row — no hour is
+missing outright — so all 492 missing hours are rows the API returned with a
+null value. Nothing was filled (SPEC 2.2).
+
+Forecast totals for the period:
+```
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+training 2021-03-24..2025-07-31: 38,184 expected, 37,692 usable, 492 missing (1.29%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,760 usable,   0 missing (0.00%)
+```
+The whole gap falls inside the training window. The test window has no
+forecast gap at all.
+
+**F9. The observation record over the full period is very good.** 44 missing
+hours out of 46,944 (**0.09%**), spread over 23 short runs. The longest is
+8 hours. There is no run of 24 hours or more.
+
+```
+reports in files           : 46,919
+minute-past-hour spread    : :20 x8, :50 x46,911
+reports with no temperature: 10
+reports >15 min from any hour, dropped (D14): 8
+hours with an observation  : 46,900
+training 2021-03-24..2025-07-31: 38,184 expected, 38,146 usable, 38 missing (0.10%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,754 usable,  6 missing (0.07%)
+```
+
+Gap runs by length: 16 runs of 1 hour, 5 runs of 2–5 hours, 2 runs of 6–23
+hours. The full list of all 23 runs is in
+`notes/session-03b-check-output.txt`.
+
+Two small things the pull turned up, both handled by the existing rules:
+- Eight reports came in at `:20` rather than `:50`. They sit 20 minutes from
+  the nearest hour, so the D14 15-minute rule drops them. That is the whole of
+  the "8 dropped" line above.
+- Ten reports carry no temperature (marked `M`). They were counted, not
+  filled.
+
+This confirms F2's two-week snapshot holds across the whole five years: gaps
+are rare and short, so dropping unpaired rows will cost very little data.
+
+**F10. Value-range sanity check, training window only.** The test window was
+not looked at (its values stay sealed until the final evaluation).
+
+```
+forecast (GFS, training window): n = 37,692   min = -1.7   max = 40.7   mean = 12.67 degC
+observed (EGLC, training window): n = 38,146   min = -5.0   max = 39.0   mean = 12.93 degC
+```
+
+Both are plainly Celsius — a Kelvin mix-up would read about 250–310 — and
+neither carries an absurd value. Nothing here is wrong.
+
+Worth noticing for later, though: the forecast's range is shifted warm at the
+cold end (its coldest hour is -1.7 against the station's -5.0) and slightly
+warm at the hot end. That is the shape you would expect from a coarse global
+grid cell sitting about 4 km away and partly over the Thames (Q5), which
+smooths extremes. It is not a fault in the data — it is exactly the kind of
+repeatable local bias this project exists to learn. Recorded as an
+observation, not acted on. See Q10.
+
+**Note — what the aborted session 03 left behind, and what happened to it.**
+Session 03 pulled four forecast chunks (2021–2024) carrying five variables
+before it was stopped. Those files were never committed. They were moved out
+of `data/raw/` before this session's pull so the dataset would be clean and
+uniform, and every forecast chunk was re-pulled temperature-only. Nothing
+committed was touched. The `data/raw/` folder now holds the six committed
+session 01 sample files plus the 24 new session 03b files (3.7 MB in total).
+
+**Q7 closed.** The owner approved rewording SPEC 3.2, and the edit was made in
+the aborted session 03 and confirmed intact at the start of this one. SPEC 3.2
+now states the `gfs_global` pin, the nominal-versus-real lead time (24 to about
+30 hours, sweeping through the day), and that every value is still a genuine
+forecast made at least 24 hours ahead, so 2.1b holds.
+
+**Q8 closed** by D16. **Q9 closed** — `git ls-files` returns nothing for
+`.DS_Store`, and `.gitignore` line 8 matches it, so the owner's
+`git rm --cached` took effect.
+
+---
+
+## 2026-08-16 — Open questions raised by session 03b (not acted on)
+
+**Q10. Does the 492-hour forecast gap need anything done about it?** It is
+1.29% of the training window and falls entirely inside it, in winter
+(30 December to 19 January). Dropping those hours is what SPEC 2.2 requires
+and is the default. The only thing worth the owner's thought is that the loss
+is concentrated in one winter rather than spread out, so the training set
+holds slightly less deep-winter data than the raw row count suggests. No
+action taken.
+
+**Q11. Should the warm shift in the forecast's value range be looked at
+before modelling?** F10 notes the forecast never gets as cold as the station
+does. This is expected and is the bias the project targets, so it needs no
+fix — but if the owner wants a sanity plot of forecast-minus-observation
+before the model is built, that is a training-window-only exercise and would
+have to be asked for explicitly. Not done here.
+
