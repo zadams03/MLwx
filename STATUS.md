@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 08)._
+_Last updated: 17 August 2026 (after session 09)._
 
 ---
 
@@ -16,8 +16,16 @@ a genuinely different location, with **only the location changed**. The target
 stays 12:00 UTC on purpose.
 
 Session 08 was the verify-on-contact check, mirroring session 01 for EGLC.
-**Both data sources carry CDG and are usable** (DECISIONS F17–F21). Nothing has
-been pulled in full, designed, joined or built yet.
+**Both data sources carry CDG and are usable** (DECISIONS F17–F21).
+
+Session 09 then did the stage 2 design, as documentation: **SPEC is now written
+per airport rather than for one airport** (DECISIONS D28). Shared rules are
+stated once and per-airport facts live in a new airport table (SPEC 3.4) with a
+row each for EGLC and LFPG. There is no separate "stage 2 section" and that is
+deliberate — opening stage 2 meant adding a row, not adding a design.
+
+**Nothing for CDG has been pulled in full, joined, built or trained yet.** That
+is the next session.
 
 **Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
 SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
@@ -346,32 +354,73 @@ result and the honest reading of it.
   - Full real output in `notes/session-08-check-output.txt`; the script is
     `scripts/session08_checks.py`.
 
+- **Session 09 — SPEC generalised to many airports. Documentation only. Done.**
+  No data was pulled, no code was written or run, nothing was joined, built or
+  trained, and no result changed.
+  - **SPEC now describes a per-airport project (DECISIONS D28).** Shared things
+    are stated once — the two data sources, the method, the D13 split dates, the
+    D14 pairing rule, the missing-data rule, the metric, the baselines and the
+    bar. Per-airport things live in a new **airport table at SPEC 3.4** holding
+    ICAO code, IEM network, the airport's own position, the forecast grid point
+    it maps to, distance and height mismatch, and the minute the station reports
+    at. Adding an airport is adding a row.
+  - **Nine authorised SPEC edits and no others (E-1 to E-9):** section 1 (the
+    project is per-airport, EGLC passed and CDG in progress); 3.1/3.2/3.3 (the
+    sources are shared, CDG's archive starts on the same hour, verify-on-contact
+    applies to each new airport); the new 3.4 (the table); 4.1 (12:00 UTC at
+    every airport, with the stage 3 solar-noon switch noted, D27); 4.3 (the
+    split dates are shared, and the D18 rehearsal subdivision is written in);
+    4.5 (the pairing rule now names no minute — the minute is a table fact);
+    the new 5.0 (the protocol applies per airport, with a results table); 5.3
+    (the bar is judged once per airport); 5.4 (the deeper evaluation is now
+    optional rather than parked); and 6 (stage 1 done, stage 2 in progress).
+  - **The frozen bar's meaning is unchanged — only its scope was generalised.**
+    "Stage 1 succeeds if…" became "An airport succeeds if…", over that airport's
+    test period. The metric, the four references, the qualitative
+    no-numeric-margin rule (D22) and rule 2.4 are all untouched. Nothing was
+    added that a result must now clear and nothing was removed.
+  - **Two questions closed by owner's decisions.** **Q18 closed by D29:** the
+    parked SPEC 5.4 work (skill score, significance, formal season testing) is
+    **optional and blocks nothing** — stage 1 passed cleanly and a second
+    airport is the stronger robustness check. **Q19 closed by D30:** at CDG the
+    off-hour report drops are **taken, and D14 is not adapted for one airport**,
+    because a different pairing rule would break the "only the location changed"
+    claim stage 2 rests on. The pull session must still count them.
+  - **One new open question, Q22.** EGLC's IEM network code `GB__ASOS` came from
+    the session 09 prompt and has never come back from IEM — every EGLC request
+    this project ever made used `station=EGLC` with no network parameter. It is
+    written into the table **marked unverified** rather than stated as fact.
+    Nothing depends on it; no request or script uses a network code.
+  - No script and no notes file: there was nothing to run and no number to
+    produce.
+
 ## In progress
 
-- Nothing. Session 08 is finished and awaiting the owner's review.
+- Nothing. Session 09 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 08.
-2. **The Stage 2 SPEC design, then the full CDG pull.** The data checks out
-   (F21), so this is the path the session 08 prompt named. Two pieces, in order:
-   - **Write the Stage 2 section of SPEC.** Session 08 was explicitly told not
-     to, because the design should follow the verification rather than precede
-     it. D26 already fixes most of it (same hour, same features, same split
-     dates, same pairing rule, same bar), so the design session is mostly a
-     matter of writing that down properly and deciding how the two airports'
-     results get compared.
-   - **Then the full historical pull for LFPG**, 2021-03-24 to 2026-07-31, both
-     sources, mirroring session 03b. Notes for whoever does it: **space the IEM
-     requests out** — three quick ones hit an HTTP 429 rate limit this session
-     (F18 meta files); **count the off-hour reports explicitly** (Q19); and
-     **map every hour of the forecast series**, which answers Q21.
-3. **Still open and not blocking: Q18 — does any of the parked SPEC 5.4
-   evaluation get done?** Skill scores, statistical significance and formal
-   season testing became available when stage 1 passed. The owner has chosen
-   stage 2 first by opening it, but Q18 was never answered either way, so it
-   stays open.
-4. Nothing is pre-committed beyond that.
+1. Owner reviews and commits sessions 08 and 09.
+2. **The full historical pull for LFPG**, 2021-03-24 to 2026-07-31, both
+   sources, mirroring session 03b — plus the gap map, which is the session's
+   main deliverable. Notes for whoever does it:
+   - **Space the IEM requests out.** Three quick ones hit an HTTP 429 rate
+     limit in session 08 (recorded in that session's `.meta.txt` files).
+   - **Map every hour of the forecast series**, exactly as session 03b did.
+     That is what **answers Q21** — whether EGLC's 492-hour gap exists at LFPG
+     too. Write the answer into SPEC 3.2, where a "to be verified" marker is
+     waiting for it.
+   - **Count the off-hour routine reports explicitly**, and report the days
+     lost at 12:00 UTC to that cause **separately** from days lost to missing
+     reports. D30 has already decided what to do about them — nothing, take the
+     drops — but they still have to be counted (Q19, now closed).
+   - **Fold in Q20 while there:** run F6's `gfs_global` versus `gfs_seamless`
+     comparison at LFPG, so stage 2 can claim "exactly NCEP GFS" by
+     construction the way stage 1 does.
+   - **Optional, nearly free: Q22.** One IEM station-metadata request for the
+     United Kingdom network would verify EGLC's `GB__ASOS` code, which is
+     currently in SPEC 3.4 marked unverified.
+3. Nothing is pre-committed beyond that.
 
 ## Notes
 
@@ -383,14 +432,20 @@ result and the honest reading of it.
 - **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
 - **Q17 is closed** by session 08 (D26): stage 2 opened, at CDG/LFPG.
-- **Four open questions, none of them blocking anything.** **Q18** (does any of
-  the parked SPEC 5.4 evaluation get done?) is left from session 07. **Q19, Q20
-  and Q21** were raised by session 08: the off-hour report rate at LFPG and
-  whether D14 should be adapted; `gfs_global` versus `gfs_seamless` at LFPG; and
-  whether EGLC's 492-hour forecast gap exists at LFPG too. Q19 and Q21 are
-  largely answered by the full pull rather than by a decision.
-- **The test year has now been opened, exactly once, in session 07** — the one
+- **Q18 and Q19 are closed** by session 09 (D29, D30).
+- **Three open questions, none of them blocking anything**, and all three are
+  answered by the CDG pull rather than by a decision. **Q20** — `gfs_global`
+  versus `gfs_seamless` has not been re-checked at LFPG. **Q21** — is EGLC's
+  492-hour forecast gap present at LFPG too? SPEC 3.2 carries a "to be verified"
+  marker waiting for that answer. **Q22** (new, session 09) — EGLC's IEM network
+  code has never been verified, and sits in SPEC 3.4 marked as such.
+- **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
   used to judge any future change to the method. Anything measured on it from
   here on is measured on data the method has been compared against once already.
+- **CDG's test year is still sealed.** The dates are the same (2025-08-01 to
+  2026-07-31, D13) but the data is a different airport's, and it has never been
+  looked at. Each airport gets its own single look (SPEC 5.0). The CDG pull
+  session will hold the whole test year in raw files without opening it, exactly
+  as session 03b did for EGLC.

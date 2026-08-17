@@ -1717,3 +1717,128 @@ to be there at LFPG as well — but "likely" is not "checked", and F11's lesson 
 precisely that spot checks cannot prove what they did not look at. The full pull
 maps every hour, exactly as session 03b did, and the answer falls out of that. No
 action needed now; recorded so the mapping is not forgotten.
+
+---
+
+## 2026-08-17 — Session 09 decisions (SPEC generalised to many airports)
+
+This session wrote no code, pulled no data, and touched no dataset. It is a
+documentation session: SPEC was rewritten so it describes a **per-airport**
+project instead of a one-airport one. The three entries below are the choices
+behind that edit.
+
+**D28. SPEC is generalised to a multi-airport structure — one set of rules,
+parameterised by airport.**
+- **What changed in shape.** Everything shared stays stated once: the data
+  sources, the method, the split dates, the pairing rule, the missing-data rule,
+  the metric, the baselines and the bar. Everything that varies by location
+  moves into a small **airport table** (SPEC 3.4) that grows by one row per
+  airport: ICAO code, IEM network, the airport's own position, the forecast grid
+  point it maps to, and the minute past the hour the station reports at.
+- **What did not change.** No rule, no date, no setting and no threshold was
+  altered. The bar's **meaning** is untouched — beat raw GFS and persistence on
+  MAE over the held-out test year. Only its **scope** is now written down: it is
+  judged once **per airport**, on that airport's own test year (SPEC 5.0, 5.3).
+  An earlier airport's pass does not excuse a later airport's failure, and a
+  later result does not re-open an earlier one.
+- **Why now, with only two airports.** Two is the cheapest moment to do it. With
+  one airport the general shape cannot be checked against anything; with five it
+  is a rewrite of a much larger file, done under pressure. Doing it at two means
+  the structure is proved by a real second case (CDG's row is filled from real
+  pulls, not invented) while the file is still small. It also sets up stage 3,
+  where airports are pooled — a pooled model needs per-airport facts to already
+  be separated from shared ones, which is exactly what the table does.
+- **The rule the table enforces: a row is filled from real pulls, never from
+  memory or a map.** That is why one cell in it is marked unverified — see Q22.
+- **SPEC edits made:** sections 1, 3 (3.1, 3.2, 3.3, and the new 3.4), 4.1, 4.3,
+  4.5, 5 (new 5.0, and 5.3), 5.4 and 6. All were authorised by the session 09
+  prompt as E-1 to E-9. No other part of SPEC was touched.
+
+**D29. The deeper evaluation (SPEC 5.4) is optional and blocks nothing. This
+closes Q18.**
+- SPEC 5.4 parked the harder checks — skill score, statistical significance,
+  formal season-by-season testing — "until stage 1 passes". Stage 1 has passed
+  (F16), so that wording was stale: it read as a gate that had quietly opened
+  with nobody deciding what came through it.
+- **The owner's decision: they stay available but are not required.** No stage
+  waits on them. No session has to do them. If they are wanted, they are a
+  session of their own.
+- Reason: stage 1 passed cleanly rather than by a hair — 1.040 against 1.242 for
+  raw GFS, a 16.3% cut — and its season-by-season table already showed the
+  correction helping in all four seasons, which is partial robustness evidence
+  in itself. The stronger check on whether the method is real is running it at a
+  second airport, which is what stage 2 is. A significance test on the same 363
+  days would say less than CDG's result will.
+- Recorded honestly: this does mean the project has no formal significance
+  figure for the stage 1 win, and F16's own reading — that much of the gap
+  between the 6.0% validation margin and the 16.3% test margin is what the
+  weather did, not what the model learned — stands unquantified.
+- **SPEC edit made:** section 5.4, authorised by session 09 E-8.
+
+**D30. At CDG, off-hour reports cost days and the days are taken. The pairing
+rule is NOT adapted for one airport. This closes Q19.**
+- Q19 asked whether D14's 15-minute tolerance should be widened, or the `:30`
+  "special" stream allowed as a fallback, to rescue the days LFPG loses when its
+  routine report is filed off the hour (F18, F19).
+- **The decision is to change nothing and take the drops.** D14 applies at CDG
+  exactly as written at EGLC.
+- Reason: stage 2's whole claim is that **only the location changed** (D26). A
+  pairing rule that differs between the two airports would break that claim, and
+  it would break it in a way that is hard to reason about afterwards — any
+  difference in the result could then be the location or the rule, with no way
+  to tell which. A handful of days out of about 1,900 is not worth that. The
+  drop-count-report rule (SPEC 2.2) already handles them honestly.
+- **What the pull session must still do:** count the off-hour reports explicitly
+  and report the days lost at 12:00 UTC to that cause **separately** from days
+  lost to missing reports. This decision fixes what to do about them; it does
+  not excuse anyone from counting them. F18's estimate of about 12 days rests on
+  a three-week sample and one off-hour report landing at noon, which is far too
+  little to tell bad luck from a midday pattern.
+- If the real rate turns out much larger than F18's estimate, that is a finding
+  for the owner, not grounds for a quiet change of rule mid-pull.
+- **SPEC edit made:** section 4.5, authorised by session 09 E-5.
+
+---
+
+## 2026-08-17 — Session 09 note (nothing measured, one thing found)
+
+No code ran and no data was pulled, so there is no F-entry. What this session
+produced is the generalised SPEC, the three entries above, and one open question
+below.
+
+**Q18 is closed** by D29. **Q19 is closed** by D30. Q20 and Q21 remain open and
+are both answered by the CDG pull rather than by a decision.
+
+**The frozen bar was checked, edit by edit, and its meaning is unchanged.** The
+session prompt required this and it is worth writing down. Before: "Stage 1
+succeeds if the corrected forecast has a lower MAE than both raw GFS and
+persistence, over the held-out test period." After: the same sentence with
+"Stage 1" replaced by "An airport" and "the held-out test period" by "the
+held-out test period at that airport". The metric (5.1), the baselines (5.2),
+the qualitative-no-numeric-margin rule (5.3, D22) and the frozen-before-running
+rule (2.4) are all untouched. Nothing was added that a result must now clear,
+and nothing was removed that it used to have to clear.
+
+---
+
+## 2026-08-17 — Open question raised by session 09 (not acted on)
+
+**Q22. EGLC's IEM network code has never been verified.** The session 09 prompt
+gave EGLC's network as `GB__ASOS` and CDG's as `FR__ASOS`, and asked for the
+airport table to be filled "from verified values". CDG's is verified: session 08
+pulled IEM's own station metadata for the `FR__ASOS` network and the coordinates
+in the table come from that file (F17). EGLC's is not. Every EGLC request in
+this project — session 01's samples and session 03b's full pull — was made with
+`station=EGLC` and no network parameter at all, so IEM has never told this
+project which network EGLC sits in. `GB__ASOS` is very probably right, but
+"probably" is not the standard the airport table is meant to hold to, and
+CLAUDE.md forbids writing a spec file from memory or assumption.
+- It is therefore written into SPEC 3.4 **marked unverified**, rather than left
+  out or stated as fact.
+- **Nothing depends on it.** The network code is not used by any request, any
+  script or any join; the pulls address stations by ICAO code. This is a
+  bookkeeping gap, not a data problem.
+- Fixing it is one small metadata request — the same call session 08 made for
+  France, pointed at the United Kingdom network — which would be a data pull,
+  and this session was documentation only. The CDG pull session could fold it in
+  for free, or the owner can leave the marker where it is.
