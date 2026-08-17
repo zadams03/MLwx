@@ -109,9 +109,19 @@ data, and must be checked on the first pull:
 
 ## 4. The target and the method
 
-**4.1 Target (stage 1).** The temperature at **one fixed hour of the day**.
-This is deliberately the simplest clean target — the honest test of whether
-the whole idea works at all. Widening to more hours comes later (section 6).
+**4.1 Target (stage 1).** The temperature at **one fixed hour of the day**,
+and that hour is **12:00 UTC**. This is deliberately the simplest clean target
+— the honest test of whether the whole idea works at all. Widening to more
+hours comes later (section 6).
+
+Why 12:00 UTC was chosen (decided on principle, before any model was built or
+any performance seen):
+- It is in daylight, so it catches the daytime heating that GFS tends to
+  mis-handle. A night-time hour would test the easier part of the day.
+- It is a stable, well-observed time of day — the station reports it reliably
+  and the temperature is not moving fast.
+- It avoids dawn and dusk, when temperature swings quickest and the ten-minute
+  offset in the pairing rule (4.5) would matter most.
 
 **4.2 What the model learns.** The model does **not** predict the temperature
 directly. It predicts the *gap* between what actually happened and what GFS

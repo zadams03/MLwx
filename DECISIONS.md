@@ -586,3 +586,295 @@ fix — but if the owner wants a sanity plot of forecast-minus-observation
 before the model is built, that is a training-window-only exercise and would
 have to be asked for explicitly. Not done here.
 
+---
+
+## 2026-08-17 — Session 04 decisions (owner's choices, now locked)
+
+**D18. The validation approach — rehearse the evaluation inside the training
+period, so the sealed test year is looked at only once.**
+- **Inner-training: 2021-03-24 to 2024-07-31.** Everything that is fitted is
+  fitted on this and only this — the model, the climatology baseline, the mean
+  bias figure.
+- **Validation year: 2024-08-01 to 2025-07-31.** A practice stand-in for the
+  real test year. It has the same August-to-July shape, so it covers all four
+  seasons the same way the real test does.
+- **The real test year (2025-08-01 to 2026-07-31, D13) stays sealed** until a
+  later session, and is judged exactly once.
+- Reason: the frozen bar (SPEC 2.4, 5.3) only means something if the test year
+  is looked at once. Every look at it is a chance to adjust the method to suit
+  it, which quietly turns a test into a fit. So the whole evaluation — the
+  join, the baselines, the model, the comparison — is rehearsed on a year taken
+  from inside training first. The single real look happens once the method is
+  locked.
+- Note this splits the D13 training window in two. D13 is unchanged: the
+  training window is still 2021-03-24 to 2025-07-31. Inner-training and the
+  validation year are a subdivision *inside* it, used for this rehearsal.
+
+**D19. The stage 1 feature set is deliberately minimal.**
+- The features are the **forecast temperature** and the **season**, where
+  season is the day of the year encoded as a sine and a cosine pair. The
+  sine/cosine encoding makes 31 December and 1 January neighbours instead of
+  sitting at opposite ends of a number line.
+- **Hour of day is not a feature.** The target hour is fixed at 12:00 UTC
+  (SPEC 4.1), so it carries no information.
+- **No recent-observation feature.** Nothing like "yesterday's observed
+  temperature" or "yesterday's error" is included, even though it would be
+  legal under SPEC 2.1d. Reason: it keeps the claim clean — the model is
+  correcting *the forecast*, not quietly becoming a persistence model wearing
+  a forecast as a feature. It may be revisited later if the correction turns
+  out too weak without it.
+
+---
+
+## 2026-08-17 — Session 04 findings (join, bias, and the validation rehearsal)
+
+The join, the bias look and the model all ran for real. **The test year was not
+touched**: the two 2026 raw chunk files were never opened, the 2025 chunk was
+cut off at 2025-07-31 on load, and the script asserts that no date on or after
+2025-08-01 reached any table. Full output in
+`notes/session-04-check-output.txt`.
+
+**F11. Correction to F1 — the forecast archive is not continuous.** F1
+(session 01) concluded, from nine spot checks, that the archive "is continuous
+from that start". That conclusion is **wrong and is superseded by F8**, which
+mapped every hour and found a single 492-hour gap running 2023-12-30 00:00 to
+2024-01-19 11:00 UTC. F1's other claims stand — the archive does begin at
+2021-03-24 00:00 UTC, and a request for 1 March 2021 does return all nulls.
+Only the continuity claim fails. F1 itself is left exactly as written, because
+this log is append-only; this entry is the correction. The lesson worth keeping:
+spot checks can only ever show that the places you looked have data, never that
+the places you did not look do.
+
+**F12. The join at 12:00 UTC, rows kept and dropped.** One row per day: date,
+forecast temperature, observed temperature, and the residual the model learns.
+
+```
+                                         days   kept   drop  no fc  null fc  no obs
+inner-training 2021-03-24..2024-07-31   1,226  1,205     21      0       20       1
+validation     2024-08-01..2025-07-31     365    364      1      0        0       1
+```
+
+Every dropped day is accounted for, and nothing was filled (SPEC 2.2):
+- **20 of the 21 inner-training drops are the F8 forecast gap** (see Q10
+  below).
+- **1 inner-training drop is a missing observation**, 2023-06-11.
+- **1 validation drop is a missing observation**, 2024-08-14. That same single
+  missing observation also costs the persistence baseline the following day,
+  2024-08-15, which is why the scored validation set is 363 days rather than
+  364.
+- Across the whole loaded period, exactly **1** observation report fell more
+  than 15 minutes from the hour and was dropped by the D14 rule, and **0**
+  reports at 12:00 carried a missing temperature.
+
+**Q10 addressed.** The F8 gap costs **20 days**, not 21: the gap ends at
+2024-01-19 11:00 UTC and the series resumes at 12:00 UTC that day, which is
+exactly the target hour, so 2024-01-19 survives. Those 20 days were dropped and
+counted, as SPEC 2.2 requires. At the 12:00-only daily resolution the loss is
+20 days out of 1,226 (1.6%) — and worth remembering, it is 20 consecutive
+mid-winter days out of about 250 winter days in inner-training, so it is about
+8% of the deep-winter training days rather than 1.6% spread evenly.
+
+**F13. The bias at 12:00 UTC has real structure, and it is at the WARM end,
+not the cold end (answers Q11).** Inner-training only.
+
+Overall:
+```
+bias (observed - forecast), n = 1,205
+mean   = -0.108 degC      median = +0.000 degC     st dev = 1.551 degC
+min    = -7.0 degC        max    = +5.6 degC
+5th pct = -2.78   25th = -1.00   75th = +0.90   95th = +2.10
+mean absolute size (= raw GFS MAE in sample) = 1.172 degC
+station warmer than the forecast on 587 of 1,205 days (48.7%)
+```
+
+The mean bias is almost zero. That is the important part: **there is very
+little constant offset to correct at 12:00 UTC.** The structure is all in how
+the bias varies.
+
+Against forecast temperature:
+```
+forecast band (degC)     days  mean bias   st dev  mean |bias|
+0 to 5                     47     -0.049    1.557        1.206
+5 to 10                   220     +0.361    1.307        0.998
+10 to 15                  356     +0.387    1.424        1.118
+15 to 20                  276     -0.287    1.678        1.270
+20 to 25                  223     -0.746    1.354        1.194
+25 to 45                   83     -1.201    1.457        1.466
+
+coldest 10% of forecasts  n=120  forecast  +1.0 to  +7.3 degC  mean bias +0.097
+warmest 10% of forecasts  n=120  forecast +23.1 to +39.4 degC  mean bias -1.155
+```
+
+This **corrects the expectation set by F10**. F10 looked at all 24 hours and
+saw a forecast that never reached the station's cold extremes, and Q11 asked
+whether that cold-end shift needed attention. At 12:00 UTC specifically, the
+cold end is not the problem — the forecast is essentially unbiased below 10
+degC, and there is barely a cold tail at all (over three and a bit years, the
+12:00 forecast never once went below 0 degC). The problem is the **warm end**:
+on the hottest days GFS runs about **1.2 degC too warm**. That is consistent
+with the grid cell sitting about 4 km away and partly over the Thames (Q5) —
+water damps a hot afternoon. F10's cold-end observation was presumably driven
+by night-time hours, which stage 1 does not target.
+
+By season, the same pattern seen through the calendar:
+```
+season         days  mean bias   st dev  mean |bias|
+winter DJF      251     +0.356    1.340        1.065
+spring MAM      345     -0.061    1.624        1.203
+summer JJA      336     -0.549    1.755        1.437
+autumn SON      273     -0.052    1.194        0.907
+```
+GFS runs slightly cold in winter and clearly warm in summer, and summer is also
+where the error is largest and most variable. The full month-by-month table is
+in the notes file.
+
+**F14. The validation rehearsal. The correction beats all four references, but
+the margin over a plain constant offset is small.**
+
+Model: LightGBM gradient-boosted trees, fitted on the 1,205 inner-training rows
+only, predicting the residual from the D19 features. Settings were fixed before
+the run and nothing was tuned, grid-searched or varied:
+```
+objective=regression (squared error)  n_estimators=300  learning_rate=0.05
+num_leaves=15  min_child_samples=40  subsample=1.0  colsample_bytree=1.0
+reg_alpha=0.0  reg_lambda=0.0  random_state=42  n_jobs=1  deterministic=True
+lightgbm 4.7.0, numpy 2.5.2, python 3.12.2
+```
+Two consecutive runs produced byte-identical output, so the result is
+reproducible.
+
+All five methods scored on the same 363 validation days:
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.239     -0.278      1.630        4.90
+Persistence                2.226     -0.017      2.928       12.00
+Climatology                2.865     +0.020      3.656       11.65
+Mean-bias reference        1.231     -0.170      1.615        4.79
+ML-corrected               1.190     -0.166      1.580        5.76
+```
+
+Verdicts:
+```
+vs Raw GFS              YES   1.190 against 1.239  ->  0.049 degC better (4.0%)
+vs Persistence          YES   1.190 against 2.226  ->  1.036 degC better (46.5%)
+vs Mean-bias reference  YES   1.190 against 1.231  ->  0.041 degC better (3.3%)
+vs Climatology          YES   1.190 against 2.865  ->  1.675 degC better (58.5%)
+```
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3).** The frozen
+bar is judged once, on the sealed test year, in a later session. A good number
+here means the method is ready for that single look. It does **not** mean
+stage 1 has passed.
+
+Read honestly, the numbers say three things:
+
+1. **The correction does beat raw GFS, and it beats it by learning structure,
+   not by shifting everything.** The mean-bias reference — the forecast plus a
+   single constant, the inner-training mean bias of -0.108 degC — improves on
+   raw GFS by only 0.008 degC. So almost all of the model's 0.049 degC gain is
+   structure, which matches F13: there was hardly any constant offset to take.
+2. **But the total gain is small: 4.0%, about 0.05 degC.** Raw GFS at 12:00
+   UTC is already good (1.24 degC MAE), and the residual left over is mostly
+   day-to-day noise rather than repeatable bias. Beating a constant offset by
+   3.3% is a real win over the sanity check, but it is a narrow one, and 363
+   days is not many.
+3. **The win is essentially a summer win, and it is not uniform:**
+   ```
+   season         days   raw GFS   ML-corr    change
+   winter DJF       90     0.972     1.068    +0.096   (worse)
+   spring MAM       92     1.337     1.363    +0.026   (worse)
+   summer JJA       90     1.498     1.204    -0.294   (better)
+   autumn SON       91     1.147     1.121    -0.026   (better)
+   ```
+   The model helps most exactly where F13 said the bias was largest (summer)
+   and slightly hurts in winter and spring. That is coherent — it is the same
+   finding twice — but it means the headline average hides a season where the
+   correction is a small step backwards. Winter is also the season missing
+   20 consecutive training days (Q10), which may be part of it.
+
+Feature importances, as a sanity check that the model used what it was meant
+to:
+```
+feature                      gain  gain share   splits
+forecast_temp_c            7056.8       51.8%    1,651
+season_sin                 3085.0       22.6%    1,141
+season_cos                 3483.1       25.6%    1,408
+```
+Forecast temperature carries about half the gain and season the other half,
+split fairly evenly between its two components. Nothing is ignored and nothing
+dominates, which is what F13's picture predicts: the bias depends on both how
+warm it is and what time of year it is.
+
+The corrections the model actually applied over the validation year were
+modest — mean -0.112 degC, standard deviation 0.820, range -2.4 to +2.1 degC.
+It is nudging the forecast, not rewriting it.
+
+For the record, the in-sample figures were raw GFS 1.172 degC against
+ML-corrected 0.857 degC on inner-training. That gap between 27% in-sample and
+4% on validation is the ordinary sign of a flexible model fitting noise it
+cannot generalise. It is recorded only so the number is not a surprise later;
+it proves nothing.
+
+**How each reference was built, for the record:**
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 12:00 UTC observation. Past
+  values only (SPEC 2.1d).
+- **Climatology** — the seasonal average of the *observed* temperature for that
+  position in the year, averaged over every inner-training observation within
+  7.5 days of it, measured around the circle so late December and early January
+  are neighbours (SPEC 2.1c). Between 30 and 61 inner-training days sit behind
+  each value, 49.5 on average.
+- **Mean-bias reference** — the forecast plus -0.108 degC, that figure being
+  the mean inner-training bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+Nothing was fitted on the validation year: not the model, not the climatology,
+not the mean bias, not any encoding.
+
+---
+
+## 2026-08-17 — Open questions raised by session 04 (not acted on)
+
+**Q12. Is a 4.0% improvement on raw GFS enough to be worth carrying to the
+sealed test?** The rehearsal wins on all four references, so on the frozen bar
+as written (SPEC 5.3, beat raw GFS and persistence) the method would pass. But
+the margin over raw GFS is 0.049 degC on 363 days, and the correction makes
+winter and spring slightly worse. Nothing here was tuned, so there is likely
+room to do better — but improving the method means more looks at the validation
+year, which is allowed, whereas looking at the test year is not. The owner
+decides whether to go straight to the single sealed-test evaluation, or to
+spend one more session improving the method against validation first.
+
+**Q13. Should SPEC 5.3 gain a numeric margin before the sealed test?** SPEC 5.3
+says a specific figure "may be fixed just before the model is run — but still
+before seeing any results". Validation results now exist, which makes this
+awkward: any margin chosen now is chosen in the knowledge that validation gave
+4.0%. The honest options are to leave the bar qualitative as it stands, or to
+write down a margin and record openly that it was set after seeing validation
+(but before seeing the test year). The owner decides. Nothing was changed.
+
+**Q14. Should the mean-bias reference join the baselines in SPEC 5.2?** It
+turned out to be the most informative comparison of the five — it is what
+separates "the model learned something" from "the model found a constant".
+SPEC 5.2 currently lists raw GFS, persistence and optional climatology. Adding
+it would be a SPEC edit, which this session is not authorised to make.
+
+**Q15. The model objective is squared error while the metric is MAE.** The
+model was fitted with LightGBM's default squared-error objective, but judged on
+mean absolute error (SPEC 5.1). Fitting with an absolute-error objective would
+line the two up and might do better on the metric that counts. Trying it is a
+model variant, which this session's scope forbids. Logged for the owner.
+
+**Q16. LightGBM needed an OpenMP library that is not installed on this
+machine.** There is no Homebrew here, so `libomp.dylib` was missing and
+LightGBM would not import. The workaround used is the copy of that library
+that scikit-learn's macOS package already ships: `scripts/session04_model.py`
+points the dynamic loader at it and restarts itself once, in a clearly
+commented block at the top. It changes nothing about the model, and both runs
+were byte-identical. A cleaner fix is to install `libomp` properly. Also
+recorded for reproducibility: a `.venv` virtual environment was created at the
+project root holding numpy, scipy, scikit-learn and lightgbm. `.gitignore`
+already ignores `.venv/`, so nothing about it enters the history — which means
+the exact versions used are recorded here (python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0) and nowhere else. The owner may want a `requirements.txt`.
+

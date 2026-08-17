@@ -1,0 +1,216 @@
+
+============================================================================
+SESSION 04 - join, build, validate. TEST YEAR SEALED.
+============================================================================
+run at        : 2026-08-17 10:23:40 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+target hour   : 12:00 UTC (SPEC 4.1)
+inner-training: 2021-03-24 to 2024-07-31   (DECISIONS D18)
+validation    : 2024-08-01 to 2025-07-31   (DECISIONS D18)
+sealed test   : 2025-08-01 onward - NOT LOADED THIS SESSION
+
+============================================================================
+PART A - join the two series at 12:00 UTC
+============================================================================
+target hour: 12:00 UTC (SPEC 4.1)
+pairing rule: the routine :50 report nearest the hour, and only if
+              within 15 minutes of it (DECISIONS D14). In practice
+              the 11:50 report is the observation for 12:00.
+
+-- the seal on the test year --
+    forecast chunk files opened : 5 (the two 2026 files were not opened at all)
+    forecast 12:00 rows seen    : 1,744
+    of those, dropped as sealed : 153 (dated 2025-08-01 or later)
+    forecast 12:00 rows kept    : 1,591
+    observation 12:00 reports seen   : 1,742
+    of those, dropped as sealed      : 152
+    observation 12:00 reports kept   : 1,589
+
+-- observation reports rejected by the rules (not sealed, just unusable) --
+    reports more than 15 min from the hour, dropped (D14): 1
+    reports carrying no temperature (M), dropped (2.2)   : 0
+
+-- rows kept and dropped, by period --
+    period                                   days   kept   drop  no fc  null fc  no obs
+    inner-training 2021-03-24..2024-07-31   1,226  1,205     21      0       20       1
+    validation     2024-08-01..2025-07-31     365    364      1      0        0       1
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'    = the forecast series had no row for 12:00;
+             'null fc'  = it had a row but the value was null;
+             'no obs'   = no usable :50 observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2).
+
+-- where the dropped inner-training days sit (Q10 - the F8 forecast gap) --
+    the F8 forecast gap covers 21 calendar days (2023-12-30 to 2024-01-19)
+    of those, days dropped here: 20
+    inner-training days dropped for any other reason: 1
+    those other dropped days:
+      2023-06-11  (no usable observation)
+
+-- the dropped validation days, named --
+    2024-08-14  (no usable observation)
+
+-- first and last kept rows of each period (a shape check) --
+    inner-training  2021-03-24 -> 2024-07-31   1,205 rows
+    validation      2024-08-01 -> 2025-07-31   364 rows
+
+============================================================================
+PART B - the raw bias, INNER-TRAINING ONLY (addresses Q11)
+============================================================================
+bias = observed minus forecast. Positive means the station was
+warmer than GFS predicted. Inner-training days only; the validation
+year's values are not looked at here, and the test year not at all.
+
+-- overall --
+    bias (observed - forecast), inner-training
+      n      = 1,205
+      mean   = -0.108 degC
+      median = +0.000 degC
+      st dev = 1.551 degC
+      min    = -7.0 degC   max = +5.6 degC
+      5th pct = -2.78   25th = -1.00   75th = +0.90   95th = +2.10
+      mean absolute size = 1.172 degC
+
+    raw GFS MAE on inner-training (in sample): 1.172 degC
+    days the station was warmer than the forecast: 587 of 1,205 (48.7%)
+
+-- bias against forecast temperature (is the cold tail worse?) --
+    forecast band (degC)     days  mean bias   st dev  mean |bias|
+    0 to 5                     47     -0.049    1.557        1.206
+    5 to 10                   220     +0.361    1.307        0.998
+    10 to 15                  356     +0.387    1.424        1.118
+    15 to 20                  276     -0.287    1.678        1.270
+    20 to 25                  223     -0.746    1.354        1.194
+    25 to 45                   83     -1.201    1.457        1.466
+
+    the coldest and warmest tenths of forecast days, side by side:
+      coldest 10% of forecasts   n= 120  forecast +1.0 to +7.3 degC   mean bias +0.097   mean |bias| 1.090
+      warmest 10% of forecasts   n= 120  forecast +23.1 to +39.4 degC   mean bias -1.155   mean |bias| 1.423
+
+-- bias by month (season) --
+    month      days  mean bias   st dev  mean |bias|  mean forecast
+    Jan          75     +0.499    1.055        0.987          +7.38
+    Feb          85     +0.259    1.484        1.075          +9.59
+    Mar         101     +0.342    1.430        1.062         +10.55
+    Apr         120     -0.149    1.531        1.157         +12.40
+    May         124     -0.304    1.800        1.360         +16.34
+    Jun         119     -0.497    1.872        1.404         +20.92
+    Jul         124     -0.423    1.653        1.426         +22.20
+    Aug          93     -0.783    1.729        1.492         +22.16
+    Sep          90     -0.384    1.237        0.998         +20.55
+    Oct          93     -0.004    1.155        0.884         +16.22
+    Nov          90     +0.232    1.118        0.839         +10.73
+    Dec          91     +0.329    1.412        1.120          +8.03
+
+-- bias by season (three-month groups) --
+    season         days  mean bias   st dev  mean |bias|
+    winter DJF      251     +0.356    1.340        1.065
+    spring MAM      345     -0.061    1.624        1.203
+    summer JJA      336     -0.549    1.755        1.437
+    autumn SON      273     -0.052    1.194        0.907
+
+============================================================================
+PART C - build the model, then rehearse the evaluation
+============================================================================
+
+-- the model (fitted on inner-training only) --
+    rows fitted on : 1,205  (2021-03-24 to 2024-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (DECISIONS D19)
+    target         : residual, observed minus forecast (SPEC 4.2)
+    settings (fixed before running, not tuned this session):
+      objective = regression
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+
+-- the common validation set (every method judged on the same days) --
+    paired validation rows from part A           : 364
+    dropped: no previous-day 12:00 observation   : 1  (2024-08-15)
+    days every method is scored on               : 363
+    date range                                   : 2024-08-01 to 2025-07-31
+    Persistence needs yesterday's observation, which is a past-only
+    value (SPEC 2.1d). Nothing was filled in (SPEC 2.2).
+    climatology: built from inner-training only (SPEC 2.1c), +/-7.5 days
+                 inner-training days behind each value: min 30, max 61, mean 49.5
+    mean-bias reference: forecast + -0.1080 degC, that figure being the
+                 mean inner-training bias and nothing else.
+
+-- VALIDATION-YEAR MAE, 363 common days (2024-08-01 to 2025-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss
+    Raw GFS                    1.239     -0.278      1.630        4.90
+    Persistence                2.226     -0.017      2.928       12.00
+    Climatology                2.865     +0.020      3.656       11.65
+    Mean-bias reference        1.231     -0.170      1.615        4.79
+    ML-corrected               1.190     -0.166      1.580        5.76
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+
+-- does the correction beat each reference on validation MAE? --
+    vs Raw GFS                YES  1.190 against 1.239  -> +0.049 degC (+4.0%)
+    vs Persistence            YES  1.190 against 2.226  -> +1.036 degC (+46.5%)
+    vs Mean-bias reference    YES  1.190 against 1.231  -> +0.041 degC (+3.3%)
+    vs Climatology            YES  1.190 against 2.865  -> +1.675 degC (+58.5%)   (optional third check, SPEC 5.2)
+
+    This is a VALIDATION REHEARSAL, not the frozen bar (SPEC 5.3).
+    The frozen bar is judged once, on the sealed test year, in a
+    later session. A good number here means the method is ready for
+    that single look - it does not mean stage 1 has passed.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                      gain  gain share   splits
+    forecast_temp_c            7056.8       51.8%    1,651
+    season_sin                 3085.0       22.6%    1,141
+    season_cos                 3483.1       25.6%    1,408
+
+-- in-sample check only (inner-training, NOT a result) --
+    raw GFS MAE on inner-training      : 1.172 degC
+    ML-corrected MAE on inner-training : 0.857 degC
+    Shown only to confirm the fit did something. A model always
+    looks better on the data it was fitted to, so this number
+    proves nothing about performance.
+
+-- how the correction behaved across the validation year, by season --
+    season         days   raw GFS   ML-corr    change
+    winter DJF       90     0.972     1.068    +0.096
+    spring MAM       92     1.337     1.363    +0.026
+    summer JJA       90     1.498     1.204    -0.294
+    autumn SON       91     1.147     1.121    -0.026
+    (A per-season breakdown of the rehearsal. SPEC 5.4 parks
+     season-by-season testing as a deeper check for later; this is
+     here only to show the win is not one freak month.)
+
+-- the predicted correction itself, validation year --
+    predicted residual applied to the forecast
+      n      = 363
+      mean   = -0.112 degC
+      median = +0.045 degC
+      st dev = 0.820 degC
+      min    = -2.4 degC   max = +2.1 degC
+      5th pct = -1.68   25th = -0.67   75th = +0.51   95th = +0.98
+      mean absolute size = 0.663 degC
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). No test-year
+value was loaded, printed or fitted on. Nothing was committed.
+This output is saved at notes/session-04-check-output.txt

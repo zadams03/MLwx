@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 16 August 2026 (after session 03b)._
+_Last updated: 17 August 2026 (after session 04)._
 
 ---
 
@@ -92,26 +92,83 @@ _Last updated: 16 August 2026 (after session 03b)._
   - **Training-window value ranges checked** and sane, both in Celsius
     (DECISIONS F10). The test window's values were not looked at.
   - **Q7, Q8 and Q9 all closed.**
+- **Session 04 — the first modelling session: join, bias look, and a
+  validation rehearsal. Done. The test year was not touched.**
+  - **The target hour is now named: 12:00 UTC** (SPEC 4.1, the one authorised
+    SPEC edit this session). Chosen on principle before any model was built.
+  - **Owner's decisions recorded (DECISIONS D18–D19):** the evaluation is
+    rehearsed on a validation year taken from inside training
+    (inner-training 2021-03-24 to 2024-07-31, validation 2024-08-01 to
+    2025-07-31), so the sealed test year is looked at exactly once, later; and
+    the stage 1 feature set is minimal — forecast temperature plus season as
+    sine/cosine, no hour-of-day, no recent-observation feature.
+  - **The two series are joined at 12:00 UTC** using the D14 pairing rule (the
+    11:50 routine report is the observation for 12:00). One row per day:
+    date, forecast, observation, residual.
+    - inner-training: 1,226 days, **1,205 rows kept**, 21 dropped.
+    - validation: 365 days, **364 rows kept**, 1 dropped.
+    - Every drop is accounted for and nothing was filled (SPEC 2.2). See
+      DECISIONS F12.
+  - **Q10 addressed.** The 492-hour forecast gap costs **20 days**, not 21 —
+    the series resumes at 2024-01-19 12:00 UTC, exactly the target hour, so
+    that day survives. Dropped and counted.
+  - **Q11 addressed, and the expectation was wrong (DECISIONS F13).** At 12:00
+    UTC the *cold* end is not the biased end. The forecast is near-unbiased
+    below 10 degC and there is barely a cold tail at all. The bias is at the
+    **warm end**: on the hottest days GFS runs about **1.2 degC too warm**.
+    F10's cold-end shift came from the night-time hours stage 1 does not
+    target. Overall mean bias is only -0.108 degC, so there is almost no
+    constant offset to correct — the structure is all in how the bias varies.
+  - **F1 corrected (DECISIONS F11).** F1's claim that the forecast archive is
+    "continuous from that start" is wrong and is superseded by F8. F1 itself is
+    left as written; the log is append-only.
+  - **The model was built and rehearsed (DECISIONS F14).** LightGBM
+    gradient-boosted trees, fixed settings, fixed seed, fitted on
+    inner-training only. Nothing tuned. Two runs byte-identical.
+    Validation MAE over the same 363 days:
+    ```
+    Raw GFS 1.239 | Persistence 2.226 | Climatology 2.865
+    Mean-bias reference 1.231 | ML-corrected 1.190 degC
+    ```
+    It beats all four: raw GFS by 4.0%, persistence by 46.5%, the mean-bias
+    reference by 3.3%, climatology by 58.5%. So it is learning structure, not
+    just a constant offset. But the total gain over raw GFS is small
+    (0.049 degC), and it is essentially a summer win — the correction makes
+    winter and spring very slightly worse.
+  - **This does not mean stage 1 has passed.** It is a rehearsal. The frozen
+    bar (SPEC 5.3) is judged once, on the sealed test year, in a later session.
+  - Full real output in `notes/session-04-check-output.txt`; the script is
+    `scripts/session04_model.py`.
 
 ## In progress
 
-- Nothing. Session 03b is finished and awaiting the owner's review.
+- Nothing. Session 04 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 03b.
-2. **Build the stage 1 pipeline.** Join the two series using the D14 pairing
-   rule (routine `:50` report to the forecast hour, drop and count anything
-   with no report within 15 minutes), pick the fixed hour of the day for the
-   stage 1 target (SPEC 4.1), then train the correction model and compare it
-   against raw GFS and persistence (SPEC 5).
-3. The test window stays sealed until that final comparison.
+1. Owner reviews and commits session 04.
+2. **Then the owner's judgement call (DECISIONS Q12): is the rehearsal good
+   enough to lock the method?**
+   - If **yes** → the next session is the **single sealed-test evaluation**.
+     It opens the test year (2025-08-01 to 2026-07-31) for the first and only
+     time, re-fits on the full D13 training window, and judges the frozen bar
+     (SPEC 5.3). That look happens once, so the method must be locked before
+     it starts.
+   - If **no** → one more session improving the method against the
+     **validation** year, which is allowed as often as needed. The sealed test
+     year stays sealed either way.
+3. The test year is untouched and stays that way until the owner opens it.
 
 ## Notes
 
-- Open questions still with the owner: **Q10** (the 492-hour forecast gap sits
-  entirely in one winter of the training window — dropping it is the default,
-  but the loss is concentrated rather than spread), **Q11** (the forecast never
-  gets as cold as the station does; expected, and it is the bias we are here to
-  correct, but the owner may want a look before modelling).
-- Nothing is blocked. The dataset is complete and ready to join.
+- Open questions now with the owner: **Q12** (is a 4.0% win enough to lock the
+  method, or is one improvement session worth it first?), **Q13** (should SPEC
+  5.3 gain a numeric margin, given validation results now exist?), **Q14**
+  (should the mean-bias reference become a listed baseline in SPEC 5.2?),
+  **Q15** (the model fits squared error but is judged on absolute error —
+  worth trying an absolute-error objective), **Q16** (LightGBM needed an
+  OpenMP library this machine does not have; the workaround is documented, and
+  there is no `requirements.txt` recording the library versions).
+- **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
+  a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
+- Nothing is blocked.
