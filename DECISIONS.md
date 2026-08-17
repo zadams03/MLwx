@@ -2083,3 +2083,278 @@ have made SPEC contradict its own table — flagged here as slightly wider than
 Nothing was joined, built, trained or evaluated. **CDG's test year is now on disk
 but has never been opened**: only its row presence and gap locations were
 counted, never a temperature value, exactly as session 03b held EGLC's.
+
+---
+
+## 2026-08-17 — Session 11 findings (the CDG join, bias look and rehearsal)
+
+The first modelling session for CDG, mirroring sessions 04 and 05 at EGLC. The
+join, the bias look and the model all ran for real. **CDG's test year was not
+touched**: the two 2026 LFPG raw chunk files were never opened, the 2025 chunk
+was cut off at 2025-07-31 on load, and the script asserts that no date on or
+after 2025-08-01 reached any table. Nothing was tuned, varied or chosen again —
+the locked D21 recipe was applied to the second location and nothing else. The
+script is `scripts/session11_model.py` and the full real output is
+`notes/session-11-check-output.txt`.
+
+**F27. The join at 12:00 UTC at CDG, and every drop reconciled in advance.**
+One row per day: date, forecast temperature, observed temperature, and the
+residual the model learns.
+
+```
+                                         days   kept   drop  no fc  null fc  no obs
+inner-training 2021-03-24..2024-07-31   1,226  1,204     22      0       20       2
+validation     2024-08-01..2025-07-31     365    365      0      0        0       0
+```
+
+**Session 10's gap map predicted these drops before anything was joined, and it
+predicted them exactly.** That is the check this session existed to make, and it
+is a stronger check than counting after the fact:
+
+```
+cause                                         expected   actual  verdict
+the 492-hour forecast gap (F22)                     20       20  MATCHES
+off-hour reports, training window (F25)              2        2  MATCHES
+anything else                                        0        0  MATCHES
+TOTAL days dropped                                  22       22  MATCHES
+```
+
+The two off-hour days are named, with the report the station actually filed:
+
+```
+2022-07-23  [inner-training]  only report nearest noon was 11:30, temp 25.0
+2022-07-25  [inner-training]  only report nearest noon was 11:30, temp 24.0
+                              both dropped by D14 (30 minutes out), per D30
+```
+
+Both reports exist and carry a temperature. D14 refuses them and D30 says the
+drops are taken rather than the rule bent for one airport.
+
+One wording note, so the two records do not look as if they disagree: F25 named
+these same two days by the report **inside the 12:00 clock hour** (12:30), while
+this entry names them by the report **nearest 12:00 under D14's pairing** (the
+one at 11:30). On both days the station filed everything at `:30` — 10:30, 11:30,
+12:30, 13:30 — so both descriptions are true of the same day, and the day is lost
+either way. Nothing was filled
+(SPEC 2.2). **CDG's validation year loses no day at all** — 365 of 365 — where
+EGLC's lost one to a missing observation (F12).
+
+Row counts beside EGLC's, for context: inner-training 1,204 against 1,205,
+validation 365 against 364. The two airports have almost exactly the same amount
+of training data, which is a coincidence worth noticing rather than a designed
+result — CDG loses two days to off-hour reporting where EGLC lost one to a
+missing observation, and the shared 20-day forecast gap costs both the same.
+
+**F28. CDG's bias at 12:00 UTC is a genuinely different shape from EGLC's: the
+same near-zero average, but the structure sits in the CALENDAR rather than in
+the temperature.** Inner-training only; the validation year's values were not
+explored and the test year not touched.
+
+Overall, beside EGLC (F13):
+
+```
+                            EGLC       CDG
+days                       1,205     1,204
+mean bias degC            -0.108    +0.050
+median degC               +0.000    +0.100
+st dev degC                1.551     1.654
+mean |bias| degC           1.172     1.248
+station warmer, %           48.7      51.7
+min / max degC        -7.0/+5.6 -7.7/+5.8
+```
+
+The headline similarity is real: **at CDG too there is almost no constant offset
+to correct** — the mean bias is +0.050 degC, even smaller than EGLC's -0.108.
+GFS is slightly harder to beat at CDG in absolute terms (mean |bias| 1.248
+against 1.172), which is the first sign that the second airport is a harder
+problem than the first.
+
+Against forecast temperature, the picture diverges:
+
+```
+forecast band (degC)     days  mean bias   st dev  mean |bias|  EGLC mean bias
+-10 to 0                    2     +1.800    0.141        1.800               -
+0 to 5                     55     -0.687    1.659        1.422          -0.049
+5 to 10                   218     +0.223    1.514        1.092          +0.361
+10 to 15                  293     +0.339    1.462        1.122          +0.387
+15 to 20                  269     +0.320    1.706        1.312          -0.287
+20 to 25                  229     -0.142    1.733        1.314          -0.746
+25 to 45                  138     -0.772    1.638        1.452          -1.201
+
+coldest 10%  n=120  forecast  -0.9 to  +7.0 degC  mean bias -0.351 (EGLC +0.097)
+warmest 10%  n=120  forecast +25.6 to +39.6 degC  mean bias -0.784 (EGLC -1.155)
+```
+
+**The warm-end bias F13 found at EGLC is present at CDG but weaker** — -0.772 in
+the top band against EGLC's -1.201, and -0.784 in the warmest tenth against
+EGLC's -1.155. **The cold end, which was unbiased at EGLC, is biased at CDG**:
+-0.687 in the 0-5 band and -0.351 across the coldest tenth, meaning GFS runs
+*too warm* on CDG's coldest days as well as its hottest. That is a plausible
+inland effect — a continental site gets colder clear nights and mornings than a
+coarse grid cell sitting near a large city does — but this session measured it
+and did not test that explanation.
+
+By season, the difference is larger still:
+
+```
+season         days  mean bias   st dev  mean |bias|  EGLC bias  EGLC |bias|
+winter DJF      251     -0.092    1.595        1.182     +0.356        1.065
+spring MAM      345     +0.614    1.433        1.203     -0.061        1.203
+summer JJA      335     -0.056    1.940        1.510     -0.549        1.437
+autumn SON      273     -0.401    1.379        1.044     -0.052        0.907
+```
+
+At EGLC the seasonal signal was small and the temperature signal carried the
+bias. **At CDG it is the other way round**: spring runs +0.614 degC (the station
+warmer than GFS) and autumn -0.401, a swing of over one degree through the year,
+while summer's average is near zero even though summer has by far the widest
+spread (st dev 1.940). Month by month the turn is sharp — June +0.704, July
+-0.125, August -0.948.
+
+**So the recipe is being asked to learn a different thing at the two airports,
+using the same three features.** That is exactly what stage 2 was for, and the
+model's own feature importances agree with this reading (F29).
+
+**F29. The rehearsal: the correction beats all four references at CDG, by a
+smaller margin than at EGLC, and in a different seasonal pattern.**
+
+Model: the locked D21 recipe, fitted on CDG's 1,204 inner-training rows only.
+PART 0 of the output proves the method was reused rather than re-chosen — it
+reads `scripts/session05_model.py` and compares it with this session's script:
+**0 model settings differ, 0 constants differ**, and `all_days`, `year_fraction`,
+`features`, `mae`, `describe` and `climatology_from_inner` are character-
+identical. The two loaders differ, and their full diffs are printed: the station
+code in the file names, the docstring naming LFPG's on-the-hour reporting, and a
+bookkeeping record of report offsets used only by the drop reconciliation. Two
+consecutive runs produced identical output apart from the clock time in the
+header.
+
+All five methods scored on the same 365 validation days — CDG loses no day at
+all, where EGLC scored 363:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.426     -0.424      1.900        7.20
+Persistence                2.523     -0.014      3.278       10.00
+Climatology                3.293     -0.298      4.163       13.87
+Mean-bias reference        1.435     -0.475      1.912        7.25
+ML-corrected               1.377     -0.465      1.863        7.87
+```
+
+Verdicts:
+
+```
+vs Raw GFS              YES   1.377 against 1.426  ->  0.050 degC better (3.5%)
+vs Persistence          YES   1.377 against 2.523  ->  1.147 degC better (45.4%)
+vs Mean-bias reference  YES   1.377 against 1.435  ->  0.058 degC better (4.1%)
+vs Climatology          YES   1.377 against 3.293  ->  1.916 degC better (58.2%)
+```
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3, 5.0).** CDG's
+bar is judged once, on CDG's own sealed test year, in a later session. A good
+number here means the recipe travels well enough to be worth that single look.
+**It does not mean stage 2 has passed.**
+
+Four things the numbers say, read honestly:
+
+1. **The recipe travels.** Applied unchanged at a location 328 km away and 104 m
+   higher, with a different bias shape, it still beats every reference. Nothing
+   about it was adapted for CDG, and nothing needed to be.
+2. **The margin over raw GFS is smaller than at EGLC: 3.5% against 6.0%**
+   (0.050 degC against 0.074). Both are small wins on a forecast that is already
+   good. CDG is the harder problem on every measure — raw GFS 1.426 against
+   1.239, persistence 2.523 against 2.226, climatology 3.293 against 2.865 — so
+   the correction is working on a noisier target and keeping less of it.
+3. **The mean-bias reference is WORSE than raw GFS at CDG (1.435 against
+   1.426).** This is new: at EGLC the constant offset helped slightly. At CDG the
+   available constant is +0.050 degC and applying it makes things very slightly
+   worse, which is what "there is no constant worth taking" looks like in
+   practice. It makes the model's 4.1% win over that reference the cleanest
+   statement yet that the correction is learning structure — there is no offset
+   here for it to be quietly finding instead.
+4. **The seasonal pattern is different, and flatter.** At EGLC the win was
+   essentially a summer win. At CDG it is spread:
+
+```
+season         days   raw GFS   ML-corr   CDG chg   EGLC chg
+winter DJF       90     1.512     1.537    +0.025     +0.087
+spring MAM       92     1.221     1.164    -0.057     -0.015
+summer JJA       92     1.445     1.323    -0.122     -0.321
+autumn SON       91     1.531     1.487    -0.044     -0.049
+```
+
+   ("chg" is corrected MAE minus raw GFS MAE. Negative is better than raw GFS.)
+   The correction helps in **three seasons of four at both airports**, and at
+   both the one season it hurts is **winter** — by less at CDG (+0.025) than at
+   EGLC (+0.087). Summer still carries the most at CDG but nothing like as much.
+   Note that CDG's validation year was hardest for raw GFS in **autumn** (1.531),
+   not summer, which is not where the correction is strongest.
+
+Day by day, the correction was closer to the truth than raw GFS on **202 of 365
+days (55.3%)**, against 60.9% for EGLC's sealed test (F16). So it nudges the
+right way slightly more often than not, and slightly less reliably than at EGLC.
+
+**Feature importances, and they back up F28:**
+
+```
+feature             EGLC gain %   CDG gain %  EGLC splits   CDG splits
+forecast_temp_c           44.3%        35.9%        1,614        1,558
+season_sin                26.7%        39.9%        1,337        1,444
+season_cos                29.0%        24.2%        1,249        1,198
+```
+
+At EGLC forecast temperature was the single largest source of gain. **At CDG
+`season_sin` overtakes it.** The model, given the same three features and no
+guidance, leant on the calendar at the airport whose bias lives in the calendar
+and on the temperature at the airport whose bias lives in the temperature. That
+is a coherent independent confirmation of F28 from a completely different
+direction, and it is the most interesting thing in this session.
+
+The corrections applied were modest and slightly warm-leaning: mean +0.041 degC,
+standard deviation 0.751, range -1.7 to +2.3 — the same gentle nudge session 05
+made at EGLC (mean -0.057, st dev 0.720, range -1.8 to +1.8), pointed the other
+way, which follows from CDG's mean bias being positive where EGLC's was
+negative.
+
+For the record, in-sample MAE on CDG inner-training was 0.945 degC against raw
+GFS's 1.248 (EGLC: 0.879). A model always looks better on the data it was fitted
+to; the figure proves nothing and is here only so it is not a surprise later.
+
+**How each reference was built, for the record** — identical to session 05,
+fitted on CDG inner-training only:
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 12:00 UTC observation. Past
+  values only (SPEC 2.1d).
+- **Climatology** — the seasonal average of the *observed* temperature for that
+  position in the year, over every CDG inner-training observation within 7.5
+  days of it, measured around the circle (SPEC 2.1c). Between 30 and 61 days sit
+  behind each value, 49.5 on average — the same coverage as at EGLC.
+- **Mean-bias reference** — the forecast plus +0.0504 degC, that figure being the
+  mean CDG inner-training bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+Nothing was fitted on the validation year: not the model, not the climatology,
+not the mean bias, not any encoding. **No SPEC edit was made and none was
+authorised.**
+
+---
+
+## 2026-08-17 — Open question raised by session 11 (not acted on)
+
+**Q23. CDG has no written test lock, and the D21.5 refit question has to be
+answered for it.** D21 is written specifically for EGLC — D21.1 names London
+City and its coordinates, and D21.5 fixes the refit on the full training window.
+D26 says stage 2 reuses everything but the location, so the substance carries
+over, but there is no CDG entry anyone can point at that says "this is what the
+sealed-test session will run", which is the whole job D21 did for stage 1. Two
+things need the owner's word before CDG's test year is opened:
+- **Does the lock get written out for CDG**, as a D21-equivalent entry naming
+  LFPG, or is D26-plus-D21 considered sufficient on its own? The stage 1 pattern
+  was to write it down first and execute it second, precisely so no choice is
+  made with the test year open (D21.11).
+- **Is CDG's test model refitted on the full D13 training window** (inner-
+  training plus the validation year recombined, as D21.5 did for EGLC)? The same
+  reasoning applies and the same consequence follows — the tested model would be
+  the same recipe on about 20% more data, so the test number will not match the
+  1.377 rehearsal figure and should not be expected to. Recorded here so it is
+  decided deliberately rather than inherited by silence.

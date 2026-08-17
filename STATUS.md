@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 10)._
+_Last updated: 17 August 2026 (after session 11)._
 
 ---
 
@@ -30,8 +30,26 @@ provenance-stamped. **CDG's forecast series has exactly the same 492-hour gap as
 EGLC's, hour for hour** (F22), and the observation record loses only **three
 days** at 12:00 UTC across five years (F25).
 
-**Nothing for CDG has been joined, built or trained yet, and its test year has
-never been opened.** That is the next session.
+Session 11 then did the **CDG join and validation rehearsal**, mirroring session
+04/05 (DECISIONS **F27–F29**). The two LFPG series are joined at 12:00 UTC, every
+dropped day reconciles exactly against session 10's gap map, and the locked D21
+method — applied unchanged, only the location different — **beats all four
+references on CDG's validation year**. CDG's test year was not touched.
+
+**The CDG rehearsal headline:** over the validation year 2024-08-01 to
+2025-07-31, on 365 days, mean absolute error in degrees Celsius —
+
+```
+Raw GFS 1.426 | Persistence 2.523 | Climatology 3.293
+Mean-bias reference 1.435 | ML-corrected 1.377
+```
+
+The correction beats raw GFS by 0.050 degC (3.5%), persistence by 1.147 degC
+(45.4%) and the mean-bias reference by 0.058 degC (4.1%). **This is a rehearsal,
+not the frozen bar — stage 2 has NOT passed.** See DECISIONS **F29**.
+
+**CDG's test year has still never been opened.** The sealed-test look comes in a
+later session.
 
 **Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
 SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
@@ -454,26 +472,86 @@ result and the honest reading of it.
     note beneath the table rewritten to match it.
   - Scripts: `scripts/session10_pull.py` and `scripts/session10_checks.py`.
 
+- **Session 11 — THE CDG JOIN AND VALIDATION REHEARSAL. Done. CDG's test year
+  was not touched and the frozen bar was not judged.**
+  - **The method was reused, not re-chosen.** PART 0 of the script reads
+    `scripts/session05_model.py` and compares it with this session's script:
+    **0 model settings differ and 0 constants differ**, and six shared functions
+    are character-identical. The two loaders differ, with their full diffs
+    printed — the station code in the file names and the labels that carry it.
+    Two consecutive runs produced identical output apart from the clock time.
+  - **The join at 12:00 UTC (DECISIONS F27).** One row per day: date, forecast,
+    observation, residual.
+    ```
+                                             days   kept   drop  no fc  null fc  no obs
+    inner-training 2021-03-24..2024-07-31   1,226  1,204     22      0       20       2
+    validation     2024-08-01..2025-07-31     365    365      0      0        0       0
+    ```
+  - **Every drop reconciles exactly against session 10's gap map**, which is the
+    check this session existed to make: the forecast gap cost **20 days** (F22
+    predicted 20), off-hour reports cost **2 days** — 2022-07-23 and 2022-07-25,
+    the two F25 named — and **nothing else was dropped at all**. Both off-hour
+    reports exist and carry a temperature; D14 refuses them at 30 minutes out and
+    D30 says the drops are taken. Nothing was filled (SPEC 2.2). **CDG's
+    validation year loses no day at all**, where EGLC's lost one.
+  - **CDG's bias has a different shape from EGLC's (DECISIONS F28).** The same
+    near-zero average — mean bias **+0.050 degC** against EGLC's -0.108, so there
+    is no constant offset worth taking at either airport — but the structure sits
+    somewhere else. EGLC's bias tracked forecast temperature (warm end, ~1.2 degC
+    too warm on the hottest days). **CDG's tracks the calendar**: spring +0.614,
+    autumn -0.401, a swing of over a degree through the year, with a weaker
+    warm-end bias (-0.772) and a cold end that is biased where EGLC's was not
+    (-0.687 in the 0–5 degC band). GFS is also simply harder to beat at CDG —
+    mean |bias| 1.248 against 1.172.
+  - **The rehearsal result (DECISIONS F29).** All five methods on the same 365
+    validation days:
+    ```
+    Raw GFS 1.426 | Persistence 2.523 | Climatology 3.293
+    Mean-bias reference 1.435 | ML-corrected 1.377 degC
+    ```
+    It beats all four: raw GFS by 3.5% (0.050 degC), persistence by 45.4%, the
+    mean-bias reference by 4.1%, climatology by 58.2%.
+  - **The recipe travels, on a smaller margin.** EGLC's rehearsal won by 6.0%,
+    CDG's by 3.5%. CDG is the harder problem on every reference. **The mean-bias
+    reference is worse than raw GFS at CDG** (1.435 against 1.426) — the constant
+    available is +0.050 degC and applying it hurts slightly, so there is no offset
+    for the model to be quietly finding instead of structure.
+  - **The seasonal picture is flatter than EGLC's.** The correction helps in
+    three seasons of four at both airports, and at both the season it hurts is
+    winter — by less at CDG (+0.025) than at EGLC (+0.087). EGLC's win was
+    essentially a summer win; CDG's is spread across spring, summer and autumn.
+    Day by day it was closer than raw GFS on 202 of 365 days (55.3%).
+  - **The feature importances confirm F28 from another direction.** At EGLC
+    forecast temperature carried the most gain (44.3%); **at CDG `season_sin`
+    overtakes it** (39.9% against 35.9%). Given the same three features and no
+    guidance, the model leant on the calendar at the airport whose bias lives in
+    the calendar.
+  - **This is a rehearsal, not a verdict.** The frozen bar (SPEC 5.3) is judged
+    once per airport (SPEC 5.0), on CDG's own sealed test year, later.
+  - **No SPEC edit was made and none was authorised.**
+  - Full real output in `notes/session-11-check-output.txt`; the script is
+    `scripts/session11_model.py`.
+
 ## In progress
 
-- Nothing. Session 10 is finished and awaiting the owner's review.
+- Nothing. Session 11 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits sessions 08, 09 and 10.
-2. **The CDG join and validation rehearsal**, mirroring session 04 — with the
-   test year sealed. Notes for whoever does it:
-   - Join the two LFPG series at 12:00 UTC under D14 (an **exact** match at CDG,
-     no offset, F18), one row per day: date, forecast, observation, residual.
-   - **Expected drop counts, from this session's gap map**, so they can be
-     reconciled rather than accepted: the forecast gap should cost **20 days**
-     (F22), and off-hour reports **2 days** in the training window (F25,
-     2022-07-23 and 2022-07-25). Anything else is a surprise worth stopping on.
-   - Rehearse on the D18 subdivision — inner-training 2021-03-24 to 2024-07-31,
-     validation 2024-08-01 to 2025-07-31 — exactly as session 04 did, then the
-     sealed test comes later and once (SPEC 5.0).
-   - The method is already locked (D21) and D26 says only the location changes,
-     so nothing about the model, features or settings is chosen again here.
+1. Owner reviews and commits sessions 08, 09, 10 and 11.
+2. **CDG's method lock, then its single sealed test** — the D21-equivalent for
+   CDG, followed by the one look. There is **no written test lock for CDG yet**:
+   D21 names London City throughout, and D26 says only the location changes, but
+   nothing in the log yet says "this is what CDG's sealed-test session will run".
+   That is DECISIONS **Q23**, and it is the owner's to answer. Two things it has
+   to settle before the test year is opened:
+   - whether the lock is written out for CDG as its own entry, the way D21 was
+     written before stage 1's test, so no choice is made with the test year open
+     (D21.11);
+   - whether CDG's test model is refitted on the **full D13 training window**
+     (inner-training plus the validation year recombined), as D21.5 did for
+     EGLC. If it is, the test number will not match this session's 1.377
+     rehearsal figure and should not be expected to.
 3. Nothing is pre-committed beyond that.
 
 ## Notes
@@ -487,11 +565,14 @@ result and the honest reading of it.
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
 - **Q17 is closed** by session 08 (D26): stage 2 opened, at CDG/LFPG.
 - **Q18 and Q19 are closed** by session 09 (D29, D30).
-- **Q20, Q21 and Q22 are closed** by session 10 (F22, F24). **No open questions
-  remain.** One honest limit is carried rather than left as a question: Q20
+- **Q20, Q21 and Q22 are closed** by session 10 (F22, F24). One honest limit is
+  carried rather than left as a question: Q20
   confirms `gfs_global` was the string used, but F6's value-by-value comparison
   against `gfs_seamless` still has not been run at LFPG, so stage 2 cannot make
   that particular by-construction claim the way stage 1 can.
+- **Q23 is open**, raised by session 11: CDG has no written test lock, and the
+  D21.5 refit question has to be answered for it. It is the owner's to decide,
+  and it is what the next session is for.
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
@@ -501,4 +582,7 @@ result and the honest reading of it.
   (2025-08-01 to 2026-07-31, D13) but the data is a different airport's, and it
   has never been looked at. Session 10 pulled it and counted only its structure —
   row presence, gap locations, report timing — never a temperature value, exactly
-  as session 03b held EGLC's. Each airport gets its own single look (SPEC 5.0).
+  as session 03b held EGLC's. **Session 11 did not open it either**: the two 2026
+  LFPG chunk files were never read, the 2025 chunk was cut off at 2025-07-31 on
+  load, and the script asserts no date on or after 2025-08-01 reached any table.
+  Each airport gets its own single look (SPEC 5.0).
