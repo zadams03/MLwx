@@ -1,0 +1,44 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_LFPG_2026-07-01_2026-07-22_routine.csv
+purpose     : session 08, part B1/B2 - truth sample for CDG/LFPG over the same
+              recent period as the forecast sample. This is also the file that
+              answers the key CDG-specific unknown: what minute past the hour
+              does LFPG report at?
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&network=FR__ASOS&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=22&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = LFPG
+  network     = FR__ASOS
+  data        = tmpc (air temperature, degC), dwpc (dew point, degC)
+  date range  = 2026-07-01 to 2026-07-22 (end date exclusive in practice;
+                the last row is 2026-07-21 23:00)
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M, not blank)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled report)
+
+result:
+- HTTP status 200. 504 data rows plus one header row.
+- Station coordinates in the file: lon 2.5344, lat 49.0153, elevation 109 m -
+  the same figures as IEM's network metadata, so the two agree.
+- Reporting minute: 501 rows at :00, 3 rows at :30. LFPG reports ON THE HOUR,
+  unlike EGLC which reports at :50.
+- The three :30 rows are 2026-07-02 17:30, 2026-07-08 12:30 and 2026-07-20
+  00:30 UTC. They sit 30 minutes from the nearest hour, so the D14 pairing rule
+  drops them.
+- No missing temperatures. All 504 hours in the window have a report.
+
+note on the pull:
+- An earlier attempt at the third IEM request of this session came back HTTP 429
+  ("too many requests, slow down"). This file was not affected; it was fetched
+  successfully first time. Recorded because the full multi-year pull will need
+  to space its requests out.

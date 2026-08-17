@@ -1,0 +1,29 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2021-03-18_2021-03-26.json
+purpose     : session 08, part A2, probe 2 - the boundary probe. This window
+              straddles 24 March 2021, the first hour EGLC has data for (F1), so
+              it shows whether LFPG's archive starts at the same place.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2021-03-18&end_date=2021-03-26&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153        (LFPG, from IEM station metadata)
+  longitude  = 2.5344         (LFPG, from IEM station metadata)
+  start_date = 2021-03-18
+  end_date   = 2021-03-26
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+result:
+- HTTP status 200. 216 hourly rows: 72 with a value, 144 null.
+- The first hour carrying a real value is 2021-03-24 00:00 UTC - exactly the
+  same first hour as EGLC (F1). Everything before it in this window is null and
+  everything from it onward has a value.
+- Value range over the 72 real hours: 4.8 to 16.1 degC.
+- Nothing was filled (SPEC 2.2).

@@ -1,0 +1,45 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_LFPG_2021-03-18_2021-04-01_routine.csv
+purpose     : session 08, part B3 - truth sample for CDG/LFPG at the early end
+              of the period, around where the forecast archive begins. Mirrors
+              the EGLC early sample from session 01 (F2), and checks whether the
+              reporting minute is the same five years back as it is today.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&network=FR__ASOS&data=tmpc&data=dwpc&year1=2021&month1=3&day1=18&year2=2021&month2=4&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = LFPG
+  network     = FR__ASOS
+  data        = tmpc (air temperature, degC), dwpc (dew point, degC)
+  date range  = 2021-03-18 to 2021-04-01 (end date exclusive in practice;
+                the last row is 2021-03-31 23:00)
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M
+  trace       = T
+  report_type = 3   (routine METAR only)
+
+result:
+- HTTP status 200. 334 data rows plus one header row.
+- Reporting minute: 334 rows at :00, none anywhere else. The on-the-hour habit
+  is the same five years ago as it is today.
+- No missing temperatures.
+- 336 hours expected, 334 covered, 2 hours missing (0.60%): 2021-03-20 07:00 and
+  2021-03-30 16:00 UTC. Those are whole reports never filed, not rows with a
+  blank temperature. Counted, not filled (SPEC 2.2).
+
+note on the pull:
+- The first attempt at this request came back HTTP 429 ("Too many requests from
+  your IP address, slow down") after the two IEM requests immediately before it.
+  It was retried with a delay and succeeded (HTTP 200). The 429 response body
+  was overwritten by the successful retry and is not kept. Recorded here because
+  the full multi-year pull will need to space its requests out - the session 03b
+  pull for EGLC did six chunks without trouble, but three quick requests hit the
+  limit this time.

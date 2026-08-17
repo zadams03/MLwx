@@ -1,0 +1,35 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_station_metadata_FR__ASOS.geojson
+purpose     : session 08, part 0 - the authoritative station position for LFPG
+              (Paris Charles de Gaulle), used to set the coordinates for the
+              Open-Meteo forecast pulls. The session prompt asked for IEM's own
+              metadata to be used rather than an approximate figure.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Iowa Environmental Mesonet (IEM) network station listing
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/geojson/network/FR__ASOS.geojson
+
+result:
+- HTTP status 200. 71,636 bytes. 127 stations in the FR__ASOS network.
+- LFPG's entry:
+    sid          = LFPG
+    sname        = Paris
+    network      = FR__ASOS
+    coordinates  = [2.5344, 49.0153]   (lon, lat - GeoJSON order)
+    elevation    = 109.0 m
+    tzname       = Europe/Paris
+    archive_begin= 1974-04-18
+    archive_end  = null   (still reporting)
+    online       = true
+
+notes:
+- The whole network file is kept rather than just the LFPG entry, because it is
+  the actual response and SPEC 2.3 says to keep raw pulls untouched.
+- The session prompt quoted approximately 49.010 N, 2.548 E, elevation ~119 m.
+  IEM's own record differs a little: 1.15 km away and 10 m lower. IEM's figures
+  were used, per the prompt's instruction to use the authoritative metadata.
+- Also in the file for later reference: LFPO (Paris Orly) and LFPB (Paris Le
+  Bourget) are in the same network, if a third Paris site is ever wanted.

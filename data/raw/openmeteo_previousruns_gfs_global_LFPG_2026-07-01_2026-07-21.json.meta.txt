@@ -1,0 +1,38 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2026-07-01_2026-07-21.json
+purpose     : session 08, part A1 - recent forecast sample for CDG/LFPG, the
+              verify-on-contact check that the Previous Runs API carries this
+              location at all. Same three-week window as the EGLC session 01
+              sample, so the two are directly comparable.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2026-07-01&end_date=2026-07-21&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153        (LFPG, from IEM station metadata)
+  longitude  = 2.5344         (LFPG, from IEM station metadata)
+  start_date = 2026-07-01
+  end_date   = 2026-07-21
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- temperature_2m_previous_day1 is the value predicted by the model run from one
+  day earlier - the day-ahead forecast this project needs (SPEC 3.2). The plain
+  temperature_2m variable was deliberately NOT requested: on this endpoint it is
+  the freshest-run series, the leakage trap SPEC 2.1b warns about.
+- models=gfs_global is the string pinned by DECISIONS D16. It was used here
+  without re-deriving it. Whether gfs_global and gfs_seamless are identical at
+  LFPG the way F6 showed they are at EGLC has NOT been checked - see the session
+  08 open questions.
+- The API returned grid point lat 49.027008, lon 2.578125, elevation 109 m -
+  3.44 km from the airport, and an exact match on elevation.
+
+result:
+- HTTP status 200. 504 hourly rows, 0 missing values.
+- Value range 8.7 to 36.7 degC.

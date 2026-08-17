@@ -1,0 +1,28 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2021-03-01_2021-03-07.json
+purpose     : session 08, part A2, probe 1 - does the forecast archive reach
+              back to early March 2021 at LFPG? This is the same window F1
+              (session 01) used at EGLC, where every value came back null.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : curl
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2021-03-01&end_date=2021-03-07&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153        (LFPG, from IEM station metadata)
+  longitude  = 2.5344         (LFPG, from IEM station metadata)
+  start_date = 2021-03-01
+  end_date   = 2021-03-07
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+result:
+- HTTP status 200. 168 hourly rows, ALL 168 null.
+- Same behaviour as EGLC (F1): the API answers successfully but has nothing
+  before its archive begins. It does not return an error for an out-of-range
+  date, which is why this has to be checked by looking at the values.
+- Nothing was filled (SPEC 2.2). The nulls are recorded as they came back.

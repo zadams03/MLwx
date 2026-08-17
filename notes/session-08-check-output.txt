@@ -1,0 +1,185 @@
+session 08 checks - CDG / LFPG verify-on-contact
+run at: 2026-08-17 15:31:25 UTC
+
+==========================================================================
+PART 0 - the station position used, and how it compares with EGLC
+==========================================================================
+LFPG position, from IEM's own FR__ASOS station metadata (authoritative):
+  lat 49.0153, lon 2.5344, elevation 109.0 m
+
+The session prompt quoted approx 49.010 N, 2.548 E, ~119 m. IEM's own
+record differs slightly and is what was used for the forecast pull:
+  latitude   IEM 49.0153 vs prompt 49.010  -> +0.59 km north/south
+  longitude  IEM 2.5344 vs prompt 2.548   -> -0.99 km east/west
+  elevation  IEM 109.0 m vs prompt 119 m -> -10.0 m
+  the two positions are 1.15 km apart
+
+Side by side with stage 1's airport:
+  EGLC  lat 51.5053, lon 0.0553, elevation 5.0 m
+  LFPG  lat 49.0153, lon 2.5344, elevation 109.0 m
+  distance apart : 328 km
+  height apart   : +104 m
+
+==========================================================================
+PART A1 - forecast sample, recent period (Open-Meteo Previous Runs, gfs_global)
+==========================================================================
+file            : openmeteo_previousruns_gfs_global_LFPG_2026-07-01_2026-07-21.json
+requested point : lat 49.0153, lon 2.5344 (LFPG, from IEM metadata)
+model grid point: lat 49.027008, lon 2.578125, elevation 109.0 m
+grid point is   : 3.44 km from the airport
+height mismatch : grid 109.0 m vs station 109.0 m -> +0.0 m
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 504
+date range (UTC): 2026-07-01T00:00 -> 2026-07-21T23:00
+values present  : 504   missing (null): 0
+value range     : 8.7 to 36.7 degC
+first non-null  : 2026-07-01T00:00
+
+For comparison, EGLC's grid point (DECISIONS Q5):
+  lat 51.487137, lon 0.0, elevation 4.0 m
+  4.33 km from the airport, -1.0 m height mismatch
+
+==========================================================================
+PART A2 - does the forecast archive reach back to March 2021 for LFPG?
+==========================================================================
+-- probe 1: 1-7 March 2021, before EGLC's first hour (F1 found all nulls there) --
+file            : openmeteo_previousruns_gfs_global_LFPG_2021-03-01_2021-03-07.json
+requested point : lat 49.0153, lon 2.5344 (LFPG, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 168
+date range (UTC): 2021-03-01T00:00 -> 2021-03-07T23:00
+values present  : 0   missing (null): 168
+value range     : n/a - every value came back null
+first non-null  : none in this window
+
+-- probe 2: 18-26 March 2021, straddling EGLC's 24 March 2021 start --
+file            : openmeteo_previousruns_gfs_global_LFPG_2021-03-18_2021-03-26.json
+requested point : lat 49.0153, lon 2.5344 (LFPG, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 216
+date range (UTC): 2021-03-18T00:00 -> 2021-03-26T23:00
+values present  : 72   missing (null): 144
+value range     : 4.8 to 16.1 degC
+first non-null  : 2021-03-24T00:00
+
+==========================================================================
+PART B1 - truth sample, same recent period (IEM ASOS LFPG, routine METARs)
+==========================================================================
+station position in the file : lat 49.0153, lon 2.5344, elevation 109.0 m
+matches the metadata used    : yes
+
+file             : iem_asos_LFPG_2026-07-01_2026-07-22_routine.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 504
+minute-past-hour : :00 x501, :30 x3
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 504
+hours MISSING    : 0   (0.00% of the window)
+missing hours    : none
+temperature range: 12.0 to 35.0 degC (plainly Celsius, not Kelvin)
+
+==========================================================================
+PART B2 - THE KEY CDG UNKNOWN: what minute does LFPG report at?
+==========================================================================
+Recent sample, routine reports only:
+
+file                          : iem_asos_LFPG_2026-07-01_2026-07-22_routine.csv
+reports                       : 504
+distance from the nearest hour:
+   0 min  x501
+  30 min  x3
+within D14's 15-minute window : 501
+outside it, so D14 drops them : 3
+
+reports in the 12:00 UTC hour : 21
+  of those, stamped exactly 12:00 : 20
+reports NOT stamped on the hour: 3
+  2026-07-02 17:30 UTC  (DROPPED by D14)
+  2026-07-08 12:30 UTC  (DROPPED by D14)
+  2026-07-20 00:30 UTC  (DROPPED by D14)
+
+==========================================================================
+PART B2b - what D14 would do at the stage 1 target hour, 12:00 UTC
+==========================================================================
+Recent sample, routine reports only. Observation side only - nothing is
+joined to a forecast here and nothing is modelled.
+
+file                : iem_asos_LFPG_2026-07-01_2026-07-22_routine.csv
+calendar days       : 21
+days with a usable 12:00 UTC observation under D14 : 20
+days D14 would drop and count                      : 1
+  2026-07-08  (reports in the 12:00 hour: 12:30)
+pairing offset      : min 0 min, max 0 min, mean 0.0 min
+  (EGLC's equivalent under D14 is a steady 10 minutes, because it reports at :50)
+
+Early sample, routine reports only:
+
+file                : iem_asos_LFPG_2021-03-18_2021-04-01_routine.csv
+calendar days       : 14
+days with a usable 12:00 UTC observation under D14 : 14
+days D14 would drop and count                      : 0
+pairing offset      : min 0 min, max 0 min, mean 0.0 min
+  (EGLC's equivalent under D14 is a steady 10 minutes, because it reports at :50)
+
+==========================================================================
+PART B3 - truth sample, early period (IEM ASOS LFPG, routine METARs)
+==========================================================================
+file             : iem_asos_LFPG_2021-03-18_2021-04-01_routine.csv
+window (UTC)     : 2021-03-18 00:00:00 -> 2021-04-01 00:00:00 (end exclusive)
+reports in file  : 334
+minute-past-hour : :00 x334
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 334
+hours MISSING    : 2   (0.60% of the window)
+missing hours    :
+  2021-03-20 07:00 UTC
+  2021-03-30 16:00 UTC
+temperature range: 0.0 to 25.0 degC (plainly Celsius, not Kelvin)
+
+Is the reporting minute the same five years earlier?
+
+file                          : iem_asos_LFPG_2021-03-18_2021-04-01_routine.csv
+reports                       : 334
+distance from the nearest hour:
+   0 min  x334
+within D14's 15-minute window : 334
+outside it, so D14 drops them : 0
+
+reports in the 12:00 UTC hour : 14
+  of those, stamped exactly 12:00 : 14
+
+==========================================================================
+PART B4 - side file: the same recent period including special (SPECI) reports
+==========================================================================
+At EGLC the 'special' reports turned out to be a second scheduled report
+at :20 (F3). This checks whether LFPG does anything similar.
+
+file             : iem_asos_LFPG_2026-07-01_2026-07-22_routine-and-special.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 1007
+minute-past-hour : :00 x501, :06 x1, :07 x1, :30 x502, :35 x1, :57 x1
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 504
+hours MISSING    : 0   (0.00% of the window)
+missing hours    : none
+temperature range: 12.0 to 35.0 degC (plainly Celsius, not Kelvin)
+
+file                          : iem_asos_LFPG_2026-07-01_2026-07-22_routine-and-special.csv
+reports                       : 1007
+distance from the nearest hour:
+   0 min  x501
+   3 min  x1
+   6 min  x1
+   7 min  x1
+  25 min  x1
+  30 min  x502
+within D14's 15-minute window : 504
+outside it, so D14 drops them : 503
+
+reports in the 12:00 UTC hour : 41
+  of those, stamped exactly 12:00 : 20
+reports NOT stamped on the hour: 506
+  too many to list one by one (506); see the minute histogram above

@@ -1,0 +1,33 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_LFPG_2026-07-01_2026-07-22_routine-and-special.csv
+purpose     : session 08, part B4 - the same recent window as the routine file,
+              but including IEM's "special" (SPECI) report type as well. At EGLC
+              the specials turned out to be a second scheduled report at :20
+              (F3), so it was worth checking whether LFPG does the same.
+pulled at   : 2026-08-17 16:29 BST (2026-08-17 15:29 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : curl
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&network=FR__ASOS&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=22&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3&report_type=4
+
+parameters:
+  as the routine file, except:
+  report_type = 3 AND 4   (routine METAR and special/SPECI together)
+
+result:
+- HTTP status 200. 1,007 data rows plus one header row.
+- Reporting minutes across the whole file: :00 x501, :06 x1, :07 x1, :30 x502,
+  :35 x1, :57 x1.
+- Subtracting the 504 routine rows leaves 503 specials, of which 499 are at :30.
+  So LFPG files a scheduled half-hourly report at :30 that IEM labels "special",
+  which is the same pattern EGLC shows at :20 (F3) - the label does not mean
+  "unscheduled" at either station.
+- Only 4 rows in the whole three weeks look like genuine unscheduled reports
+  (:06, :07, :35, :57).
+- No missing temperatures.
+
+note:
+- This file is kept for the record only. Stage 1 used the routine report as the
+  hourly truth observation and this session changes nothing about that.

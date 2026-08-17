@@ -1414,3 +1414,306 @@ learned. A significance check on 363 days would say how much of the win is
 solid. The case against is that stage 2 at a second airport is a stronger and
 more honest robustness check than any statistic on the same 363 days. The owner
 decides which comes first, or whether both do. Nothing was started.
+
+---
+
+## 2026-08-17 — Session 08 decisions (Stage 2 opens)
+
+Stage 1 passed (F16), so the owner has opened Stage 2. These two entries are
+the opening decisions, written before any CDG data was pulled.
+
+**D26. Stage 2 is opened: the second airport is Paris Charles de Gaulle
+(CDG / ICAO LFPG). This answers Q17.**
+- **The job of Stage 2 is to prove the recipe travels.** Stage 1 worked at one
+  airport. A method that only works where it was built is not a method, it is a
+  fit. Running the same recipe at a genuinely different location is the test of
+  that.
+- **Target: the temperature at 12:00 UTC at LFPG — the same fixed hour as
+  Stage 1.** The hour is kept identical on purpose. Stage 2 changes the
+  **location and nothing else**, so if the result differs, the location is the
+  only thing that can explain it.
+- **Everything else is reused unchanged from Stage 1**, pending verification
+  that CDG's data supports it: the model and its settings (D21.4), the minimal
+  three-feature set (D19), the train/test split dates (D13), the pairing rule
+  (D14), the drop-count-report rule (SPEC 2.2), the four references (D21.8) and
+  the frozen qualitative bar (SPEC 5.3, D22).
+- **"Pending verification" is the important clause.** Reusing a rule written
+  around EGLC's habits only works if CDG has the same habits. That is what this
+  session checked, and one of those rules did need a closer look — see F18.
+
+**D27. The target-hour convention for Stage 3, noted now and NOT acted on.**
+- When airports are pooled into one model at Stage 3 (SPEC section 6), the
+  target hour will switch from a fixed UTC hour to **solar standard noon** —
+  each airport's local standard-time noon.
+- **Daylight saving is deliberately ignored.** That keeps the target at a fixed
+  UTC hour for each airport all year round, so there is no seasonal jump in the
+  middle of the data, while the sun still sits at a comparable height across
+  airports.
+- Why it is written down now rather than later: a pooled model compares
+  airports, and comparing 12:00 UTC at London with 12:00 UTC at a location
+  several time zones away would be comparing different times of day. Deciding
+  the convention while nothing depends on it is cleaner than deciding it under
+  pressure when the pooling session needs an answer.
+- **This is not applied to Stage 2.** Stage 2 stays on 12:00 UTC at both
+  airports (D26). LFPG's local standard time is UTC+1, so its solar standard
+  noon would be 11:00 UTC — close to 12:00 UTC but not the same, which is
+  exactly why the convention needs to be a deliberate decision rather than a
+  detail settled by accident.
+
+---
+
+## 2026-08-17 — Session 08 findings (CDG verified on contact)
+
+This session pulled small samples only. **No full dataset was pulled, nothing
+was joined, built, trained or evaluated, and nothing from Stage 1 was touched or
+re-run.** Six raw files went into `data/raw/`, each with a `.meta.txt` beside it
+recording the pull time and the exact request (SPEC 2.3). The script is
+`scripts/session08_checks.py` and the full real output is
+`notes/session-08-check-output.txt`.
+
+**F17. The station position used, and the forecast grid point returned.**
+
+The session prompt quoted CDG at approximately 49.010 N, 2.548 E, elevation
+~119 m, and asked for IEM's own metadata to be used instead. IEM's record
+differs a little:
+
+```
+                    IEM metadata      prompt's figure     difference
+latitude            49.0153           49.010              +0.59 km
+longitude           2.5344            2.548               -0.99 km
+elevation           109.0 m           119 m               -10.0 m
+                                      the two are 1.15 km apart
+```
+
+**IEM's figures were used for every forecast pull**, and the observation file
+IEM returns carries the same lat/lon/elevation, so the two IEM sources agree
+with each other. The 10 m elevation difference is worth noting but changes
+nothing here.
+
+Against Stage 1's airport, LFPG is a genuinely different setting, which is the
+point of Stage 2:
+
+```
+        latitude   longitude   elevation
+EGLC    51.5053    0.0553        5 m
+LFPG    49.0153    2.5344      109 m
+        328 km apart, 104 m higher
+```
+
+The forecast grid point Open-Meteo returned for LFPG:
+
+```
+requested        : lat 49.0153,  lon 2.5344
+grid point       : lat 49.027008, lon 2.578125, elevation 109 m
+distance         : 3.44 km from the airport
+height mismatch  : 0.0 m  (grid 109 m, station 109 m)
+```
+
+For comparison, EGLC's grid point is 4.33 km away with a 1 m height mismatch
+(Q5). So CDG's grid point is slightly closer and, on the numbers, an exact
+elevation match. That last point should not be over-read: a GFS cell elevation
+is a smoothed average over a wide area, so an exact match to the station figure
+is a pleasant coincidence rather than evidence the cell represents the airport.
+What it does say is that there is no height problem to worry about at CDG, the
+same conclusion Q5 reached for EGLC.
+
+**F18. LFPG reports ON THE HOUR, not at :50 — so the D14 pairing rule applies
+as it stands and actually fits CDG better than it fits EGLC. But CDG files
+off-hour reports more often, and those cost days.**
+
+This was the key CDG-specific unknown, because D14 was written around EGLC's
+habit of reporting at :50.
+
+Recent sample, 1–21 July 2026, routine METARs only:
+
+```
+reports in file  : 504
+minute-past-hour : :00 x501, :30 x3
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 504
+hours MISSING    : 0  (0.00%)
+```
+
+Early sample, 18–31 March 2021, routine METARs only:
+
+```
+reports in file  : 334
+minute-past-hour : :00 x334
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 334
+hours MISSING    : 2  (0.60%)  -> 2021-03-20 07:00 and 2021-03-30 16:00 UTC
+```
+
+So the on-the-hour habit holds at both ends of the period, five years apart.
+Nothing was filled (SPEC 2.2); the two missing hours are whole reports never
+filed.
+
+**Does D14 need adapting? No.** D14 says: pair each `HH:00` forecast with the
+nearest report, and drop the hour if no report falls within 15 minutes of it.
+Written for a station reporting at :50, it produces a 10-minute offset at EGLC.
+At LFPG it produces an **exact match, 0 minutes**, because the report is stamped
+on the hour already. The rule is unchanged and the pairing it gives is strictly
+better. The 10-minute-gap argument D14 rests on does not even need to be made
+for CDG.
+
+**But there is a real catch, and it is the one thing this session found that
+needs the owner's attention.** Three of the 504 recent routine reports came in
+at `:30` rather than `:00`:
+
+```
+2026-07-02 17:30 UTC   (dropped by D14 - 30 minutes from the hour)
+2026-07-08 12:30 UTC   (dropped by D14)
+2026-07-20 00:30 UTC   (dropped by D14)
+```
+
+D14 drops all three, correctly — they sit 30 minutes out, twice the tolerance.
+Two of them do not matter, because Stage 1's target is 12:00 UTC only. **The
+middle one does:** on 2026-07-08 the only routine report in the noon hour was at
+12:30, so there is no observation for 12:00 UTC that day and the day is dropped.
+
+Counting what D14 would keep at the target hour, observation side only:
+
+```
+recent sample 2026-07-01..2026-07-21   21 calendar days, 20 kept, 1 dropped
+                                       (2026-07-08, only report was 12:30)
+early sample  2021-03-18..2021-03-31   14 calendar days, 14 kept, 0 dropped
+pairing offset on every kept day       : 0 minutes
+```
+
+**The rate is what deserves a second look, not the rule.** Over five years at
+EGLC, exactly 8 reports out of 46,919 fell more than 15 minutes from an hour
+(F9) — about 0.017%. LFPG produced 3 out of 504 in three weeks — about 0.60%,
+roughly 35 times higher. If that rate held across the roughly 1,950 days from
+2021-03-24 to 2026-07-31, it would cost **about 12 days** at the 12:00 target.
+
+For contrast, over EGLC's training and validation years this cause cost **no
+days at all** at 12:00 UTC. F12 found exactly one report in that whole loaded
+period more than 15 minutes from an hour, and it was not at noon: every day
+lost there went to the forecast gap or to a missing observation, never to a
+report filed at an odd minute. (F16 records one day dropped in the test year,
+2025-11-21, as "no usable observation" without saying which of the two causes it
+was. It is one day either way, so it does not change the comparison, and this
+session did not re-open stage 1's data to find out.)
+
+About 12 days out of ~1,950 is still a small number, and the drop-count-report
+rule handles it exactly as written. **But three weeks is a small sample, and one
+of the three off-hour reports landed on the target hour — which is either bad
+luck or a hint that off-hour reports cluster around the middle of the day.** One
+in three is far too little to tell those apart. The full pull will settle it, and
+the honest thing is to look at the number then rather than guess now. See Q19.
+
+**F19. LFPG files a scheduled half-hourly report at :30, which IEM labels
+"special" — the same pattern EGLC shows at :20.**
+
+Pulling the same three weeks with both report types:
+
+```
+reports in file  : 1,007
+minute-past-hour : :00 x501, :06 x1, :07 x1, :30 x502, :35 x1, :57 x1
+```
+
+Subtracting the 504 routine rows leaves 503 "special" rows, of which **499 are
+at :30**. So IEM's "special" label does not mean "unscheduled" at LFPG any more
+than it did at EGLC (F3): both stations file a second scheduled report each
+hour, EGLC at :20 and LFPG at :30. Only 4 rows in three weeks look like genuine
+unscheduled reports.
+
+This is recorded, not acted on. Stage 1 used the routine report as the hourly
+truth and Stage 2 reuses that unchanged (D26). It is noted because the :30
+stream is the obvious place to look if Q19's off-hour drops turn out to matter.
+
+**F20. The forecast archive starts at LFPG on exactly the same hour as it does
+at EGLC: 2021-03-24 00:00 UTC.**
+
+Two probes, both `gfs_global`, `temperature_2m_previous_day1`:
+
+```
+probe 1, 2021-03-01..2021-03-07 : 168 rows, ALL 168 null
+probe 2, 2021-03-18..2021-03-26 : 216 rows, 72 with a value, 144 null
+                                  first non-null = 2021-03-24T00:00
+                                  value range 4.8 to 16.1 degC
+```
+
+The recent sample is complete:
+
+```
+2026-07-01..2026-07-21 : 504 rows, 504 with a value, 0 null
+                         value range 8.7 to 36.7 degC
+```
+
+This is the same behaviour F1 found at EGLC, down to the hour — including the
+detail that the API answers HTTP 200 with all-null values for dates before its
+archive begins, rather than returning an error. That the two locations share the
+exact same first hour says the March 2021 floor is a property of the archive
+itself, not of any one place.
+
+**The practical consequence: the D13 split dates carry over to CDG unchanged.**
+Training 2021-03-24 to 2025-07-31 and testing 2025-08-01 to 2026-07-31 are as
+available at LFPG as at EGLC. No date needs moving for Stage 2.
+
+**F21. Plain first read — yes, CDG's data is usable for Stage 2 the same way
+EGLC's was.** Every verify-on-contact check passed:
+
+- the Previous Runs API carries the location, with a grid point 3.44 km away and
+  no height problem (F17);
+- the archive reaches back to the same 2021-03-24 start, so the fixed split
+  dates need no change (F20);
+- IEM carries LFPG in the `FR__ASOS` network with a clean, complete-looking
+  observation record (F18);
+- the pairing rule needs no adapting, and pairs better at CDG than at EGLC
+  (F18).
+
+The one qualification worth carrying forward is the off-hour report rate (Q19),
+which is a counting question the full pull answers, not a blocker. **Nothing
+here justifies changing any Stage 1 decision.**
+
+Two things this session did **not** check, both listed as open questions below:
+whether `gfs_global` and `gfs_seamless` return identical data at LFPG the way
+F6 proved they do at EGLC (Q20), and whether the 492-hour forecast gap F8 found
+at EGLC is present at LFPG too (Q21). Neither could be answered from
+three-week samples.
+
+---
+
+## 2026-08-17 — Open questions raised by session 08 (not acted on)
+
+**Q19. Off-hour routine reports at LFPG cost days at the target hour — how many,
+and should the `:30` stream be allowed to rescue them?** F18 found 3 routine
+reports out of 504 stamped at `:30` instead of `:00`, one of them in the noon
+hour, which drops that day. The rate is about 35 times EGLC's, on a three-week
+sample. Two questions follow, and both are the owner's:
+- **What is the real rate over five years?** Only the full pull can say. The
+  session that does the pull should count it explicitly and report the number of
+  days lost at 12:00 UTC to this cause, separately from days lost to missing
+  reports.
+- **If it matters, should D14 be adapted for Stage 2?** The `:30` report exists
+  in IEM's "special" stream (F19), so on 2026-07-08 there *was* a real
+  observation 30 minutes from the target — D14 simply refuses it, correctly, as
+  the rule stands. Widening the tolerance or allowing a fallback would recover
+  those days, but it would also mean Stage 2 runs a different pairing rule from
+  Stage 1, which weakens the "only the location changed" claim D26 rests on.
+  **The default is to change nothing and take the drops**, since a handful of
+  days out of ~1,900 is not worth muddying the comparison. Recorded so the
+  choice is made deliberately rather than by silence.
+
+**Q20. `gfs_global` versus `gfs_seamless` has not been re-checked at LFPG.** D16
+pinned `gfs_global`, and this session used it. But F6 proved the two return
+identical data **at EGLC**, and F6's own closing note said the same reasoning
+should be re-checked at CDG rather than assumed. It was not re-checked this
+session — that was outside the verify-on-contact scope, which was about whether
+the data exists at all. The pin holds either way (D16 is a decision about which
+string to use, not a claim about equivalence), so nothing is blocked. But if the
+project ever wants to say "Stage 2 used exactly NCEP GFS" with the same
+by-construction confidence F6 gives for Stage 1, the comparison should be run at
+LFPG before the full pull.
+
+**Q21. Is the 492-hour forecast gap present at LFPG too?** F8 found exactly one
+sizeable gap in EGLC's forecast series, 2023-12-30 00:00 to 2024-01-19 11:00
+UTC, falling entirely inside the training window. Because F20 shows the archive
+floor is a property of the archive rather than of a location, the gap is likely
+to be there at LFPG as well — but "likely" is not "checked", and F11's lesson is
+precisely that spot checks cannot prove what they did not look at. The full pull
+maps every hour, exactly as session 03b did, and the answer falls out of that. No
+action needed now; recorded so the mapping is not forgotten.

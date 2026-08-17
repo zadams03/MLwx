@@ -3,20 +3,28 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 07)._
+_Last updated: 17 August 2026 (after session 08)._
 
 ---
 
 ## Current stage
 
-**Stage 1 — one model, one airport, one fixed hour. PASSED.** (See SPEC section
-6.) The sealed test ran in session 07 and the corrected forecast beat both raw
-GFS and persistence. Stage 2 (a second airport, CDG) is the next stage to open,
-but it has not been opened and nothing about it has been started — that is the
-owner's call (DECISIONS Q17).
+**Stage 2 — a second airport, Paris Charles de Gaulle (CDG / LFPG). OPEN.** The
+owner opened it in session 08 (DECISIONS **D26**, which closes Q17). Its job is
+to prove the recipe travels: the same method that worked at London City, run at
+a genuinely different location, with **only the location changed**. The target
+stays 12:00 UTC on purpose.
 
-**The headline result:** over the held-out year 2025-08-01 to 2026-07-31, on 363
-days, mean absolute error in degrees Celsius —
+Session 08 was the verify-on-contact check, mirroring session 01 for EGLC.
+**Both data sources carry CDG and are usable** (DECISIONS F17–F21). Nothing has
+been pulled in full, designed, joined or built yet.
+
+**Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
+SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
+beat both raw GFS and persistence. Nothing about it is to be re-run or revisited.
+
+**The Stage 1 headline result:** over the held-out year 2025-08-01 to
+2026-07-31, on 363 days, mean absolute error in degrees Celsius —
 
 ```
 Raw GFS 1.242 | Persistence 2.096 | Climatology 2.972
@@ -277,27 +285,93 @@ result and the honest reading of it.
   - Full real output in `notes/session-07-check-output.txt`; the script is
     `scripts/session07_test.py`. The result of record is DECISIONS **F16**.
 
+- **Session 08 — STAGE 2 OPENS: CDG verified on contact. Done. Small samples
+  only; nothing was pulled in full, joined, built or trained, and nothing from
+  stage 1 was touched or re-run.**
+  - **Owner's decisions recorded (DECISIONS D26–D27).** **D26 opens stage 2 at
+    Paris Charles de Gaulle (CDG / LFPG)** — same target hour (12:00 UTC), same
+    model and settings, same D19 features, same D13 split dates, same D14
+    pairing rule, same frozen bar, with **only the location changed**, so that
+    if the result differs the location is the only thing that can explain it.
+    **Q17 is closed.** **D27** records, without acting on it, that stage 3's
+    pooled target hour will be **solar standard noon** with daylight saving
+    deliberately ignored.
+  - **Six raw files pulled**, each with a `.meta.txt` beside it recording the
+    pull time and the exact request (SPEC 2.3): three Open-Meteo forecast
+    samples, two IEM observation samples, one IEM observation side-file, plus
+    the IEM station metadata the coordinates came from.
+  - **The station position used, from IEM's own metadata (F17):** lat 49.0153,
+    lon 2.5344, elevation 109 m. The session prompt's approximate figure
+    (49.010, 2.548, ~119 m) sits 1.15 km away and 10 m higher; IEM's was used,
+    as the prompt asked. LFPG is **328 km from EGLC and 104 m higher** — a
+    genuinely different setting, which is the point.
+  - **Forecast source verified (F17, F20).** The grid point returned is lat
+    49.027008, lon 2.578125, elevation 109 m — **3.44 km from the airport with
+    no height mismatch**, slightly better than EGLC's 4.33 km. The recent
+    sample is 504 rows with 0 missing. The archive begins at **2021-03-24 00:00
+    UTC, the very same hour as EGLC**, with 1–7 March 2021 coming back all-null
+    exactly as F1 found. **So the D13 split dates carry over to CDG unchanged.**
+  - **Truth source verified, and the key CDG unknown answered (F18).**
+    **LFPG reports ON THE HOUR (`:00`), not at `:50` like EGLC.** That holds at
+    both ends of the period, five years apart: 501 of 504 recent reports and
+    334 of 334 early reports are stamped `:00`. **The D14 pairing rule therefore
+    needs no adapting — it applies as written and fits CDG better than EGLC**,
+    giving an exact 0-minute match instead of a 10-minute offset.
+  - **The one qualification worth carrying forward (F18, Q19).** Three recent
+    routine reports came in at `:30` instead of `:00`, and D14 correctly drops
+    all three. One of them was in the noon hour (2026-07-08, only report 12:30),
+    so that day is lost at the target hour: 20 of 21 recent days kept, 14 of 14
+    early days kept. The off-hour rate is about **0.60% against EGLC's 0.017%**
+    — roughly 35 times higher, though on a three-week sample. Held across the
+    whole period that would cost about 12 days at 12:00 UTC, against **none at
+    all** at EGLC, where every lost day came from the forecast gap or a missing
+    observation instead. Only the full pull can say what the real rate is.
+  - **Gap counts, nothing filled (SPEC 2.2).** Recent observation sample: 504
+    hours expected, 504 covered, **0 missing**. Early sample: 336 expected, 334
+    covered, **2 missing** (2021-03-20 07:00 and 2021-03-30 16:00 UTC).
+  - **F19 — LFPG files a scheduled half-hourly report at `:30`** which IEM
+    labels "special", the same pattern EGLC shows at `:20` (F3). Recorded, not
+    acted on; stage 2 reuses the routine report as the truth observation.
+  - **Plain verdict (F21): yes, CDG's data is usable for stage 2 the same way
+    EGLC's was.** Every verify-on-contact check passed and nothing found here
+    justifies changing any stage 1 decision.
+  - **Three new open questions, all the owner's (Q19–Q21):** the off-hour report
+    rate and whether D14 should be adapted for CDG (**default: change nothing
+    and take the drops**); `gfs_global` versus `gfs_seamless` not re-checked at
+    LFPG as F6 said it should be; and whether the 492-hour forecast gap F8 found
+    at EGLC is present at LFPG too.
+  - **No SPEC edit was made and none was authorised.** The stage 2 SPEC design
+    is deliberately not written yet — it comes after verification, which is what
+    this session was.
+  - Full real output in `notes/session-08-check-output.txt`; the script is
+    `scripts/session08_checks.py`.
+
 ## In progress
 
-- Nothing. Session 07 is finished and awaiting the owner's review.
+- Nothing. Session 08 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 07. **Stage 1 is decided and the result
-   stands** (D21.10) — there is nothing left to re-run or improve about it.
-2. **Then two owner decisions, in whichever order the owner wants:**
-   - **Q17 — does stage 2 open, and with what scope?** SPEC section 6 says stage
-     2 is the same recipe at a second airport (Charles de Gaulle, CDG). SPEC
-     leaves it deliberately unspecified until the owner opens it, so nothing
-     about it has been written or started.
-   - **Q18 — does any of the parked SPEC 5.4 evaluation get done first?** Skill
-     scores, statistical significance and formal season testing were parked
-     until stage 1 passed. It has passed, so they are now available. F16's own
-     reading — that most of the gap between the 6% and 16% margins is the
-     weather — is the argument for doing a significance check; the argument
-     against is that a second airport is a stronger robustness test than any
-     statistic on the same 363 days.
-3. Nothing is pre-committed beyond that.
+1. Owner reviews and commits session 08.
+2. **The Stage 2 SPEC design, then the full CDG pull.** The data checks out
+   (F21), so this is the path the session 08 prompt named. Two pieces, in order:
+   - **Write the Stage 2 section of SPEC.** Session 08 was explicitly told not
+     to, because the design should follow the verification rather than precede
+     it. D26 already fixes most of it (same hour, same features, same split
+     dates, same pairing rule, same bar), so the design session is mostly a
+     matter of writing that down properly and deciding how the two airports'
+     results get compared.
+   - **Then the full historical pull for LFPG**, 2021-03-24 to 2026-07-31, both
+     sources, mirroring session 03b. Notes for whoever does it: **space the IEM
+     requests out** — three quick ones hit an HTTP 429 rate limit this session
+     (F18 meta files); **count the off-hour reports explicitly** (Q19); and
+     **map every hour of the forecast series**, which answers Q21.
+3. **Still open and not blocking: Q18 — does any of the parked SPEC 5.4
+   evaluation get done?** Skill scores, statistical significance and formal
+   season testing became available when stage 1 passed. The owner has chosen
+   stage 2 first by opening it, but Q18 was never answered either way, so it
+   stays open.
+4. Nothing is pre-committed beyond that.
 
 ## Notes
 
@@ -308,9 +382,13 @@ result and the honest reading of it.
 - **Q15 is closed** by session 05 (D20, F15).
 - **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
-- **Two open questions, both raised by session 07 and both the owner's to
-  answer: Q17 (does stage 2 open?) and Q18 (does any of the parked SPEC 5.4
-  evaluation get done first?).** Neither blocks anything.
+- **Q17 is closed** by session 08 (D26): stage 2 opened, at CDG/LFPG.
+- **Four open questions, none of them blocking anything.** **Q18** (does any of
+  the parked SPEC 5.4 evaluation get done?) is left from session 07. **Q19, Q20
+  and Q21** were raised by session 08: the off-hour report rate at LFPG and
+  whether D14 should be adapted; `gfs_global` versus `gfs_seamless` at LFPG; and
+  whether EGLC's 492-hour forecast gap exists at LFPG too. Q19 and Q21 are
+  largely answered by the full pull rather than by a decision.
 - **The test year has now been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
