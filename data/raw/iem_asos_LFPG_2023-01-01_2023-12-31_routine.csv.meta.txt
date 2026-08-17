@@ -1,0 +1,40 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv
+purpose     : session 10, part B2 - full history truth chunk for LFPG
+pulled at   : 2026-08-17 20:15:57 BST (2026-08-17 19:15:57 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2023&month1=1&day1=1&year2=2024&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = LFPG   (Paris Charles de Gaulle)
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2023-01-01 to 2023-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2024-01-01.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- LFPG's routine report is stamped ON THE HOUR, :00, not at :50 like
+  EGLC (DECISIONS F18). It is the hourly truth observation (D14).
+- LFPG also files a second scheduled report at :30, which IEM labels
+  'special' (DECISIONS F19). It is NOT in this file, because
+  report_type=3 asks for routine reports only.
+- No network parameter is sent. Stage 1's EGLC pulls addressed the
+  station by code alone, and this pull is deliberately the same shape
+  so that only the location differs (D26). LFPG's network is FR__ASOS
+  (DECISIONS F17) and a probe with and without the parameter returned
+  identical rows.
+- Air temperature (tmpc) is the designated truth field. Dew point
+  (dwpc) arrives in the same response and is kept for the record.
+- HTTP status 200.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).

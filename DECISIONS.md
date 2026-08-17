@@ -1842,3 +1842,244 @@ CLAUDE.md forbids writing a spec file from memory or assumption.
   France, pointed at the United Kingdom network — which would be a data pull,
   and this session was documentation only. The CDG pull session could fold it in
   for free, or the owner can leave the marker where it is.
+
+---
+
+## 2026-08-17 — Session 10 findings (the full LFPG pull and gap map)
+
+The full stage 2 pull ran for real: 2021-03-24 to 2026-07-31, both sources, six
+yearly chunks each, plus one IEM network metadata file. 26 new files went into
+`data/raw/`, with a `.meta.txt` beside every one of the 13 data files (SPEC
+2.3). **Nothing was joined, filled, cleaned, built, trained or evaluated**, and
+no temperature value from the test window was printed. The scripts are
+`scripts/session10_pull.py` and `scripts/session10_checks.py`; the full real
+output is `notes/session-10-check-output.txt` and `notes/session-10-pull-output.txt`.
+
+**F22. Q21 answered — LFPG has EXACTLY the same 492-hour forecast gap as EGLC,
+down to the hour. It is one gap and there are no others.**
+
+```
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+training 2021-03-24..2025-07-31: 38,184 expected, 37,692 usable, 492 missing (1.29%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,760 usable,   0 missing (0.00%)
+
+GAP MAP: 1 gap run in the whole period
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches EGLC's F8 gap     : YES - same start, same end, same length
+```
+
+Every one of those six totals is **identical to EGLC's** (F8), and so is the
+gap's position. That is the answer Q21 wanted and it is stronger than "likely":
+the gap is a property of the Open-Meteo archive itself, not of a location, in
+exactly the way F20 showed the March 2021 floor is. Nothing was filled (SPEC
+2.2).
+
+The practical consequence is the same one F12 recorded at EGLC: the gap ends at
+2024-01-19 11:00 UTC and the series resumes at 12:00, which is the target hour,
+so **that day survives and the gap should cost 20 days at 12:00 UTC, not 21**.
+That is a prediction about the join, which is the next session's job — this
+session did not join anything.
+
+The grid point Open-Meteo returned across all six chunks is lat 49.027008, lon
+2.578125, elevation 109.0 m — the same point session 08's samples got (F17), so
+the full pull is describing the same place the verification did.
+
+**Q20 closed.** All six forecast chunks were requested with `models=gfs_global`
+(D16), read back out of the saved `.meta.txt` URLs rather than claimed, with no
+`gfs_seamless` anywhere. Nothing looked wrong, so `gfs_seamless` was not
+re-probed at LFPG, as the session prompt's A-1 directed. Note honestly what this
+does and does not settle: the pin is confirmed as *used*, but F6's
+value-by-value equivalence check between the two strings still has not been run
+at LFPG. Stage 2 can say "this is exactly the `gfs_global` series" but not "and
+`gfs_seamless` would have given the same", which is what F6 proved for stage 1.
+
+**F23. The observation record at LFPG is good, but not as clean as EGLC's, and
+the reason is interesting.**
+
+```
+reports in files           : 46,903
+minute-past-hour spread    : :00 x46,805, :30 x95, :36 x1, :43 x1, :49 x1
+reports with no temperature: 1
+reports >15 min from any hour, dropped (D14): 97
+expected hours in period   : 46,944
+hours with an observation  : 46,804
+hours missing              : 140 (0.30% of the period)
+
+training 2021-03-24..2025-07-31: 38,184 expected, 38,077 usable, 107 missing (0.28%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,727 usable,  33 missing (0.38%)
+
+gap runs: 85 in total
+    1 hour        75 runs      75 hours
+    2-5 hours      8 runs      18 hours
+    6-23 hours     1 run       15 hours
+    1-7 days       1 run       32 hours
+longest two: 32 hours  2022-07-22 16:00 -> 2022-07-23 23:00 UTC
+             15 hours  2022-07-25 00:00 -> 2022-07-25 14:00 UTC
+```
+
+Against EGLC (F9): 140 missing hours against 44, so **0.30% against 0.09%** —
+about three times as many holes, and a longest run of 32 hours against 8. Both
+are still small. The full list of all 85 runs is in the notes file. Nothing was
+filled (SPEC 2.2).
+
+**The two long runs are not missing data at all — they are the station shifting
+its reporting minute.** On 2022-07-23 LFPG filed all 24 of its routine reports
+at `:30`, and on 2022-07-25 it filed the first 15 that way. The reports exist and
+carry temperatures; D14 refuses them at 30 minutes out, so they show up in the
+gap map as absent hours. Recorded plainly because a reader of the gap map would
+otherwise conclude the station went dark for a day and a half, and it did not.
+The rule is still applied as written (D30) — the point is only that "missing
+hour" and "no report filed" are not the same thing at this airport.
+
+**F24. Q22 closed — IEM confirms EGLC is in `GB__ASOS`, and the position in
+SPEC 3.4 was already right.**
+
+One metadata request, the same call session 08 made for France pointed at the
+United Kingdom (`https://mesonet.agron.iastate.edu/geojson/network/GB__ASOS.geojson`,
+HTTP 200, 63,682 bytes, 112 stations). What IEM returned for EGLC:
+
+```
+sid           = EGLC
+sname         = London City
+network       = GB__ASOS
+coordinates   = lat 51.5053, lon 0.0553
+elevation     = 5.0 m
+tzname        = Europe/London
+archive_begin = 1988-01-29
+archive_end   = None   (still reporting)
+online        = True
+```
+
+The FR__ASOS file was re-read in the same check and still carries LFPG at
+49.0153 / 2.5344 / 109.0 m, matching F17.
+
+So the guess carried in from the session 09 prompt was correct — but it is now a
+checked fact rather than a probable one, which is the standard SPEC 3.4 is meant
+to hold to. **SPEC 3.4 before:** `` `GB__ASOS` (unverified) ``. **After:**
+`` `GB__ASOS` ``, and the note beneath the table now records both networks as
+verified by real pulls instead of explaining why one was not. Nothing in the
+project uses a network code — every request addresses its station by ICAO code —
+so this closes a bookkeeping gap, not a data one.
+
+**F25. The D30 count: LFPG loses THREE days at 12:00 UTC to off-hour reporting
+across the whole period, not the ~12 F18 estimated.**
+
+D30 decided what to do about these days — nothing, take the drops — but required
+this session to count them and to keep them apart from days lost because no
+report was filed. Observation side only; nothing was joined. This is a count of
+report *timing*, not of temperature values, so it covers the test window too
+without opening it.
+
+```
+calendar days in the period : 1,956
+cause                                days  training   test
+kept - usable 12:00 observation      1953      1589    364
+LOST: only an off-hour report           3         2      1
+LOST: report on the hour, no temp       0         0      0
+LOST: no report in the 12:00 hour       0         0      0
+
+total days lost at 12:00 UTC (observation side): 3 of 1,956 (0.15%)
+of those, lost to CDG's off-hour reporting (D30) : 3
+
+    2022-07-23  [training]  only report in the noon hour: 12:30
+    2022-07-25  [training]  only report in the noon hour: 12:30
+    2026-07-08  [test]      only report in the noon hour: 12:30
+```
+
+**Every day lost on the observation side is lost to this one cause.** There is
+not a single day in five years where LFPG filed nothing at all in the 12:00 hour,
+and only one report in 46,903 carries no temperature. On the observation side
+CDG's record at the target hour is better than EGLC's, which lost days to missing
+reports (F12, F16).
+
+**F18's estimate was four times too high, and the reason is worth keeping.** F18
+extrapolated 3 off-hour reports in a three-week sample to a 0.60% rate and about
+12 lost days. The real whole-period rate is **97 reports in 46,903, or 0.207%**,
+and the lost-day count is 3. Two things went wrong with the extrapolation, in
+opposite directions from what was feared:
+
+```
+off-hour reports : 97 on 57 days, in 49 episodes
+episodes of 5 or more reports: 2
+  2022-07-23 .. 2022-07-25   39 reports over 2 days  (the F23 shift to :30)
+  2026-03-07 .. 2026-03-11    5 reports over 3 days
+the remaining 53 reports are scattered singles across 47 episodes
+minute stamps: :30 x95, :36 x1, :43 x1
+```
+
+First, **40% of all off-hour reports come from one two-day episode** (F23), so
+the rate is not the steady drizzle a three-week sample suggested. Second, and
+more importantly, **off-hour reports do not cluster at midday** — that was F18's
+open worry, raised because one of its three landed at noon. Spread over 57 days
+and 24 hours, only 3 ever hit the noon hour, which is close to what chance alone
+would give. So the noon hit in F18's sample was bad luck, not a pattern.
+
+**Against EGLC:** 0.207% off-hour against 0.017% (F9) — still roughly twelve
+times the rate, so F18's headline observation was right in direction even though
+its size was wrong. But the thing that matters, days lost at the target hour, is
+3 against 0. **Nothing here disturbs D30**: the drops are taken, the rule is
+unchanged, and three days out of 1,956 is not worth a different pairing rule at
+one airport.
+
+**F26. Training-window value ranges, both series — sane, and plainly Celsius.**
+The test window's values were not looked at.
+
+```
+forecast (GFS, training window) : n = 37,692   min = -8.5   max = 41.2   mean = 12.77 degC
+observed (LFPG, training window): n = 38,077   min = -5.0   max = 39.0   mean = 13.14 degC
+```
+
+Kelvin would read about 250–310, so neither series has a unit problem, and
+neither carries an absurd value. The observed maximum of 39.0 degC is real: it
+is the July 2022 European heat, and the raw file shows 2022-07-19 sitting at
+39 degC from 13:00 to 17:00 UTC. METAR reports whole degrees, which is why the
+extremes land on round numbers.
+
+Worth noticing for later, and **only** as an observation on the training window:
+unlike EGLC (F10), the forecast's range here is *wider* than the station's at
+both ends rather than narrower — it goes 3.5 degC colder and 2.2 degC warmer
+than anything observed. Whether that means anything at 12:00 UTC specifically is
+a question for the join session, which is exactly the mistake F13 caught F10
+making: an all-hours range says little about one target hour. Not acted on.
+
+**The pull itself, for the record.** No retry fired and no HTTP 429 appeared,
+with a 3-second pause between calls (session 08 hit a rate limit at a faster
+pace). No IEM network parameter was sent: stage 1 addressed EGLC by station code
+alone, and a probe confirmed IEM returns identical rows with and without
+`network=FR__ASOS`, so the request shape is deliberately the same as stage 1's —
+only the location changed (D26). `data/raw/` now holds 76 files, 7.6 MB.
+
+---
+
+## 2026-08-17 — Session 10 note (what closed, and what is left)
+
+**Q20, Q21 and Q22 are all closed** — by F22 (with the honest limit noted on
+Q20), F22 again, and F24. **No open questions remain.**
+
+The three closures needed findings, not decisions: each was a question about what
+the data actually is, and the full pull answered all three. D30's required count
+is F25.
+
+**Two authorised SPEC edits and no others**, both from the session prompt's B-3:
+section 3.2's "whether CDG has a forecast gap is NOT YET KNOWN" marker is
+replaced by the verified answer (F22), and section 3.4's EGLC network cell drops
+its "(unverified)" tag (F24). The note beneath the table was rewritten to match
+the cell, because leaving it saying "EGLC's network code is not verified" would
+have made SPEC contradict its own table — flagged here as slightly wider than
+"one cell", so the owner can judge it.
+
+**Nothing else changed.** No rule, date, setting, threshold or bar was touched.
+Nothing was joined, built, trained or evaluated. **CDG's test year is now on disk
+but has never been opened**: only its row presence and gap locations were
+counted, never a temperature value, exactly as session 03b held EGLC's.

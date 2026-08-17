@@ -1,0 +1,22 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_station_metadata_GB__ASOS.geojson
+purpose     : session 10, part B3 - settle Q22. EGLC's IEM network
+              code has never come back from IEM in this project, so
+              SPEC 3.4 carries it marked unverified. This is the same
+              network listing session 08 pulled for France, pointed at
+              the United Kingdom.
+pulled at   : 2026-08-17 20:16:16 BST (2026-08-17 19:16:16 UTC)
+source      : Iowa Environmental Mesonet (IEM) network station listing
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/geojson/network/GB__ASOS.geojson
+
+notes:
+- The whole network file is kept rather than just the EGLC entry,
+  because it is the actual response and SPEC 2.3 says to keep raw
+  pulls untouched.
+- What IEM returned for EGLC is reported by scripts/session10_checks.py
+  and written up in DECISIONS.
+- HTTP status 200.

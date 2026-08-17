@@ -126,13 +126,14 @@ training window (the test window has no forecast gap at all). Those hours are
 dropped and counted, never filled (rule 2.2). See DECISIONS F8, and F11 for the
 correction to F1's earlier claim of continuity.
 
-**Whether CDG has a forecast gap is NOT YET KNOWN — to be verified.** The gap
-above was mapped hour by hour at EGLC only. It is likely to be present at CDG
-too, since the archive floor is shared, but likely is not checked, and F11's
-lesson is exactly that spot checks cannot prove anything about the hours nobody
-looked at. The CDG pull session maps every hour of its forecast series the way
-session 03b did for EGLC, and the answer is written in here then. Until it is,
-this line stands as the marker. See DECISIONS Q21.
+**CDG has the very same gap — verified, hour by hour.** Session 10 mapped every
+hour of LFPG's forecast series the way session 03b did for EGLC, and found
+**exactly one gap, 492 hours, from 2023-12-30 00:00 to 2024-01-19 11:00 UTC** —
+the same first missing hour, the same last missing hour, the same length. It
+falls entirely inside the training window at CDG too, and CDG's test window has
+no forecast gap at all. So the gap is a property of the archive, not of one
+place, in the same way the March 2021 floor is. Those hours are dropped and
+counted, never filled (rule 2.2). See DECISIONS F22, which closes Q21.
 
 **3.3 Verify on contact.** Two things can only be checked by pulling real
 data, and must be checked on the first pull **for each new airport**:
@@ -152,7 +153,7 @@ The airport, and where it is (position from IEM, section 3.1):
 
 | ICAO | airport | stage | IEM network | latitude | longitude | elevation |
 |---|---|---|---|---|---|---|
-| EGLC | London City | 1 — passed | `GB__ASOS` (unverified) | 51.5053 | 0.0553 | 5 m |
+| EGLC | London City | 1 — passed | `GB__ASOS` | 51.5053 | 0.0553 | 5 m |
 | LFPG | Paris Charles de Gaulle (CDG) | 2 — in progress | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
 
 The forecast grid point it maps to (from Open-Meteo, section 3.2), and when the
@@ -179,11 +180,12 @@ Notes on the table:
   sits from 12:00 UTC. Both stations also file a second scheduled report each
   hour, which IEM labels "special" although it is plainly scheduled; neither is
   used as the truth observation (DECISIONS F3, F19).
-- **EGLC's network code is not verified.** Every EGLC request was made by
-  station code alone, with no network parameter, so `GB__ASOS` has never come
-  back from IEM in this project — it is carried here from the session 09 prompt
-  and marked unverified rather than written as a checked fact. LFPG's
-  `FR__ASOS` was verified by a real pull (DECISIONS F17). See DECISIONS Q22.
+- **Both network codes are now verified by a real pull.** LFPG's `FR__ASOS` was
+  checked in session 08 (DECISIONS F17) and EGLC's `GB__ASOS` in session 10
+  (DECISIONS F24, which closes Q22): IEM's own United Kingdom station listing
+  carries EGLC in `GB__ASOS`, at the position and elevation this table already
+  held. Nothing in the project uses a network code — every request addresses
+  its station by ICAO code — so this closes a bookkeeping gap, not a data one.
 
 ---
 

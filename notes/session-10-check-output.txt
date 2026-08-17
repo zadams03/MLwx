@@ -1,0 +1,336 @@
+session 10 checks - the full LFPG (Paris CDG) pull and gap map
+run at: 2026-08-17 19:20:07 UTC
+
+
+============================================================================
+Q20 - was every forecast chunk pulled with gfs_global? (D16)
+============================================================================
+  2021-03-24..2021-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2022-01-01..2022-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2023-01-01..2023-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2024-01-01..2024-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2025-01-01..2025-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2026-01-01..2026-07-31  models=gfs_global: yes   gfs_seamless present: no
+
+  all 6 forecast chunks used gfs_global: YES
+  Nothing looked wrong, so gfs_seamless was not re-probed at LFPG
+  (session prompt A-1: this is a confirmation, not a reopening).
+
+============================================================================
+FORECAST SERIES - Open-Meteo Previous Runs, gfs_global, LFPG, temperature only
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6792  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8760  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8760  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8784  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8760  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5088  2026-01-01 00:00 -> 2026-07-31 23:00
+
+grid point returned : lat 49.027008, lon 2.578125, elevation 109.0 m
+session 08 (F17) got : lat 49.027008, lon 2.578125, elevation 109.0 m
+same grid point      : yes
+
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,692 usable, 492 missing (1.29%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,760 usable, 0 missing (0.00%)
+
+-- GAP MAP: every gap run, whole period (1 run(s)) --
+    2023-12-30 00:00 -> 2024-01-19 11:00 UTC     492 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    over 7 days         1      492
+
+-- largest gap runs in order --
+       492 hours   2023-12-30 00:00 -> 2024-01-19 11:00 UTC
+    runs of 24 hours or more: 1
+
+-- Q21: DOES THE LFPG FORECAST SERIES HAVE A GAP? --
+    YES. 1 gap run(s), 492 missing hours in total,
+    of which 1 run(s) of a day or more.
+
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches EGLC's F8 gap     : YES - same start, same end, same length
+
+-- TRAINING WINDOW ONLY: temperature value range (sanity) --
+    n = 37,692
+    min = -8.5 degC   max = 41.2 degC   mean = 12.77 degC
+    (Celsius as expected - Kelvin would show roughly 250-310.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, usable 8,760, missing 0
+    gap runs:
+      (none)
+
+============================================================================
+TRUTH SERIES - IEM ASOS routine METARs, LFPG
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6773  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8743  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8756  2023-01-01 01:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8783  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8762  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5086  2026-01-01 00:00 -> 2026-07-31 23:00
+
+station position in the files: lat 49.0153, lon 2.5344, elevation 109.0 m
+matches SPEC 3.4 (F17)       : yes
+
+reports in files           : 46,903
+minute-past-hour spread    : :00 x46,805, :30 x95, :36 x1, :43 x1, :49 x1
+reports with no temperature: 1
+reports >15 min from any hour, dropped (D14): 97
+
+expected hours in period : 46,944
+hours with an observation: 46,804
+hours missing            : 140 (0.30% of the period)
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 38,077 usable, 107 missing (0.28%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,727 usable, 33 missing (0.38%)
+
+-- GAP MAP: every gap run, whole period (85 run(s)) --
+    2021-03-30 16:00 -> 2021-03-30 16:00 UTC       1 hour
+    2021-04-06 08:00 -> 2021-04-06 08:00 UTC       1 hour
+    2021-04-25 00:00 -> 2021-04-25 00:00 UTC       1 hour
+    2021-05-05 00:00 -> 2021-05-05 00:00 UTC       1 hour
+    2021-05-27 00:00 -> 2021-05-27 00:00 UTC       1 hour
+    2021-06-13 23:00 -> 2021-06-13 23:00 UTC       1 hour
+    2021-06-24 00:00 -> 2021-06-24 00:00 UTC       1 hour
+    2021-06-24 20:00 -> 2021-06-24 20:00 UTC       1 hour
+    2021-07-23 07:00 -> 2021-07-23 07:00 UTC       1 hour
+    2021-08-18 00:00 -> 2021-08-18 00:00 UTC       1 hour
+    2021-09-10 23:00 -> 2021-09-10 23:00 UTC       1 hour
+    2021-09-21 11:00 -> 2021-09-21 11:00 UTC       1 hour
+    2021-09-25 05:00 -> 2021-09-25 05:00 UTC       1 hour
+    2021-10-01 15:00 -> 2021-10-01 15:00 UTC       1 hour
+    2021-10-04 17:00 -> 2021-10-04 18:00 UTC       2 hours
+    2021-10-09 00:00 -> 2021-10-09 00:00 UTC       1 hour
+    2021-11-18 01:00 -> 2021-11-18 01:00 UTC       1 hour
+    2021-11-18 14:00 -> 2021-11-18 14:00 UTC       1 hour
+    2021-12-31 00:00 -> 2021-12-31 00:00 UTC       1 hour
+    2022-02-17 00:00 -> 2022-02-17 00:00 UTC       1 hour
+    2022-03-02 19:00 -> 2022-03-02 21:00 UTC       3 hours
+    2022-03-04 11:00 -> 2022-03-04 11:00 UTC       1 hour
+    2022-03-25 00:00 -> 2022-03-25 00:00 UTC       1 hour
+    2022-03-29 10:00 -> 2022-03-29 11:00 UTC       2 hours
+    2022-05-18 00:00 -> 2022-05-18 00:00 UTC       1 hour
+    2022-07-22 16:00 -> 2022-07-23 23:00 UTC      32 hours
+    2022-07-25 00:00 -> 2022-07-25 14:00 UTC      15 hours
+    2022-07-28 09:00 -> 2022-07-28 09:00 UTC       1 hour
+    2022-09-09 00:00 -> 2022-09-09 00:00 UTC       1 hour
+    2022-09-29 00:00 -> 2022-09-29 00:00 UTC       1 hour
+    2023-01-01 00:00 -> 2023-01-01 00:00 UTC       1 hour
+    2023-07-24 01:00 -> 2023-07-24 01:00 UTC       1 hour
+    2023-08-03 21:00 -> 2023-08-03 22:00 UTC       2 hours
+    2023-09-03 20:00 -> 2023-09-03 22:00 UTC       3 hours
+    2023-10-30 00:00 -> 2023-10-30 00:00 UTC       1 hour
+    2024-02-23 04:00 -> 2024-02-23 04:00 UTC       1 hour
+    2024-04-19 13:00 -> 2024-04-19 13:00 UTC       1 hour
+    2024-05-03 07:00 -> 2024-05-03 07:00 UTC       1 hour
+    2024-07-11 15:00 -> 2024-07-11 15:00 UTC       1 hour
+    2024-08-03 00:00 -> 2024-08-03 00:00 UTC       1 hour
+    2024-09-02 19:00 -> 2024-09-02 19:00 UTC       1 hour
+    2024-09-03 08:00 -> 2024-09-03 08:00 UTC       1 hour
+    2024-09-15 04:00 -> 2024-09-15 04:00 UTC       1 hour
+    2024-11-12 00:00 -> 2024-11-12 00:00 UTC       1 hour
+    2024-11-17 00:00 -> 2024-11-17 00:00 UTC       1 hour
+    2024-11-21 00:00 -> 2024-11-21 00:00 UTC       1 hour
+    2024-11-21 15:00 -> 2024-11-21 15:00 UTC       1 hour
+    2025-01-06 10:00 -> 2025-01-06 10:00 UTC       1 hour
+    2025-01-31 16:00 -> 2025-01-31 16:00 UTC       1 hour
+    2025-02-16 00:00 -> 2025-02-16 00:00 UTC       1 hour
+    2025-02-20 00:00 -> 2025-02-20 00:00 UTC       1 hour
+    2025-03-24 23:00 -> 2025-03-24 23:00 UTC       1 hour
+    2025-03-30 00:00 -> 2025-03-30 00:00 UTC       1 hour
+    2025-05-14 14:00 -> 2025-05-14 14:00 UTC       1 hour
+    2025-07-23 00:00 -> 2025-07-23 00:00 UTC       1 hour
+    2025-08-11 00:00 -> 2025-08-11 00:00 UTC       1 hour
+    2025-08-31 15:00 -> 2025-08-31 15:00 UTC       1 hour
+    2025-09-11 00:00 -> 2025-09-11 00:00 UTC       1 hour
+    2025-09-24 03:00 -> 2025-09-24 04:00 UTC       2 hours
+    2025-12-03 15:00 -> 2025-12-03 15:00 UTC       1 hour
+    2025-12-17 00:00 -> 2025-12-17 00:00 UTC       1 hour
+    2026-01-08 10:00 -> 2026-01-08 10:00 UTC       1 hour
+    2026-01-09 15:00 -> 2026-01-09 15:00 UTC       1 hour
+    2026-03-07 19:00 -> 2026-03-07 19:00 UTC       1 hour
+    2026-03-09 18:00 -> 2026-03-09 19:00 UTC       2 hours
+    2026-03-11 13:00 -> 2026-03-11 14:00 UTC       2 hours
+    2026-03-11 20:00 -> 2026-03-11 20:00 UTC       1 hour
+    2026-03-11 22:00 -> 2026-03-11 22:00 UTC       1 hour
+    2026-03-14 01:00 -> 2026-03-14 01:00 UTC       1 hour
+    2026-03-18 05:00 -> 2026-03-18 05:00 UTC       1 hour
+    2026-03-21 15:00 -> 2026-03-21 15:00 UTC       1 hour
+    2026-03-24 16:00 -> 2026-03-24 16:00 UTC       1 hour
+    2026-05-04 00:00 -> 2026-05-04 00:00 UTC       1 hour
+    2026-05-09 00:00 -> 2026-05-09 00:00 UTC       1 hour
+    2026-05-15 02:00 -> 2026-05-15 02:00 UTC       1 hour
+    2026-06-15 06:00 -> 2026-06-15 06:00 UTC       1 hour
+    2026-06-16 07:00 -> 2026-06-16 07:00 UTC       1 hour
+    2026-06-18 05:00 -> 2026-06-18 05:00 UTC       1 hour
+    2026-06-22 22:00 -> 2026-06-22 22:00 UTC       1 hour
+    2026-06-24 09:00 -> 2026-06-24 09:00 UTC       1 hour
+    2026-06-29 13:00 -> 2026-06-29 13:00 UTC       1 hour
+    2026-07-02 17:00 -> 2026-07-02 17:00 UTC       1 hour
+    2026-07-08 12:00 -> 2026-07-08 12:00 UTC       1 hour
+    2026-07-20 00:00 -> 2026-07-20 00:00 UTC       1 hour
+    2026-07-25 08:00 -> 2026-07-25 08:00 UTC       1 hour
+
+-- gap runs by length --
+    run length       runs    hours
+    1 hour             75       75
+    2-5 hours           8       18
+    6-23 hours          1       15
+    1-7 days            1       32
+
+-- largest gap runs in order --
+        32 hours   2022-07-22 16:00 -> 2022-07-23 23:00 UTC
+        15 hours   2022-07-25 00:00 -> 2022-07-25 14:00 UTC
+         3 hours   2022-03-02 19:00 -> 2022-03-02 21:00 UTC
+         3 hours   2023-09-03 20:00 -> 2023-09-03 22:00 UTC
+         2 hours   2021-10-04 17:00 -> 2021-10-04 18:00 UTC
+         2 hours   2022-03-29 10:00 -> 2022-03-29 11:00 UTC
+         2 hours   2023-08-03 21:00 -> 2023-08-03 22:00 UTC
+         2 hours   2025-09-24 03:00 -> 2025-09-24 04:00 UTC
+         2 hours   2026-03-09 18:00 -> 2026-03-09 19:00 UTC
+         2 hours   2026-03-11 13:00 -> 2026-03-11 14:00 UTC
+    runs of 24 hours or more: 1
+
+-- TRAINING WINDOW ONLY: observed temperature range (sanity) --
+    n = 38,077
+    min = -5.0 degC   max = 39.0 degC   mean = 13.14 degC
+    (Celsius as expected.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, with an observation 8,727, missing 33
+    gap runs:
+      2025-08-11 00:00 -> 2025-08-11 00:00 UTC       1 hour
+      2025-08-31 15:00 -> 2025-08-31 15:00 UTC       1 hour
+      2025-09-11 00:00 -> 2025-09-11 00:00 UTC       1 hour
+      2025-09-24 03:00 -> 2025-09-24 04:00 UTC       2 hours
+      2025-12-03 15:00 -> 2025-12-03 15:00 UTC       1 hour
+      2025-12-17 00:00 -> 2025-12-17 00:00 UTC       1 hour
+      2026-01-08 10:00 -> 2026-01-08 10:00 UTC       1 hour
+      2026-01-09 15:00 -> 2026-01-09 15:00 UTC       1 hour
+      2026-03-07 19:00 -> 2026-03-07 19:00 UTC       1 hour
+      2026-03-09 18:00 -> 2026-03-09 19:00 UTC       2 hours
+      2026-03-11 13:00 -> 2026-03-11 14:00 UTC       2 hours
+      2026-03-11 20:00 -> 2026-03-11 20:00 UTC       1 hour
+      2026-03-11 22:00 -> 2026-03-11 22:00 UTC       1 hour
+      2026-03-14 01:00 -> 2026-03-14 01:00 UTC       1 hour
+      2026-03-18 05:00 -> 2026-03-18 05:00 UTC       1 hour
+      2026-03-21 15:00 -> 2026-03-21 15:00 UTC       1 hour
+      2026-03-24 16:00 -> 2026-03-24 16:00 UTC       1 hour
+      2026-05-04 00:00 -> 2026-05-04 00:00 UTC       1 hour
+      2026-05-09 00:00 -> 2026-05-09 00:00 UTC       1 hour
+      2026-05-15 02:00 -> 2026-05-15 02:00 UTC       1 hour
+      2026-06-15 06:00 -> 2026-06-15 06:00 UTC       1 hour
+      2026-06-16 07:00 -> 2026-06-16 07:00 UTC       1 hour
+      2026-06-18 05:00 -> 2026-06-18 05:00 UTC       1 hour
+      2026-06-22 22:00 -> 2026-06-22 22:00 UTC       1 hour
+      2026-06-24 09:00 -> 2026-06-24 09:00 UTC       1 hour
+      2026-06-29 13:00 -> 2026-06-29 13:00 UTC       1 hour
+      2026-07-02 17:00 -> 2026-07-02 17:00 UTC       1 hour
+      2026-07-08 12:00 -> 2026-07-08 12:00 UTC       1 hour
+      2026-07-20 00:00 -> 2026-07-20 00:00 UTC       1 hour
+      2026-07-25 08:00 -> 2026-07-25 08:00 UTC       1 hour
+
+============================================================================
+D30 - DAYS LOST AT 12:00 UTC, BY CAUSE (observation side only)
+============================================================================
+Counting report timing, not temperature values, so this covers the
+whole period including the sealed test window. Nothing is joined
+and nothing is filled (SPEC 2.2).
+
+calendar days in the period : 1,956
+cause                                days  training   test
+kept - usable 12:00 observation      1953      1589    364
+LOST: only an off-hour report           3         2      1
+LOST: report on the hour, no temp       0         0      0
+LOST: no report in the 12:00 hour       0         0      0
+
+total days lost at 12:00 UTC (observation side): 3 of 1,956 (0.15%)
+of those, lost specifically to CDG's off-hour reporting (D30): 3
+
+-- LOST: only an off-hour report (3 day(s)) --
+    2022-07-23  [training]  reports: 12:30
+    2022-07-25  [training]  reports: 12:30
+    2026-07-08  [test]  reports: 12:30
+
+-- where the off-hour reports sit (are they bunched?) --
+    off-hour reports : 97 on 57 day(s), in 49 episode(s)
+    episodes of 5 or more reports: 2
+      2022-07-23 .. 2022-07-25   39 reports over 2 day(s)
+        2022-07-23  x24  00:30, 01:30, 02:30, 03:30, 04:30, 05:30, 06:30, 07:30, 08:30, 09:30, 10:30, 11:30, 12:30, 13:30, 14:30, 15:30, 16:30, 17:30, 18:30, 19:30, 20:30, 21:30, 22:30, 23:30
+        2022-07-25  x15  00:30, 01:30, 02:30, 03:30, 04:30, 05:30, 06:30, 07:30, 08:30, 09:30, 10:30, 11:30, 12:30, 13:30, 14:30
+      2026-03-07 .. 2026-03-11   5 reports over 3 day(s)
+        2026-03-07  x1  19:30
+        2026-03-09  x2  18:30, 19:30
+        2026-03-11  x2  20:30, 22:30
+    the remaining 53 report(s) are scattered singles across 47 episode(s)
+    minute stamps across all off-hour reports: :30 x95, :36 x1, :43 x1
+
+-- how this compares with EGLC (stage 1) --
+    EGLC lost NO days at 12:00 UTC to off-hour reporting across
+    training and validation (F18, reading F12). Its whole-period
+    off-hour rate was 8 reports in 46,919 (0.017%, F9).
+    LFPG whole-period off-hour reports: 97 of 46,903 (0.207%)
+    F18 estimated ~12 days lost at noon, from a three-week sample.
+    The real figure is 3.
+
+============================================================================
+Q22 - EGLC's IEM network code, from IEM's own station listing
+============================================================================
+
+file     : iem_station_metadata_GB__ASOS.geojson
+stations : 112 in the GB__ASOS network
+  EGLC found:
+    sid           = EGLC
+    sname         = London City
+    network       = GB__ASOS
+    coordinates   = lat 51.5053, lon 0.0553
+    elevation     = 5.0 m
+    tzname        = Europe/London
+    archive_begin = 1988-01-29
+    archive_end   = None
+    online        = True
+
+file     : iem_station_metadata_FR__ASOS.geojson
+stations : 127 in the FR__ASOS network
+  LFPG found:
+    sid           = LFPG
+    sname         = Paris
+    network       = FR__ASOS
+    coordinates   = lat 49.0153, lon 2.5344
+    elevation     = 109.0 m
+    tzname        = Europe/Paris
+    archive_begin = 1974-04-18
+    archive_end   = None
+    online        = True
+
+-- against what SPEC 3.4 holds --
+    EGLC network  SPEC says GB__ASOS (unverified); IEM says GB__ASOS  -> CONFIRMED
+    EGLC position SPEC says 51.5053 / 0.0553 / 5 m; IEM agrees
+    LFPG network  SPEC says FR__ASOS (verified in session 08); IEM agrees
+
+============================================================================
+Nothing was joined, filled or modelled. Raw files untouched.
+No temperature value from the test window was printed.
+============================================================================

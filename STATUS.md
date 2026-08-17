@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 09)._
+_Last updated: 17 August 2026 (after session 10)._
 
 ---
 
@@ -24,8 +24,14 @@ stated once and per-airport facts live in a new airport table (SPEC 3.4) with a
 row each for EGLC and LFPG. There is no separate "stage 2 section" and that is
 deliberate — opening stage 2 meant adding a row, not adding a design.
 
-**Nothing for CDG has been pulled in full, joined, built or trained yet.** That
-is the next session.
+Session 10 then pulled **the full CDG history for both sources** and mapped
+every gap (DECISIONS **F22–F26**). The dataset is on disk, complete and
+provenance-stamped. **CDG's forecast series has exactly the same 492-hour gap as
+EGLC's, hour for hour** (F22), and the observation record loses only **three
+days** at 12:00 UTC across five years (F25).
+
+**Nothing for CDG has been joined, built or trained yet, and its test year has
+never been opened.** That is the next session.
 
 **Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
 SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
@@ -394,32 +400,80 @@ result and the honest reading of it.
   - No script and no notes file: there was nothing to run and no number to
     produce.
 
+- **Session 10 — THE FULL CDG PULL AND GAP MAP. Done. Nothing was joined,
+  built, trained or evaluated, and the test year was not opened.**
+  - **The full LFPG history was pulled**, 2021-03-24 to 2026-07-31, both
+    sources, six yearly chunks each, mirroring session 03b file for file. 26 new
+    files in `data/raw/` — 13 data files with a `.meta.txt` beside every one
+    (SPEC 2.3), plus the IEM United Kingdom network listing. `data/raw/` is now
+    76 files, 7.6 MB. No retry fired and no rate limit was hit.
+    - Forecast: Open-Meteo Previous Runs, `gfs_global`,
+      `temperature_2m_previous_day1`, at LFPG's IEM coordinates. **46,944 hourly
+      rows returned, 46,452 with a value.**
+    - Truth: IEM ASOS routine `:00` METARs for LFPG. **46,903 reports, covering
+      46,804 hours.**
+  - **Full gap map produced for both series — the session's main deliverable.**
+    Saved in `notes/session-10-check-output.txt`; the pull log is
+    `notes/session-10-pull-output.txt`. Nothing was filled, counts only
+    (SPEC 2.2).
+  - **Q21 answered, and the answer is exact (DECISIONS F22). CDG's forecast
+    series has EXACTLY the same single gap as EGLC's** — 492 hours,
+    2023-12-30 00:00 to 2024-01-19 11:00 UTC, same first missing hour, same last,
+    same length, entirely inside the training window, with no gap at all in the
+    test window. Every one of the six headline totals matches EGLC's. So the gap
+    is a property of the archive, not of a place — the same conclusion F20 reached
+    about the March 2021 floor. It should cost 20 days at 12:00 UTC, not 21,
+    because the series resumes at exactly the target hour.
+  - **Observations: 140 missing hours (0.30%)** in 85 runs, against EGLC's 44
+    (0.09%) in 23 (DECISIONS F23). Longest run 32 hours. **The two longest runs
+    are not absent data** — on 2022-07-23 and 2022-07-25 the station filed its
+    reports at `:30` instead of `:00`, so D14 refuses them and they read as holes.
+  - **The D30 count: three days lost at 12:00 UTC to off-hour reporting**, across
+    1,956 days — two in training, one in the test year (DECISIONS F25). **F18's
+    three-week extrapolation of ~12 days was four times too high.** The real
+    off-hour rate is 0.207% (97 of 46,903), not 0.60%, and 40% of those reports
+    come from one two-day episode. Crucially, **off-hour reports do not cluster at
+    midday** — that was F18's open worry and the five-year data says it was bad
+    luck, not a pattern. Every day CDG loses on the observation side is lost to
+    this one cause: there is no day in five years with nothing filed in the noon
+    hour, and exactly one report in 46,903 carries no temperature. **D30 stands
+    unchanged** — the drops are taken.
+  - **Q20 closed (DECISIONS F22).** All six chunks were pulled with
+    `models=gfs_global` (D16), read back out of the saved `.meta.txt` URLs rather
+    than claimed. Noted honestly: the pin is confirmed as *used*, but F6's
+    value-by-value `gfs_seamless` equivalence check was **not** re-run at LFPG,
+    as the session prompt directed.
+  - **Q22 closed (DECISIONS F24).** IEM's United Kingdom listing returns EGLC in
+    network **`GB__ASOS`**, at 51.5053 / 0.0553 / 5 m — matching what SPEC 3.4
+    already held. The guess was right and is now a checked fact.
+  - **Training-window value ranges checked and sane, both in Celsius**
+    (DECISIONS F26). The test window's values were not looked at.
+  - **Two authorised SPEC edits and no others**, both from the prompt's B-3:
+    3.2's "whether CDG has a forecast gap is NOT YET KNOWN" marker replaced by
+    the verified answer; 3.4's EGLC network cell drops "(unverified)", with the
+    note beneath the table rewritten to match it.
+  - Scripts: `scripts/session10_pull.py` and `scripts/session10_checks.py`.
+
 ## In progress
 
-- Nothing. Session 09 is finished and awaiting the owner's review.
+- Nothing. Session 10 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits sessions 08 and 09.
-2. **The full historical pull for LFPG**, 2021-03-24 to 2026-07-31, both
-   sources, mirroring session 03b — plus the gap map, which is the session's
-   main deliverable. Notes for whoever does it:
-   - **Space the IEM requests out.** Three quick ones hit an HTTP 429 rate
-     limit in session 08 (recorded in that session's `.meta.txt` files).
-   - **Map every hour of the forecast series**, exactly as session 03b did.
-     That is what **answers Q21** — whether EGLC's 492-hour gap exists at LFPG
-     too. Write the answer into SPEC 3.2, where a "to be verified" marker is
-     waiting for it.
-   - **Count the off-hour routine reports explicitly**, and report the days
-     lost at 12:00 UTC to that cause **separately** from days lost to missing
-     reports. D30 has already decided what to do about them — nothing, take the
-     drops — but they still have to be counted (Q19, now closed).
-   - **Fold in Q20 while there:** run F6's `gfs_global` versus `gfs_seamless`
-     comparison at LFPG, so stage 2 can claim "exactly NCEP GFS" by
-     construction the way stage 1 does.
-   - **Optional, nearly free: Q22.** One IEM station-metadata request for the
-     United Kingdom network would verify EGLC's `GB__ASOS` code, which is
-     currently in SPEC 3.4 marked unverified.
+1. Owner reviews and commits sessions 08, 09 and 10.
+2. **The CDG join and validation rehearsal**, mirroring session 04 — with the
+   test year sealed. Notes for whoever does it:
+   - Join the two LFPG series at 12:00 UTC under D14 (an **exact** match at CDG,
+     no offset, F18), one row per day: date, forecast, observation, residual.
+   - **Expected drop counts, from this session's gap map**, so they can be
+     reconciled rather than accepted: the forecast gap should cost **20 days**
+     (F22), and off-hour reports **2 days** in the training window (F25,
+     2022-07-23 and 2022-07-25). Anything else is a surprise worth stopping on.
+   - Rehearse on the D18 subdivision — inner-training 2021-03-24 to 2024-07-31,
+     validation 2024-08-01 to 2025-07-31 — exactly as session 04 did, then the
+     sealed test comes later and once (SPEC 5.0).
+   - The method is already locked (D21) and D26 says only the location changes,
+     so nothing about the model, features or settings is chosen again here.
 3. Nothing is pre-committed beyond that.
 
 ## Notes
@@ -433,19 +487,18 @@ result and the honest reading of it.
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
 - **Q17 is closed** by session 08 (D26): stage 2 opened, at CDG/LFPG.
 - **Q18 and Q19 are closed** by session 09 (D29, D30).
-- **Three open questions, none of them blocking anything**, and all three are
-  answered by the CDG pull rather than by a decision. **Q20** — `gfs_global`
-  versus `gfs_seamless` has not been re-checked at LFPG. **Q21** — is EGLC's
-  492-hour forecast gap present at LFPG too? SPEC 3.2 carries a "to be verified"
-  marker waiting for that answer. **Q22** (new, session 09) — EGLC's IEM network
-  code has never been verified, and sits in SPEC 3.4 marked as such.
+- **Q20, Q21 and Q22 are closed** by session 10 (F22, F24). **No open questions
+  remain.** One honest limit is carried rather than left as a question: Q20
+  confirms `gfs_global` was the string used, but F6's value-by-value comparison
+  against `gfs_seamless` still has not been run at LFPG, so stage 2 cannot make
+  that particular by-construction claim the way stage 1 can.
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
   used to judge any future change to the method. Anything measured on it from
   here on is measured on data the method has been compared against once already.
-- **CDG's test year is still sealed.** The dates are the same (2025-08-01 to
-  2026-07-31, D13) but the data is a different airport's, and it has never been
-  looked at. Each airport gets its own single look (SPEC 5.0). The CDG pull
-  session will hold the whole test year in raw files without opening it, exactly
-  as session 03b did for EGLC.
+- **CDG's test year is still sealed, and is now on disk.** The dates are the same
+  (2025-08-01 to 2026-07-31, D13) but the data is a different airport's, and it
+  has never been looked at. Session 10 pulled it and counted only its structure —
+  row presence, gap locations, report timing — never a temperature value, exactly
+  as session 03b held EGLC's. Each airport gets its own single look (SPEC 5.0).

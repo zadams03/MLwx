@@ -1,0 +1,36 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2023-01-01_2023-12-31.json
+purpose     : session 10, part B1 - full history forecast chunk for
+              LFPG (Paris Charles de Gaulle), the stage 2 airport
+pulled at   : 2026-08-17 20:15:31 BST (2026-08-17 19:15:31 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2023-01-01&end_date=2023-12-31&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153        (LFPG, Paris Charles de Gaulle)
+  longitude  = 2.5344         (LFPG, Paris Charles de Gaulle)
+  start_date = 2023-01-01
+  end_date   = 2023-12-31
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string pinned to gfs_global rather than gfs_seamless (DECISIONS D16).
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for LFPG (DECISIONS F17), the
+  same figures session 08's samples used, not an approximate position.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them. Nothing
+  was filled in (SPEC 2.2).

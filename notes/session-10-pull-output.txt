@@ -1,0 +1,52 @@
+session 10 pull log - the full LFPG (Paris CDG) history, both sources
+
+Airport: LFPG (Paris Charles de Gaulle), lat 49.0153, lon 2.5344
+Period : 2021-03-24 to 2026-07-31   chunks: 6
+Forecast variables: temperature_2m (D17)
+Model string      : gfs_global (D16)
+
+=== B1  forecast (Open-Meteo Previous Runs, gfs_global, LFPG) ===
+2021-03-24 -> 2021-12-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2021-03-24_2021-12-31.json  (161,050 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2021-03-24_2021-12-31.json.meta.txt  (1,774 bytes)
+2022-01-01 -> 2022-12-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2022-01-01_2022-12-31.json  (207,484 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2022-01-01_2022-12-31.json.meta.txt  (1,774 bytes)
+2023-01-01 -> 2023-12-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2023-01-01_2023-12-31.json  (207,490 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2023-01-01_2023-12-31.json.meta.txt  (1,774 bytes)
+2024-01-01 -> 2024-12-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2024-01-01_2024-12-31.json  (208,245 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2024-01-01_2024-12-31.json.meta.txt  (1,774 bytes)
+2025-01-01 -> 2025-12-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2025-01-01_2025-12-31.json  (207,460 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2025-01-01_2025-12-31.json.meta.txt  (1,774 bytes)
+2026-01-01 -> 2026-07-31
+  wrote openmeteo_previousruns_gfs_global_LFPG_2026-01-01_2026-07-31.json  (120,516 bytes)
+  wrote openmeteo_previousruns_gfs_global_LFPG_2026-01-01_2026-07-31.json.meta.txt  (1,774 bytes)
+
+=== B2  truth (IEM ASOS routine METARs, LFPG) ===
+2021-03-24 -> 2021-12-31
+  wrote iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv  (374,006 bytes)
+  wrote iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv.meta.txt  (1,988 bytes)
+2022-01-01 -> 2022-12-31
+  wrote iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv  (482,306 bytes)
+  wrote iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv.meta.txt  (1,987 bytes)
+2023-01-01 -> 2023-12-31
+  wrote iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv  (483,395 bytes)
+  wrote iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv.meta.txt  (1,987 bytes)
+2024-01-01 -> 2024-12-31
+  wrote iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv  (484,879 bytes)
+  wrote iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv.meta.txt  (1,987 bytes)
+2025-01-01 -> 2025-12-31
+  wrote iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv  (483,428 bytes)
+  wrote iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv.meta.txt  (1,987 bytes)
+2026-01-01 -> 2026-07-31
+  wrote iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv  (280,297 bytes)
+  wrote iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv.meta.txt  (1,987 bytes)
+
+=== B3  IEM station metadata for the GB__ASOS network (Q22) ===
+  wrote iem_station_metadata_GB__ASOS.geojson  (63,682 bytes)
+  wrote iem_station_metadata_GB__ASOS.geojson.meta.txt  (955 bytes)
+
+Done.
