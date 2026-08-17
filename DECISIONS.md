@@ -878,3 +878,139 @@ already ignores `.venv/`, so nothing about it enters the history — which means
 the exact versions used are recorded here (python 3.12.2, numpy 2.5.2,
 lightgbm 4.7.0) and nowhere else. The owner may want a `requirements.txt`.
 
+---
+
+## 2026-08-17 — Session 05 decision (the objective fix)
+
+**D20. The model is fitted on absolute error, not squared error (closes
+Q15).**
+- The LightGBM objective changes from `regression` (squared error, the library
+  default used in session 04) to **`regression_l1`** (absolute error).
+- The "objective" is the quantity the model tries to make small while it is
+  being fitted. Squared error makes one big miss count far more than several
+  small ones; absolute error counts every degree of miss the same.
+- Reason: SPEC 5.1 measures **mean absolute error**. Session 04 fitted the
+  model on one quantity and judged it on another. Lining the two up is a
+  correctness fix — the model should be trained on the thing it is measured
+  on. It is the right change whether or not the number improves, which is
+  exactly why it was allowed while variant-hunting was not.
+- **Nothing else changed.** Same D18 split, same D19 features, same tree
+  settings (300 trees, learning rate 0.05, 15 leaves, minimum 40 samples per
+  leaf), same seed 42, same deterministic run. Nothing was retuned to suit the
+  new objective. `scripts/session05_model.py` proves this rather than claiming
+  it: it reads `scripts/session04_model.py` and compares the two, setting by
+  setting, constant by constant, and function source character by character.
+  The printed comparison is at the top of
+  `notes/session-05-check-output.txt`.
+- The sealed test year was not touched. This is still a rehearsal.
+
+---
+
+## 2026-08-17 — Session 05 finding (the objective fix, measured)
+
+**F15. The absolute-error objective helps a little, and it helps in the place
+session 04's model was weakest.** Validation rehearsal only, same 363 days,
+same harness.
+
+The proof that only one thing changed, from the script's own comparison:
+```
+settings that differ between session 04 and session 05: 1
+    objective   regression -> regression_l1
+every other setting                                    : same
+every shared constant (hour, dates, chunks, features)  : same
+load_forecast_12z, load_obs_12z, all_days, year_fraction,
+features, mae, describe, join, bias_look,
+climatology_from_inner                                 : character-identical
+model_and_evaluate                                     : one added `return`
+                                                         so the comparison
+                                                         section can read the
+                                                         results; no
+                                                         calculation touched
+```
+Parts A and B of the output — the join, the drop counts, the bias tables — are
+character-identical to session 04's output file. Two consecutive runs of the
+new script produced identical output apart from the clock time in the header
+line, so the result is reproducible.
+
+All five methods, the same 363 validation days:
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.239     -0.278      1.630        4.90
+Persistence                2.226     -0.017      2.928       12.00
+Climatology                2.865     +0.020      3.656       11.65
+Mean-bias reference        1.231     -0.170      1.615        4.79
+ML-corrected (L1)          1.165     -0.221      1.571        5.42
+```
+The four non-ML rows match session 04 to three decimal places, which is the
+cross-check that the harness is unchanged. Only the ML row moved.
+
+Against session 04:
+```
+session 04, squared-error objective : 1.190 degC
+session 05, absolute-error objective: 1.165 degC
+change                              : -0.025 degC (-2.1%)
+```
+
+It still beats every reference, by wider margins than before:
+```
+vs                    session 04 margin   session 05 margin
+Raw GFS                        +0.049              +0.074   (4.0% -> 6.0%)
+Persistence                    +1.036              +1.061
+Mean-bias reference            +0.041              +0.066   (3.3% -> 5.3%)
+Climatology                    +1.675              +1.700
+```
+
+Per season, which is where the interesting part is:
+```
+season         days   raw GFS   s04 ML   s05 ML   s04 chg   s05 chg
+winter DJF       90     0.972    1.068    1.059    +0.096    +0.087
+spring MAM       92     1.337    1.363    1.322    +0.026    -0.015
+summer JJA       90     1.498    1.204    1.177    -0.294    -0.321
+autumn SON       91     1.147    1.121    1.098    -0.026    -0.049
+```
+("chg" is the corrected MAE minus raw GFS MAE for that season. Negative means
+better than raw GFS.) Session 04's picture was "a summer win, with winter and
+spring made slightly worse". After the fix, **spring flips from slightly worse
+to slightly better**, summer improves further, autumn improves, and winter is
+still worse than raw GFS but by less. So the correction now helps in three
+seasons out of four instead of two. Winter remains the one season where the
+correction is a small step backwards — the same winter that is missing 20
+consecutive training days (Q10).
+
+Feature importances, still sane and still using both inputs:
+```
+feature             s04 gain %  s05 gain %  s04 splits  s05 splits
+forecast_temp_c          51.8%       44.3%       1,651       1,614
+season_sin               22.6%       26.7%       1,141       1,337
+season_cos               25.6%       29.0%       1,408       1,249
+```
+Gain is on a different scale under an absolute-error objective, so only the
+shares and the split counts compare meaningfully. Season now carries slightly
+more of the weight than before. Nothing is ignored and nothing dominates.
+
+Two honest notes on the size and shape of this:
+
+1. **The gain is real but small.** 0.025 degC off the corrected MAE, on 363
+   days. The win over raw GFS goes from 4.0% to 6.0%, which is still 0.074
+   degC — the same order of magnitude as before. The objective fix did not
+   change the character of the result; it made a small win slightly less
+   small. That was the expected outcome and it is why the change was made on
+   principle rather than for the number.
+2. **The new model fits its training data less tightly, not more.** In-sample
+   MAE on inner-training went from 0.857 (session 04) to 0.879 degC — worse
+   in sample, better on validation. That is the ordinary signature of a less
+   over-fitted model: absolute error does not chase extreme days the way
+   squared error does, so the fitted corrections are more conservative. The
+   corrections applied over the validation year bear that out — mean -0.057
+   degC, standard deviation 0.720, range -1.8 to +1.8, against session 04's
+   mean -0.112, standard deviation 0.820, range -2.4 to +2.1. It nudges the
+   forecast even more gently than before.
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3).** The bar is
+judged once, on the sealed test year, in a later session. Stage 1 has not
+passed. The test year was not touched: the two 2026 raw chunk files were never
+opened, the 2025 chunk was cut off at 2025-07-31 on load, and the script
+asserts that no date on or after 2025-08-01 reached any table.
+
+**Q15 is closed** by D20 and this finding.
+

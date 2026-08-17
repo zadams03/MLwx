@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 04)._
+_Last updated: 17 August 2026 (after session 05)._
 
 ---
 
@@ -139,21 +139,62 @@ _Last updated: 17 August 2026 (after session 04)._
     bar (SPEC 5.3) is judged once, on the sealed test year, in a later session.
   - Full real output in `notes/session-04-check-output.txt`; the script is
     `scripts/session04_model.py`.
+- **Session 05 — the objective fix (Q15). One change only. Done. The test year
+  was not touched.**
+  - **Owner's decision recorded (DECISIONS D20):** the model is now fitted on
+    **absolute error** (`objective="regression_l1"`) instead of squared error.
+    SPEC 5.1 measures absolute error, so the model is now trained on the same
+    thing it is judged on. A correctness fix, not tuning.
+  - **Nothing else changed**, and the script proves it rather than claiming
+    it: `scripts/session05_model.py` reads the session 04 script and compares
+    the two setting by setting, constant by constant, and function source
+    character by character. Exactly **one setting differs** — the objective.
+    Parts A and B of the output (the join, the drop counts, the bias tables)
+    are character-identical to session 04's output file. Two consecutive runs
+    matched apart from the clock time in the header.
+  - **Validation MAE, the same 363 days, same harness:**
+    ```
+    Raw GFS 1.239 | Persistence 2.226 | Climatology 2.865
+    Mean-bias reference 1.231 | ML-corrected 1.165 degC
+    ```
+    The four non-ML figures are unchanged to three decimals, which is the
+    cross-check that the harness is identical. Only the ML row moved.
+  - **The fix helped a little: 1.190 → 1.165 degC, 0.025 better (2.1%).** The
+    win over raw GFS goes from 4.0% to 6.0% (0.074 degC). It still beats all
+    four references, by wider margins than before.
+  - **The seasonal picture improved more than the headline did.** Session 04
+    was a summer win with winter and spring slightly worse. Now the correction
+    helps in **three seasons out of four**: spring flips to slightly better,
+    summer and autumn improve further, and winter is still worse than raw GFS
+    but by less (+0.096 → +0.087).
+  - Read honestly: the gain is real but small, and it did not change the
+    character of the result. The model also fits its own training data *less*
+    tightly than before (in-sample 0.857 → 0.879) while doing better on
+    validation — the ordinary sign of a less over-fitted model. See
+    DECISIONS F15.
+  - **Q15 closed.** Still a rehearsal — the frozen bar (SPEC 5.3) has not been
+    judged and stage 1 has not passed.
+  - Full real output in `notes/session-05-check-output.txt`; the script is
+    `scripts/session05_model.py`.
 
 ## In progress
 
-- Nothing. Session 04 is finished and awaiting the owner's review.
+- Nothing. Session 05 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 04.
-2. **Then the owner's judgement call (DECISIONS Q12): is the rehearsal good
-   enough to lock the method?**
-   - If **yes** → the next session is the **single sealed-test evaluation**.
-     It opens the test year (2025-08-01 to 2026-07-31) for the first and only
-     time, re-fits on the full D13 training window, and judges the frozen bar
-     (SPEC 5.3). That look happens once, so the method must be locked before
-     it starts.
+1. Owner reviews and commits session 05.
+2. **Then the owner's judgement call (DECISIONS Q12, now with a better
+   number): is the rehearsal good enough to lock the method?** The validation
+   win over raw GFS is now 6.0% (0.074 degC) rather than 4.0%, and the
+   correction helps in three seasons out of four rather than two.
+   - If **yes** → lock the method, do the housekeeping the owner wants first
+     (Q13, Q14, Q16 — the numeric margin, the mean-bias baseline, the
+     `requirements.txt`), then the **single sealed-test evaluation**. That
+     session opens the test year (2025-08-01 to 2026-07-31) for the first and
+     only time, re-fits on the full D13 training window, and judges the frozen
+     bar (SPEC 5.3). That look happens once, so the method must be locked
+     before it starts.
    - If **no** → one more session improving the method against the
      **validation** year, which is allowed as often as needed. The sealed test
      year stays sealed either way.
@@ -161,14 +202,14 @@ _Last updated: 17 August 2026 (after session 04)._
 
 ## Notes
 
-- Open questions now with the owner: **Q12** (is a 4.0% win enough to lock the
-  method, or is one improvement session worth it first?), **Q13** (should SPEC
-  5.3 gain a numeric margin, given validation results now exist?), **Q14**
-  (should the mean-bias reference become a listed baseline in SPEC 5.2?),
-  **Q15** (the model fits squared error but is judged on absolute error —
-  worth trying an absolute-error objective), **Q16** (LightGBM needed an
-  OpenMP library this machine does not have; the workaround is documented, and
-  there is no `requirements.txt` recording the library versions).
+- Open questions now with the owner: **Q12** (is the rehearsal — now a 6.0%
+  win — enough to lock the method, or is another improvement session worth it
+  first?), **Q13** (should SPEC 5.3 gain a numeric margin, given validation
+  results now exist?), **Q14** (should the mean-bias reference become a listed
+  baseline in SPEC 5.2?), **Q16** (LightGBM needed an OpenMP library this
+  machine does not have; the workaround is documented, and there is no
+  `requirements.txt` recording the library versions).
+- **Q15 is closed** by session 05 (D20, F15).
 - **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
 - Nothing is blocked.
