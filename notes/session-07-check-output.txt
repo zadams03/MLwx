@@ -1,0 +1,450 @@
+
+============================================================================
+SESSION 07 - THE SEALED-TEST EVALUATION. ONE LOOK. THE RESULT STANDS.
+============================================================================
+run at        : 2026-08-17 15:45:54 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+target hour   : 12:00 UTC at EGLC (SPEC 4.1, D21.1)
+training      : 2021-03-24 to 2025-07-31   (D13, D21.5)
+SEALED TEST   : 2025-08-01 to 2026-07-31   (D13, D21.6)
+nothing after : 2026-07-31
+
+This session executes DECISIONS D21 and decides nothing. Nothing is
+tuned, searched, swapped or re-run. If anything did not fit the D21
+record, the run would stop and go back to the owner (D21.11).
+
+============================================================================
+PART 0 - checking this script against the lock (DECISIONS D21)
+============================================================================
+
+-- check 1: every value D21 fixes, against what this script will use --
+    what D21 fixes                     D21 says               this run               match?
+    target hour (D21.1)                12                     12                     yes
+    train start (D21.5)                2021-03-24             2021-03-24             yes
+    train end (D21.5)                  2025-07-31             2025-07-31             yes
+    test start (D21.6)                 2025-08-01             2025-08-01             yes
+    test end (D21.6)                   2026-07-31             2026-07-31             yes
+    features (D21.3)                   ['forecast_temp_c', 'season_sin', 'season_cos'] ['forecast_temp_c', 'season_sin', 'season_cos'] yes
+    objective (D21.4)                  regression_l1          regression_l1          yes
+    n_estimators (D21.4)               300                    300                    yes
+    learning_rate (D21.4)              0.05                   0.05                   yes
+    num_leaves (D21.4)                 15                     15                     yes
+    min_child_samples (D21.4)          40                     40                     yes
+    subsample (D21.4)                  1.0                    1.0                    yes
+    colsample_bytree (D21.4)           1.0                    1.0                    yes
+    reg_alpha (D21.4)                  0.0                    0.0                    yes
+    reg_lambda (D21.4)                 0.0                    0.0                    yes
+    random_state (D21.4)               42                     42                     yes
+    n_jobs (D21.4)                     1                      1                      yes
+    deterministic (D21.4)              True                   True                   yes
+    force_row_wise (D21.4)             True                   True                   yes
+    verbose (D21.4)                    -1                     -1                     yes
+    pairing window minutes (D21.7)     15                     15                     yes
+    climatology half window (D21.8)    7.5                    7.5                    yes
+    values that do not match D21: 0
+    (The 15-minute pairing window is the literal in load_obs_12z
+     below. Check 2d prints that function's only difference from
+     session 05's, so it can be seen that the 15 minutes is
+     untouched.)
+
+-- check 2a: model settings, session 05 against this session --
+    setting              session 05             session 07             same?
+    objective            regression_l1          regression_l1          yes
+    n_estimators         300                    300                    yes
+    learning_rate        0.05                   0.05                   yes
+    num_leaves           15                     15                     yes
+    min_child_samples    40                     40                     yes
+    subsample            1.0                    1.0                    yes
+    colsample_bytree     1.0                    1.0                    yes
+    reg_alpha            0.0                    0.0                    yes
+    reg_lambda           0.0                    0.0                    yes
+    random_state         42                     42                     yes
+    n_jobs               1                      1                      yes
+    deterministic        True                   True                   yes
+    force_row_wise       True                   True                   yes
+    verbose              -1                     -1                     yes
+    settings that differ: 0
+
+-- check 2b: the constants that must not have moved --
+    TARGET_HOUR              12                                 same
+    CLIM_HALF_WINDOW_DAYS    7.5                                same
+    FEATURE_NAMES            ['forecast_temp_c', 'season_sin', 'season_cos'] same
+    GAP_START                2023-12-30                         same
+    GAP_END                  2024-01-19                         same
+    INNER_START              2021-03-24                         same
+    INNER_END                2024-07-31                         same
+    VALID_START              2024-08-01                         same
+    VALID_END                2025-07-31                         same
+
+-- check 2c: the code that must be character-identical, and is --
+    Compared character for character with session 05.
+    all_days()                 identical
+    year_fraction()            identical
+    features()                 identical
+    mae()                      identical
+    describe()                 identical
+
+-- check 2d: the three functions that DO differ, each shown in full --
+    Nothing is hidden: every diff is printed so the changes can be
+    read rather than taken on trust.
+
+    load_forecast_12z() - the seal on the test year is lifted - the whole point of this
+    session (D21.6, D21.10). A hard end at 2026-07-31 replaces it.
+      --- session05
+      +++ session07
+      @@ -1,6 +1,12 @@
+       def load_forecast_12z():
+      -    """Return {date: forecast_temp_or_None} for 12:00 UTC, before the seal."""
+      +    """Return {date: forecast_temp_or_None} for 12:00 UTC, up to the hard end.
+      +
+      +    Unlike sessions 04 and 05 there is no seal here: the test year is loaded,
+      +    because this is the one authorised look at it (DECISIONS D21.6, D21.10).
+      +    The only cut-off is the hard end at 2026-07-31, which keeps the test set
+      +    exactly one calendar year (D13).
+      +    """
+           series = {}
+           rows_seen = 0
+      -    rows_sealed = 0
+      +    rows_after_end = 0
+           for start, end in CHUNKS:
+      @@ -15,6 +21,6 @@
+                   rows_seen += 1
+      -            if t.date() >= SEALED_FROM:
+      -                rows_sealed += 1
+      +            if t.date() > HARD_END:
+      +                rows_after_end += 1
+                       continue
+                   series[t.date()] = v
+      -    return series, rows_seen, rows_sealed
+      +    return series, rows_seen, rows_after_end
+
+    load_obs_12z() - the same change, on the observation side. The 15-minute pairing
+    rule (D14, D21.7) is not touched.
+      --- session05
+      +++ session07
+      @@ -1,3 +1,3 @@
+       def load_obs_12z():
+      -    """Return {date: observed_temp} for the 12:00 UTC hour, before the seal.
+      +    """Return {date: observed_temp} for the 12:00 UTC hour, up to the hard end.
+       
+      @@ -10,3 +10,3 @@
+           reports_at_12 = 0
+      -    reports_sealed = 0
+      +    reports_after_end = 0
+           no_temp = 0
+      @@ -24,4 +24,4 @@
+                       reports_at_12 += 1
+      -                if nearest.date() >= SEALED_FROM:
+      -                    reports_sealed += 1
+      +                if nearest.date() > HARD_END:
+      +                    reports_after_end += 1
+                           continue
+      @@ -36,2 +36,2 @@
+       
+      -    return series, reports_at_12, reports_sealed, no_temp, outside_15min
+      +    return series, reports_at_12, reports_after_end, no_temp, outside_15min
+
+    climatology_from_training() - renamed, because it is now fitted on the full training window
+    (D21.5, D21.8). The arithmetic is untouched.
+      --- session05
+      +++ session07
+      @@ -1,12 +1,12 @@
+      -def climatology_from_inner(inner):
+      +def climatology_from_training(train):
+           """Day-of-year seasonal average of the OBSERVED temperature.
+       
+      -    Built from inner-training days only (SPEC 2.1c). For a given position in
+      -    the year it averages every inner-training observation within +/- 7.5 days
+      -    of that position, measured around the circle so that late December and
+      -    early January are neighbours. The window smooths what would otherwise be
+      -    three or four noisy days per date.
+      +    Built from training-window days only (SPEC 2.1c, D21.8). For a given
+      +    position in the year it averages every training-window observation within
+      +    +/- 7.5 days of that position, measured around the circle so that late
+      +    December and early January are neighbours. The window smooths what would
+      +    otherwise be four or five noisy days per date.
+           """
+      -    fracs = np.array([year_fraction(r["date"]) for r in inner])
+      -    obs = np.array([r["obs"] for r in inner])
+      +    fracs = np.array([year_fraction(r["date"]) for r in train])
+      +    obs = np.array([r["obs"] for r in train])
+           half = CLIM_HALF_WINDOW_DAYS / 365.25
+
+    Everything else in this script is new: it scores the test year
+    instead of the validation year, which is what D21 asks for.
+
+============================================================================
+PART A - the join at 12:00 UTC, both windows (D21.6, D21.7)
+============================================================================
+target hour: 12:00 UTC (SPEC 4.1, D21.1)
+pairing rule: the routine :50 report nearest the hour, and only if
+              within 15 minutes of it (DECISIONS D14, D21.7). In
+              practice the 11:50 report is the observation for 12:00.
+
+THE TEST YEAR IS OPENED HERE, for the first and only time (D21.10).
+The two 2026 raw chunk files are read for the first time in this
+project. Sessions 04 and 05 never opened them.
+
+-- what was loaded --
+    forecast chunk files opened : 6 (all six, including both 2026 files)
+    forecast 12:00 rows seen    : 1,956
+    of those, after 2026-07-31 : 0 (not used, D13)
+    forecast 12:00 rows kept    : 1,956
+    observation 12:00 reports seen  : 1,954
+    of those, after 2026-07-31: 0 (not used, D13)
+    observation 12:00 reports kept  : 1,953
+
+-- observation reports rejected by the rules --
+    reports more than 15 min from the hour, dropped (D14): 1
+    reports carrying no temperature (M), dropped (2.2)   : 0
+
+-- rows kept and dropped, by period --
+    period                                         days   kept   drop  no fc  null fc  no obs
+    TRAINING   2021-03-24..2025-07-31             1,591  1,569     22      0       20       2
+    TEST YEAR  2025-08-01..2026-07-31               365    364      1      0        0       1
+      (of which) inner  2021-03-24..2024-07-31    1,226  1,205     21      0       20       1
+      (of which) valid  2024-08-01..2025-07-31      365    364      1      0        0       1
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'   = the forecast series had no row for 12:00;
+             'null fc' = it had a row but the value was null;
+             'no obs'  = no usable :50 observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2, D21.7).
+
+-- reconciliation: does the training window add up? (D21.11) --
+    The training window is inner-training plus the validation year,
+    which sessions 04 and 05 counted separately. Those published
+    counts must add up to this session's training count, or
+    something has drifted and this session must stop.
+    session 04/05 inner-training kept rows (F12): 1,205
+    session 04/05 validation kept rows (F12)    :   364
+    published total                              : 1,569
+    this session, training window kept rows      : 1,569
+    this session, of which dated <= 2024-07-31 : 1,205
+    this session, of which dated >= 2024-08-01 : 364
+    reconciles: YES
+
+-- the F8 forecast gap, for the record (Q10) --
+    gap covers 21 calendar days (2023-12-30 to 2024-01-19), all inside training
+    of those, dropped here: 20
+
+-- THE TEST-YEAR DROP COUNT (D21.7) --
+    test-year calendar days : 365
+    paired rows kept        : 364
+    days dropped            : 1
+      2025-11-21  (no usable observation)
+    Every drop is named. Nothing was filled (SPEC 2.2).
+
+-- shape check: first and last kept row of each window --
+    training   2021-03-24 -> 2025-07-31   1,569 rows
+    test year  2025-08-01 -> 2026-07-31   364 rows
+
+============================================================================
+PART B - fit on the FULL training window only (D21.5, D21.8)
+============================================================================
+Everything fitted in this session is fitted here, on the training
+window, and on nothing else: the model, the climatology baseline and
+the mean-bias figure. The test year plays no part in any fit.
+
+-- the model --
+    rows fitted on : 1,569  (2021-03-24 to 2025-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (D19, D21.3)
+    target         : residual, observed minus forecast (SPEC 4.2,
+                     D21.2). The model never predicts temperature.
+    settings (locked in D21.4, nothing tuned this session):
+      objective = regression_l1
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+
+-- the mean-bias figure (D21.8) --
+    mean training-window bias (observed - forecast): -0.1479 degC
+    over 1,569 training days. The mean-bias reference is
+    the raw forecast plus this one constant, and nothing else.
+    raw GFS MAE on the training window (in sample): 1.187 degC
+
+-- the climatology baseline (D21.8, SPEC 2.1c) --
+    seasonal average of the OBSERVED temperature, from
+    training-window days only, +/-7.5 days
+    measured around the circle so late December and early January
+    are neighbours.
+
+============================================================================
+PART C - THE SEALED TEST (D21.6, D21.8, D21.9)
+============================================================================
+
+-- the common test set (every method judged on the same days) --
+    paired test rows from part A                 : 364
+    dropped: no previous-day 12:00 observation    : 1  (2025-11-22)
+    days every method is scored on                : 363
+    date range                                    : 2025-08-01 to 2026-07-31
+    Persistence needs yesterday's 12:00 observation, a past-only
+    value (SPEC 2.1d). For the first test day, 2025-08-01,
+    'yesterday' is 2025-07-31, which sits in the training window.
+    That is a past observation, so it is legal and it is used -
+    written down in D21.8 in advance so it is not mistaken for
+    leakage. Nothing was filled in (SPEC 2.2).
+    check: the first scored day is 2025-08-01, and its
+           persistence value is +20.0 degC, which is the
+           2025-07-31 12:00 observation (+20.0 degC).
+    climatology: training days behind each value: min 45, max 76, mean 64.5
+
+-- TEST-YEAR MAE, 363 common days (2025-08-01 to 2026-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss  part of bar?
+    Raw GFS                    1.242     -0.369      1.672        6.00           YES
+    Persistence                2.096     -0.008      2.775       10.00           YES
+    Climatology                2.972     +0.773      3.865       16.11            no
+    Mean-bias reference        1.234     -0.221      1.646        5.85            no
+    ML-corrected               1.040     -0.272      1.412        5.86     the claim
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+    The bar is raw GFS and persistence only (SPEC 5.2, 5.3, D23).
+
+============================================================================
+PART D - THE VERDICT against the frozen bar (SPEC 5.3, D21.9)
+============================================================================
+The bar, frozen before any model existed and unchanged since:
+  stage 1 passes if the corrected forecast has a LOWER MAE than
+  BOTH raw GFS AND persistence, over the held-out test year.
+It is qualitative. There is no numeric margin and there never will
+be one (SPEC 5.3, DECISIONS D22). Climatology and the mean-bias
+reference are reported but do not decide pass or fail (D23).
+
+-- the two comparisons that decide it --
+    vs Raw GFS                BEATEN      1.040 against 1.242  -> +0.202 degC (+16.3%)
+    vs Persistence            BEATEN      1.040 against 2.096  -> +1.056 degC (+50.4%)
+
+    **********************************************************************
+    *  STAGE 1 PASSES.                                                  *
+    *  The corrected forecast beats both raw GFS and persistence        *
+    *  over the held-out test year, on mean absolute error.             *
+    **********************************************************************
+
+-- the size of the margin, stated plainly (D22) --
+    D22 requires the margin to be reported prominently, so that a
+    technical pass by a hair reads as what it is.
+    margin over raw GFS     : +0.202 degC (+16.3% of raw GFS MAE)
+    margin over persistence : +1.056 degC (+50.4% of persistence MAE)
+    days the correction was closer than raw GFS : 221 of 363 (60.9%)
+    days it was further away                    : 142 of 363 (39.1%)
+    days it made no difference                  : 0
+
+-- the two informative references (not part of the bar, D23) --
+    vs Mean-bias reference    BEATEN      1.040 against 1.234  -> +0.194 degC (+15.7%)
+    vs Climatology            BEATEN      1.040 against 2.972  -> +1.932 degC (+65.0%)
+
+    The mean-bias reference is the whole forecast plus one constant -
+    the simplest correction anyone could apply, with no learning in
+    it. Beating it is what separates 'the model learned real
+    structure' from 'the model found an offset'.
+    -> It is beaten, so there is structure in the correction.
+
+-- per season (SPEC 5.4 parks deeper season testing; this is context) --
+    season         days   raw GFS   ML-corr    change   persist
+    winter DJF       90     0.752     0.745    -0.007     1.589
+    spring MAM       92     1.285     1.219    -0.066     2.576
+    summer JJA       92     1.870     1.252    -0.618     2.391
+    autumn SON       89     1.045     0.934    -0.111     1.809
+    'change' is the corrected MAE minus raw GFS MAE for that season.
+    Negative means the correction helped; positive means it hurt.
+    The headline verdict above is judged on the whole year, not
+    season by season (SPEC 5.3).
+
+============================================================================
+PART E - the test number beside session 05's validation number
+============================================================================
+A DIFFERENCE IS EXPECTED AND IS NOT A PROBLEM (D21.5). Three things
+differ between the two columns below:
+  1. a different year of weather - the validation year 2024-08-01 to
+     2025-07-31, against the test year 2025-08-01 to 2026-07-31;
+  2. a model fitted on about 20% more data - the full training
+     window here, inner-training only in session 05;
+  3. therefore climatology and the mean-bias figure differ too.
+The recipe is identical. Session 05's figures are quoted from
+notes/session-05-check-output.txt and DECISIONS F15.
+
+-- MAE, side by side (different years - context, not a like-for-like) --
+    method                  s05 valid   s07 test  difference
+    Raw GFS                     1.239      1.242      +0.003
+    Persistence                 2.226      2.096      -0.130
+    Climatology                 2.865      2.972      +0.107
+    Mean-bias reference         1.231      1.234      +0.003
+    ML-corrected                1.165      1.040      -0.125
+    days scored                   363        363
+
+    Read the raw GFS row first. It says how hard the two years were
+    for GFS in the first place, which is the context every other
+    row has to be read against.
+
+-- the margin over raw GFS, which is the comparable quantity --
+    session 05, validation year    +0.074 degC (+6.0%)
+    session 07, sealed test year   +0.202 degC (+16.3%)
+    Margins are more comparable than raw MAE figures, because they
+    divide out how hard the year was. They are still two different
+    years, so this is a sense check, not a measurement.
+
+-- per season, session 05 validation against session 07 test --
+    season        s05 raw   s05 ML  s05 chg   s07 raw   s07 ML  s07 chg
+    winter DJF      0.972    1.059   +0.087     0.752    0.745   -0.007
+    spring MAM      1.337    1.322   -0.015     1.285    1.219   -0.066
+    summer JJA      1.498    1.177   -0.321     1.870    1.252   -0.618
+    autumn SON      1.147    1.098   -0.049     1.045    0.934   -0.111
+    'chg' is the corrected MAE minus raw GFS MAE for that season.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                     gain  gain share   splits   s05 share  s05 splits
+    forecast_temp_c           5265.2       51.8%    1,844       44.3%       1,614
+    season_sin                2496.8       24.5%    1,166       26.7%       1,337
+    season_cos                2411.6       23.7%    1,190       29.0%       1,249
+    Both inputs are used and neither is ignored, which is what the
+    F13 bias picture predicts: the bias depends on both how warm it
+    is and what time of year it is. The split counts are higher than
+    session 05's because there are more training rows to split on.
+
+-- in-sample check only, training window (NOT a result) --
+    raw GFS MAE on the training window      : 1.187 degC
+    ML-corrected MAE on the training window : 0.908 degC
+    session 05, same figure on inner-training: 0.879 degC
+    A model always looks better on the data it was fitted to, so
+    this proves nothing about performance. It is here only so the
+    number is not a surprise later.
+
+-- the correction the model actually applied over the test year --
+    predicted residual added to the forecast
+      n      = 363
+      mean   = -0.098 degC
+      median = +0.053 degC
+      st dev = 0.749 degC
+      min    = -1.8 degC   max = +1.9 degC
+      5th pct = -1.42   25th = -0.64   75th = +0.49   95th = +0.88
+      mean absolute size = 0.622 degC
+    Session 05's corrections over its validation year, for scale:
+    mean -0.057, st dev 0.720, range -1.8 to +1.8 degC (F15).
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). Nothing was
+committed. The test year was opened once, the locked method ran
+once, and the number above is the result of record (D21.10).
+
+STAGE 1: PASSED   ML-corrected test-year MAE = 1.040 degC against raw GFS 1.242 and persistence 2.096
+This output is saved at notes/session-07-check-output.txt

@@ -1214,3 +1214,203 @@ tracked one was removed from the index and that `.gitignore` matches the
 pattern, so these are untracked clutter, not a problem — recorded only so the
 owner is not surprised to see them.
 
+
+---
+
+## 2026-08-17 — Session 07: THE SEALED-TEST RESULT (stage 1 is decided)
+
+The test year was opened for the first and only time. The method locked in D21
+was executed and nothing was decided, tuned, swapped or re-run. This section is
+the stage 1 result of record. The script is `scripts/session07_test.py` and the
+full real output is `notes/session-07-check-output.txt`.
+
+**F16. STAGE 1 PASSES. The corrected forecast beats both raw GFS and
+persistence on the held-out test year.**
+
+The verdict first, because that is what the session was for:
+
+```
+                        MAE degC   part of bar?
+Raw GFS                    1.242   YES
+Persistence                2.096   YES
+Climatology                2.972   no  (informative)
+Mean-bias reference        1.234   no  (informative)
+ML-corrected               1.040   the claim
+
+vs Raw GFS       BEATEN   1.040 against 1.242  ->  0.202 degC better (16.3%)
+vs Persistence   BEATEN   1.040 against 2.096  ->  1.056 degC better (50.4%)
+```
+
+**Stage 1 passes on the frozen bar (SPEC 5.3, D21.9): the corrected forecast has
+a lower MAE than both raw GFS and persistence over 2025-08-01 to 2026-07-31.**
+The margin is stated prominently because D22 requires it — this is not a pass by
+a hair. It is 0.202 degC, a 16.3% cut in the average error against raw GFS.
+
+The full table, all five methods on the same 363 days:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.242     -0.369      1.672        6.00
+Persistence                2.096     -0.008      2.775       10.00
+Climatology                2.972     +0.773      3.865       16.11
+Mean-bias reference        1.234     -0.221      1.646        5.85
+ML-corrected               1.040     -0.272      1.412        5.86
+```
+
+**It beats the mean-bias reference too, by 15.7% (1.040 against 1.234).** That
+is the comparison that matters most for the claim (D23): the mean-bias reference
+is the forecast plus one constant, with no learning in it. Beating it by that
+much means the model found real structure in the bias, not just an offset. The
+constant itself is tiny — the mean training-window bias is -0.1479 degC — so
+there was almost no offset available to take, exactly as F13 predicted.
+
+**Day by day, not just on average.** The correction was closer to the truth than
+raw GFS on **221 of 363 days (60.9%)** and further away on 142 (39.1%). So the
+win is spread across the year rather than carried by a handful of days, but it
+is far from every day — the model is nudging a good forecast, and about two days
+in five it nudges the wrong way.
+
+**Per season, the correction helped in all four:**
+
+```
+season         days   raw GFS   ML-corr    change   persistence
+winter DJF       90     0.752     0.745    -0.007         1.589
+spring MAM       92     1.285     1.219    -0.066         2.576
+summer JJA       92     1.870     1.252    -0.618         2.391
+autumn SON       89     1.045     0.934    -0.111         1.809
+```
+("change" is corrected MAE minus raw GFS MAE. Negative means better than raw
+GFS.) This is the first time the correction has not made a season worse. Winter
+is now a dead heat rather than a loss — 0.745 against 0.752, a difference of
+0.007 degC, which is nothing. Summer is the whole result: 0.618 degC better on
+92 days.
+
+**The test-year drop count (D21.7).** One day dropped out of 365:
+
+```
+test-year calendar days : 365
+paired rows kept        : 364
+days dropped            : 1
+    2025-11-21  (no usable observation)
+```
+The forecast series had no gap in the test year at all, as F8 said it would not.
+Scoring then loses one more day — 2025-11-22 — because persistence needs the
+previous day's observation and 2025-11-21 is the day that is missing. So all five
+methods are scored on **363 days**. Nothing was filled (SPEC 2.2).
+
+The training-window counts reconcile exactly against the published session 04
+and 05 figures, which is the check that the harness has not drifted (D21.11):
+1,205 inner-training rows plus 364 validation rows equals the 1,569 rows this
+session fitted on, out of 1,591 calendar days.
+
+**The test number against the session 05 validation number.** D21.5 said in
+advance that these would differ and should not be expected to match. They do
+differ, and by more than expected:
+
+```
+method                  s05 valid   s07 test  difference
+Raw GFS                     1.239      1.242      +0.003
+Persistence                 2.226      2.096      -0.130
+Climatology                 2.865      2.972      +0.107
+Mean-bias reference         1.231      1.234      +0.003
+ML-corrected                1.165      1.040      -0.125
+days scored                   363        363
+
+margin over raw GFS:  validation +0.074 (6.0%)   test +0.202 (16.3%)
+```
+
+**Read honestly, the test margin is better than validation's for two reasons,
+and only one of them is the model.**
+
+1. **The model is fitted on more data.** D21.5 recombined the validation year
+   into training, so the tested model saw 1,569 days instead of 1,205 — about
+   30% more rows and one more full cycle of seasons. That was expected to help
+   slightly.
+2. **The test year suited the correction better.** Raw GFS was almost exactly as
+   hard overall (1.242 against 1.239), but the difficulty sat in a different
+   place. In the test year raw GFS's summer MAE was **1.870**, against 1.498 in
+   the validation year — a harder summer for GFS. Summer is precisely where F13
+   located the bias and where the correction has always worked best, so a summer
+   with more warm-end error to remove flatters the method. Meanwhile test-year
+   winter was easy for raw GFS (0.752 against 0.972), so the season where the
+   correction used to lose ground had less ground to lose.
+
+So the 16.3% figure is the honest result on the year that was sealed, but it
+should not be read as "the method improved by 10 percentage points". A fair
+summary is: the method wins on both years, by 6% on one and 16% on the other,
+and the gap between those two numbers is mostly what the weather did.
+
+**Two further honest notes.**
+
+- **Climatology ran 0.773 degC cold on the test year**, against +0.020 on the
+  validation year. That is not a fault in the baseline — it means the test year
+  was warmer at 12:00 UTC than the 2021–2025 training average for the same dates.
+  It is worth recording because it says the test year was not a neutral repeat of
+  the training period.
+- **Nothing about the residual scatter changed.** The corrections applied were
+  modest: mean -0.098 degC, standard deviation 0.749, range -1.8 to +1.9 —
+  essentially the same gentle nudge as session 05's (mean -0.057, st dev 0.720,
+  range -1.8 to +1.8). The model did not start making big swings on unseen data.
+
+**Feature importances, the sanity check that it used what it was meant to:**
+
+```
+feature                 gain  gain share   splits   s05 share  s05 splits
+forecast_temp_c       5265.2       51.8%    1,844       44.3%       1,614
+season_sin            2496.8       24.5%    1,166       26.7%       1,337
+season_cos            2411.6       23.7%    1,190       29.0%       1,249
+```
+Forecast temperature carries about half the gain and season the other half.
+Nothing is ignored and nothing dominates — the same picture as sessions 04 and
+05, which is what F13 predicts: the bias depends on both how warm it is and
+what time of year it is.
+
+For the record, in-sample MAE on the training window was 0.908 degC against raw
+GFS's 1.187. A model always looks better on the data it was fitted to; that
+figure proves nothing and is here only so it is not a surprise later.
+
+**What this session did not do, on purpose.**
+- **The script was run once and not repeated.** D21.10 says the method is run
+  once, so no second run was made to confirm byte-identical output, even though
+  sessions 04 and 05 both did that. Determinism rests on the fixed seed,
+  `deterministic=True`, `n_jobs=1`, the pinned versions in `requirements.txt`
+  (D24) and the byte-identical repeat runs already recorded in F14 and F15.
+  Re-running the unchanged script would change nothing about the result above,
+  but the strict reading of the lock was followed rather than the convenient one.
+- **The deeper evaluation stays parked.** Skill scores, statistical
+  significance and formal season-by-season testing are SPEC 5.4 items, parked
+  until stage 1 passes. Stage 1 has now passed, so they can be opened — but they
+  were not opened here. The seasonal table above is context, not a significance
+  test.
+- **Nothing was committed.**
+
+**No SPEC edit was made this session, and none was authorised.** The bar was
+judged as written.
+
+---
+
+## 2026-08-17 — Open questions raised by session 07 (not acted on)
+
+Stage 1 has passed, which opens two choices that are the owner's to make. Both
+are recorded here and neither was acted on.
+
+**Q17. Stage 1 has passed — does stage 2 open now, and with what scope?** SPEC
+section 6 says stage 2 is the same recipe at a second airport, Charles de Gaulle
+(CDG), to prove stage 1 was not a fluke. SPEC deliberately leaves stage 2
+unspecified until the owner opens it, and section 6 says a session that fills in
+a later stage early is a warning sign. So nothing about stage 2 was written or
+started. Two things F6 already flagged for it: CDG is also in Europe so the
+`gfs_global` reasoning should carry over, but it must be re-checked rather than
+assumed; and the observation record and archive start date at CDG are
+verify-on-contact facts, exactly as Q1 and Q2 were for EGLC.
+
+**Q18. Does any of the parked SPEC 5.4 evaluation get done now that stage 1 has
+passed?** SPEC 5.4 parks skill scores, statistical significance and formal
+season-by-season testing until stage 1 passes. It has now passed, so they are
+available. The case for doing some of it first is in F16: the test-year margin
+(16.3%) is much larger than the validation margin (6.0%), and F16's own reading
+is that most of that gap is what the weather did rather than what the model
+learned. A significance check on 363 days would say how much of the win is
+solid. The case against is that stage 2 at a second airport is a stronger and
+more honest robustness check than any statistic on the same 363 days. The owner
+decides which comes first, or whether both do. Nothing was started.

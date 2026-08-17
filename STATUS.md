@@ -3,13 +3,29 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 06)._
+_Last updated: 17 August 2026 (after session 07)._
 
 ---
 
 ## Current stage
 
-**Stage 1 — one model, one airport, one fixed hour.** (See SPEC section 6.)
+**Stage 1 — one model, one airport, one fixed hour. PASSED.** (See SPEC section
+6.) The sealed test ran in session 07 and the corrected forecast beat both raw
+GFS and persistence. Stage 2 (a second airport, CDG) is the next stage to open,
+but it has not been opened and nothing about it has been started — that is the
+owner's call (DECISIONS Q17).
+
+**The headline result:** over the held-out year 2025-08-01 to 2026-07-31, on 363
+days, mean absolute error in degrees Celsius —
+
+```
+Raw GFS 1.242 | Persistence 2.096 | Climatology 2.972
+Mean-bias reference 1.234 | ML-corrected 1.040
+```
+
+The correction beat raw GFS by 0.202 degC (16.3%) and persistence by 1.056 degC
+(50.4%), so the frozen bar (SPEC 5.3) is met. See DECISIONS **F16** for the full
+result and the honest reading of it.
 
 ## Done
 
@@ -210,25 +226,78 @@ _Last updated: 17 August 2026 (after session 06)._
     satisfied on this machine. No script behaviour changed (DECISIONS D24).
   - **Q13, Q14 and Q16 closed.**
 
+- **Session 07 — THE SEALED-TEST EVALUATION. Done. Stage 1 PASSED.**
+  - **The test year was opened for the first and only time** (2025-08-01 to
+    2026-07-31). The two 2026 raw chunk files had never been read before this
+    session. The locked method (DECISIONS **D21**) was executed exactly as
+    written. Nothing was decided, tuned, swapped or re-run.
+  - **The script checks itself against the lock before running anything.** All
+    22 values D21 fixes matched. The model settings matched session 05's setting
+    by setting, with zero differences. The shared code (`all_days`,
+    `year_fraction`, `features`, `mae`, `describe`) is character-identical to
+    session 05's, and the three functions that do differ have their full diffs
+    printed in the output — the lifted seal on both loaders, and the climatology
+    function's rename.
+  - **Refitted on the full training window** 2021-03-24 to 2025-07-31, which is
+    inner-training plus the validation year recombined (D21.5). **1,569 rows**
+    out of 1,591 calendar days. That reconciles exactly against the published
+    session 04/05 counts (1,205 + 364 = 1,569), which is the check that the
+    harness has not drifted.
+  - **Test-year drop count: 1 day of 365.** 2025-11-21 had no usable
+    observation. Scoring loses one more day, 2025-11-22, because persistence
+    needs the previous day's observation. So all five methods are scored on the
+    same **363 days**. Nothing was filled (SPEC 2.2).
+  - **The verdict, plainly: the bar is met.** MAE in degrees Celsius —
+    ```
+    Raw GFS 1.242 | Persistence 2.096 | Climatology 2.972
+    Mean-bias reference 1.234 | ML-corrected 1.040
+    ```
+    Beats raw GFS by 0.202 degC (16.3%) and persistence by 1.056 degC (50.4%).
+    Also beats the mean-bias reference by 15.7%, which is the comparison that
+    shows the model learned real structure rather than a constant offset — the
+    constant available to take was only -0.148 degC.
+  - **The correction helped in all four seasons**, the first time that has
+    happened. Winter is now a dead heat (0.745 against 0.752) instead of a loss.
+    Summer carries the result: 1.252 against 1.870, better by 0.618 degC.
+    Day by day it was closer than raw GFS on 221 of 363 days (60.9%).
+  - **The honest reading of the bigger margin.** Validation gave 6.0%; the test
+    gave 16.3%. Most of that gap is the weather, not the model. Raw GFS was
+    almost equally hard overall (1.242 against 1.239) but its error sat in a
+    different place: test-year summer was harder for GFS (1.870 against 1.498),
+    and summer is exactly where the correction works, while test-year winter was
+    easier (0.752 against 0.972), so the season the correction used to lose had
+    less to lose. The extra 30% of training data helped a little too. Fair
+    summary: the method wins on both years, by 6% on one and 16% on the other.
+  - **Run once, not repeated.** D21.10 says the method runs once, so no second
+    run was made to confirm byte-identical output. Determinism rests on the fixed
+    seed, `deterministic=True`, `n_jobs=1`, the pinned versions, and the
+    byte-identical repeats already recorded in F14 and F15.
+  - **No SPEC edit was made** and none was authorised. The bar was judged as
+    written.
+  - Full real output in `notes/session-07-check-output.txt`; the script is
+    `scripts/session07_test.py`. The result of record is DECISIONS **F16**.
+
 ## In progress
 
-- Nothing. Session 06 is finished and awaiting the owner's review.
+- Nothing. Session 07 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 06.
-2. **Then the single sealed-test evaluation — the next session.** It opens the
-   test year (2025-08-01 to 2026-07-31) for the first and only time, runs the
-   locked method exactly as DECISIONS **D21** specifies, and judges the frozen
-   bar (SPEC 5.3): does the corrected forecast beat **raw GFS and persistence**
-   on MAE across those twelve months?
-   - Nothing is decided during that session. D21 is what it follows; any need
-     to deviate stops the session and comes back to the owner.
-   - The result stands either way. A failure is an honest finding (SPEC 2.4),
-     not a reason to re-run.
-3. After the result: if stage 1 passes, stage 2 (a second airport, CDG) opens.
-   If it does not, the owner decides what happens next — nothing is
-   pre-committed.
+1. Owner reviews and commits session 07. **Stage 1 is decided and the result
+   stands** (D21.10) — there is nothing left to re-run or improve about it.
+2. **Then two owner decisions, in whichever order the owner wants:**
+   - **Q17 — does stage 2 open, and with what scope?** SPEC section 6 says stage
+     2 is the same recipe at a second airport (Charles de Gaulle, CDG). SPEC
+     leaves it deliberately unspecified until the owner opens it, so nothing
+     about it has been written or started.
+   - **Q18 — does any of the parked SPEC 5.4 evaluation get done first?** Skill
+     scores, statistical significance and formal season testing were parked
+     until stage 1 passed. It has passed, so they are now available. F16's own
+     reading — that most of the gap between the 6% and 16% margins is the
+     weather — is the argument for doing a significance check; the argument
+     against is that a second airport is a stronger robustness test than any
+     statistic on the same 363 days.
+3. Nothing is pre-committed beyond that.
 
 ## Notes
 
@@ -239,5 +308,11 @@ _Last updated: 17 August 2026 (after session 06)._
 - **Q15 is closed** by session 05 (D20, F15).
 - **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
-- No open questions remain. Nothing is blocked.
-- The test year has still never been loaded, printed, averaged or fitted on.
+- **Two open questions, both raised by session 07 and both the owner's to
+  answer: Q17 (does stage 2 open?) and Q18 (does any of the parked SPEC 5.4
+  evaluation get done first?).** Neither blocks anything.
+- **The test year has now been opened, exactly once, in session 07** — the one
+  authorised look (D21.10). It was never loaded, printed, averaged or fitted on
+  in any earlier session. It is not a held-out set any more, so it must not be
+  used to judge any future change to the method. Anything measured on it from
+  here on is measured on data the method has been compared against once already.
