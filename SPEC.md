@@ -99,6 +99,13 @@ Confirmed available back to **24 March 2021**. (A request for 1 March 2021
 returns HTTP 200 with every value null; the first hour carrying a real value
 is 2021-03-24 00:00 UTC. See DECISIONS F1.)
 
+The archive is **not continuous**. From that start date to 2026-07-31 there is
+exactly one sizeable gap: **492 hours with no forecast value, from 2023-12-30
+00:00 to 2024-01-19 11:00 UTC**. It falls entirely inside the training window
+(the test window has no forecast gap at all). Those hours are dropped and
+counted, never filled (rule 2.2). See DECISIONS F8, and F11 for the correction
+to F1's earlier claim of continuity.
+
 **3.3 Verify on contact.** Two things can only be checked by pulling real
 data, and must be checked on the first pull:
 - that the Previous Runs API actually returns history back to 2021 (not just
@@ -159,6 +166,18 @@ better.
   Beating this proves the model beats the simplest possible predictor.
 - **Climatology** (optional third check) — the seasonal average for that date,
   computed from the training period only (see rule 2.1c).
+- **Mean-bias reference** (informative check, not part of the bar) — the raw
+  GFS forecast plus one fixed number: GFS's average bias (observation minus
+  forecast) measured on the training period only. It is the simplest possible
+  correction — a single constant offset, no learning. Its job is to separate
+  two very different results: a model that learned real structure in the bias
+  beats it, while a model that merely found a constant offset does not. It is
+  listed here because it proved the most informative of the comparisons (see
+  DECISIONS F14).
+
+The pass/fail bar is **raw GFS and persistence only** (section 5.3).
+Climatology and the mean-bias reference are reported alongside because they
+explain the result; they do not decide it. See DECISIONS D23.
 
 **5.3 Success bar (qualitative, frozen before running).** Stage 1 succeeds
 if the corrected forecast has a lower MAE than **both raw GFS and
@@ -167,10 +186,16 @@ only thing now made concrete is that the test period is the fixed window
 2025-08-01 to 2026-07-31, set before any model runs (section 4.3, DECISIONS
 D13).
 
-The exact numeric margin is deliberately left qualitative for now. A specific
-figure (for example, a minimum percent improvement over raw GFS) may be fixed
-just before the model is run — but still *before* seeing any results, and
-recorded in DECISIONS at that point.
+**The bar is qualitative, and it stays that way.** There is no numeric margin —
+no minimum percent improvement, no minimum number of degrees. Beating raw GFS
+and persistence on MAE over the test year is the whole of it.
+
+An earlier version of this section left the door open to fixing a numeric
+figure "just before the model is run". That door is now closed. Validation
+results exist (DECISIONS F14, F15), so any number chosen now would be chosen in
+the knowledge of what validation gave — which is not a clean before-the-fact
+choice, and rule 2.4 exists precisely to stop bars being set to fit results.
+Leaving the bar qualitative is the honest option. See DECISIONS D22.
 
 **5.4 Deeper evaluation (parked).** More thorough checks — expressing results
 as a skill score, testing whether the win holds across seasons, statistical

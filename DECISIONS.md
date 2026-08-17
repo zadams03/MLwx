@@ -1014,3 +1014,203 @@ asserts that no date on or after 2025-08-01 reached any table.
 
 **Q15 is closed** by D20 and this finding.
 
+---
+
+## 2026-08-17 — Session 06: THE METHOD LOCK
+
+No model was built, run or refitted this session, and the test year was not
+touched. This section is the written lock, plus the three SPEC questions the
+owner has now answered and the environment pin.
+
+**D21. The method is LOCKED. This entry fully specifies what the sealed-test
+session will run.**
+
+The point of writing this down before the test year is opened is simple: every
+choice below is made *now*, with the test year still unseen. The test session
+executes this record and reports. It decides nothing.
+
+**D21.1 — Target.** The temperature at **12:00 UTC** at **London City airport
+(EGLC)**, latitude 51.505, longitude 0.055 (SPEC 4.1). One row per day.
+
+**D21.2 — What the model predicts.** The **residual**: observed minus forecast
+(SPEC 4.2). The corrected forecast is the GFS forecast plus the predicted
+residual. The model never predicts temperature directly.
+
+**D21.3 — Features.** The D19 minimal set, exactly three:
+```
+forecast_temp_c   the GFS forecast temperature for that day at 12:00 UTC
+season_sin        sin(2 * pi * year_fraction(date))
+season_cos        cos(2 * pi * year_fraction(date))
+```
+where `year_fraction` is `(day_of_year - 1) / 365`, or `/ 366` in a leap year.
+No hour-of-day feature (the hour is fixed, so it carries no information). No
+recent-observation feature, even though SPEC 2.1d would allow one — see D19 for
+why.
+
+**D21.4 — Model and settings.** LightGBM gradient-boosted trees (SPEC 4.4,
+D12), with exactly the session 05 settings, unchanged:
+```
+objective=regression_l1   (absolute error, D20)   n_estimators=300
+learning_rate=0.05        num_leaves=15           min_child_samples=40
+subsample=1.0             colsample_bytree=1.0    reg_alpha=0.0
+reg_lambda=0.0            random_state=42         n_jobs=1
+deterministic=True        force_row_wise=True     verbose=-1
+```
+Nothing is tuned, searched or varied in the test session. Library versions are
+pinned in `requirements.txt` (D24): python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0.
+
+**D21.5 — Training data for the test: the FULL D13 training window,
+2021-03-24 to 2025-07-31.** That is inner-training **and** the validation year
+recombined into one training set.
+- Reason: the D18 split existed so the method could be rehearsed without
+  touching the test year. The method is now locked, so validation has finished
+  its job, and holding a year back would only throw away real training data.
+  Refitting on all non-test data before the single test is the standard move.
+- Everything fitted is fitted on this window and nothing else: the model, the
+  climatology baseline (SPEC 2.1c) and the mean-bias figure.
+- **Note the consequence, so it is not a surprise:** the model that is tested
+  is not literally the model measured in session 05. It is the same recipe
+  fitted on about 20% more data, including one more year of seasons. That is
+  expected to help slightly, but it means the test number will not match the
+  validation number exactly, and it should not be expected to.
+
+**D21.6 — Test data: 2025-08-01 to 2026-07-31 (D13), and nothing after it.**
+The 2026 raw chunk files are opened for the first time. Data after 2026-07-31
+is not used, keeping the test set exactly one calendar year.
+
+**D21.7 — Pairing and missing data.** The D14 rule: the routine `:50` report is
+the truth observation, each 12:00 forecast is paired with the observation
+nearest that hour, and if no report falls within 15 minutes of the hour the day
+is dropped and counted. Drop, count, report — nothing filled, ever (SPEC 2.2).
+The drop counts for both the training window and the test year are part of the
+output.
+
+**D21.8 — The four references. Anything that has to be *fitted* is fitted on
+the training window only.** Raw GFS and persistence are fitted on nothing —
+they are just values. Climatology and the mean-bias figure are fitted, and both
+come from the D13 training window (SPEC 2.1c).
+- **Raw GFS** — the forecast value itself, uncorrected. *Part of the bar.*
+- **Persistence** — the previous calendar day's 12:00 UTC observation. Past
+  values only (SPEC 2.1d). *Part of the bar.* Note that for the first test day,
+  2025-08-01, "yesterday" is 2025-07-31, which sits in the training window.
+  That is a past observation, so it is legal and it will be used; it is written
+  down here so it is not mistaken for leakage later.
+- **Climatology** — the seasonal average of the *observed* temperature for that
+  position in the year, averaged over every **training-window** observation
+  within 7.5 days of it, measured around the circle so late December and early
+  January are neighbours (SPEC 2.1c). *Informative only.*
+- **Mean-bias reference** — the forecast plus one constant: the mean
+  **training-window** bias. *Informative only* (SPEC 5.2, D23).
+
+All five methods — the four above plus the corrected forecast — are scored on
+the **same set of days**, the days where every method has a value.
+
+**D21.9 — The metric and the bar.** Mean absolute error in degrees Celsius
+(SPEC 5.1). **Stage 1 passes if the corrected forecast has a lower MAE than
+both raw GFS and persistence over the test year.** No numeric margin — the bar
+is qualitative and stays that way (D22, SPEC 5.3). Climatology and the
+mean-bias reference are reported but do not decide pass or fail.
+
+**D21.10 — One look, and the result stands.** The test year is opened once,
+this method is run once, and whatever comes out is reported straight — pass or
+fail, with the seasonal breakdown and the drop counts. A failure is an honest
+finding (SPEC 2.4), not something to fix by trying again. If the result
+disappoints, the response is a new decision logged here by the owner, never a
+quiet re-run.
+
+**D21.11 — Deviation is a stop signal.** If the test session finds any reason
+to depart from this record — a setting that does not fit, a missing file, a
+count that will not reconcile, a tempting small improvement — it **stops and
+raises it with the owner**. It does not decide on the fly with the test year
+open. Any change to the above is a new DECISIONS entry made deliberately, not
+an adjustment made mid-run.
+
+---
+
+**D22. The success bar stays qualitative — no numeric margin, ever (closes
+Q13).**
+- SPEC 5.3 previously left the door open to fixing a numeric figure "just
+  before the model is run". That door is now closed, and SPEC 5.3 says so.
+- Reason: validation results exist (F14, F15). Any figure chosen now would be
+  chosen knowing validation gave a 6.0% win, which is not the clean
+  before-the-fact choice rule 2.4 demands. Setting a bar that the known result
+  comfortably clears would be self-flattering; setting one it does not clear
+  would be equally arbitrary. The honest option is to fix no number at all.
+- What survives is the bar as originally frozen: beat raw GFS **and**
+  persistence on MAE over the test year. That was written before any model
+  existed and it is unchanged.
+- The cost of this is worth stating plainly: a win of, say, 0.01 degC would
+  count as a pass under a purely qualitative bar. The size of the margin is
+  therefore reported prominently alongside the verdict, so a technical pass by
+  a hair reads as what it is.
+- **SPEC edit made:** section 5.3, authorised by session 06 A-1.
+
+**D23. The mean-bias reference is now a listed baseline, as an informative
+check (closes Q14).**
+- SPEC 5.2 now lists four references: raw GFS, persistence, climatology and the
+  mean-bias reference — the forecast plus GFS's average bias measured on
+  training data only.
+- Reason: it turned out to be the most informative of the five comparisons
+  (F14). It is the simplest correction anyone could apply — one constant, no
+  learning — so it separates a model that learned real structure from a model
+  that merely found an offset. Session 04's model beat it by 3.3% and session
+  05's by 5.3%, which is what makes "it is learning structure" a claim with
+  evidence behind it.
+- **It is not part of the pass/fail bar.** The bar stays raw GFS and
+  persistence (D10, D22). SPEC 5.2 now says this explicitly, because a baseline
+  list that does not say which entries decide the verdict invites confusion
+  later.
+- **SPEC edit made:** section 5.2, authorised by session 06 A-2.
+
+**D24. The environment is pinned in `requirements.txt` (closes Q16).**
+- A `requirements.txt` now records the exact versions: python 3.12.2 with
+  numpy 2.5.2, lightgbm 4.7.0, scikit-learn 1.9.0, scipy 1.18.0, joblib 1.5.3,
+  threadpoolctl 3.6.0, narwhals 2.24.0.
+- Only **numpy** and **lightgbm** are imported by the scripts. scipy and
+  narwhals are lightgbm's own dependencies. scikit-learn is pinned for one
+  reason only: it is the current source of the OpenMP library, below.
+- **The OpenMP note, written into the file as a comment.** LightGBM's macOS
+  build will not import without `libomp.dylib`, which is a system library, not
+  a Python package, so pip cannot supply it. The normal fix is
+  `brew install libomp`. This machine has no Homebrew, so the model scripts use
+  the copy that scikit-learn's macOS wheel ships: they point the dynamic loader
+  at it and restart the interpreter once, in a commented block at the top of
+  `session04_model.py` and `session05_model.py`. It changes nothing about the
+  model — repeat runs were byte-identical (F14, F15) — and it becomes a no-op
+  if `libomp` is ever installed properly.
+- **No script behaviour was changed** this session.
+
+**D25. SPEC 3.2 now records the forecast gap.** SPEC 3.2 said the archive was
+"confirmed available back to 24 March 2021" and said nothing about the 492-hour
+gap, so a reader could infer the archive is continuous — the exact mistake F1
+made and F11 corrected. One clause was added naming the gap (2023-12-30 00:00
+to 2024-01-19 11:00 UTC, training window only, dropped and counted), pointing
+at F8 and F11. This records a fact already established; it changes no decision.
+**SPEC edit made:** section 3.2, authorised by session 06 A-3.
+
+---
+
+## 2026-08-17 — Session 06 note (no findings, nothing measured)
+
+This session ran no code against the data and produced no numbers of its own.
+There is therefore no F-entry. What it produced is the lock above, three SPEC
+edits, and one new file (`requirements.txt`).
+
+**Q13, Q14 and Q16 are closed** by D22, D23 and D24.
+
+**Q12 is also closed, by the lock itself.** Q12 asked whether to spend another
+session improving the method against validation, or to go to the sealed test.
+The owner chose the second: session 06's whole purpose was to lock and prepare
+for the test. D21 is that answer written down. The 6.0% validation win is
+carried to the test as it stands, with no further tuning.
+
+Q7, Q8, Q9, Q10, Q11 and Q15 were closed in earlier sessions. **No open
+questions remain.**
+
+**One thing noticed and deliberately not acted on.** `.DS_Store` files exist in
+the working tree at the project root and in `scripts/`. Q9 confirmed the
+tracked one was removed from the index and that `.gitignore` matches the
+pattern, so these are untracked clutter, not a problem — recorded only so the
+owner is not surprised to see them.
+

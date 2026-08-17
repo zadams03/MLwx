@@ -1,0 +1,58 @@
+# requirements.txt - the exact Python packages this project runs on.
+#
+# Recorded in session 06 to close DECISIONS Q16. Until now the versions used
+# lived only in a DECISIONS entry, because the virtual environment itself is
+# ignored by .gitignore and never enters the history.
+#
+# Python 3.12.2 on macOS (darwin, arm64). To reproduce:
+#     python3 -m venv .venv
+#     .venv/bin/python -m pip install -r requirements.txt
+#
+# ---------------------------------------------------------------------------
+# Directly imported by the scripts
+# ---------------------------------------------------------------------------
+# numpy      - arrays and arithmetic (session04_model.py, session05_model.py)
+# lightgbm   - the gradient-boosted tree model (SPEC 4.4, DECISIONS D12)
+#
+# Everything else below is a dependency pulled in by those two, or by
+# scikit-learn. They are pinned as well so the environment is reproducible
+# exactly, not approximately.
+#
+# scikit-learn is NOT imported by any script. It is here for one reason only:
+# the OpenMP note below.
+#
+# ---------------------------------------------------------------------------
+# OpenMP note (the thing that will trip up anyone setting this up fresh)
+# ---------------------------------------------------------------------------
+# LightGBM's macOS build will not import without the OpenMP runtime library
+# libomp.dylib. It is not part of macOS and pip cannot install it, because it
+# is a system library rather than a Python package. The normal fix is Homebrew:
+#
+#     brew install libomp
+#
+# This machine has no Homebrew, so a workaround is used instead: scikit-learn's
+# macOS wheel ships its own copy of libomp.dylib, and the model scripts point
+# the dynamic loader at that copy and restart the interpreter once. That block
+# sits at the top of scripts/session04_model.py and scripts/session05_model.py,
+# clearly commented. It changes nothing about the model - it only lets the
+# library load - and repeat runs were byte-identical (DECISIONS F14, F15, Q16).
+#
+# So: scikit-learn is pinned here because it is currently the source of
+# libomp.dylib on this machine. If libomp is installed properly, scikit-learn
+# is no longer needed and the workaround block becomes a no-op (it checks
+# whether the file exists before doing anything).
+
+# --- directly imported ---
+numpy==2.5.2
+lightgbm==4.7.0
+
+# --- pulled in by lightgbm ---
+scipy==1.18.0
+
+# --- present for the libomp workaround, plus its remaining dependencies ---
+scikit-learn==1.9.0
+joblib==1.5.3
+threadpoolctl==3.6.0
+
+# --- pulled in by both lightgbm and scikit-learn ---
+narwhals==2.24.0

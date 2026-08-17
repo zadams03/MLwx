@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 05)._
+_Last updated: 17 August 2026 (after session 06)._
 
 ---
 
@@ -177,39 +177,67 @@ _Last updated: 17 August 2026 (after session 05)._
   - Full real output in `notes/session-05-check-output.txt`; the script is
     `scripts/session05_model.py`.
 
+- **Session 06 — housekeeping and the method lock. Done. No model was run and
+  the test year was not touched.**
+  - **THE METHOD IS LOCKED (DECISIONS D21).** One entry now fully specifies
+    what the sealed-test session will run: the target (12:00 UTC at EGLC), the
+    exact LightGBM settings from session 05, the D19 three features, the
+    training data, the D14 pairing and drop-count rule, the four references,
+    the bar, and the rule that the test year is opened once and the result
+    stands. It also says that any deviation during the test session is a stop
+    signal — raise it with the owner, do not decide with the test year open.
+  - **The one substantive choice inside the lock:** the test model is refitted
+    on the **full D13 training window (2021-03-24 to 2025-07-31)** — that is
+    inner-training plus the validation year recombined. Validation has done its
+    job now that the method is fixed. The consequence is recorded openly: the
+    tested model is the same recipe on about 20% more data, so the test number
+    will not match session 05's validation number, and should not be expected
+    to.
+  - **Three authorised SPEC edits, and no others:**
+    - **5.3 (A-1, Q13):** the success bar is now stated as **qualitative and
+      staying that way** — no numeric margin, ever. The old sentence allowing a
+      figure to be fixed "just before the model is run" is gone, because
+      validation results now exist and no number chosen today could be a clean
+      before-the-fact choice (DECISIONS D22).
+    - **5.2 (A-2, Q14):** the **mean-bias reference** is now a listed baseline,
+      described plainly, and marked **informative only** — the pass/fail bar
+      stays raw GFS plus persistence (DECISIONS D23).
+    - **3.2 (A-3):** one clause added recording the single **492-hour forecast
+      gap** (2023-12-30 to 2024-01-19, training window only), so the archive is
+      no longer described in a way that reads as continuous (DECISIONS D25).
+  - **`requirements.txt` created (Q16).** Exact versions pinned, with a comment
+    explaining the OpenMP (`libomp`) requirement and how it is currently
+    satisfied on this machine. No script behaviour changed (DECISIONS D24).
+  - **Q13, Q14 and Q16 closed.**
+
 ## In progress
 
-- Nothing. Session 05 is finished and awaiting the owner's review.
+- Nothing. Session 06 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 05.
-2. **Then the owner's judgement call (DECISIONS Q12, now with a better
-   number): is the rehearsal good enough to lock the method?** The validation
-   win over raw GFS is now 6.0% (0.074 degC) rather than 4.0%, and the
-   correction helps in three seasons out of four rather than two.
-   - If **yes** → lock the method, do the housekeeping the owner wants first
-     (Q13, Q14, Q16 — the numeric margin, the mean-bias baseline, the
-     `requirements.txt`), then the **single sealed-test evaluation**. That
-     session opens the test year (2025-08-01 to 2026-07-31) for the first and
-     only time, re-fits on the full D13 training window, and judges the frozen
-     bar (SPEC 5.3). That look happens once, so the method must be locked
-     before it starts.
-   - If **no** → one more session improving the method against the
-     **validation** year, which is allowed as often as needed. The sealed test
-     year stays sealed either way.
-3. The test year is untouched and stays that way until the owner opens it.
+1. Owner reviews and commits session 06.
+2. **Then the single sealed-test evaluation — the next session.** It opens the
+   test year (2025-08-01 to 2026-07-31) for the first and only time, runs the
+   locked method exactly as DECISIONS **D21** specifies, and judges the frozen
+   bar (SPEC 5.3): does the corrected forecast beat **raw GFS and persistence**
+   on MAE across those twelve months?
+   - Nothing is decided during that session. D21 is what it follows; any need
+     to deviate stops the session and comes back to the owner.
+   - The result stands either way. A failure is an honest finding (SPEC 2.4),
+     not a reason to re-run.
+3. After the result: if stage 1 passes, stage 2 (a second airport, CDG) opens.
+   If it does not, the owner decides what happens next — nothing is
+   pre-committed.
 
 ## Notes
 
-- Open questions now with the owner: **Q12** (is the rehearsal — now a 6.0%
-  win — enough to lock the method, or is another improvement session worth it
-  first?), **Q13** (should SPEC 5.3 gain a numeric margin, given validation
-  results now exist?), **Q14** (should the mean-bias reference become a listed
-  baseline in SPEC 5.2?), **Q16** (LightGBM needed an OpenMP library this
-  machine does not have; the workaround is documented, and there is no
-  `requirements.txt` recording the library versions).
+- **Q12 no longer needs a separate answer.** It asked whether to improve the
+  method further or go straight to the sealed test. The owner chose to lock and
+  test: session 06 wrote D21, so the question is answered by that act.
+- **Q13, Q14 and Q16 are closed** by session 06 (D22, D23, D24).
 - **Q15 is closed** by session 05 (D20, F15).
 - **Q10 and Q11 are addressed** by session 04 (F12, F13). Q10 no longer needs
   a decision — the 20 days were dropped and counted, as SPEC 2.2 requires.
-- Nothing is blocked.
+- No open questions remain. Nothing is blocked.
+- The test year has still never been loaded, printed, averaged or fitted on.
