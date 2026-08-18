@@ -3,17 +3,54 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 18 August 2026 (after session 16)._
+_Last updated: 18 August 2026 (after session 17)._
 
 ---
 
 ## Current stage
 
 **A THIRD AIRPORT IS OPEN: Des Moines, Iowa (DSM). Verified, pulled in full,
-gap-mapped, joined and rehearsed. Not yet locked and not yet tested.** The owner
+gap-mapped, joined, rehearsed and now LOCKED. Not yet tested.** The owner
 opened it in session 14 (DECISIONS **D32**), which is the "more airports first"
 branch of Q24 rather than stage 3. **Stage 3 is not opened and nothing about it
 has been written or started.**
+
+**DSM'S METHOD IS LOCKED: DECISIONS D35, written in session 17.** It is the
+D31-equivalent for the third airport, written **before** DSM's test year is
+opened, exactly as session 12 did for CDG and session 06 for EGLC. One entry
+now fully specifies what DSM's sealed-test session will run: the target (18:00
+UTC at DSM, D33), the residual as what the model predicts, the D19 three
+features, the exact session 05 LightGBM settings, the refit on the full D13
+training window, the D14 pairing at `:54`, the four references, the metric and
+the frozen bar, the one-look rule and the stop-signal rule.
+
+**It is D31 with the airport AND the target hour swapped — two intended
+differences, not one.** DECISIONS carries a full D31 <-> D35 correspondence
+table over all its sub-points, with two difference columns rather than one:
+`HOUR` (D33's 18:00 UTC, and the three things that follow from it — which hour
+the feature is read at, which hour persistence looks back to, which report the
+pairing lands on) and `LOCATION` (the airport, its files, its `:54` reporting,
+and the row and drop counts that follow from its own record). **No
+methodological choice differs.** D26's "only the location changed" does not
+hold for DSM and D35 says so plainly, as SPEC 4.1 and D33 already do.
+
+**D35 predicts DSM's test-year drops before the look**, from session 15's gap
+map: **0 forecast-gap days, 0 observation-side losses, so 365 paired rows and
+365 scored days** — the first airport expected to lose no day at all. EGLC and
+CDG each scored 363. It also fixes the training refit at **1,571 rows** (1,206
++ 365, F42) out of 1,591 calendar days, where both European airports fitted
+1,569.
+
+**The warm-end watch-item is recorded inside the lock, as D35.12**, before
+anyone knows the result. F44 measured that DSM's forecast overshoots badly at
+the warm extreme at the target hour, and that it rests on very few days — 5
+inner-training days reach 40 degC at 18:00. **This is not a reason to change
+the method and the method does not change.** If the test result behaves oddly,
+those days are the first place to look, and looking there describes what
+happened rather than licensing a re-run.
+
+**Session 17 ran no model and did not open DSM's test year.** No data file was
+read, nothing was fitted or refitted, and no SPEC edit was made or authorised.
 
 **Session 16 joined DSM's two series at 18:00 UTC and ran the locked method on
 DSM's validation year** (DECISIONS **F42-F46**). **DSM's test year was not
@@ -1065,40 +1102,122 @@ result and the honest reading of it.
   - Full real output in `notes/session-16-check-output.txt`; the script is
     `scripts/session16_model.py`.
 
+- **Session 17 — DSM'S METHOD LOCK. Documentation only. Done.** No code was
+  written or run, no data was loaded, no model was built or refitted, and DSM's
+  test year was not opened. No file in `data/raw/` was read.
+  - **DSM's method is LOCKED (DECISIONS D35).** One entry now fully specifies
+    what DSM's sealed-test session will run: the target (18:00 UTC at DSM, D33,
+    at IEM's position and the grid point it maps to), the residual as what the
+    model predicts, the D19 three features, the exact session 05 LightGBM
+    settings, the training data, the D14 pairing and drop-count rule, the four
+    references, the metric and the bar, the one-look rule, and the rule that any
+    deviation during the test session is a stop signal.
+  - **It is D31 with the airport and the target hour swapped and nothing else
+    touched.** It was written out separately rather than by pointing at D31
+    because D31 names Paris throughout and fixes the target at 12:00 UTC, so the
+    test session would otherwise be translating a CDG-named record twice over
+    with the test year open — and a translation is a decision, which D31.11
+    forbids.
+  - **The lock was verified point by point.** DECISIONS carries a full
+    D31 <-> D35 correspondence table with **two** difference columns instead of
+    one: `HOUR` and `LOCATION`. **No methodological choice differs.** Every
+    setting, date, feature, reference, the metric, the bar, the one-look rule
+    and the stop-signal rule are the same in D21, D31 and D35.
+    - The `HOUR` rows are all one decision — D33 — and the three things that
+      follow from it: the hour `forecast_temp_c` is read at, the hour
+      persistence looks back to, and the report D14 lands on.
+    - The `LOCATION` rows are the airport and its files, its `:54` reporting,
+      the row and drop counts from its own record, what the rehearsal already
+      showed about its references, and two recorded facts (D35.12, D35.13).
+    - **This is the first lock where the target hour is among the intended
+      differences.** D31 could say "only the location changed" (D26); D35
+      cannot, and says so.
+  - **D35 predicts DSM's test-year drops before the look**, from session 15's
+    gap map (F38, F41): **0 forecast-gap days, 0 observation-side losses, so 365
+    paired rows and 365 scored days.** DSM is the first airport expected to lose
+    no day at all — EGLC and CDG each scored 363, because each lost a day inside
+    its test year and that cost the following day's persistence too. At DSM
+    2025-07-31's 18:00 observation exists, so the first test day keeps its
+    persistence value, which D35.8 declares legal in advance.
+  - **The training refit is fixed at 1,571 rows** (1,206 inner-training + 365
+    validation, F42) out of 1,591 calendar days, where both European airports
+    fitted 1,569. The consequence is recorded in advance: the tested model is
+    the same recipe on about 30% more data, so **the test number will not match
+    session 16's 1.466 rehearsal figure and should not be expected to.**
+  - **The warm-end watch-item is recorded as D35.12**, before the look. F44's
+    figures are restated inside the lock, with both consequences: it is the
+    largest piece of learnable structure at DSM, and it rests on very few days
+    (5 inner-training days reach 40 degC at 18:00, and a tree model cannot
+    extrapolate past its training range). **The method does not change.**
+  - **One thing stated in D35 that D31 did not state (D35.6), and one new open
+    question (Q29).** The verify-on-contact samples SPEC 3.3 requires were
+    pulled from the most recent weeks available, and at all three airports those
+    weeks fall inside the sealed test year. At DSM, session 14 printed three
+    target-hour observations from July 2026 (F34) and 72 hourly values while
+    checking units (F35). Nothing was fitted on them, no method choice came from
+    them, no forecast-observation pair from a test year has ever been formed,
+    and the test session reads the yearly chunk files instead. But the sentence
+    "never a temperature value" is slightly too strong, so D35.6 says what is
+    actually true and **Q29** puts the wording and the future-airport question
+    to the owner.
+  - **One point where the session prompt and STATUS disagreed was raised, not
+    guessed** (CLAUDE.md). The prompt said DSM should expect "365 paired rows,
+    364 scored once persistence loses the first day"; STATUS's "Next" said 365
+    scored, with no persistence day lost. The evidence (F41, F42, and session
+    13's harness) says 365, the owner confirmed 365, and D35.7 freezes that.
+  - **No SPEC edit was made and none was authorised.** D35 fixes no rule SPEC
+    does not already carry — it names, for one airport, what SPEC already says
+    per airport.
+  - No script and no notes file: there was nothing to run and no number to
+    produce, the same as sessions 09 and 12.
+
 ## In progress
 
-- Nothing. Session 16 is finished and awaiting the owner's review.
+- Nothing. Session 17 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 16 — DSM's join and validation rehearsal.
-   Sessions 08 to 15 are still awaiting review too if they have not been
-   committed yet.
-2. **DSM's method lock — a D31-equivalent naming DSM**, written before DSM's
-   test year is opened, exactly as session 12 did for CDG. It fixes the target
-   (18:00 UTC at DSM, D33), the residual, the D19 three features, the session 05
-   LightGBM settings, the refit on the full D13 training window, the D14
-   pairing, the four references, the metric and the frozen bar, the one-look
-   rule and the stop-signal rule. Two things it should carry that CDG's lock
-   could not: **F41's advance drop prediction for the test year — 365 paired
-   rows, 0 forecast-gap days, 0 observation-side losses, so 365 scored days**
-   with no persistence day lost either, since the validation year ends
-   complete; and **the note from F45 that at DSM the binding half of the bar
-   will be raw GFS, not persistence.**
-3. **Then DSM's sealed test** — the single authorised look, executing the lock
-   and reporting the result straight, the same step session 13 took for CDG.
-4. **Q28 is open and it is the owner's.** SPEC 3.4's first column is headed
+1. Owner reviews and commits session 17 — DSM's method lock. Sessions 08 to 16
+   are still awaiting review too if they have not been committed yet.
+2. **DSM's sealed test — the single authorised look, executing DECISIONS D35**
+   and reporting the result straight, the same step session 07 took for EGLC and
+   session 13 for CDG. Everything it needs is fixed in D35 and it decides
+   nothing. The checks it must make:
+   - **reconcile the training refit against 1,571 rows** (1,206 + 365, F42) out
+     of 1,591 calendar days — the check that the harness has not drifted;
+   - **reconcile the test-year drops against D35.7's advance prediction** — 0
+     forecast-gap days, 0 observation-side losses, 365 paired rows, 365 scored
+     days. A count that will not reconcile is a stop signal, not something to
+     explain away;
+   - **report the raw-GFS margin as the deciding one**, because at DSM
+     persistence is far weaker and raw GFS is the binding half of the bar (F45,
+     D35.8);
+   - **expect the test number not to match session 16's 1.466** (D35.5).
+   If the result behaves oddly, D35.12's warm-end days are the first place to
+   look — as a description, never as grounds to re-run or adjust (D35.10,
+   D35.11).
+3. **Q28 is open and it is the owner's.** SPEC 3.4's first column is headed
    "ICAO" and DSM's code is not an ICAO code; SPEC 3.1 says each airport is
    requested by its ICAO code, which is not true of DSM either. Nothing depends
    on it and nothing was changed — a note beneath the table states the position
    plainly. The repair is one heading and one sentence, and it needs the owner's
    authorisation.
+4. **Q29 is open and it is the owner's** (raised by session 17). The
+   verify-on-contact samples at all three airports were pulled from the most
+   recent weeks available, which fall inside the sealed test year; a handful of
+   values inside each test window were printed months before the look. Nothing
+   was fitted on them and no method choice came from them, but the wording
+   "never a temperature value" in STATUS and in some log entries is slightly too
+   strong. Two things for the owner: whether that wording is corrected, and
+   whether future airports should sample from **after 2026-07-31**, which D13
+   does not use at all.
 5. **One thing that is available and blocks nothing.** SPEC 5.4's deeper
    evaluation — skill score, statistical significance, formal season testing —
    is optional by D29 and still undone, so no airport's win has a significance
    figure. F6's `gfs_global` versus `gfs_seamless` comparison has now been run
    at DSM (F40) but **still never at LFPG** (Q20's closing note), so stage 2's
-   first airport still cannot make the by-construction claim stage 1 can.
+   first airport still cannot make the by-construction claim stage 1 and DSM
+   can.
 6. Nothing is pre-committed beyond that. **Stage 3 is not opened.**
 
 ## Notes
@@ -1136,8 +1255,18 @@ result and the honest reading of it.
   first column is headed "ICAO" but DSM's code is IEM's station id, not an ICAO
   code, and SPEC 3.1's "requested by its ICAO code" wording has the same
   problem. Nothing depends on it; a note beneath the table states the position
-  plainly rather than letting SPEC assert something false. **Q28 is the only
-  open question.**
+  plainly rather than letting SPEC assert something false.
+- **Q29 is open, and it is the owner's** (raised by session 17): the
+  verify-on-contact samples SPEC 3.3 requires were taken from the most recent
+  weeks at every airport, and those weeks sit inside the sealed test year — so a
+  few values from each test window were printed long before the look (EGLC F1/F2,
+  LFPG F18/F20, DSM F34/F35). **It is not leakage**: nothing was fitted on them,
+  no method choice came from them, no forecast-observation pair or error figure
+  from a test year was ever formed, each test session reads the yearly chunk
+  files instead, and all three airports were sampled alike. What it does mean is
+  that "never a temperature value" is slightly too strong wording. D35.6 states
+  the true position for DSM; D21.6 and D31.6 do not, and are closed and
+  append-only. **Q28 and Q29 are the only open questions.**
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be

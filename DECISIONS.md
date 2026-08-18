@@ -4330,3 +4330,505 @@ left alone.
 **No SPEC edit was made and none was authorised.**
 
 **Nothing was committed.**
+
+---
+
+## 2026-08-18 — Session 17: THE DSM METHOD LOCK
+
+No model was built, run or refitted this session, no data was loaded, and
+**DSM's test year was not touched**. This section is the written lock for the
+third airport, mirroring what D31 did for CDG and D21 did for EGLC, plus the
+correspondence check that proves it is D31 with the location and the target
+hour swapped and nothing else.
+
+**D35. DSM's method is LOCKED. This entry fully specifies what DSM's
+sealed-test session will run.**
+
+This is **D31 with the airport and the target hour swapped and nothing else
+touched.** Every methodological choice below — the model, its settings, the
+features, what is predicted, the pairing rule, the missing-data rule, the
+references, the metric, the bar, and the one-look rule — is the same choice
+D31 made, which was the same choice D21 made. Not one of them is new.
+
+**Two things differ from D31, not one.** D31 could say "only the location
+changed" (D26). D35 cannot: DSM changes the location **and** the target hour,
+because 12:00 UTC at Des Moines is dawn (D33, F32, SPEC 4.1). That cost was
+accepted on purpose, in advance, and is written into SPEC 4.1 and D33. It is
+repeated here so the test session cannot report a DSM result as though it were
+the same controlled comparison EGLC and CDG made between them.
+
+Why it is written out separately rather than by pointing at D31: D31 names
+Paris throughout and fixes the target at 12:00 UTC, so DSM's test session would
+otherwise have to reach back to a CDG-named record and translate it — twice
+over — while the test year was open. The whole value of a lock is that the
+executing session decides nothing (D21.11, D31.11). A translation is a
+decision. So the translation is done here, now, with DSM's test year still
+unopened, and the test session executes this record and reports.
+
+**D35.1 — Target.** The temperature at **18:00 UTC** at **Des Moines, Iowa
+(IEM station code `DSM`, IEM network `IA_ASOS`)**, the station at latitude
+41.534, longitude -93.6531, elevation 294 m — IEM's own position, per SPEC 3.4
+and F31. The forecast comes from the Open-Meteo grid point that position maps
+to: latitude 41.52945, longitude -93.63281, elevation 285 m, 1.76 km from the
+airport with a -9 m height difference (SPEC 3.4, F31). One row per day.
+
+The hour is **18:00 UTC, not 12:00 UTC**, and that is the one methodological
+input this lock does not share with D31. 18:00 UTC is local standard noon at
+Des Moines (12:00 CST in winter, 13:00 CDT in summer), which is what SPEC 4.1
+asks each airport to target; 12:00 UTC there would be 06:00 local, the dawn
+hour SPEC 4.1 exists to avoid. Decided on principle before any DSM data was
+seen (D33) and then checked against the timezone database (F32). Daylight
+saving is deliberately ignored, so the target stays one fixed UTC hour all
+year.
+
+**D35.2 — What the model predicts.** The **residual**: observed minus forecast
+(SPEC 4.2). The corrected forecast is the GFS forecast plus the predicted
+residual. The model never predicts temperature directly. Identical to D31.2
+and D21.2.
+
+**D35.3 — Features.** The D19 minimal set, exactly three:
+```
+forecast_temp_c   the GFS forecast temperature for that day at 18:00 UTC
+season_sin        sin(2 * pi * year_fraction(date))
+season_cos        cos(2 * pi * year_fraction(date))
+```
+where `year_fraction` is `(day_of_year - 1) / 365`, or `/ 366` in a leap year.
+No hour-of-day feature — the hour is fixed at 18:00, so it carries no
+information, which is D19's reason unchanged. No recent-observation feature,
+even though SPEC 2.1d would allow one — see D19 for why. Identical to D31.3
+apart from which fixed hour `forecast_temp_c` is read at, which follows from
+D35.1.
+
+**D35.4 — Model and settings.** LightGBM gradient-boosted trees (SPEC 4.4,
+D12), with exactly the session 05 settings, unchanged:
+```
+objective=regression_l1   (absolute error, D20)   n_estimators=300
+learning_rate=0.05        num_leaves=15           min_child_samples=40
+subsample=1.0             colsample_bytree=1.0    reg_alpha=0.0
+reg_lambda=0.0            random_state=42         n_jobs=1
+deterministic=True        force_row_wise=True     verbose=-1
+```
+Nothing is tuned, searched or varied in the test session. Library versions are
+pinned in `requirements.txt` (D24): python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0. Identical to D31.4 and D21.4. Session 16 already ran this exact
+configuration at DSM, and its PART 0 proved it against
+`scripts/session05_model.py`: **0 model settings differ, and of the eleven
+shared constants exactly one differs — TARGET_HOUR, 12 to 18** (F45). That one
+constant is D33 and nothing else.
+
+**D35.5 — Training data for the test: the FULL D13 training window,
+2021-03-24 to 2025-07-31, at DSM.** That is DSM's inner-training **and** DSM's
+validation year recombined into one training set.
+- Reason: the same reason D21.5 and D31.5 gave. The D18 split existed so the
+  method could be rehearsed without touching the test year. The method is
+  locked, so validation has finished its job, and holding a year back would
+  only throw away real training data. Refitting on all non-test data before the
+  single test is the standard move — and it is what both earlier airports did,
+  so doing anything else here would add a third difference on top of the
+  location and the hour.
+- Everything fitted is fitted on this window and nothing else: the model, the
+  climatology baseline (SPEC 2.1c) and the mean-bias figure.
+- **Expected row count, written down before the run.** The window holds 1,591
+  calendar days. Session 16 kept 1,206 inner-training rows and 365 validation
+  rows (F42), both exactly as F41 predicted, so:
+  ```
+  inner-training rows (F42)                      1,206
+  validation rows      (F42)                       365
+  expected training rows for the test refit      1,571 of 1,591 calendar days
+  days dropped, all of them the shared forecast gap  20 (2023-12-30..2024-01-18)
+  ```
+  **1,571, not 1,569.** EGLC and CDG each fitted 1,569 rows because each lost
+  22 days; DSM loses only the 20 gap days, because its observation record loses
+  no day at all in the training window (F41, F42). A count other than 1,571 is
+  a D35.11 stop signal.
+- **Note the consequence, so it is not a surprise:** the model that is tested
+  is **not** the model measured in session 16. It is the same recipe fitted on
+  about 30% more days, including one more full cycle of seasons. **The test
+  number will not match session 16's 1.466 rehearsal figure and should not be
+  expected to.** At EGLC the equivalent move moved the number by 0.125 degC
+  (F16) and at CDG by 0.169 degC (F30), and in both cases most of that was the
+  weather rather than the extra data.
+
+**D35.6 — Test data: DSM, 2025-08-01 to 2026-07-31 (D13), and nothing after
+it.** Data after 2026-07-31 is not used, keeping the test set exactly one
+calendar year. This is DSM's own test year: the dates are the same as EGLC's
+and CDG's but the data is a third airport's.
+
+What "opened for the first time" means precisely here. Two yearly chunk files
+carry the test year, and the 2025 chunks have been read with a cut-off:
+```
+openmeteo_previousruns_gfs_global_DSM_2026-01-01_2026-07-31.json   never read
+iem_asos_DSM_2026-01-01_2026-07-31_routine.csv                     never read
+openmeteo_previousruns_gfs_global_DSM_2025-01-01_2025-12-31.json   read, but
+iem_asos_DSM_2025-01-01_2025-12-31_routine.csv                     cut at
+                                                                   2025-07-31
+```
+The two 2026 DSM chunk files have never been opened by any session. The 2025
+chunks were read by sessions 15 and 16, which cut them off at 2025-07-31 on
+load and asserted that no date on or after 2025-08-01 reached any table (F42).
+Session 15 counted row presence, gap positions and report timing across the
+whole period including the test window, but never a temperature value from it
+(F38, F39, F41) — a structural count, not a look at the data.
+
+**One thing stated plainly rather than left out, because D31.6 did not state
+it and it is true at all three airports.** Session 14's verify-on-contact
+samples (SPEC 3.3) were pulled from the most recent weeks available, and those
+weeks fall **inside** DSM's test year. Six small sample files cover
+2026-07-01 to 2026-07-22, and session 14's output printed real values from
+them: forecast value ranges for 2026-07-01..21, and three target-hour
+observations — 2026-07-01 30.56, 2026-07-02 31.11, 2026-07-03 28.33 degC
+(F34, F35). So three of DSM's 365 test days have had an observed value printed
+already, and no forecast/observation pair or error figure from the test year
+has ever been formed. Nothing was fitted on them, no method choice was made
+from them, and the test session reads the yearly chunk files, not these
+samples. **The same thing happened at EGLC in session 01 and at LFPG in
+session 08**, both of whose recent samples were July 2026, so the three
+airports are at least treated alike. It is written here rather than glossed
+over, and raised for the owner as **Q29**, because the honest sentence is "the
+test year is unopened except for three printed observation values from a
+verification sample", not "never touched at all".
+
+**D35.7 — Pairing and missing data.** The D14 rule, applied exactly as written
+at EGLC and CDG: the routine report is the truth observation, each target-hour
+forecast is paired with the report nearest that hour, and if no report falls
+within 15 minutes of the hour the day is dropped and counted. Drop, count,
+report — nothing filled, ever (SPEC 2.2). The drop counts for both the training
+window and the test year are part of the output.
+
+The location facts inside this: **DSM reports at `:54`** (F34, and IEM's own
+`METAR_RESET_MINUTE` attribute says 54), where LFPG reports at `:00` and EGLC
+at `:50` (SPEC 3.4). So the rule pairs 18:00 UTC with the **17:54 report — six
+minutes earlier**. The next report, 18:54, is 54 minutes out, so the rule picks
+17:54 without ambiguity; session 16 confirmed that no day in the whole training
+window has more than one report inside the 15-minute window (F42). Six minutes
+is a smaller gap than EGLC's ten, so D14's argument covers it comfortably.
+**The rule is not adapted; it simply fits DSM well.** DSM also files no second
+scheduled report at all (F36), so D30's question — whether to fall back to a
+"special" stream — cannot even arise here.
+
+**What the gap map says the test year should cost, written down before the
+look.** From session 15, which mapped every hour without reading a value:
+```
+forecast-gap days in DSM's test year                            0   (F38, F41)
+days lost to an off-hour-only report in DSM's test year         0   (F41)
+days lost to no report near the 18:00 hour                      0   (F41)
+days lost to a report in place carrying no temperature          0   (F41)
+expected paired rows                                          365 of 365
+expected scored days                                          365
+```
+**365 scored days, not 364.** Scoring loses a day only when the previous day's
+observation is missing, because persistence needs it. DSM's observation record
+loses no day anywhere in the five years (F41, F42), so 2025-07-31's 18:00
+observation exists and the first test day, 2025-08-01, keeps its persistence
+value — which D35.8 declares legal in advance. That is why DSM expects 365
+scored days where EGLC and CDG each scored 363: at those airports a day inside
+the test year was lost, which cost the following day as well.
+
+This is an **expectation, not a requirement.** The test session reports the
+**actual** counts and reconciles them against this table. A count that will not
+reconcile is a D35.11 stop signal, not something to explain away.
+
+**D35.8 — The four references. Anything that has to be *fitted* is fitted on
+DSM's training window only.** Raw GFS and persistence are fitted on nothing —
+they are just values. Climatology and the mean-bias figure are fitted, and both
+come from DSM's D13 training window (SPEC 2.1c).
+- **Raw GFS** — the forecast value itself, uncorrected. *Part of the bar.*
+- **Persistence** — the previous calendar day's 18:00 UTC observation at DSM.
+  Past values only (SPEC 2.1d). *Part of the bar.* Note that for the first test
+  day, 2025-08-01, "yesterday" is 2025-07-31, which sits in the training
+  window. That is a past observation, so it is legal and it will be used; it is
+  written down here so it is not mistaken for leakage later. Identical to
+  D31.8's and D21.8's note.
+- **Climatology** — the seasonal average of the *observed* temperature at DSM
+  for that position in the year, averaged over every **DSM training-window**
+  observation within 7.5 days of it, measured around the circle so late
+  December and early January are neighbours (SPEC 2.1c). *Informative only.*
+- **Mean-bias reference** — the forecast plus one constant: the mean **DSM
+  training-window** bias. *Informative only* (SPEC 5.2, D23). Worth carrying
+  forward from F45: on DSM's validation year this reference **beat** raw GFS
+  (1.723 against 1.748), as it did at EGLC and did not at CDG, because the
+  constant available at DSM is not quite nothing (-0.2305 degC on
+  inner-training; the training-window figure will differ slightly and is
+  computed in the test session, not here). The model beat it by 14.9% all the
+  same, so a win over it on the test year is the evidence that the correction
+  is structure and not an offset.
+
+All five methods — the four above plus the corrected forecast — are scored on
+the **same set of days**, the days where every method has a value.
+
+**One thing about the bar that is DSM-specific and is stated in advance (F45).**
+Persistence is far weaker at DSM than in Europe — 4.108 degC on the validation
+year against 2.523 at CDG and 2.226 at EGLC — because day-to-day swings in the
+continental interior are much bigger. **So at DSM the binding half of the bar
+will be raw GFS, not persistence.** This changes nothing about the bar, which
+is both halves as always; it is written down so the test session reports the
+raw-GFS margin as the one that decides the verdict in practice.
+
+**D35.9 — The metric and the bar.** Mean absolute error in degrees Celsius
+(SPEC 5.1). **DSM passes if the corrected forecast has a lower MAE than both
+raw GFS and persistence over DSM's test year.** No numeric margin — the bar is
+qualitative and stays that way (D22, SPEC 5.3). Climatology and the mean-bias
+reference are reported but do not decide pass or fail. The margin is reported
+prominently alongside the verdict, so a technical pass by a hair reads as what
+it is (D22).
+
+**The bar is judged once per airport, on that airport's own data (SPEC 5.0).**
+EGLC's and CDG's passes do not excuse a DSM failure, and a DSM result does not
+re-open either of theirs. Stage 1's 16.3% and stage 2's 13.5% are not targets
+DSM has to reach and not numbers DSM is measured against; DSM is measured
+against DSM's own raw GFS and DSM's own persistence, and nothing else.
+
+**D35.10 — One look, and the result stands.** DSM's test year is opened once,
+this method is run once, and whatever comes out is reported straight — pass or
+fail, with the seasonal breakdown and the drop counts. A failure is an honest
+finding (SPEC 2.4), not something to fix by trying again. If the result
+disappoints, the response is a new decision logged here by the owner, never a
+quiet re-run. Identical to D31.10 and D21.10.
+
+Read plainly, and note that it reads differently here from how it read at CDG.
+D31.10 warned that CDG's rehearsal margin was half EGLC's, so a failure was a
+real possibility. DSM's rehearsal margin is the widest of the three — 16.1%
+(F45) — so a failure is less likely on the face of it. **That is not a reason
+to expect a pass.** The rehearsal margin is not the test margin at either
+earlier airport, DSM's raw GFS error is much larger and much more variable than
+Europe's, and D35.12 names a handful of extreme days that could move a
+365-day average on their own. A DSM failure remains an outcome this project
+reports rather than avoids.
+
+**D35.11 — Deviation is a stop signal.** If DSM's test session finds any reason
+to depart from this record — a setting that does not fit, a missing file, a
+count that will not reconcile against D35.5 or D35.7, a tempting small
+improvement — it **stops and raises it with the owner**. It does not decide on
+the fly with the test year open. Any change to the above is a new DECISIONS
+entry made deliberately, not an adjustment made mid-run. Identical to D31.11
+and D21.11.
+
+**D35.12 — The warm-end watch-item, recorded before the look and NOT acted
+on.** This is inside the lock so that any inspection after the test is honest:
+the place to look was named before anyone knew what the result was.
+
+F44 measured, at the 18:00 target hour on inner-training, that DSM's forecast
+overshoots badly at the warm extreme, and that the overshoot grows with the
+forecast rather than sitting on a few odd days:
+```
+selection                 days  mean bias  mean |bias|
+forecast >= 30 degC        114     -3.089        3.449
+forecast >= 34 degC         37     -4.838        4.838
+forecast >= 38 degC         13     -6.438        6.438
+forecast >= 40 degC          5     -7.068        7.068
+
+forecast range at 18:00 UTC, inner-training : -21.70 to +42.70 degC
+observed range at 18:00 UTC, inner-training : -23.28 to +36.67 degC
+days with a forecast above the observed maximum : 17
+worst single day: 2023-07-27, forecast 40.9, observed 30.6, gap 10.3 degC
+```
+Two consequences, both recorded and neither acted on:
+1. **This is the largest single piece of learnable structure at DSM** and much
+   of why the rehearsal did as well as it did (F45).
+2. **It rests on very few days.** Only 5 inner-training days reach 40 degC at
+   18:00 and only 21 reach 36. A tree model cannot extrapolate past the range
+   it was fitted on, so on a test day hotter than anything in training it
+   applies the correction it learned at the top of that range.
+
+**This is not a reason to change the method, and the method does not change.**
+It is locked. If DSM's test result behaves oddly — a large swing either way, a
+summer that does not match the rehearsal, a worst-miss far outside the others —
+**this handful of extreme warm days is the first place to look**, and looking
+there is a description of what happened, never a licence to re-run or adjust
+anything (D35.10, D35.11).
+
+**D35.13 — One data-source fact that is stronger at DSM than at CDG, recorded
+so the test session states it correctly.** At LFPG, F6's value-by-value check
+of `gfs_global` against `gfs_seamless` was never run (Q20's closing note), so
+stage 2's first airport can say "this is exactly the `gfs_global` series" but
+not "and `gfs_seamless` would have given the same". At DSM the check **was**
+run (F40) and it gave a different answer from EGLC's: on recent dates the two
+strings return **different** data, 259 of 264 hours differing by up to
+12.3 degC, from a different grid point. Every DSM chunk was pulled with
+`gfs_global` (read back out of the saved `.meta.txt` URLs), so DSM's dataset is
+exactly NCEP GFS and is unaffected. The test session should say that, and must
+**not** say that the two strings agree at DSM — they do not. This is a fact
+about the data source, not a methodological difference; it changes nothing in
+D35.
+
+---
+
+**The D31 ↔ D35 correspondence check.** Every D31 sub-point set beside its D35
+counterpart. Two kinds of intended difference are expected this time, not one:
+`LOCATION` (the airport and what follows from it) and `HOUR` (the target hour,
+per D33, and what follows from it). Anything else appearing in that column
+would be a stop signal.
+
+```
+point  subject                D31 (LFPG)                D35 (DSM)                 differs?
+.1     target hour            12:00 UTC                 18:00 UTC (D33)           HOUR
+.1     why that hour          local midday in Europe    local standard noon       HOUR
+.1     airport                Paris CDG / LFPG          Des Moines / DSM          LOCATION
+.1     station position       49.0153 / 2.5344 / 109 m  41.534 / -93.6531 / 294 m LOCATION
+.1     position source        IEM's own metadata (F17)  IEM's own metadata (F31)  same
+.1     grid point             49.027008 / 2.578125      41.52945 / -93.63281      LOCATION
+.1     grid distance/height   3.44 km, 0 m              1.76 km, -9 m             LOCATION
+.1     row granularity        one row per day           one row per day           same
+.2     what is predicted      residual = obs - fcst     residual = obs - fcst     same
+.2     how corrected is made  fcst + predicted resid    fcst + predicted resid    same
+.3     features               3: fcst temp, sin, cos    3: fcst temp, sin, cos    same
+.3     fcst temp read at      12:00 UTC                 18:00 UTC                 HOUR
+.3     year_fraction          (doy-1)/365 or /366       (doy-1)/365 or /366       same
+.3     excluded features      no hour, no recent obs    no hour, no recent obs    same
+.4     library and model      LightGBM GBDT             LightGBM GBDT             same
+.4     objective              regression_l1             regression_l1             same
+.4     n_estimators           300                       300                       same
+.4     learning_rate          0.05                      0.05                      same
+.4     num_leaves             15                        15                        same
+.4     min_child_samples      40                        40                        same
+.4     subsample              1.0                       1.0                       same
+.4     colsample_bytree       1.0                       1.0                       same
+.4     reg_alpha / reg_lambda 0.0 / 0.0                 0.0 / 0.0                 same
+.4     random_state           42                        42                        same
+.4     n_jobs                 1                         1                         same
+.4     deterministic          True                      True                      same
+.4     force_row_wise         True                      True                      same
+.4     verbose                -1                        -1                        same
+.4     pinned versions        py 3.12.2, np 2.5.2,      py 3.12.2, np 2.5.2,      same
+                              lightgbm 4.7.0            lightgbm 4.7.0
+.4     tuning allowed         none                      none                      same
+.5     training window        2021-03-24..2025-07-31    2021-03-24..2025-07-31    same
+.5     refit on inner+valid   yes                       yes                       same
+.5     what else is fitted    model, climatology,       model, climatology,       same
+                              mean bias -- all on it    mean bias -- all on it
+.5     rows fitted on         1,569 (1,204 + 365, F27)  1,571 (1,206 + 365, F42)  LOCATION
+.5     calendar days in it    1,591                     1,591                     same
+.5     mismatch warning       test != 1.377 rehearsal   test != 1.466 rehearsal   LOCATION
+.6     test window            2025-08-01..2026-07-31    2025-08-01..2026-07-31    same
+.6     nothing used after     2026-07-31                2026-07-31                same
+.6     files opened first     the two 2026 LFPG         the two 2026 DSM          LOCATION
+       time                   chunks                    chunks
+.6     verification samples   not stated in D31         stated: 3 test-day obs    LOCATION
+       inside the test year   (the same is true of      values printed in F34/F35 (see Q29)
+                              LFPG, session 08)
+.7     pairing rule           D14, nearest report,      D14, nearest report,      same
+                              15-minute tolerance       15-minute tolerance
+.7     report minute          :00                       :54                       LOCATION
+.7     pairing offset         0 min (exact match)       6 min (17:54 -> 18:00)    LOCATION
+                                                                                  + HOUR
+.7     missing data           drop, count, report,      drop, count, report,      same
+                              never fill (SPEC 2.2)     never fill (SPEC 2.2)
+.7     second scheduled       :30 "special" exists,     none exists at all        LOCATION
+       stream                 refused (D30)             (F36), D30 cannot arise
+.7     expected fcst-gap days 0 in test year (F22)      0 in test year (F38)      same
+.7     expected obs-loss days 1: 2026-07-08 (F25)       0 (F41)                   LOCATION
+.7     expected paired rows   364 of 365                365 of 365                LOCATION
+.7     expected scored days   363 (persistence loses    365 (nothing lost, so     LOCATION
+                              2026-07-09)               nothing follows)
+.7     drop counts reported   training and test         training and test         same
+.8     reference 1            raw GFS, in the bar       raw GFS, in the bar       same
+.8     reference 2            persistence, in the bar   persistence, in the bar   same
+.8     persistence's source   previous day's 12:00 obs  previous day's 18:00 obs  HOUR
+.8     first-day note         2025-07-31 is training,   2025-07-31 is training,   same
+                              legal, will be used       legal, will be used
+.8     reference 3            climatology, +-7.5 days   climatology, +-7.5 days   same
+                              circular, informative     circular, informative
+.8     reference 4            mean-bias, informative    mean-bias, informative    same
+.8     mean-bias note carried worse than raw GFS on     better than raw GFS on    LOCATION
+       from the rehearsal     validation (F29)          validation (F45)
+.8     which half binds       not stated (both close)   raw GFS, not persistence  LOCATION
+                                                        (F45)
+.8     what fitted refs use   training window only      training window only      same
+                              (SPEC 2.1c)               (SPEC 2.1c)
+.8     scoring set            same days for all five    same days for all five    same
+.9     metric                 MAE in degC (SPEC 5.1)    MAE in degC (SPEC 5.1)    same
+.9     the bar                beat raw GFS AND          beat raw GFS AND          same
+                              persistence               persistence
+.9     numeric margin         none, qualitative (D22)   none, qualitative (D22)   same
+.9     margin reported        yes, prominently          yes, prominently          same
+.9     who decides pass/fail  raw GFS + persistence     raw GFS + persistence     same
+.9     judged once per        that airport's own data   that airport's own data   same
+       airport                (SPEC 5.0)                (SPEC 5.0)
+.10    number of looks        one                       one                       same
+.10    number of runs         one                       one                       same
+.10    failure handling       reported straight, not    reported straight, not    same
+                              re-run                    re-run
+.11    deviation handling     stop and raise with       stop and raise with       same
+                              the owner                 the owner
+.12    watch-item             none recorded             warm-end overshoot        LOCATION
+                                                        (F44), see below
+.13    gfs_seamless check     never run at LFPG         run at DSM, and they      LOCATION
+                              (Q20)                     DIFFER (F40)
+```
+
+**Verdict of the check: no methodological choice differs.** The `HOUR` rows are
+all one decision — D33's target hour — and the three things that follow from
+it: which hour the feature is read at, which hour persistence looks back to,
+and which report the pairing rule lands on. The `LOCATION` rows are the same
+four kinds D31's own check found, plus two new kinds that record facts rather
+than choices:
+
+1. **which airport it is** — its name, station code, network, position and grid
+   point (D35.1);
+2. **which files hold its data** (D35.6);
+3. **when the station files its routine report** — `:54` at DSM against `:00`
+   at LFPG — which changes the pairing *offset* the D14 rule produces, not the
+   rule (D35.7);
+4. **how many rows and drops follow from that airport's own record** — 1,571
+   expected training rows, 0 expected test-year drops, 365 expected scored days
+   (D35.5, D35.7);
+5. **what the rehearsal already showed about the references at this airport** —
+   the mean-bias reference beats raw GFS here, persistence is far weaker here
+   (D35.8). These carry no requirement; they are context so the test session
+   reports the right thing as the deciding margin;
+6. **two facts about the data and the record** — the warm-end watch-item
+   (D35.12) and the `gfs_seamless` result (D35.13). Neither changes a setting,
+   a date, a feature, a reference or the bar.
+
+Every setting, every date, every feature, every reference, the metric, the bar,
+the one-look rule and the stop-signal rule are the same in D21, D31 and D35.
+Nothing was added to D35 that D31 does not require, and nothing D31 requires
+was left out of D35.
+
+**The one difference that must not be smoothed over, stated again because it is
+the point of the whole check.** D31's correspondence table had no `HOUR`
+column, and it could say in one line that only the location changed (D26).
+D35's has one. **DSM is the first lock where the target hour is among the
+intended differences**, and that is D33's deliberate choice, taken before any
+DSM data was seen, with its cost written into SPEC 4.1: a DSM result answers
+"does the recipe travel to a different region at a comparable local time", and
+must **not** be quoted as if it were the controlled, location-only comparison
+EGLC and CDG make between them (D33, F46).
+
+---
+
+## 2026-08-18 — Open question raised by session 17 (not acted on)
+
+**Q29. The verify-on-contact samples sit inside each airport's test year, and
+no lock has said so until now.** SPEC 3.3 requires two things to be checked by
+pulling real data at every new airport, and the natural sample to pull is the
+most recent few weeks. At all three airports that sample landed inside the
+sealed test window (2025-08-01 to 2026-07-31):
+- **EGLC**, session 01: forecast and observation samples for 1–21 July 2026;
+  F2 printed gap counts and F1 the archive's behaviour.
+- **LFPG**, session 08: the same three weeks; F18 printed the minute spread and
+  F20 the forecast value range 8.7 to 36.7 degC.
+- **DSM**, session 14: the same three weeks; F34 printed three target-hour
+  observations (2026-07-01 30.56, 2026-07-02 31.11, 2026-07-03 28.33 degC) and
+  F35 printed 72 hourly values for 2026-07-01..03 while checking units.
+
+**What this is not.** It is not leakage into any model: nothing was fitted on
+those values, no method choice was made from them, no forecast-observation pair
+or error figure from a test year has ever been formed, and each test session
+reads the yearly chunk files rather than the samples. Nor is it unequal
+treatment — all three airports were sampled the same way in the same weeks.
+
+**What it is.** STATUS and several log entries say a test window has been
+touched only by structural counts, "never a temperature value". For the
+verify-on-contact samples that sentence is slightly too strong: a handful of
+values inside the test window were printed at each airport, months before the
+look. D35.6 now says so for DSM. D21.6 and D31.6 do not say it for EGLC and
+LFPG, and those entries are closed and append-only.
+
+**Two things for the owner, and neither was acted on.** Whether the wording in
+STATUS should be corrected to match (this session did not change any claim it
+did not write). And whether future airports should take their verify-on-contact
+samples from **outside** the D13 period entirely — after 2026-07-31, which D13
+does not use at all — the way session 15 already chose to do for F40's recent
+window when it noticed the same problem (F40's own note). That would cost
+nothing and would remove the question at the next airport.
