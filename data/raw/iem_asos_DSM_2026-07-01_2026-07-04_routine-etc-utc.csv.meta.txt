@@ -1,0 +1,35 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_DSM_2026-07-01_2026-07-04_routine-etc-utc.csv
+purpose     : session 14 - part B7 - tz spelling cross-check. The session 14 prompt describes the existing request approach as tz=Etc/UTC, while every request this project has actually made uses tz=UTC. This pulls the same rows the other way so the two spellings can be compared row by row
+pulled at   : 2026-08-18 14:41:59 BST (2026-08-18 13:41:59 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&network=IA_ASOS&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=4&tz=Etc%2FUTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = DSM   (Des Moines International, Iowa)
+  network     = IA_ASOS
+  data        = tmpc, dwpc
+  date range  = 2026-07-01 to 2026-07-04. IEM treats its end date as
+                exclusive, so the last row is the day before 2026-07-04.
+  tz          = Etc/UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled report)
+
+notes:
+- This file is a CHECK, not part of the dataset. It settles a
+  wording difference between the session prompt and the
+  project's own request shape; it changes nothing.
+- tmpc is air temperature in degrees Celsius, the same field and the
+  same units stage 1 and stage 2 used at EGLC and LFPG. No unit
+  conversion happens anywhere in this project.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).
+- HTTP status 200.

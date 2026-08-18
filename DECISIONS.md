@@ -3039,3 +3039,450 @@ One thing worth deciding alongside it, though it needs no separate question:
 twelve months** (F30). Whatever opens next, a result measured on 2025-08-01 to
 2026-07-31 is no longer a held-out result for the method, and a third airport
 tested on those same dates would not be an independent draw of weather either.
+
+---
+
+## 2026-08-18 — Session 14 decisions (a third airport opens)
+
+Stage 2 passed (F30), and F30's own closing caveat is what these two entries
+answer. Both were written before any DSM data was pulled.
+
+**D32. A third airport is opened: Des Moines, Iowa (IEM station `DSM`, network
+`IA_ASOS`).**
+- **What it is for.** F30 recorded the honest limit on stages 1 and 2: EGLC and
+  LFPG are 328 km apart and were tested on **the same twelve months**, so the
+  two wins lean on one western-European weather year seen twice, not on two
+  independent draws. A third airport in a different weather region is the direct
+  attack on that. Des Moines sits in the flat continental interior of the United
+  States, where a summer has little to do with a summer in London or Paris.
+- **Why Des Moines specifically.** Flat and continental, so the local
+  terrain effects are mild; GFS is well behaved over the US interior; and IEM is
+  an Iowa institution, so `IA_ASOS` is its home network and its cleanest record.
+  The owner's plan is "temperate and well-behaved first, then ramp up
+  difficulty", so DSM is the easy off-continent step, taken before harder and
+  more independent airports and before any stage 3 pooling.
+- **This partially answers Q24**, which asked what opens next now that stage 2
+  has passed. The answer is the "more airports first" branch, not stage 3.
+  **Stage 3 is not opened and nothing about it was written or started.** Q24's
+  second half — the SPEC edits that would stop SPEC describing stage 2 as in
+  progress — is still open and is now joined by Q25.
+- Everything else is reused unchanged from stages 1 and 2, pending
+  verification that DSM's data supports it: the two data sources (SPEC 3.1,
+  3.2), the model string pin (D16), temperature only (D17), the split dates
+  (D13), the pairing rule (D14), the drop-count-report rule (SPEC 2.2), the
+  minimal three features (D19), the model settings (D21.4) and the frozen
+  qualitative bar (SPEC 5.3, D22). **One thing is not reused — the target
+  hour. See D33.**
+
+**D33. DSM's target hour is local standard noon — 18:00 UTC — not 12:00 UTC.**
+- **The problem.** DSM's standard-time offset is UTC−6, so 12:00 UTC is 06:00
+  in the morning at Des Moines. That is dawn: the coldest, most stable part of
+  the day, and precisely the transition SPEC 4.1 says 12:00 UTC was chosen to
+  **avoid** in Europe ("It avoids dawn and dusk, when temperature swings
+  quickest"). Testing DSM at 12:00 UTC would change the *time of day* as well
+  as the region, so a different result could be either, with no way to tell
+  which.
+- **The decision.** DSM's target is **12:00 Central Standard Time = 18:00 UTC**,
+  with daylight saving deliberately ignored so the target stays a fixed UTC hour
+  all year round. At 18:00 UTC the local clock reads 12:00 CST in winter and
+  13:00 CDT in summer — midday to early afternoon, which is how 12:00 UTC sat
+  at the European airports.
+- This is **D27's solar-standard-noon convention brought forward**. D27 wrote
+  the convention down for stage 3 and said, in as many words, that deciding it
+  while nothing depended on it was cleaner than deciding it under pressure. It
+  is now being applied earlier than D27 expected, for a reason D27 did not have
+  in front of it: a third airport six time zones away, modelled on its own.
+- **The honest consequence, recorded plainly.** DSM changes **both** the
+  location and the target hour against EGLC and CDG, so **D26's "only the
+  location changed" does not strictly hold for DSM**. That claim was what made
+  stage 2's comparison clean, and it is being given up here on purpose. The
+  argument for giving it up: for a cross-region test, holding *local midday*
+  constant is the more meaningful thing to fix than holding the UTC hour
+  constant, because 12:00 UTC is a different time of day at each location and
+  the difference is small in Europe and large across an ocean. Anyone reading a
+  DSM result must read it knowing two things changed, and DSM's result must not
+  be quoted as if it were the same controlled comparison stage 2 was.
+- **Chosen on principle, before any DSM data was seen.** Nothing about DSM's
+  bias, its record or its numbers was known when this was decided. That matters
+  under rule 2.4 in the same way the frozen bar does.
+- **It conflicts with SPEC 4.1 as SPEC is written today**, which says the same
+  hour 12:00 UTC is used at every airport and that the convention "changes at
+  stage 3, and only there". No SPEC edit was authorised this session, so none
+  was made. The conflict is real, it is deliberate, and it is raised as **Q25**
+  and in this session's consistency check for the owner to settle.
+
+---
+
+## 2026-08-18 — Session 14 findings (DSM verified on contact)
+
+This session pulled small samples only. **No full dataset was pulled, nothing
+was joined, built, trained or evaluated, and nothing from stage 1 or stage 2 was
+touched or re-run.** Ten raw files went into `data/raw/`, each with a
+`.meta.txt` beside it recording the pull time and the exact request (SPEC 2.3).
+The scripts are `scripts/session14_pull.py` and `scripts/session14_checks.py`;
+the full real output is `notes/session-14-check-output.txt`, and the pull log is
+`notes/session-14-pull-output.txt`. Two consecutive runs of the checks script
+produced identical output.
+
+**F31. DSM's position, and the forecast grid point it maps to.**
+
+The position comes from IEM's own `IA_ASOS` station listing, pulled first in the
+same run so that the forecast requests could use it. Nothing was typed in from
+memory or a map — the rule D28 set for the airport table.
+
+```
+IEM's entry for DSM, exactly as returned:
+  sid           = DSM
+  sname         = Des Moines
+  network       = IA_ASOS
+  state / country = IA / US
+  coordinates   = lat 41.534, lon -93.6531
+  elevation     = 294.0 m
+  tzname        = America/Chicago
+  archive_begin = 1928-01-01
+  archive_end   = None   (still reporting)
+  online        = True
+  attributes    = METAR_RESET_MINUTE = 54, HAS1MIN = 1, HASTAF = 1, ...
+                  (62 stations in the IA_ASOS listing)
+```
+
+The observation CSV carries lat 41.5339 / lon -93.6531 / elevation 294.0 m — the
+same place, 11 m apart, because the CSV rounds latitude to four decimals and the
+metadata to three. The two IEM sources agree.
+
+Beside the two airports already in the project:
+
+```
+        latitude   longitude   elevation
+EGLC    51.5053     0.0553         5 m
+LFPG    49.0153     2.5344       109 m
+DSM     41.534    -93.6531       294 m
+DSM is 6,754 km from EGLC and 7,051 km from LFPG, and 289 m / 185 m higher.
+EGLC and LFPG are 328 km apart (F17).
+```
+
+That distance is the whole point of D32. It also makes DSM the highest and by
+far the most continental site in the project.
+
+The forecast grid point Open-Meteo returned for DSM:
+
+```
+requested        : lat 41.534, lon -93.6531
+grid point       : lat 41.52945, lon -93.63281, elevation 285.0 m
+distance         : 1.76 km from the airport
+height mismatch  : -9.0 m  (grid 285 m, station 294 m)
+```
+
+**This is the closest grid point of the three** — 1.76 km against 3.44 km at
+LFPG and 4.33 km at EGLC — and the first with a height mismatch worth naming.
+Neither should be over-read. A GFS cell elevation is a smoothed average over a
+wide area, so 9 m is well inside the noise, and both facts are exactly the kind
+of steady local offset this project exists to learn (Q5, F17).
+
+**F32. The target hour checked, not assumed: local standard noon at DSM really
+is 18:00 UTC.**
+
+D33 fixes DSM's target at local standard noon and says that is 18:00 UTC. That
+was checked against the timezone database, using the timezone name IEM's own
+metadata gives (`America/Chicago`):
+
+```
+timezone from IEM metadata     : America/Chicago
+mid-winter (standard time)     : 18:00 UTC = 12:00 CST (UTC-6)
+mid-summer (daylight saving)   : 18:00 UTC = 13:00 CDT (UTC-5)
+standard-time offset           : UTC-6
+so local standard noon (12:00) = 18:00 UTC
+D33 says                       = 18:00 UTC
+VERDICT                        : MATCHES
+```
+
+And for contrast, what the European target hour would have been at DSM:
+
+```
+mid-winter  : 12:00 UTC = 06:00 CST - dawn
+mid-summer  : 12:00 UTC = 07:00 CDT - dawn
+```
+
+So the reason D33 gives is not theoretical. 12:00 UTC at Des Moines is the
+dawn hour SPEC 4.1 explicitly chose 12:00 UTC to avoid in Europe.
+
+**F33. The forecast archive starts at DSM on exactly the same hour as at EGLC
+and LFPG: 2021-03-24 00:00 UTC.**
+
+Two probes, both `gfs_global`, `temperature_2m_previous_day1`, at IEM's DSM
+position:
+
+```
+probe 1, 2021-03-01..2021-03-07 : 168 rows, ALL 168 null
+probe 2, 2021-03-18..2021-03-26 : 216 rows, 72 with a value, 144 null
+                                  first non-null = 2021-03-24T00:00
+                                  value range 4.8 to 13.0 degC
+```
+
+The recent sample is complete:
+
+```
+2026-07-01..2026-07-21 : 504 rows, 504 with a value, 0 null
+                         value range 17.2 to 36.0 degC
+                         timezone in the response: GMT, utc_offset_seconds 0
+```
+
+This is the third location to give the same answer, down to the hour, including
+the detail that the API answers HTTP 200 with all-null values for dates before
+its archive begins rather than returning an error (F1, F20). Two locations
+sharing a start hour said the floor was a property of the archive; a third on
+another continent makes that about as settled as it can be without reading
+Open-Meteo's source.
+
+**The practical consequence: the D13 split dates carry over to DSM unchanged.**
+Training 2021-03-24 to 2025-07-31 and testing 2025-08-01 to 2026-07-31 are as
+available at DSM as at the two European airports. No date needs moving.
+
+**F34. DSM reports at `:54`, on every single report in both samples — so the
+D14 pairing rule applies as written at the 18:00 UTC target, with a 6-minute
+offset.**
+
+This is the per-airport fact D14 depends on. EGLC reports at `:50` (F3), LFPG at
+`:00` (F18), and DSM turns out to be the most consistent of the three.
+
+```
+recent sample 2026-07-01..2026-07-21 : 504 reports, minute-past-hour  :54 x504
+early  sample 2021-03-18..2021-03-31 : 336 reports, minute-past-hour  :54 x336
+distance from the nearest hour        : 6 min on every report in both samples
+within D14's 15-minute window         : 504 of 504, and 336 of 336
+outside it, so D14 drops them         : 0, and 0
+```
+
+IEM's own station metadata agrees: DSM's `METAR_RESET_MINUTE` attribute is `54`
+(F31). So the habit is both measured and declared, and it holds at both ends of
+the period, five years apart.
+
+**Does D14 need adapting? No.** D14 pairs each target hour with the nearest
+routine report and drops the hour if no report falls within 15 minutes of it.
+At DSM the `17:54` report is 6 minutes from 18:00 UTC and the `18:54` report is
+54 minutes from it, so the rule picks 17:54 — the same shape of pairing D14
+gives at EGLC, where the 11:50 report serves 12:00, and a smaller offset than
+EGLC's. The 10-minute argument D14 rests on covers 6 minutes comfortably.
+
+```
+pairing offset at the target hour     EGLC   LFPG   DSM
+                                      10 min  0 min  6 min
+```
+
+What D14 would keep at DSM's own target hour, observation side only:
+
+```
+recent sample 2026-07-01..2026-07-21  21 calendar days, 21 kept, 0 dropped
+early  sample 2021-03-18..2021-03-31  14 calendar days, 14 kept, 0 dropped
+pairing offset on every kept day      : 6 minutes, min and max alike
+e.g. 2026-07-01 -> report 17:54 UTC, 30.56 degC
+     2021-03-18 -> report 17:54 UTC,  8.89 degC
+```
+
+**Not one report in either sample falls outside D14's tolerance**, so on this
+evidence DSM loses no day at all to off-hour reporting — the problem that costs
+LFPG three days across five years (F25) and EGLC almost nothing (F9). Only the
+full pull can say whether that holds over five years; three weeks plus two weeks
+is a small sample and F11's lesson is that spot checks prove nothing about the
+places they did not look.
+
+**Gap counts, nothing filled (SPEC 2.2).** Both samples are complete except for
+one hour each, and that one hour is an artefact of where the request was cut,
+not a hole in the record:
+
+```
+recent sample : 504 hours expected, 503 covered, 1 missing (2026-07-01 00:00)
+early  sample : 336 hours expected, 335 covered, 1 missing (2021-03-18 00:00)
+reports with no temperature : 0 in both samples
+```
+
+Because DSM reports at `:54`, the report that covers hour `H` is stamped
+`(H-1):54`. The first hour of any window therefore needs a report from the day
+*before* the request, which was not asked for. **It does not touch the target
+hour** — 18:00 is served by 17:54 on the same day — but it will make the full
+pull's whole-hours gap map miscount one hour per chunk boundary unless the
+mapping allows for it. See Q26.
+
+**F35. The two United States questions answered: DSM needs no new units
+handling and no new timezone handling.**
+
+Neither was ever in doubt in Europe, and both would have been large, silent
+errors if wrong at a US station. Both were measured rather than assumed.
+
+**Units.** The pipeline reads IEM's `tmpc` field and performs no unit conversion
+anywhere — session 08's reader floats the value straight into a Celsius column.
+A short window was pulled with Fahrenheit alongside Celsius purely to check
+this:
+
+```
+file : iem_asos_DSM_2026-07-01_2026-07-04_routine-tmpc-tmpf.csv   72 rows
+
+valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+2026-07-01 00:54   32.22    90.00          32.22       -0.002
+2026-07-01 01:54   30.00    86.00          30.00       +0.000
+2026-07-01 03:54   28.89    84.00          28.89       +0.001
+2026-07-01 04:54   28.33    83.00          28.33       -0.003
+
+largest disagreement across all 72 rows : 0.0044 degC
+tmpc range in this sample               : 18.89 to 32.22 degC
+```
+
+`tmpc` is degrees Celsius at DSM, the same field and the same units EGLC and
+LFPG use. The sub-hundredth differences are rounding: the METAR carries whole
+degrees Celsius, IEM derives Fahrenheit from it, and both are printed to two
+decimals.
+
+**Timezone.** Every IEM request in this project sends `tz=UTC`. The same three
+days were pulled a second time with `tz=America/Chicago` and the two series
+slid past each other to see where the temperatures line up:
+
+```
+shift (hours)   rows compared   temperatures equal
+          +0              72        3  (4.2%)
+          +3              69        9  (13.0%)
+          +4              68       17  (25.0%)
+          +5              67       67  (100.0%)
+          +6              66       17  (25.8%)
+          +8              64        4  (6.2%)
+```
+
+A single clean 100% at +5 hours, and early July is exactly when
+`America/Chicago` is on daylight saving at UTC−5. So the `tz=UTC` request really
+is UTC. Open-Meteo labels its own side of the join `timezone=GMT`,
+`utc_offset_seconds=0`, so both series are stamped in UTC and neither needs
+shifting.
+
+**One wording difference settled while there.** The session 14 prompt describes
+the existing request approach as `tz=Etc/UTC`; every request this project has
+ever made uses `tz=UTC`. The same three days were pulled the prompt's way and
+compared with the first three days of the `tz=UTC` sample — same station, same
+fields, same window:
+
+```
+tz=UTC file     : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv, first 73 lines
+tz=Etc/UTC file : iem_asos_DSM_2026-07-01_2026-07-04_routine-etc-utc.csv
+both            : 4,146 bytes
+byte-for-byte identical : YES
+```
+
+They are the same request under two spellings. The project's `tz=UTC` needs no
+change and the prompt's wording and the code agree in substance.
+
+**F36. DSM does NOT file a second scheduled report — its "special" reports are
+genuinely unscheduled. That is different from both European airports.**
+
+At EGLC, IEM's "special" (SPECI) stream turned out to be a second scheduled
+report at `:20` (F3), and at LFPG one at `:30` (F19). At DSM it is what the name
+says:
+
+```
+recent window 2026-07-01..2026-07-21, 21 days
+  routine rows           : 504  (all at :54)
+  routine + special rows : 558
+  special rows           :  54
+  distinct minutes used  :  38
+  busiest minutes        : :07 x4, :31 x3, :01 x2, :13 x2, :22 x2
+```
+
+Fifty-four extra reports spread over thirty-eight different minutes, none used
+more than four times in three weeks. That is weather-driven, not scheduled.
+
+Recorded, not acted on. Stage 1 and stage 2 use the routine report as the hourly
+truth and DSM reuses that unchanged. It is worth writing down for two reasons:
+DSM has no `:30`-style fallback stream to argue about the way Q19 did at CDG, so
+D30's question cannot even arise here; and a reader comparing the three airports'
+report counts should know why DSM's second stream is so much smaller.
+
+**F37. Plain first read — yes, DSM is usable for the recipe the same way EGLC
+and CDG were.** Every verify-on-contact check passed:
+
+- the Previous Runs API carries the location, with a grid point 1.76 km away and
+  a 9 m height difference (F31);
+- the archive reaches back to the same 2021-03-24 00:00 UTC start hour, so the
+  fixed D13 split dates need no change (F33);
+- IEM carries DSM in `IA_ASOS` with a complete-looking observation record, and
+  the position used is IEM's own (F31);
+- the pairing rule needs no adapting: DSM reports at `:54`, a steady 6 minutes
+  from the target hour, inside D14's tolerance, on every report in both samples
+  (F34);
+- the units and the timezone need no new handling, and that is measured rather
+  than assumed (F35);
+- and the one genuinely DSM-specific choice, the target hour, was made on
+  principle before any data was seen (D33) and then confirmed against the
+  timezone database (F32).
+
+**Nothing found here justifies changing any stage 1 or stage 2 decision.** The
+one thing that is not reused — the target hour — was decided in advance and its
+cost to D26's "only the location changed" claim is written into D33 rather than
+glossed over.
+
+Three things this session did **not** check, all listed as open questions below:
+the SPEC edits D33 now requires (Q25), the chunk-boundary effect DSM's `:54`
+reporting has on a whole-hours gap map (Q26), and whether `gfs_global` and
+`gfs_seamless` return the same data at DSM (Q27) — which matters more in Iowa
+than it ever did in Europe.
+
+---
+
+## 2026-08-18 — Open questions raised by session 14 (not acted on)
+
+**Q25. SPEC and D33 now disagree about DSM's target hour, and SPEC also still
+describes stage 2 as in progress.** No SPEC edit was authorised this session and
+none was made. The places that need the owner's word, so the edits are made
+deliberately the way session 09's and session 10's were:
+- **SPEC 4.1 says the target hour is 12:00 UTC at every airport**, and says the
+  solar-standard-noon convention "changes at stage 3, and only there" and is
+  "**not** applied to stage 1 or stage 2". D33 applies it at DSM now. Both
+  sentences cannot stand. The natural repair is to make the target hour a
+  **per-airport fact in the SPEC 3.4 table** — a new column — with 12:00 UTC for
+  EGLC and LFPG and 18:00 UTC for DSM, and to reword 4.1 so it states the
+  principle (local midday, daylight saving ignored) rather than one hour. That
+  is exactly the move D28 made for the other per-airport facts, and the session
+  14 prompt says it belongs to the design/pull session, not this one.
+- **SPEC 3.4's table has no DSM row**, and no target-hour column to put in it.
+- **The four places Q24 already listed are still out of date**, now with a
+  third airport arriving on top of them: section 1 ("stage 2, **in progress**"),
+  the stage cell in the 3.4 table, the 5.0 results table ("LFPG | pending — not
+  yet run") and section 6 ("Stage 2 ... IN PROGRESS"). Adding DSM raises a
+  further question the owner should settle at the same time: **what is a third
+  airport called?** SPEC 6's stage list has no slot for it — stage 3 is pooling.
+  It may be a continuation of stage 2's "prove the recipe travels", a new stage
+  2b, or something else. Nothing was invented here.
+
+**Q26. DSM's `:54` reporting will make a whole-hours gap map miscount one hour
+at every chunk boundary.** At a station reporting at `:54`, the report covering
+hour `H` is stamped `(H-1):54`, so the first hour of any request window has no
+report inside that window — which is why both of this session's samples show
+exactly one missing hour, at the very first hour (F34). It is a request-boundary
+artefact, not a hole. It **does not touch the target hour**: 18:00 UTC is served
+by the 17:54 report from the same day, inside the same chunk. But session 10's
+gap-mapping approach counts *every* hour, and run unchanged over six yearly
+chunks at DSM it would report six phantom missing hours. The pull session
+should either overlap the chunks by a day, or count the boundary hours
+separately and say so. Recorded now so it is not discovered as a surprise in the
+middle of the pull, and so nobody "fixes" it by filling anything (SPEC 2.2).
+
+**Q27. `gfs_global` versus `gfs_seamless` has never been compared at DSM, and
+F6's reason for expecting them to agree does NOT carry to Iowa.** D16 pins
+`gfs_global`, and this session used it, so nothing is broken. But the argument
+behind F6 was location-specific and it is worth reading again:
+
+> "For the NCEP provider the candidates are GFS (global) and HRRR/NAM/NBM (all
+> CONUS-only, that is the United States). HRRR 'data are only available for the
+> United States, while for other locations, only GFS is used'. EGLC is in
+> London, so no CONUS model can ever apply."
+
+**Des Moines is in CONUS.** So at DSM, `gfs_seamless` is exactly the case F6
+ruled out for Europe: a seamless blend that may prefer a higher-resolution
+non-GFS model over GFS. Two consequences, neither of them a blocker:
+- The **D16 pin protects the project** — pinning `gfs_global` means the series
+  is NCEP GFS by construction wherever the airport is, which is precisely the
+  reason D16 gave for pinning it. This is the first time that reason has had
+  real work to do.
+- But if anyone ever reaches for `gfs_seamless` at a US airport, or compares
+  DSM's numbers with a `gfs_seamless` series from elsewhere, **it will not be
+  the same model**. That is worth a check at the pull session, in the way F6
+  checked it at EGLC: a small value-by-value comparison of the two strings over
+  a recent and an early window. Q20's note already records that this comparison
+  was never re-run at LFPG either. Not acted on here — it is outside a
+  verify-on-contact scope, which is about whether the data exists at all.

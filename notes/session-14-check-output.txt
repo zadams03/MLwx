@@ -1,0 +1,402 @@
+
+==========================================================================
+PART 0 - DSM's position, from IEM's own station metadata
+==========================================================================
+file          : iem_station_metadata_IA_ASOS.geojson   (62 stations in IA_ASOS)
+IEM's entry for DSM, exactly as returned:
+  sid           = DSM
+  sname         = Des Moines
+  network       = IA_ASOS
+  state         = IA
+  country       = US
+  elevation     = 294.0
+  tzname        = America/Chicago
+  archive_begin = 1928-01-01
+  archive_end   = None
+  online        = True
+  coordinates   = lat 41.534, lon -93.6531  (GeoJSON order in the file is lon, lat)
+  attributes    = {'GHCNH_ID': 'USW00014933', 'SHEF_6HR_SRC': 'DSXI4', 'HASTAF': '1', 'METAR_RESET_MINUTE': '54', 'HAS1MIN': '1', 'HAS_PHOUR': '1'}
+
+IEM's own METAR_RESET_MINUTE attribute is the station's scheduled
+reporting minute. It is checked against the real reports in PART B2.
+
+Side by side with the two airports already in the project (SPEC 3.4):
+  EGLC  lat 51.5053, lon 0.0553, elevation 5.0 m
+  LFPG  lat 49.0153, lon 2.5344, elevation 109.0 m
+  DSM   lat 41.534, lon -93.6531, elevation 294.0 m
+  DSM is 6,754 km from EGLC and 7,051 km from LFPG,
+  and +289 m / +185 m in elevation against them.
+  EGLC and LFPG are 328 km apart (F17). DSM is on another continent,
+  which is the whole reason it was opened (D32, F30's weather-year caveat).
+
+==========================================================================
+PART 0b - the target hour: is local standard noon really 18:00 UTC?
+==========================================================================
+DECISIONS D33 sets DSM's target hour to local standard noon with
+daylight saving deliberately ignored, and says that is 18:00 UTC. This
+checks it against the timezone database rather than taking it on trust.
+
+timezone from IEM metadata : America/Chicago
+  mid-winter (standard time)    : 18:00 UTC = 12:00 CST (UTC-6)
+  mid-summer (daylight saving)  : 18:00 UTC = 13:00 CDT (UTC-5)
+  standard-time offset          : UTC-6
+  so local standard noon (12:00) = 18:00 UTC
+  D33 says                       = 18:00 UTC
+  VERDICT                        : MATCHES
+
+For contrast, what 12:00 UTC would have been at DSM:
+  mid-winter  : 12:00 UTC = 06:00 CST - dawn
+  mid-summer  : 12:00 UTC = 07:00 CDT - dawn
+That is the dawn transition SPEC 4.1 chose 12:00 UTC to avoid in Europe,
+which is why D33 moved the hour rather than keeping it.
+
+==========================================================================
+PART A1 - forecast sample, recent period (Open-Meteo Previous Runs, gfs_global)
+==========================================================================
+file            : openmeteo_previousruns_gfs_global_DSM_2026-07-01_2026-07-21.json
+requested point : lat 41.534, lon -93.6531 (DSM, from IEM metadata)
+model grid point: lat 41.52945, lon -93.63281, elevation 285.0 m
+grid point is   : 1.76 km from the airport
+height mismatch : grid 285.0 m vs station 294.0 m -> -9.0 m
+timezone in file: GMT (abbrev GMT), utc_offset_seconds 0
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 504
+date range (UTC): 2026-07-01T00:00 -> 2026-07-21T23:00
+values present  : 504   missing (null): 0
+value range     : 17.2 to 36.0 degC
+first non-null  : 2026-07-01T00:00
+
+For comparison, the two grid points already in SPEC 3.4:
+  EGLC  lat 51.487137, lon 0.0, elev 4.0 m -> 4.33 km, -1.0 m
+  LFPG  lat 49.027008, lon 2.578125, elev 109.0 m -> 3.44 km, +0.0 m
+
+==========================================================================
+PART A2 - does the forecast archive reach back to March 2021 for DSM?
+==========================================================================
+-- probe 1: 1-7 March 2021, before the first hour EGLC (F1) and LFPG (F20) have --
+file            : openmeteo_previousruns_gfs_global_DSM_2021-03-01_2021-03-07.json
+requested point : lat 41.534, lon -93.6531 (DSM, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 168
+date range (UTC): 2021-03-01T00:00 -> 2021-03-07T23:00
+values present  : 0   missing (null): 168
+value range     : n/a - every value came back null
+first non-null  : none in this window
+
+-- probe 2: 18-26 March 2021, straddling the 24 March 2021 start --
+file            : openmeteo_previousruns_gfs_global_DSM_2021-03-18_2021-03-26.json
+requested point : lat 41.534, lon -93.6531 (DSM, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 216
+date range (UTC): 2021-03-18T00:00 -> 2021-03-26T23:00
+values present  : 72   missing (null): 144
+value range     : 4.8 to 13.0 degC
+first non-null  : 2021-03-24T00:00
+
+==========================================================================
+PART B1 - truth sample, same recent period (IEM ASOS DSM, routine METARs)
+==========================================================================
+station position in the file : lat 41.5339, lon -93.6531, elevation 294.0 m
+station position in metadata : lat 41.534, lon -93.6531, elevation 294.0 m
+agree to within               : 11 m (the CSV rounds latitude to 4 places, the metadata to 3)
+
+file             : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 504
+minute-past-hour : :54 x504
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 503
+hours MISSING    : 1   (0.20% of the window)
+missing hours    :
+  2026-07-01 00:00 UTC <- needs the previous day's :54 report, outside this request
+temperature range: 18.89 to 36.67 degC (plainly Celsius, not Kelvin)
+
+==========================================================================
+PART B2 - what minute does DSM report at, and does D14 still apply?
+==========================================================================
+Recent sample, routine reports only:
+
+file                          : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv
+reports                       : 504
+distance from the nearest hour:
+   6 min  x504
+within D14's 15-minute window : 504
+outside it, so D14 drops them : 0
+
+reports within 15 min of 18:00 UTC (DSM's target hour, D33) : 21
+most common offset            : 6 min (504 of 504 reports)
+reports D14 DROPS             : none in this sample
+
+==========================================================================
+PART B2b - what D14 would do at DSM's target hour, 18:00 UTC
+==========================================================================
+Recent sample, routine reports only. Observation side only - nothing is
+joined to a forecast here and nothing is modelled.
+
+file                : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv
+target hour         : 18:00 UTC (local standard noon at DSM, D33)
+calendar days       : 21
+days with a usable 18:00 UTC observation under D14 : 21
+days D14 would drop and count                      : 0
+pairing offset      : min 6 min, max 6 min, mean 6.0 min
+  (EGLC's is a steady 10 minutes at :50; LFPG's is 0 at :00)
+  e.g. 2026-07-01 -> report 17:54 UTC, 30.56 degC, 6 min before the target hour
+  e.g. 2026-07-02 -> report 17:54 UTC, 31.11 degC, 6 min before the target hour
+  e.g. 2026-07-03 -> report 17:54 UTC, 28.33 degC, 6 min before the target hour
+
+Early sample, routine reports only:
+
+file                : iem_asos_DSM_2021-03-18_2021-04-01_routine.csv
+target hour         : 18:00 UTC (local standard noon at DSM, D33)
+calendar days       : 14
+days with a usable 18:00 UTC observation under D14 : 14
+days D14 would drop and count                      : 0
+pairing offset      : min 6 min, max 6 min, mean 6.0 min
+  (EGLC's is a steady 10 minutes at :50; LFPG's is 0 at :00)
+  e.g. 2021-03-18 -> report 17:54 UTC, 8.89 degC, 6 min before the target hour
+  e.g. 2021-03-19 -> report 17:54 UTC, 8.89 degC, 6 min before the target hour
+  e.g. 2021-03-20 -> report 17:54 UTC, 12.22 degC, 6 min before the target hour
+
+==========================================================================
+PART B3 - truth sample, early period (IEM ASOS DSM, routine METARs)
+==========================================================================
+file             : iem_asos_DSM_2021-03-18_2021-04-01_routine.csv
+window (UTC)     : 2021-03-18 00:00:00 -> 2021-04-01 00:00:00 (end exclusive)
+reports in file  : 336
+minute-past-hour : :54 x336
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 335
+hours MISSING    : 1   (0.30% of the window)
+missing hours    :
+  2021-03-18 00:00 UTC <- needs the previous day's :54 report, outside this request
+temperature range: -2.22 to 23.89 degC (plainly Celsius, not Kelvin)
+
+Is the reporting minute the same five years earlier?
+
+file                          : iem_asos_DSM_2021-03-18_2021-04-01_routine.csv
+reports                       : 336
+distance from the nearest hour:
+   6 min  x336
+within D14's 15-minute window : 336
+outside it, so D14 drops them : 0
+
+reports within 15 min of 18:00 UTC (DSM's target hour, D33) : 14
+most common offset            : 6 min (336 of 336 reports)
+reports D14 DROPS             : none in this sample
+
+==========================================================================
+PART B4 - side file: the same recent period including special (SPECI) reports
+==========================================================================
+At EGLC the 'special' reports turned out to be a second scheduled report
+at :20 (F3), and at LFPG one at :30 (F19). This checks what DSM does.
+
+file             : iem_asos_DSM_2026-07-01_2026-07-22_routine-and-special.csv
+window (UTC)     : 2026-07-01 00:00:00 -> 2026-07-22 00:00:00 (end exclusive)
+reports in file  : 558
+minute-past-hour : :00 x1, :01 x2, :02 x1, :03 x1, :06 x2, :07 x4, :11 x1, :12 x1, :13 x2, :14 x1, :15 x1, :16 x1, :17 x2, :19 x1, :21 x2, :22 x2, :26 x1, :27 x1, :28 x1, :29 x2, :30 x1, :31 x3, :32 x1, :33 x1, :36 x1, :37 x2, :38 x1, :39 x1, :40 x1, :41 x2, :43 x1, :44 x2, :46 x1, :47 x1, :50 x2, :52 x1, :54 x504, :58 x1, :59 x1
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 503
+hours MISSING    : 1   (0.20% of the window)
+missing hours    :
+  2026-07-01 00:00 UTC <- needs the previous day's :54 report, outside this request
+temperature range: 18.89 to 36.67 degC (plainly Celsius, not Kelvin)
+
+file                          : iem_asos_DSM_2026-07-01_2026-07-22_routine-and-special.csv
+reports                       : 558
+distance from the nearest hour:
+   0 min  x1
+   1 min  x3
+   2 min  x2
+   3 min  x1
+   6 min  x506
+   7 min  x4
+   8 min  x1
+  10 min  x2
+  11 min  x1
+  12 min  x1
+  13 min  x3
+  14 min  x2
+  15 min  x1
+  16 min  x3
+  17 min  x3
+  19 min  x3
+  20 min  x1
+  21 min  x3
+  22 min  x3
+  23 min  x2
+  24 min  x1
+  26 min  x1
+  27 min  x2
+  28 min  x2
+  29 min  x5
+  30 min  x1
+within D14's 15-minute window : 528
+outside it, so D14 drops them : 30
+
+reports within 15 min of 18:00 UTC (DSM's target hour, D33) : 21
+most common offset            : 6 min (506 of 558 reports)
+reports D14 DROPS (30):
+  too many to list one by one (30); see the minute histogram above
+
+What the 'special' rows actually are at DSM:
+  routine rows            : 504 (all at :54)
+  routine + special rows  : 558
+  special rows            : 54
+  distinct minutes used   : 38
+  busiest minutes         : :07 x4, :31 x3, :01 x2, :13 x2, :22 x2
+  days in the window      : 21
+  VERDICT: DSM does NOT file a second scheduled report. Its specials
+           are scattered across many minutes with no minute used more
+           than a handful of times, which is what genuine unscheduled
+           reports look like. That is unlike EGLC (a second scheduled
+           report at :20, F3) and LFPG (at :30, F19).
+           Nothing here is used: the routine report is the truth
+           observation, exactly as at both European airports.
+
+==========================================================================
+PART B5 - US-specific check 1: is tmpc really Celsius at a US station?
+==========================================================================
+The pipeline reads IEM's `tmpc` field and does no unit conversion at
+all - session 08's reader floats the value straight into a Celsius
+column. At a US station the METAR itself is written in Celsius but the
+country works in Fahrenheit, so this is worth measuring, not assuming.
+
+file            : iem_asos_DSM_2026-07-01_2026-07-04_routine-tmpc-tmpf.csv
+columns         : station, valid, lon, lat, elevation, tmpc, tmpf, dwpc
+rows            : 72
+date range (UTC): 2026-07-01 00:54:00 -> 2026-07-03 23:54:00
+
+tmpc against tmpf converted to Celsius, first 8 rows:
+  valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+  2026-07-01 00:54    32.22    90.00          32.22       -0.002
+  2026-07-01 01:54    30.00    86.00          30.00       +0.000
+  2026-07-01 02:54    30.00    86.00          30.00       +0.000
+  2026-07-01 03:54    28.89    84.00          28.89       +0.001
+  2026-07-01 04:54    28.33    83.00          28.33       -0.003
+  2026-07-01 05:54    28.89    84.00          28.89       +0.001
+  2026-07-01 06:54    28.33    83.00          28.33       -0.003
+  2026-07-01 07:54    27.22    81.00          27.22       -0.002
+
+largest disagreement across all 72 rows : 0.0044 degC
+  (METAR reports whole degrees Celsius and IEM derives Fahrenheit from
+   it, so tiny rounding differences are expected and nothing else is.)
+tmpc range in this sample : 18.89 to 32.22 degC
+VERDICT: tmpc is degrees Celsius at DSM, the same field and the same
+         units EGLC and LFPG use. No new unit handling is needed.
+
+==========================================================================
+PART B6 - US-specific check 2: are the timestamps really UTC?
+==========================================================================
+Every IEM request in this project sends tz=UTC. In Europe that was easy
+to take on trust. At DSM, local time is 5 or 6 hours behind UTC, so a
+mistake here would be large and silent. The same three days were pulled
+a second time with tz=America/Chicago, so the two can be compared.
+
+UTC-request file        : iem_asos_DSM_2026-07-01_2026-07-04_routine-tmpc-tmpf.csv
+local-request file      : iem_asos_DSM_2026-07-01_2026-07-04_routine-localtime.csv
+rows, UTC request       : 72   first 2026-07-01 00:54:00, last 2026-07-03 23:54:00
+rows, local request     : 72   first 2026-07-01 00:54:00, last 2026-07-03 23:54:00
+
+The two files carry the same stamps (00:54, 01:54, ...) but different
+values, which is what a real timezone shift looks like: the same clock
+face is a different moment in each. So the test is: how far do the two
+series have to be slid past each other before the temperatures line up?
+
+  shift (hours)   rows compared   temperatures equal
+             +0              72        3  (4.2%)
+             +1              71        4  (5.6%)
+             +2              70        4  (5.7%)
+             +3              69        9  (13.0%)
+             +4              68       17  (25.0%)
+             +5              67       67  (100.0%)
+             +6              66       17  (25.8%)
+             +7              65        7  (10.8%)
+             +8              64        4  (6.2%)
+
+  best match: the UTC series is 5 hours ahead of the local
+              series (100.0% of temperatures identical).
+  Expected in early July: America/Chicago is on daylight saving, UTC-5,
+  so a UTC stamp should sit 5 hours ahead of the same local moment.
+  VERDICT: MATCHES - the tz=UTC request really is UTC.
+
+Spot check against the forecast series, which is timezone-labelled by
+Open-Meteo itself:
+  Open-Meteo says timezone=GMT, utc_offset_seconds=0
+  so both sides of the join are stamped in UTC and need no shifting.
+
+Third check - the two spellings of UTC. The session 14 prompt describes
+the existing request approach as tz=Etc/UTC; every request this project
+has actually made uses tz=UTC. The same three days were pulled the
+prompt's way, and compared with the first three days of the tz=UTC
+sample - same fields, same station, same window, so the two responses
+can be compared byte for byte.
+  tz=UTC file     : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv
+                    first 73 lines (1 header + 72 rows), 4,146 bytes
+  tz=Etc/UTC file : iem_asos_DSM_2026-07-01_2026-07-04_routine-etc-utc.csv
+                    73 lines, 4,146 bytes
+  byte-for-byte identical : YES
+  So the two spellings are the same request. The project's tz=UTC needs
+  no change; the prompt's wording and the code agree in substance.
+
+==========================================================================
+PART C - plain first read
+==========================================================================
+A summary of what the checks above actually printed. Nothing here is a
+decision; the owner decides what happens next.
+
+1. Position. IEM's own record puts DSM at lat 41.534, lon -93.6531,
+   elevation 294.0 m, timezone America/Chicago. That is what every
+   forecast request in this session used - nothing was typed from a map.
+
+2. Forecast source. The Previous Runs API carries DSM. Its grid point is
+   lat 41.52945, lon -93.63281, elevation 285.0 m -
+   1.76 km from the airport, -9.0 m in height. That is CLOSER than
+   either European airport's grid point (4.33 km at EGLC, 3.44 km at LFPG)
+   and the first height mismatch worth naming, though 9 m is small.
+   Recent sample: 504 hourly rows, 0 missing.
+
+3. Archive depth. 1-7 March 2021 comes back HTTP 200 with all 168 values
+   null, and the first hour carrying a real value is 2021-03-24T00:00 UTC -
+   the same hour as EGLC (F1) and LFPG (F20), to the hour. So the D13
+   split dates need no moving for DSM either.
+
+4. Target hour. America/Chicago's standard offset is UTC-6, so local
+   standard noon is 18:00 UTC year-round, which is what D33 says.
+   At 18:00 UTC the local clock reads 12:00 CST in winter and 13:00 CDT
+   in summer - midday to early afternoon, matching how 12:00 UTC sat in
+   Europe. 12:00 UTC would have been 06:00/07:00 local, at dawn.
+
+5. Truth source. IEM carries DSM in IA_ASOS with a clean record. Both
+   samples, five years apart, are complete apart from the first hour of
+   each window, which is a request-boundary artefact rather than a gap.
+
+6. Report timing. DSM reports at :54, every single report in both
+   samples - 504 of 504 recently and 336 of 336 in 2021, with IEM's own
+   METAR_RESET_MINUTE attribute saying 54 as well. That is 6 minutes
+   before the hour, inside D14's 15-minute tolerance, so D14 applies as
+   written at the 18:00 UTC target: the 17:54 report is the observation
+   for 18:00. Not one report in either sample falls outside the
+   tolerance, so on this evidence DSM loses no day to off-hour
+   reporting - unlike LFPG, which loses three across five years (F25).
+
+7. Units and timezone need no new handling. tmpc is degrees Celsius at
+   DSM, agreeing with the Fahrenheit field to 0.005 degC across 72 rows,
+   and the tz=UTC request really is UTC: pulled again in local time, the
+   same temperatures line up exactly 5 hours later, which is the July
+   UTC-5 daylight-saving offset. tz=UTC and tz=Etc/UTC return byte-for-
+   byte the same rows.
+
+8. Gap counts, nothing filled (SPEC 2.2). Recent sample: 504 hours
+   expected, 503 covered, 1 missing (the boundary hour). Early sample:
+   336 expected, 335 covered, 1 missing (the same boundary artefact).
+   No report in either sample carries a missing temperature.
+
+9. Plain verdict: YES - on this evidence DSM is usable for the recipe
+   the same way EGLC and CDG were. Every verify-on-contact check passed,
+   and the only thing that had to change is the target hour, which was
+   changed on principle before any DSM data was seen (D33). Three-week
+   samples cannot prove what the other five years look like; the full
+   pull and its gap map settle that, exactly as session 10 did for CDG.

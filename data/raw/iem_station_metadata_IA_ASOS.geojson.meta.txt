@@ -1,0 +1,21 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_station_metadata_IA_ASOS.geojson
+purpose     : session 14, part 0 - the authoritative station position
+              for DSM (Des Moines, Iowa), used to set the coordinates
+              for the Open-Meteo forecast requests below. Nothing is
+              typed in from memory or a map.
+pulled at   : 2026-08-18 14:41:07 BST (2026-08-18 13:41:07 UTC)
+source      : Iowa Environmental Mesonet (IEM) network station listing
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/geojson/network/IA_ASOS.geojson
+
+notes:
+- The whole network file is kept rather than just the DSM entry,
+  because it is the actual response and SPEC 2.3 says to keep raw
+  pulls untouched.
+- What IEM returned for DSM is reported by
+  scripts/session14_checks.py and written up in DECISIONS.
+- HTTP status 200.

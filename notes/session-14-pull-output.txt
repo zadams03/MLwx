@@ -1,0 +1,40 @@
+Airport: DSM (Des Moines International, Iowa), IEM network IA_ASOS
+Small verification samples only - this is NOT the full pull.
+
+=== 0  IEM station metadata for the IA_ASOS network ===
+  wrote iem_station_metadata_IA_ASOS.geojson  (39,447 bytes)
+  wrote iem_station_metadata_IA_ASOS.geojson.meta.txt  (895 bytes)
+  DSM position from IEM: lat 41.534, lon -93.6531, elevation 294.0 m, tz America/Chicago
+
+=== A  forecast (Open-Meteo Previous Runs, gfs_global, DSM) ===
+A1 recent sample 2026-07-01 -> 2026-07-21
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-07-01_2026-07-21.json  (12,389 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-07-01_2026-07-21.json.meta.txt  (1,720 bytes)
+A2 archive probe 1 2021-03-01 -> 2021-03-07
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-01_2021-03-07.json  (4,328 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-01_2021-03-07.json.meta.txt  (1,716 bytes)
+A2 archive probe 2 2021-03-18 -> 2021-03-26
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-18_2021-03-26.json  (5,413 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-18_2021-03-26.json.meta.txt  (1,712 bytes)
+
+=== B  truth (IEM ASOS METARs, DSM) ===
+B1 recent routine 2026-07-01 -> 2026-07-22
+  wrote iem_asos_DSM_2026-07-01_2026-07-22_routine.csv  (28,770 bytes)
+  wrote iem_asos_DSM_2026-07-01_2026-07-22_routine.csv.meta.txt  (1,514 bytes)
+B3 early routine 2021-03-18 -> 2021-04-01
+  wrote iem_asos_DSM_2021-03-18_2021-04-01_routine.csv  (18,798 bytes)
+  wrote iem_asos_DSM_2021-03-18_2021-04-01_routine.csv.meta.txt  (1,495 bytes)
+B4 recent routine+special 2026-07-01 -> 2026-07-22
+  wrote iem_asos_DSM_2026-07-01_2026-07-22_routine-and-special.csv  (31,848 bytes)
+  wrote iem_asos_DSM_2026-07-01_2026-07-22_routine-and-special.csv.meta.txt  (1,537 bytes)
+B5 units cross-check 2026-07-01 -> 2026-07-04
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-tmpc-tmpf.csv  (4,583 bytes)
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-tmpc-tmpf.csv.meta.txt  (1,726 bytes)
+B6 timezone cross-check 2026-07-01 -> 2026-07-04 (tz=America/Chicago)
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-localtime.csv  (4,146 bytes)
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-localtime.csv.meta.txt  (1,846 bytes)
+B7 tz spelling cross-check 2026-07-01 -> 2026-07-04 (tz=Etc/UTC)
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-etc-utc.csv  (4,146 bytes)
+  wrote iem_asos_DSM_2026-07-01_2026-07-04_routine-etc-utc.csv.meta.txt  (1,818 bytes)
+
+Done.

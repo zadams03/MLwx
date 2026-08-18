@@ -1,0 +1,35 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_DSM_2026-07-01_2026-07-21.json
+purpose     : session 14 - part A1 - recent forecast sample, to confirm the Previous Runs API carries DSM and to see the grid point returned
+pulled at   : 2026-08-18 14:41:11 BST (2026-08-18 13:41:11 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=41.534&longitude=-93.6531&start_date=2026-07-01&end_date=2026-07-21&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 41.534    (DSM, Des Moines International, Iowa)
+  longitude  = -93.6531
+  start_date = 2026-07-01
+  end_date   = 2026-07-21
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string pinned to gfs_global rather than gfs_seamless (DECISIONS D16).
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for DSM, read out of
+  iem_station_metadata_IA_ASOS.geojson in the same run.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them.
+  Nothing was filled in (SPEC 2.2).

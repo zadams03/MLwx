@@ -1,0 +1,32 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_DSM_2026-07-01_2026-07-22_routine.csv
+purpose     : session 14 - part B1/B2 - recent truth sample over the same period as the forecast sample, and the file that answers what minute past the hour DSM reports at
+pulled at   : 2026-08-18 14:41:21 BST (2026-08-18 13:41:21 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&network=IA_ASOS&data=tmpc&data=dwpc&year1=2026&month1=7&day1=1&year2=2026&month2=7&day2=22&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = DSM   (Des Moines International, Iowa)
+  network     = IA_ASOS
+  data        = tmpc, dwpc
+  date range  = 2026-07-01 to 2026-07-22. IEM treats its end date as
+                exclusive, so the last row is the day before 2026-07-22.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled report)
+
+notes:
+- tmpc is air temperature in degrees Celsius, the same field and the
+  same units stage 1 and stage 2 used at EGLC and LFPG. No unit
+  conversion happens anywhere in this project.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).
+- HTTP status 200.
