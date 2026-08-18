@@ -1,0 +1,37 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_seamless_DSM_2021-03-24_2021-04-05_q27compare.json
+purpose     : session 15, part B2 - settle Q27. One half of a
+              value-by-value comparison of gfs_global against
+              gfs_seamless at DSM, the way F6 compared them at
+              EGLC. F6's argument was location-specific - it rested
+              on no CONUS-only NCEP model being able to apply in
+              London - and Des Moines is inside CONUS, so the
+              comparison has to be made rather than assumed.
+window      : 2021-03-24 to 2021-04-05
+why this window: early, inside the training window; F6's own early window at EGLC
+pulled at   : 2026-08-18 15:23:30 BST (2026-08-18 14:23:30 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=41.534&longitude=-93.6531&start_date=2021-03-24&end_date=2021-04-05&hourly=temperature_2m_previous_day1&models=gfs_seamless&timezone=UTC
+
+parameters:
+  latitude   = 41.534         (DSM, IEM's own position, F31)
+  longitude  = -93.6531
+  start_date = 2021-03-24
+  end_date   = 2021-04-05
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_seamless
+  timezone   = UTC
+
+notes:
+- This file is for the Q27 comparison only. The project's own DSM
+  series is the yearly gfs_global chunks; D16 pins that string and this
+  comparison does not change it.
+- Neither comparison window touches the sealed test year
+  (2025-08-01 to 2026-07-31). The recent window sits after the
+  project period ends on 2026-07-31, which D13 does not use at all.
+- HTTP status 200.
+- Nulls are left exactly as the API returned them (SPEC 2.2).

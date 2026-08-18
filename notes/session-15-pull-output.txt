@@ -1,0 +1,59 @@
+Airport: DSM (Des Moines, Iowa), lat 41.534, lon -93.6531
+Period : 2021-03-24 to 2026-07-31   chunks: 6
+Forecast variables: temperature_2m (D17)
+Model string      : gfs_global (D16)
+Target hour       : 18:00 UTC (D33) - does not affect the pull
+
+=== B1  forecast (Open-Meteo Previous Runs, gfs_global, DSM) ===
+2021-03-24 -> 2021-12-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-24_2021-12-31.json  (161,455 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-24_2021-12-31.json.meta.txt  (2,199 bytes)
+2022-01-01 -> 2022-12-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2022-01-01_2022-12-31.json  (209,006 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2022-01-01_2022-12-31.json.meta.txt  (2,199 bytes)
+2023-01-01 -> 2023-12-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2023-01-01_2023-12-31.json  (208,175 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2023-01-01_2023-12-31.json.meta.txt  (2,199 bytes)
+2024-01-01 -> 2024-12-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2024-01-01_2024-12-31.json  (208,809 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2024-01-01_2024-12-31.json.meta.txt  (2,199 bytes)
+2025-01-01 -> 2025-12-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2025-01-01_2025-12-31.json  (209,073 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2025-01-01_2025-12-31.json.meta.txt  (2,199 bytes)
+2026-01-01 -> 2026-07-31
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-01-01_2026-07-31.json  (121,461 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-01-01_2026-07-31.json.meta.txt  (2,199 bytes)
+
+=== B2  Q27: gfs_global vs gfs_seamless at DSM ===
+2021-03-24 -> 2021-04-05   (early, inside the training window; F6's own early window at EGLC)
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-24_2021-04-05_q27compare.json  (7,591 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2021-03-24_2021-04-05_q27compare.json.meta.txt  (1,789 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_DSM_2021-03-24_2021-04-05_q27compare.json  (7,591 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_DSM_2021-03-24_2021-04-05_q27compare.json.meta.txt  (1,795 bytes)
+2026-08-05 -> 2026-08-15   (recent, AFTER the project period ends 2026-07-31, so outside training and test alike (D13))
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-08-05_2026-08-15_q27compare.json  (6,630 bytes)
+  wrote openmeteo_previousruns_gfs_global_DSM_2026-08-05_2026-08-15_q27compare.json.meta.txt  (1,815 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_DSM_2026-08-05_2026-08-15_q27compare.json  (6,629 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_DSM_2026-08-05_2026-08-15_q27compare.json.meta.txt  (1,821 bytes)
+
+=== B3  truth (IEM ASOS routine METARs, DSM) ===
+2021-03-24 -> 2021-12-31
+  wrote iem_asos_DSM_2021-03-24_2021-12-31_routine.csv  (383,887 bytes)
+  wrote iem_asos_DSM_2021-03-24_2021-12-31_routine.csv.meta.txt  (2,746 bytes)
+2022-01-01 -> 2022-12-31
+  wrote iem_asos_DSM_2022-01-01_2022-12-31_routine.csv  (497,317 bytes)
+  wrote iem_asos_DSM_2022-01-01_2022-12-31_routine.csv.meta.txt  (2,745 bytes)
+2023-01-01 -> 2023-12-31
+  wrote iem_asos_DSM_2023-01-01_2023-12-31_routine.csv  (495,798 bytes)
+  wrote iem_asos_DSM_2023-01-01_2023-12-31_routine.csv.meta.txt  (2,745 bytes)
+2024-01-01 -> 2024-12-31
+  wrote iem_asos_DSM_2024-01-01_2024-12-31_routine.csv  (496,764 bytes)
+  wrote iem_asos_DSM_2024-01-01_2024-12-31_routine.csv.meta.txt  (2,745 bytes)
+2025-01-01 -> 2025-12-31
+  wrote iem_asos_DSM_2025-01-01_2025-12-31_routine.csv  (496,548 bytes)
+  wrote iem_asos_DSM_2025-01-01_2025-12-31_routine.csv.meta.txt  (2,745 bytes)
+2026-01-01 -> 2026-07-31
+  wrote iem_asos_DSM_2026-01-01_2026-07-31_routine.csv  (288,679 bytes)
+  wrote iem_asos_DSM_2026-01-01_2026-07-31_routine.csv.meta.txt  (2,745 bytes)
+
+Done.

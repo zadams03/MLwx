@@ -3,16 +3,27 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 18 August 2026 (after session 14)._
+_Last updated: 18 August 2026 (after session 15)._
 
 ---
 
 ## Current stage
 
-**A THIRD AIRPORT IS OPEN: Des Moines, Iowa (DSM). Verified on contact, not
-yet pulled in full.** The owner opened it in session 14 (DECISIONS **D32**),
-which is the "more airports first" branch of Q24 rather than stage 3. **Stage 3
-is not opened and nothing about it has been written or started.**
+**A THIRD AIRPORT IS OPEN: Des Moines, Iowa (DSM). Verified, pulled in full,
+and gap-mapped. Not yet joined, built or trained.** The owner opened it in
+session 14 (DECISIONS **D32**), which is the "more airports first" branch of Q24
+rather than stage 3. **Stage 3 is not opened and nothing about it has been
+written or started.**
+
+**SPEC now describes an open-ended list of airports with a per-airport target
+hour (DECISIONS D34).** Session 15's first job was to generalise it rather than
+patch it: the target hour is now a column in the SPEC 3.4 airport table (12:00
+UTC for EGLC and LFPG, 18:00 UTC for DSM), section 4.1 states the principle —
+one fixed hour per airport, at that airport's local midday — instead of naming
+one hour for everybody, and **stage 2 is reframed from "the second airport" to
+"individual airports, two or more"**, holding CDG, DSM and any that follow.
+**The frozen bar's meaning is unchanged**; only its scope and the hour
+convention moved, and that was checked section by section.
 
 **Why DSM.** F30 recorded the honest limit on stages 1 and 2: EGLC and LFPG are
 328 km apart and were tested on **the same twelve months**, so the two wins lean
@@ -36,9 +47,28 @@ comparison stage 2 was.**
 **F31–F37**). Both sources carry it, the archive starts on the same hour as at
 the two European airports, the pairing rule needs no adapting, and the US-specific
 worries — units and timezone — were measured rather than assumed and need no new
-handling. **Nothing was pulled in full, joined, built or trained.**
+handling.
 
-**Stage 2 — a second airport, Paris Charles de Gaulle (CDG / LFPG). PASSED**
+**Session 15 then pulled DSM's full history and mapped every hour** (DECISIONS
+**F38–F41**). Three headline answers:
+
+- **DSM's forecast series has the very same 492-hour gap**, 2023-12-30 00:00 to
+  2024-01-19 11:00 UTC, hour for hour, entirely inside the training window, with
+  no gap at all in the test window. Three airports on two continents now share
+  it, so it is a property of the Open-Meteo archive, not of a place (F38).
+- **DSM's observation record is the cleanest of the three** — 11 real missing
+  hours in five years (0.02%), against LFPG's 140 and EGLC's 44, with a longest
+  run of two hours. **It loses no day at all at its 18:00 UTC target**, so all
+  20 expected drops are the shared forecast gap (F39, F41).
+- **Q27 answered, and D16's pin earned its keep.** At DSM, `gfs_seamless` is
+  **not** the same series as `gfs_global`: on recent dates 259 of 264 hours
+  differ, by up to 12.3 degC, from a different grid point. On the 2021 window
+  the two are identical, so a comparison run only on old data would have
+  concluded wrongly. Every DSM chunk was pulled with `gfs_global`, so nothing in
+  the project is affected — but had the project used `gfs_seamless`, DSM would
+  quietly not have been GFS at all (F40).
+
+**Stage 2's first airport — Paris Charles de Gaulle (CDG / LFPG). PASSED**
 and closed. The owner opened it in session 08 (DECISIONS **D26**, which closes
 Q17). Its job was to prove the recipe travels: the same method that worked at
 London City, run at a genuinely different location, with **only the location
@@ -46,7 +76,11 @@ changed**. The target stayed 12:00 UTC on purpose. The sealed test ran in
 session 13 and the corrected forecast beat both raw GFS and persistence.
 Nothing about it is to be re-run or revisited.
 
-**The Stage 2 headline result:** over CDG's held-out year 2025-08-01 to
+(**Stage 2 itself is still in progress**, because D34 reframed it as
+"individual airports, two or more" rather than "the second airport". CDG is
+finished; DSM is the airport now in it.)
+
+**CDG's headline result:** over CDG's held-out year 2025-08-01 to
 2026-07-31, on 363 days, mean absolute error in degrees Celsius —
 
 ```
@@ -798,43 +832,143 @@ result and the honest reading of it.
     `scripts/session14_pull.py` and `scripts/session14_checks.py`. Two
     consecutive runs of the checks script produced identical output.
 
+- **Session 15 — SPEC GENERALISED FOR PER-AIRPORT HOURS, THEN DSM'S FULL PULL
+  AND GAP MAP. Done. Nothing was joined, built, trained or evaluated, and DSM's
+  test year was not opened.**
+  - **SPEC now describes an open-ended list of airports with a per-airport
+    target hour (DECISIONS D34, which closes Q25 and the rest of Q24).** Seven
+    authorised edits and no others — A-1 (section 1), A-2 (the 3.4 airport table:
+    a new **target hour (UTC)** column, DSM's row in both tables, and the notes
+    beneath them), A-3 (3.2 and 3.3), A-4 (4.1), A-5 (4.5), A-6 (5.0 and 5.3)
+    and A-7 (section 6). The full before/after of every edit is in
+    `notes/session-15-spec-edits.txt`.
+  - **The important edit is 4.1.** The target is now **one fixed hour per
+    airport, chosen to sit at that airport's local midday**, stored in the
+    airport table: 12:00 UTC at EGLC and LFPG, **18:00 UTC at DSM**. The three
+    "why noon" reasons are kept and now justify *local* midday rather than the
+    number 12:00. D27's solar-standard-noon convention is folded in openly —
+    it was planned for stage 3 and DSM brought it forward — and stage 3 now
+    inherits it rather than switching to it.
+  - **The honest cost is written into SPEC, not left in DECISIONS.** SPEC 4.1
+    now says D26's "only the location changed" holds **within western Europe**
+    (EGLC↔LFPG, same hour) but **not** for DSM, which changes location and
+    target hour together. A DSM result answers "does the recipe travel to a
+    different region at a comparable local time".
+  - **Stage 2 is reframed** from "the second airport (CDG)" to **"individual
+    airports, two or more"**, covering CDG (passed), DSM (in progress) and any
+    that follow before pooling. That settles the "what is a third airport
+    called?" half of Q25: stage 2 is the shape of the work, not a count.
+  - **The frozen bar's meaning is unchanged, checked section by section.** 5.1
+    (metric) and 5.2 (which references decide) are untouched. 5.3's only change
+    is scope wording — "stage 2 is CDG" became "stage 2 is each further
+    individual airport put to the same bar". Rule 2.4 untouched. Nothing was
+    added that a result must clear and nothing removed.
+  - **The stale wording is resolved.** Section 1, the 3.4 stage cells, the 5.0
+    results table and section 6 now record EGLC and LFPG as **passed**, with
+    F30's figures in the results table, and DSM as in progress.
+  - **The full DSM history was pulled**, 2021-03-24 to 2026-07-31, both sources,
+    six yearly chunks each, mirroring sessions 03b and 10 file for file. 32 new
+    files in `data/raw/` — 16 data files with a `.meta.txt` beside every one
+    (SPEC 2.3), including four small `q27compare` files. `data/raw/` is now 128
+    files, 11 MB. No retry fired and no rate limit was hit.
+    - Forecast: Open-Meteo Previous Runs, `gfs_global`,
+      `temperature_2m_previous_day1`, at DSM's IEM coordinates. **46,944 hourly
+      rows returned, 46,452 with a value.**
+    - Truth: IEM ASOS routine `:54` METARs for DSM. **46,938 reports, covering
+      46,932 hours.**
+  - **Full gap map produced for both series — the session's main deliverable.**
+    Saved in `notes/session-15-check-output.txt`; the pull log is
+    `notes/session-15-pull-output.txt`. Nothing was filled, counts only
+    (SPEC 2.2).
+  - **The 492-hour gap answer is explicit: the SAME WINDOW (DECISIONS F38).**
+    DSM's forecast series has exactly one gap, 492 hours, 2023-12-30 00:00 to
+    2024-01-19 11:00 UTC — same first missing hour, same last, same length as
+    EGLC's (F8) and LFPG's (F22). All six headline totals match. Entirely inside
+    training; **no forecast gap at all in the test window**. Three airports on
+    two continents settle it: the gap belongs to the archive, not to a place.
+    At DSM's 18:00 target it costs **20 days**, 2023-12-30 to 2024-01-18.
+  - **Observations: 11 real missing hours (0.02%) in 10 runs, longest 2 hours**
+    (DECISIONS F39) — the cleanest of the three airports, against LFPG's 140
+    (0.30%) and EGLC's 44 (0.09%). Only **3 off-hour reports in five years**
+    (0.006%, against LFPG's 0.207%), none near a target hour, and exactly **one**
+    report with no temperature (2023-06-30 10:50 UTC).
+  - **Q26 handled, and it is smaller than feared (F39).** The `:54` artefact is
+    real — all six chunks' first hours are uncovered by their own chunk — but the
+    chunks are contiguous, so each one's last `:54` report serves the next one's
+    first hour. **Five of the six seams close themselves; exactly one artefact
+    hour remains, 2021-03-24 00:00 UTC**, the first hour of the whole period. It
+    is counted and named separately from the 11 real gaps, it touches no target
+    hour, and nothing was filled to cover it. The script proves this by mapping
+    each chunk in isolation and then the joined series.
+  - **Q27 answered, and the answer matters (DECISIONS F40). At DSM
+    `gfs_seamless` is NOT `gfs_global`.** On the recent window 259 of 264 hours
+    differ, by up to **12.3 degC**, from a **different grid point** (2 km away)
+    and with 200x the server generation time. On the 2021 window the two are
+    identical, 312 of 312 — so a comparison run only on old data would have
+    concluded wrongly. Every DSM chunk was pulled with `gfs_global` (read back
+    out of the saved URLs), so **nothing in the project is affected** — but had
+    `gfs_seamless` been used, DSM's recent forecasts would not have been GFS at
+    all. **This is the first time a decision in the log (D16) has prevented a
+    real error rather than a hypothetical one.**
+    - One deliberate departure from F6's method, stated in F40: F6's "recent"
+      window (July 2026) now sits inside DSM's sealed test year, so it was not
+      used. The recent window here is 2026-08-05 to 2026-08-15, **after the
+      project period ends**, which D13 does not use at all. The early window is
+      F6's own.
+  - **Days lost at the 18:00 UTC target, written down before any join
+    (DECISIONS F41).** Observation side: **0 days lost in 1,956**. Forecast
+    side: 20, all the shared gap, all consecutive, all in inner-training.
+    Expected paired rows **1,206 inner-training / 365 validation / 365 test**.
+    These are the counts the join session must reconcile against.
+  - **Training-window value ranges checked and sane, both in Celsius**
+    (F38): forecast -30.0 to 44.7 (mean 11.95), observed -27.22 to 38.33 (mean
+    12.28). About 20 degrees wider at the cold end than either European airport,
+    which is what a continental interior means. One thing noted for the join
+    session and **not acted on**: the forecast's warm end runs past anything
+    observed (64 hours at or above 40 degC against an observed maximum of
+    38.33). Whether that matters at 18:00 UTC specifically is the join session's
+    question — F13 caught F10 making exactly that mistake.
+  - **One inaccuracy flagged rather than fixed: Q28.** SPEC 3.4's first column
+    is headed "ICAO" and `DSM` is IEM's station id, not an ICAO code; SPEC 3.1
+    has the same wording problem. Neither is among edits A-1 to A-7, so neither
+    was changed. A note beneath the table states the position plainly so SPEC
+    does not assert something false.
+  - Scripts: `scripts/session15_pull.py` and `scripts/session15_checks.py`.
+
 ## In progress
 
-- Nothing. Session 14 is finished and awaiting the owner's review.
+- Nothing. Session 15 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 14 — DSM opened and verified on contact.
-   Sessions 08 to 13, the whole of stage 2, are still awaiting review too if
+1. Owner reviews and commits session 15 — the SPEC generalisation and DSM's
+   full pull and gap map. Sessions 08 to 14 are still awaiting review too if
    they have not been committed yet.
-2. **DSM's design session, then its full pull** — the natural next step if the
-   owner is happy with the verification. Two things belong to it:
-   - **The SPEC design (Q25).** SPEC 4.1 currently says 12:00 UTC at every
-     airport and that solar standard noon arrives only at stage 3, which now
-     contradicts D33. The repair that follows the project's own pattern is to
-     make the **target hour a per-airport column in the SPEC 3.4 table**
-     (12:00 UTC for EGLC and LFPG, 18:00 UTC for DSM) and reword 4.1 to state
-     the principle rather than one hour — the same move D28 made for the other
-     per-airport facts. **This needs the owner's authorisation, edit by edit,
-     the way sessions 09 and 10 were authorised.** Nothing was changed.
-   - **The full pull and gap map**, mirroring session 10: 2021-03-24 to
-     2026-07-31, both sources, yearly chunks, every hour mapped, nothing filled.
-     Two things for that session to carry: the chunk-boundary hour DSM's `:54`
-     reporting creates (Q26), and F6's `gfs_seamless` comparison, which matters
-     at DSM in a way it never did in Europe (Q27).
-3. **Q24 is now half answered and half open.** D32 answered "which way next" —
-   more airports first, not stage 3. **The SPEC edits half is still open** and
-   has grown: the four places that describe stage 2 as in progress are still
-   out of date, and adding a third airport raises the question of **what a third
-   airport is called**, since SPEC 6's stage list has no slot for it. All of that
-   is folded into Q25.
-4. **Two things that are available and block nothing.** SPEC 5.4's deeper
-   evaluation — skill score, statistical significance, formal season testing — is
-   optional by D29 and still undone, so no airport's win has a significance
-   figure. And F6's `gfs_global` versus `gfs_seamless` comparison has still never
-   been run at LFPG (Q20's closing note) and now not at DSM either (Q27). Both
-   would be sessions of their own.
-5. Nothing is pre-committed beyond that. **Stage 3 is not opened.**
+2. **DSM's join and validation rehearsal**, mirroring session 11 at CDG. The
+   two DSM series are joined at **18:00 UTC** under the D14 pairing rule (the
+   17:54 report is the observation), every drop reconciled against session 15's
+   gap map, the bias looked at on inner-training only, and the locked method
+   applied unchanged. **DSM's test year stays sealed and the frozen bar is not
+   judged.** The counts that join must reconcile against are already written
+   down (F41): 1,206 inner-training rows, 365 validation rows, 365 test rows,
+   20 dropped days and all 20 of them the forecast gap. Anything else is a
+   discrepancy to raise, not to explain away.
+3. **Then DSM's method lock, then its sealed test** — the same two steps CDG
+   took in sessions 12 and 13. The lock will be a D31-equivalent naming DSM and
+   its 18:00 UTC target, written before the test year is opened.
+4. **Q28 is open and it is the owner's.** SPEC 3.4's first column is headed
+   "ICAO" and DSM's code is not an ICAO code; SPEC 3.1 says each airport is
+   requested by its ICAO code, which is not true of DSM either. Nothing depends
+   on it and nothing was changed — a note beneath the table states the position
+   plainly. The repair is one heading and one sentence, and it needs the owner's
+   authorisation.
+5. **One thing that is available and blocks nothing.** SPEC 5.4's deeper
+   evaluation — skill score, statistical significance, formal season testing —
+   is optional by D29 and still undone, so no airport's win has a significance
+   figure. F6's `gfs_global` versus `gfs_seamless` comparison has now been run
+   at DSM (F40) but **still never at LFPG** (Q20's closing note), so stage 2's
+   first airport still cannot make the by-construction claim stage 1 can.
+6. Nothing is pre-committed beyond that. **Stage 3 is not opened.**
 
 ## Notes
 
@@ -855,24 +989,24 @@ result and the honest reading of it.
 - **Q23 is closed** by session 12 (D31): CDG's method lock is written, and the
   D21.5 refit question is answered — CDG's test model is refitted on the full
   D13 training window, as EGLC's was.
-- **Q24 is half closed by session 14.** Its first half — which way next, stage
-  3's pooled model or more airports first? — is answered by **D32**: more
-  airports first, at Des Moines. Its second half, the SPEC edits, is **still
-  open** and is now carried by Q25 along with the new conflict D33 creates.
-- **Q25, Q26 and Q27 are open, and they are the owner's** (raised by session
-  14). Q25: SPEC 4.1 says 12:00 UTC at every airport and that solar standard
-  noon comes only at stage 3, which D33 now contradicts — plus the four stale
-  stage-2 places, plus what a third airport is called. Q26: DSM's `:54`
-  reporting will make a whole-hours gap map count one phantom missing hour at
-  every chunk boundary, so the pull session must allow for it rather than fill
-  anything. Q27: `gfs_global` versus `gfs_seamless` at DSM, where **F6's
-  reasoning does not carry** because Des Moines is inside CONUS. **Q24 (second
-  half), Q25, Q26 and Q27 are the open questions.**
-- **SPEC contradicts DECISIONS on DSM's target hour right now, on purpose.**
-  SPEC 4.1 says the solar-noon convention is "not applied to stage 1 or stage 2"
-  and "changes at stage 3, and only there"; D33 applies it at DSM today. No SPEC
-  edit was authorised in session 14 so none was made. This is flagged, not
-  fixed — it is Q25's first bullet and the owner settles it.
+- **Q24 is now fully closed.** Its first half — which way next, stage 3's
+  pooled model or more airports first? — was answered by **D32**: more airports
+  first, at Des Moines. Its second half, the stale SPEC wording, is closed by
+  **D34**.
+- **Q25, Q26 and Q27 are all closed by session 15.** Q25 by **D34** (the
+  per-airport target hour, DSM's table row, and stage 2 reframed as "individual
+  airports, two or more"). Q26 by **F39** — the `:54` artefact is real but it is
+  **one** hour, not six, because the yearly chunks are contiguous and each one's
+  last report serves the next one's first hour; it is counted separately and
+  nothing was filled. Q27 by **F40**, with a result rather than a shrug.
+- **SPEC no longer contradicts DECISIONS on DSM's target hour.** That conflict
+  was flagged by session 14 and settled by D34's authorised edit to SPEC 4.1.
+- **Q28 is open, and it is the owner's** (raised by session 15): SPEC 3.4's
+  first column is headed "ICAO" but DSM's code is IEM's station id, not an ICAO
+  code, and SPEC 3.1's "requested by its ICAO code" wording has the same
+  problem. Nothing depends on it; a note beneath the table states the position
+  plainly rather than letting SPEC assert something false. **Q28 is the only
+  open question.**
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be

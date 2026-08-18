@@ -1,0 +1,43 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_DSM_2025-01-01_2025-12-31.json
+purpose     : session 15, part B1 - full history forecast chunk for
+              DSM (Des Moines, Iowa), the third airport
+pulled at   : 2026-08-18 15:23:21 BST (2026-08-18 14:23:21 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=41.534&longitude=-93.6531&start_date=2025-01-01&end_date=2025-12-31&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 41.534         (DSM, Des Moines International, Iowa)
+  longitude  = -93.6531       (DSM, Des Moines International, Iowa)
+  start_date = 2025-01-01
+  end_date   = 2025-12-31
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string pinned to gfs_global rather than gfs_seamless (DECISIONS D16).
+  That pin matters more here than it ever did in Europe: Des Moines is
+  inside CONUS, so gfs_seamless could in principle prefer a
+  higher-resolution non-GFS model there (Q27). Pinning gfs_global
+  makes the series NCEP GFS by construction wherever the airport is.
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for DSM (DECISIONS F31), the
+  same figures session 14's samples used, not a position from a map.
+- DSM's target hour is 18:00 UTC, not 12:00 UTC (DECISIONS D33). That
+  changes nothing about what is downloaded - a whole-hours series is
+  pulled either way.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them. Nothing
+  was filled in (SPEC 2.2).

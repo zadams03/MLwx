@@ -1,0 +1,52 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_DSM_2021-03-24_2021-12-31_routine.csv
+purpose     : session 15, part B3 - full history truth chunk for DSM
+pulled at   : 2026-08-18 15:23:40 BST (2026-08-18 14:23:40 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2021&month1=3&day1=24&year2=2022&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = DSM   (Des Moines International, Iowa)
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2021-03-24 to 2021-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2022-01-01.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- DSM's routine report is stamped at :54, not at :50 like EGLC or on
+  the hour like LFPG (DECISIONS F34). It is the hourly truth
+  observation (D14). At DSM's 18:00 UTC target (D33) the 17:54 report
+  is the paired observation, six minutes out.
+- Because the report covering hour H is stamped (H-1):54, the FIRST
+  hour of a request window has no report inside that window. The
+  chunks here are contiguous, so concatenating them closes that seam
+  everywhere except the very first hour of the whole period
+  (2021-03-24 00:00 UTC). That is a request-boundary artefact, not a
+  hole in the record, and the gap map counts it separately (Q26).
+  Nothing is filled to cover it (SPEC 2.2).
+- DSM does NOT file a second scheduled report; its 'special' reports
+  are genuinely unscheduled (DECISIONS F36). report_type=3 asks for
+  routine reports only, so none of them are in this file.
+- No network parameter is sent. The EGLC and LFPG pulls addressed
+  their stations by code alone, and this pull is deliberately the
+  same shape. DSM's network is IA_ASOS (DECISIONS F31).
+- Air temperature (tmpc) is the designated truth field, and at DSM it
+  really is degrees Celsius - session 14 checked it against the
+  Fahrenheit field and the two agree to 0.0044 degC (DECISIONS F35).
+  No unit conversion is applied anywhere.
+- tz=UTC really is UTC at this station: session 14 pulled the same
+  days in local time and they line up at a clean 100% at the expected
+  daylight-saving offset (DECISIONS F35).
+- HTTP status 200.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).

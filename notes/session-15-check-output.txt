@@ -1,0 +1,330 @@
+
+============================================================================
+D16 - was every DSM forecast chunk pulled with gfs_global?
+============================================================================
+  2021-03-24..2021-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2022-01-01..2022-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2023-01-01..2023-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2024-01-01..2024-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2025-01-01..2025-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2026-01-01..2026-07-31  models=gfs_global: yes   gfs_seamless present: no
+
+  all 6 forecast chunks used gfs_global: YES
+
+============================================================================
+Q27 - gfs_global vs gfs_seamless at DSM (Des Moines is in CONUS)
+============================================================================
+F6 proved the two strings return identical data AT EGLC, but its
+argument was location-specific: no CONUS-only NCEP model (HRRR,
+NAM, NBM) can apply in London, so nothing non-GFS was in the
+seamless set to mix in. Des Moines IS inside CONUS, so that
+argument does not carry and the comparison has to be measured.
+
+Neither window touches the sealed test year (2025-08-01 to
+2026-07-31). The recent window sits after the project period ends
+on 2026-07-31, which D13 does not use at all.
+
+-- window 2021-03-24 .. 2021-04-05  (early, inside the training window) --
+    gfs_global     grid lat 41.52945, lon -93.63281, elev 285.0 m
+    gfs_seamless   grid lat 41.53814, lon -93.65474, elev 285.0 m
+    same grid point : NO - a different model
+    hours in gfs_global    : 312   null: 0
+    hours in gfs_seamless  : 312   null: 0
+    hours in one series only    : 0 / 0
+    hours compared              : 312
+    values that DIFFER          : 0
+    raw files byte-identical    : no
+      differs in generationtime_ms: 0.07510185241699219 vs 0.07462501525878906
+
+-- window 2026-08-05 .. 2026-08-15  (recent, after the project period ends) --
+    gfs_global     grid lat 41.52945, lon -93.63281, elev 285.0 m
+    gfs_seamless   grid lat 41.53814, lon -93.65474, elev 285.0 m
+    same grid point : NO - a different model
+    hours in gfs_global    : 264   null: 0
+    hours in gfs_seamless  : 264   null: 0
+    hours in one series only    : 0 / 0
+    hours compared              : 264
+    values that DIFFER          : 259
+    largest difference          : 12.3000 degC
+      2026-08-05 00:00  gfs_global=27.2  gfs_seamless=22.4
+      2026-08-05 01:00  gfs_global=24.3  gfs_seamless=21.1
+      2026-08-05 02:00  gfs_global=21.7  gfs_seamless=20.2
+      2026-08-05 03:00  gfs_global=20.8  gfs_seamless=19.6
+      2026-08-05 04:00  gfs_global=20.3  gfs_seamless=19.3
+      2026-08-05 05:00  gfs_global=20.1  gfs_seamless=18.8
+      2026-08-05 06:00  gfs_global=18.1  gfs_seamless=17.7
+      2026-08-05 07:00  gfs_global=18.2  gfs_seamless=16.9
+      2026-08-05 08:00  gfs_global=18.1  gfs_seamless=16.5
+      2026-08-05 09:00  gfs_global=18.1  gfs_seamless=16.4
+      2026-08-05 10:00  gfs_global=17.7  gfs_seamless=16.2
+      2026-08-05 11:00  gfs_global=18.0  gfs_seamless=16.2
+      2026-08-05 12:00  gfs_global=18.4  gfs_seamless=16.9
+      2026-08-05 13:00  gfs_global=19.3  gfs_seamless=17.1
+      2026-08-05 14:00  gfs_global=20.8  gfs_seamless=17.4
+      2026-08-05 15:00  gfs_global=22.7  gfs_seamless=17.7
+      2026-08-05 16:00  gfs_global=23.4  gfs_seamless=18.7
+      2026-08-05 17:00  gfs_global=22.4  gfs_seamless=19.0
+      2026-08-05 18:00  gfs_global=20.9  gfs_seamless=19.1
+      2026-08-05 19:00  gfs_global=19.7  gfs_seamless=20.0
+      ... and 239 more
+    raw files byte-identical    : no
+      differs in generationtime_ms: 0.1163482666015625 vs 27.08566188812256
+
+  Q27 VERDICT: at DSM, gfs_global and gfs_seamless return DIFFERENT values - see above.
+  The project pulled with gfs_global regardless (D16). The pin is
+  what makes 'this is exactly NCEP GFS' true by construction.
+
+============================================================================
+FORECAST SERIES - Open-Meteo Previous Runs, gfs_global, DSM, temperature only
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6792  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8760  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8760  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8784  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8760  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5088  2026-01-01 00:00 -> 2026-07-31 23:00
+
+grid point returned : lat 41.52945, lon -93.63281, elevation 285.0 m
+session 14 (F31) got : lat 41.52945, lon -93.63281, elevation 285.0 m
+same grid point      : yes
+
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,692 usable, 492 missing (1.29%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,760 usable, 0 missing (0.00%)
+
+-- GAP MAP: every gap run, whole period (1 run(s)) --
+    2023-12-30 00:00 -> 2024-01-19 11:00 UTC     492 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    over 7 days         1      492
+
+-- largest gap runs in order --
+       492 hours   2023-12-30 00:00 -> 2024-01-19 11:00 UTC
+    runs of 24 hours or more: 1
+
+-- THE 492-HOUR GAP: DOES DSM HAVE IT? (explicit answer) --
+    EGLC (F8) and LFPG (F22) both have exactly one gap:
+      2023-12-30 00:00 -> 2024-01-19 11:00 UTC, 492 hours
+
+    DSM: 1 gap run(s), 492 missing hours in total,
+    of which 1 run(s) of a day or more.
+
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches the EGLC/LFPG gap : YES - same start, same end, same length
+
+    ANSWER: SAME WINDOW - DSM has the identical gap
+
+-- TRAINING WINDOW ONLY: temperature value range (sanity) --
+    n = 37,692
+    min = -30.0 degC   max = 44.7 degC   mean = 11.95 degC
+    (Celsius as expected - Kelvin would show roughly 250-310.)
+
+    the extremes in context, training window only:
+      coldest 3: -30.0 on 2024-01-20 14:00, -29.4 on 2024-01-20 13:00, -28.2 on 2024-01-20 12:00
+      warmest 3: 44.3 on 2023-07-28 20:00, 44.3 on 2023-08-23 21:00, 44.7 on 2023-07-28 21:00
+      hours at or below -25 degC: 11
+      hours at or above +40 degC: 64
+      A continental interior swings much further than either
+      European airport did: EGLC -1.7 to 40.7 (F10), LFPG -8.5 to
+      41.2 (F26). Nothing here is out of range for Iowa.
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, usable 8,760, missing 0
+    gap runs:
+      (none)
+
+============================================================================
+TRUTH SERIES - IEM ASOS routine METARs, DSM
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6789  2021-03-24 00:54 -> 2021-12-31 23:54
+2022-01-01..2022-12-31      8759  2022-01-01 00:54 -> 2022-12-31 23:54
+2023-01-01..2023-12-31      8761  2023-01-01 00:54 -> 2023-12-31 23:54
+2024-01-01..2024-12-31      8784  2024-01-01 00:54 -> 2024-12-31 23:54
+2025-01-01..2025-12-31      8757  2025-01-01 00:54 -> 2025-12-31 23:54
+2026-01-01..2026-07-31      5088  2026-01-01 00:54 -> 2026-07-31 23:54
+
+station position in the files: lat 41.5339, lon -93.6531, elevation 294.0 m
+SPEC 3.4 holds (F31)         : lat 41.534, lon -93.6531
+  (the CSV rounds latitude to four decimals and IEM's metadata to three,
+   which is the 11 m difference session 14 already recorded.)
+
+reports in files           : 46,938
+minute-past-hour spread    : :09 x1, :36 x1, :38 x2, :47 x1, :49 x1, :50 x2, :51 x1, :53 x3, :54 x46,921, :57 x1, :58 x2, :59 x2
+reports with no temperature: 1
+reports >15 min from any hour, dropped (D14): 3
+
+============================================================================
+Q26 - the :54 request-boundary artefact, counted separately
+============================================================================
+DSM reports at :54, so the report serving hour H is stamped
+(H-1):54. The first hour of a request window therefore needs a
+report from before that window.
+
+chunk                      first hour           that chunk alone   all chunks joined
+2021-03-24..2021-12-31   2021-03-24 00:00     MISSING            MISSING
+2022-01-01..2022-12-31   2022-01-01 00:00     MISSING            covered
+2023-01-01..2023-12-31   2023-01-01 00:00     MISSING            covered
+2024-01-01..2024-12-31   2024-01-01 00:00     MISSING            covered
+2025-01-01..2025-12-31   2025-01-01 00:00     MISSING            covered
+2026-01-01..2026-07-31   2026-01-01 00:00     MISSING            covered
+
+  chunk-boundary hours uncovered by their own chunk : 6
+  of those, closed by the neighbouring chunk         : 5
+  of those, still uncovered after joining           : 1
+      2021-03-24 00:00 UTC - the first hour of the whole period;
+      nothing before 2021-03-24 was requested, so no report
+      exists in the data to serve it. A request-boundary
+      artefact, not a hole in the station's record.
+
+  These hours are counted, named and left alone. Nothing was
+  filled (SPEC 2.2). None of them is a target hour: 18:00 UTC is
+  served by the 17:54 report of the same day, inside the same chunk.
+
+expected hours in period : 46,944
+hours with an observation: 46,932
+hours missing            : 12 (0.03% of the period)
+  of which Q26 request-boundary artefacts: 1
+  real missing hours                     : 11 (0.02%)
+
+-- split across the fixed windows (D13) --
+  window                              expected  observed  real gap  Q26
+  training 2021-03-24..2025-07-31       38,184    38,174         9    1
+  test     2025-08-01..2026-07-31        8,760     8,758         2    0
+  ('observed' = expected minus real gaps minus Q26 artefacts, so
+   the row adds up. The Q26 column is the request-boundary hour,
+   not a hole in the station's record.)
+
+-- GAP MAP: every real gap run, whole period (10 run(s)) --
+    2021-04-07 21:00 -> 2021-04-07 21:00 UTC       1 hour
+    2021-04-19 13:00 -> 2021-04-19 13:00 UTC       1 hour
+    2021-10-24 16:00 -> 2021-10-24 16:00 UTC       1 hour
+    2022-03-06 00:00 -> 2022-03-06 00:00 UTC       1 hour
+    2023-06-01 03:00 -> 2023-06-01 03:00 UTC       1 hour
+    2023-06-01 09:00 -> 2023-06-01 09:00 UTC       1 hour
+    2024-05-13 00:00 -> 2024-05-13 00:00 UTC       1 hour
+    2024-05-21 22:00 -> 2024-05-21 22:00 UTC       1 hour
+    2025-07-27 20:00 -> 2025-07-27 20:00 UTC       1 hour
+    2025-09-24 03:00 -> 2025-09-24 04:00 UTC       2 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    1 hour              9        9
+    2-5 hours           1        2
+
+-- largest gap runs in order --
+         2 hours   2025-09-24 03:00 -> 2025-09-24 04:00 UTC
+         1 hours   2021-04-07 21:00 -> 2021-04-07 21:00 UTC
+         1 hours   2021-04-19 13:00 -> 2021-04-19 13:00 UTC
+         1 hours   2021-10-24 16:00 -> 2021-10-24 16:00 UTC
+         1 hours   2022-03-06 00:00 -> 2022-03-06 00:00 UTC
+         1 hours   2023-06-01 03:00 -> 2023-06-01 03:00 UTC
+         1 hours   2023-06-01 09:00 -> 2023-06-01 09:00 UTC
+         1 hours   2024-05-13 00:00 -> 2024-05-13 00:00 UTC
+         1 hours   2024-05-21 22:00 -> 2024-05-21 22:00 UTC
+         1 hours   2025-07-27 20:00 -> 2025-07-27 20:00 UTC
+    runs of 24 hours or more: 0
+
+-- reports carrying no temperature (marked M) --
+    2023-06-30 10:50 UTC
+    Counted, never filled (SPEC 2.2).
+
+-- TRAINING WINDOW ONLY: observed temperature range (sanity) --
+    n = 38,174
+    min = -27.22 degC   max = 38.33 degC   mean = 12.28 degC
+    (Celsius as expected. F35 checked tmpc against the Fahrenheit
+     field at DSM and the two agree to 0.0044 degC.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, with an observation 8,758, real gaps 2
+    gap runs:
+      2025-09-24 03:00 -> 2025-09-24 04:00 UTC       2 hours
+
+============================================================================
+DAYS LOST AT THE 18:00 UTC TARGET, BY CAUSE (D33's target hour)
+============================================================================
+Structural counts only - no temperature value from the test window
+is printed. The two series are NOT joined; that is the next
+session's job. These counts are what that join should reconcile
+against, the way session 11 reconciled CDG's join against F22/F25.
+
+calendar days in the period : 1,956
+
+-- OBSERVATION SIDE --
+cause                                  days  training   test
+kept - usable 18:00 observation        1956      1591    365
+LOST: only an off-hour report             0         0      0
+LOST: report in place, no temperature      0         0      0
+LOST: no report near the 18:00 hour       0         0      0
+
+total days lost at 18:00 UTC (observation side): 0 of 1,956 (0.00%)
+
+-- FORECAST SIDE --
+days with no 18:00 UTC forecast value : 20 (training 20, test 0)
+  as date runs:
+    2023-12-30 -> 2023-12-30   1 day(s)
+    2023-12-31 -> 2023-12-31   1 day(s)
+    2024-01-01 -> 2024-01-01   1 day(s)
+    2024-01-02 -> 2024-01-02   1 day(s)
+    2024-01-03 -> 2024-01-03   1 day(s)
+    2024-01-04 -> 2024-01-04   1 day(s)
+    2024-01-05 -> 2024-01-05   1 day(s)
+    2024-01-06 -> 2024-01-06   1 day(s)
+    2024-01-07 -> 2024-01-07   1 day(s)
+    2024-01-08 -> 2024-01-08   1 day(s)
+    2024-01-09 -> 2024-01-09   1 day(s)
+    2024-01-10 -> 2024-01-10   1 day(s)
+    2024-01-11 -> 2024-01-11   1 day(s)
+    2024-01-12 -> 2024-01-12   1 day(s)
+    2024-01-13 -> 2024-01-13   1 day(s)
+    2024-01-14 -> 2024-01-14   1 day(s)
+    2024-01-15 -> 2024-01-15   1 day(s)
+    2024-01-16 -> 2024-01-16   1 day(s)
+    2024-01-17 -> 2024-01-17   1 day(s)
+    2024-01-18 -> 2024-01-18   1 day(s)
+
+-- BOTH SIDES TOGETHER: what the join should expect to drop --
+    calendar days in the period : 1,956
+    days lost, either side      : 20 (training 20, test 0)
+    days lost on BOTH sides     : 0
+    paired rows expected        : 1,936
+    inner-training 2021-03-24..2024-07-31: 1,226 days, 1,206 expected rows, 20 dropped (forecast 20, observation 0)
+    validation     2024-08-01..2025-07-31: 365 days, 365 expected rows, 0 dropped (forecast 0, observation 0)
+    test           2025-08-01..2026-07-31: 365 days, 365 expected rows, 0 dropped (forecast 0, observation 0)
+
+    Nothing was filled and nothing was joined (SPEC 2.2). These
+    are counts of row presence and report timing only.
+
+-- where the off-hour reports sit (are they bunched?) --
+    off-hour reports : 3 on 3 day(s), in 3 episode(s)
+    episodes of 5 or more reports: 0
+    the remaining 3 report(s) are scattered singles across 3 episode(s)
+    minute stamps across all off-hour reports: :36 x1, :38 x2
+
+    against the other two airports:
+      EGLC   8 of 46,919 (0.017%, F9)
+      LFPG  97 of 46,903 (0.207%, F23)
+      DSM  3 of 46,938 (0.006%)
+
+============================================================================
+Nothing was joined, filled or modelled. Raw files untouched.
+No temperature value from the test window was printed.
+============================================================================

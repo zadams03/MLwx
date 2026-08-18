@@ -1,0 +1,420 @@
+==============================================================================
+A-1  section 1 - what the project does
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+The same recipe is run **one airport at a time**. Every airport gets the same
+treatment: the same target hour, the same split dates, the same method, and the
+same frozen bar, judged once on that airport's own test year. The only thing
+that changes from one airport to the next is the location.
+
+The airports so far:
+
+- **London City (ICAO code EGLC)** — stage 1, **passed**.
+- **Paris Charles de Gaulle (IATA code CDG, ICAO code LFPG)** — stage 2,
+  **in progress**.
+
+More airports may follow. Each airport's own facts — its code, its position,
+the forecast grid point it maps to, and when it reports — live in the airport
+table in section 3.4. Everything else in this file is shared by all of them.
+--- AFTER  ------------------------------------------------------------------
+The same recipe is run **one airport at a time**. What every airport shares is
+the split dates, the method, and the frozen bar, judged once on that airport's
+own test year. The **target hour is chosen per airport**, so that it falls at
+that airport's local midday (section 4.1) — it is a per-airport fact, in the
+same way the minute the station reports at is.
+
+The airports so far:
+
+- **London City (ICAO code EGLC)** — stage 1, **passed**.
+- **Paris Charles de Gaulle (IATA code CDG, ICAO code LFPG)** — stage 2,
+  **passed**.
+- **Des Moines, Iowa (IEM station code DSM)** — stage 2, **in progress**.
+
+**The list is open-ended and more airports may follow.** Each airport's own
+facts — its code, its position, the forecast grid point it maps to, when it
+reports, and its target hour — live in the airport table in section 3.4.
+Everything else in this file is shared by all of them.
+
+==============================================================================
+A-3a  section 3.2 - archive start hour, now three airports
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+Confirmed available back to **24 March 2021**. (A request for 1 March 2021
+returns HTTP 200 with every value null; the first hour carrying a real value
+is 2021-03-24 00:00 UTC. See DECISIONS F1.) **The same first hour was found at
+CDG** — 2021-03-24 00:00 UTC exactly, with the same all-null answer before it
+(DECISIONS F20). So the March 2021 floor is a property of the archive itself,
+not of one place, and the section 4.3 split dates work at both airports.
+--- AFTER  ------------------------------------------------------------------
+Confirmed available back to **24 March 2021**. (A request for 1 March 2021
+returns HTTP 200 with every value null; the first hour carrying a real value
+is 2021-03-24 00:00 UTC. See DECISIONS F1.) **The same first hour was found at
+CDG** — 2021-03-24 00:00 UTC exactly, with the same all-null answer before it
+(DECISIONS F20) — **and again at DSM**, on another continent, down to the same
+hour and with the same all-null answer before it (DECISIONS F33). So the March
+2021 floor is a property of the archive itself, not of one place, and the
+section 4.3 split dates work at all three airports without adjustment.
+
+==============================================================================
+A-3b  section 3.2 - DSM's gap status, to be verified this session
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+**CDG has the very same gap — verified, hour by hour.** Session 10 mapped every
+hour of LFPG's forecast series the way session 03b did for EGLC, and found
+**exactly one gap, 492 hours, from 2023-12-30 00:00 to 2024-01-19 11:00 UTC** —
+the same first missing hour, the same last missing hour, the same length. It
+falls entirely inside the training window at CDG too, and CDG's test window has
+no forecast gap at all. So the gap is a property of the archive, not of one
+place, in the same way the March 2021 floor is. Those hours are dropped and
+counted, never filled (rule 2.2). See DECISIONS F22, which closes Q21.
+--- AFTER  ------------------------------------------------------------------
+**CDG has the very same gap — verified, hour by hour.** Session 10 mapped every
+hour of LFPG's forecast series the way session 03b did for EGLC, and found
+**exactly one gap, 492 hours, from 2023-12-30 00:00 to 2024-01-19 11:00 UTC** —
+the same first missing hour, the same last missing hour, the same length. It
+falls entirely inside the training window at CDG too, and CDG's test window has
+no forecast gap at all. So the gap is a property of the archive, not of one
+place, in the same way the March 2021 floor is. Those hours are dropped and
+counted, never filled (rule 2.2). See DECISIONS F22, which closes Q21.
+
+**Whether DSM shares the same gap is NOT YET KNOWN — to be verified in this
+session's gap map.** DSM's archive starts on the same hour as the two European
+airports (F33), which makes the gap likely to be there as well, but likely is
+not checked, and F11's lesson is exactly that a spot check proves nothing about
+the hours it did not look at. Nothing is assumed here until every hour of DSM's
+series has been mapped.
+
+==============================================================================
+A-3c  section 3.3 - verify on contact, now three airports
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+Both were checked for EGLC in session 01 (F1, F2, F3) and for CDG in session 08
+(F17–F21). Both airports passed.
+--- AFTER  ------------------------------------------------------------------
+Both were checked for EGLC in session 01 (F1, F2, F3), for CDG in session 08
+(F17–F21) and for DSM in session 14 (F31–F37). All three airports passed. At
+DSM two further things were checked on contact, because it is the first airport
+outside Europe: that the observation temperature field really is in degrees
+Celsius, and that a request stamped UTC really is UTC. Both were measured
+rather than assumed and both needed no new handling (DECISIONS F35).
+
+==============================================================================
+A-2a  section 3.4 - first table: target-hour column and DSM's row
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+| ICAO | airport | stage | IEM network | latitude | longitude | elevation |
+|---|---|---|---|---|---|---|
+| EGLC | London City | 1 — passed | `GB__ASOS` | 51.5053 | 0.0553 | 5 m |
+| LFPG | Paris Charles de Gaulle (CDG) | 2 — in progress | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
+--- AFTER  ------------------------------------------------------------------
+| ICAO | airport | stage | target hour (UTC) | IEM network | latitude | longitude | elevation |
+|---|---|---|---|---|---|---|---|
+| EGLC | London City | 1 — passed | 12:00 | `GB__ASOS` | 51.5053 | 0.0553 | 5 m |
+| LFPG | Paris Charles de Gaulle (CDG) | 2 — passed | 12:00 | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
+| DSM | Des Moines, Iowa | 2 — in progress | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
+
+==============================================================================
+A-2b  section 3.4 - second table: DSM's row
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+| ICAO | grid latitude | grid longitude | grid elevation | distance from airport | height mismatch | reports at | also files at | pairing offset |
+|---|---|---|---|---|---|---|---|---|
+| EGLC | 51.487137 | 0.0 | 4 m | 4.33 km | 1 m | `:50` | `:20` | 10 minutes |
+| LFPG | 49.027008 | 2.578125 | 109 m | 3.44 km | 0 m | `:00` | `:30` | 0 minutes |
+--- AFTER  ------------------------------------------------------------------
+| ICAO | grid latitude | grid longitude | grid elevation | distance from airport | height mismatch | reports at | also files at | pairing offset |
+|---|---|---|---|---|---|---|---|---|
+| EGLC | 51.487137 | 0.0 | 4 m | 4.33 km | 1 m | `:50` | `:20` | 10 minutes |
+| LFPG | 49.027008 | 2.578125 | 109 m | 3.44 km | 0 m | `:00` | `:30` | 0 minutes |
+| DSM | 41.52945 | -93.63281 | 285 m | 1.76 km | -9 m | `:54` | nothing scheduled | 6 minutes |
+
+==============================================================================
+A-2c  section 3.4 - notes beneath the table
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+- **The airport position is IEM's own, not a figure from elsewhere.** IEM's
+  record is treated as authoritative, because it is the same source the
+  observations come from. For CDG this mattered: IEM's position sits 1.15 km
+  from the approximate figure the session prompt carried, and IEM's was used
+  (DECISIONS F17).
+- **The grid point is whatever Open-Meteo returns** for that airport's
+  position. A few kilometres of offset is not a fault — it is exactly the kind
+  of steady local error this project exists to learn (DECISIONS Q5, F17).
+- **"Reports at" is the minute past the hour the routine METAR is stamped**,
+  and it is what makes the general pairing rule (4.5) concrete for that
+  airport. **"Pairing offset"** follows from it: how far the paired observation
+  sits from 12:00 UTC. Both stations also file a second scheduled report each
+  hour, which IEM labels "special" although it is plainly scheduled; neither is
+  used as the truth observation (DECISIONS F3, F19).
+- **Both network codes are now verified by a real pull.** LFPG's `FR__ASOS` was
+  checked in session 08 (DECISIONS F17) and EGLC's `GB__ASOS` in session 10
+  (DECISIONS F24, which closes Q22): IEM's own United Kingdom station listing
+  carries EGLC in `GB__ASOS`, at the position and elevation this table already
+  held. Nothing in the project uses a network code — every request addresses
+  its station by ICAO code — so this closes a bookkeeping gap, not a data one.
+--- AFTER  ------------------------------------------------------------------
+- **The code column holds whatever IEM addresses the station by.** For the two
+  European airports that is the ICAO code, EGLC and LFPG. For Des Moines it is
+  IEM's own station id, **`DSM`, which is not an ICAO code** — IEM's Iowa
+  listing gives the station no ICAO code at all (DECISIONS F31). The column
+  heading still reads "ICAO", which was true while every airport was European
+  and is not true now; that heading, and section 3.1's wording about requesting
+  each airport "by its ICAO code", are flagged as an open question (Q28) rather
+  than changed here, because this session's authorised edits do not cover them.
+- **The airport position is IEM's own, not a figure from elsewhere.** IEM's
+  record is treated as authoritative, because it is the same source the
+  observations come from. For CDG this mattered: IEM's position sits 1.15 km
+  from the approximate figure the session prompt carried, and IEM's was used
+  (DECISIONS F17). DSM's position came from IEM's Iowa station listing the same
+  way, pulled before any forecast request so nothing was typed in from a map
+  (DECISIONS F31).
+- **The grid point is whatever Open-Meteo returns** for that airport's
+  position. A few kilometres of offset is not a fault — it is exactly the kind
+  of steady local error this project exists to learn (DECISIONS Q5, F17). DSM's
+  is the closest of the three, 1.76 km, and the first with a height mismatch
+  worth naming at -9 m; 9 m is well inside the noise of a smoothed grid-cell
+  elevation (DECISIONS F31).
+- **"Reports at" is the minute past the hour the routine METAR is stamped**,
+  and it is what makes the general pairing rule (4.5) concrete for that
+  airport. **"Pairing offset"** follows from it: how far the paired observation
+  sits from **that airport's own target hour** (4.1). EGLC and LFPG also file a
+  second scheduled report each hour, which IEM labels "special" although it is
+  plainly scheduled; neither is used as the truth observation (DECISIONS F3,
+  F19). **DSM files no such second scheduled report** — its "special" reports
+  are spread across dozens of minutes and are genuinely unscheduled, which is
+  why its "also files at" cell reads *nothing scheduled* (DECISIONS F36).
+- **All three network codes are now verified by a real pull.** LFPG's
+  `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
+  session 10 (DECISIONS F24, which closes Q22) and DSM's `IA_ASOS` in session
+  14 (DECISIONS F31). In each case IEM's own station listing carries the
+  station in that network, at the position and elevation this table holds.
+  Nothing in the project uses a network code — every request addresses its
+  station by the code in the first column — so this closes a bookkeeping gap,
+  not a data one.
+
+==============================================================================
+A-4  section 4.1 - the target hour becomes per-airport, at local midday
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+**4.1 Target.** The temperature at **one fixed hour of the day**, and that hour
+is **12:00 UTC**. This is deliberately the simplest clean target — the honest
+test of whether the whole idea works at all. Widening to more hours comes later
+(section 6).
+
+**The same hour, 12:00 UTC, is used at every airport.** That is a deliberate
+choice, not a convenience: stage 2 changes the **location and nothing else**, so
+if the result at a second airport differs, the location is the only thing that
+can explain it (DECISIONS D26).
+
+**This convention changes at stage 3, and only there.** When airports are pooled
+into one model, the target moves to each airport's **solar standard noon** —
+local standard-time noon, with daylight saving deliberately ignored, so the
+target stays a fixed UTC hour for that airport all year round. The reason is
+that 12:00 UTC is a different time of day at each location, which is harmless
+when airports are modelled separately and wrong when they are pooled. Noted here
+so it is not a surprise; it is **not** applied to stage 1 or stage 2 (DECISIONS
+D27).
+
+Why 12:00 UTC was chosen (decided on principle, before any model was built or
+any performance seen):
+- It is in daylight, so it catches the daytime heating that GFS tends to
+  mis-handle. A night-time hour would test the easier part of the day.
+- It is a stable, well-observed time of day — the station reports it reliably
+  and the temperature is not moving fast.
+- It avoids dawn and dusk, when temperature swings quickest and the ten-minute
+  offset in the pairing rule (4.5) would matter most.
+--- AFTER  ------------------------------------------------------------------
+**4.1 Target.** The temperature at **one fixed hour of the day**, and that hour
+is **chosen per airport, so that it falls at that airport's local midday**. The
+hour each airport uses is a per-airport fact and lives in the airport table
+(section 3.4). One hour a day is deliberately the simplest clean target — the
+honest test of whether the whole idea works at all. Widening to more hours comes
+later (section 6).
+
+The hours in use:
+
+- **EGLC and LFPG use 12:00 UTC.** Local standard time in western Europe is
+  UTC+0 and UTC+1, so 12:00 UTC is midday to early afternoon at both.
+- **DSM uses 18:00 UTC**, which is 12:00 Central Standard Time — local standard
+  noon at Des Moines. 12:00 UTC there would be 06:00 local, which is dawn: the
+  one part of the day the reasons below rule out. Checked against the timezone
+  database rather than assumed (DECISIONS D33, F32).
+
+**Daylight saving is deliberately ignored**, so each airport's target stays a
+fixed UTC hour all year round and there is no seasonal jump in the middle of the
+data. At 18:00 UTC the clock at Des Moines reads 12:00 in winter and 13:00 in
+summer; the sun sits at a comparable height either way.
+
+Why local midday was chosen (decided on principle, before any model was built or
+any performance seen):
+- It is in daylight, so it catches the daytime heating that GFS tends to
+  mis-handle. A night-time hour would test the easier part of the day.
+- It is a stable, well-observed time of day — the station reports it reliably
+  and the temperature is not moving fast.
+- It avoids dawn and dusk, when temperature swings quickest and the pairing
+  offset (4.5) would matter most.
+
+**All three reasons are about the local time of day, not about the number
+12:00.** That is why the hour moves with the airport instead of staying fixed in
+UTC. At the two European airports the two happen to coincide, which is why
+stages 1 and 2's first two airports could use a single hour without anyone
+having to choose between the two ideas.
+
+**This is the solar-standard-noon convention, brought forward.** DECISIONS D27
+wrote that convention down for stage 3, when airports are pooled, and said it
+was not applied to stage 1 or stage 2. DSM needed it earlier, for the reason D27
+already gave: 12:00 UTC is a different time of day at each location, which is
+harmless across the 328 km between London and Paris and wrong across an ocean.
+So the convention is in use **from DSM onwards** (DECISIONS D33), and the two
+European airports keep 12:00 UTC because that already is their local midday.
+
+**The honest cost, stated plainly.** DECISIONS D26 said stage 2 changes the
+**location and nothing else**, so that if a result differs, the location is the
+only thing that can explain it. That claim still holds **within western
+Europe** — EGLC and LFPG were run at the same hour and differ only in place. It
+does **not** hold for DSM: against the European pair, DSM changes the location
+**and** the target hour together. A DSM result answers "does the recipe travel
+to a different region at a comparable local time", and it must not be quoted as
+if it were the same controlled comparison EGLC and LFPG make between them
+(DECISIONS D33).
+
+==============================================================================
+A-5  section 4.5 - pairing, now against each airport's own target hour
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+The rule names no minute, because the minute is a per-airport fact and lives in
+the airport table (3.4). What it means in practice:
+
+- At **EGLC**, which reports at `:50`, the observation for 12:00 UTC is the
+  11:50 report — ten minutes earlier. Ten minutes is a negligible gap for
+  temperature, which is the argument D14 rests on.
+- At **LFPG**, which reports at `:00`, the observation for 12:00 UTC is the
+  12:00 report — an **exact match, no offset at all**. So the rule fits CDG
+  better than it fits EGLC, and needs no adapting for it (DECISIONS F18).
+--- AFTER  ------------------------------------------------------------------
+The rule names no minute and no hour, because both are per-airport facts and
+live in the airport table (3.4). **The hour being paired is each airport's own
+target hour (4.1), not one hour shared by all of them.** What the rule means in
+practice:
+
+- At **EGLC**, which reports at `:50`, the observation for 12:00 UTC is the
+  11:50 report — ten minutes earlier. Ten minutes is a negligible gap for
+  temperature, which is the argument D14 rests on.
+- At **LFPG**, which reports at `:00`, the observation for 12:00 UTC is the
+  12:00 report — an **exact match, no offset at all**. So the rule fits CDG
+  better than it fits EGLC, and needs no adapting for it (DECISIONS F18).
+- At **DSM**, which reports at `:54`, the observation for its 18:00 UTC target
+  is the **17:54 report — six minutes earlier**. The next report, 18:54, is 54
+  minutes out, so the rule picks 17:54 without ambiguity. Six minutes is a
+  smaller gap than EGLC's ten, so D14's argument covers it comfortably and the
+  rule again needs no adapting (DECISIONS F34).
+
+==============================================================================
+A-6a  section 5.0 - the results table
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+| airport | verdict | MAE degC: corrected vs raw GFS vs persistence |
+|---|---|---|
+| EGLC | **PASSED** (stage 1, 363 test days) | 1.040 vs 1.242 vs 2.096 |
+| LFPG | pending — not yet run | — |
+
+EGLC's figures are the stage 1 record: DECISIONS F16.
+--- AFTER  ------------------------------------------------------------------
+| airport | verdict | MAE degC: corrected vs raw GFS vs persistence |
+|---|---|---|
+| EGLC | **PASSED** (stage 1, 363 test days) | 1.040 vs 1.242 vs 2.096 |
+| LFPG | **PASSED** (stage 2, 363 test days) | 1.208 vs 1.396 vs 2.300 |
+| DSM | pending — not yet run | — |
+
+EGLC's figures are the stage 1 record (DECISIONS F16) and LFPG's the stage 2
+record for its airport (DECISIONS F30). Both airports' single authorised looks
+are now spent, and they fell on **the same twelve months**, so the two margins
+are not two independent draws of weather — see F30's closing reading. DSM's
+look has not been taken.
+
+==============================================================================
+A-6b  section 5.2 - the bar sentence, CHECKED AND LEFT UNCHANGED
+==============================================================================
+  (no change - left exactly as it stands)
+
+==============================================================================
+A-6c  section 5.3 - scope wording
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+The bar itself is
+unchanged; the only things now made concrete are that the test period is the
+fixed window 2025-08-01 to 2026-07-31, set before any model runs (section 4.3,
+DECISIONS D13), and that the bar is applied once per airport (5.0). Stage 1
+is EGLC passing this bar; stage 2 is CDG being put to the same one.
+--- AFTER  ------------------------------------------------------------------
+The bar itself is
+unchanged; the only things now made concrete are that the test period is the
+fixed window 2025-08-01 to 2026-07-31, set before any model runs (section 4.3,
+DECISIONS D13), and that the bar is applied once per airport (5.0). Stage 1
+is EGLC passing this bar; stage 2 is **each further individual airport put to
+the same bar, one at a time** — CDG, then DSM, then any that follow. The bar
+does not change from one airport to the next, and neither does what it
+requires.
+
+==============================================================================
+A-7a  section 6 - the preamble
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+Stages 1 and 2 are fully specified above — the sections are written per
+airport, so one set of rules covers both. **Stages 3 to 6 are intentionally
+left as short descriptions only.**
+--- AFTER  ------------------------------------------------------------------
+Stages 1 and 2 are fully specified above — the sections are written per
+airport, so one set of rules covers every airport in either of them. **Stages 3
+to 6 are intentionally left as short descriptions only.**
+
+==============================================================================
+A-7b  section 6 - stage 2 reframed, stage 3's note
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+- **Stage 2 — second airport (Charles de Gaulle, CDG / LFPG). IN PROGRESS.**
+  Re-run the same recipe at a second location to prove stage 1 was not a fluke.
+  Opened by DECISIONS D26. Its data was verified on contact (F17–F21) and its
+  design is the per-airport wording in sections 1, 3, 4 and 5 above, plus its
+  row in the airport table (3.4) — there is no separate stage 2 section, and
+  that is the point: only the location changes.
+- **Stage 3 — pool airports.** Combine airports into one model with
+  location-describing features, so locations learn from each other. The target
+  hour switches to solar standard noon here (4.1, DECISIONS D27).
+--- AFTER  ------------------------------------------------------------------
+- **Stage 2 — individual airports, two or more. IN PROGRESS.** Re-run the same
+  recipe at further locations, one airport at a time, each judged on its own
+  sealed test year, to prove stage 1 was not a fluke and to find out how far
+  the recipe travels. Opened at Charles de Gaulle by DECISIONS D26 and widened
+  to an open-ended list of airports by D32. There is no separate stage 2
+  section and that is the point: sections 1, 3, 4 and 5 are written per airport,
+  so opening an airport means adding a row to the table (3.4), not adding a
+  design.
+  - **CDG (LFPG) — PASSED.** Verified on contact (F17–F21), pulled and mapped
+    (F22–F26), rehearsed (F27–F29), locked (D31) and tested once (F30).
+  - **Des Moines (DSM) — IN PROGRESS.** Opened by D32, verified on contact
+    (F31–F37). It is the first airport outside western Europe, and the first
+    whose target hour is not 12:00 UTC (D33, 4.1).
+  - **Further airports may follow before stage 3**, on the same five steps:
+    verify on contact, pull and map, join and rehearse, lock, test once.
+- **Stage 3 — pool airports.** Combine airports into one model with
+  location-describing features, so locations learn from each other. **The
+  solar-standard-noon target hour this stage was going to introduce is already
+  in use, from DSM onwards** (4.1, DECISIONS D27, D33), so stage 3 inherits it
+  rather than switching to it.
+
+==============================================================================
+A-7c  section 6 - the closing parenthetical
+==============================================================================
+--- BEFORE ------------------------------------------------------------------
+*(Stages 3–6 have no sections of their own yet, and will not until the owner
+opens them. Stage 2 needed no section: the sections above are written per
+airport, so opening it meant adding a row to the airport table, not adding a
+design.)*
+--- AFTER  ------------------------------------------------------------------
+*(Stages 3–6 have no sections of their own yet, and will not until the owner
+opens them. Stage 2 needs no section of its own, however many airports it comes
+to hold: the sections above are written per airport, so opening one means
+adding a row to the airport table, not adding a design.)*
+
+SPEC.md rewritten: 393 lines -> 481 lines
