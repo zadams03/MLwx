@@ -2358,3 +2358,370 @@ things need the owner's word before CDG's test year is opened:
   the same recipe on about 20% more data, so the test number will not match the
   1.377 rehearsal figure and should not be expected to. Recorded here so it is
   decided deliberately rather than inherited by silence.
+
+---
+
+## 2026-08-17 — Session 12: THE CDG METHOD LOCK
+
+No model was built, run or refitted this session, no data was loaded, and
+**CDG's test year was not touched**. This section is the written lock for stage
+2, mirroring what D21 did for stage 1, plus the correspondence check that proves
+it is D21 with the location swapped and nothing else.
+
+**D31. CDG's method is LOCKED. This entry fully specifies what CDG's
+sealed-test session will run. It closes Q23.**
+
+This is **D21 with the airport swapped and nothing else touched.** Every
+methodological choice below — the model, its settings, the features, the target
+hour, the pairing rule, the missing-data rule, the references, the bar, and the
+one-look rule — is the same choice D21 made, not a new one. That is required by
+D26, which says stage 2 changes **only the location**: if CDG's result differs
+from EGLC's, the location must be the only thing that can explain it.
+
+Why it is written out separately rather than by pointing at D21: D21 names
+London City throughout, so CDG's test session would otherwise have to reach back
+to an EGLC-named record and translate it while the test year was open. The whole
+value of a lock is that the executing session decides nothing (D21.11). A
+translation is a decision. So the translation is done here, now, with CDG's test
+year still unseen, and the test session executes this record and reports.
+
+**D31.1 — Target.** The temperature at **12:00 UTC** at **Paris Charles de
+Gaulle (IATA CDG, ICAO LFPG)**, the station at latitude 49.0153, longitude
+2.5344, elevation 109 m — IEM's own position, per SPEC 3.4 and F17. The forecast
+comes from the Open-Meteo grid point that position maps to: latitude 49.027008,
+longitude 2.578125, elevation 109 m, 3.44 km from the airport (SPEC 3.4, F17).
+One row per day. The hour is 12:00 UTC, the same hour as stage 1, on purpose
+(SPEC 4.1, D26).
+
+**D31.2 — What the model predicts.** The **residual**: observed minus forecast
+(SPEC 4.2). The corrected forecast is the GFS forecast plus the predicted
+residual. The model never predicts temperature directly. Identical to D21.2.
+
+**D31.3 — Features.** The D19 minimal set, exactly three:
+```
+forecast_temp_c   the GFS forecast temperature for that day at 12:00 UTC
+season_sin        sin(2 * pi * year_fraction(date))
+season_cos        cos(2 * pi * year_fraction(date))
+```
+where `year_fraction` is `(day_of_year - 1) / 365`, or `/ 366` in a leap year.
+No hour-of-day feature (the hour is fixed, so it carries no information). No
+recent-observation feature, even though SPEC 2.1d would allow one — see D19 for
+why. Identical to D21.3.
+
+**D31.4 — Model and settings.** LightGBM gradient-boosted trees (SPEC 4.4,
+D12), with exactly the session 05 settings, unchanged:
+```
+objective=regression_l1   (absolute error, D20)   n_estimators=300
+learning_rate=0.05        num_leaves=15           min_child_samples=40
+subsample=1.0             colsample_bytree=1.0    reg_alpha=0.0
+reg_lambda=0.0            random_state=42         n_jobs=1
+deterministic=True        force_row_wise=True     verbose=-1
+```
+Nothing is tuned, searched or varied in the test session. Library versions are
+pinned in `requirements.txt` (D24): python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0. Identical to D21.4. Session 11 already ran this exact
+configuration at CDG and its PART 0 proved it setting by setting against
+`scripts/session05_model.py` — 0 settings differ, 0 constants differ (F29).
+
+**D31.5 — Training data for the test: the FULL D13 training window,
+2021-03-24 to 2025-07-31, at LFPG.** That is CDG's inner-training **and** CDG's
+validation year recombined into one training set.
+- Reason: the same reason D21.5 gave. The D18 split existed so the method could
+  be rehearsed without touching the test year. The method is locked, so
+  validation has finished its job, and holding a year back would only throw away
+  real training data. Refitting on all non-test data before the single test is
+  the standard move — and it is what stage 1 did, so doing anything else here
+  would be a second difference between the two airports on top of the location.
+- Everything fitted is fitted on this window and nothing else: the model, the
+  climatology baseline (SPEC 2.1c) and the mean-bias figure.
+- **Note the consequence, so it is not a surprise:** the model that is tested is
+  **not** the model measured in session 11. It is the same recipe fitted on about
+  20% more days, including one more full cycle of seasons. Session 11 fitted
+  1,204 inner-training rows; the test model fits those plus CDG's 365 validation
+  rows (F27). **The test number will not match session 11's 1.377 rehearsal
+  figure and should not be expected to.** At EGLC the equivalent move moved the
+  number by 0.125 degC (F16), and most of that was the weather rather than the
+  extra data.
+
+**D31.6 — Test data: LFPG, 2025-08-01 to 2026-07-31 (D13), and nothing after
+it.** Data after 2026-07-31 is not used, keeping the test set exactly one
+calendar year. This is CDG's own test year: the dates are the same as EGLC's but
+the data is a different airport's, and it has never been looked at.
+
+What "opened for the first time" means precisely here, because it is not quite
+the same sentence D21.6 could write. Two files carry the test year:
+```
+openmeteo_previousruns_gfs_global_LFPG_2026-01-01_2026-07-31.json  never read
+iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv                    never read
+openmeteo_previousruns_gfs_global_LFPG_2025-01-01_2025-12-31.json  read, but
+iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv                    cut at
+                                                                   2025-07-31
+```
+The two 2026 LFPG chunk files have never been opened by any session. The 2025
+chunks have been read, but every session so far cut them off at 2025-07-31 on
+load and asserted that no date on or after 2025-08-01 reached any table (F27).
+The test session reads them to their end. Session 10 counted row presence, gap
+positions and report timing across the whole period including the test window,
+but never a temperature value from it (F22, F23, F25) — a structural count, not
+a look at the data.
+
+**D31.7 — Pairing and missing data.** The D14 rule, applied exactly as written at
+EGLC: the routine report is the truth observation, each 12:00 forecast is paired
+with the report nearest that hour, and if no report falls within 15 minutes of
+the hour the day is dropped and counted. Drop, count, report — nothing filled,
+ever (SPEC 2.2). The drop counts for both the training window and the test year
+are part of the output.
+
+The one location fact inside this: **LFPG reports on the hour (`:00`)**, where
+EGLC reports at `:50` (SPEC 3.4, F18). So the rule pairs 12:00 with the 12:00
+report — an exact match, no offset — where at EGLC it paired 12:00 with the
+11:50 report. **The rule is not adapted; it simply fits CDG better.** Where CDG
+files its routine report off the hour, the day is dropped and taken, not
+rescued: that is D30, which refused to widen the tolerance or fall back to the
+`:30` "special" stream for one airport, because a different pairing rule at
+stage 2 would break the "only the location changed" claim.
+
+**What the gap map says the test year should cost, written down before the
+look.** From session 10, which mapped every hour without reading a value:
+```
+forecast-gap days in CDG's test year                            0   (F22)
+days lost to an off-hour-only report in CDG's test year         1   (F25)
+    2026-07-08  -- the only routine report in the noon hour was 12:30
+days lost to no report at all in the noon hour                  0   (F25)
+days lost to a report on the hour carrying no temperature       0   (F25)
+expected paired rows                                          364 of 365
+```
+Scoring is then expected to lose one further day, 2026-07-09, because
+persistence needs the previous day's observation and 2026-07-08 is the day that
+is missing — the same arithmetic that took EGLC's test from 364 paired rows to
+363 scored days (F16). So **363 scored days is the expectation, not a
+requirement.** The test session reports the **actual** counts and reconciles
+them against this table. A count that will not reconcile is a D31.11 stop
+signal, not something to explain away.
+
+**D31.8 — The four references. Anything that has to be *fitted* is fitted on
+CDG's training window only.** Raw GFS and persistence are fitted on nothing —
+they are just values. Climatology and the mean-bias figure are fitted, and both
+come from LFPG's D13 training window (SPEC 2.1c).
+- **Raw GFS** — the forecast value itself, uncorrected. *Part of the bar.*
+- **Persistence** — the previous calendar day's 12:00 UTC observation at LFPG.
+  Past values only (SPEC 2.1d). *Part of the bar.* Note that for the first test
+  day, 2025-08-01, "yesterday" is 2025-07-31, which sits in the training window.
+  That is a past observation, so it is legal and it will be used; it is written
+  down here so it is not mistaken for leakage later. Identical to D21.8's note.
+- **Climatology** — the seasonal average of the *observed* temperature at LFPG
+  for that position in the year, averaged over every **CDG training-window**
+  observation within 7.5 days of it, measured around the circle so late December
+  and early January are neighbours (SPEC 2.1c). *Informative only.*
+- **Mean-bias reference** — the forecast plus one constant: the mean **CDG
+  training-window** bias. *Informative only* (SPEC 5.2, D23). Worth carrying
+  forward from F29: on CDG's validation year this reference was **worse** than
+  raw GFS, because the constant available is near zero and applying it hurt
+  slightly. If that repeats on the test year it is not a fault — it is what "no
+  constant offset worth taking" looks like.
+
+All five methods — the four above plus the corrected forecast — are scored on
+the **same set of days**, the days where every method has a value.
+
+**D31.9 — The metric and the bar.** Mean absolute error in degrees Celsius
+(SPEC 5.1). **Stage 2 passes if the corrected forecast has a lower MAE than both
+raw GFS and persistence over CDG's test year.** No numeric margin — the bar is
+qualitative and stays that way (D22, SPEC 5.3). Climatology and the mean-bias
+reference are reported but do not decide pass or fail. The margin is reported
+prominently alongside the verdict, so a technical pass by a hair reads as what it
+is (D22).
+
+**The bar is judged once per airport, on that airport's own data (SPEC 5.0).**
+EGLC's pass does not excuse a CDG failure, and a CDG result does not re-open
+EGLC's. Stage 1's 16.3% is not a target CDG has to reach and not a number CDG is
+measured against; CDG is measured against CDG's own raw GFS and CDG's own
+persistence, and nothing else.
+
+**D31.10 — One look, and the result stands.** CDG's test year is opened once,
+this method is run once, and whatever comes out is reported straight — pass or
+fail, with the seasonal breakdown and the drop counts. A failure is an honest
+finding (SPEC 2.4), not something to fix by trying again. If the result
+disappoints, the response is a new decision logged here by the owner, never a
+quiet re-run. Identical to D21.10.
+
+Read this one plainly, because stage 2 is where it bites hardest. CDG's
+rehearsal margin was 3.5% (F29), half of EGLC's 6.0%, on a harder problem. A
+smaller margin is easier to lose. **A CDG failure is a real possible outcome of
+the next session, and it is an outcome the project reports rather than avoids.**
+It would be a finding about how far the recipe travels, which is exactly the
+question stage 2 was opened to ask (D26).
+
+**D31.11 — Deviation is a stop signal.** If CDG's test session finds any reason
+to depart from this record — a setting that does not fit, a missing file, a count
+that will not reconcile against D31.7, a tempting small improvement — it **stops
+and raises it with the owner**. It does not decide on the fly with the test year
+open. Any change to the above is a new DECISIONS entry made deliberately, not an
+adjustment made mid-run. Identical to D21.11.
+
+---
+
+**The D21 ↔ D31 correspondence check.** This is the verification the session
+prompt required: every D21 sub-point set beside its D31 counterpart, to show that
+the only differences are the location and the facts that follow from it.
+
+```
+point  subject                D21 (EGLC)                D31 (LFPG)                differs?
+.1     target hour            12:00 UTC                 12:00 UTC                 same
+.1     airport                London City / EGLC        Paris CDG / LFPG          LOCATION
+.1     station position       51.505 / 0.055            49.0153 / 2.5344 / 109 m  LOCATION
+.1     grid point             (not stated in D21)       49.027008 / 2.578125      LOCATION
+.1     row granularity        one row per day           one row per day           same
+.2     what is predicted      residual = obs - fcst     residual = obs - fcst     same
+.2     how corrected is made  fcst + predicted resid    fcst + predicted resid    same
+.3     features               3: fcst temp, sin, cos    3: fcst temp, sin, cos    same
+.3     year_fraction          (doy-1)/365 or /366       (doy-1)/365 or /366       same
+.3     excluded features      no hour, no recent obs    no hour, no recent obs    same
+.4     library and model      LightGBM GBDT             LightGBM GBDT             same
+.4     objective              regression_l1             regression_l1             same
+.4     n_estimators           300                       300                       same
+.4     learning_rate          0.05                      0.05                      same
+.4     num_leaves             15                        15                        same
+.4     min_child_samples      40                        40                        same
+.4     subsample              1.0                       1.0                       same
+.4     colsample_bytree       1.0                       1.0                       same
+.4     reg_alpha / reg_lambda 0.0 / 0.0                 0.0 / 0.0                 same
+.4     random_state           42                        42                        same
+.4     n_jobs                 1                         1                         same
+.4     deterministic          True                      True                      same
+.4     force_row_wise         True                      True                      same
+.4     verbose                -1                        -1                        same
+.4     pinned versions        py 3.12.2, np 2.5.2,      py 3.12.2, np 2.5.2,      same
+                              lightgbm 4.7.0            lightgbm 4.7.0
+.4     tuning allowed         none                      none                      same
+.5     training window        2021-03-24..2025-07-31    2021-03-24..2025-07-31    same
+.5     refit on inner+valid   yes                       yes                       same
+.5     what else is fitted    model, climatology,       model, climatology,       same
+                              mean bias -- all on it    mean bias -- all on it
+.5     rows fitted on         1,569 (F16)               1,569 expected (F27:      LOCATION
+                                                        1,204 + 365)
+.5     mismatch warning       test != validation no.    test != 1.377 rehearsal   LOCATION
+.6     test window            2025-08-01..2026-07-31    2025-08-01..2026-07-31    same
+.6     nothing used after     2026-07-31                2026-07-31                same
+.6     files opened first     the two 2026 EGLC         the two 2026 LFPG         LOCATION
+       time                   chunks                    chunks
+.7     pairing rule           D14, nearest report,      D14, nearest report,      same
+                              15-minute tolerance       15-minute tolerance
+.7     report minute          :50 -> 10-min offset      :00 -> exact match        LOCATION
+.7     missing data           drop, count, report,      drop, count, report,      same
+                              never fill (SPEC 2.2)     never fill (SPEC 2.2)
+.7     off-hour reports       dropped by D14            dropped by D14, taken     same rule,
+                                                        not rescued (D30)         LOCATION
+                                                                                  consequence
+.7     expected fcst-gap days 0 in test year (F8)       0 in test year (F22)      same
+.7     expected obs-loss days (not predicted in         1: 2026-07-08 (F25)       LOCATION
+                              advance; 1 found, F16)
+.7     drop counts reported   training and test         training and test         same
+.8     reference 1            raw GFS, in the bar       raw GFS, in the bar       same
+.8     reference 2            persistence, in the bar   persistence, in the bar   same
+.8     persistence's source   previous day's 12:00 obs  previous day's 12:00 obs  same
+.8     first-day note         2025-07-31 is training,   2025-07-31 is training,   same
+                              legal, will be used       legal, will be used
+.8     reference 3            climatology, +-7.5 days   climatology, +-7.5 days   same
+                              circular, informative     circular, informative
+.8     reference 4            mean-bias, informative    mean-bias, informative    same
+.8     what fitted refs use   training window only      training window only      same
+                              (SPEC 2.1c)               (SPEC 2.1c)
+.8     scoring set            same days for all five    same days for all five    same
+.9     metric                 MAE in degC (SPEC 5.1)    MAE in degC (SPEC 5.1)    same
+.9     the bar                beat raw GFS AND          beat raw GFS AND          same
+                              persistence               persistence
+.9     numeric margin         none, qualitative (D22)   none, qualitative (D22)   same
+.9     margin reported        yes, prominently          yes, prominently          same
+.9     who decides pass/fail  raw GFS + persistence     raw GFS + persistence     same
+.10    number of looks        one                       one                       same
+.10    number of runs         one                       one                       same
+.10    failure handling       reported straight, not    reported straight, not    same
+                              re-run
+.11    deviation handling     stop and raise with       stop and raise with       same
+                              the owner                 the owner
+```
+
+**Verdict of the check: no methodological choice differs.** Every row marked
+`LOCATION` is one of four things, and nothing else appears in that column:
+1. **which airport it is** — its name, ICAO code, station position and grid
+   point (D31.1);
+2. **which files hold its data** (D31.6);
+3. **when the station files its routine report** — `:00` at LFPG against `:50` at
+   EGLC — which changes the pairing *offset* the D14 rule produces, not the rule
+   (D31.7);
+4. **how many rows and drops follow from that airport's own record** — 1,569
+   expected training rows, 1 expected test-year drop (D31.5, D31.7).
+
+Every setting, every date, every feature, every reference, the metric, the bar,
+the one-look rule and the stop-signal rule are the same in both entries. Nothing
+was added to D31 that D21 does not require, and nothing D21 requires was left
+out of D31.
+
+**One difference inside the `LOCATION` rows worth naming rather than hiding.**
+D21.1 gives EGLC's position as 51.505 / 0.055, which is the approximate figure
+stage 1's pulls were made with. D31.1 gives LFPG's as 49.0153 / 2.5344 / 109 m,
+which is **IEM's own metadata** (F17), because session 08 pulled that metadata
+and used it in preference to the prompt's approximate figure. So the two
+coordinates do not come from the same kind of source. This is a difference in
+where a number came from, not in method: each airport's pulls were made at the
+position that airport's session used, every file records the exact query (SPEC
+2.3), and the grid point Open-Meteo returned is fixed and recorded either way. It
+changes nothing in D31 and needs no action; it is written down so nobody later
+reads "only the location changed" as also meaning "and both positions were
+sourced the same way".
+
+Three places where D31 says **more** than D21 did, all of them recording facts
+that already exist rather than making choices:
+- **D31.7 predicts the test-year drops before the look** (0 forecast-gap days, 1
+  off-hour day, 363 scored days expected). D21 could not do this: EGLC's gap map
+  came from session 03b, but nobody had computed the day-level consequence for
+  the test year in advance, so F16 reported one dropped day after the fact. CDG's
+  session 10 gap map makes the prediction possible, and F27 already showed the
+  same prediction landing exactly on the training side. **A prediction made
+  before the look is a stronger check than a count made after it**, which is why
+  it is written here rather than left to the test session.
+- **D31.6 spells out what "opened for the first time" means** for the 2025 chunk
+  files, which have been read with a cut-off. D21 did not need this sentence
+  because it was writing about the same situation without naming it.
+- **D31.9 and D31.10 add a plain warning** that CDG's rehearsal margin was half
+  EGLC's, so a failure is a real possible outcome. This adds no requirement and
+  changes no threshold; it is written so a disappointing result is met with a
+  record that expected the possibility, rather than with a search for a reason.
+
+---
+
+## 2026-08-17 — Session 12 note (nothing measured, nothing opened)
+
+This session ran no code, loaded no data and produced no numbers of its own, so
+there is no F-entry. What it produced is D31, the correspondence check above,
+and the STATUS update.
+
+**Q23 is closed by D31**, and both halves of it are answered:
+- **Does the lock get written out for CDG?** Yes. D31 is the D21-equivalent,
+  written before the test year is opened, exactly as the stage 1 pattern did.
+  D26-plus-D21 was judged not sufficient on its own, because it would leave the
+  test session translating an EGLC-named record with the test year open, and
+  translation is a decision (D21.11).
+- **Is CDG's test model refitted on the full D13 training window?** Yes —
+  D31.5, matching D21.5, with the consequence stated in advance: the test number
+  will not match session 11's 1.377 and should not be expected to.
+
+**No open questions remain.**
+
+**Nothing was opened.** CDG's test year was not loaded, read, printed, averaged
+or fitted on. No model was run, fitted or refitted. No file in `data/raw/` was
+read this session at all — the file names in D31.6 come from listing the
+directory, not from opening the files. `scripts/` gained nothing: there was
+nothing to run.
+
+**No SPEC edit was made and none was authorised.** D31 fixes no rule that SPEC
+does not already carry; it names, for one airport, what SPEC already says
+per-airport.
+
+**One honest limit carried forward, not a new question.** Q20 is closed, but its
+closing note stands and applies to the test session's write-up: `gfs_global` is
+confirmed as the string every LFPG chunk was pulled with, while F6's
+value-by-value comparison against `gfs_seamless` was never re-run at LFPG. So
+stage 2 can say "this is exactly the `gfs_global` series" but not "and
+`gfs_seamless` would have given the same", which stage 1 can. Recorded here so
+the test session does not accidentally claim the stronger version.

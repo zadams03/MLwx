@@ -3,7 +3,7 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 11)._
+_Last updated: 17 August 2026 (after session 12)._
 
 ---
 
@@ -48,8 +48,31 @@ The correction beats raw GFS by 0.050 degC (3.5%), persistence by 1.147 degC
 (45.4%) and the mean-bias reference by 0.058 degC (4.1%). **This is a rehearsal,
 not the frozen bar — stage 2 has NOT passed.** See DECISIONS **F29**.
 
-**CDG's test year has still never been opened.** The sealed-test look comes in a
-later session.
+Session 12 then **wrote and froze CDG's method lock, DECISIONS D31** — the
+D21-equivalent for stage 2, closing **Q23**. No model was run, no data was
+loaded, and CDG's test year was not touched. D31 is D21 with the airport swapped
+and nothing else: the same target hour, the same three features, the same
+LightGBM settings, the same D13 training window refit, the same D14 pairing, the
+same four references, the same qualitative bar, the same one-look and
+stop-signal rules. It was written out separately rather than by pointing at D21
+because D21 names London City throughout, and a test session translating an
+EGLC-named record with the test year open would be making a decision (D21.11).
+
+**The lock was verified, point by point.** DECISIONS carries a full D21 ↔ D31
+correspondence table covering all 11 sub-points. **No methodological choice
+differs.** Everything that differs is the location or follows from it: which
+airport it is and where, which files hold its data, that LFPG reports at `:00`
+so D14 gives an exact match instead of EGLC's 10-minute offset, and the row and
+drop counts that follow from CDG's own record.
+
+**D31 also predicts CDG's test-year drops before the look**, from session 10's
+gap map: 0 forecast-gap days, 1 off-hour day (2026-07-08), so 364 paired rows
+expected and 363 scored days once persistence loses 2026-07-09. The test session
+reports the actual counts and reconciles them; a count that will not reconcile
+is a stop signal, not something to explain away.
+
+**CDG's test year has still never been opened.** The sealed-test look is the
+next session, and it executes D31.
 
 **Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
 SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
@@ -532,26 +555,78 @@ result and the honest reading of it.
   - Full real output in `notes/session-11-check-output.txt`; the script is
     `scripts/session11_model.py`.
 
+- **Session 12 — CDG'S METHOD LOCK. Documentation only. Done.** No code was
+  written or run, no data was loaded, no model was built or refitted, and CDG's
+  test year was not opened. No file in `data/raw/` was read.
+  - **CDG's method is LOCKED (DECISIONS D31), which closes Q23.** One entry now
+    fully specifies what CDG's sealed-test session will run: the target (12:00
+    UTC at LFPG, IEM's position and the grid point it maps to), the residual as
+    what the model predicts, the D19 three features, the exact session 05
+    LightGBM settings, the training data, the D14 pairing and drop-count rule,
+    the four references, the metric and the bar, the one-look rule, and the rule
+    that any deviation during the test session is a stop signal.
+  - **It is D21 with the airport swapped and nothing else touched.** It was
+    written out separately rather than by pointing at D21 because D21 names
+    London City throughout, so the test session would otherwise be translating an
+    EGLC-named record with the test year open — and a translation is a decision,
+    which D21.11 forbids.
+  - **Both halves of Q23 are answered.** The lock **is** written out for CDG as
+    its own entry (D31), and CDG's test model **is** refitted on the full D13
+    training window 2021-03-24 to 2025-07-31 (D31.5), exactly as D21.5 did for
+    EGLC. The consequence is recorded in advance: the tested model is the same
+    recipe on CDG's 1,204 inner-training rows plus its 365 validation rows, so
+    **the test number will not match session 11's 1.377 rehearsal figure and
+    should not be expected to.**
+  - **The lock was verified point by point.** DECISIONS carries a D21 ↔ D31
+    correspondence table over all 11 sub-points — every setting, date, feature,
+    reference, the metric, the bar, the one-look rule and the stop-signal rule.
+    **No methodological choice differs.** Everything marked as differing is the
+    location or follows from it: the airport and its position, which files hold
+    its data, LFPG reporting at `:00` so D14 gives an exact match rather than
+    EGLC's 10-minute offset, and the row and drop counts from CDG's own record.
+  - **One difference was named rather than smoothed over.** D21.1 carries EGLC's
+    approximate pull coordinates (51.505 / 0.055) while D31.1 carries IEM's own
+    metadata for LFPG (49.0153 / 2.5344 / 109 m, F17). That is a difference in
+    where a number came from, not in method — each airport's pulls were made at
+    the position its session used and every file records the exact query — but it
+    is written down so "only the location changed" is not read as also meaning
+    the two positions were sourced the same way.
+  - **D31 predicts the test-year drops before the look**, from session 10's gap
+    map: 0 forecast-gap days (F22), 1 day lost to an off-hour-only report
+    (2026-07-08, F25), 0 lost to nothing being filed and 0 to a report with no
+    temperature. So 364 paired rows are expected, and 363 scored days once
+    persistence loses 2026-07-09. D21 could not make this prediction for EGLC;
+    CDG's gap map makes it possible, and a prediction made before the look is a
+    stronger check than a count made after it.
+  - **No SPEC edit was made and none was authorised.** D31 fixes no rule SPEC
+    does not already carry — it names, for one airport, what SPEC already says
+    per airport.
+  - No script and no notes file: there was nothing to run and no number to
+    produce, the same as session 09.
+
 ## In progress
 
-- Nothing. Session 11 is finished and awaiting the owner's review.
+- Nothing. Session 12 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits sessions 08, 09, 10 and 11.
-2. **CDG's method lock, then its single sealed test** — the D21-equivalent for
-   CDG, followed by the one look. There is **no written test lock for CDG yet**:
-   D21 names London City throughout, and D26 says only the location changes, but
-   nothing in the log yet says "this is what CDG's sealed-test session will run".
-   That is DECISIONS **Q23**, and it is the owner's to answer. Two things it has
-   to settle before the test year is opened:
-   - whether the lock is written out for CDG as its own entry, the way D21 was
-     written before stage 1's test, so no choice is made with the test year open
-     (D21.11);
-   - whether CDG's test model is refitted on the **full D13 training window**
-     (inner-training plus the validation year recombined), as D21.5 did for
-     EGLC. If it is, the test number will not match this session's 1.377
-     rehearsal figure and should not be expected to.
+1. Owner reviews and commits sessions 08, 09, 10, 11 and 12 — **the lock is
+   meant to be reviewed before the irreversible look**, which is why sessions 12
+   and 13 were split.
+2. **CDG'S SINGLE SEALED-TEST EVALUATION — execute DECISIONS D31.** Open CDG's
+   test year (2025-08-01 to 2026-07-31) for the first and only time, refit on the
+   full D13 training window, score all five methods on the same days, and judge
+   the frozen bar (SPEC 5.3, 5.0) once. Report the verdict straight, pass or
+   fail, with the margin stated prominently (D22), the seasonal breakdown, and
+   the drop counts reconciled against D31.7's prediction.
+   - The session decides nothing. D31 already decided it all.
+   - Any deviation — a setting that does not fit, a missing file, a count that
+     will not reconcile, a tempting improvement — is a **stop signal** (D31.11):
+     raise it with the owner, do not decide with the test year open.
+   - A CDG failure is a real possible outcome. CDG's rehearsal margin was 3.5%
+     against EGLC's 6.0%, on a harder problem, and a smaller margin is easier to
+     lose. It would be an honest finding about how far the recipe travels, which
+     is the question stage 2 exists to ask.
 3. Nothing is pre-committed beyond that.
 
 ## Notes
@@ -570,9 +645,9 @@ result and the honest reading of it.
   confirms `gfs_global` was the string used, but F6's value-by-value comparison
   against `gfs_seamless` still has not been run at LFPG, so stage 2 cannot make
   that particular by-construction claim the way stage 1 can.
-- **Q23 is open**, raised by session 11: CDG has no written test lock, and the
-  D21.5 refit question has to be answered for it. It is the owner's to decide,
-  and it is what the next session is for.
+- **Q23 is closed** by session 12 (D31): CDG's method lock is written, and the
+  D21.5 refit question is answered — CDG's test model is refitted on the full
+  D13 training window, as EGLC's was. **No open questions remain.**
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
@@ -585,4 +660,5 @@ result and the honest reading of it.
   as session 03b held EGLC's. **Session 11 did not open it either**: the two 2026
   LFPG chunk files were never read, the 2025 chunk was cut off at 2025-07-31 on
   load, and the script asserts no date on or after 2025-08-01 reached any table.
-  Each airport gets its own single look (SPEC 5.0).
+  **Session 12 did not open it either** — it loaded no data at all. Each airport
+  gets its own single look (SPEC 5.0), and CDG's is the next session.
