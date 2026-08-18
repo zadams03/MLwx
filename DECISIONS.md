@@ -3927,3 +3927,406 @@ The obvious repair, for the owner to authorise or reject: rename the column to
 "station code" and reword section 3.1 to say each airport is requested by its
 IEM station code, noting that for the European airports that code is the ICAO
 code. That is one heading and one sentence.
+
+---
+
+## 2026-08-18 — Session 16 findings (the DSM join, bias look and rehearsal)
+
+The first modelling session for the third airport, mirroring session 11 at CDG
+and sessions 04/05 at EGLC. The join, the bias look and the model all ran for
+real. **DSM's test year was not touched**: the two 2026 DSM raw chunk files were
+never opened, the 2025 chunk was cut off at 2025-07-31 on load, and the script
+asserts that no date on or after 2025-08-01 reached any table. Nothing was
+tuned, varied or chosen again — the locked recipe was applied at the third
+location and nothing else. The script is `scripts/session16_model.py` and the
+full real output is `notes/session-16-check-output.txt`.
+
+**F42. The join at 18:00 UTC at DSM, and every drop reconciled against F41's
+advance prediction. All four lines matched.**
+
+One row per day: date, forecast temperature, observed temperature, and the
+residual the model learns.
+
+```
+                                         days   kept   drop  no fc  null fc  no obs
+inner-training 2021-03-24..2024-07-31   1,226  1,206     20      0       20       0
+validation     2024-08-01..2025-07-31     365    365      0      0        0       0
+```
+
+**Session 15's gap map predicted these drops before anything was joined, and it
+predicted them exactly** — the check F41 exists for, and the same check D31.7
+and F27/F30 made at CDG:
+
+```
+cause                                         expected   actual  verdict
+the 492-hour forecast gap (F38, F41)                20       20  MATCHES
+observation-side losses, any cause (F41)             0        0  MATCHES
+TOTAL days dropped                                  20       20  MATCHES
+
+period rows                                   expected   actual  verdict
+inner-training paired rows (F41)                 1,206    1,206  MATCHES
+validation paired rows (F41)                       365      365  MATCHES
+```
+
+The 20 dropped days are 2023-12-30 to 2024-01-18, consecutive, all of them the
+shared archive gap, all in inner-training. The gap ends at 2024-01-19 11:00 UTC
+and the series resumes at 12:00, so DSM's 18:00 target has a value on
+2024-01-19 and that day survives — 20 days lost, not 21, arrived at by different
+arithmetic from Europe's (F38). Nothing was filled (SPEC 2.2).
+
+**DSM loses no day at all on the observation side, in the whole training
+window**, exactly as F41 said: 1,591 usable 18:00 observations from 1,591
+calendar days, **0** reports more than 15 minutes from the hour and **0**
+carrying no temperature at the target hour. Both European airports lost days
+here — EGLC to missing observations (F12), LFPG three to off-hour reporting
+(F25). **DSM's validation year is complete, 365 of 365**, as CDG's was and
+EGLC's was not.
+
+**The pairing offset actually used, day by day.** F34 predicted a steady 6
+minutes from DSM's `:54` report, and that is what 1,590 of the 1,591 days gave:
+
+```
+-6 minutes from 18:00 UTC : 1,590 days
+-2 minutes from 18:00 UTC :     1 day   (2024-06-07, report filed at 17:58)
+```
+
+On 2024-06-07 the station filed 16:54, **17:58** and 18:54 — one report in the
+tolerance window, two minutes out, so D14 keeps it and no day is lost. The
+script counts one more thing worth writing down: **no day in the whole training
+window has more than one report inside D14's 15-minute window**, so the pairing
+is never ambiguous at DSM and the rule never has to choose between two reports.
+
+**F43. DSM's bias at 18:00 UTC is a third distinct shape — and it is the first
+airport that has BOTH structures, each of them larger than either European
+airport's.** Inner-training only; the validation year's values were not
+explored and the test year not touched.
+
+Overall, beside EGLC (F13) and CDG (F28):
+
+```
+                            EGLC       CDG       DSM
+days                       1,205     1,204     1,206
+mean bias degC            -0.108    +0.050    -0.231
+median degC               +0.000    +0.100    -0.200
+st dev degC                1.551     1.654     2.550
+mean |bias| degC           1.172     1.248     1.973
+station warmer, %           48.7      51.7      45.5
+min / max degC        -7.0/+5.6 -7.7/+5.8 -10.4/+9.2
+```
+
+EGLC and CDG are measured at 12:00 UTC and DSM at 18:00 UTC (D33). What is held
+constant across the three is each airport's own local midday, not the UTC hour
+(SPEC 4.1).
+
+**GFS is a much harder forecast to beat at DSM.** Mean |bias| 1.973 degC against
+1.248 at CDG and 1.172 at EGLC — about 60% larger — and the spread is half as
+wide again. That is what a continental interior means, and it was expected from
+F38's value ranges. The mean bias is still small (-0.231), so most of the error
+is structure and day-to-day noise rather than a constant offset — but unlike at
+CDG, the constant here is not quite nothing.
+
+Against forecast temperature, the warm end is much stronger than anywhere yet:
+
+```
+forecast band (degC)     days  mean bias   st dev  mean |bias|  EGLC bias   CDG bias
+-30 to -20                  1     -1.580      -          1.580          -          -
+-20 to -10                 26     -1.179    1.611        1.612          -          -
+-10 to 0                   85     -1.087    1.548        1.504          -     +1.800
+0 to 5                    130     -0.781    2.026        1.611     -0.049     -0.687
+5 to 10                   165     -0.337    2.049        1.543     +0.361     +0.223
+10 to 15                  147     +0.465    2.026        1.554     +0.387     +0.339
+15 to 20                  130     +1.098    2.579        2.153     -0.287     +0.320
+20 to 25                  186     +0.953    2.247        2.006     -0.746     -0.142
+25 to 30                  222     -0.147    2.567        2.113          -          -
+30 to 45                  114     -3.089    2.795        3.449          -          -
+
+coldest 10%  n=120  forecast -21.7 to  +0.3 degC  mean bias -1.066 (EGLC +0.097, CDG -0.351)
+warmest 10%  n=120  forecast +29.8 to +42.7 degC  mean bias -2.993 (EGLC -1.155, CDG -0.784)
+```
+
+**The warm-end bias EGLC had is present at DSM at nearly three times the size**
+(-2.993 in the warmest tenth against EGLC's -1.155 and CDG's -0.784), and it
+strengthens steadily the warmer the forecast gets (see F44). The cold end is
+biased the same way EGLC's was not and CDG's was — GFS runs too warm on DSM's
+coldest days too, by about a degree.
+
+By season, the calendar swing is also the biggest of the three:
+
+```
+season         days  mean bias   st dev  mean |bias|  EGLC bias   CDG bias
+winter DJF      251     -0.805    2.051        1.693     +0.356     -0.092
+spring MAM      345     +0.923    2.226        1.923     -0.061     +0.614
+summer JJA      337     -0.208    3.155        2.519     -0.549     -0.056
+autumn SON      273     -1.187    1.862        1.619     -0.052     -0.401
+```
+
+Month by month the turn is sharp: May +1.965 and June +1.736, then August
+-2.808 and September -2.113 — a swing of nearly five degrees across the year,
+against CDG's one and EGLC's much less.
+
+**So DSM is not "EGLC's shape" or "CDG's shape". It is both at once, and
+larger.** EGLC's bias lived in the temperature, CDG's in the calendar, and DSM
+carries a strong version of each. That is a third distinct answer from three
+airports, and it is the finding this part of the session existed to produce.
+
+**F44. The warm-end overshoot F38 flagged IS real at the 18:00 target hour —
+this is not F10's mistake repeated.** Inner-training only.
+
+F38 noticed that DSM's forecast warm end runs past anything the station
+observed, counting all 24 hours across the whole training window (forecast max
+44.7, observed max 38.33, 64 forecast hours at or above 40 degC). F13 caught F10
+reading an all-hours range as if it said something about one target hour, so the
+question had to be asked of 18:00 specifically. It was, by mapping every hour of
+the day on inner-training and then the join rows:
+
+```
+hour UTC   fc hours  fc >=40   fc max   obs max
+00:00         1,205        2    40.20     35.56
+...
+15:00         1,206        0    37.50     31.67
+16:00         1,206        1    40.20     33.89
+17:00         1,206        2    41.20     35.00
+18:00         1,206        5    42.70     36.67   <- target hour
+19:00         1,206        8    43.50     37.22
+20:00         1,206       10    44.30     37.78
+21:00         1,206       13    44.70     38.33
+22:00         1,206       11    43.80     38.33
+23:00         1,206        6    42.70     36.11
+all hours together: 58 forecast hours at or above 40 degC (inner-training)
+```
+
+**The overshoot peaks at 19:00 to 22:00 UTC — mid to late local afternoon — and
+18:00 sits on the rising edge of it, not away from it.** That is the opposite of
+F10's cold-end shift, which came from night-time hours the target never sees.
+At the target hour itself:
+
+```
+join rows (inner-training)                        : 1,206
+forecast range at 18:00 UTC                       : -21.70 to +42.70 degC
+observed range at 18:00 UTC                       : -23.28 to +36.67 degC
+days with forecast at or above 40 degC            : 5
+days with forecast above the observed maximum     : 17
+```
+
+And the bias grows steadily as the forecast gets hotter — it is a slope, not a
+handful of odd days:
+
+```
+selection                 days  mean bias  mean |bias|
+forecast >= 30 degC        114     -3.089        3.449
+forecast >= 32 degC         57     -4.331        4.360
+forecast >= 34 degC         37     -4.838        4.838
+forecast >= 36 degC         21     -5.818        5.818
+forecast >= 38 degC         13     -6.438        6.438
+forecast >= 40 degC          5     -7.068        7.068
+
+the cold end, for symmetry:
+forecast <= -10 degC        29     -1.209        1.597
+forecast <= -15 degC         4     -0.478        1.148
+forecast <= -20 degC         1     -1.580        1.580
+```
+
+The ten warmest forecast days at 18:00 are all July to September 2022 and 2023,
+and GFS is too warm on every one of them, by 4.6 to 10.3 degC. The worst of
+them is **2023-07-27: forecast 40.9, observed 30.6, a gap of 10.3 degC** — the
+second-largest miss anywhere in inner-training, behind 2021-08-26 (forecast
+33.2, observed 22.8, -10.4).
+
+Two things follow, and both are recorded rather than acted on, because the
+method is locked (D21.11 applies to the lock, and this session's scope forbids
+changes anyway):
+
+1. **This is the largest single piece of learnable structure at DSM**, and it is
+   the reason the correction does as well as it does (F45).
+2. **It rests on few days.** Only 5 inner-training days reach 40 degC at 18:00
+   and only 21 reach 36. A tree model cannot extrapolate past the range it was
+   fitted on, so on any future day hotter than its training data it applies the
+   correction it learned at the top of that range. That is a property of the
+   locked method, stated here so it is not a surprise when DSM's test year is
+   opened — not a proposal to change anything.
+
+**F45. The rehearsal: at DSM the correction beats all four references by the
+widest margin of the three airports — on much the hardest problem.**
+
+Model: the locked D21/D31 recipe, fitted on DSM's 1,206 inner-training rows
+only. PART 0 of the output proves the method was reused rather than re-chosen —
+it reads `scripts/session05_model.py` and compares it with this session's
+script: **0 model settings differ**, and of the eleven shared constants
+**exactly one differs, TARGET_HOUR (12 → 18), which is D33 and nothing else.**
+Eight shared functions are character-identical to both session 05's and session
+11's; the ninth, `features`, differs by one docstring line naming the fixed hour,
+and its executable code with docstrings stripped is identical. The two loaders
+differ and their full diffs are printed — the station code in the file names,
+DSM's `:54` reporting in the docstring, and the same near-target bookkeeping
+session 11 added. Two consecutive runs produced identical output apart from the
+clock time in the header line.
+
+All five methods scored on the same 365 validation days — DSM loses no day at
+all, so the common set is the whole year:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.748     -0.407      2.218        7.27
+Persistence                4.108     -0.017      5.470       22.22
+Climatology                4.772     -0.074      6.143       19.78
+Mean-bias reference        1.723     -0.176      2.187        7.42
+ML-corrected               1.466     -0.291      1.921        6.99
+```
+
+Verdicts:
+
+```
+vs Raw GFS              YES   1.466 against 1.748  ->  0.282 degC better (16.1%)
+vs Persistence          YES   1.466 against 4.108  ->  2.642 degC better (64.3%)
+vs Mean-bias reference  YES   1.466 against 1.723  ->  0.257 degC better (14.9%)
+vs Climatology          YES   1.466 against 4.772  ->  3.306 degC better (69.3%)
+```
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3, 5.0).** DSM's
+bar is judged once, on DSM's own sealed test year, in a later session. **A good
+number here does not mean DSM has passed.**
+
+Five things the numbers say, read honestly:
+
+1. **The recipe travels to a different continent.** Applied unchanged 6,754 km
+   from EGLC, at a different target hour, on a bias with a different shape, it
+   beats every reference. Nothing about it was adapted for DSM and nothing
+   needed to be.
+2. **The margin is the biggest yet — 16.1% against EGLC's 6.0% and CDG's
+   3.4% — but so is the error it is working on.** Raw GFS is 1.748 at DSM
+   against 1.426 at CDG and 1.239 at EGLC. There is simply more repeatable bias
+   to remove at a continental site, and F43 and F44 say where it is. The
+   correction removes a larger share of a larger error; it does not make DSM's
+   corrected forecast better in absolute terms than Europe's (1.466 against
+   1.165 and 1.377).
+3. **Persistence and climatology are far worse at DSM** — 4.108 and 4.772,
+   roughly double their European figures. Day-to-day temperature swings in the
+   US interior are much bigger, so "tomorrow is the same as today" is a much
+   weaker guess there. **The consequence for the frozen bar is worth stating in
+   advance: at DSM the binding half of the bar will be raw GFS, not
+   persistence.**
+4. **The mean-bias reference beats raw GFS at DSM (1.723 against 1.748)**, which
+   it did at EGLC and did not at CDG. So there is a small constant worth taking
+   here — -0.2305 degC. The model beats that reference by 14.9%, so the win is
+   still overwhelmingly structure and not the offset.
+5. **The seasonal pattern is new: the season it hurts is SUMMER, not winter.**
+
+```
+season         days   raw GFS   ML-corr   DSM chg   EGLC chg   CDG chg
+winter DJF       90     1.687     1.273    -0.414     +0.087     +0.025
+spring MAM       92     1.958     1.774    -0.184     -0.015     -0.057
+summer JJA       92     1.532     1.593    +0.061     -0.321     -0.122
+autumn SON       91     1.816     1.218    -0.598     -0.049     -0.044
+```
+
+   ("chg" is corrected MAE minus raw GFS MAE for that season. Negative means
+   better than raw GFS.) The correction helps in **three seasons of four**, the
+   same as both European airports — but at EGLC and CDG the losing season was
+   winter every time, and here winter is the second-best season and summer is
+   the only loss. Autumn carries the result (-0.598). **Winter flipping from
+   the worst season to a strong one is the clearest sign that the seasonal
+   pattern was a fact about western Europe, not about the method.**
+
+Day by day, the correction was closer to the truth than raw GFS on **203 of 365
+days (55.6%)**, almost exactly CDG's 202 of 365 (55.3%). So it nudges the right
+way slightly more often than not, and the extra margin at DSM comes from the
+size of the nudges, not their frequency.
+
+**Feature importances — and DSM leans on both features, which is F43 seen from
+another direction:**
+
+```
+feature             EGLC gain %   CDG gain %   DSM gain %   DSM splits
+forecast_temp_c           44.3%        35.9%        45.0%        1,850
+season_sin                26.7%        39.9%        37.3%        1,366
+season_cos                29.0%        24.2%        17.7%          984
+```
+
+At EGLC forecast temperature was the largest source of gain, at CDG `season_sin`
+overtook it. **At DSM forecast temperature leads and `season_sin` is close
+behind**, which is what an airport carrying a strong version of both structures
+should look like. Given the same three features and no guidance, the model
+matched each airport's bias where that bias actually lives — three times now.
+
+The corrections applied were much larger than at either European airport, as the
+larger bias would suggest: mean -0.116 degC, standard deviation 1.607, range
+-5.3 to +3.1, against CDG's standard deviation of 0.751 and EGLC's 0.720. It is
+still nudging rather than rewriting, but the nudges are twice the size.
+
+For the record, in-sample MAE on DSM inner-training was 1.221 degC against raw
+GFS's 1.973 (EGLC 0.879, CDG 0.945). A model always looks better on the data it
+was fitted to; the figure proves nothing and is here only so it is not a
+surprise later.
+
+**How each reference was built, for the record** — identical to sessions 05 and
+11, fitted on DSM inner-training only:
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 18:00 UTC observation. Past
+  values only (SPEC 2.1d). The first validation day, 2024-08-01, takes its value
+  from the 2024-07-31 observation, which sits in inner-training — a past
+  observation, legal, and written down so it is not mistaken for leakage.
+- **Climatology** — the seasonal average of the *observed* temperature at DSM
+  for that position in the year, over every DSM inner-training observation
+  within 7.5 days of it, measured around the circle (SPEC 2.1c). Between 30 and
+  61 days sit behind each value, 49.6 on average — the same coverage as at the
+  other two airports.
+- **Mean-bias reference** — the forecast plus -0.2305 degC, that figure being
+  the mean DSM inner-training bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+Nothing was fitted on the validation year: not the model, not the climatology,
+not the mean bias, not any encoding. **No SPEC edit was made and none was
+authorised.**
+
+**F46. What a DSM rehearsal win does and does not answer.** This is worth
+writing down separately, because it is the reason D32 opened DSM at all and it
+is easy to over-claim.
+
+F30 recorded the honest limit on stages 1 and 2: EGLC and LFPG are 328 km apart
+and were judged on **the same twelve months** in **the same weather region**, so
+two wins leant on one western-European weather year seen twice. DSM attacks one
+of those two axes and only one:
+
+- **The region axis: answered.** Des Moines is 6,754 km from EGLC, in the
+  continental interior, where a summer has nothing to do with a summer in
+  London or Paris. The recipe wins there too, on a bias with a different shape
+  and a different seasonal pattern. That is genuinely independent evidence that
+  the method is not a western-European artefact.
+- **The year axis: NOT answered.** DSM's rehearsal year is
+  2024-08-01 to 2025-07-31 — **the same twelve months** the EGLC and CDG
+  rehearsals used, because D13's dates are shared by every airport. So nothing
+  here says what a different year would have done, at any airport.
+- **And the comparison is not the controlled one stage 2 made between EGLC and
+  CDG.** DSM changes the location **and** the target hour (D33, SPEC 4.1). A DSM
+  result answers "does the recipe travel to a different region at a comparable
+  local time", and must not be quoted as if only the location had moved.
+
+**Read as: independent region, same year, two things changed.**
+
+---
+
+## 2026-08-18 — Session 16 note (what was and was not done)
+
+**No new open question was raised.** Q28 remains the only open question, and it
+is the owner's: SPEC 3.4's first column is headed "ICAO" while `DSM` is IEM's
+own station id (session 15). Nothing in this session depends on it — the station
+is addressed by the code IEM knows it as, exactly as F31's meta files record.
+
+**Nothing was tuned, varied or re-chosen.** PART 0's comparison against
+`scripts/session05_model.py` is in the output: 0 model settings differ, 1
+constant differs and it is TARGET_HOUR (D33).
+
+**Nothing was joined, built or evaluated outside inner-training and the
+validation year. DSM's test year was not touched**: the two 2026 DSM chunk files
+were never opened, the 2025 chunks were cut off at 2025-07-31 on load, and the
+script asserts that no date on or after 2025-08-01 reached any table. Only
+session 15's structural counts have ever touched the test window, and they
+counted rows and report times, never a temperature value.
+
+**The frozen bar was not judged and DSM has not passed.** SPEC 5.0's results
+table still reads "DSM | pending — not yet run | —", which is correct and was
+left alone.
+
+**No SPEC edit was made and none was authorised.**
+
+**Nothing was committed.**
