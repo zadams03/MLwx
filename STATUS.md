@@ -3,17 +3,45 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 17 August 2026 (after session 12)._
+_Last updated: 18 August 2026 (after session 13)._
 
 ---
 
 ## Current stage
 
-**Stage 2 — a second airport, Paris Charles de Gaulle (CDG / LFPG). OPEN.** The
-owner opened it in session 08 (DECISIONS **D26**, which closes Q17). Its job is
-to prove the recipe travels: the same method that worked at London City, run at
-a genuinely different location, with **only the location changed**. The target
-stays 12:00 UTC on purpose.
+**Stage 2 — a second airport, Paris Charles de Gaulle (CDG / LFPG). PASSED**
+and closed. The owner opened it in session 08 (DECISIONS **D26**, which closes
+Q17). Its job was to prove the recipe travels: the same method that worked at
+London City, run at a genuinely different location, with **only the location
+changed**. The target stayed 12:00 UTC on purpose. The sealed test ran in
+session 13 and the corrected forecast beat both raw GFS and persistence.
+Nothing about it is to be re-run or revisited.
+
+**The Stage 2 headline result:** over CDG's held-out year 2025-08-01 to
+2026-07-31, on 363 days, mean absolute error in degrees Celsius —
+
+```
+Raw GFS 1.396 | Persistence 2.300 | Climatology 3.774
+Mean-bias reference 1.389 | ML-corrected 1.208
+```
+
+The correction beat raw GFS by 0.188 degC (13.5%) and persistence by 1.092 degC
+(47.5%), so the frozen bar (SPEC 5.3, 5.0) is met at CDG too. It also beat the
+mean-bias reference by 13.0%, which is what says it learned structure rather
+than a constant. See DECISIONS **F30** for the full result and the honest
+reading of it — including the caveat that both airports were tested on the
+**same twelve months**, so the two test-year margins are largely one weather
+year seen twice, not two independent confirmations.
+
+**The recipe travelled, and that is the point of stage 2.** CDG is the harder
+problem on every reference — raw GFS 1.396 against EGLC's 1.242, persistence
+2.300 against 2.096, climatology 3.774 against 2.972 — and the correction is
+worse there in absolute terms (1.208 against 1.040). But **the share of the
+error it removes is very nearly the same**: 13.5% against 16.3% on raw GFS, and
+47.5% against 50.4% on persistence. Nothing was rebuilt, retuned or adapted for
+the second airport.
+
+How the two stages ran, session by session:
 
 Session 08 was the verify-on-contact check, mirroring session 01 for EGLC.
 **Both data sources carry CDG and are usable** (DECISIONS F17–F21).
@@ -45,8 +73,9 @@ Mean-bias reference 1.435 | ML-corrected 1.377
 ```
 
 The correction beats raw GFS by 0.050 degC (3.5%), persistence by 1.147 degC
-(45.4%) and the mean-bias reference by 0.058 degC (4.1%). **This is a rehearsal,
-not the frozen bar — stage 2 has NOT passed.** See DECISIONS **F29**.
+(45.4%) and the mean-bias reference by 0.058 degC (4.1%). **That was a
+rehearsal, not the frozen bar — at that point stage 2 had not passed.** See
+DECISIONS **F29**.
 
 Session 12 then **wrote and froze CDG's method lock, DECISIONS D31** — the
 D21-equivalent for stage 2, closing **Q23**. No model was run, no data was
@@ -67,12 +96,15 @@ drop counts that follow from CDG's own record.
 
 **D31 also predicts CDG's test-year drops before the look**, from session 10's
 gap map: 0 forecast-gap days, 1 off-hour day (2026-07-08), so 364 paired rows
-expected and 363 scored days once persistence loses 2026-07-09. The test session
-reports the actual counts and reconciles them; a count that will not reconcile
-is a stop signal, not something to explain away.
+expected and 363 scored days once persistence loses 2026-07-09. **Session 13
+counted them and every line matched** (F30) — which is the strongest single
+check in stage 2, because the prediction was written before the look.
 
-**CDG's test year has still never been opened.** The sealed-test look is the
-next session, and it executes D31.
+Session 13 then **opened CDG's test year, once, and executed D31** (DECISIONS
+**F30**). Every one of D31.7's advance drop predictions landed exactly, the
+training-window row counts reconciled against session 11's published figures,
+and the frozen bar was judged once and met. **CDG's single authorised look has
+now been used.**
 
 **Stage 1 — one model, one airport, one fixed hour. PASSED** and closed. (See
 SPEC section 6.) The sealed test ran in session 07 and the corrected forecast
@@ -604,30 +636,92 @@ result and the honest reading of it.
   - No script and no notes file: there was nothing to run and no number to
     produce, the same as session 09.
 
+
+- **Session 13 — CDG'S SEALED-TEST EVALUATION. Done. STAGE 2 PASSED.**
+  - **CDG's test year was opened for the first and only time** (2025-08-01 to
+    2026-07-31). The two 2026 LFPG raw chunk files had never been read before
+    this session. The locked method (DECISIONS **D31**) was executed exactly as
+    written. Nothing was decided, tuned, swapped or re-run.
+  - **The script checks itself against the lock before running anything, three
+    ways.** All 23 values D31 fixes matched. The model settings matched session
+    05's setting by setting, with zero differences. And the script was compared
+    function by function with `scripts/session07_test.py`, EGLC's sealed test:
+    **nine functions are character-identical**, all fourteen shared constants
+    match, and the three functions that do differ have their full diffs printed
+    — the two loaders (the station code in the file names, LFPG's on-the-hour
+    reporting, and the near-noon bookkeeping the drop reconciliation needs) and
+    `fit_on_training` (printed labels only). So "only the location changed"
+    (D26) is checked in code, not argued.
+  - **Refitted on CDG's full training window** 2021-03-24 to 2025-07-31, which
+    is inner-training plus the validation year recombined (D31.5). **1,569 rows**
+    out of 1,591 calendar days. That reconciles exactly against the published
+    session 11 counts (1,204 + 365 = 1,569), which is the check that the harness
+    has not drifted.
+  - **Every one of D31.7's advance drop predictions landed exactly.** 0
+    forecast-gap days, 1 off-hour day and it was the one D31.7 named
+    (2026-07-08), 0 no-report days, 0 no-temperature days, 364 paired rows, 363
+    scored once persistence lost 2026-07-09. A prediction written before the
+    look is a stronger check than a count made after it, and it paid off.
+    Nothing was filled (SPEC 2.2).
+  - **The verdict, plainly: the bar is met.** MAE in degrees Celsius —
+    ```
+    Raw GFS 1.396 | Persistence 2.300 | Climatology 3.774
+    Mean-bias reference 1.389 | ML-corrected 1.208
+    ```
+    Beats raw GFS by 0.188 degC (13.5%) and persistence by 1.092 degC (47.5%).
+    Also beats the mean-bias reference by 13.0% — the constant available was
+    only -0.060 degC, so there was almost no offset to take and the win is
+    structure.
+  - **The correction helped in three seasons of four.** Winter is the one it
+    makes worse, by 0.010 degC, which is nothing — winter has been the losing
+    season at both airports in every run. Summer carries the result: 1.397
+    against 1.924, better by 0.528 degC. Day by day it was closer than raw GFS
+    on 213 of 363 days (58.7%), against EGLC's 60.9%.
+  - **The honest reading of the bigger margin.** CDG's rehearsal gave 3.5%; the
+    test gave 13.5%. Most of that gap is the weather, not the model: test-year
+    summer was much harder for GFS at CDG (1.924 against 1.445) and summer is
+    where the correction works, while test-year winter was easier (1.188 against
+    1.512), so the season the correction loses in had less to lose. About 30%
+    more training data helped a little too. **And the caveat that matters most:
+    that is exactly the pattern F16 described at EGLC, and both airports were
+    tested on the same twelve months — so this is largely one weather year that
+    suited the method, seen twice, not two independent confirmations.**
+  - **Run once, not repeated.** D31.10 says the method runs once, so no second
+    run was made to confirm byte-identical output, exactly as session 07 chose.
+  - **No SPEC edit was made** and none was authorised. The bar was judged as
+    written. SPEC 5.0's results table, and SPEC 1 and 6, still describe stage 2
+    as in progress — flagged in the consistency check for the owner, not changed.
+  - Full real output in `notes/session-13-check-output.txt`; the script is
+    `scripts/session13_test.py`. The result of record is DECISIONS **F30**.
+
 ## In progress
 
-- Nothing. Session 12 is finished and awaiting the owner's review.
+- Nothing. Session 13 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits sessions 08, 09, 10, 11 and 12 — **the lock is
-   meant to be reviewed before the irreversible look**, which is why sessions 12
-   and 13 were split.
-2. **CDG'S SINGLE SEALED-TEST EVALUATION — execute DECISIONS D31.** Open CDG's
-   test year (2025-08-01 to 2026-07-31) for the first and only time, refit on the
-   full D13 training window, score all five methods on the same days, and judge
-   the frozen bar (SPEC 5.3, 5.0) once. Report the verdict straight, pass or
-   fail, with the margin stated prominently (D22), the seasonal breakdown, and
-   the drop counts reconciled against D31.7's prediction.
-   - The session decides nothing. D31 already decided it all.
-   - Any deviation — a setting that does not fit, a missing file, a count that
-     will not reconcile, a tempting improvement — is a **stop signal** (D31.11):
-     raise it with the owner, do not decide with the test year open.
-   - A CDG failure is a real possible outcome. CDG's rehearsal margin was 3.5%
-     against EGLC's 6.0%, on a harder problem, and a smaller margin is easier to
-     lose. It would be an honest finding about how far the recipe travels, which
-     is the question stage 2 exists to ask.
-3. Nothing is pre-committed beyond that.
+1. Owner reviews and commits sessions 08 to 13 — the whole of stage 2, from the
+   verify-on-contact check through to the sealed test.
+2. **A decision for the owner, not a task already chosen.** Stage 2 has passed,
+   so SPEC section 6 says the roadmap's next stage is **Stage 3 — pool airports
+   into one model with location-describing features**, where the target hour
+   also switches to solar standard noon (SPEC 4.1, DECISIONS D27). **Stage 3 is
+   NOT started and must not be**: SPEC 6 says a stage opens only when the owner
+   opens it, and that a session filling in a later stage early is a warning sign.
+   - The owner has earlier said they would rather **explore more airports first**
+     before pooling. SPEC 1 already leaves that door open ("More airports may
+     follow"), and adding an airport means adding a row to the SPEC 3.4 table and
+     running the same recipe again — which is now a well-worn path: verify on
+     contact, pull and map, join and rehearse, lock, test.
+   - Either way the choice is the owner's and needs a DECISIONS entry, the way
+     D26 opened stage 2.
+3. **Two things that are available and block nothing.** SPEC 5.4's deeper
+   evaluation — skill score, statistical significance, formal season testing — is
+   optional by D29 and still undone, so neither airport's win has a significance
+   figure. And F6's `gfs_global` versus `gfs_seamless` comparison has still never
+   been run at LFPG (Q20's closing note), so stage 2 cannot make that
+   by-construction claim the way stage 1 can. Both would be sessions of their own.
+4. Nothing is pre-committed beyond that.
 
 ## Notes
 
@@ -647,18 +741,29 @@ result and the honest reading of it.
   that particular by-construction claim the way stage 1 can.
 - **Q23 is closed** by session 12 (D31): CDG's method lock is written, and the
   D21.5 refit question is answered — CDG's test model is refitted on the full
-  D13 training window, as EGLC's was. **No open questions remain.**
+  D13 training window, as EGLC's was.
+- **Q24 is open, and it is the owner's** (raised by session 13). Stage 2 has
+  passed, so: which way next — stage 3's pooled model, or more airports first? —
+  and does SPEC get the four edits that would stop it describing stage 2 as
+  in progress? Nothing was started and no SPEC edit was made. **Q24 is the only
+  open question.**
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be
   used to judge any future change to the method. Anything measured on it from
   here on is measured on data the method has been compared against once already.
-- **CDG's test year is still sealed, and is now on disk.** The dates are the same
-  (2025-08-01 to 2026-07-31, D13) but the data is a different airport's, and it
-  has never been looked at. Session 10 pulled it and counted only its structure —
-  row presence, gap locations, report timing — never a temperature value, exactly
-  as session 03b held EGLC's. **Session 11 did not open it either**: the two 2026
-  LFPG chunk files were never read, the 2025 chunk was cut off at 2025-07-31 on
-  load, and the script asserts no date on or after 2025-08-01 reached any table.
-  **Session 12 did not open it either** — it loaded no data at all. Each airport
-  gets its own single look (SPEC 5.0), and CDG's is the next session.
+- **CDG's test year has been opened, exactly once, in session 13** — the one
+  authorised look (D31.10). It was sealed through sessions 10, 11 and 12: session
+  10 counted only its structure (row presence, gap locations, report timing) and
+  never a temperature value, session 11 cut its load off at 2025-07-31 and
+  asserted no date on or after 2025-08-01 reached any table, and session 12
+  loaded no data at all. **It is not a held-out set any more**, so, exactly as
+  for EGLC, it must not be used to judge any future change to the method.
+  Anything measured on it from here on is measured on data the method has been
+  compared against once already.
+- **Both airports' test years are now spent, and they are the same twelve
+  months.** That is worth carrying forward when the next airport or the pooled
+  model is judged: 2025-08-01 to 2026-07-31 was a year with a hard summer and an
+  easy winter for GFS at both locations, which flattered a correction that works
+  best in summer (F16, F30). A future airport on those same dates is not an
+  independent draw of weather.

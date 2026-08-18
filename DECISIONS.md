@@ -2725,3 +2725,317 @@ value-by-value comparison against `gfs_seamless` was never re-run at LFPG. So
 stage 2 can say "this is exactly the `gfs_global` series" but not "and
 `gfs_seamless` would have given the same", which stage 1 can. Recorded here so
 the test session does not accidentally claim the stronger version.
+
+---
+
+## 2026-08-18 — Session 13: THE CDG SEALED-TEST RESULT (stage 2 is decided)
+
+CDG's test year was opened for the first and only time. The method locked in
+D31 was executed and nothing was decided, tuned, swapped or re-run. This
+section is the stage 2 result of record. The script is
+`scripts/session13_test.py` and the full real output is
+`notes/session-13-check-output.txt`.
+
+**F30. STAGE 2 PASSES. At CDG the corrected forecast beats both raw GFS and
+persistence on the held-out test year. The recipe travels.**
+
+The verdict first, because that is what the session was for:
+
+```
+                        MAE degC   part of bar?
+Raw GFS                    1.396   YES
+Persistence                2.300   YES
+Climatology                3.774   no  (informative)
+Mean-bias reference        1.389   no  (informative)
+ML-corrected               1.208   the claim
+
+vs Raw GFS       BEATEN   1.208 against 1.396  ->  0.188 degC better (13.5%)
+vs Persistence   BEATEN   1.208 against 2.300  ->  1.092 degC better (47.5%)
+```
+
+**Stage 2 passes on the frozen bar (SPEC 5.3, 5.0, D31.9): the corrected
+forecast has a lower MAE than both raw GFS and persistence over 2025-08-01 to
+2026-07-31 at LFPG.** The margin is stated prominently because D22 requires it —
+this is not a pass by a hair. It is 0.188 degC, a 13.5% cut in the average error
+against raw GFS.
+
+The full table, all five methods on the same 363 days:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.396     -0.517      1.847        8.70
+Persistence                2.300     +0.008      3.097       12.00
+Climatology                3.774     +0.918      4.822       14.60
+Mean-bias reference        1.389     -0.457      1.831        8.64
+ML-corrected               1.208     -0.401      1.650        7.60
+```
+
+**It beats the mean-bias reference too, by 13.0% (1.208 against 1.389).** That
+is the comparison that matters most for the claim (D23): the mean-bias reference
+is the forecast plus one constant, with no learning in it. The constant itself is
+tiny — the mean training-window bias at CDG is **-0.0600 degC** — so there was
+almost no offset available to take, exactly as F28 found on the training side.
+Beating it by 13.0% means the model found real structure in CDG's bias, not an
+offset.
+
+**Day by day, not just on average.** The correction was closer to the truth than
+raw GFS on **213 of 363 days (58.7%)** and further away on 150 (41.3%), with no
+day where it made no difference. So the win is spread across the year rather than
+carried by a handful of days, but it is far from every day — the model is nudging
+a good forecast, and about two days in five it nudges the wrong way. EGLC's
+sealed test was 60.9% (F16), so the two airports are close on this.
+
+**Per season, the correction helped in three of the four:**
+
+```
+season         days   raw GFS   ML-corr    change   persistence
+winter DJF       90     1.188     1.198    +0.010         2.200
+spring MAM       92     1.239     1.135    -0.104         2.196
+summer JJA       90     1.924     1.397    -0.528         2.767
+autumn SON       91     1.238     1.104    -0.134         2.044
+```
+("change" is corrected MAE minus raw GFS MAE. Negative means better than raw
+GFS.) Winter is the one season it makes worse, and by 0.010 degC, which is
+nothing — smaller than CDG's own rehearsal loss (+0.025, F29) and much smaller
+than EGLC's rehearsal loss (+0.087, F15). Winter has been the losing season at
+both airports in every run so far. Summer carries the result: 0.528 degC better
+on 90 days.
+
+**The test-year drop count, and the reconciliation D31.7 existed for.** D31.7
+wrote the expected drops down in session 12, from session 10's gap map, before
+CDG's test year was opened. Every line matched:
+
+```
+cause                                            predicted  actual  verdict
+forecast-gap days in the test year (F22)                 0       0  MATCHES
+days lost to an off-hour-only report (F25)               1       1  MATCHES
+days lost to no report at all in the noon hour (F25)     0       0  MATCHES
+days lost to a report on the hour with no temp (F25)     0       0  MATCHES
+paired rows expected                                   364     364  MATCHES
+the off-hour day is the one D31.7 named         2026-07-08  2026-07-08  MATCHES
+```
+
+Scoring then loses one more day — 2026-07-09 — because persistence needs the
+previous day's observation and 2026-07-08 is the day that is missing. So all five
+methods are scored on **363 days**, which is what D31.7 predicted. Nothing was
+filled (SPEC 2.2).
+
+**A prediction made before the look landed exactly**, which is a stronger check
+than a count made after it. D21 could not make this check for EGLC; CDG's session
+10 gap map made it possible, and it has now paid off on both the training side
+(F27) and the test side.
+
+The training-window counts reconcile exactly against session 11's published
+figures, which is the check that the harness has not drifted (D31.11): 1,204
+inner-training rows plus 365 validation rows equals the 1,569 rows this session
+fitted on, out of 1,591 calendar days.
+
+**What LFPG actually filed on 2026-07-08, written out because two records
+describe it differently.** The station filed at 11:00 and at 12:30 — no report at
+all between 11:30 and 12:29:
+
+```
+routine report at 12:00-60 min, temp 31.0  -> belongs to the 11:00 hour
+routine report at 12:00+30 min, temp 32.0  -> in the noon clock hour but 30
+                                              minutes out, dropped by D14
+```
+
+So under D14's nearest-hour pairing there was **no** report in the noon bucket,
+while under F25's clock-hour framing there **was** one, at 12:30. Both are true
+of the same day, the day is lost either way, and the day is counted against
+F25's framing because that is the framing D31.7's prediction was built from. This
+is the same double description F27 had to reconcile at 2022-07-23 and
+2022-07-25, and it is written out again here so nobody later reads the two
+entries as disagreeing.
+
+**The test number against session 11's rehearsal number.** D31.5 said in advance
+that these would differ and should not be expected to match. They do differ, and
+in the same direction the equivalent EGLC comparison moved (F16):
+
+```
+method                  s11 valid   s13 test  difference
+Raw GFS                     1.426      1.396      -0.030
+Persistence                 2.523      2.300      -0.223
+Climatology                 3.293      3.774      +0.481
+Mean-bias reference         1.435      1.389      -0.046
+ML-corrected                1.377      1.208      -0.169
+days scored                   365        363
+
+margin over raw GFS:  validation +0.050 (3.5%)   test +0.188 (13.5%)
+```
+
+(One small bookkeeping note so the two records do not look as if they disagree:
+F29 reported the validation margin as 0.050 degC / 3.5% from unrounded figures,
+while session 13's side-by-side recomputes it as 0.049 degC / 3.4% from the
+published three-decimal MAEs. It is a rounding artefact of quoting rounded
+numbers, not a different measurement.)
+
+**Read honestly, the test margin is bigger than the rehearsal margin for two
+reasons, and only one of them is the model. It is the same reading F16 gave for
+EGLC, and that similarity is itself the thing worth noticing.**
+
+1. **The model is fitted on more data.** D31.5 recombined the validation year
+   into training, so the tested model saw 1,569 days instead of 1,204 — about 30%
+   more rows and one more full cycle of seasons. That was expected to help
+   slightly.
+2. **The test year suited the correction better.** Raw GFS was slightly easier
+   overall (1.396 against 1.426), but the difficulty sat in a different place. In
+   the test year raw GFS's summer MAE at CDG was **1.924**, against 1.445 in the
+   validation year — a much harder summer for GFS — and summer is where the
+   correction works best. Meanwhile test-year winter was easier for raw GFS
+   (1.188 against 1.512), so the season the correction loses in had less ground
+   to lose.
+
+**And here is the caveat that matters most, stated plainly.** That is *exactly*
+the pattern F16 described at EGLC: a harder summer and an easier winter in the
+test year than in the validation year, both flattering the correction. The two
+airports are 328 km apart and were tested on **the same twelve months**, so this
+is not two independent pieces of evidence that the method does better than its
+rehearsals suggest. It is much more likely one weather year that happened to suit
+the method, seen twice. The honest summary is: **the method won at both airports
+on both years — by 6.0% and 3.5% on the two rehearsal years, and by 16.3% and
+13.5% on one shared test year — and the gap between those two pairs of numbers is
+mostly what the weather did.**
+
+**Stage 2 beside stage 1, which is the question stage 2 was opened to ask:**
+
+```
+                        EGLC       CDG   difference
+Raw GFS                1.242     1.396       +0.154
+Persistence            2.096     2.300       +0.204
+Climatology            2.972     3.774       +0.802
+Mean-bias reference    1.234     1.389       +0.155
+ML-corrected           1.040     1.208       +0.168
+days scored              363       363
+
+margin over raw GFS   +0.202 (16.3%)   +0.188 (13.5%)
+margin over persist.  +1.056 (50.4%)   +1.092 (47.5%)
+seasons helped               4 of 4          3 of 4
+days closer than raw   221/363 (60.9%)  213/363 (58.7%)
+```
+
+**CDG is the harder problem on every reference**, exactly as its rehearsal said
+it would be — raw GFS, persistence and climatology are all worse there than at
+EGLC. The correction is worse there too, in absolute terms. But **the proportion
+of the error it removes is very nearly the same**: 13.5% against 16.3% on raw
+GFS, 47.5% against 50.4% on persistence. That is the result stage 2 was for. The
+recipe was not rebuilt, retuned or adapted for the second airport — only the
+location changed (D26) — and it removed a similar share of a larger error.
+
+**Two further honest notes.**
+
+- **Climatology ran 0.918 degC cold on CDG's test year**, against -0.298 on its
+  validation year (F29). As at EGLC (+0.773, F16), that says the test year was
+  warmer at 12:00 UTC than the 2021–2025 training average for the same dates. It
+  is not a fault in the baseline; it is a fact about the year, and it is the same
+  fact at both airports, which fits the "one shared weather year" caveat above.
+- **Nothing about the residual scatter changed.** The corrections applied were
+  modest: mean -0.117 degC, standard deviation 0.796, range -1.8 to +1.5 —
+  essentially the same gentle nudge session 11 made (mean +0.041, st dev 0.751,
+  range -1.7 to +2.3), pointed the other way. The model did not start making big
+  swings on unseen data.
+
+**Feature importances, the sanity check that it used what it was meant to:**
+
+```
+feature                 gain  gain share   splits   s11 share  EGLC test share
+forecast_temp_c       3706.8       38.2%    1,659       35.9%            51.8%
+season_sin            3381.7       34.9%    1,206       39.9%            24.5%
+season_cos            2606.5       26.9%    1,335       24.2%            23.7%
+```
+Nothing is ignored and nothing dominates. The three shares are much more even at
+CDG than at EGLC, which is F28's finding seen again: CDG's bias lives partly in
+the calendar where EGLC's lived mostly in the temperature. With one extra year of
+training data, forecast temperature edges back ahead of `season_sin` at CDG
+(38.2% against 34.9%) where session 11 had it behind (35.9% against 39.9%) — a
+small shift, not a change of character, and it is not over-read here.
+
+For the record, in-sample MAE on the training window was 0.989 degC against raw
+GFS's 1.290. A model always looks better on the data it was fitted to; that
+figure proves nothing and is here only so it is not a surprise later.
+
+**How each reference was built, for the record** — identical to session 07,
+fitted on LFPG's D13 training window only (D31.8, SPEC 2.1c):
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 12:00 UTC observation at LFPG.
+  Past values only (SPEC 2.1d). The first scored day, 2025-08-01, took its
+  persistence value from the 2025-07-31 12:00 observation (+24.0 degC), which
+  sits in the training window — a past observation, legal, and written down in
+  D31.8 in advance so it is not mistaken for leakage.
+- **Climatology** — the seasonal average of the observed LFPG temperature for
+  that position in the year, over every training-window observation within 7.5
+  days of it, measured around the circle. Between 45 and 76 training days sit
+  behind each value, 64.4 on average.
+- **Mean-bias reference** — the forecast plus -0.0600 degC, that figure being the
+  mean LFPG training-window bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+**The lock was checked before anything ran.** PART 0 of the output does three
+checks and all three passed: all 23 values D31 fixes matched what the script used
+(0 mismatches); the model settings matched `scripts/session05_model.py` setting
+by setting (0 differ); and the script was compared function by function with
+`scripts/session07_test.py`, EGLC's sealed test. **Nine functions are
+character-identical to EGLC's test script** — `all_days`, `year_fraction`,
+`features`, `mae`, `describe`, `_literal`, `top_level`, `func_source` and
+`climatology_from_training` — and the three that differ have their full diffs
+printed: the two loaders (the station code in the file names, LFPG's on-the-hour
+reporting in the docstring, and the near-noon bookkeeping the drop reconciliation
+needs) and `fit_on_training` (printed labels only, D21 references becoming D31
+references). All fourteen shared constants matched, including the split dates.
+So "only the location changed" (D26) is checked in code here, not argued.
+
+**What this session did not do, on purpose.**
+- **The script was run once and not repeated.** D31.10 says the method is run
+  once, so no second run was made to confirm byte-identical output, exactly as
+  session 07 chose. Determinism rests on the fixed seed, `deterministic=True`,
+  `n_jobs=1`, the pinned versions in `requirements.txt` (D24) and the
+  byte-identical repeat runs already recorded in F14, F15 and F29.
+- **The deeper evaluation (SPEC 5.4) stays optional and was not opened.** D29
+  made it optional and blocking nothing. The seasonal table above is context, not
+  a significance test. The project still has no formal significance figure for
+  either airport's win.
+- **The `gfs_seamless` equivalence check was not run at LFPG**, and this result
+  does not claim it. Stage 2 can say "this is exactly the `gfs_global` series"
+  (D16, F22) but not "and `gfs_seamless` would have given the same", which stage
+  1 can (F6). Carried forward from Q20's closing note and session 12's warning.
+- **Nothing was committed.**
+
+**No SPEC edit was made this session, and none was authorised.** The bar was
+judged as written. SPEC 5.0's results table still shows LFPG as "pending — not
+yet run", and SPEC 1 and 6 still describe stage 2 as in progress; those are now
+out of date and are flagged for the owner in this session's consistency check
+rather than changed here.
+
+---
+
+## 2026-08-18 — Open question raised by session 13 (not acted on)
+
+Stage 2 has passed, which opens a choice that is the owner's to make. It is
+recorded here and was not acted on. This mirrors Q17, which was raised the same
+way when stage 1 passed.
+
+**Q24. Stage 2 has passed — what opens next, and does SPEC need updating to say
+so?** Two parts, both the owner's:
+- **Which way next?** SPEC section 6 says the roadmap's next stage is **Stage 3 —
+  pool airports into one model with location-describing features**, with the
+  target hour switching to solar standard noon (D27). But the owner has
+  previously said they would rather **add more airports first** before pooling,
+  and SPEC 1 leaves that open ("More airports may follow"). Adding an airport
+  means a new row in SPEC 3.4 and the same five steps stage 2 just walked:
+  verify on contact, pull and map, join and rehearse, lock, test. SPEC 6 is
+  explicit that a stage opens only when the owner opens it and that a session
+  filling in a later stage early is a warning sign, so **nothing about stage 3
+  was written or started**.
+- **SPEC now describes stage 2 as unfinished, and it is finished.** Four places
+  are out of date, and no session 13 SPEC edit was authorised, so none was made:
+  section 1 ("stage 2, **in progress**"), the stage cell in the 3.4 airport table
+  ("2 — in progress"), the 5.0 results table ("LFPG | pending — not yet run | —")
+  and section 6 ("Stage 2 ... IN PROGRESS"). They are listed here and in session
+  13's consistency check so the owner can authorise the edits deliberately, in
+  the way session 09 and session 10's SPEC edits were authorised.
+
+One thing worth deciding alongside it, though it needs no separate question:
+**both airports' single looks are now spent, and they were spent on the same
+twelve months** (F30). Whatever opens next, a result measured on 2025-08-01 to
+2026-07-31 is no longer a held-out result for the method, and a third airport
+tested on those same dates would not be an independent draw of weather either.
