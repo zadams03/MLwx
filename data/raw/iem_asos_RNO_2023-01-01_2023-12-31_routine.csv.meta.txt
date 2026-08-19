@@ -1,0 +1,41 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_RNO_2023-01-01_2023-12-31_routine.csv
+purpose     : session 26, part B2 - full history truth chunk for
+              Reno (RNO)
+pulled at   : 2026-08-19 18:24:47 BST (2026-08-19 17:24:47 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2023&month1=1&day1=1&year2=2024&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = RNO   (Reno, Nevada, USA)
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2023-01-01 to 2023-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2024-01-01.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- RNO's routine report is stamped at :55, five minutes before the
+  hour (session 25's candidate sample, IEM's own METAR_RESET_MINUTE
+  attribute = 55). At Reno's 20:00 UTC target (D42) the 19:55 report
+  is the paired observation under D14 - a 5-minute offset.
+- No network parameter is sent. Every earlier airport's full pull
+  addressed its station by code alone, and this pull is deliberately
+  the same shape. RNO's network is NV_ASOS (DECISIONS F66).
+- Air temperature (tmpc) is the designated truth field. US METARs
+  are written in whole-degree Fahrenheit, so a small
+  Fahrenheit-derived rounding gap is expected, the same pattern DSM
+  (F35) and Bozeman (session 25) both showed. No unit conversion is
+  applied anywhere.
+- HTTP status 200.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).

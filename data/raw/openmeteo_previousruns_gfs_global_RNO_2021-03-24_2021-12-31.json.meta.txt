@@ -1,0 +1,44 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_RNO_2021-03-24_2021-12-31.json
+purpose     : session 26, part B1 - full history forecast chunk for
+              Reno (RNO), Nevada, USA, the fifth airport (switched
+              from Bozeman, DECISIONS D42, superseding D40)
+pulled at   : 2026-08-19 18:24:11 BST (2026-08-19 17:24:11 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=39.4839&longitude=-119.7711&start_date=2021-03-24&end_date=2021-12-31&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 39.4839       (RNO, Reno, IEM's own position, F66)
+  longitude  = -119.7711
+  start_date = 2021-03-24
+  end_date   = 2021-12-31
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string pinned to gfs_global rather than gfs_seamless (DECISIONS D16). At this airport session 25's candidate sample and
+  Bozeman's own full comparison (F69) both found the two strings
+  DIFFER sharply on recent dates, so the pin is doing real work here.
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for RNO (DECISIONS F66), the
+  same figures session 25's candidate-comparison sample used, not a
+  position from a map.
+- Reno's target hour is 20:00 UTC (local standard noon, Pacific
+  standard time UTC-8), not 12:00, 18:00, 02:00 or 19:00 UTC
+  (DECISIONS D42). That changes nothing about what is downloaded - a
+  whole-hours series is pulled either way.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them. Nothing
+  was filled in (SPEC 2.2).

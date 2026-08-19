@@ -1,0 +1,49 @@
+Airport: RNO (Reno, Nevada, USA), lat 39.4839, lon -119.7711
+Switched from Bozeman (BZN) to Reno (RNO) - DECISIONS D42, superseding D40.
+Period : 2021-03-24 to 2026-07-31   chunks: 6
+Forecast variables: temperature_2m (D17)
+Model string      : gfs_global (D16)
+Target hour       : 20:00 UTC (D42) - does not affect the pull
+gfs_global vs gfs_seamless: diverges sharply at this station (session 25 candidate sample; F69 for Bozeman) - gfs_global used regardless (D16).
+
+=== B1  forecast (Open-Meteo Previous Runs, gfs_global, RNO) ===
+2021-03-24 -> 2021-12-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2021-03-24_2021-12-31.json  (161,818 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2021-03-24_2021-12-31.json.meta.txt  (2,245 bytes)
+2022-01-01 -> 2022-12-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2022-01-01_2022-12-31.json  (207,241 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2022-01-01_2022-12-31.json.meta.txt  (2,245 bytes)
+2023-01-01 -> 2023-12-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2023-01-01_2023-12-31.json  (207,535 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2023-01-01_2023-12-31.json.meta.txt  (2,245 bytes)
+2024-01-01 -> 2024-12-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2024-01-01_2024-12-31.json  (207,985 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2024-01-01_2024-12-31.json.meta.txt  (2,245 bytes)
+2025-01-01 -> 2025-12-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2025-01-01_2025-12-31.json  (207,554 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2025-01-01_2025-12-31.json.meta.txt  (2,245 bytes)
+2026-01-01 -> 2026-07-31
+  wrote openmeteo_previousruns_gfs_global_RNO_2026-01-01_2026-07-31.json  (120,812 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2026-01-01_2026-07-31.json.meta.txt  (2,245 bytes)
+
+=== B2  truth (IEM ASOS routine METARs, RNO) ===
+2021-03-24 -> 2021-12-31
+  wrote iem_asos_RNO_2021-03-24_2021-12-31_routine.csv  (391,841 bytes)
+  wrote iem_asos_RNO_2021-03-24_2021-12-31_routine.csv.meta.txt  (1,992 bytes)
+2022-01-01 -> 2022-12-31
+  wrote iem_asos_RNO_2022-01-01_2022-12-31_routine.csv  (511,399 bytes)
+  wrote iem_asos_RNO_2022-01-01_2022-12-31_routine.csv.meta.txt  (1,991 bytes)
+2023-01-01 -> 2023-12-31
+  wrote iem_asos_RNO_2023-01-01_2023-12-31_routine.csv  (510,662 bytes)
+  wrote iem_asos_RNO_2023-01-01_2023-12-31_routine.csv.meta.txt  (1,991 bytes)
+2024-01-01 -> 2024-12-31
+  wrote iem_asos_RNO_2024-01-01_2024-12-31_routine.csv  (512,018 bytes)
+  wrote iem_asos_RNO_2024-01-01_2024-12-31_routine.csv.meta.txt  (1,991 bytes)
+2025-01-01 -> 2025-12-31
+  wrote iem_asos_RNO_2025-01-01_2025-12-31_routine.csv  (510,311 bytes)
+  wrote iem_asos_RNO_2025-01-01_2025-12-31_routine.csv.meta.txt  (1,991 bytes)
+2026-01-01 -> 2026-07-31
+  wrote iem_asos_RNO_2026-01-01_2026-07-31_routine.csv  (296,830 bytes)
+  wrote iem_asos_RNO_2026-01-01_2026-07-31_routine.csv.meta.txt  (1,991 bytes)
+
+Done.

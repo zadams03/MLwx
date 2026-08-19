@@ -29,7 +29,9 @@ The airports so far:
 - **Paris Charles de Gaulle (IATA code CDG, ICAO code LFPG)** — stage 2,
   **passed**.
 - **Des Moines, Iowa (IEM station code DSM)** — stage 2, **passed**.
-- **Dubbo, Australia (ICAO code YSDU)** — stage 2, **in progress**.
+- **Dubbo, Australia (ICAO code YSDU)** — stage 2, **passed**.
+- **Reno, Nevada (IEM station code RNO, ICAO code KRNO)** — stage 2, **in
+  progress**. The project's first mountain/terrain-affected airport.
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -124,18 +126,25 @@ CDG** — 2021-03-24 00:00 UTC exactly, with the same all-null answer before it
 (DECISIONS F20) — **and again at DSM**, on another continent, down to the same
 hour and with the same all-null answer before it (DECISIONS F33). So the March
 2021 floor is a property of the archive itself, not of one place, and the
-section 4.3 split dates work at all three airports without adjustment.
+section 4.3 split dates work at all four airports pulled so far without
+adjustment. Reno's own full pull (session 26) begins exactly at 2021-03-24
+00:00 UTC too, with no null values inside the requested period, consistent
+with the same floor (DECISIONS F75); the all-null probe *before* that date
+was not separately repeated for Reno, since the full pull itself only asks
+for dates on or after the floor.
 
 **The archive is not continuous.** From the start date to 2026-07-31 there is
 exactly one sizeable gap: **492 hours with no forecast value, from 2023-12-30
 00:00 to 2024-01-19 11:00 UTC**. It falls entirely inside the training window
 (no airport's test window has a forecast gap). Those hours are dropped and
 counted, never filled (rule 2.2). It has now been verified **hour by hour, at
-every airport pulled so far — EGLC, CDG, DSM and Dubbo — same start hour, same
-end hour, same length, on four different continents** (DECISIONS F8, and F11
-for the correction to F1's earlier claim of continuity; F22, closing Q21; F38;
-F57). It is a property of the Open-Meteo archive itself, not of any one place.
-See each airport's own DECISIONS finding for the hour-by-hour specifics.
+every airport pulled so far — EGLC, CDG, DSM, Dubbo and Reno — same start
+hour, same end hour, same length, across Europe, North America and
+Australia** (DECISIONS
+F8, and F11 for the correction to F1's earlier claim of continuity; F22,
+closing Q21; F38; F57; F75). It is a property of the Open-Meteo archive
+itself, not of any one place. See each airport's own DECISIONS finding for
+the hour-by-hour specifics.
 
 **3.3 Verify on contact.** Two things can only be checked by pulling real
 data, and must be checked on the first pull **for each new airport**:
@@ -145,11 +154,25 @@ data, and must be checked on the first pull **for each new airport**:
   period, and at what minute past the hour it reports.
 
 Both were checked for EGLC in session 01 (F1, F2, F3), for CDG in session 08
-(F17–F21) and for DSM in session 14 (F31–F37). All three airports passed. At
-DSM two further things were checked on contact, because it is the first airport
-outside Europe: that the observation temperature field really is in degrees
-Celsius, and that a request stamped UTC really is UTC. Both were measured
-rather than assumed and both needed no new handling (DECISIONS F35).
+(F17–F21), for DSM in session 14 (F31–F37) and for Dubbo in session 19
+(F49–F56). All four airports passed. At DSM two further things were checked
+on contact, because it is the first airport outside Europe: that the
+observation temperature field really is in degrees Celsius, and that a
+request stamped UTC really is UTC. Both were measured rather than assumed and
+both needed no new handling (DECISIONS F35).
+
+**Reno's verify-on-contact was done in two steps, across two sessions, and is
+honestly a partial case.** Session 25 checked Reno alongside Bozeman as
+mountain-valley candidates, but only to candidate-comparison depth — station
+position, grid point, grid-elevation mismatch, and reporting minute on a
+short sample (DECISIONS F66) — before choosing Bozeman. The owner then
+switched the fifth airport to Reno (DECISIONS D42, superseding D40). Session
+26's full six-year pull confirmed the archive floor and the shared 492-hour
+gap at Reno (DECISIONS F75) and mapped the target-hour pairing across the
+whole period (DECISIONS F76, F77), which is deeper than a verify-on-contact
+sample but does not include Bozeman's full checklist — in particular, whether
+Reno files a second scheduled report (SPEC 3.4's "also files at" column) has
+not been checked by any session (see SPEC 3.4's notes).
 
 The verify-on-contact samples at EGLC, CDG and DSM were pulled from the most
 recent weeks available, which happened to fall inside the sealed test year
@@ -172,7 +195,8 @@ The airport, and where it is (position from IEM, section 3.1):
 | EGLC | London City | 1 — passed | 12:00 | `GB__ASOS` | 51.5053 | 0.0553 | 5 m |
 | LFPG | Paris Charles de Gaulle (CDG) | 2 — passed | 12:00 | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
-| YSDU | Dubbo, Australia | 2 — in progress | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
+| YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
+| RNO | Reno, Nevada | 2 — in progress | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
 
 The forecast grid point it maps to (from Open-Meteo, section 3.2), and when the
 station reports:
@@ -183,6 +207,7 @@ station reports:
 | LFPG | 49.027008 | 2.578125 | 109 m | 3.44 km | 0 m | `:00` | `:30` | 0 minutes |
 | DSM | 41.52945 | -93.63281 | 285 m | 1.76 km | -9 m | `:54` | nothing scheduled | 6 minutes |
 | YSDU | -32.274643 | 148.59375 | 279 m | 6.69 km | +4 m | `:00` | `:30` | 0 minutes |
+| RNO | 39.537918 | -119.765625 | 1344 m | 6.02 km | -1 m | `:55` | not yet checked | 5 minutes |
 
 Notes on the table:
 
@@ -195,20 +220,29 @@ Notes on the table:
   id, and now a third ICAO code that happens to coincide with IEM's own id —
   and no single word describes every entry correctly. The column heading is
   now **"station code"**, and section 3.1's wording says each airport is
-  requested by its station code rather than by its ICAO code.
+  requested by its station code rather than by its ICAO code. For Reno it is
+  **`RNO`, also not an ICAO code** — Reno's ICAO code is `KRNO` (DECISIONS
+  F66), the same non-ICAO-station-id situation as DSM.
 - **The airport position is IEM's own, not a figure from elsewhere.** IEM's
   record is treated as authoritative, because it is the same source the
   observations come from. For CDG this mattered: IEM's position sits 1.15 km
   from the approximate figure the session prompt carried, and IEM's was used
   (DECISIONS F17). DSM's position came from IEM's Iowa station listing the same
   way, pulled before any forecast request so nothing was typed in from a map
-  (DECISIONS F31).
+  (DECISIONS F31). Reno's position came from IEM's Nevada (`NV_ASOS`) station
+  listing the same way, pulled in session 25 before any forecast request for
+  it was made (DECISIONS F66).
 - **The grid point is whatever Open-Meteo returns** for that airport's
   position. A few kilometres of offset is not a fault — it is exactly the kind
   of steady local error this project exists to learn (DECISIONS Q5, F17). DSM's
-  is the closest of the three, 1.76 km, and the first with a height mismatch
+  is the closest of the five, 1.76 km, and the first with a height mismatch
   worth naming at -9 m; 9 m is well inside the noise of a smoothed grid-cell
-  elevation (DECISIONS F31).
+  elevation (DECISIONS F31). **Reno is by far the highest-elevation airport in
+  the project (1,345 m), yet its grid-elevation mismatch is the smallest of
+  any airport so far, -1 m** — real but negligible (DECISIONS F66). Reno's
+  difficulty as a terrain test, if any, is expected to come from horizontal
+  terrain complexity (the nearby Sierra Nevada front), not from this vertical
+  mismatch — see DECISIONS D42.
 - **"Reports at" is the minute past the hour the routine METAR is stamped**,
   and it is what makes the general pairing rule (4.5) concrete for that
   airport. **"Pairing offset"** follows from it: how far the paired observation
@@ -218,15 +252,21 @@ Notes on the table:
   (DECISIONS F3, F19, F55). **DSM files no such second scheduled report** — its
   "special" reports are spread across dozens of minutes and are genuinely
   unscheduled, which is why its "also files at" cell reads *nothing scheduled*
-  (DECISIONS F36).
-- **All four network codes are now verified by a real pull.** LFPG's
+  (DECISIONS F36). **Reno's "also files at" cell reads "not yet checked"** —
+  session 25's verification of Reno went only as deep as the candidate
+  comparison against Bozeman (position, grid, elevation mismatch, reporting
+  minute on a short sample); whether Reno files a second scheduled report has
+  not been pulled or checked by any session yet, and is logged as an open
+  question rather than guessed.
+- **All five network codes are now verified by a real pull.** LFPG's
   `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
   session 10 (DECISIONS F24, which closes Q22), DSM's `IA_ASOS` in session 14
-  (DECISIONS F31) and YSDU's `AU__ASOS` in session 19 (DECISIONS F49). In each
-  case IEM's own station listing carries the station in that network, at the
-  position and elevation this table holds. Nothing in the project uses a
-  network code — every request addresses its station by the code in the first
-  column — so this closes a bookkeeping gap, not a data one.
+  (DECISIONS F31), YSDU's `AU__ASOS` in session 19 (DECISIONS F49) and RNO's
+  `NV_ASOS` in session 25 (DECISIONS F66). In each case IEM's own station
+  listing carries the station in that network, at the position and elevation
+  this table holds. Nothing in the project uses a network code — every
+  request addresses its station by the code in the first column — so this
+  closes a bookkeeping gap, not a data one.
 
 ---
 
@@ -369,15 +409,17 @@ earlier one's, and an earlier pass does not excuse a later failure.
 | EGLC | **PASSED** (stage 1, 363 test days) | 1.040 vs 1.242 vs 2.096 |
 | LFPG | **PASSED** (stage 2, 363 test days) | 1.208 vs 1.396 vs 2.300 |
 | DSM | **PASSED** (stage 2, 365 test days) | 1.700 vs 1.815 vs 4.003 |
+| YSDU | **PASSED** (stage 2, 347 test days) | 1.210 vs 1.251 vs 2.669 |
 
 EGLC's figures are the stage 1 record (DECISIONS F16), LFPG's the stage 2
-record for its airport (DECISIONS F30), and DSM's the stage 2 record for its
-airport (DECISIONS F47). All three airports' single authorised looks are now
-spent, and all three fell on **the same twelve months**, so the three margins
-are not three independent draws of weather — see F30's and F48's closing
-readings. DSM also changed its target hour against the European pair (4.1), so
-its result is not the same controlled comparison EGLC and LFPG make between
-them.
+record for its airport (DECISIONS F30), DSM's the stage 2 record for its
+airport (DECISIONS F47), and YSDU's (Dubbo's) the stage 2 record for its
+airport (DECISIONS F64). All four airports' single authorised looks are now
+spent, and all four fell on **the same twelve months**, so the four margins
+are not four independent draws of weather — see F30's, F48's and F65's
+closing readings. DSM and Dubbo also each changed their target hour against
+the European pair (4.1), so neither result is the same controlled comparison
+EGLC and LFPG make between them.
 
 **5.1 Metric.** Mean absolute error (MAE) — the average size of the gap
 between forecast and what actually happened, in degrees Celsius. Lower is
@@ -468,11 +510,17 @@ to fill in a later stage early, treat it as a warning sign and stop.
     locked (D35) and tested once (F47). It is the first airport outside
     western Europe, and the first whose target hour is not 12:00 UTC (D33,
     4.1).
-  - **Dubbo (YSDU) — IN PROGRESS.** Opened by D36, verified on contact
-    (F49–F56), pulled and mapped (F57–F59), joined and rehearsed (F60–F63),
-    and locked (D39). The single sealed-test look has not yet run. It is
-    the project's first Southern Hemisphere airport, and the second whose
-    target hour is not 12:00 UTC (D37, 4.1).
+  - **Dubbo (YSDU) — PASSED.** Opened by D36, verified on contact (F49–F56),
+    pulled and mapped (F57–F59), joined and rehearsed (F60–F63), locked (D39)
+    and tested once (F64). It is the project's first Southern Hemisphere
+    airport, and the second whose target hour is not 12:00 UTC (D37, 4.1).
+  - **Reno (RNO) — IN PROGRESS.** Session 25 verified two mountain-valley
+    candidates, Bozeman and Reno, and initially chose Bozeman (D40); the
+    owner then switched the choice to Reno (D42, superseding D40). Reno's
+    candidate-comparison checks are recorded in F66, and its full pull and
+    gap map are in F74–F77. It is the project's first mountain/terrain-
+    affected airport, and the third whose target hour is not 12:00 UTC (D42,
+    4.1). Not yet joined, rehearsed, locked or tested.
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with

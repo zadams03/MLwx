@@ -7381,3 +7381,445 @@ other check followed the same shape session 19 already established for a
 non-European, non-ICAO-code airport.
 
 ---
+
+## 2026-08-19 — Session 26 (corrected) decision (Task 0): the fifth airport
+switches from Bozeman to Reno
+
+A previous version of the session 26 prompt jumped straight to Reno without
+recording the switch, and the files-vs-prompt disagreement was correctly
+caught and stopped on. This corrected session records the switch first, as a
+new dated decision, before doing anything else.
+
+**D42. The fifth airport is switched from Bozeman (BZN) to Reno (RNO). This
+supersedes D40; D40 itself is left exactly as written, per the append-only
+rule.**
+
+- **What D40 recorded.** Session 25 (D40) opened a fifth airport and chose
+  Bozeman, Montana, after verifying two candidates (Bozeman and Reno) on
+  contact and comparing their grid-elevation mismatches (F66). D40 stands as
+  the honest record of that choice, made at that moment, from the
+  information available then. It is not edited or retracted.
+- **What changed, and when.** After reviewing session 25's results, the
+  owner switched the choice to Reno. That switch was made in discussion and
+  had not yet been written into DECISIONS or STATUS before this session —
+  the record said Bozeman while the intended work was Reno. This entry is
+  that missing write-down, made before any further work proceeds on the
+  fifth airport.
+- **Why the switch.** The fifth airport's job (D40) is a genuine
+  *terrain-hard* test: does the correction deliver its biggest wins exactly
+  where raw GFS is worst. Bozeman's own numbers turned out to argue against
+  it being that test:
+  - Bozeman's grid-elevation mismatch is only **-16 m** (F66), and it sits in
+    a **wide, grid-resolved valley** — the ~0.25-degree GFS grid cell,
+    averaged over the valley floor, lands close to the valley's own
+    elevation rather than blending in nearby peaks. Raw GFS should therefore
+    handle it about as well as it handles a flat airport: Bozeman is
+    "high-altitude flat", not a terrain test, even though its altitude
+    (1,364 m) is real and by far the highest in the project.
+  - **Reno sits in a valley against the steep Sierra Nevada front** —
+    immediately to its west the terrain rises very steeply to peaks above
+    3,000 m within about 20 km (F66's own comparison). Its difficulty is
+    expected to be **horizontal terrain complexity** (foehn / downslope
+    warming, cold-air drainage off a nearby steep escarpment), which the
+    small **vertical** grid-elevation mismatch (**-1 m**, smaller even than
+    Bozeman's) does not capture and cannot rule out. A small elevation
+    mismatch does not mean an easy forecast when the difficulty is
+    horizontal rather than vertical.
+  - **Reno's true difficulty is only knowable by running it** — exactly the
+    same honest limit D40 already stated about both candidates before either
+    was pulled in full. The switch is a bet that the harder physical setting
+    (proximity to a steep mountain front) is more likely to produce the
+    terrain-hard test D40 was opened to find than the wide, evenly-resolved
+    valley Bozeman turned out to be.
+- **What is set aside, not discarded.** Bozeman is set aside as the fifth
+  airport. Its verification (F66–F73) remains on record in full and could be
+  revisited later — as a sixth airport, or otherwise — if the owner ever
+  wants it; nothing about it was wrong, and D40's reasoning for choosing it
+  at the time (the clearer "broad, not pathological" case of the two) still
+  stands as an honest account of that comparison. It is simply no longer the
+  airport this session's pull and gap-map target.
+- **Everything else carried over unchanged from D40, now pointed at Reno.**
+  US, for pristine IEM data quality (as D32 chose for DSM). Broad-valley,
+  not pathological (the Aspen-style narrow-canyon failure mode D40 named to
+  avoid — Reno's own metadata, F66, shows it hourly-and-complete like
+  Bozoman, so this is not that failure mode either). Everything else reused
+  unchanged from the four airports already in the project, pending
+  verification: the two data sources (SPEC 3.1, 3.2), the model string pin
+  (D16), temperature only (D17), the split dates (D13), the pairing rule
+  (D14), the drop-count-report rule (SPEC 2.2), the minimal three features
+  (D19), the model settings (D21.4) and the frozen qualitative bar (SPEC
+  5.3, D22). **One thing is not reused — the target hour. See below.**
+
+**Reno's target hour: 20:00 UTC, not Bozeman's 19:00 UTC — confirmed against
+the timezone database in this session's own checks script, not inherited.**
+
+D41 computed 19:00 UTC for *Bozeman* (Mountain Standard Time, UTC-7). Reno is
+**Pacific** (`America/Los_Angeles`), one hour further west. This session's
+`scripts/session26_checks.py` computes the standard-time offset directly from
+a January date (guaranteed outside daylight saving) rather than assuming the
+nominal "Pacific = UTC-8" figure carries over uninspected:
+
+```
+timezone from IEM metadata     : America/Los_Angeles
+mid-summer (daylight saving)   : 12:00 UTC = 05:00 PDT (UTC-7)
+mid-winter (standard time)     : 12:00 UTC = 04:00 PST (UTC-8)
+standard-time offset           : UTC-8
+so local standard noon (12:00) = 20:00 UTC
+VERDICT                        : MATCHES the session prompt's expectation
+```
+
+This is the same discipline F32 (DSM), F50 (Dubbo) and session 25's own PART
+0c (Bozeman) applied: state the expected hour on principle, then confirm it
+against real timezone data. **20:00 UTC is Reno's target hour** — the fourth
+distinct target hour among the airports SPEC now tracks, after 12:00 (EGLC,
+LFPG), 18:00 (DSM) and 02:00 (Dubbo). Counting Bozeman's own brief
+candidacy, it is the **fifth** distinct target-hour value computed anywhere
+in the project's history: D41 computed 19:00 UTC for Bozeman before this
+session's switch set that airport aside (D41's own text also called 19:00
+"a fourth distinct target hour", counting the same way at the time — before
+Reno's 20:00 existed to make either count stale). Daylight saving is
+deliberately ignored (D27's convention, applied a fifth time counting
+Bozeman, a fourth among airports SPEC tracks), so the target stays one fixed
+UTC hour all year; Nevada does observe daylight saving (PDT, roughly
+March–November), and the standard offset (PST, UTC-8) is used regardless.
+
+**The honest consequence, recorded plainly, exactly as D33/D37/D41 recorded
+it for the three earlier non-European airports.** Reno changes **both** the
+location and the target hour against EGLC and LFPG, so D26's "only the
+location changed" claim does not hold for it. Read a result from Reno as:
+independent terrain regime (this time genuinely terrain-complex, per the
+reasoning above), same shared D13 twelve months, two things changed from the
+European pair — the same honest reading D33/F46 give DSM, D37/F63 give
+Dubbo, and D41 gave Bozeman.
+
+**No SPEC edit is made by this decision itself.** The SPEC edits authorised
+for this session (A-1 to A-4) are recorded separately below, as their own
+decision entry, mirroring how session 20's D38 kept its SPEC-housekeeping
+edits in one entry distinct from the substantive per-airport decisions
+around it.
+
+---
+
+## 2026-08-19 — Session 26 decision: SPEC housekeeping (Dubbo's pass
+recorded, Reno added to SPEC, mirroring D38's shape)
+
+**D43. SPEC is brought up to date with two facts that were already true and
+had not yet been written down (Dubbo's pass), plus one new airport row
+(Reno, in progress).** This entry documents the four authorised edits (A-1
+to A-4, the session 26 prompt) and no others, made in Part A, before Part
+B/C's pull and gap map ran — mirroring session 20's D38 approach of doing
+the careful documentation edits before the mechanical pull, and session 15's
+approach of writing a marker for the one fact (the 492-hour gap) that could
+not honestly be filled in until the pull was mapped, then filling it in once
+it was.
+
+- **A-1 (§1, §3.4 first table, §5.0, §6).** Dubbo's sealed test ran in
+  session 24 and passed (DECISIONS F64: corrected 1.210 vs raw GFS 1.251 vs
+  persistence 2.669, 347 scored test days) but SPEC had not yet been updated
+  to say so — an oversight carried forward from session 24's own "no SPEC
+  edit was authorised" note. Updated: §1's Dubbo bullet to **passed**;
+  §3.4's YSDU stage cell from `2 — in progress` to `2 — passed`; §5.0's
+  results table gained a YSDU row (`PASSED (stage 2, 347 test days) | 1.210
+  vs 1.251 vs 2.669`) and its paragraph beneath now names Dubbo's figures,
+  the fact that all four passed airports' single looks are spent on the
+  same twelve months (F65's extension of F30/F48's reading), and that
+  Dubbo — like DSM — changed its target hour against the European pair;
+  §6's Dubbo bullet changed from "IN PROGRESS" to "PASSED", citing its full
+  chain of findings (F49–F56, F57–F59, F60–F63, D39, F64), mirroring how the
+  DSM bullet already reads.
+- **A-2 (§3.4 airport table, both sub-tables).** A RNO row was added to
+  each table, using session 25's own recorded figures (F66) rather than the
+  session prompt's summary of them: station code `RNO`, stage `2 — in
+  progress`, target hour `20:00` (confirmed above), network `NV_ASOS`,
+  position lat 39.4839 / lon -119.7711 / elevation 1345 m, grid point lat
+  39.537918 / lon -119.765625 / elevation 1344 m, grid distance 6.02 km,
+  height mismatch -1 m, reports at `:55`, pairing offset 5 minutes. **The
+  "also files at" cell reads "not yet checked"** rather than a guessed
+  value — session 25's checks did not run a routine-plus-special sample for
+  Reno the way it did for Bozeman (F72), so whether Reno files a second
+  scheduled report is genuinely unknown, not merely unrecorded, and D28's
+  rule (never write the table from memory or assumption) means the honest
+  entry is "not yet checked", flagged as an open item (Q31, below) rather
+  than silently left blank or copied from Bozeman's or DSM's answer.
+- **A-3 (§1 airport list).** A Reno bullet was added: "Reno, Nevada (IEM
+  station code RNO, ICAO code KRNO) — stage 2, in progress. The project's
+  first mountain/terrain-affected airport." The parenthetical follows the
+  DSM precedent (IEM station code, not ICAO, since `RNO` is not an ICAO
+  code — Reno's ICAO code is `KRNO`, per F66).
+- **A-4 (§3.2, §3.3).** §3.2's forecast-gap paragraph and archive-floor
+  paragraph now name Reno alongside the four other airports, with the
+  verified answer this session's Part C actually measured (F75: same 492-
+  hour window, same start, same end, same length) rather than a "to be
+  verified" marker — mirroring session 15's two-step approach (D34's own
+  note #1): the marker was the working state during Part A, and it was
+  replaced with the measured fact once Part C's gap map ran later in this
+  same session, so SPEC never asserts something this session had not yet
+  checked. §3.3's verify-on-contact paragraph now lists Dubbo alongside the
+  other three fully-checked airports (an oversight-fix — Dubbo's own F49–F56
+  checks were never added to this list when they were made) and adds a new
+  paragraph stating plainly that Reno's own verify-on-contact was partial
+  and happened across two sessions (25's candidate-comparison depth, 26's
+  full-pull depth), rather than letting the existing wording imply Reno
+  received the same checklist Bozeman did.
+- **One additional wording correction inside A-4's authorised section,
+  flagged rather than silently taken further than needed.** The gap
+  paragraph's continent count ("four different continents" for EGLC, CDG,
+  DSM and Dubbo) does not hold up under inspection — EGLC and CDG are both
+  in Europe, so four airports span three continents, not four. Adding Reno
+  (also North America, alongside DSM) would have compounded a new
+  inaccuracy rather than merely extended an old one, so the phrase was
+  changed to name the continents directly ("across Europe, North America
+  and Australia") instead of counting them. This is a wording-accuracy fix
+  inside the section A-4 already authorises editing, in the same spirit as
+  session 21's SPEC 3.2 correction; it changes no rule, date, setting or
+  bar. Flagged here and in this session's consistency check rather than
+  left for the owner to discover.
+
+**What did not change.** Sections 5.1 (the metric), 5.2 (which references
+decide the bar) and 5.3 (the qualitative bar itself, D22) are untouched. No
+edit here adds anything a result must clear or removes anything it already
+had to. The frozen bar's *meaning* is exactly what it was before this
+session — checked edit by edit, the same discipline sessions 09, 15 and 20
+applied to their own SPEC edits.
+
+**Why this is a decision entry and not just a finding.** Sessions 09 (D28),
+15 (D34) and 20 (D38) established the pattern: bringing SPEC into line with
+facts already established elsewhere in the log, or adding a new airport's
+row from real pulls, is itself the kind of change this project tracks as a
+decision, because it is edited under authorisation rather than discovered by
+measurement. D43 is that same kind of entry for session 26.
+
+---
+
+## 2026-08-19 — Session 26 findings (Reno verified against the timezone
+database, and the full pull and gap map)
+
+Part B pulled Reno's full history for both sources, 2021-03-24 to
+2026-07-31, mirroring session 03b (EGLC), session 10 (LFPG), session 15
+(DSM) and session 20 (Dubbo) file for file. Part C mapped every hour. **No
+data was joined, built, trained or evaluated, and Reno's test year was
+touched only structurally** — row presence, gap positions, report timing —
+never a temperature value. The scripts are `scripts/session26_pull.py` and
+`scripts/session26_checks.py`; the full real output is
+`notes/session-26-check-output.txt`, and the pull log is
+`notes/session-26-pull-output.txt`. Two consecutive runs of the checks
+script produced byte-identical output (confirmed by diff). No retry fired on
+the pull and no rate limit was hit; every chunk was written on the first
+attempt.
+
+**F74. Reno's target hour, 20:00 UTC, confirmed against the timezone
+database — not inherited from Bozeman's 19:00 UTC.** Recorded in full inside
+D42 above, since the confirmation is what D42's target-hour claim rests on;
+summarised here for the finding sequence: `America/Los_Angeles`'s standard
+(non-daylight-saving) offset, read from a January date, is UTC-8, so local
+standard noon is 20:00 UTC, matching the session prompt's expectation
+exactly. This is the fourth distinct target hour among the airports SPEC
+tracks (12:00, 18:00, 02:00, now 20:00) — the fifth counting Bozeman's
+19:00 UTC (D41), which was set aside before entering SPEC.
+
+**F75. Reno's forecast series has EXACTLY the same 492-hour gap as EGLC,
+LFPG, DSM and Dubbo, down to the hour. It is one gap and there are no
+others, and the archive floor matches too.**
+
+```
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+training 2021-03-24..2025-07-31: 38,184 expected, 37,692 usable, 492 missing (1.29%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,760 usable,   0 missing (0.00%)
+
+GAP MAP: 1 gap run in the whole period
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches the EGLC/LFPG/DSM/Dubbo gap : YES - same start, same end, same length
+```
+
+Five airports on three continents (Europe: EGLC, LFPG; North America: DSM,
+Reno; Australia: Dubbo) now share this gap hour for hour, which is as close
+to proof as this project can get that it belongs to the Open-Meteo archive
+itself, not to any place. The grid point returned across all six chunks is
+lat 39.537918, lon -119.765625, elevation 1344.0 m — the **exact same
+figures** session 25's candidate sample (B0) got for Reno (F66), so the full
+pull describes the same place the earlier sample did (`same grid point:
+yes`, checked programmatically, not just eyeballed).
+
+Reno's target hour (20:00 UTC) falls **after** the gap's last missing hour
+(11:00 UTC), the same as EGLC (12:00), LFPG (12:00) and DSM (18:00) and
+unlike Dubbo (02:00, which falls before it). So 2024-01-19 already carries a
+value at Reno's target and survives — the gap is expected to cost **20 days
+at the target hour, 2023-12-30 through 2024-01-18**, not 21 the way it did
+at Dubbo (F59). Confirmed directly below (F77): exactly 20.
+
+**Training-window value ranges, both series, checked and sane, both in
+Celsius. The test window's values were not looked at.**
+
+```
+forecast (GFS, training window) : n = 37,692   min = -11.9   max = 40.2   mean = 14.18 degC
+observed (RNO, training window) : n = 38,085   min = -15.0   max = 41.11  mean = 13.50 degC
+```
+
+Kelvin would read about 250–310, so neither series has a unit problem.
+**Reno's training-window range does not look obviously wider or harder than
+the four flat airports' own ranges** — its coldest forecast (-11.9) sits
+between LFPG's (-8.5, F26) and DSM's (-30.0, F38), and its warmest (40.2) is
+unremarkable beside EGLC's 40.7 (F10) and Dubbo's 40.9 (F57). This is a
+purely structural, all-24-hours observation on the training window, exactly
+the kind F13 warns not to over-read as a statement about one target hour —
+whatever terrain-driven structure exists at Reno's 20:00 UTC target
+specifically is a question for the join session, not this one. It is
+recorded here because the session prompt asked for it as a structural
+sanity check, not because it settles anything about the terrain hypothesis
+D42 rests on.
+
+**Q30's other branches remain untouched.** Nothing about stage 3 (pooling)
+or a second test year was opened or acted on this session.
+
+**F76. Reno's observation record is clean — the second-cleanest of the five
+airports after DSM — and the request-boundary artefact its `:55` reporting
+predicts is real, small and fully accounted for, the same shape DSM's `:54`
+reporting produced (Q26, F39).**
+
+```
+reports in files           : 46,836
+minute-past-hour spread    : :48 x1, :52 x2, :53 x2, :55 x46,831
+reports with no temperature: 1   (2021-11-26 08:55 UTC)
+reports >15 min from any hour, dropped (D14): 0
+expected hours in period   : 46,944
+hours with an observation  : 46,834
+hours missing              : 110 (0.23% of the period)
+
+training 2021-03-24..2025-07-31: 38,184 expected, 38,085 usable, 99 missing (0.26%)
+test     2025-08-01..2026-07-31:  8,760 expected,  8,749 usable, 11 missing (0.13%)
+
+gap runs (whole period): 26 in total
+    1 hour        17 runs      17 hours
+    2-5 hours       6 runs      15 hours
+    6-23 hours      2 runs      19 hours
+    1-7 days        1 run       59 hours
+longest: 59 hours  2021-05-02 06:00 -> 2021-05-04 16:00 UTC
+```
+
+Against the other four airports: EGLC 44 (0.09%, F9), LFPG 140 (0.30%,
+F23), DSM 11 (0.02%, F39), Dubbo 477 (1.02%, F58 — the real, non-off-hour
+gaps only). **Reno's 110 missing hours (0.23%) sit between LFPG's and
+Dubbo's**, closer to LFPG's, with no run anywhere near Dubbo's 42/37/19-hour
+outages. **Zero off-hour reports across the whole five-year record** — no
+routine report anywhere in the period sits more than 15 minutes from a whole
+hour, so D14's tolerance rejects nothing at Reno, the same clean shape DSM
+showed (F39: 3 off-hour reports total) and unlike LFPG (97, F23) or
+especially Dubbo (235, F58). Nothing was filled (SPEC 2.2); the one report
+carrying no temperature was counted, not filled.
+
+**The `:55`-report boundary artefact, checked chunk by chunk rather than
+assumed.** Reno reports 5 minutes before the hour (`:55`), the same shape
+DSM's `:54` reporting and Bozeman's `:56` reporting both take (F34, session
+25), so the report serving hour `H` is stamped `(H-1):55` — outside the
+request window that covers hour `H`, at the very first hour of every chunk
+after the first. Checked directly: at every chunk boundary from 2022 onward,
+the first hour of that chunk is genuinely uncovered by that chunk's own
+file, exactly as `:55` reporting predicts (`CONFIRMED` in the script's own
+boundary check). Unlike Dubbo, whose on-the-hour reporting meant this
+artefact did **not** apply (session 20 checked and found it absent), Reno's
+artefact is real but small: it touches no target hour, because 20:00 UTC is
+served by the 19:55 report of the *same* day, inside the *same* chunk — the
+boundary only ever bites the whole-period midnight-hour count, which is
+already folded into the 110-hour total above via the ordinary gap map (the
+artefact hours are indistinguishable from genuine gaps in that count, and
+are not separately subtracted, matching how F39 and F58 reported DSM's and
+Dubbo's own equivalents).
+
+**Units.** Session 25's B5 check already confirmed `tmpc` at this station
+(on the candidate sample) agrees with the Fahrenheit-derived figure to about
+0.004 degC, the same rounding-only gap DSM's F35 found — not re-run this
+session, since the field and the pipeline are unchanged and the check
+already exists on record for this exact station.
+
+**F77. Days lost at Reno's 20:00 UTC target, both sides, written down before
+any join — the numbers the next session's join must reconcile against,
+mirroring session 10/15/20's gap maps for CDG/DSM/Dubbo.**
+
+```
+                                       days    expected rows   dropped (fc / obs)
+inner-training 2021-03-24..2024-07-31  1,226           1,203        23 / 20 fc, 3 obs
+validation      2024-08-01..2025-07-31   365             365         0 / 0
+test            2025-08-01..2026-07-31   365             365         0 / 0
+whole period                           1,956           1,933        23 / 0 overlap
+```
+
+**Observation side: 3 days lost of 1,956 (0.15%), all training, all to "no
+report near the hour" — zero to off-hour reports, matching the zero off-hour
+rate F76 found.**
+
+```
+2021-05-02  [training]  no routine report near the 20:00 hour
+2021-05-03  [training]  no routine report near the 20:00 hour
+2024-03-21  [training]  no routine report near the 20:00 hour
+```
+
+This is the cleanest observation-side result at the target hour of any
+airport except DSM's zero (F41) — cleaner than EGLC's, LFPG's three
+off-hour losses (F25) and far cleaner than Dubbo's 26 (F59). **Reno loses no
+day at all to an off-hour report at the target hour**, which follows
+directly from F76's whole-record zero.
+
+**Forecast side: 20 days lost, all inside the shared 492-hour gap, all
+consecutive, all in inner-training** — 2023-12-30 through 2024-01-18, exactly
+as F75 predicted from the target hour falling after the gap's last missing
+hour (11:00 UTC). The same count DSM (F41) and the two European airports
+(F12, F27/D31.7) lost from the identical gap; Dubbo alone lost 21 because its
+02:00 target falls before 11:00 (F59).
+
+**Expected paired rows for the eventual join: 1,933 of 1,956 calendar days
+(98.8%).** Against the other four airports: EGLC and LFPG each about 1,933
+(98.8%, F12, F27/D31.7), DSM 1,936 (99.0%, F42), Dubbo 1,909 (97.6%, F60).
+**Reno sits essentially level with EGLC and LFPG**, well ahead of Dubbo and
+just behind DSM's cleanest-yet record — all five losing the same ~20-day
+shared forecast gap, with the small remaining gap between them coming
+entirely from each airport's own observation-side rate, not from anything
+forecast-side.
+
+**Nothing was filled and nothing was joined this session (SPEC 2.2); these
+counts are what the next session's join must reconcile against**, the way
+session 11/16/22 reconciled CDG's/DSM's/Dubbo's joins against their own
+session's gap map.
+
+**Plain first read — yes, Reno is usable for the recipe the same way the
+other four airports were**, and its record is genuinely cleaner than
+session 25's Bozeman-focused checks might have suggested was typical of a
+mountain station: no off-hour reports at all in five years, a request-
+boundary artefact that behaves exactly as `:55` reporting predicts, and a
+gap map that matches the shared archive gap precisely. Nothing found here
+justifies changing any earlier decision at EGLC, CDG, DSM or Dubbo, and
+nothing found here changes D14, D30, or how the pairing rule is applied —
+the same rule is used at every airport (SPEC 4.5, D30). **Whether Reno's
+raw-GFS error at 20:00 UTC is actually large — the whole point D42 opened
+this airport to test — is not answered by anything in this session.** That
+question needs the join, which is deliberately not done here (session 26
+scope).
+
+---
+
+## 2026-08-19 — Open question raised by session 26 (not acted on)
+
+**Q31. Does Reno file a second scheduled report, the way EGLC, LFPG and
+Dubbo do (at `:20`/`:30`/`:30`) rather than the way DSM and Bozeman do
+(genuinely unscheduled)?** SPEC 3.4's "also files at" cell for RNO reads
+"not yet checked" (D43/A-2) rather than a guessed value, because no session
+has pulled a routine-plus-special sample for Reno the way session 25's B4
+did for Bozeman (F72) or session 19's equivalent did for Dubbo (F55).
+Nothing in the project's pipeline uses the "special" stream as the truth
+observation at any airport (D30), so this is a bookkeeping gap rather than a
+data one — the same shape Q28 was before D38 closed it for DSM. A short
+routine-plus-special sample, pulled from outside the test year (the Q29
+fix), would answer it in one request; not done here because it was outside
+this session's authorised scope (A-1 to A-4 plus Parts B/C).
+
+---

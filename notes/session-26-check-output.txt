@@ -1,0 +1,304 @@
+
+============================================================================
+TARGET HOUR - local standard noon at Reno, computed and checked
+============================================================================
+timezone from IEM metadata : America/Los_Angeles
+  mid-summer  : 12:00 UTC = 05:00 PDT (UTC-7)
+  mid-winter  : 12:00 UTC = 04:00 PST (UTC-8)
+  standard-time offset (read from a January date, guaranteed standard time) : UTC-8
+  so local standard noon (12:00) = 20:00 UTC
+  D42 / session 26 prompt expect = 20:00 UTC
+  VERDICT: MATCHES
+
+Note on daylight saving: Nevada observes it (PDT, roughly
+Mar-Nov). The convention (D27/D33/D37/D41) uses the STANDARD
+offset (PST, UTC-8) regardless, so the target stays one fixed UTC
+hour all year, per D42 and the session 26 prompt.
+
+For contrast, Bozeman's target hour (D41, session 25 PART 0c):
+  America/Denver, standard offset UTC-7, local standard noon =
+  19:00 UTC. Reno is Pacific, one hour further west, so 20:00 UTC
+  is one hour later than Bozeman's figure, not the same number.
+
+============================================================================
+D16 - was every RNO forecast chunk pulled with gfs_global?
+============================================================================
+  2021-03-24..2021-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2022-01-01..2022-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2023-01-01..2023-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2024-01-01..2024-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2025-01-01..2025-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2026-01-01..2026-07-31  models=gfs_global: yes   gfs_seamless present: no
+
+  all 6 forecast chunks used gfs_global: YES
+  gfs_global vs gfs_seamless diverges sharply at this station
+  (session 25's B0 candidate sample; F69 measured it in full for
+  Bozeman, 258/264 hours differing by up to 16.5 degC) - the pin
+  is doing real work here, so it is not re-probed in this session.
+
+============================================================================
+FORECAST SERIES - Open-Meteo Previous Runs, gfs_global, RNO, temperature only
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6792  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8760  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8760  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8784  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8760  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5088  2026-01-01 00:00 -> 2026-07-31 23:00
+
+grid point returned : lat 39.537918, lon -119.765625, elevation 1344.0 m
+session 25 B0 sample got : lat 39.537918, lon -119.765625, elevation 1344.0 m
+same grid point      : yes
+
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,692 usable, 492 missing (1.29%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,760 usable, 0 missing (0.00%)
+
+-- GAP MAP: every gap run, whole period (1 run(s)) --
+    2023-12-30 00:00 -> 2024-01-19 11:00 UTC     492 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    over 7 days         1      492
+
+-- largest gap runs in order --
+       492 hours   2023-12-30 00:00 -> 2024-01-19 11:00 UTC
+    runs of 24 hours or more: 1
+
+-- THE 492-HOUR GAP: DOES RENO HAVE IT? (explicit answer) --
+    EGLC (F8), LFPG (F22), DSM (F38) and Dubbo (F57) all have exactly one gap:
+      2023-12-30 00:00 -> 2024-01-19 11:00 UTC, 492 hours
+
+    RNO: 1 gap run(s), 492 missing hours in total,
+    of which 1 run(s) of a day or more.
+
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches the EGLC/LFPG/DSM/Dubbo gap : YES - same start, same end, same length
+
+    ANSWER: SAME WINDOW - Reno has the identical gap
+
+-- TRAINING WINDOW ONLY: temperature value range (sanity) --
+    n = 37,692
+    min = -11.9 degC   max = 40.2 degC   mean = 14.18 degC
+    (Celsius as expected - Kelvin would show roughly 250-310.)
+
+    the extremes in context, training window only:
+      coldest 3: -11.9 on 2023-01-02 15:00, -11.7 on 2023-01-02 11:00, -11.2 on 2023-01-02 13:00
+      warmest 3: 39.8 on 2023-07-16 22:00, 39.9 on 2024-07-07 22:00, 40.2 on 2024-07-07 23:00
+      against the other four airports (training window):
+        EGLC -1.7 to 40.7 (F10), LFPG -8.5 to 41.2 (F26),
+        DSM  -30.0 to 44.7 (F38), YSDU 0.5 to 40.9 (F57)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, usable 8,760, missing 0
+    gap runs:
+      (none)
+
+============================================================================
+TRUTH SERIES - IEM ASOS routine METARs, RNO
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6709  2021-03-24 05:55 -> 2021-12-31 23:55
+2022-01-01..2022-12-31      8754  2022-01-01 00:55 -> 2022-12-31 23:55
+2023-01-01..2023-12-31      8759  2023-01-01 00:55 -> 2023-12-31 23:55
+2024-01-01..2024-12-31      8780  2024-01-01 00:55 -> 2024-12-31 23:55
+2025-01-01..2025-12-31      8754  2025-01-01 00:55 -> 2025-12-31 23:55
+2026-01-01..2026-07-31      5080  2026-01-01 00:55 -> 2026-07-31 23:55
+
+station position in the files: lat 39.4839, lon -119.7711, elevation 1345.0 m
+session 25's B0 sample got   : lat 39.4839, lon -119.7711
+
+reports in files           : 46,836
+minute-past-hour spread    : :48 x1, :52 x2, :53 x2, :55 x46,831
+reports with no temperature: 1
+reports >15 min from any hour, dropped (D14): 0
+
+============================================================================
+BOUNDARY CHECK - does the :55 report create a Q26-style artefact at chunk boundaries?
+============================================================================
+A report stamped (H-1):55 serves hour H - outside the window that
+covers hour H at the very first hour of each chunk. Checked chunk
+by chunk: the first hour of chunk N should be covered by chunk
+N-1's own file (its last report, stamped :55 on its final day),
+except for the very first chunk, which nothing precedes.
+
+  2021-03-24..2021-12-31   first hour 2021-03-24 00:00 UTC : n/a - first chunk of the whole period
+  2022-01-01..2022-12-31   first hour 2022-01-01 00:00 UTC : not covered by its own chunk, as expected for :55 reporting
+  2023-01-01..2023-12-31   first hour 2023-01-01 00:00 UTC : not covered by its own chunk, as expected for :55 reporting
+  2024-01-01..2024-12-31   first hour 2024-01-01 00:00 UTC : not covered by its own chunk, as expected for :55 reporting
+  2025-01-01..2025-12-31   first hour 2025-01-01 00:00 UTC : not covered by its own chunk, as expected for :55 reporting
+  2026-01-01..2026-07-31   first hour 2026-01-01 00:00 UTC : not covered by its own chunk, as expected for :55 reporting
+
+  Behaved exactly as :55 reporting predicts at every boundary: CONFIRMED
+  (The artefact hour itself is counted in the whole-period gap
+  map above like any other missing hour; it touches no target
+  hour, because 20:00 UTC is served by the 19:55 report of the
+  same day, inside the same chunk.)
+
+expected hours in period : 46,944
+hours with an observation: 46,834
+hours missing            : 110 (0.23% of the period)
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 38,085 usable, 99 missing (0.26%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,749 usable, 11 missing (0.13%)
+
+-- GAP MAP: every gap run, whole period (26 run(s)) --
+    2021-03-24 00:00 -> 2021-03-24 05:00 UTC       6 hours
+    2021-03-30 05:00 -> 2021-03-30 05:00 UTC       1 hour
+    2021-04-25 21:00 -> 2021-04-25 21:00 UTC       1 hour
+    2021-04-26 00:00 -> 2021-04-26 00:00 UTC       1 hour
+    2021-05-02 06:00 -> 2021-05-04 16:00 UTC      59 hours
+    2021-07-11 07:00 -> 2021-07-11 19:00 UTC      13 hours
+    2021-07-26 11:00 -> 2021-07-26 11:00 UTC       1 hour
+    2021-09-07 15:00 -> 2021-09-07 15:00 UTC       1 hour
+    2021-11-26 09:00 -> 2021-11-26 09:00 UTC       1 hour
+    2021-12-08 15:00 -> 2021-12-08 15:00 UTC       1 hour
+    2022-03-05 05:00 -> 2022-03-05 05:00 UTC       1 hour
+    2022-07-22 16:00 -> 2022-07-22 19:00 UTC       4 hours
+    2022-08-31 13:00 -> 2022-08-31 13:00 UTC       1 hour
+    2023-06-01 03:00 -> 2023-06-01 03:00 UTC       1 hour
+    2024-03-21 20:00 -> 2024-03-21 22:00 UTC       3 hours
+    2024-07-04 12:00 -> 2024-07-04 12:00 UTC       1 hour
+    2025-03-10 05:00 -> 2025-03-10 05:00 UTC       1 hour
+    2025-05-01 08:00 -> 2025-05-01 09:00 UTC       2 hours
+    2025-08-20 21:00 -> 2025-08-20 21:00 UTC       1 hour
+    2025-09-24 03:00 -> 2025-09-24 03:00 UTC       1 hour
+    2025-09-24 05:00 -> 2025-09-24 05:00 UTC       1 hour
+    2026-04-03 07:00 -> 2026-04-03 08:00 UTC       2 hours
+    2026-04-03 10:00 -> 2026-04-03 11:00 UTC       2 hours
+    2026-05-18 05:00 -> 2026-05-18 06:00 UTC       2 hours
+    2026-07-17 13:00 -> 2026-07-17 13:00 UTC       1 hour
+    2026-07-27 14:00 -> 2026-07-27 14:00 UTC       1 hour
+
+-- gap runs by length --
+    run length       runs    hours
+    1 hour             17       17
+    2-5 hours           6       15
+    6-23 hours          2       19
+    1-7 days            1       59
+
+-- largest gap runs in order --
+        59 hours   2021-05-02 06:00 -> 2021-05-04 16:00 UTC
+        13 hours   2021-07-11 07:00 -> 2021-07-11 19:00 UTC
+         6 hours   2021-03-24 00:00 -> 2021-03-24 05:00 UTC
+         4 hours   2022-07-22 16:00 -> 2022-07-22 19:00 UTC
+         3 hours   2024-03-21 20:00 -> 2024-03-21 22:00 UTC
+         2 hours   2025-05-01 08:00 -> 2025-05-01 09:00 UTC
+         2 hours   2026-04-03 07:00 -> 2026-04-03 08:00 UTC
+         2 hours   2026-04-03 10:00 -> 2026-04-03 11:00 UTC
+         2 hours   2026-05-18 05:00 -> 2026-05-18 06:00 UTC
+         1 hours   2021-03-30 05:00 -> 2021-03-30 05:00 UTC
+    runs of 24 hours or more: 1
+
+-- reports carrying no temperature (marked M) --
+    2021-11-26 08:55 UTC
+    Counted, never filled (SPEC 2.2).
+
+-- TRAINING WINDOW ONLY: observed temperature range (sanity) --
+    n = 38,085
+    min = -15.0 degC   max = 41.11 degC   mean = 13.50 degC
+    (Celsius as expected. Session 25's B5 check confirmed tmpc
+     against the Fahrenheit-derived figure for this station's
+     candidate sample, agreeing to about 0.004 degC - the same
+     rounding-only gap DSM's F35 found.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, with an observation 8,749, missing 11
+    gap runs:
+      2025-08-20 21:00 -> 2025-08-20 21:00 UTC       1 hour
+      2025-09-24 03:00 -> 2025-09-24 03:00 UTC       1 hour
+      2025-09-24 05:00 -> 2025-09-24 05:00 UTC       1 hour
+      2026-04-03 07:00 -> 2026-04-03 08:00 UTC       2 hours
+      2026-04-03 10:00 -> 2026-04-03 11:00 UTC       2 hours
+      2026-05-18 05:00 -> 2026-05-18 06:00 UTC       2 hours
+      2026-07-17 13:00 -> 2026-07-17 13:00 UTC       1 hour
+      2026-07-27 14:00 -> 2026-07-27 14:00 UTC       1 hour
+
+============================================================================
+DAYS LOST AT THE 20:00 UTC TARGET, BY CAUSE (D42's target hour)
+============================================================================
+Structural counts only - no temperature value from the test window
+is printed. The two series are NOT joined; that is the next
+session's job. These counts are what that join should reconcile
+against, the way session 11/16/22 reconciled CDG's/DSM's/Dubbo's
+join.
+
+calendar days in the period : 1,956
+
+-- OBSERVATION SIDE --
+cause                                  days  training   test
+kept - usable 20:00 observation        1953      1588    365
+LOST: only an off-hour report             0         0      0
+LOST: report in place, no temperature      0         0      0
+LOST: no report near the 20:00 hour       3         3      0
+
+total days lost at 20:00 UTC (observation side): 3 of 1,956 (0.15%)
+
+-- LOST: no report near the 20:00 hour (3 day(s)) --
+    2021-05-02  [training]  reports: no routine report near the 20:00 hour
+    2021-05-03  [training]  reports: no routine report near the 20:00 hour
+    2024-03-21  [training]  reports: no routine report near the 20:00 hour
+
+-- FORECAST SIDE --
+days with no 20:00 UTC forecast value : 20 (training 20, test 0)
+  as date runs:
+    2023-12-30 -> 2023-12-30   1 day(s)
+    2023-12-31 -> 2023-12-31   1 day(s)
+    2024-01-01 -> 2024-01-01   1 day(s)
+    2024-01-02 -> 2024-01-02   1 day(s)
+    2024-01-03 -> 2024-01-03   1 day(s)
+    2024-01-04 -> 2024-01-04   1 day(s)
+    2024-01-05 -> 2024-01-05   1 day(s)
+    2024-01-06 -> 2024-01-06   1 day(s)
+    2024-01-07 -> 2024-01-07   1 day(s)
+    2024-01-08 -> 2024-01-08   1 day(s)
+    2024-01-09 -> 2024-01-09   1 day(s)
+    2024-01-10 -> 2024-01-10   1 day(s)
+    2024-01-11 -> 2024-01-11   1 day(s)
+    2024-01-12 -> 2024-01-12   1 day(s)
+    2024-01-13 -> 2024-01-13   1 day(s)
+    2024-01-14 -> 2024-01-14   1 day(s)
+    2024-01-15 -> 2024-01-15   1 day(s)
+    2024-01-16 -> 2024-01-16   1 day(s)
+    2024-01-17 -> 2024-01-17   1 day(s)
+    2024-01-18 -> 2024-01-18   1 day(s)
+
+-- BOTH SIDES TOGETHER: what the join should expect to drop --
+    calendar days in the period : 1,956
+    days lost, either side      : 23 (training 23, test 0)
+    days lost on BOTH sides     : 0
+    paired rows expected        : 1,933
+    inner-training 2021-03-24..2024-07-31: 1,226 days, 1,203 expected rows, 23 dropped (forecast 20, observation 3)
+    validation     2024-08-01..2025-07-31: 365 days, 365 expected rows, 0 dropped (forecast 0, observation 0)
+    test           2025-08-01..2026-07-31: 365 days, 365 expected rows, 0 dropped (forecast 0, observation 0)
+
+    Nothing was filled and nothing was joined (SPEC 2.2). These
+    are counts of row presence and report timing only.
+
+-- where the off-hour reports sit (are they bunched?) --
+    none at all: every routine report in the five years sits
+    within 15 minutes of a whole hour, so D14 refuses none of
+    them.
+
+============================================================================
+Nothing was joined, filled or modelled. Raw files untouched.
+No temperature value from the test window was printed.
+============================================================================
