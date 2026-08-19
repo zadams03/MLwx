@@ -5727,3 +5727,307 @@ again; new material goes to the bottom of `DECISIONS.md`, never into
 `DECISIONS-archive.md`, from this point on.
 
 ---
+
+## 2026-08-19 — Session 22 findings (the Dubbo join, bias look and
+validation rehearsal)
+
+The first modelling session for the fourth airport, Dubbo. It mirrors
+session 16 at DSM, which mirrored session 11 at CDG and sessions 04/05 at
+EGLC. **Dubbo's test year was not touched**: the two 2026 YSDU raw chunk
+files were never opened, the 2025 chunk was cut off at 2025-07-31 on load,
+and the script asserts that no date on or after 2025-08-01 reached any
+table. Nothing was tuned, varied or chosen again — the locked recipe (D21,
+restated per airport as D31/D35) was applied at the fourth location and
+nothing else. The script is `scripts/session22_model.py` and the full real
+output is `notes/session-22-check-output.txt`. Two consecutive runs
+produced identical output apart from the clock time in the header line;
+PART 0 proves against `scripts/session05_model.py` that 0 model settings
+differ and exactly 1 constant differs (TARGET_HOUR, 12 to 2), which is
+D37 and nothing else.
+
+**F60. The join at 02:00 UTC at Dubbo, and every drop reconciled exactly
+against session 20's gap map (F59) — including the one respect in which
+Dubbo's expected drops differ in kind from every earlier airport's.**
+
+One row per day: date, forecast temperature, observed temperature, and the
+residual the model learns.
+
+```
+                                         days   kept   drop  no fc  null fc  no obs
+inner-training 2021-03-24..2024-07-31   1,226  1,193     33      0       21      12
+validation     2024-08-01..2025-07-31     365    360      5      0        0       5
+```
+
+```
+cause                                             expected   actual  verdict
+the 492-hour forecast gap (F57, F59)                    21       21  MATCHES
+observation-side losses, inner-training (F59)           12       12  MATCHES
+observation-side losses, validation (F59)                5        5  MATCHES
+TOTAL days dropped                                      38       38  MATCHES
+
+inner-training paired rows (F59)                      1,193    1,193  MATCHES
+validation paired rows (F59)                            360      360  MATCHES
+```
+
+**The forecast-gap loss is 21 days here, not the 20 every earlier airport
+lost from the identical gap.** EGLC (12:00), LFPG (12:00) and DSM (18:00)
+all target an hour *after* the gap's last missing hour, 2024-01-19 11:00
+UTC, so 2024-01-19 already carries a value at their targets and survives.
+Dubbo's 02:00 UTC target falls *before* 11:00, so 2024-01-19 is still
+inside the gap at 02:00 and is lost too — 2023-12-30 through 2024-01-19,
+21 consecutive days. This was predicted by F59 from the target hour alone,
+before anything was joined, and the join found exactly 21.
+
+**The observation side is not clean here, unlike DSM's.** DSM lost zero
+days on the observation side in five years (F41, F42). Dubbo loses 17 —
+12 in inner-training, 5 in validation — split between two causes, both
+predicted in advance by F59 and both confirmed exactly:
+- **4 days lost to an off-hour-only report** (all inside the loaded
+  window; the fifth of F59's five whole-period off-hour days,
+  2025-08-30, sits in the test year and does not appear here):
+  2022-07-23, 2022-07-25 and 2022-10-21 (all `:30`, 30 minutes out,
+  dropped by D14) and 2025-03-08 (`:31`, 29 minutes out, dropped by D14).
+- **13 days lost to no routine report anywhere near the hour at all**:
+  2022-10-22/23/24 (inside the 42+37+19-hour outage F58 found),
+  2022-12-12, 2023-03-23, 2023-05-10, 2024-02-04, 2024-05-14, 2024-07-20
+  (inner-training), and 2024-09-18, 2024-11-17, 2024-11-27, 2025-07-22
+  (validation).
+
+**The pairing itself needed no adapting and worked exactly as F53
+predicted.** Every one of the 1,574 kept days paired at a 0-minute offset
+— Dubbo reports on the hour, so the target-hour report is itself the
+observation, the same shape as LFPG. Exactly one day in the whole period
+had more than one report inside the 15-minute window (not itself a
+problem; D14 already handles it by taking the nearest).
+
+Row counts beside the three prior airports: inner-training 1,205 (EGLC),
+1,204 (CDG), 1,206 (DSM), 1,193 (Dubbo); validation 364, 365, 365, 360.
+**Dubbo keeps the fewest rows of the four airports in both periods** —
+consistent with F58's finding that Dubbo's full observation record is a
+genuine step down in cleanliness from what its three-week verify-on-contact
+sample suggested. Nothing was filled (SPEC 2.2), and every count above
+matched what F59 predicted before the join ran — no surprise, no stop.
+
+**F61. Dubbo's bias at 02:00 UTC is a fourth distinct shape: the
+calendar/season structure CDG showed, but concentrated into ONE local
+season rather than spread across the year — and it is phase-shifted into
+Dubbo's own summer, exactly as the flipped-hemisphere check asked whether
+it would be.** Inner-training only; the validation year's values were not
+explored and the test year not touched.
+
+Overall, beside EGLC (F13), CDG (F28) and DSM (F43):
+
+```
+                            EGLC       CDG       DSM      YSDU
+days                       1,205     1,204     1,206     1,193
+mean bias degC            -0.108    +0.050    -0.231    -0.136
+median degC               +0.000    +0.100    -0.200    -0.100
+st dev degC                1.551     1.654     2.550     1.740
+mean |bias| degC           1.172     1.248     1.973     1.260
+station warmer, %           48.7      51.7      45.5      45.3
+min / max degC        -7.0/+5.6 -7.7/+5.8 -10.4/+9.2 -12.8/+8.0
+```
+
+EGLC and CDG are measured at 12:00 UTC, DSM at 18:00 UTC and Dubbo at 02:00
+UTC (D33, D37) — all four are their own airport's local midday, which is
+what is held constant, not the UTC hour (SPEC 4.1). **GFS is harder to
+beat at Dubbo than at either European airport but easier than at DSM** —
+mean |bias| 1.260 sits between CDG's 1.248 and DSM's 1.973, close to CDG's.
+The mean bias is small (-0.136), so as at the other three airports most of
+the error is structure and day-to-day noise, not a constant offset.
+
+Against forecast temperature, Dubbo's coldest days behave differently from
+every airport so far:
+
+```
+forecast band (degC)     days  mean bias   st dev  mean |bias|     EGLC      CDG      DSM
+0 to 5                      1     +0.300      nan        0.300   -0.049   -0.687   -0.781
+5 to 10                    13     +1.046    1.384        1.231   +0.361   +0.223   -0.337
+10 to 15                  248     +0.252    1.719        1.268   +0.387   +0.339   +0.465
+15 to 20                  295     +0.456    1.625        1.243   -0.287   +0.320   +1.098
+20 to 25                  242     +0.026    1.594        1.144   -0.746   -0.142   +0.953
+25 to 30                  198     -0.630    1.442        1.188        -        -   -0.147
+30 to 45                  196     -1.301    1.723        1.497        -        -   -3.089
+
+coldest 10%  n=119  forecast  +4.7 to +13.0 degC  mean bias +0.499 (EGLC +0.097, CDG -0.351, DSM -1.066)
+warmest 10%  n=119  forecast +31.6 to +39.4 degC  mean bias -1.418 (EGLC -1.155, CDG -0.784, DSM -2.993)
+```
+
+**Dubbo has by far the narrowest cold end of the four airports (F57), and
+on the coldest tenth of its own forecasts GFS actually runs slightly too
+COLD (+0.499)** — the only one of the four airports where the coldest-tail
+bias is positive. CDG and DSM both ran too warm at their own cold ends;
+EGLC's was flat. **The warm end overshoots as at every airport** — -1.301
+in the hottest band, -1.418 across the warmest tenth, between EGLC's
+-1.155 and DSM's -2.993 and larger than CDG's -0.784.
+
+By season (Northern-calendar label, for column alignment with the three
+prior airports' published tables):
+
+```
+season (Northern label)    days  YSDU bias   st dev  YSDU |bias|     EGLC      CDG      DSM
+winter DJF                  248     -0.973    1.638        1.408   +0.356   -0.092   -0.805
+spring MAM                  342     +0.073    1.635        1.135   -0.061   +0.614   +0.923
+summer JJA                  334     +0.140    1.614        1.176   -0.549   -0.056   -0.208
+autumn SON                  269     +0.027    1.881        1.387   -0.052   -0.401   -1.187
+```
+
+**One season carries almost the entire calendar signal.** Northern-labelled
+"winter DJF" is -0.973 degC; the other three seasons sit between +0.027 and
++0.140, essentially flat by comparison. This is CDG's kind of bias (F28
+found CDG's structure lived mainly in the calendar, spread more evenly
+across seasons) sharpened into a single strong season rather than spread
+across the year, and it is larger in that one season than any single
+seasonal figure CDG produced.
+
+**The flipped-season check, examined explicitly as the session prompt
+asked.** "Winter DJF" is a Northern-calendar label; December, January and
+February are Dubbo's own SUMMER (D37, and F61's bias-by-month table in the
+notes file: Dec -1.054, Jan -1.158, Feb -0.723 — the three most negative
+months of the year). The `season_sin`/`season_cos` features (D19) encode
+only calendar position, with no hemisphere information built in, so a
+model that had somehow learned "Northern-hemisphere summer (Jun-Aug) is
+warm" and applied it blindly would put its largest correction near
+June-August. Instead **the largest-magnitude seasonal bias sits in
+December-February — Dubbo's own actual summer** — which is exactly the
+Southern-summer-in-Dec-Feb signal the session prompt asked to check for.
+This is evidence the underlying physical bias is genuinely phase-shifted
+at Dubbo, not a copy of any Northern airport's calendar shape, and that
+the day-of-year encoding is free to fit whatever local structure is
+actually there rather than being tied to a hemisphere.
+
+**F62. The rehearsal: at Dubbo the correction beats all four references,
+by a margin between CDG's and DSM's — the first result on the region and
+hemisphere axis F46/F48/D36 named as untested.**
+
+Model: the locked D21/D31/D35 recipe, fitted on Dubbo's 1,193
+inner-training rows only. PART 0 of the output proves the method was
+reused rather than re-chosen: 0 model settings differ from session 05's,
+and of the shared constants exactly one differs, TARGET_HOUR (12 to 2),
+which is D37 and nothing else. Two consecutive runs produced identical
+output apart from the header's clock time.
+
+All five methods scored on the same 355 common validation days (5 of
+Dubbo's 360 paired validation rows drop out because persistence needs the
+previous day's observation and it is one of F61's missing-observation
+days):
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.397     -0.392      2.027       10.90
+Persistence                2.577     +0.020      3.451       16.00
+Climatology                2.888     +1.319      3.578       11.64
+Mean-bias reference        1.368     -0.256      2.005       10.76
+ML-corrected               1.283     -0.062      1.890       10.31
+```
+
+Verdicts:
+
+```
+vs Raw GFS              YES   1.283 against 1.397  ->  0.115 degC better (8.2%)
+vs Persistence          YES   1.283 against 2.577  ->  1.295 degC better (50.2%)
+vs Mean-bias reference  YES   1.283 against 1.368  ->  0.086 degC better (6.3%)
+vs Climatology          YES   1.283 against 2.888  ->  1.606 degC better (55.6%)
+```
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3, 5.0). A
+good number here does not mean Dubbo has passed.**
+
+Four things the numbers say, read honestly:
+
+1. **The recipe travels to a fourth continent, a flipped hemisphere and a
+   flipped season cycle.** Applied unchanged 14,504–16,683 km from the
+   three existing airports (F49), at a third distinct target hour, on a
+   bias shaped like nothing seen before (F61), it beats every reference.
+2. **The margin sits between CDG's and DSM's, closer to CDG's**: 8.2%
+   against EGLC's 6.0%, CDG's 3.4%, DSM's 16.1%. Raw GFS at Dubbo (1.397)
+   is harder to beat than at either European airport but easier than at
+   DSM (1.748), which lines up with F61's bias-magnitude ordering.
+3. **The mean-bias reference beats raw GFS at Dubbo (1.368 against
+   1.397)**, as it did at EGLC and DSM and did not at CDG — there is a
+   small constant worth taking (-0.136 degC on inner-training). The model
+   beats that reference by 6.3%, so the win is still mostly structure.
+4. **The seasonal pattern helps in only 2 of 4 Northern-labelled seasons —
+   the fewest of any airport so far — and one season carries almost the
+   whole result:**
+
+```
+season         days   raw GFS   ML-corr   YSDU chg   EGLC chg   CDG chg   DSM chg
+winter DJF       90     1.344     1.290    -0.055     +0.087     +0.025    -0.414
+spring MAM       90     1.219     1.241    +0.022     -0.015     -0.057    -0.184
+summer JJA       90     1.170     1.236    +0.066     -0.321     -0.122    +0.061
+autumn SON       85     1.884     1.368    -0.516     -0.049     -0.044    -0.598
+```
+
+   Northern-labelled autumn (SON, Dubbo's own local spring) carries almost
+   the entire win (-0.516 of the average improvement); spring and summer
+   (Dubbo's own autumn and winter) both got very slightly worse. EGLC,
+   CDG and DSM each helped in 3 of 4 seasons; Dubbo helps in only 2.
+   Day-by-day, the correction was closer to the truth than raw GFS on
+   **190 of 355 days (53.5%)** — the lowest win rate of the four airports
+   (CDG 55.3%, DSM 55.6%), consistent with the result leaning more heavily
+   on one strong season than the other three airports' rehearsals did.
+
+Feature importances — forecast temperature carries the largest share of
+any airport yet:
+
+```
+feature             EGLC gain %  CDG gain %  DSM gain %  YSDU gain %  YSDU splits
+forecast_temp_c           44.3%       35.9%       45.0%       47.8%        1,633
+season_sin                26.7%       39.9%       37.3%       30.2%        1,555
+season_cos                29.0%       24.2%       17.7%       22.0%        1,012
+```
+
+In-sample MAE on Dubbo inner-training was 0.961 degC against raw GFS's
+1.260 (EGLC 0.879, CDG 0.945, DSM 1.221) — shown only to confirm the fit
+did something; it proves nothing about performance on unseen data.
+
+How each reference was built, identical in method to the three prior
+airports, fitted on Dubbo inner-training only:
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 02:00 UTC observation.
+  Past values only (SPEC 2.1d). The first scored validation day takes its
+  persistence value from inner-training, legal per D21.8/D31.8/D35.8's
+  note, unchanged here.
+- **Climatology** — the seasonal average of the *observed* temperature at
+  Dubbo within 7.5 days of that position in the year, training-window
+  only (SPEC 2.1c).
+- **Mean-bias reference** — the forecast plus -0.1360 degC, the mean
+  Dubbo inner-training bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+Nothing was fitted on the validation year: not the model, not the
+climatology, not the mean bias, not any encoding. **No SPEC edit was made
+and none was authorised.**
+
+**F63. What a Dubbo rehearsal win does and does not answer — the same
+honest accounting F46 gave DSM.**
+
+F46 named two axes stage 2's first pair (EGLC, CDG) left untested: the
+region axis (answered by DSM) and the year axis (still not answered by
+anyone). Dubbo attacks a third, named in D36 when it was opened: the
+hemisphere and season-cycle axis.
+
+- **The hemisphere/season-cycle axis: answered, for the first time.**
+  Dubbo is Southern Hemisphere, 14,504–16,683 km from the three existing
+  airports, with physical seasons six months out of phase. The recipe
+  wins there too, on a bias shaped differently from any of the first
+  three (F61), and the flipped-season check found the calendar signal
+  sitting where Dubbo's own summer actually falls rather than copying a
+  Northern shape.
+- **The year axis: still NOT answered.** Dubbo's rehearsal year is
+  2024-08-01 to 2025-07-31 — the same twelve months every earlier
+  rehearsal used, because D13's dates are shared by every airport. This
+  result says nothing about what a different year would have done, at
+  any airport.
+- **Not the controlled EGLC-CDG comparison.** Dubbo changes the location
+  **and** the target hour (D37, SPEC 4.1), the same honest caveat D33
+  attaches to DSM. A Dubbo result answers "does the recipe travel to a
+  different hemisphere and season cycle at a comparable local time", and
+  must not be quoted as though only the location had moved.
+
+**Read as: independent hemisphere, independent season cycle, same shared
+D13 twelve months, two things changed from the European pair (location
+and target hour) — the same honest reading D33/F46 give DSM.**
+
+---
