@@ -6031,3 +6031,534 @@ D13 twelve months, two things changed from the European pair (location
 and target hour) — the same honest reading D33/F46 give DSM.**
 
 ---
+
+## 2026-08-19 — Session 23: THE DUBBO METHOD LOCK (no test yet)
+
+No model was built, run or refitted this session, no data was loaded, and
+**Dubbo's test year was not touched**. This section is the written lock for
+the fourth airport, mirroring what D35 did for DSM (which mirrored D31 for
+CDG and D21 for EGLC), plus the correspondence check that proves it is D35
+with the location and the target hour swapped and nothing else.
+
+**A numbering note, made before anything else, because it affects every
+reference below.** The session 23 prompt suggested this lock be numbered
+D38. Session 20 already used D38 for its own entry (the SPEC housekeeping
+that recorded DSM's pass and added Dubbo's row — see above,
+"2026-08-19 — Session 20 decision"), which the session 23 prompt-writer
+could not have known when the prompt was drafted, since it was written
+before session 20 ran. DECISIONS is append-only and D38 is settled, so this
+lock is **D39**, not D38. Nothing else about the prompt's instructions is
+affected by this — it is a numbering correction only.
+
+**D39. Dubbo's method is LOCKED. This entry fully specifies what Dubbo's
+sealed-test session will run.**
+
+This is **D35 with the airport and the target hour swapped and nothing else
+touched.** Every methodological choice below — the model, its settings, the
+features, what is predicted, the pairing rule, the missing-data rule, the
+references, the metric, the bar, and the one-look rule — is the same choice
+D35 made, which was the same choice D31 and D21 made before it. Not one of
+them is new.
+
+**Two things differ from D35, exactly as two things differed from D31 when
+D35 was written.** D35 could not say "only the location changed" against
+D31, because DSM changed the location **and** the target hour. The same is
+true here: Dubbo changes the location **and** the target hour against every
+earlier lock, including D35 (D37, F50, SPEC 4.1). That cost was accepted on
+purpose, in advance, and is written into SPEC 4.1 and D37. It is repeated
+here so the test session cannot report a Dubbo result as though it were the
+same controlled comparison EGLC and CDG make between them.
+
+Why it is written out separately rather than by pointing at D35: D35 names
+Des Moines throughout and fixes the target at 18:00 UTC, so Dubbo's test
+session would otherwise have to reach back to a DSM-named record and
+translate it — three times over, through D31 and D21 before it — while the
+test year was open. The whole value of a lock is that the executing session
+decides nothing (D21.11, D31.11, D35.11). A translation is a decision. So
+the translation is done here, now, with Dubbo's test year still unopened,
+and the test session executes this record and reports.
+
+**D39.1 — Target.** The temperature at **02:00 UTC** at **Dubbo, Australia
+(IEM/ICAO station code `YSDU`, IEM network `AU__ASOS`)**, the station at
+latitude -32.2167, longitude 148.5747, elevation 275 m — IEM's own
+position, per SPEC 3.4 and F49. The forecast comes from the Open-Meteo grid
+point that position maps to: latitude -32.274643, longitude 148.59375,
+elevation 279 m, 6.69 km from the airport with a +4 m height difference
+(SPEC 3.4, F49) — the largest grid offset of the four airports so far,
+still small and still the same kind of steady local error this project
+exists to learn (Q5). One row per day.
+
+The hour is **02:00 UTC, not 12:00 or 18:00 UTC**, and that is one of the
+two methodological inputs this lock does not share with D35 (the other is
+the airport itself). 02:00 UTC is local standard noon at Dubbo (12:00 AEST
+in winter, 13:00 AEDT in summer, daylight saving deliberately ignored so
+the target stays one fixed UTC hour all year), which is what SPEC 4.1 asks
+every airport to target. Decided on principle before any Dubbo data was
+seen (D37) and then checked against the timezone database (F50), the same
+discipline F32 applied for DSM.
+
+**D39.2 — What the model predicts.** The **residual**: observed minus
+forecast (SPEC 4.2). The corrected forecast is the GFS forecast plus the
+predicted residual. The model never predicts temperature directly.
+Identical to D35.2, D31.2 and D21.2.
+
+**D39.3 — Features.** The D19 minimal set, exactly three:
+```
+forecast_temp_c   the GFS forecast temperature for that day at 02:00 UTC
+season_sin        sin(2 * pi * year_fraction(date))
+season_cos        cos(2 * pi * year_fraction(date))
+```
+where `year_fraction` is `(day_of_year - 1) / 365`, or `/ 366` in a leap
+year. No hour-of-day feature — the hour is fixed at 02:00, so it carries no
+information, which is D19's reason unchanged. No recent-observation
+feature, even though SPEC 2.1d would allow one — see D19 for why. Identical
+to D35.3, D31.3 and D21.3 apart from which fixed hour `forecast_temp_c` is
+read at, which follows from D39.1. The encoding is hemisphere-blind by
+construction, and F61's flipped-season check found the model free to place
+its largest correction in Dubbo's own summer (December–February) rather
+than copying a Northern-hemisphere shape — evidence the encoding
+generalises rather than having quietly learned "June–August is warm".
+
+**D39.4 — Model and settings.** LightGBM gradient-boosted trees (SPEC 4.4,
+D12), with exactly the session 05 settings, unchanged:
+```
+objective=regression_l1   (absolute error, D20)   n_estimators=300
+learning_rate=0.05        num_leaves=15           min_child_samples=40
+subsample=1.0             colsample_bytree=1.0    reg_alpha=0.0
+reg_lambda=0.0            random_state=42         n_jobs=1
+deterministic=True        force_row_wise=True     verbose=-1
+```
+Nothing is tuned, searched or varied in the test session. Library versions
+are pinned in `requirements.txt` (D24): python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0. Identical to D35.4, D31.4 and D21.4. Session 22 already ran
+this exact configuration at Dubbo, and its PART 0 proved it against
+`scripts/session05_model.py`: **0 model settings differ, and exactly 1
+shared constant differs — TARGET_HOUR, 12 to 2** (F62). That one constant
+is D37 and nothing else.
+
+**D39.5 — Training data for the test: the FULL D13 training window,
+2021-03-24 to 2025-07-31, at Dubbo.** That is Dubbo's inner-training **and**
+Dubbo's validation year recombined into one training set.
+- Reason: the same reason D21.5, D31.5 and D35.5 gave. The D18 split
+  existed so the method could be rehearsed without touching the test year.
+  The method is locked, so validation has finished its job, and holding a
+  year back would only throw away real training data. Refitting on all
+  non-test data before the single test is the standard move — and it is
+  what all three earlier airports did, so doing anything else here would
+  add a further difference on top of the location and the hour.
+- Everything fitted is fitted on this window and nothing else: the model,
+  the climatology baseline (SPEC 2.1c) and the mean-bias figure.
+- **Expected row count, written down before the run, and confirmed against
+  session 22's join (F60).** The window holds 1,591 calendar days. Session
+  22 kept **1,193 inner-training rows and 360 validation rows**, both
+  exactly as F59 predicted before the join ran, so:
+  ```
+  inner-training rows (F60)                      1,193
+  validation rows      (F60)                       360
+  expected training rows for the test refit      1,553 of 1,591 calendar days
+  days dropped, all reconciled by F60               38
+      the shared 492-hour forecast gap               21  (2023-12-30..2024-01-19)
+      observation-side losses, inner-training         12
+      observation-side losses, validation              5
+  ```
+  **1,553, not 1,571, 1,569, or 1,569.** Every earlier airport lost only the
+  shared forecast-gap days on the training side (EGLC and CDG 22 days each
+  including their own small observation losses; DSM 20 days, all gap, none
+  observation). Dubbo loses 21 gap days (one more than the three others,
+  because its 02:00 target falls before the gap's last missing hour,
+  11:00 — see F59, F60) **plus 17 real observation-side losses** — the
+  first time any airport's training refit loses meaningful rows to
+  something other than the shared gap. This is F58's higher off-hour and
+  real-gap rate on the observation side, carried through to the row count
+  a lock has to state. A count other than 1,553 is a D39.11 stop signal.
+- **Note the consequence, so it is not a surprise:** the model that is
+  tested is **not** the model measured in session 22. It is the same
+  recipe fitted on about 30% more days than inner-training alone, including
+  one more full cycle of seasons. **The test number will not match session
+  22's 1.283 rehearsal figure and should not be expected to.** At EGLC the
+  equivalent move shifted the number by 0.125 degC (F16), at CDG by 0.169
+  degC (F30) and at DSM by 0.234 degC (F47), and in all three cases most of
+  that was the weather rather than the extra data.
+
+**D39.6 — Test data: Dubbo, 2025-08-01 to 2026-07-31 (D13), and nothing
+after it.** Data after 2026-07-31 is not used, keeping the test set exactly
+one calendar year. This is Dubbo's own test year: the dates are the same as
+every earlier airport's but the data is a fourth airport's, and it has
+never been looked at.
+
+What "opened for the first time" means precisely here. Two yearly chunk
+files carry the test year, and the 2025 chunk has been read with a
+cut-off:
+```
+openmeteo_previousruns_gfs_global_YSDU_2026-01-01_2026-07-31.json   never read
+iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv                     never read
+openmeteo_previousruns_gfs_global_YSDU_2025-01-01_2025-12-31.json   read, but
+iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv                     cut at
+                                                                    2025-07-31
+```
+The two 2026 YSDU chunk files have never been opened by any session.
+Session 20 counted row presence, gap positions and report timing across
+the whole period including the test window, but never a temperature value
+from it (F57, F58, F59) — a structural count, not a look at the data.
+
+**One respect in which this is cleaner than every earlier lock, worth
+stating plainly rather than silently inherited.** D35.6 had to record that
+DSM's (and EGLC's and LFPG's) verify-on-contact samples fell inside the
+test year — printed observation values months before the look, not
+leakage, but a habit Q29 flagged. Session 19's own findings state that the
+Q29 fix was applied **from the start** at Dubbo: every verify-on-contact
+sample was drawn from 2021 (the shared archive-start probes) or 2024
+(comfortably inside training), and none from 2025-08-01 onward. So unlike
+every airport before it, **no value from Dubbo's test year has ever been
+printed, computed or looked at, by any session, for any reason.** This
+closes the gap Q29 raised, one airport early into the "future airports"
+half of its own suggestion.
+
+**D39.7 — Pairing and missing data.** The D14 rule, applied exactly as
+written at the other three airports: the routine report is the truth
+observation, each target-hour forecast is paired with the report nearest
+that hour, and if no report falls within 15 minutes of the hour the day is
+dropped and counted. Drop, count, report — nothing filled, ever (SPEC 2.2).
+The drop counts for both the training window and the test year are part of
+the output.
+
+The location facts inside this: **Dubbo reports on the hour (`:00`)** —
+the same shape as LFPG (SPEC 3.4, F53) — where DSM reports at `:54` and
+EGLC at `:50`. So the rule pairs 02:00 UTC with the **02:00 report — an
+exact match, no offset at all**, session 22 confirming every one of the
+1,553 kept training-window days paired at a 0-minute offset (F60). Dubbo
+also files a genuine second scheduled report, mostly at `:30` (F55) — the
+same shape as EGLC and LFPG, unlike DSM, which has none (F36) — but it is
+not used as a fallback: D30 already settled that the pairing rule is not
+adapted for one airport, and Dubbo reuses that unchanged.
+
+**Important — Dubbo is unlike the other three here, and this is the one
+genuine structural difference the correspondence check below calls out.**
+Every earlier lock could state a single expected test-year drop count with
+confidence: EGLC and CDG each predicted a handful of days from a named
+cause, DSM predicted **zero**. Dubbo cannot. Session 20's gap map (F57,
+F59) is explicit:
+```
+forecast-gap days in Dubbo's test year                            0   (F57, F59)
+observation-side losses in Dubbo's test year                      9   (F59)
+    of which an off-hour-only report                              1   (2025-08-30, F59)
+    of which no report at all near the 02:00 hour                 8   (F59)
+expected paired rows                                            356 of 365
+```
+**The individual dates of the 8 "no report" test-year losses are not named
+anywhere in DECISIONS.** F60 named every inner-training and validation loss
+by date when the join ran (12 and 5 respectively), because the join had
+those rows in front of it; F59's session 20 gap map gave the test-year
+*count* (9) without opening the test year to name the dates, exactly as
+SPEC 3.3's boundary requires. **This lock cannot go further than F59
+already did without opening the test year, so it does not try.** What it
+can and does say: 356 of 365 days are expected to carry a paired row. What
+it cannot say in advance, and what every earlier lock could: the exact
+**scored**-day count. Persistence needs the previous calendar day's
+observation, and with 9 scattered observation-side losses instead of 0 or
+1, whether a given scored day's *previous* day is itself one of the 9 (or
+adjacent to one) cannot be known without the dates — the same mechanism
+that cost EGLC, CDG and DSM one extra scored day each when their own
+single test-year loss fell where it did (F16, F30, F47). **This is an
+expectation, not a requirement**, exactly as D31.7 and D35.7 said of their
+own predictions: the test session reports the **actual** paired-row and
+scored-day counts, names every date it drops, and reconciles them against
+the 356 figure above. A paired-row count other than 356 is a D39.11 stop
+signal; a scored-day count below 356 is expected and should be explained by
+naming the dates, not treated as a surprise.
+
+**D39.8 — The four references. Anything that has to be *fitted* is fitted
+on Dubbo's training window only.** Raw GFS and persistence are fitted on
+nothing — they are just values. Climatology and the mean-bias figure are
+fitted, and both come from Dubbo's D13 training window (SPEC 2.1c).
+- **Raw GFS** — the forecast value itself, uncorrected. *Part of the bar.*
+- **Persistence** — the previous calendar day's 02:00 UTC observation at
+  Dubbo. Past values only (SPEC 2.1d). *Part of the bar.* Note that for the
+  first test day, 2025-08-01, "yesterday" is 2025-07-31, which sits in the
+  training window and is not one of F60's named observation-side losses.
+  That is a past observation, so it is legal and it will be used; written
+  down here so it is not mistaken for leakage later. Identical in substance
+  to D21.8's, D31.8's and D35.8's note.
+- **Climatology** — the seasonal average of the *observed* temperature at
+  Dubbo for that position in the year, averaged over every **Dubbo
+  training-window** observation within 7.5 days of it, measured around the
+  circle so late December and early January are neighbours (SPEC 2.1c).
+  *Informative only.*
+- **Mean-bias reference** — the forecast plus one constant: the mean
+  **Dubbo training-window** bias. *Informative only* (SPEC 5.2, D23). Worth
+  carrying forward from F62: on Dubbo's validation year this reference
+  **beat** raw GFS (1.368 against 1.397), as it did at EGLC and DSM and did
+  not at CDG, because the constant available at Dubbo is not quite nothing
+  (-0.1360 degC on inner-training; the training-window figure will differ
+  slightly and is computed in the test session, not here). The model beat
+  it by 6.3% all the same, so a win over it on the test year is the
+  evidence that the correction is structure and not an offset.
+
+All five methods — the four above plus the corrected forecast — are scored
+on the **same set of days**, the days where every method has a value.
+
+**One thing about the bar that is Dubbo-specific and is stated in advance
+(F62).** Persistence on Dubbo's validation year was 2.577 degC against raw
+GFS's 1.397 — persistence is the weaker reference by a wide margin, roughly
+the same order as DSM's split (4.108 against 1.748, F45) though not as
+extreme. **So at Dubbo, as at DSM, the binding half of the bar is expected
+to be raw GFS, not persistence.** This changes nothing about the bar, which
+is both halves as always; it is written down so the test session reports
+the raw-GFS margin as the one that decides the verdict in practice.
+
+**D39.9 — The metric and the bar.** Mean absolute error in degrees Celsius
+(SPEC 5.1). **Dubbo passes if the corrected forecast has a lower MAE than
+both raw GFS and persistence over Dubbo's test year.** No numeric margin —
+the bar is qualitative and stays that way (D22, SPEC 5.3). Climatology and
+the mean-bias reference are reported but do not decide pass or fail. The
+margin is reported prominently alongside the verdict, so a technical pass
+by a hair reads as what it is (D22).
+
+**The bar is judged once per airport, on that airport's own data (SPEC
+5.0).** EGLC's, CDG's and DSM's passes do not excuse a Dubbo failure, and a
+Dubbo result does not re-open any of theirs. Stage 1's 16.3% and stage 2's
+13.5%/6.3% are not targets Dubbo has to reach and not numbers Dubbo is
+measured against; Dubbo is measured against Dubbo's own raw GFS and Dubbo's
+own persistence, and nothing else.
+
+**D39.10 — One look, and the result stands.** Dubbo's test year is opened
+once, this method is run once, and whatever comes out is reported
+straight — pass or fail, with the seasonal breakdown and the drop counts.
+A failure is an honest finding (SPEC 2.4), not something to fix by trying
+again. If the result disappoints, the response is a new decision logged
+here by the owner, never a quiet re-run. Identical to D21.10, D31.10 and
+D35.10.
+
+Read plainly. Dubbo's rehearsal margin, 8.2% (F62), sits between CDG's
+3.4% and DSM's 16.1% — closer to CDG's, on the airport whose rehearsal win
+is the most concentrated in one season of any airport so far (F62's "2 of
+4 seasons helped" and its "-0.516 carries almost the entire result").
+**Neither a comfortable pass nor a narrow failure should be treated as
+expected.** A Dubbo failure remains an outcome this project reports rather
+than avoids.
+
+**D39.11 — Deviation is a stop signal.** If Dubbo's test session finds any
+reason to depart from this record — a setting that does not fit, a missing
+file, a count that will not reconcile against D39.5 or D39.7, a tempting
+small improvement — it **stops and raises it with the owner**. It does not
+decide on the fly with the test year open. Any change to the above is a
+new DECISIONS entry made deliberately, not an adjustment made mid-run.
+Identical to D21.11, D31.11 and D35.11.
+
+**D39.12 — The single-season watch-item, recorded before the look and NOT
+acted on.** This is inside the lock so that any inspection after the test
+is honest: the place to look was named before anyone knew what the result
+was.
+
+F62 measured, on Dubbo's validation year, that the correction's win is
+carried almost entirely by one Northern-labelled season (autumn SON,
+Dubbo's own local spring, -0.516 degC of the average improvement) while
+the other three seasons are close to flat or very slightly worse:
+```
+season         days   raw GFS   ML-corr   YSDU chg
+winter DJF       90     1.344     1.290    -0.055
+spring MAM       90     1.219     1.241    +0.022
+summer JJA       90     1.170     1.236    +0.066
+autumn SON       85     1.884     1.368    -0.516
+```
+Only 2 of 4 Northern-labelled seasons improved — the fewest of any airport
+so far (EGLC, CDG and DSM each improved in 3 of 4) — and the day-by-day win
+rate, 53.5% (190 of 355 days), is also the lowest of the four rehearsals.
+
+**This is not a reason to change the method, and the method does not
+change. It is locked.** A win concentrated in one season is more exposed to
+that particular season's weather in the test year than a win spread across
+all four would be — if the test year's version of that one season behaves
+differently from the rehearsal year's, the overall margin could move more
+than it has at any earlier airport. **If Dubbo's test result behaves
+oddly — a swing either way, a season that does not match the rehearsal, a
+result that flips from pass to fail or the reverse of what the rehearsal
+margin would suggest — this single season is the first place to look**, and
+looking there is a description of what happened, never a licence to re-run
+or adjust anything (D39.10, D39.11).
+
+**D39.13 — One data-source fact that is stronger at Dubbo than at DSM,
+recorded so the test session states it correctly.** At DSM, F40 found
+`gfs_global` and `gfs_seamless` genuinely **differ** on recent dates — 259
+of 264 hours, by up to 12.3 degC, because Des Moines sits inside CONUS
+where non-GFS models can be blended in. At Dubbo the comparison was run in
+the same session that verified the airport on contact (F52) rather than
+deferred, and it gives the opposite answer: **identical** in both windows
+tested, 312 and 264 hours compared, 0 differences in either, at the same
+grid point throughout. This confirms F6's original non-CONUS reasoning
+(first shown at EGLC) travels to a second non-CONUS, non-European
+continent, rather than being a fluke of Europe specifically. Every Dubbo
+chunk was pulled with `gfs_global` (D16) regardless, so nothing in the
+project depends on this result either way — but the test session should
+say that Dubbo's dataset is confirmed identical to what `gfs_seamless`
+would have given, which is a stronger claim than DSM's data can make and
+one LFPG's still cannot (Q20 was never re-checked there).
+
+---
+
+**The D35 ↔ D39 correspondence check.** Every D35 sub-point set beside its
+D39 counterpart, mirroring the format the D31 ↔ D35 check used. Two kinds
+of intended difference are expected, exactly as they were between D31 and
+D35: `LOCATION` (the airport and what follows from it) and `HOUR` (the
+target hour, per D37, and what follows from it). Anything else appearing
+in that column would be a stop signal.
+
+```
+point  subject                D35 (DSM)                 D39 (Dubbo)               differs?
+.1     target hour            18:00 UTC (D33)           02:00 UTC (D37)           HOUR
+.1     why that hour          local standard noon       local standard noon       same
+.1     airport                Des Moines / DSM          Dubbo / YSDU              LOCATION
+.1     station position       41.534 / -93.6531 / 294m  -32.2167 / 148.5747/275m  LOCATION
+.1     position source        IEM's own metadata (F31)  IEM's own metadata (F49)  same
+.1     grid point             41.52945 / -93.63281      -32.274643 / 148.59375    LOCATION
+.1     grid distance/height   1.76 km, -9 m              6.69 km, +4 m            LOCATION
+.1     row granularity        one row per day           one row per day           same
+.2     what is predicted      residual = obs - fcst     residual = obs - fcst     same
+.2     how corrected is made  fcst + predicted resid    fcst + predicted resid    same
+.3     features               3: fcst temp, sin, cos    3: fcst temp, sin, cos    same
+.3     fcst temp read at      18:00 UTC                 02:00 UTC                 HOUR
+.3     year_fraction          (doy-1)/365 or /366       (doy-1)/365 or /366       same
+.3     excluded features      no hour, no recent obs    no hour, no recent obs    same
+.4     library and model      LightGBM GBDT             LightGBM GBDT             same
+.4     objective              regression_l1             regression_l1             same
+.4     n_estimators           300                       300                       same
+.4     learning_rate          0.05                      0.05                      same
+.4     num_leaves             15                        15                        same
+.4     min_child_samples      40                        40                        same
+.4     subsample              1.0                       1.0                       same
+.4     colsample_bytree       1.0                       1.0                       same
+.4     reg_alpha / reg_lambda 0.0 / 0.0                 0.0 / 0.0                 same
+.4     random_state           42                        42                        same
+.4     n_jobs                 1                         1                         same
+.4     deterministic          True                      True                      same
+.4     force_row_wise         True                      True                      same
+.4     verbose                -1                        -1                        same
+.4     pinned versions        py 3.12.2, np 2.5.2,      py 3.12.2, np 2.5.2,      same
+                              lightgbm 4.7.0             lightgbm 4.7.0
+.4     tuning allowed         none                       none                      same
+.5     training window        2021-03-24..2025-07-31    2021-03-24..2025-07-31    same
+.5     refit on inner+valid   yes                        yes                       same
+.5     what else is fitted    model, climatology,        model, climatology,       same
+                              mean bias -- all on it     mean bias -- all on it
+.5     rows fitted on         1,571 (1,206+365, F42)     1,553 (1,193+360, F60)    LOCATION
+.5     calendar days in it    1,591                      1,591                     same
+.5     days dropped, cause    20, all forecast gap       38: 21 gap + 17 obs-side  LOCATION
+.5     mismatch warning       test != 1.466 rehearsal    test != 1.283 rehearsal   LOCATION
+.6     test window            2025-08-01..2026-07-31     2025-08-01..2026-07-31    same
+.6     nothing used after     2026-07-31                 2026-07-31                same
+.6     files opened first     the two 2026 DSM chunks    the two 2026 YSDU chunks  LOCATION
+       time
+.6     verification samples   3 test-day obs values      NONE -- Q29 fix applied   LOCATION
+       inside the test year   printed (F34/F35, Q29)     from session 19 onward
+.7     pairing rule           D14, nearest report,       D14, nearest report,      same
+                              15-minute tolerance        15-minute tolerance
+.7     report minute          :54                        :00                      LOCATION
+.7     pairing offset         6 min (17:54 -> 18:00)     0 min (exact match)      LOCATION
+                                                                                   + HOUR
+.7     missing data           drop, count, report,       drop, count, report,      same
+                              never fill (SPEC 2.2)      never fill (SPEC 2.2)
+.7     second scheduled       none exists at all (F36),  exists, mostly :30       LOCATION
+       stream                 D30 cannot arise           (F55), refused (D30)
+.7     expected fcst-gap days 0 in test year (F38)       0 in test year (F57,F59) same
+.7     expected obs-loss days 0 (F41)                    9: 1 off-hour + 8        LOCATION
+                                                          no-report (F59)
+.7     expected paired rows   365 of 365                 356 of 365               LOCATION
+.7     expected scored days   365, pinned exactly        cannot be pinned in      LOCATION
+                              (nothing lost, F41)         advance -- see D39.7     (structural)
+.7     drop counts reported   training and test          training and test         same
+.8     reference 1            raw GFS, in the bar        raw GFS, in the bar       same
+.8     reference 2            persistence, in the bar    persistence, in the bar   same
+.8     persistence's source   previous day's 18:00 obs   previous day's 02:00 obs  HOUR
+.8     first-day note         2025-07-31 is training,    2025-07-31 is training,   same
+                              legal, will be used        legal, will be used
+.8     reference 3            climatology, +-7.5 days    climatology, +-7.5 days   same
+                              circular, informative      circular, informative
+.8     reference 4            mean-bias, informative     mean-bias, informative    same
+.8     mean-bias note carried better than raw GFS on     better than raw GFS on    same
+       from the rehearsal     validation (F45)           validation (F62)         (both beat)
+.8     which half binds       raw GFS, not persistence   raw GFS, not persistence  same
+       (expected)             (F45)                      (F62)                    (both DSM-like)
+.9     metric                 MAE in degC (SPEC 5.1)     MAE in degC (SPEC 5.1)    same
+.9     the bar                beat raw GFS AND           beat raw GFS AND          same
+                              persistence                persistence
+.9     numeric margin         none, qualitative (D22)    none, qualitative (D22)   same
+.9     margin reported        yes, prominently           yes, prominently          same
+.9     who decides pass/fail  raw GFS + persistence      raw GFS + persistence     same
+.9     judged once per        that airport's own data    that airport's own data   same
+       airport                (SPEC 5.0)                 (SPEC 5.0)
+.10    number of looks        one                        one                       same
+.10    number of runs         one                        one                       same
+.10    failure handling       reported straight, not     reported straight, not    same
+                              re-run                     re-run
+.10    rehearsal margin note  widest of three (16.1%),   between CDG and DSM       LOCATION
+                              not a reason to expect a    (8.2%), most season-     (structural)
+                              pass (F45)                  concentrated win yet
+                                                          (F62), no expectation
+                                                          either way
+.11    deviation handling     stop and raise with        stop and raise with       same
+                              the owner                  the owner
+.12    watch-item             warm-end overshoot (F44)   single-season             LOCATION
+                                                          concentration (F62)      (structural)
+.13    gfs_seamless check     run at DSM, and they       run at Dubbo (in the      LOCATION
+                              DIFFER (F40)               same session as verify-
+                                                          on-contact), and they
+                                                          are IDENTICAL (F52)
+```
+
+**Verdict of the check: no methodological choice differs.** The `HOUR` rows
+are all one decision — D37's target hour — and what follows from it: which
+hour the feature is read at, which hour persistence looks back to, and
+(combined with the reporting-minute LOCATION fact) which report the
+pairing rule lands on. The `LOCATION` rows are the same kinds D31's and
+D35's own checks found — which airport it is, which files hold its data,
+when the station reports, how many rows and drops follow from that
+airport's own record, what the rehearsal already showed about the
+references, and two facts about the data and the record (the watch-item
+and the `gfs_seamless` result) — **plus one new kind, marked
+`(structural)`, that D35's own table did not need**: the expected
+test-year drop and scored-day counts, which cannot be pinned to a single
+number the way D35.7 pinned DSM's to zero. That structural difference is
+named explicitly in D39.7 and is the one thing this check flags as
+qualitatively new rather than a same-shaped fact with a different value.
+
+Every setting, every date, every feature, every reference, the metric, the
+bar, the one-look rule and the stop-signal rule are the same in D21, D31,
+D35 and D39. Nothing was added to D39 that D35 does not require, and
+nothing D35 requires was left out of D39.
+
+**The one difference that must not be smoothed over, stated again because
+it is the point of the whole check.** Every earlier lock's test-year
+prediction resolved to one number the join either matched or did not: CDG
+predicted one lost day, DSM predicted zero, and both landed exactly (F30,
+F47). **Dubbo's lock cannot make that same promise.** It can and does
+predict the paired-row count (356 of 365) with the same confidence as
+every earlier lock, because that count follows directly from F59's
+whole-hour gap map without opening the test year. It cannot predict the
+final scored-day count with the same confidence, because persistence's
+day-before dependency interacts with 9 scattered losses in a way that
+needs the actual dates to resolve — dates this lock deliberately does not
+have, because getting them would mean opening the test year early. The
+test session must name every date it drops and show the arithmetic, not
+just report a number.
+
+---
+
+## 2026-08-19 — Session 23 note (nothing measured, nothing opened)
+
+This session ran no code, loaded no data and produced no numbers of its
+own, so there is no new F-entry. What it produced is D39, the
+correspondence check above, one authorised SPEC edit (below), and the
+STATUS update.
+
+**Nothing was opened.** Dubbo's test year was not loaded, read, printed,
+averaged or fitted on. No model was run, fitted or refitted. No file in
+`data/raw/` was read this session at all — every file name in D39.6 comes
+from listing the directory and from session 20's and 22's already-published
+findings, not from opening a file this session.
+
+**No open question was closed or raised.** Q30 remains the project's only
+live open question, unchanged by this session.
+
+**Nothing was committed.**
+
+---

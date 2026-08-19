@@ -469,8 +469,10 @@ to fill in a later stage early, treat it as a warning sign and stop.
     western Europe, and the first whose target hour is not 12:00 UTC (D33,
     4.1).
   - **Dubbo (YSDU) — IN PROGRESS.** Opened by D36, verified on contact
-    (F49–F56). It is the project's first Southern Hemisphere airport, and the
-    second whose target hour is not 12:00 UTC (D37, 4.1).
+    (F49–F56), pulled and mapped (F57–F59), joined and rehearsed (F60–F63),
+    and locked (D39). The single sealed-test look has not yet run. It is
+    the project's first Southern Hemisphere airport, and the second whose
+    target hour is not 12:00 UTC (D37, 4.1).
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with
