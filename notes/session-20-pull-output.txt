@@ -1,0 +1,48 @@
+Airport: YSDU (Dubbo, New South Wales, Australia), lat -32.2167, lon 148.5747
+Period : 2021-03-24 to 2026-07-31   chunks: 6
+Forecast variables: temperature_2m (D17)
+Model string      : gfs_global (D16)
+Target hour       : 02:00 UTC (D37) - does not affect the pull
+gfs_global vs gfs_seamless: already settled at this airport in session 19 (F52) - not repeated here.
+
+=== B1  forecast (Open-Meteo Previous Runs, gfs_global, YSDU) ===
+2021-03-24 -> 2021-12-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-24_2021-12-31.json  (161,366 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-24_2021-12-31.json.meta.txt  (2,176 bytes)
+2022-01-01 -> 2022-12-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2022-01-01_2022-12-31.json  (208,764 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2022-01-01_2022-12-31.json.meta.txt  (2,176 bytes)
+2023-01-01 -> 2023-12-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2023-01-01_2023-12-31.json  (208,960 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2023-01-01_2023-12-31.json.meta.txt  (2,176 bytes)
+2024-01-01 -> 2024-12-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-01-01_2024-12-31.json  (209,621 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-01-01_2024-12-31.json.meta.txt  (2,176 bytes)
+2025-01-01 -> 2025-12-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2025-01-01_2025-12-31.json  (208,980 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2025-01-01_2025-12-31.json.meta.txt  (2,176 bytes)
+2026-01-01 -> 2026-07-31
+  wrote openmeteo_previousruns_gfs_global_YSDU_2026-01-01_2026-07-31.json  (121,636 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2026-01-01_2026-07-31.json.meta.txt  (2,176 bytes)
+
+=== B2  truth (IEM ASOS routine METARs, YSDU) ===
+2021-03-24 -> 2021-12-31
+  wrote iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv  (393,037 bytes)
+  wrote iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv.meta.txt  (2,384 bytes)
+2022-01-01 -> 2022-12-31
+  wrote iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv  (502,273 bytes)
+  wrote iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv.meta.txt  (2,383 bytes)
+2023-01-01 -> 2023-12-31
+  wrote iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv  (509,565 bytes)
+  wrote iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv.meta.txt  (2,383 bytes)
+2024-01-01 -> 2024-12-31
+  wrote iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv  (511,194 bytes)
+  wrote iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv.meta.txt  (2,383 bytes)
+2025-01-01 -> 2025-12-31
+  wrote iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv  (510,206 bytes)
+  wrote iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv.meta.txt  (2,383 bytes)
+2026-01-01 -> 2026-07-31
+  wrote iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv  (297,050 bytes)
+  wrote iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv.meta.txt  (2,383 bytes)
+
+Done.

@@ -1,0 +1,371 @@
+
+============================================================================
+D16 - was every YSDU forecast chunk pulled with gfs_global?
+============================================================================
+  2021-03-24..2021-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2022-01-01..2022-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2023-01-01..2023-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2024-01-01..2024-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2025-01-01..2025-12-31  models=gfs_global: yes   gfs_seamless present: no
+  2026-01-01..2026-07-31  models=gfs_global: yes   gfs_seamless present: no
+
+  all 6 forecast chunks used gfs_global: YES
+  gfs_global vs gfs_seamless was already compared at this airport
+  in session 19 and found identical in both windows tested (F52),
+  so it is not re-probed here.
+
+============================================================================
+FORECAST SERIES - Open-Meteo Previous Runs, gfs_global, YSDU, temperature only
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6792  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8760  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8760  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8784  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8760  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5088  2026-01-01 00:00 -> 2026-07-31 23:00
+
+grid point returned : lat -32.274643, lon 148.59375, elevation 279.0 m
+session 19 (F49) got : lat -32.274643, lon 148.59375, elevation 279.0 m
+same grid point      : yes
+
+expected hours in period : 46,944
+hours with a usable value: 46,452
+hours missing            : 492 (1.05% of the period)
+  of which no row at all : 0
+  of which row but null  : 492
+rows returned outside the period: 0
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,692 usable, 492 missing (1.29%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,760 usable, 0 missing (0.00%)
+
+-- GAP MAP: every gap run, whole period (1 run(s)) --
+    2023-12-30 00:00 -> 2024-01-19 11:00 UTC     492 hours
+
+-- gap runs by length --
+    run length       runs    hours
+    over 7 days         1      492
+
+-- largest gap runs in order --
+       492 hours   2023-12-30 00:00 -> 2024-01-19 11:00 UTC
+    runs of 24 hours or more: 1
+
+-- THE 492-HOUR GAP: DOES DUBBO HAVE IT? (explicit answer) --
+    EGLC (F8), LFPG (F22) and DSM (F38) all have exactly one gap:
+      2023-12-30 00:00 -> 2024-01-19 11:00 UTC, 492 hours
+
+    YSDU: 1 gap run(s), 492 missing hours in total,
+    of which 1 run(s) of a day or more.
+
+    last hour with data       : 2023-12-29 23:00 UTC
+    first missing hour        : 2023-12-30 00:00 UTC
+    last missing hour         : 2024-01-19 11:00 UTC
+    first hour with data again: 2024-01-19 12:00 UTC
+    length                    : 492 hours (20.5 days)
+    falls entirely in training: yes
+    matches the EGLC/LFPG/DSM gap : YES - same start, same end, same length
+
+    ANSWER: SAME WINDOW - Dubbo has the identical gap
+
+-- TRAINING WINDOW ONLY: temperature value range (sanity) --
+    n = 37,692
+    min = 0.5 degC   max = 40.9 degC   mean = 17.03 degC
+    (Celsius as expected - Kelvin would show roughly 250-310.)
+
+    the extremes in context, training window only:
+      coldest 3: 0.5 on 2023-06-20 20:00, 0.6 on 2023-06-20 21:00, 0.6 on 2024-07-28 21:00
+      warmest 3: 40.7 on 2025-01-28 05:00, 40.8 on 2023-12-09 04:00, 40.9 on 2025-01-28 06:00
+      against the other three airports (training window):
+        EGLC -1.7 to 40.7 (F10), LFPG -8.5 to 41.2 (F26),
+        DSM  -30.0 to 44.7 (F38)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, usable 8,760, missing 0
+    gap runs:
+      (none)
+
+============================================================================
+TRUTH SERIES - IEM ASOS routine METARs, YSDU
+============================================================================
+chunk files: 6
+
+chunk                         rows  date range (UTC)
+2021-03-24..2021-12-31      6768  2021-03-24 00:00 -> 2021-12-31 23:00
+2022-01-01..2022-12-31      8619  2022-01-01 00:00 -> 2022-12-31 23:00
+2023-01-01..2023-12-31      8751  2023-01-01 00:00 -> 2023-12-31 23:00
+2024-01-01..2024-12-31      8760  2024-01-01 00:00 -> 2024-12-31 23:00
+2025-01-01..2025-12-31      8754  2025-01-01 00:00 -> 2025-12-31 23:00
+2026-01-01..2026-07-31      5082  2026-01-01 00:00 -> 2026-07-31 23:00
+
+station position in the files: lat -32.2167, lon 148.5747, elevation 275.0 m
+SPEC 3.4 holds (F49)         : lat -32.2167, lon 148.5747
+
+reports in files           : 46,734
+minute-past-hour spread    : :00 x46,466, :02 x1, :17 x1, :30 x177, :31 x5, :32 x4, :33 x4, :34 x6, :35 x1, :36 x2, :37 x1, :38 x6, :39 x7, :40 x3, :41 x10, :42 x2, :43 x6, :45 x4, :46 x1, :48 x4, :49 x1, :50 x1, :51 x2, :52 x2, :53 x3, :54 x2, :55 x1, :56 x2, :57 x2, :58 x2, :59 x5
+reports with no temperature: 2
+reports >15 min from any hour, dropped (D14): 235
+
+============================================================================
+BOUNDARY CHECK - does the on-the-hour report avoid DSM's Q26 artefact?
+============================================================================
+DSM reports at :54, so the report serving hour H is stamped
+(H-1):54 - outside the window that covers hour H. Dubbo reports on
+the hour (F53), so the report serving hour H is stamped H:00 -
+inside the same window. Checked chunk by chunk:
+
+  2021-03-24..2021-12-31   first hour 2021-03-24 00:00 UTC : n/a - first chunk of the whole period
+  2022-01-01..2022-12-31   first hour 2022-01-01 00:00 UTC : covered by its own chunk
+  2023-01-01..2023-12-31   first hour 2023-01-01 00:00 UTC : covered by its own chunk
+  2024-01-01..2024-12-31   first hour 2024-01-01 00:00 UTC : covered by its own chunk
+  2025-01-01..2025-12-31   first hour 2025-01-01 00:00 UTC : covered by its own chunk
+  2026-01-01..2026-07-31   first hour 2026-01-01 00:00 UTC : covered by its own chunk
+
+  No Q26-style request-boundary artefact expected or found: CONFIRMED
+
+expected hours in period : 46,944
+hours with an observation: 46,467
+hours missing            : 477 (1.02% of the period)
+
+-- split across the fixed windows (D13) --
+  training 2021-03-24..2025-07-31: 38,184 hours expected, 37,793 usable, 391 missing (1.02%)
+  test     2025-08-01..2026-07-31: 8,760 hours expected, 8,674 usable, 86 missing (0.98%)
+
+-- GAP MAP: every gap run, whole period (287 run(s)) --
+    2021-03-30 05:00 -> 2021-03-30 06:00 UTC       2 hours
+    2021-04-03 17:00 -> 2021-04-03 17:00 UTC       1 hour
+    2021-04-20 20:00 -> 2021-04-20 20:00 UTC       1 hour
+    2021-05-09 19:00 -> 2021-05-09 19:00 UTC       1 hour
+    2021-05-12 13:00 -> 2021-05-12 13:00 UTC       1 hour
+    2021-06-08 09:00 -> 2021-06-08 09:00 UTC       1 hour
+    2021-06-09 05:00 -> 2021-06-09 05:00 UTC       1 hour
+    2021-06-23 22:00 -> 2021-06-23 22:00 UTC       1 hour
+    2021-07-08 19:00 -> 2021-07-08 19:00 UTC       1 hour
+    2021-07-16 04:00 -> 2021-07-16 04:00 UTC       1 hour
+    2021-07-16 20:00 -> 2021-07-16 20:00 UTC       1 hour
+    2021-08-23 09:00 -> 2021-08-23 09:00 UTC       1 hour
+    2021-09-23 08:00 -> 2021-09-23 08:00 UTC       1 hour
+    2021-10-14 03:00 -> 2021-10-14 03:00 UTC       1 hour
+    2021-10-15 00:00 -> 2021-10-15 00:00 UTC       1 hour
+    2021-11-04 21:00 -> 2021-11-04 21:00 UTC       1 hour
+    2021-11-05 00:00 -> 2021-11-05 00:00 UTC       1 hour
+    2021-11-13 05:00 -> 2021-11-13 05:00 UTC       1 hour
+    2021-11-14 03:00 -> 2021-11-14 03:00 UTC       1 hour
+    2021-11-14 06:00 -> 2021-11-14 06:00 UTC       1 hour
+    2021-11-15 04:00 -> 2021-11-15 04:00 UTC       1 hour
+    2021-11-24 21:00 -> 2021-11-24 21:00 UTC       1 hour
+    2021-11-30 04:00 -> 2021-11-30 04:00 UTC       1 hour
+    2022-01-08 23:00 -> 2022-01-09 01:00 UTC       3 hours
+    2022-01-20 00:00 -> 2022-01-20 00:00 UTC       1 hour
+    2022-01-20 07:00 -> 2022-01-20 07:00 UTC       1 hour
+    2022-02-01 22:00 -> 2022-02-01 22:00 UTC       1 hour
+    2022-02-22 06:00 -> 2022-02-22 06:00 UTC       1 hour
+    2022-03-01 07:00 -> 2022-03-01 07:00 UTC       1 hour
+    2022-03-02 19:00 -> 2022-03-02 19:00 UTC       1 hour
+    2022-03-05 06:00 -> 2022-03-05 06:00 UTC       1 hour
+    2022-05-06 08:00 -> 2022-05-06 08:00 UTC       1 hour
+    2022-05-18 16:00 -> 2022-05-18 16:00 UTC       1 hour
+    2022-05-24 14:00 -> 2022-05-24 14:00 UTC       1 hour
+    2022-05-27 14:00 -> 2022-05-27 14:00 UTC       1 hour
+    2022-05-29 13:00 -> 2022-05-29 13:00 UTC       1 hour
+    2022-05-30 04:00 -> 2022-05-30 04:00 UTC       1 hour
+    2022-05-30 06:00 -> 2022-05-30 06:00 UTC       1 hour
+    2022-06-03 20:00 -> 2022-06-03 20:00 UTC       1 hour
+    2022-06-11 00:00 -> 2022-06-11 00:00 UTC       1 hour
+    2022-06-22 18:00 -> 2022-06-22 18:00 UTC       1 hour
+    2022-07-01 06:00 -> 2022-07-01 06:00 UTC       1 hour
+    2022-07-13 19:00 -> 2022-07-13 19:00 UTC       1 hour
+    2022-07-21 15:00 -> 2022-07-21 19:00 UTC       5 hours
+    2022-07-22 16:00 -> 2022-07-23 20:00 UTC      29 hours
+    2022-07-23 22:00 -> 2022-07-23 23:00 UTC       2 hours
+    2022-07-25 00:00 -> 2022-07-25 14:00 UTC      15 hours
+    2022-07-27 20:00 -> 2022-07-27 20:00 UTC       1 hour
+    2022-07-31 12:00 -> 2022-07-31 15:00 UTC       4 hours
+    2022-08-06 19:00 -> 2022-08-06 19:00 UTC       1 hour
+    2022-08-11 18:00 -> 2022-08-11 18:00 UTC       1 hour
+    2022-08-11 23:00 -> 2022-08-11 23:00 UTC       1 hour
+    2022-08-14 05:00 -> 2022-08-14 05:00 UTC       1 hour
+    2022-08-15 23:00 -> 2022-08-15 23:00 UTC       1 hour
+    2022-08-19 20:00 -> 2022-08-19 20:00 UTC       1 hour
+    2022-08-21 16:00 -> 2022-08-21 16:00 UTC       1 hour
+    2022-08-25 15:00 -> 2022-08-25 15:00 UTC       1 hour
+    2022-09-08 20:00 -> 2022-09-08 20:00 UTC       1 hour
+    2022-09-10 03:00 -> 2022-09-10 03:00 UTC       1 hour
+    2022-09-13 13:00 -> 2022-09-13 13:00 UTC       1 hour
+    ... and 227 more run(s)
+
+-- gap runs by length --
+    run length       runs    hours
+    1 hour            253      253
+    2-5 hours          28       74
+    6-23 hours          3       42
+    1-7 days            3      108
+
+-- largest gap runs in order --
+        42 hours   2022-10-20 14:00 -> 2022-10-22 07:00 UTC
+        37 hours   2022-10-23 05:00 -> 2022-10-24 17:00 UTC
+        29 hours   2022-07-22 16:00 -> 2022-07-23 20:00 UTC
+        19 hours   2022-10-22 09:00 -> 2022-10-23 03:00 UTC
+        15 hours   2022-07-25 00:00 -> 2022-07-25 14:00 UTC
+         8 hours   2022-11-04 05:00 -> 2022-11-04 12:00 UTC
+         5 hours   2022-07-21 15:00 -> 2022-07-21 19:00 UTC
+         5 hours   2024-06-07 03:00 -> 2024-06-07 07:00 UTC
+         4 hours   2022-07-31 12:00 -> 2022-07-31 15:00 UTC
+         4 hours   2023-05-17 21:00 -> 2023-05-18 00:00 UTC
+    runs of 24 hours or more: 3
+
+-- reports carrying no temperature (marked M) --
+    2022-12-12 01:02 UTC
+    2025-07-23 17:00 UTC
+    Counted, never filled (SPEC 2.2).
+
+-- TRAINING WINDOW ONLY: observed temperature range (sanity) --
+    n = 37,793
+    min = -5.0 degC   max = 41.0 degC   mean = 16.66 degC
+    (Celsius as expected. F54 checked tmpc against the Fahrenheit
+     field at Dubbo and the two agree to the limits of floating-point.)
+
+-- TEST WINDOW: structural only, no values printed --
+    expected 8,760 hours, with an observation 8,674, missing 86
+    gap runs:
+      2025-08-20 14:00 -> 2025-08-20 14:00 UTC       1 hour
+      2025-08-22 16:00 -> 2025-08-22 16:00 UTC       1 hour
+      2025-08-26 18:00 -> 2025-08-26 18:00 UTC       1 hour
+      2025-08-30 01:00 -> 2025-08-30 02:00 UTC       2 hours
+      2025-09-09 15:00 -> 2025-09-09 15:00 UTC       1 hour
+      2025-09-10 07:00 -> 2025-09-10 07:00 UTC       1 hour
+      2025-09-11 16:00 -> 2025-09-11 16:00 UTC       1 hour
+      2025-09-13 16:00 -> 2025-09-13 16:00 UTC       1 hour
+      2025-09-13 19:00 -> 2025-09-13 19:00 UTC       1 hour
+      2025-09-19 16:00 -> 2025-09-19 16:00 UTC       1 hour
+      2025-09-21 05:00 -> 2025-09-21 05:00 UTC       1 hour
+      2025-09-24 03:00 -> 2025-09-24 04:00 UTC       2 hours
+      2025-10-01 12:00 -> 2025-10-01 12:00 UTC       1 hour
+      2025-10-08 05:00 -> 2025-10-08 05:00 UTC       1 hour
+      2025-10-12 05:00 -> 2025-10-12 05:00 UTC       1 hour
+      2025-10-28 00:00 -> 2025-10-28 00:00 UTC       1 hour
+      2025-10-28 02:00 -> 2025-10-28 02:00 UTC       1 hour
+      2025-10-31 06:00 -> 2025-10-31 06:00 UTC       1 hour
+      2025-11-03 17:00 -> 2025-11-03 17:00 UTC       1 hour
+      2025-11-05 13:00 -> 2025-11-05 13:00 UTC       1 hour
+      2025-11-08 12:00 -> 2025-11-08 12:00 UTC       1 hour
+      2025-11-11 07:00 -> 2025-11-11 08:00 UTC       2 hours
+      2025-11-15 02:00 -> 2025-11-15 02:00 UTC       1 hour
+      2025-11-15 06:00 -> 2025-11-15 06:00 UTC       1 hour
+      2025-11-16 05:00 -> 2025-11-16 05:00 UTC       1 hour
+      2025-11-17 00:00 -> 2025-11-17 00:00 UTC       1 hour
+      2025-11-18 17:00 -> 2025-11-18 17:00 UTC       1 hour
+      2025-11-22 18:00 -> 2025-11-22 18:00 UTC       1 hour
+      2025-11-24 09:00 -> 2025-11-24 09:00 UTC       1 hour
+      2025-11-25 00:00 -> 2025-11-25 00:00 UTC       1 hour
+      ... and 46 more run(s)
+
+============================================================================
+DAYS LOST AT THE 02:00 UTC TARGET, BY CAUSE (D37's target hour)
+============================================================================
+Structural counts only - no temperature value from the test window
+is printed. The two series are NOT joined; that is the next
+session's job. These counts are what that join should reconcile
+against, the way session 11/16 reconciled CDG's/DSM's join.
+
+calendar days in the period : 1,956
+
+-- OBSERVATION SIDE --
+cause                                  days  training   test
+kept - usable 02:00 observation        1930      1574    356
+LOST: only an off-hour report             5         4      1
+LOST: report in place, no temperature      0         0      0
+LOST: no report near the 02:00 hour      21        13      8
+
+total days lost at 02:00 UTC (observation side): 26 of 1,956 (1.33%)
+
+-- LOST: only an off-hour report (5 day(s)) --
+    2022-07-23  [training]  reports: 01:30
+    2022-07-25  [training]  reports: 01:30
+    2022-10-21  [training]  reports: 01:30
+    2025-03-08  [training]  reports: 01:31
+    2025-08-30  [test]  reports: 01:30
+
+-- LOST: no report near the 02:00 hour (21 day(s)) --
+    2022-10-22  [training]  reports: no routine report near the 02:00 hour
+    2022-10-23  [training]  reports: no routine report near the 02:00 hour
+    2022-10-24  [training]  reports: no routine report near the 02:00 hour
+    2022-12-12  [training]  reports: no routine report near the 02:00 hour
+    2023-03-23  [training]  reports: no routine report near the 02:00 hour
+    2023-05-10  [training]  reports: no routine report near the 02:00 hour
+    2024-02-04  [training]  reports: no routine report near the 02:00 hour
+    2024-05-14  [training]  reports: no routine report near the 02:00 hour
+    2024-07-20  [training]  reports: no routine report near the 02:00 hour
+    2024-09-18  [training]  reports: no routine report near the 02:00 hour
+    2024-11-17  [training]  reports: no routine report near the 02:00 hour
+    2024-11-27  [training]  reports: no routine report near the 02:00 hour
+    2025-07-22  [training]  reports: no routine report near the 02:00 hour
+    2025-10-28  [test]  reports: no routine report near the 02:00 hour
+    2025-11-15  [test]  reports: no routine report near the 02:00 hour
+    2025-11-25  [test]  reports: no routine report near the 02:00 hour
+    2025-11-30  [test]  reports: no routine report near the 02:00 hour
+    2025-12-03  [test]  reports: no routine report near the 02:00 hour
+    2026-01-18  [test]  reports: no routine report near the 02:00 hour
+    2026-02-14  [test]  reports: no routine report near the 02:00 hour
+    2026-04-12  [test]  reports: no routine report near the 02:00 hour
+
+-- FORECAST SIDE --
+days with no 02:00 UTC forecast value : 21 (training 21, test 0)
+  as date runs:
+    2023-12-30 -> 2023-12-30   1 day(s)
+    2023-12-31 -> 2023-12-31   1 day(s)
+    2024-01-01 -> 2024-01-01   1 day(s)
+    2024-01-02 -> 2024-01-02   1 day(s)
+    2024-01-03 -> 2024-01-03   1 day(s)
+    2024-01-04 -> 2024-01-04   1 day(s)
+    2024-01-05 -> 2024-01-05   1 day(s)
+    2024-01-06 -> 2024-01-06   1 day(s)
+    2024-01-07 -> 2024-01-07   1 day(s)
+    2024-01-08 -> 2024-01-08   1 day(s)
+    2024-01-09 -> 2024-01-09   1 day(s)
+    2024-01-10 -> 2024-01-10   1 day(s)
+    2024-01-11 -> 2024-01-11   1 day(s)
+    2024-01-12 -> 2024-01-12   1 day(s)
+    2024-01-13 -> 2024-01-13   1 day(s)
+    2024-01-14 -> 2024-01-14   1 day(s)
+    2024-01-15 -> 2024-01-15   1 day(s)
+    2024-01-16 -> 2024-01-16   1 day(s)
+    2024-01-17 -> 2024-01-17   1 day(s)
+    2024-01-18 -> 2024-01-18   1 day(s)
+    2024-01-19 -> 2024-01-19   1 day(s)
+
+-- BOTH SIDES TOGETHER: what the join should expect to drop --
+    calendar days in the period : 1,956
+    days lost, either side      : 47 (training 38, test 9)
+    days lost on BOTH sides     : 0
+    paired rows expected        : 1,909
+    inner-training 2021-03-24..2024-07-31: 1,226 days, 1,193 expected rows, 33 dropped (forecast 21, observation 12)
+    validation     2024-08-01..2025-07-31: 365 days, 360 expected rows, 5 dropped (forecast 0, observation 5)
+    test           2025-08-01..2026-07-31: 365 days, 356 expected rows, 9 dropped (forecast 0, observation 9)
+
+    Nothing was filled and nothing was joined (SPEC 2.2). These
+    are counts of row presence and report timing only.
+
+-- where the off-hour reports sit (are they bunched?) --
+    off-hour reports : 235 on 178 day(s), in 126 episode(s)
+    episodes of 5 or more reports: 5
+      2022-07-23 .. 2022-07-25   38 reports over 2 day(s)
+      2024-02-04 .. 2024-02-06   5 reports over 3 day(s)
+      2025-11-15 .. 2025-11-18   5 reports over 4 day(s)
+      2025-11-22 .. 2025-11-29   8 reports over 6 day(s)
+      2025-12-02 .. 2025-12-06   5 reports over 4 day(s)
+    the remaining 174 report(s) are scattered singles across 121 episode(s)
+    minute stamps across all off-hour reports: :17 x1, :30 x177, :31 x5, :32 x4, :33 x4, :34 x6, :35 x1, :36 x2, :37 x1, :38 x6, :39 x7, :40 x3, :41 x10, :42 x2, :43 x6
+
+    against the other three airports:
+      EGLC   8 of 46,919 (0.017%, F9)
+      LFPG  97 of 46,903 (0.207%, F23)
+      DSM  few, see F39
+      YSDU 235 of 46,734 (0.503%)
+
+============================================================================
+Nothing was joined, filled or modelled. Raw files untouched.
+No temperature value from the test window was printed.
+============================================================================

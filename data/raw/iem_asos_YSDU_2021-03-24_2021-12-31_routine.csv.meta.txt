@@ -1,0 +1,47 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv
+purpose     : session 20, part B2 - full history truth chunk for
+              Dubbo (YSDU)
+pulled at   : 2026-08-19 10:35:49 BST (2026-08-19 09:35:49 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2021&month1=3&day1=24&year2=2022&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = YSDU   (Dubbo, New South Wales, Australia)
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2021-03-24 to 2021-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2022-01-01.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- YSDU's routine report is stamped on the hour, :00 (DECISIONS F53),
+  the same shape as LFPG. At Dubbo's 02:00 UTC target (D37) the 02:00
+  report is the paired observation - an exact match, no offset.
+- YSDU files a second SCHEDULED report each hour, at :30 (DECISIONS
+  F55), the same pattern as EGLC and LFPG rather than DSM's genuinely
+  unscheduled 'special' stream. report_type=3 asks for routine
+  reports only, so none of the :30 reports are in this file.
+- No network parameter is sent. Every earlier airport's full pull
+  addressed its station by code alone, and this pull is deliberately
+  the same shape. YSDU's network is AU__ASOS (DECISIONS F49).
+- Air temperature (tmpc) is the designated truth field, and at Dubbo
+  it is natively whole-degree Celsius - session 19 checked it against
+  the Fahrenheit field and the two agree to the limits of
+  floating-point (DECISIONS F54). No unit conversion is applied
+  anywhere.
+- tz=UTC really is UTC at this station: session 19 pulled the same
+  days in local time and they line up at a clean 100% at the AEST
+  standard offset (DECISIONS F54).
+- HTTP status 200.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).

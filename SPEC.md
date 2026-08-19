@@ -28,7 +28,8 @@ The airports so far:
 - **London City (ICAO code EGLC)** — stage 1, **passed**.
 - **Paris Charles de Gaulle (IATA code CDG, ICAO code LFPG)** — stage 2,
   **passed**.
-- **Des Moines, Iowa (IEM station code DSM)** — stage 2, **in progress**.
+- **Des Moines, Iowa (IEM station code DSM)** — stage 2, **passed**.
+- **Dubbo, Australia (ICAO code YSDU)** — stage 2, **in progress**.
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -99,8 +100,9 @@ in the airport table in section 3.4.
 **3.1 Truth data (what actually happened).** Official hourly airport weather
 observations, in the METAR format (the standard coded format airports report
 in). Source: the Iowa Environmental Mesonet (IEM) ASOS download service. Free,
-no account needed. Each airport is requested by its ICAO code; the routine
-report (IEM `report_type=3`) is the truth observation.
+no account needed. Each airport is requested by its station code (the first
+column of the airport table, section 3.4); the routine report (IEM
+`report_type=3`) is the truth observation.
 
 **3.2 Forecast data (what GFS predicted).** Past GFS forecasts for the
 airport's location. Source: Open-Meteo **Previous Runs API**, model string
@@ -163,38 +165,51 @@ outside Europe: that the observation temperature field really is in degrees
 Celsius, and that a request stamped UTC really is UTC. Both were measured
 rather than assumed and both needed no new handling (DECISIONS F35).
 
+The verify-on-contact samples at EGLC, CDG and DSM were pulled from the most
+recent weeks available, which happened to fall inside the sealed test year
+(2025-08-01 to 2026-07-31). **This is not leakage**: nothing was fitted on
+those values, no method or feature choice was drawn from them, and the
+accurate claim throughout has always been that **no test-year data influenced
+any model, feature, or choice** — not that no test-year value was ever seen.
+From Dubbo (session 19) onward, verification samples are drawn from outside
+the test year on purpose, closing the wording gap for good (DECISIONS F49,
+Q29).
+
 **3.4 The airport table.** This is the only place per-airport facts are
 written. Everything else in this file is shared. Adding an airport means adding
 a row here, filled in from real pulls — never from memory or a map.
 
 The airport, and where it is (position from IEM, section 3.1):
 
-| ICAO | airport | stage | target hour (UTC) | IEM network | latitude | longitude | elevation |
+| station code | airport | stage | target hour (UTC) | IEM network | latitude | longitude | elevation |
 |---|---|---|---|---|---|---|---|
 | EGLC | London City | 1 — passed | 12:00 | `GB__ASOS` | 51.5053 | 0.0553 | 5 m |
 | LFPG | Paris Charles de Gaulle (CDG) | 2 — passed | 12:00 | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
-| DSM | Des Moines, Iowa | 2 — in progress | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
+| DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
+| YSDU | Dubbo, Australia | 2 — in progress | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
 
 The forecast grid point it maps to (from Open-Meteo, section 3.2), and when the
 station reports:
 
-| ICAO | grid latitude | grid longitude | grid elevation | distance from airport | height mismatch | reports at | also files at | pairing offset |
+| station code | grid latitude | grid longitude | grid elevation | distance from airport | height mismatch | reports at | also files at | pairing offset |
 |---|---|---|---|---|---|---|---|---|
 | EGLC | 51.487137 | 0.0 | 4 m | 4.33 km | 1 m | `:50` | `:20` | 10 minutes |
 | LFPG | 49.027008 | 2.578125 | 109 m | 3.44 km | 0 m | `:00` | `:30` | 0 minutes |
 | DSM | 41.52945 | -93.63281 | 285 m | 1.76 km | -9 m | `:54` | nothing scheduled | 6 minutes |
+| YSDU | -32.274643 | 148.59375 | 279 m | 6.69 km | +4 m | `:00` | `:30` | 0 minutes |
 
 Notes on the table:
 
-- **The code column holds whatever IEM addresses the station by.** For the two
-  European airports that is the ICAO code, EGLC and LFPG. For Des Moines it is
-  IEM's own station id, **`DSM`, which is not an ICAO code** — IEM's Iowa
-  listing carries no ICAO code for the station at all, in any field (checked in
-  session 15 against the saved listing; see DECISIONS Q28). The column
-  heading still reads "ICAO", which was true while every airport was European
-  and is not true now; that heading, and section 3.1's wording about requesting
-  each airport "by its ICAO code", are flagged as an open question (Q28) rather
-  than changed here, because this session's authorised edits do not cover them.
+- **The code column holds whatever IEM addresses the station by** — resolving
+  Q28. For EGLC and LFPG that is the ICAO code. For Des Moines it is IEM's own
+  station id, **`DSM`, which is not an ICAO code** — IEM's Iowa listing carries
+  no ICAO code for the station at all, in any field (checked in session 15
+  against the saved listing). For Dubbo it is **`YSDU`, which is an ICAO
+  code**. So the set is genuinely mixed — two ICAO codes, one non-ICAO station
+  id, and now a third ICAO code that happens to coincide with IEM's own id —
+  and no single word describes every entry correctly. The column heading is
+  now **"station code"**, and section 3.1's wording says each airport is
+  requested by its station code rather than by its ICAO code.
 - **The airport position is IEM's own, not a figure from elsewhere.** IEM's
   record is treated as authoritative, because it is the same source the
   observations come from. For CDG this mattered: IEM's position sits 1.15 km
@@ -211,20 +226,21 @@ Notes on the table:
 - **"Reports at" is the minute past the hour the routine METAR is stamped**,
   and it is what makes the general pairing rule (4.5) concrete for that
   airport. **"Pairing offset"** follows from it: how far the paired observation
-  sits from **that airport's own target hour** (4.1). EGLC and LFPG also file a
-  second scheduled report each hour, which IEM labels "special" although it is
-  plainly scheduled; neither is used as the truth observation (DECISIONS F3,
-  F19). **DSM files no such second scheduled report** — its "special" reports
-  are spread across dozens of minutes and are genuinely unscheduled, which is
-  why its "also files at" cell reads *nothing scheduled* (DECISIONS F36).
-- **All three network codes are now verified by a real pull.** LFPG's
+  sits from **that airport's own target hour** (4.1). EGLC, LFPG and YSDU also
+  file a second scheduled report each hour, which IEM labels "special" although
+  it is plainly scheduled; none of them is used as the truth observation
+  (DECISIONS F3, F19, F55). **DSM files no such second scheduled report** — its
+  "special" reports are spread across dozens of minutes and are genuinely
+  unscheduled, which is why its "also files at" cell reads *nothing scheduled*
+  (DECISIONS F36).
+- **All four network codes are now verified by a real pull.** LFPG's
   `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
-  session 10 (DECISIONS F24, which closes Q22) and DSM's `IA_ASOS` in session
-  14 (DECISIONS F31). In each case IEM's own station listing carries the
-  station in that network, at the position and elevation this table holds.
-  Nothing in the project uses a network code — every request addresses its
-  station by the code in the first column — so this closes a bookkeeping gap,
-  not a data one.
+  session 10 (DECISIONS F24, which closes Q22), DSM's `IA_ASOS` in session 14
+  (DECISIONS F31) and YSDU's `AU__ASOS` in session 19 (DECISIONS F49). In each
+  case IEM's own station listing carries the station in that network, at the
+  position and elevation this table holds. Nothing in the project uses a
+  network code — every request addresses its station by the code in the first
+  column — so this closes a bookkeeping gap, not a data one.
 
 ---
 
@@ -366,13 +382,16 @@ earlier one's, and an earlier pass does not excuse a later failure.
 |---|---|---|
 | EGLC | **PASSED** (stage 1, 363 test days) | 1.040 vs 1.242 vs 2.096 |
 | LFPG | **PASSED** (stage 2, 363 test days) | 1.208 vs 1.396 vs 2.300 |
-| DSM | pending — not yet run | — |
+| DSM | **PASSED** (stage 2, 365 test days) | 1.700 vs 1.815 vs 4.003 |
 
-EGLC's figures are the stage 1 record (DECISIONS F16) and LFPG's the stage 2
-record for its airport (DECISIONS F30). Both airports' single authorised looks
-are now spent, and they fell on **the same twelve months**, so the two margins
-are not two independent draws of weather — see F30's closing reading. DSM's
-look has not been taken.
+EGLC's figures are the stage 1 record (DECISIONS F16), LFPG's the stage 2
+record for its airport (DECISIONS F30), and DSM's the stage 2 record for its
+airport (DECISIONS F47). All three airports' single authorised looks are now
+spent, and all three fell on **the same twelve months**, so the three margins
+are not three independent draws of weather — see F30's and F48's closing
+readings. DSM also changed its target hour against the European pair (4.1), so
+its result is not the same controlled comparison EGLC and LFPG make between
+them.
 
 **5.1 Metric.** Mean absolute error (MAE) — the average size of the gap
 between forecast and what actually happened, in degrees Celsius. Lower is
@@ -458,9 +477,14 @@ to fill in a later stage early, treat it as a warning sign and stop.
   design.
   - **CDG (LFPG) — PASSED.** Verified on contact (F17–F21), pulled and mapped
     (F22–F26), rehearsed (F27–F29), locked (D31) and tested once (F30).
-  - **Des Moines (DSM) — IN PROGRESS.** Opened by D32, verified on contact
-    (F31–F37). It is the first airport outside western Europe, and the first
-    whose target hour is not 12:00 UTC (D33, 4.1).
+  - **Des Moines (DSM) — PASSED.** Opened by D32, verified on contact
+    (F31–F37), pulled and mapped (F38–F41), joined and rehearsed (F42–F46),
+    locked (D35) and tested once (F47). It is the first airport outside
+    western Europe, and the first whose target hour is not 12:00 UTC (D33,
+    4.1).
+  - **Dubbo (YSDU) — IN PROGRESS.** Opened by D36, verified on contact
+    (F49–F56). It is the project's first Southern Hemisphere airport, and the
+    second whose target hour is not 12:00 UTC (D37, 4.1).
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with

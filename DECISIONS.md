@@ -5610,3 +5610,211 @@ hour, so there is no DSM-style chunk-boundary artifact to name; and the
 deferred to the next one.
 
 ---
+
+## 2026-08-19 — Session 20 decision (SPEC housekeeping: DSM's pass recorded,
+Dubbo added to SPEC, Q28 and Q29 resolved)
+
+**D38. SPEC is brought up to date with two facts that were already true and
+had not yet been written down, plus one new airport row.** Nothing measured
+here changes; this entry documents six authorised edits (A-1 to A-6, the
+session 20 prompt) and no others, made *before* this session's own pull ran,
+exactly as the prompt required ("the SPEC edits are the careful part and come
+first, so the pull runs against an agreed spec").
+
+- **A-1 (§5.0 results table).** DSM's row changed from "pending — not yet run"
+  to **PASSED (stage 2, 365 test days)**, with its session 18 figures
+  (corrected 1.700 vs raw GFS 1.815 vs persistence 4.003, DECISIONS F47). The
+  paragraph beneath now says all three airports' single authorised looks are
+  spent and fell on the same twelve months, and names the extra caveat that
+  applies to DSM alone: it changed both the location and the target hour
+  against the European pair, so it is not the same controlled comparison EGLC
+  and LFPG make between them.
+- **A-2 (§6 build order).** The DSM bullet changed from "IN PROGRESS" to
+  **PASSED**, citing its full chain of findings (F31–F37, F38–F41, F42–F46,
+  D35, F47), mirroring how the CDG bullet already reads. A new Dubbo bullet was
+  added, "IN PROGRESS", citing its verify-on-contact findings (F49–F56).
+- **A-3 (§3.4 airport table, both sub-tables).** A YSDU row was added to each
+  table, using session 19's own recorded figures (F49, F50, F53) rather than
+  the session prompt's summary of them, exactly as the prompt required.
+  DSM's stage cell changed from "2 — in progress" to "2 — passed".
+- **A-4 (§3.4 notes and §3.1 — closes Q28).** The first column heading in both
+  sub-tables changed from **"ICAO"** to **"station code"**, and §3.1's
+  wording changed from "requested by its ICAO code" to "requested by its
+  station code (the first column of the table)". The note beneath the table
+  now explains why the old heading could not survive a fourth airport: YSDU's
+  code *is* an ICAO code, unlike DSM's, so the set is genuinely mixed (two
+  ICAO codes, one non-ICAO station id, and a third ICAO code) and no single
+  word describes every entry. **This closes Q28.**
+- **A-5 (§1 airport list).** DSM's bullet now reads "passed" instead of "in
+  progress"; a new Dubbo bullet was added, "stage 2, in progress".
+- **A-6 (§3.3 verify-on-contact — closes Q29).** A new paragraph states the
+  accurate claim plainly: verify-on-contact samples at EGLC, CDG and DSM fell
+  inside the sealed test year, which was never leakage (nothing was fitted on
+  those values, no method choice came from them), and the accurate claim has
+  always been **"no test-year data influenced any model, feature, or
+  choice"** — not that no test-year value was ever seen. From Dubbo onward,
+  verification samples are drawn from outside the test year on purpose. **This
+  closes Q29** as the honest-wording item it always was, not a leakage one.
+
+**What did not change.** Sections 5.1 (the metric), 5.2 (which references
+decide the bar) and 5.3 (the qualitative bar itself, D22) are untouched. No
+edit here adds anything a result must clear or removes anything it already
+had to. The frozen bar's *meaning* is exactly what it was before this session.
+
+**Why this is a decision entry and not just a finding.** Sessions 09 (D28) and
+15 (D34) established the pattern: bringing SPEC into line with facts already
+established elsewhere in the log is itself the kind of change this project
+tracks as a decision, because it is edited under authorisation rather than
+discovered by measurement. D38 is that same kind of entry for session 20.
+
+---
+
+## 2026-08-19 — Session 20 findings (the full Dubbo pull and gap map)
+
+This session pulled Dubbo's full history for both sources, 2021-03-24 to
+2026-07-31, mirroring session 03b (EGLC), session 10 (LFPG) and session 15
+(DSM) file for file. **No data was joined, built, trained or evaluated, and
+Dubbo's test year was touched only structurally** — row presence, gap
+positions, report timing — never a temperature value. The scripts are
+`scripts/session20_pull.py` and `scripts/session20_checks.py`; the full real
+output is `notes/session-20-check-output.txt`, and the pull log is
+`notes/session-20-pull-output.txt`. Two consecutive runs of the checks script
+produced byte-identical output. No retry fired on the pull and no rate limit
+was hit; every chunk was written on the first attempt.
+
+**F57. The full pull totals, and the 492-hour gap answer: SAME WINDOW — a
+fourth airport on a fourth continent shares it.**
+
+```
+Forecast (Open-Meteo Previous Runs, gfs_global, YSDU):
+  46,944 hourly rows expected, 46,452 with a usable value, 492 missing (all
+  null, 0 "no row at all"). Grid point: lat -32.274643, lon 148.59375,
+  elevation 279.0 m — matches session 19's F49 exactly.
+
+Truth (IEM ASOS routine METARs, YSDU):
+  46,734 reports across the six chunks. Station position in the files:
+  lat -32.2167, lon 148.5747, elevation 275.0 m — matches SPEC 3.4 (F49)
+  exactly.
+```
+
+The forecast series' single gap is **2023-12-30 00:00 to 2024-01-19 11:00
+UTC, 492 hours** — the same start, same end, same length as EGLC (F8), LFPG
+(F22) and DSM (F38). Every one of the six headline totals matches. It falls
+entirely inside the training window; **the test window has no forecast gap at
+all**. Four airports on four continents now share it hour for hour, which is
+as close to proof as this project can get that the gap belongs to the
+Open-Meteo archive itself, not to any place.
+
+**Training-window value ranges checked and sane, both in Celsius.** Forecast
+0.5 to 40.9 degC (mean 17.03); observed -5.0 to 41.0 degC (mean 16.66).
+**Dubbo has by far the narrowest cold end of the four airports** — its
+forecast series never drops below 0.5 degC across the whole training window,
+against EGLC's -1.7 (F10), LFPG's -8.5 (F26) and DSM's -30.0 (F38). Inland
+New South Wales plains sit at latitude -32, a good deal closer to the equator
+than any of the other three airports are to it, and the training window's
+worth of hours reflects that plainly. Nothing here is out of range for the
+location; recorded, not acted on.
+
+**F58. The observation record is real, complete enough, and its off-hour
+report rate is the highest of the four airports — a correction to F53's
+early optimism, not a contradiction of it.**
+
+```
+                              reports   no temp   off-hour (>15 min)   rate
+EGLC (F9, whole period)       46,919         -              8         0.017%
+LFPG (F23, whole period)      46,903         -             97         0.207%
+DSM  (F39, whole period)      46,938         1              3         0.006%
+YSDU (this session)           46,734         2            235         0.503%
+```
+
+**Two reports in five years carry no temperature** (2022-12-12 01:02 UTC,
+2025-07-23 17:00 UTC) — dropped and counted, never filled (SPEC 2.2). The
+**235 off-hour reports (0.503%)** are the highest rate of any airport so far,
+about 2.4 times LFPG's and roughly 80 times DSM's — all 235 are still
+`report_type=3` (routine) rows, since that is the only type this pull
+requested. Most (177 of 235, 75%) sit at exactly `:30`, on 178 distinct days
+in total across all 235; whether a given `:30` row sits alongside a normal
+`:00` report that same hour or in its place was not examined this session
+(observation-side counting only asks whether *a* report exists near the
+target hour, which is unaffected either way). The rest are single scattered
+minutes across 121 further episodes, the largest being the 38 reports over the
+same 2022-07-23/25 episode session 10 found in LFPG's own record (a genuine
+short outage at the station, not something specific to Dubbo's equipment).
+**Session 19's F53
+sample (500 reports over three weeks, D14 dropping none) undersold this: a
+three-week sample is 3.5% of a five-year record, and this is the second time
+a short sample has read more cleanly than the full one turned out to be**
+(F18 made the same kind of extrapolation error for LFPG, corrected by F25).
+Nothing about the pairing rule changes: D14's tolerance and D30's "take the
+drops, do not adapt the rule for one airport" both apply exactly as written,
+and the pull session's job — as it was for every earlier airport — is to
+count the real cost, not to change the rule.
+
+**Real observation gaps: 287 runs, 477 missing hours (1.02% of the whole
+period), the largest being 42, 37 and 29 hours (October 2022 and July 2022) —
+genuine outages where nothing was filed at all, not an off-hour shift.** This is
+higher than DSM's 11 hours (0.02%, the cleanest of the airports so far) and
+higher than EGLC's 44 (0.09%), but still comparable to LFPG's 140 (0.30%) in
+shape if not in size. There is no request-boundary artefact of the kind DSM's
+`:54` reporting created (Q26): Dubbo reports on the hour, so the report
+serving hour H is stamped H:00 and always sits inside the chunk that covers
+hour H — checked chunk by chunk in this session's script rather than assumed,
+and confirmed clean at every one of the five internal chunk boundaries.
+
+**F59. Days lost at the 02:00 UTC target, both sides, written down before any
+join — the numbers the next session's join must reconcile against.**
+
+```
+                                       days    expected rows   dropped (fc / obs)
+inner-training 2021-03-24..2024-07-31  1,226           1,193        21 / 12
+validation      2024-08-01..2025-07-31   365             360         0 / 5
+test            2025-08-01..2026-07-31   365             356         0 / 9
+whole period                           1,956           1,909        21 / 26 (0 overlap)
+```
+
+**Observation side: 26 days lost of 1,956 (1.33%)** — 5 to an off-hour-only
+report near 02:00 (2022-07-23, 2022-07-25, 2022-10-21, 2025-03-08, 2025-08-30,
+all at `:30` or `:31`) and 21 to no report at all near the hour (mostly single
+scattered days, with 2022-10-22/23/24 sitting inside the 42+37+19-hour outage
+F58 found). **This is the most any airport has lost at its own target hour on
+the observation side** — DSM lost 0 (F41), EGLC and LFPG a handful each. **Of
+the test window's 9 observation-side losses, 8 are "no report near the hour"
+and 1 is the off-hour report on 2025-08-30** — so the test year is not spared
+either cause, only spared the bulk of it: 4 of the 5 off-hour losses and 13 of
+the 21 "no report" losses fall in training instead. Nothing about this changes
+the pairing rule's behaviour; it is a fact about which weeks the outages fell
+in.
+
+**Forecast side: 21 days lost, all inside the shared 492-hour gap, all
+consecutive, all in inner-training** — 2023-12-30 through 2024-01-19. This is
+one more day than EGLC (20, F12), LFPG (20, F22) and DSM (20, F41) lost from
+the identical gap. The gap's last missing hour is 2024-01-19 11:00 UTC, so
+whether that date's target hour is lost depends only on whether the target
+hour falls before or after 11:00: EGLC (12:00), LFPG (12:00) and DSM (18:00)
+all fall after it, so 2024-01-19 already has data at their targets and only
+2023-12-30 through 2024-01-18 (20 days) is lost. Dubbo's 02:00 target falls
+*before* 11:00, so 2024-01-19 is still inside the gap at 02:00 and is lost
+too, giving 21 days (2023-12-30 through 2024-01-19) — arithmetic that follows
+from the target hour, not a new fact about the gap itself.
+
+**Expected paired rows for the eventual join: 1,909 of 1,956 calendar days
+(97.6%).** That is the lowest keep-rate of the four airports — EGLC and LFPG
+each kept about 1,933 of 1,956 (98.8%, F12, F27/D31.7) and DSM kept 1,936
+(99.0%, F42) — all four losing essentially the same ~20-day shared forecast
+gap, with the gap between them coming entirely from F58's higher off-hour and
+real-gap rate on the observation side, not from anything on the forecast side.
+**Nothing was filled and nothing was joined this session (SPEC 2.2); these
+counts are what the next session's join must reconcile against**, the way
+session 11 reconciled CDG's join against session 10's gap map and session 16
+reconciled DSM's against session 15's.
+
+**Plain first read — yes, this airport is usable for the recipe the same way
+the other three were**, but its full record is a genuine step down in
+cleanliness from what the small verify-on-contact sample suggested, and that
+correction is recorded here rather than smoothed over. Nothing found here
+justifies changing any earlier decision at EGLC, CDG or DSM, and nothing found
+here changes D14, D30, or how the pairing rule is applied — the same rule is
+used at every airport, including where, as at CDG and now more so at Dubbo, it
+costs real days (SPEC 4.5, D30).
+
+---
