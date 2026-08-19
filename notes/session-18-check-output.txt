@@ -1,0 +1,810 @@
+
+============================================================================
+SESSION 18 - DSM'S SEALED-TEST EVALUATION. ONE LOOK. THE RESULT STANDS.
+============================================================================
+run at        : 2026-08-18 21:07:40 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+airport       : DSM - Des Moines, Iowa (SPEC 3.4) - stage 2
+                (D32, the third airport)
+target hour   : 18:00 UTC at DSM (SPEC 4.1, D33, D35.1)
+training      : 2021-03-24 to 2025-07-31   (D13, D35.5)
+SEALED TEST   : 2025-08-01 to 2026-07-31   (D13, D35.6)
+nothing after : 2026-07-31
+
+This session executes DECISIONS D35 and decides nothing. Nothing is
+tuned, searched, swapped or re-run. If anything did not fit the D35
+record, the run stops and goes back to the owner (D35.11).
+
+TWO THINGS DIFFER FROM CDG'S TEST, NOT ONE: the location AND the
+target hour (D33). D26's 'only the location changed' does not hold
+for DSM, and this result must not be quoted as if it did (F46).
+
+============================================================================
+PART 0 - checking this script against the lock (DECISIONS D35)
+============================================================================
+
+-- check 1: every value D35 fixes, against what this script will use --
+    what D35 fixes                     D35 says               this run               match?
+    airport (D35.1)                    DSM                    DSM                    yes
+    target hour (D35.1)                18                     18                     yes
+    train start (D35.5)                2021-03-24             2021-03-24             yes
+    train end (D35.5)                  2025-07-31             2025-07-31             yes
+    test start (D35.6)                 2025-08-01             2025-08-01             yes
+    test end (D35.6)                   2026-07-31             2026-07-31             yes
+    features (D35.3)                   ['forecast_temp_c', 'season_sin', 'season_cos'] ['forecast_temp_c', 'season_sin', 'season_cos'] yes
+    objective (D35.4)                  regression_l1          regression_l1          yes
+    n_estimators (D35.4)               300                    300                    yes
+    learning_rate (D35.4)              0.05                   0.05                   yes
+    num_leaves (D35.4)                 15                     15                     yes
+    min_child_samples (D35.4)          40                     40                     yes
+    subsample (D35.4)                  1.0                    1.0                    yes
+    colsample_bytree (D35.4)           1.0                    1.0                    yes
+    reg_alpha (D35.4)                  0.0                    0.0                    yes
+    reg_lambda (D35.4)                 0.0                    0.0                    yes
+    random_state (D35.4)               42                     42                     yes
+    n_jobs (D35.4)                     1                      1                      yes
+    deterministic (D35.4)              True                   True                   yes
+    force_row_wise (D35.4)             True                   True                   yes
+    verbose (D35.4)                    -1                     -1                     yes
+    pairing window minutes (D35.7)     15                     15                     yes
+    climatology half window (D35.8)    7.5                    7.5                    yes
+    values checked: 23
+    values that do not match D35: 0
+    (The 15-minute pairing window is the literal in
+     load_obs_target_hour below. Check 3d prints that function's
+     differences from session 13's, so it can be seen that the
+     15 minutes is untouched.)
+
+-- check 2a: model settings, session 05 against this session --
+    setting              session 05             session 18             same?
+    objective            regression_l1          regression_l1          yes
+    n_estimators         300                    300                    yes
+    learning_rate        0.05                   0.05                   yes
+    num_leaves           15                     15                     yes
+    min_child_samples    40                     40                     yes
+    subsample            1.0                    1.0                    yes
+    colsample_bytree     1.0                    1.0                    yes
+    reg_alpha            0.0                    0.0                    yes
+    reg_lambda           0.0                    0.0                    yes
+    random_state         42                     42                     yes
+    n_jobs               1                      1                      yes
+    deterministic        True                   True                   yes
+    force_row_wise       True                   True                   yes
+    verbose              -1                     -1                     yes
+    settings that differ: 0   (D35.4 requires 0)
+
+-- check 2b: the code that must be character-identical to session 05 --
+    Compared character for character with scripts/session05_model.py.
+    all_days()                 identical
+    year_fraction()            identical
+    mae()                      identical
+    describe()                 identical
+    features() is handled separately below: its text differs from
+    session 05's by one docstring line naming the fixed hour, and
+    its executable code is compared with docstrings stripped out.
+
+-- check 3a: model settings, session 13 (CDG test) against this session --
+    settings compared: 14
+    settings that differ from CDG's sealed test: 0
+
+-- check 3b: the constants, session 13 (CDG) against session 18 (DSM) --
+    Exactly one constant should differ: TARGET_HOUR, 12 -> 18, which
+    is D33 and nothing else. The split dates are shared by every
+    airport (SPEC 4.3), so they must be identical.
+    constant                 session 13 (CDG)                   session 18 (DSM)   same?
+    TARGET_HOUR              12                                 18                 NO - DIFFERS
+    TRAIN_START              2021-03-24                                            yes
+    TRAIN_END                2025-07-31                                            yes
+    TEST_START               2025-08-01                                            yes
+    TEST_END                 2026-07-31                                            yes
+    INNER_START              2021-03-24                                            yes
+    INNER_END                2024-07-31                                            yes
+    VALID_START              2024-08-01                                            yes
+    VALID_END                2025-07-31                                            yes
+    CHUNKS                   [('2021-03-24', '2021-12-31'), ('                     yes
+    GAP_START                2023-12-30                                            yes
+    GAP_END                  2024-01-19                                            yes
+    CLIM_HALF_WINDOW_DAYS    7.5                                                   yes
+    FEATURE_NAMES            ['forecast_temp_c', 'season_sin',                     yes
+    constants that differ: 1  ['TARGET_HOUR']
+
+-- check 3c: session 18 against session 13, function by function --
+    This is the 'the airport and the hour changed, and nothing else'
+    claim, checked in code rather than argued. Every function is
+    compared character for character with CDG's sealed test script.
+    all_days()                   identical
+    year_fraction()              identical
+    features()                   differs - shown below
+    mae()                        identical
+    describe()                   identical
+    _literal()                   identical
+    top_level()                  identical
+    func_source()                identical
+    climatology_from_training()  identical
+    fit_on_training()            differs - shown below
+    The two loaders are renamed, because '12z' would be a false name
+    at an airport whose target hour is 18:00 UTC, so they are
+    compared by an explicit old-name/new-name pair below.
+    The remaining functions (join, score_test_year, judge_the_bar,
+    the comparison parts and main) differ in the text they print,
+    which is on the screen anyway, and in which published figures
+    they quote. No arithmetic differs; the diffs below cover every
+    function that does any of the loading, fitting or scoring.
+
+-- check 3d: the functions that DO differ, each shown in full --
+    Nothing is hidden: every diff is printed so the changes can be
+    read rather than taken on trust.
+
+    features() - one docstring line: the sentence naming the fixed hour says 18:00
+    UTC at DSM instead of 12:00 (D33). No executable line differs -
+    proved below with docstrings stripped out.
+      --- session13 features
+      +++ session18 features
+      @@ -5,3 +5,4 @@
+           that 31 December sits next to 1 January instead of at the opposite end of
+      -    a number line. Hour of day is not a feature - the hour is fixed at 12:00.
+      +    a number line. Hour of day is not a feature - the hour is fixed at that
+      +    airport's target hour, 18:00 UTC at DSM.
+           """
+
+    load_forecast_target_hour() - the station code in the file name, the function name, and the
+    docstring naming the hour and the session that held the seal.
+    Nothing else.
+      --- session13 load_forecast_12z
+      +++ session18 load_forecast_target_hour
+      @@ -1,6 +1,6 @@
+      -def load_forecast_12z():
+      -    """Return {date: forecast_temp_or_None} for 12:00 UTC, up to the hard end.
+      +def load_forecast_target_hour():
+      +    """Return {date: forecast_temp_or_None} for 18:00 UTC, up to the hard end.
+       
+      -    Unlike session 11 there is no seal here: CDG's test year is loaded, because
+      -    this is the one authorised look at it (DECISIONS D31.6, D31.10). The only
+      +    Unlike session 16 there is no seal here: DSM's test year is loaded, because
+      +    this is the one authorised look at it (DECISIONS D35.6, D35.10). The only
+           cut-off is the hard end at 2026-07-31, which keeps the test set exactly one
+
+    load_obs_target_hour() - the station code in the file name, the function name, and DSM's :54
+    reporting: the near-target bookkeeping is keyed on the report's
+    NEAREST whole hour, which is the framing session 15 counted F41
+    in, rather than CDG's dual clock-hour/nearest-hour framing that
+    F25 needed. The 15-minute D14 rule is untouched.
+      --- session13 load_obs_12z
+      +++ session18 load_obs_target_hour
+      @@ -1,17 +1,19 @@
+      -def load_obs_12z():
+      -    """Return {date: observed_temp} for the 12:00 UTC hour, up to the hard end.
+      +def load_obs_target_hour():
+      +    """Return {date: observed_temp} for the 18:00 UTC hour, up to the hard end.
+       
+           The D14 pairing rule: the routine report belongs to the hour it is nearest
+      -    to, and only if it is within 15 minutes of it. At LFPG the routine report
+      -    is stamped ON THE HOUR (F18), so the 12:00 report is the observation for
+      -    12:00 - an exact match, no offset, where at EGLC it was the 11:50 report
+      -    ten minutes earlier. Anything further off is dropped and counted (D31.7).
+      +    to, and only if it is within 15 minutes of it. At DSM the routine report is
+      +    stamped at :54 (F34), so the 17:54 report is the observation for 18:00 - a
+      +    six-minute offset, smaller than EGLC's ten. The next report, 18:54, is 54
+      +    minutes out, so the rule picks 17:54 without ambiguity. Anything further off
+      +    is dropped and counted (D35.7).
+       
+      -    'near_noon' separately records every routine report stamped between 11:00
+      -    and 12:59, with how many minutes it sits from 12:00. That is bookkeeping
+      -    for the drop reconciliation only: it changes no pairing, keeps no report
+      -    the rule drops, and drops none the rule keeps.
+      +    'near_target' separately records every routine report whose nearest whole
+      +    hour is the target hour, with how many minutes it sits from it. That is
+      +    bookkeeping for the drop reconciliation only - it is the same framing
+      +    session 15 counted F41 in - and it changes no pairing, keeps no report the
+      +    rule drops, and drops none the rule keeps.
+           """
+           series = {}
+      -    reports_at_12 = 0
+      +    reports_at_target = 0
+           reports_after_end = 0
+      @@ -19,3 +21,3 @@
+           outside_15min = 0
+      -    near_noon = {}                     # date -> [(minutes from 12:00, temp)]
+      +    near_target = {}                   # date -> [(minute offset, temp or None)]
+       
+      @@ -26,12 +28,2 @@
+                       t = datetime.strptime(r["valid"], "%Y-%m-%d %H:%M")
+      -                raw = (r.get("tmpc") or "").strip()
+      -                has_temp = raw not in ("M", "", "T", "None")
+      -
+      -                # bookkeeping only - see the docstring
+      -                if t.hour in (11, TARGET_HOUR) and t.date() <= HARD_END:
+      -                    noon = t.replace(hour=TARGET_HOUR, minute=0)
+      -                    near_noon.setdefault(t.date(), []).append(
+      -                        (int((t - noon).total_seconds() // 60),
+      -                         raw if has_temp else None))
+      -
+                       nearest = (t + timedelta(minutes=30)).replace(
+      @@ -40,3 +32,3 @@
+                           continue
+      -                reports_at_12 += 1
+      +                reports_at_target += 1
+                       if nearest.date() > HARD_END:
+      @@ -44,2 +36,6 @@
+                           continue
+      +                off = int((t - nearest).total_seconds() // 60)
+      +                raw = (r.get("tmpc") or "").strip()
+      +                near_target.setdefault(nearest.date(), []).append(
+      +                    (off, raw if raw not in ("M", "", "T", "None") else None))
+                       if abs((t - nearest).total_seconds()) > 15 * 60:
+      @@ -47,3 +43,3 @@
+                           continue
+      -                if not has_temp:
+      +                if raw in ("M", "", "T", "None"):
+                           no_temp += 1
+      @@ -52,3 +48,3 @@
+       
+      -    return (series, reports_at_12, reports_after_end, no_temp, outside_15min,
+      -            near_noon)
+      +    return (series, reports_at_target, reports_after_end, no_temp,
+      +            outside_15min, near_target)
+
+    fit_on_training() - printed labels only - D31 references become D35 references and the
+    airport is named. Every fitted quantity is computed by the same
+    lines.
+      --- session13 fit_on_training
+      +++ session18 fit_on_training
+      @@ -4,8 +4,8 @@
+           Three things are fitted here: the model, the climatology baseline and the
+      -    mean-bias figure. All three see only LFPG 2021-03-24 to 2025-07-31 (D31.5,
+      -    D31.8, SPEC 2.1c).
+      +    mean-bias figure. All three see only DSM 2021-03-24 to 2025-07-31 (D35.5,
+      +    D35.8, SPEC 2.1c).
+           """
+      -    line("PART B - fit on CDG's FULL training window only (D31.5, D31.8)")
+      +    line("PART B - fit on DSM's FULL training window only (D35.5, D35.8)")
+       
+      -    print("Everything fitted in this session is fitted here, on CDG's training")
+      +    print("Everything fitted in this session is fitted here, on DSM's training")
+           print("window, and on nothing else: the model, the climatology baseline and")
+      @@ -19,6 +19,6 @@
+                 f"({train[0]['date']} to {train[-1]['date']})")
+      -    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D31.3)")
+      +    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D35.3)")
+           print("    target         : residual, observed minus forecast (SPEC 4.2,")
+      -    print("                     D31.2). The model never predicts temperature.")
+      -    print("    settings (locked in D31.4, nothing tuned this session):")
+      +    print("                     D35.2). The model never predicts temperature.")
+      +    print("    settings (locked in D35.4, nothing tuned this session):")
+           for k, v in LGB_PARAMS.items():
+      @@ -30,3 +30,3 @@
+       
+      -    sub("the mean-bias figure (D31.8)")
+      +    sub("the mean-bias figure (D35.8)")
+           mean_bias = float(np.mean(y_tr))
+      @@ -38,9 +38,11 @@
+                 f"{mae(y_tr):.3f} degC")
+      -    print(f"    EGLC's equivalent constant was {EGLC_TEST_MEAN_BIAS:+.4f} degC "
+      -          f"(F16). Both are")
+      -    print("    near zero: there is almost no constant offset to take at either")
+      -    print("    airport, which is what F13 and F28 both found.")
+      +    print(f"    session 16's inner-training figure was {S16_MEAN_BIAS:+.4f} degC")
+      +    print(f"    (F45). EGLC's constant was {EGLC_TEST_MEAN_BIAS:+.4f} (F16) and")
+      +    print(f"    CDG's {CDG_TEST_MEAN_BIAS:+.4f} (F30). DSM's is the largest of")
+      +    print("    the three, so there is a little more constant offset to take")
+      +    print("    here than in Europe - which is what F43 found on the training")
+      +    print("    side, and it is still small beside a mean |bias| near 2 degC.")
+       
+      -    sub("the climatology baseline (D31.8, SPEC 2.1c)")
+      -    print("    seasonal average of the OBSERVED temperature at LFPG, from")
+      +    sub("the climatology baseline (D35.8, SPEC 2.1c)")
+      +    print("    seasonal average of the OBSERVED temperature at DSM, from")
+           print(f"    training-window days only, +/-{CLIM_HALF_WINDOW_DAYS:.1f} days")
+
+-- check 3e: executable code with docstrings removed --
+    A function whose text differs may still do exactly the same
+    thing. This strips the docstring and the name and compares what
+    is left, against session 13's.
+    all_days()                   IDENTICAL
+    year_fraction()              IDENTICAL
+    features()                   IDENTICAL
+    mae()                        IDENTICAL
+    describe()                   IDENTICAL
+    climatology_from_training()  IDENTICAL
+    load_forecast_target_hour()  IDENTICAL
+    load_obs_target_hour() is expected to differ here as well as in
+    text: its bookkeeping records reports by nearest hour, which is
+    what F41 counted. The pairing itself - nearest report, 15-minute
+    tolerance, drop and count - is unchanged and is visible in the
+    diff above.
+
+============================================================================
+PART A - the join at 18:00 UTC, both windows (D35.6, D35.7)
+============================================================================
+airport     : DSM - Des Moines, Iowa (SPEC 3.4, D35.1)
+target hour : 18:00 UTC (SPEC 4.1, D33, D35.1) -
+              local standard noon at Des Moines, NOT the 12:00 UTC
+              the two European airports use. 12:00 UTC there is
+              06:00 local, which is dawn (F32).
+pairing rule: the routine report nearest the hour, and only if within
+              15 minutes of it (DECISIONS D14, D35.7). At DSM the
+              routine report is stamped :54 (F34), so 18:00 UTC is
+              served by the 17:54 report - a 6-minute offset,
+              smaller than EGLC's ten and inside D14's tolerance.
+
+DSM'S TEST YEAR IS OPENED HERE, for the first and only time (D35.10).
+The two 2026 DSM raw chunk files are read for the first time in this
+project. Sessions 15, 16 and 17 never opened them.
+
+-- what was loaded --
+    forecast chunk files opened : 6 (all six, including both 2026 files)
+    forecast 18:00 rows seen    : 1,956
+    of those, after 2026-07-31 : 0 (not used, D13)
+    forecast 18:00 rows kept    : 1,956
+    observation 18:00 reports seen  : 1,956
+    of those, after 2026-07-31: 0 (not used, D13)
+    observation 18:00 reports kept  : 1,956
+
+-- observation reports rejected by the rules --
+    reports more than 15 min from the hour, dropped (D14): 0
+    reports carrying no temperature (M), dropped (2.2)   : 0
+
+-- the pairing offset actually used, every kept day --
+    offset from 18:00 UTC         all loaded days  of which test year
+    -6 minutes                              1,955                 365
+    -2 minutes                                  1                   0
+    F34 predicted -6 minutes from DSM's :54 report, and F42 found
+    -6 on 1,590 of 1,591 training days (2024-06-07 filed at 17:58).
+    days with MORE THAN ONE report inside D14's 15-minute window: 0
+    So the pairing is never ambiguous at DSM: where a day has a
+    usable observation, exactly one report qualifies and the rule
+    never has to choose between two.
+
+-- rows kept and dropped, by period --
+    period                                         days   kept   drop  no fc  null fc  no obs
+    TRAINING   2021-03-24..2025-07-31             1,591  1,571     20      0       20       0
+    TEST YEAR  2025-08-01..2026-07-31               365    365      0      0        0       0
+      (of which) inner  2021-03-24..2024-07-31    1,226  1,206     20      0       20       0
+      (of which) valid  2024-08-01..2025-07-31      365    365      0      0        0       0
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'   = the forecast series had no row for 18:00;
+             'null fc' = it had a row but the value was null;
+             'no obs'  = no usable observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2, D35.7).
+
+-- reconciliation 1: does the training window add up? (D35.5, D35.11) --
+    The training window is DSM's inner-training plus DSM's validation
+    year, which session 16 counted separately. Those published counts
+    must add up to this session's training count, or something has
+    drifted and this session must stop.
+    session 16 inner-training kept rows (F42): 1,206
+    session 16 validation kept rows (F42)    :   365
+    published total                          : 1,571
+    this session, training window kept rows  : 1,571
+    this session, of which dated <= 2024-07-31 : 1,206
+    this session, of which dated >= 2024-08-01 : 365
+    reconciles: YES
+    (1,571, not the 1,569 both European airports fitted: DSM loses
+     only the 20 shared gap days, because its observation record
+     loses no day at all in the training window - F41, F42, D35.5.)
+
+-- the F38 forecast gap, for the record --
+    gap covers 21 calendar days (2023-12-30 to 2024-01-19), all inside training
+    of those, dropped here: 20
+
+-- THE TEST-YEAR DROP COUNT (D35.7) --
+    test-year calendar days : 365
+    paired rows kept        : 365
+    days dropped            : 0
+    (no test-year day was dropped - which is what D35.7
+     predicted, and would make DSM the first airport to lose no
+     test day at all)
+    Every drop is named. Nothing was filled (SPEC 2.2).
+
+-- reconciliation 2: THE DROPS AGAINST D35.7's ADVANCE PREDICTION --
+    D35.7 wrote these numbers down in session 17, from session 15's
+    gap map, BEFORE DSM's test year was opened. A prediction made
+    before the look is a stronger check than a count made after it.
+    A count that will not reconcile is a stop signal (D35.11).
+
+    cause                                                predicted  actual  verdict
+    forecast-gap days in the test year (F38)                     0       0  MATCHES
+    days lost to an off-hour-only report (F41)                   0       0  MATCHES
+    days lost to no report near the 18:00 hour (F41)             0       0  MATCHES
+    days lost to a report in place with no temperature (F41)         0       0  MATCHES
+    paired rows expected                                       365     365  MATCHES
+
+-- shape check: first and last kept row of each window --
+    training   2021-03-24 -> 2025-07-31   1,571 rows
+    test year  2025-08-01 -> 2026-07-31   365 rows
+
+============================================================================
+PART B - fit on DSM's FULL training window only (D35.5, D35.8)
+============================================================================
+Everything fitted in this session is fitted here, on DSM's training
+window, and on nothing else: the model, the climatology baseline and
+the mean-bias figure. The test year plays no part in any fit.
+
+-- the model --
+    rows fitted on : 1,571  (2021-03-24 to 2025-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (D19, D35.3)
+    target         : residual, observed minus forecast (SPEC 4.2,
+                     D35.2). The model never predicts temperature.
+    settings (locked in D35.4, nothing tuned this session):
+      objective = regression_l1
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+
+-- the mean-bias figure (D35.8) --
+    mean training-window bias (observed - forecast): -0.2715 degC
+    over 1,571 training days. The mean-bias reference is
+    the raw forecast plus this one constant, and nothing else.
+    raw GFS MAE on the training window (in sample): 1.921 degC
+    session 16's inner-training figure was -0.2305 degC
+    (F45). EGLC's constant was -0.1479 (F16) and
+    CDG's -0.0600 (F30). DSM's is the largest of
+    the three, so there is a little more constant offset to take
+    here than in Europe - which is what F43 found on the training
+    side, and it is still small beside a mean |bias| near 2 degC.
+
+-- the climatology baseline (D35.8, SPEC 2.1c) --
+    seasonal average of the OBSERVED temperature at DSM, from
+    training-window days only, +/-7.5 days
+    measured around the circle so late December and early January
+    are neighbours.
+
+============================================================================
+PART C - THE SEALED TEST AT DSM (D35.6, D35.8, D35.9)
+============================================================================
+
+-- the common test set (every method judged on the same days) --
+    paired test rows from part A                 : 365
+    dropped: no previous-day 18:00 observation    : 0
+    days every method is scored on                : 365
+    D35.7 expected                                : 365
+    date range                                    : 2025-08-01 to 2026-07-31
+    Persistence needs yesterday's 18:00 observation, a
+    past-only value (SPEC 2.1d). For the first test day,
+    2025-08-01, 'yesterday' is 2025-07-31, which sits in the
+    training window. That is a past observation, so it is legal and
+    it is used - written down in D35.8 in advance so it is not
+    mistaken for leakage. Nothing was filled in (SPEC 2.2).
+    check: the first scored day is 2025-08-01, and its
+           persistence value is +23.9 degC, which is the
+           2025-07-31 18:00 observation (+23.9 degC).
+    climatology: training days behind each value: min 45, max 76, mean 64.6
+
+-- DSM TEST-YEAR MAE, 365 common days (2025-08-01 to 2026-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss  part of bar?
+    Raw GFS                    1.815     -0.641      2.423       10.09           YES
+    Persistence                4.003     +0.000      5.453       20.56           YES
+    Climatology                5.030     +0.172      6.393       21.81            no
+    Mean-bias reference        1.760     -0.369      2.366        9.82            no
+    ML-corrected               1.700     -0.444      2.333       12.44     the claim
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+    The bar is raw GFS and persistence only (SPEC 5.2, 5.3, D23).
+
+============================================================================
+PART D - THE VERDICT against the frozen bar (SPEC 5.3, 5.0, D35.9)
+============================================================================
+The bar, frozen before any model existed and unchanged since:
+  an airport passes if the corrected forecast has a LOWER MAE than
+  BOTH raw GFS AND persistence, over that airport's held-out test
+  year. Stage 2 is each further individual airport put to that bar,
+  one at a time; DSM is the airport in it now.
+It is qualitative. There is no numeric margin and there never will
+be one (SPEC 5.3, DECISIONS D22). Climatology and the mean-bias
+reference are reported but do not decide pass or fail (D23).
+The bar is judged once per airport, on that airport's own data
+(SPEC 5.0). EGLC's and CDG's passes do not excuse a DSM failure, and
+DSM is measured against DSM's own raw GFS and DSM's own persistence
+only. Stage 1's 16.3% and stage 2's 13.5% are not targets (D35.9).
+
+-- the two comparisons that decide it --
+    vs Raw GFS                BEATEN      1.700 against 1.815  -> +0.115 degC (+6.3%)
+    vs Persistence            BEATEN      1.700 against 4.003  -> +2.303 degC (+57.5%)
+
+    **********************************************************************
+    *  DSM PASSES.                                                      *
+    *  At Des Moines the corrected forecast beats both raw GFS and      *
+    *  persistence over the held-out test year, on mean absolute        *
+    *  error. The recipe travelled to a different region, at a          *
+    *  different target hour.                                           *
+    **********************************************************************
+
+-- the size of the margin, stated plainly (D22) --
+    D22 requires the margin to be reported prominently, so that a
+    technical pass by a hair reads as what it is.
+    margin over raw GFS     : +0.115 degC (+6.3% of raw GFS MAE)
+    margin over persistence : +2.303 degC (+57.5% of persistence MAE)
+
+    D35.8 said in advance which half of the bar binds at DSM:
+    persistence is far weaker in the continental interior (4.108 on
+    the validation year against 2.523 at CDG and 2.226 at EGLC,
+    F45), so THE RAW-GFS MARGIN IS THE ONE THAT DECIDES THE VERDICT
+    IN PRACTICE. Both halves are still required by the bar.
+    raw GFS MAE       : 1.815 degC
+    persistence MAE   : 4.003 degC  (2.21x raw GFS)
+    days the correction was closer than raw GFS : 195 of 365 (53.4%)
+    days it was further away                    : 170 of 365 (46.6%)
+    days it made no difference                  : 0
+
+-- the two informative references (not part of the bar, D23) --
+    vs Mean-bias reference    BEATEN      1.700 against 1.760  -> +0.060 degC (+3.4%)
+    vs Climatology            BEATEN      1.700 against 5.030  -> +3.329 degC (+66.2%)
+
+    The mean-bias reference is the whole forecast plus one constant -
+    the simplest correction anyone could apply, with no learning in
+    it. Beating it is what separates 'the model learned real
+    structure' from 'the model found an offset'.
+    -> It is beaten, so there is structure in the correction.
+    Note: the mean-bias reference is BETTER than raw GFS here,
+    as D35.8 said it was on DSM's validation year (F45). So a
+    small constant is worth taking at DSM, unlike at CDG - which
+    makes the margin over this reference the sharper test of
+    whether the model found structure.
+
+-- per season (SPEC 5.4 parks deeper season testing; this is context) --
+    season         days   raw GFS   ML-corr    change   persist
+    winter DJF       90     1.652     1.639    -0.013     5.160
+    spring MAM       92     1.964     2.159    +0.196     5.254
+    summer JJA       92     1.921     1.590    -0.331     2.360
+    autumn SON       91     1.718     1.408    -0.310     3.254
+    'change' is the corrected MAE minus raw GFS MAE for that season.
+    Negative means the correction helped; positive means it hurt.
+    The headline verdict above is judged on the whole year, not
+    season by season (SPEC 5.3).
+
+============================================================================
+PART E - the test number beside session 16's DSM rehearsal
+============================================================================
+A DIFFERENCE IS EXPECTED AND IS NOT A PROBLEM (D35.5). Three things
+differ between the two columns below:
+  1. a different year of weather - the validation year 2024-08-01 to
+     2025-07-31, against the test year 2025-08-01 to 2026-07-31;
+  2. a model fitted on about 30% more data - DSM's full training
+     window here (1,571 rows), DSM's inner-training only in session
+     16 (1,206 rows);
+  3. therefore climatology and the mean-bias figure differ too.
+The recipe is identical. Session 16's figures are quoted from
+notes/session-16-check-output.txt and DECISIONS F45.
+
+-- MAE, side by side (different years - context, not a like-for-like) --
+    method                  s16 valid   s18 test  difference
+    Raw GFS                     1.748      1.815      +0.067
+    Persistence                 4.108      4.003      -0.105
+    Climatology                 4.772      5.030      +0.258
+    Mean-bias reference         1.723      1.760      +0.037
+    ML-corrected                1.466      1.700      +0.234
+    days scored                   365        365
+
+    Read the raw GFS row first. It says how hard the two years were
+    for GFS in the first place, which is the context every other
+    row has to be read against.
+
+-- the margin over raw GFS, which is the comparable quantity --
+    session 16, validation year    +0.282 degC (+16.1%)
+    session 18, sealed test year   +0.115 degC (+6.3%)
+    Margins are more comparable than raw MAE figures, because they
+    divide out how hard the year was. They are still two different
+    years, so this is a sense check, not a measurement.
+
+-- per season, session 16 validation against session 18 test --
+    season        s16 raw   s16 ML  s16 chg   s18 raw   s18 ML  s18 chg
+    winter DJF      1.687    1.273   -0.414     1.652    1.639   -0.013
+    spring MAM      1.958    1.774   -0.184     1.964    2.159   +0.196
+    summer JJA      1.532    1.593   +0.061     1.921    1.590   -0.331
+    autumn SON      1.816    1.218   -0.598     1.718    1.408   -0.310
+    'chg' is the corrected MAE minus raw GFS MAE for that season.
+    F45 found DSM's losing season was SUMMER, the first airport
+    where it was not winter. This line says what the test year did.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                     gain  gain share   splits   s16 share  s16 splits
+    forecast_temp_c           5694.0       43.4%    1,809       45.0%       1,850
+    season_sin                4736.8       36.1%    1,400       37.3%       1,366
+    season_cos                2701.1       20.6%      991       17.7%         984
+    Both inputs are used and neither is ignored. Session 16 found
+    forecast temperature leading with season_sin close behind, which
+    is what an airport carrying a strong version of BOTH bias
+    structures should look like (F43, F45).
+
+-- in-sample check only, training window (NOT a result) --
+    raw GFS MAE on the training window      : 1.921 degC
+    ML-corrected MAE on the training window : 1.222 degC
+    session 16, same figure on inner-training: 1.221 degC
+    A model always looks better on the data it was fitted to, so
+    this proves nothing about performance. It is here only so the
+    number is not a surprise later.
+
+-- the correction the model actually applied over DSM's test year --
+    predicted residual added to the forecast
+      n      = 365
+      mean   = -0.197 degC
+      median = -0.323 degC
+      st dev = 1.658 degC
+      min    = -5.2 degC   max = +3.0 degC
+      5th pct = -3.11   25th = -1.23   75th = +1.05   95th = +2.36
+      mean absolute size = 1.331 degC
+    Session 16's corrections over DSM's validation year, for scale:
+    mean -0.116, st dev 1.607, range -5.3 to +3.1 degC (F45).
+    Both are much larger than Europe's (st dev 0.720 at EGLC and
+    0.751 at CDG), which is what a larger bias should look like.
+
+============================================================================
+PART F - how the recipe travelled: DSM beside EGLC (F16) and CDG (F30)
+============================================================================
+EGLC's figures are session 07's sealed test (F16) and CDG's are
+session 13's (F30), quoted from their notes files.
+
+READ THIS AS CONTEXT, NOT AS A COMPARISON OF LIKE WITH LIKE. SPEC
+5.0 judges each airport on its own data. Three cautions, all written
+down before this look:
+  1. DSM changes the LOCATION AND THE TARGET HOUR against the two
+     European airports (D33, SPEC 4.1, F46). It is not the
+     controlled, location-only comparison EGLC and CDG make between
+     themselves, and must not be quoted as if it were.
+  2. All three airports were tested on THE SAME TWELVE MONTHS,
+     because D13's split dates are shared. DSM answers the region
+     half of F30's caveat and not the year half (F46).
+  3. EGLC's 16.3% and CDG's 13.5% are not targets DSM had to reach
+     (D35.9).
+
+-- test-year MAE, each airport on its own test year --
+    method                      EGLC       CDG       DSM
+    Raw GFS                    1.242     1.396     1.815
+    Persistence                2.096     2.300     4.003
+    Climatology                2.972     3.774     5.030
+    Mean-bias reference        1.234     1.389     1.760
+    ML-corrected               1.040     1.208     1.700
+    days scored                  363       363       365
+    training rows fitted       1,569     1,569     1,571
+    All five rows are error measures, so larger is worse. Every
+    reference is worse at DSM, which is what a continental interior
+    means: there is more error there to begin with.
+
+-- the margin over each reference, all three airports --
+    vs                                     EGLC                  CDG                  DSM
+    Raw GFS                     +0.202 (+16.3%)      +0.188 (+13.5%)       +0.115 (+6.3%)
+    Persistence                 +1.056 (+50.4%)      +1.092 (+47.5%)      +2.303 (+57.5%)
+    Mean-bias reference         +0.194 (+15.7%)      +0.181 (+13.0%)       +0.060 (+3.4%)
+    Climatology                 +1.932 (+65.0%)      +2.566 (+68.0%)      +3.329 (+66.2%)
+    Margins are degC of MAE saved by the correction. Positive means
+    the correction is ahead of that reference. The PERCENTAGE is the
+    comparable figure across airports, because it divides out how
+    hard each airport's problem is.
+
+-- rehearsal margin against test margin, at all three airports --
+    airport            rehearsal margin              test margin
+    EGLC             +0.074 degC (6.0%)      +0.202 degC (16.3%)
+    CDG              +0.050 degC (3.5%)      +0.188 degC (13.5%)
+    DSM             +0.282 degC (16.1%)      +0.115 degC (+6.3%)
+    D35.10 said in advance that DSM's rehearsal margin being the
+    widest of the three was NOT a reason to expect a pass. This line
+    records what actually happened.
+
+-- per season, all three sealed tests --
+    season        EGLC chg   CDG chg   DSM raw    DSM ML   DSM chg
+    winter DJF      -0.007    +0.010     1.652     1.639    -0.013
+    spring MAM      -0.066    -0.104     1.964     2.159    +0.196
+    summer JJA      -0.618    -0.527     1.921     1.590    -0.331
+    autumn SON      -0.111    -0.134     1.718     1.408    -0.310
+    'chg' is corrected MAE minus raw GFS MAE for that season.
+    Negative is better than raw GFS; positive is worse.
+
+-- seasons where the correction helped, on the sealed test year --
+    EGLC: 4 of 4   CDG: 3 of 4   DSM: 3 of 4
+    At EGLC and CDG the season the correction hurt was winter. DSM's
+    rehearsal flipped that - winter was its second-best season and
+    summer was its only loss (F45).
+
+-- day by day, on each airport's test year --
+    EGLC: closer than raw GFS on 221 of 363 days (60.9%)
+    CDG : closer than raw GFS on 213 of 363 days (58.7%)
+    DSM : closer than raw GFS on 195 of 365 days (53.4%)
+
+-- feature importances, all three sealed tests --
+    feature             EGLC gain %   CDG gain %   DSM gain %   DSM splits
+    forecast_temp_c           51.8%        38.2%        43.4%        1,809
+    season_sin                24.5%        34.9%        36.1%        1,400
+    season_cos                23.7%        26.9%        20.6%          991
+    Gain totals depend on the data, so the shares and split counts
+    are what compare meaningfully between airports.
+
+-- one data-source fact that is STRONGER at DSM than at CDG (D35.13) --
+    Every DSM forecast chunk was pulled with models=gfs_global (D16,
+    F38, read back out of the saved .meta.txt URLs). At DSM the
+    gfs_global versus gfs_seamless comparison WAS run (F40), and it
+    gave a different answer from EGLC's: on recent dates the two
+    strings return DIFFERENT data - 259 of 264 hours differing by up
+    to 12.3 degC, from a different grid point, because Des Moines is
+    inside CONUS where gfs_seamless may prefer a higher-resolution
+    non-GFS model. So this result is genuine NCEP GFS BY
+    CONSTRUCTION of the D16 pin, and it must NOT be said that the
+    two strings agree at DSM - they do not. At LFPG the comparison
+    was never run at all (Q20), so stage 2's first airport cannot
+    make the by-construction claim stage 1 and DSM can.
+
+============================================================================
+PART G - D35.12's warm-end watch-item, described (NOT acted on)
+============================================================================
+D35.12 named this before the look, so that any inspection after the
+test is honest: the place to look was written down before anyone
+knew the result. F44 measured, on DSM's inner-training rows at
+18:00 UTC, that the forecast overshoots badly at the warm extreme
+and that the overshoot grows with the forecast.
+
+THIS IS A DESCRIPTION AND NOTHING ELSE. The method is locked, it did
+not change, and nothing here licenses a re-run or an adjustment
+(D35.10, D35.11, D35.12).
+
+-- what F44 measured on inner-training, quoted from the lock --
+    selection                    days   mean bias  mean |bias|
+    forecast >= 30 degC             114      -3.089        3.449
+    forecast >= 32 degC              57      -4.331        4.360
+    forecast >= 34 degC              37      -4.838        4.838
+    forecast >= 36 degC              21      -5.818        5.818
+    forecast >= 38 degC              13      -6.438        6.438
+    forecast >= 40 degC               5      -7.068        7.068
+    forecast range at 18:00 UTC, inner-training : -21.70 to +42.70 degC
+    observed range at 18:00 UTC, inner-training : -23.28 to +36.67 degC
+
+-- the same ranges on the FULL training window the test model was fitted on --
+    forecast range at 18:00 UTC, training window: -21.70 to +42.70 degC
+    observed range at 18:00 UTC, training window: -23.28 to +36.67 degC
+    A tree model cannot extrapolate past the range it was fitted on,
+    so on a test day hotter than anything in training it applies the
+    correction it learned at the top of that range (D35.12).
+
+-- the warm end of the TEST year, by the same thresholds --
+    selection                    days   mean bias   raw MAE    ML MAE    change
+    forecast >= 30 degC              31      -2.485     2.661     1.554    -1.107
+    forecast >= 32 degC              13      -4.395     4.395     1.913    -2.483
+    forecast >= 34 degC              11      -4.774     4.774     2.162    -2.612
+    forecast >= 36 degC               3      -6.687     6.687     2.322    -4.365
+    forecast >= 38 degC               2      -7.240     7.240     3.211    -4.029
+    forecast >= 40 degC               2      -7.240     7.240     3.211    -4.029
+    'change' is the corrected MAE minus raw GFS MAE on those days.
+    Negative means the correction helped there.
+
+    test days with a forecast above the training-window maximum (42.70): 0
+    Those are the days where the model is applying the correction it
+    learned at the very top of its training range, because it cannot
+    extrapolate past it. Counted, named, and not acted on.
+
+-- the worst single misses of the test year, for the record --
+    date          forecast  observed   raw err    ML err  correction
+    2026-04-02       21.20     11.11     10.09     12.44       +2.35
+    2026-07-27       40.50     32.22      8.28      4.25       -4.03
+    2025-08-09       31.20     23.33      7.87      5.77       -2.10
+    2025-08-18       35.40     27.78      7.62      2.39       -5.23
+    2026-07-25       34.20     26.67      7.53      3.50       -4.03
+    Listed because D35.12 asked for the warm days to be the first
+    place to look if the result behaved oddly. Looking is describing;
+    it changes nothing.
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). Nothing was
+committed. DSM's test year was opened once, the locked method ran
+once, and the number above is the result of record (D35.10).
+
+DSM: PASSED   ML-corrected test-year MAE = 1.700 degC against raw GFS 1.815 and persistence 4.003
+This output is saved at notes/session-18-check-output.txt

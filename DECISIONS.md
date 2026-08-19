@@ -4832,3 +4832,409 @@ samples from **outside** the D13 period entirely — after 2026-07-31, which D13
 does not use at all — the way session 15 already chose to do for F40's recent
 window when it noticed the same problem (F40's own note). That would cost
 nothing and would remove the question at the next airport.
+
+---
+
+## 2026-08-18 — Session 18: THE DSM SEALED-TEST RESULT (the third airport is decided)
+
+DSM's test year was opened for the first and only time. The method locked in
+D35 was executed and nothing was decided, tuned, swapped or re-run. This
+section is the third airport's result of record. The script is
+`scripts/session18_test.py` and the full real output is
+`notes/session-18-check-output.txt`.
+
+**F47. DSM PASSES. At Des Moines the corrected forecast beats both raw GFS and
+persistence on the held-out test year. The recipe travels to another
+continent — on the narrowest margin of the three airports.**
+
+The verdict first, because that is what the session was for:
+
+```
+                        MAE degC   part of bar?
+Raw GFS                    1.815   YES
+Persistence                4.003   YES
+Climatology                5.030   no  (informative)
+Mean-bias reference        1.760   no  (informative)
+ML-corrected               1.700   the claim
+
+vs Raw GFS       BEATEN   1.700 against 1.815  ->  0.115 degC better (6.3%)
+vs Persistence   BEATEN   1.700 against 4.003  ->  2.303 degC better (57.5%)
+```
+
+**DSM passes on the frozen bar (SPEC 5.3, 5.0, D35.9): the corrected forecast
+has a lower MAE than both raw GFS and persistence over 2025-08-01 to 2026-07-31
+at Des Moines.** The margin is stated prominently because D22 requires it. It is
+**0.115 degC, a 6.3% cut against raw GFS** — a clear pass, but the smallest
+margin any airport has returned on a sealed test year (EGLC 16.3%, CDG 13.5%),
+and smaller than DSM's own rehearsal margin. That reading is in F48.
+
+**D35.8 named the deciding half of the bar in advance and it was right.**
+Persistence at DSM is 4.003 degC, **2.21 times raw GFS**, because day-to-day
+swings in the continental interior are much bigger. So the raw-GFS comparison is
+what decides the verdict in practice; the persistence half is met by a wide
+margin that says little. Both halves are still required by the bar and both were
+met.
+
+The full table, all five methods on the same 365 days:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.815     -0.641      2.423       10.09
+Persistence                4.003     +0.000      5.453       20.56
+Climatology                5.030     +0.172      6.393       21.81
+Mean-bias reference        1.760     -0.369      2.366        9.82
+ML-corrected               1.700     -0.444      2.333       12.44
+```
+
+**It beats the mean-bias reference too, but only by 3.4% (1.700 against
+1.760), and that is the number to read carefully.** The mean-bias reference is
+the forecast plus one constant, with no learning in it — the comparison that
+separates "the model learned real structure" from "the model found an offset"
+(D23). At EGLC the model beat it by 15.7% and at CDG by 13.0%. At DSM it beats
+it by 3.4%.
+
+Two things explain that and both are honest:
+
+- **The constant available at DSM is the largest of the three.** The mean
+  training-window bias is **-0.2715 degC**, against -0.1479 at EGLC (F16) and
+  -0.0600 at CDG (F30). So more of the correction's win here *is* a constant
+  offset than at either European airport — as D35.8 said in advance, the
+  mean-bias reference **beats** raw GFS at DSM (1.760 against 1.815), which it
+  did at EGLC and did not at CDG.
+- **What is left over is still structure, and it is still a win.** 0.060 degC on
+  365 days, in the same direction the rehearsal found (14.9%, F45). But the
+  claim "the correction learned structure rather than an offset" is on its
+  thinnest evidence yet at this airport, and it should be quoted at 3.4%, not at
+  stage 1's 15.7%.
+
+**Day by day, not just on average.** The correction was closer to the truth than
+raw GFS on **195 of 365 days (53.4%)** and further away on 170 (46.6%), with no
+day where it made no difference. That is the lowest of the three airports —
+EGLC 60.9% (F16), CDG 58.7% (F30) — so at DSM the correction nudges the right
+way barely more often than not, and its margin comes from the *size* of the
+nudges rather than their frequency. That is the same shape session 16 saw on the
+rehearsal (55.6%, F45).
+
+**Per season, the correction helped in three of the four:**
+
+```
+season         days   raw GFS   ML-corr    change   persistence
+winter DJF       90     1.652     1.639    -0.013         5.160
+spring MAM       92     1.964     2.159    +0.196         5.254
+summer JJA       92     1.921     1.590    -0.331         2.360
+autumn SON       91     1.718     1.408    -0.310         3.254
+```
+("change" is corrected MAE minus raw GFS MAE. Negative means better than raw
+GFS.) **Spring is the season it makes worse, by 0.196 degC — and that is a
+fourth distinct answer.** Winter was the losing season at EGLC and CDG in every
+run; summer was DSM's losing season in its rehearsal (F45); spring is DSM's
+losing season on the test year. Summer and autumn carry the result, 0.331 and
+0.310 degC better. Winter is a dead heat.
+
+**The test-year drop count, and the reconciliation D35.7 existed for. Every
+line matched, and DSM is the first airport to lose no test day at all.**
+
+```
+cause                                                    predicted  actual  verdict
+forecast-gap days in the test year (F38)                         0       0  MATCHES
+days lost to an off-hour-only report (F41)                       0       0  MATCHES
+days lost to no report near the 18:00 hour (F41)                 0       0  MATCHES
+days lost to a report in place carrying no temperature (F41)     0       0  MATCHES
+paired rows expected                                           365     365  MATCHES
+days scored (nothing lost, so nothing follows)                 365     365  MATCHES
+```
+
+D35.7 wrote those numbers down in session 17, from session 15's gap map, before
+DSM's test year was opened. **A prediction made before the look is a stronger
+check than a count made after it**, and this is the third time it has paid off —
+F27 and F30 at CDG, F42 and now F47 at DSM. Nothing was filled (SPEC 2.2).
+
+Scoring loses no further day either. Persistence needs the previous day's
+observation, and DSM's observation record loses no day anywhere in five years
+(F41), so the first test day 2025-08-01 keeps its persistence value from the
+2025-07-31 18:00 observation (+23.9 degC) — a past observation, sitting in the
+training window, declared legal in advance by D35.8 so it is not mistaken for
+leakage. EGLC and CDG each scored 363 because each lost a day inside its test
+year and that cost the following day as well.
+
+**The pairing behaved exactly as F34 and F42 said it would.** Across all 1,956
+loaded days the pairing offset is **-6 minutes on 1,955 of them** (DSM's `:54`
+report serving 18:00) and -2 minutes on one — 2024-06-07, in training, which F42
+already named. **On all 365 test days the offset is -6 minutes.** No day in the
+whole loaded period has more than one report inside D14's 15-minute window, so
+the pairing is never ambiguous at DSM. Not one report was dropped for being more
+than 15 minutes out, and not one carried no temperature.
+
+**The training refit reconciles exactly**, which is the check that the harness
+has not drifted (D35.11): **1,571 rows** out of 1,591 calendar days, of which
+1,206 are dated on or before 2024-07-31 and 365 on or after 2024-08-01 — session
+16's published counts (F42) to the row. That is 1,571 and not the 1,569 both
+European airports fitted, exactly as D35.5 predicted, because DSM loses only the
+20 shared forecast-gap days.
+
+**The test number against session 16's rehearsal number.** D35.5 said in advance
+these would differ and should not be expected to match. They differ — and for
+the first time the test margin is **smaller** than the rehearsal margin:
+
+```
+method                  s16 valid   s18 test  difference
+Raw GFS                     1.748      1.815      +0.067
+Persistence                 4.108      4.003      -0.105
+Climatology                 4.772      5.030      +0.258
+Mean-bias reference         1.723      1.760      +0.037
+ML-corrected                1.466      1.700      +0.234
+days scored                   365        365
+
+margin over raw GFS:  validation +0.282 (16.1%)   test +0.115 (6.3%)
+```
+
+Season by season, that is where it went:
+
+```
+season        s16 raw   s16 ML  s16 chg   s18 raw   s18 ML  s18 chg
+winter DJF      1.687    1.273   -0.414     1.652    1.639   -0.013
+spring MAM      1.958    1.774   -0.184     1.964    2.159   +0.196
+summer JJA      1.532    1.593   +0.061     1.921    1.590   -0.331
+autumn SON      1.816    1.218   -0.598     1.718    1.408   -0.310
+```
+
+**Raw GFS was about equally hard in both years in winter and spring** (1.687
+against 1.652, 1.958 against 1.964), so the loss is not the weather being
+easier: **the correction simply stopped helping in winter and turned harmful in
+spring.** Summer moved the other way — a much harder summer for GFS (1.921
+against 1.532) and the correction turned a small loss into its second-best
+season. Autumn stayed strong at both. Net, the two gains did not cover the two
+losses, and 16.1% became 6.3%.
+
+**Feature importances, the sanity check that it used what it was meant to:**
+
+```
+feature                 gain  gain share   splits   s16 share  s16 splits
+forecast_temp_c       5694.0       43.4%    1,809       45.0%       1,850
+season_sin            4736.8       36.1%    1,400       37.3%       1,366
+season_cos            2701.1       20.6%      991         17.7%       984
+```
+Nothing is ignored and nothing dominates. Forecast temperature leads with
+`season_sin` close behind — the same picture session 16 found, and the picture
+F43 predicts for an airport carrying a strong version of both bias structures.
+Beside the other two sealed tests: EGLC 51.8 / 24.5 / 23.7, CDG 38.2 / 34.9 /
+26.9. DSM sits between them, which is what "both structures at once" looks like
+from this direction.
+
+**The corrections applied stayed the size the rehearsal made them.** Mean
+-0.197 degC, standard deviation 1.658, range -5.2 to +3.0, mean absolute size
+1.331 — against session 16's mean -0.116, standard deviation 1.607, range -5.3
+to +3.1 (F45). Both are about twice the size of Europe's nudges (standard
+deviation 0.720 at EGLC, 0.751 at CDG). The model did not start making bigger
+swings on unseen data.
+
+For the record, in-sample MAE on the training window was 1.222 degC against raw
+GFS's 1.921 (session 16's inner-training figure was 1.221). A model always looks
+better on the data it was fitted to; that figure proves nothing and is here only
+so it is not a surprise later.
+
+**Climatology ran 0.172 degC cold on DSM's test year**, against -0.074 on its
+validation year (F45). At EGLC the same figure was +0.773 and at CDG +0.918
+(F16, F30), both saying their test year was much warmer at the target hour than
+the training average for the same dates. **DSM's is close to neutral**, so the
+"warm test year" that flattered the two European airports is a western-European
+fact, not a fact about 2025-08 to 2026-07 everywhere.
+
+**D35.12's warm-end watch-item, described and NOT acted on.** D35.12 named this
+before the look precisely so that any inspection afterwards is honest. The
+answer is that the warm end is **not** where this result went wrong — it is
+where the correction did its best work:
+
+```
+selection                 test days  mean bias   raw MAE   ML MAE   change
+forecast >= 30 degC              31     -2.485     2.661    1.554   -1.107
+forecast >= 32 degC              13     -4.395     4.395    1.913   -2.483
+forecast >= 34 degC              11     -4.774     4.774    2.162   -2.612
+forecast >= 36 degC               3     -6.687     6.687    2.322   -4.365
+forecast >= 38 degC               2     -7.240     7.240    3.211   -4.029
+forecast >= 40 degC               2     -7.240     7.240    3.211   -4.029
+
+test days with a forecast above the training-window maximum (42.70 degC): 0
+forecast range at 18:00 UTC, training window : -21.70 to +42.70 degC
+observed range at 18:00 UTC, training window : -23.28 to +36.67 degC
+```
+
+The overshoot F44 measured on inner-training is present in the test year at
+about the same size, and the correction removes most of it — on the two hottest
+days it cuts a 7.24 degC error to 3.21. **No test day asked the model to
+extrapolate past its training range**, so D35.12's second worry (a tree model
+cannot extrapolate) never arose. This is a description of what happened, not a
+licence to re-run or adjust anything (D35.10, D35.11).
+
+**The five worst single misses of the test year, for the record:**
+
+```
+date          forecast  observed   raw err    ML err  correction
+2026-04-02       21.20     11.11     10.09     12.44       +2.35
+2026-07-27       40.50     32.22      8.28      4.25       -4.03
+2025-08-09       31.20     23.33      7.87      5.77       -2.10
+2025-08-18       35.40     27.78      7.62      2.39       -5.23
+2026-07-25       34.20     26.67      7.53      3.50       -4.03
+```
+
+**The correction's own worst miss is the ML column's 12.44 degC on
+2026-04-02** — a spring day where GFS was already 10.09 degC too warm and the
+model, reading a spring date, pushed it a further 2.35 degC the wrong way. That
+is the same spring loss the season table shows, seen on one day. The other four
+are warm-end days and the correction helped on every one of them. This is why
+the ML "worst miss" (12.44) is larger than raw GFS's (10.09) even though the ML
+average is better.
+
+**The lock was checked before anything ran.** PART 0 does five checks and all
+five passed: all 23 values D35 fixes matched what the script used (0
+mismatches); the model settings matched `scripts/session05_model.py` setting by
+setting (0 differ) and `scripts/session13_test.py` likewise (0 differ); of the
+fourteen shared constants **exactly one differs — TARGET_HOUR, 12 to 18** — and
+the script asserts that it is the only one, so the shared split dates, chunks,
+gap dates, climatology window and feature names are provably identical to CDG's
+sealed test; eight functions are character-identical to session 13's
+(`all_days`, `year_fraction`, `mae`, `describe`, `_literal`, `top_level`,
+`func_source`, `climatology_from_training`); and the four that differ have their
+full diffs printed. Those four are `features` (one docstring line naming the
+hour), the two loaders (the station code in the file names, the function names,
+and DSM's `:54` reporting) and `fit_on_training` (printed labels only). Every
+one of them was also compared with its docstring and name stripped out:
+`features` and `load_forecast_target_hour` are **identical in executable code**.
+So "the airport and the hour changed, and nothing else" is checked in code here,
+not argued.
+
+**What this session did not do, on purpose.**
+- **The script was run once and not repeated.** D35.10 says the method is run
+  once, so no second run was made to confirm byte-identical output, exactly as
+  sessions 07 and 13 chose. Determinism rests on the fixed seed,
+  `deterministic=True`, `n_jobs=1`, the pinned versions in `requirements.txt`
+  (D24) and the byte-identical repeat runs already recorded in F14, F15, F29 and
+  F45.
+- **Nothing was analysed beyond the locked run.** The spring loss is described
+  from the figures the single run printed. No further pass was made over the
+  test year to explain it.
+- **The deeper evaluation (SPEC 5.4) stays optional and was not opened.** D29
+  made it optional and blocking nothing. The seasonal table above is context,
+  not a significance test. The project still has no formal significance figure
+  for any airport's win — and at 6.3% on 365 days that limit now bites harder
+  than it did at 16.3%.
+- **Nothing was committed.**
+
+**One data-source fact stated correctly, per D35.13.** Every DSM forecast chunk
+was pulled with `models=gfs_global` (D16, F38, read back out of the saved
+`.meta.txt` URLs), so **this result is genuine NCEP GFS by construction of the
+D16 pin**. At DSM the `gfs_global` versus `gfs_seamless` comparison **was** run
+(F40) and the two strings **differ** on recent dates — 259 of 264 hours, by up
+to 12.3 degC, from a different grid point, because Des Moines is inside CONUS.
+So it must not be said that the two strings agree at DSM; they do not. At LFPG
+the comparison was never run at all (Q20), so stage 2's first airport still
+cannot make the by-construction claim stage 1 and DSM can.
+
+**No SPEC edit was made this session, and none was authorised.** The bar was
+judged as written. SPEC 5.0's results table still reads "DSM | pending — not yet
+run | —", and SPEC 1, 3.4 and 6 still describe DSM as in progress; those are now
+out of date and are flagged for the owner in this session's consistency check
+rather than changed here.
+
+---
+
+**F48. What three passes now establish, and what they still do not. The most
+important number in F47 is the one that went DOWN.**
+
+This is written separately because it is easy to over-claim three passes, and
+because the direction of DSM's test margin is genuinely new information.
+
+**1. The region axis of F30's caveat is now answered.** F30 recorded that EGLC
+and LFPG are 328 km apart in one weather region, so two wins leant on one
+western-European weather year seen twice. Des Moines is 6,754 km away in the
+continental interior, with a bias of a different shape (F43), a different
+seasonal pattern (F45, F47) and roughly double the persistence error. **The same
+recipe, unchanged, wins there too.** That is genuinely independent evidence that
+the method is not a western-European artefact.
+
+**2. The year axis is still not answered, and cannot be by this result.** D13's
+split dates are shared by every airport, so DSM's test year is **the same twelve
+months** EGLC's and CDG's were. Three passes on one calendar year are not three
+independent draws of weather. F46 wrote this down before the look and it stands
+unchanged.
+
+**3. DSM is not the controlled comparison EGLC and CDG make between them.** DSM
+changed the location **and** the target hour (D33, SPEC 4.1, D35, F46). A DSM
+result answers "does the recipe travel to a different region at a comparable
+local time". It must not be quoted as if only the location had moved.
+
+**4. The new information: at DSM the test margin is SMALLER than the rehearsal
+margin, and that is the first time.**
+
+```
+airport   rehearsal margin over raw GFS   test margin over raw GFS
+EGLC              +0.074 degC (6.0%)          +0.202 degC (16.3%)
+CDG               +0.050 degC (3.5%)          +0.188 degC (13.5%)
+DSM               +0.282 degC (16.1%)         +0.115 degC (6.3%)
+```
+
+F16 and F30 both read their rise the same way: most of the gap was the weather,
+not the model — the shared test year had a hard summer and an easy winter for
+GFS in western Europe, and that flattered a correction that works best in
+summer. **DSM is the test of that reading, and it supports it.** The same twelve
+months at Des Moines were not a year that suited the correction: winter went
+from a 0.414 degC gain to nothing, spring flipped from a gain to a 0.196 degC
+loss, and only summer improved. Climatology's near-neutral bias at DSM (+0.172
+against +0.773 and +0.918 in Europe) says the same thing from another direction
+— that test year was warm in Europe, not everywhere.
+
+**So the honest summary across all three airports is: the method wins on both
+years at all three places, by 6.0%, 3.5% and 16.1% on the three rehearsal years
+and by 16.3%, 13.5% and 6.3% on the one shared test year — and the spread inside
+each of those two groups is mostly what the weather did.** The range across six
+airport-years is roughly 3% to 16%. That is the size of win this method
+delivers; anyone quoting 16.3% alone is quoting the best of six.
+
+**5. One claim is weaker at DSM than at either European airport.** The margin
+over the mean-bias reference — the evidence that the correction learned
+structure rather than a constant — is 3.4% at DSM against 15.7% at EGLC and
+13.0% at CDG, and DSM has the largest constant available (-0.2715 degC). The
+claim still holds in the same direction at all three airports and it held on
+DSM's rehearsal by 14.9%. But it is thinner here, and the honest statement is
+that at DSM most of the win is the constant plus a modest amount of structure,
+where in Europe almost all of it was structure.
+
+**6. Nothing here re-opens EGLC's or CDG's results.** SPEC 5.0 judges each
+airport once on its own data. F16 and F30 stand as written; F47 stands beside
+them, not above or below them.
+
+---
+
+## 2026-08-18 — Open question raised by session 18 (not acted on)
+
+A third airport has passed, which opens a choice that is the owner's to make. It
+is recorded here and was not acted on. This mirrors Q17, raised when stage 1
+passed, and Q24, raised when stage 2's first airport passed.
+
+**Q30. Three airports have now passed on the same twelve months — what opens
+next?** Three branches, and the owner picks. Nothing about any of them was
+written or started.
+- **More airports.** Stage 2 is the shape of the work and holds as many airports
+  as the owner opens (D34, SPEC 6). D32's plan was "temperate and well-behaved
+  first, then ramp up difficulty", and DSM was the easy off-continent step. A
+  harder airport — coastal, mountainous, tropical — would test the method where
+  it has not been tested. Each one is the same five steps: verify on contact,
+  pull and map, join and rehearse, lock, test once.
+- **A different test year — the remaining half of the F30 caveat.** F46 and F48
+  both record that D13's dates are shared, so all three passes rest on one
+  calendar year. Answering that means testing on different twelve months, which
+  would need D13 revisited deliberately and a written decision about what a
+  second test year means for airports whose single authorised look is already
+  spent (D21.10, D31.10, D35.10). **This is the axis no result so far touches**,
+  and it is the one F48 names as still open.
+- **Stage 3 — pooling.** SPEC 6's next stage combines airports into one model
+  with location-describing features. It inherits the solar-standard-noon target
+  hour already in use (SPEC 4.1, D27, D33). **Stage 3 is not opened and nothing
+  about it has been written or started.**
+
+**Two things worth deciding alongside whichever branch is chosen, neither of
+them a separate question.** First, all three airports' single looks are now
+spent, so 2025-08-01 to 2026-07-31 is no longer a held-out year for this method
+at any of them; anything measured on it from here on is measured on data the
+method has been compared against once already. Second, F48's range — 3% to 16%
+across six airport-years — is the figure to carry forward, not stage 1's 16.3%.
