@@ -1,0 +1,38 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_BZN_2024-06-01_2024-06-04_routine-localtime.csv
+purpose     : session 25 - part B6 - timezone cross-check. The same rows requested in the station's own local timezone, so the UTC request can be shown to really be UTC rather than local time wearing a UTC label.
+pulled at   : 2026-08-19 14:17:05 BST (2026-08-19 13:17:05 UTC)
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python urllib
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=BZN&network=MT_ASOS&data=tmpc&data=dwpc&year1=2024&month1=6&day1=1&year2=2024&month2=6&day2=4&tz=America%2FDenver&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = BZN
+  network     = MT_ASOS
+  data        = tmpc, dwpc
+  date range  = 2024-06-01 to 2024-06-04. IEM treats its end date as
+                exclusive, so the last row is the day before 2024-06-04.
+  tz          = America/Denver
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M   (missing values come back as the letter M)
+  trace       = T
+  report_type = 3   (routine METAR only - the scheduled report)
+
+notes:
+- This file is a CHECK, not part of the dataset. Every real
+  request in this project uses tz=UTC. This one asks for
+  the station's own local timezone so the offset can be
+  measured directly.
+- tmpc is air temperature in degrees Celsius, the same field and the
+  same units the other four airports use. No unit conversion
+  happens anywhere in this project.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).
+- HTTP status 200.
+- Q29 fix: this window is deliberately outside the sealed test year
+  (2025-08-01 to 2026-07-31, D13).

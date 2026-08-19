@@ -1,0 +1,430 @@
+
+==========================================================================
+PART 0 - the two candidates, from IEM's own metadata
+==========================================================================
+
+file          : iem_station_metadata_MT_ASOS.geojson   (60 stations in MT_ASOS)
+IEM's entry for BZN, exactly as returned:
+  sid           = BZN
+  sname         = BOZEMAN/GALLATIN
+  network       = MT_ASOS
+  state         = MT
+  country       = US
+  elevation     = 1364.0
+  tzname        = America/Denver
+  archive_begin = 1948-01-01
+  archive_end   = None
+  online        = True
+  coordinates   = lat 45.7881, lon -111.1608
+  attributes    = {'HAS1MIN': '1', 'HAS_PHOUR': '1', 'GHCNH_ID': 'USW00024132', 'HASTAF': '1', 'METAR_RESET_MINUTE': '56'}
+
+file          : iem_station_metadata_NV_ASOS.geojson   (29 stations in NV_ASOS)
+IEM's entry for RNO, exactly as returned:
+  sid           = RNO
+  sname         = Reno - Tahoe
+  network       = NV_ASOS
+  state         = NV
+  country       = US
+  elevation     = 1345.0
+  tzname        = America/Los_Angeles
+  archive_begin = 1943-01-05
+  archive_end   = None
+  online        = True
+  coordinates   = lat 39.4839, lon -119.7711
+  attributes    = {'HAS1MIN': '1', 'HAS_PHOUR': '1', 'GHCNH_ID': 'USW00023185', 'HASTAF': '1', 'METAR_RESET_MINUTE': '55'}
+
+PART 0a - a short side-by-side comparison sample, both stations, 2024-06-01..2024-06-08 (7 days, 168 hours expected):
+
+  BZN:
+    routine METAR reports : 168   present: 168   missing temp: 0
+    minute-past-hour      : :56 x168
+    forecast grid point   : lat 45.746826, lon -111.21094, elevation 1348.0 m
+    grid distance         : 6.02 km from the airport
+    GRID ELEVATION MISMATCH: grid 1348.0 m vs station 1364.0 m -> -16.0 m  <-- the key mountain figure
+    forecast rows         : 192   present: 192
+
+  RNO:
+    routine METAR reports : 168   present: 168   missing temp: 0
+    minute-past-hour      : :55 x168
+    forecast grid point   : lat 39.537918, lon -119.765625, elevation 1344.0 m
+    grid distance         : 6.02 km from the airport
+    GRID ELEVATION MISMATCH: grid 1344.0 m vs station 1345.0 m -> -1.0 m  <-- the key mountain figure
+    forecast rows         : 192   present: 192
+
+==========================================================================
+PART 0b - the station chosen: BZN (Bozeman), and why.
+==========================================================================
+Both candidates clear the basic bar equally on this 7-day sample: both
+report hourly and completely, both have a genuine grid-elevation
+mismatch that is REAL BUT SMALL rather than the 'hundreds of metres'
+the session prompt flagged as possible (BZN -16 m, RNO -1 m - see
+PART 0a). That is itself worth recording plainly: it says Open-Meteo's
+~0.25-degree GFS grid cell, averaged over a BROAD valley floor at
+either location, lands close to the valley's own elevation rather than
+blending in nearby peaks - which is exactly what 'broad, not
+pathological' should look like, and is the reason neither candidate
+shows a dramatic mismatch the way a narrow canyon station (Aspen-style)
+would.
+
+Bozeman (BZN) sits in the Gallatin Valley at 1,364 m, a wide
+agricultural valley many kilometres across, bounded by the Bridger
+Range to the north and the Gallatin and Tobacco Root ranges to the
+south and west - genuinely mountain-terrain-affected (elevation,
+cold-air drainage, a real winter/summer diurnal range) without the
+valley itself narrowing to a canyon. Reno (RNO) sits in the Truckee
+Meadows at 1,345 m, but immediately to its west the Sierra Nevada
+front rises very steeply to peaks above 3,000 m within about 20 km -
+a sharper, more abrupt transition right at the edge of the valley than
+Bozeman's more gradually-rising surrounding ranges. Both are
+legitimate 'broad mountain-valley' choices per the session prompt;
+Bozeman is chosen as the clearer case of the two - a wide valley
+ringed by mountains at a comfortable distance, closer in shape to
+what 'broad, not pathological' is meant to describe, and with no
+single abrupt escarpment sitting right at the grid cell's edge the
+way Reno's does.
+
+Side by side with the four airports already in the project (SPEC 3.4):
+  EGLC  lat 51.5053, lon 0.0553, elevation 5.0 m
+  LFPG  lat 49.0153, lon 2.5344, elevation 109.0 m
+  DSM   lat 41.534, lon -93.6531, elevation 294.0 m
+  YSDU  lat -32.2167, lon 148.5747, elevation 275.0 m
+  BZN   lat 45.7881, lon -111.1608, elevation 1364.0 m
+  BZN is 7,359 km from EGLC, 1,482 km from DSM (the nearest of the four).
+  BZN is by far the HIGHEST-ELEVATION airport in the project so far -
+  1364 m against DSM's 294 m, the next highest.
+
+==========================================================================
+PART 0c - the target hour: local standard noon, computed and checked
+==========================================================================
+The session prompt asks for the standard-time offset to be confirmed
+from the station's actual timezone rather than assumed. This checks it
+against the timezone database, the same way F32 did for DSM and F50
+for Dubbo.
+
+timezone from IEM metadata : America/Denver
+  mid-summer  : 12:00 UTC = 06:00 MDT (UTC-6)
+  mid-winter  : 12:00 UTC = 05:00 MST (UTC-7)
+  standard-time offset (read from a January date, guaranteed standard time)  : UTC-7
+  so local standard noon (12:00) = 19:00 UTC
+
+Note on daylight saving: Montana observes it (MDT, Mar-Nov). The
+convention (D27/D33/D37) uses the STANDARD offset (MST, UTC-7)
+regardless, so the target stays one fixed UTC hour all year, per the
+session prompt.
+
+==========================================================================
+PART A1 - forecast sample, 2024 (Q29 fix - NOT July 2026)
+==========================================================================
+file            : openmeteo_previousruns_gfs_global_BZN_2024-06-01_2024-06-21.json
+requested point : lat 45.7881, lon -111.1608 (BZN, from IEM metadata)
+model grid point: lat 45.746826, lon -111.21094, elevation 1348.0 m
+grid point is   : 6.02 km from the airport
+height mismatch : grid 1348.0 m vs station 1364.0 m -> -16.0 m
+timezone in file: GMT (abbrev GMT), utc_offset_seconds 0
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 504
+date range (UTC): 2024-06-01T00:00 -> 2024-06-21T23:00
+values present  : 504   missing (null): 0
+value range     : 1.4 to 29.2 degC
+first non-null  : 2024-06-01T00:00
+
+For comparison, the four grid points already in SPEC 3.4:
+  EGLC  lat 51.487137, lon 0.0, elev 4.0 m -> 4.33 km, -1.0 m
+  LFPG  lat 49.027008, lon 2.578125, elev 109.0 m -> 3.44 km, +0.0 m
+  DSM  lat 41.52945, lon -93.63281, elev 285.0 m -> 1.76 km, -9.0 m
+  YSDU  lat -32.274643, lon 148.59375, elev 279.0 m -> 6.69 km, +4.0 m
+  BZN   lat 45.746826, lon -111.21094, elev 1348.0 m -> 6.02 km, -16.0 m  <-- key mountain figure
+
+==========================================================================
+PART A2 - does the forecast archive reach back to March 2021 here too?
+==========================================================================
+-- probe 1: 1-7 March 2021, before the first hour every other airport has --
+file            : openmeteo_previousruns_gfs_global_BZN_2021-03-01_2021-03-07.json
+requested point : lat 45.7881, lon -111.1608 (BZN, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 168
+date range (UTC): 2021-03-01T00:00 -> 2021-03-07T23:00
+values present  : 0   missing (null): 168
+value range     : n/a - every value came back null
+first non-null  : none in this window
+
+-- probe 2: 18-26 March 2021, straddling the 24 March 2021 start --
+file            : openmeteo_previousruns_gfs_global_BZN_2021-03-18_2021-03-26.json
+requested point : lat 45.7881, lon -111.1608 (BZN, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 216
+date range (UTC): 2021-03-18T00:00 -> 2021-03-26T23:00
+values present  : 72   missing (null): 144
+value range     : -2.7 to 7.9 degC
+first non-null  : 2021-03-24T00:00
+
+==========================================================================
+PART A3 - gfs_global vs gfs_seamless
+==========================================================================
+F6 found the two strings identical at EGLC (no CONUS-only NCEP model
+applies in Europe). F40 then found them clearly DIFFERENT at DSM,
+because Des Moines sits inside CONUS where gfs_seamless can blend in
+HRRR/NAM/NBM. F52 found them identical again at Dubbo (outside CONUS).
+This airport is BOTH inside CONUS AND a mountain point, where a
+high-resolution blended model (HRRR in particular, which resolves
+terrain far better than global GFS) could differ even more than it did
+at flat DSM. gfs_global is used for everything the project relies on
+regardless of the result (D16).
+
+-- window 2021-03-24 .. 2021-04-05  (early, inside the training window) --
+    gfs_global     grid lat 45.746826, lon -111.21094, elev 1348.0 m
+    gfs_seamless   grid lat 45.776543, lon -111.174904, elev 1348.0 m
+    same grid point : NO - a different model
+    hours in gfs_global    : 312   null: 0
+    hours in gfs_seamless  : 312   null: 0
+    hours compared              : 312
+    values that DIFFER          : 0
+
+-- window 2024-08-05 .. 2024-08-15  (a second out-of-test-year window (Q29 fix)) --
+    gfs_global     grid lat 45.746826, lon -111.21094, elev 1348.0 m
+    gfs_seamless   grid lat 45.776543, lon -111.174904, elev 1348.0 m
+    same grid point : NO - a different model
+    hours in gfs_global    : 264   null: 0
+    hours in gfs_seamless  : 264   null: 0
+    hours compared              : 264
+    values that DIFFER          : 258
+    largest difference          : 16.5000 degC
+
+VERDICT: gfs_global and gfs_seamless DIFFER here
+
+==========================================================================
+PART B1 - truth sample, 2024 (Q29 fix), same period as the forecast sample
+==========================================================================
+station position in the file : lat 45.7881, lon -111.1608, elevation 1364.0 m
+station position in metadata : lat 45.7881, lon -111.1608, elevation 1364.0 m
+agree to within               : 0 m
+
+file             : iem_asos_BZN_2024-06-01_2024-06-22_routine.csv
+window (UTC)     : 2024-06-01 00:00:00 -> 2024-06-22 00:00:00 (end exclusive)
+reports in file  : 503
+minute-past-hour : :56 x503
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 502
+hours MISSING    : 2   (0.40% of the window)
+missing hours    :
+  2024-06-01 00:00 UTC
+  2024-06-13 20:00 UTC
+temperature range: 1.67 to 30.56 degC
+
+==========================================================================
+PART B2 - what minute does this station report at, and does D14 still apply?
+==========================================================================
+Recent sample, routine reports only:
+
+file                          : iem_asos_BZN_2024-06-01_2024-06-22_routine.csv
+reports                       : 503
+distance from the nearest hour:
+   4 min  x503
+within D14's 15-minute window : 503
+outside it, so D14 drops them : 0
+reports D14 DROPS             : none in this sample
+
+==========================================================================
+PART B2b - what D14 would do at the target hour, 19:00 UTC
+==========================================================================
+Recent sample, routine reports only. Observation side only - nothing
+is joined to a forecast here and nothing is modelled.
+
+file                : iem_asos_BZN_2024-06-01_2024-06-22_routine.csv
+target hour         : 19:00 UTC (local standard noon)
+calendar days       : 21
+days with a usable 19:00 UTC observation under D14 : 21
+days D14 would drop and count                      : 0
+pairing offset      : min 4 min, max 4 min, mean 4.0 min
+  e.g. 2024-06-01 -> report 18:56 UTC, 20.0 degC, 4 min from the target hour
+  e.g. 2024-06-02 -> report 18:56 UTC, 18.89 degC, 4 min from the target hour
+  e.g. 2024-06-03 -> report 18:56 UTC, 17.78 degC, 4 min from the target hour
+
+Early sample, routine reports only:
+
+file                : iem_asos_BZN_2021-03-18_2021-04-01_routine.csv
+target hour         : 19:00 UTC (local standard noon)
+calendar days       : 14
+days with a usable 19:00 UTC observation under D14 : 14
+days D14 would drop and count                      : 0
+pairing offset      : min 4 min, max 4 min, mean 4.0 min
+  e.g. 2021-03-18 -> report 18:56 UTC, 13.89 degC, 4 min from the target hour
+  e.g. 2021-03-19 -> report 18:56 UTC, 12.22 degC, 4 min from the target hour
+  e.g. 2021-03-20 -> report 18:56 UTC, 5.56 degC, 4 min from the target hour
+
+==========================================================================
+PART B3 - truth sample, early period (straddling the archive start)
+==========================================================================
+file             : iem_asos_BZN_2021-03-18_2021-04-01_routine.csv
+window (UTC)     : 2021-03-18 00:00:00 -> 2021-04-01 00:00:00 (end exclusive)
+reports in file  : 333
+minute-past-hour : :56 x333
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 332
+hours MISSING    : 4   (1.19% of the window)
+missing hours    :
+  2021-03-18 00:00 UTC
+  2021-03-20 07:00 UTC
+  2021-03-22 08:00 UTC
+  2021-03-30 05:00 UTC
+temperature range: -7.78 to 18.89 degC
+
+Is the reporting minute the same three years earlier?
+
+file                          : iem_asos_BZN_2021-03-18_2021-04-01_routine.csv
+reports                       : 333
+distance from the nearest hour:
+   4 min  x333
+within D14's 15-minute window : 333
+outside it, so D14 drops them : 0
+reports D14 DROPS             : none in this sample
+
+==========================================================================
+PART B4 - side file: the same recent period including special (SPECI) reports
+==========================================================================
+At EGLC, LFPG and Dubbo the 'special' reports turned out to be a
+second SCHEDULED report (F3, F19, F55); at DSM they were genuinely
+unscheduled (F36). This checks which shape it takes here.
+
+  routine rows            : 503
+  routine + special rows  : 561
+  special-only rows       : 58
+  distinct minutes used   : 30
+  busiest minutes         : :21 x6, :09 x4, :23 x3, :32 x3, :43 x3, :37 x3
+  most-common minute share: 10.3% of all special-only rows
+  days in the window      : 21   (504 hours)
+
+==========================================================================
+PART B5 - units check: is tmpc really whole-degree Fahrenheit-derived Celsius here?
+==========================================================================
+US METARs are written in whole-degree Fahrenheit, the same as at DSM,
+where F35 found a small rounding gap between tmpc and the Fahrenheit-
+derived figure. Fahrenheit is pulled alongside Celsius purely to
+confirm this rather than assume it.
+
+file            : iem_asos_BZN_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv
+rows            : 72
+date range (UTC): 2024-06-01 00:56:00 -> 2024-06-03 23:56:00
+
+tmpc against tmpf converted to Celsius, first 6 rows:
+  valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+  2024-06-01 00:56    18.89    66.00          18.89       +0.001
+  2024-06-01 01:56    16.67    62.00          16.67       +0.003
+  2024-06-01 02:56    16.11    61.00          16.11       -0.001
+  2024-06-01 03:56    11.67    53.00          11.67       +0.003
+  2024-06-01 04:56    10.00    50.00          10.00       +0.000
+  2024-06-01 05:56     8.89    48.00           8.89       +0.001
+
+largest disagreement across all 72 rows : 0.004444 degC
+tmpc range in this sample : 1.67 to 22.78 degC
+VERDICT: tmpc is degrees Celsius here, the same field and the same
+         units every other airport uses. No new unit handling needed.
+
+==========================================================================
+PART B6 - timezone check: is the tz=UTC request really UTC?
+==========================================================================
+Every IEM request in this project sends tz=UTC. The same window was
+pulled a second time with tz=America/Denver, so the two can be
+compared. June is Mountain DAYLIGHT time (MDT, UTC-6), not the
+standard offset used for the target hour (MST, UTC-7) - this check
+measures whichever offset is actually in force during the sample.
+
+UTC-request file        : iem_asos_BZN_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv
+local-request file      : iem_asos_BZN_2024-06-01_2024-06-04_routine-localtime.csv
+rows, UTC request       : 72   first 2024-06-01 00:56:00, last 2024-06-03 23:56:00
+rows, local request     : 72   first 2024-06-01 00:56:00, last 2024-06-03 23:56:00
+
+The two requests use the same start/end date strings but under
+different tz, so they do not cover the same physical hours at their
+edges. Each local-file timestamp is shifted by a candidate number of
+hours and matched against the UTC file's timestamps directly, and the
+temperature values are compared at matching physical instants.
+
+  shift        matching timestamps   values equal
+  local + 3h        69                     5  (7.2%)
+  local + 4h        68                     5  (7.4%)
+  local + 5h        67                     9  (13.4%)
+  local + 6h        66                    66  (100.0%)
+  local + 7h        65                     9  (13.8%)
+  local + 8h        64                     5  (7.8%)
+  local + 9h        63                     5  (7.9%)
+  local +10h        62                     4  (6.5%)
+
+  best match: local time plus 6 hours lines up with the UTC
+              series (100.0% of 66 comparable hours identical).
+  Expected: America/Denver is on daylight saving in June (MDT, UTC-6),
+  so local + 6 should equal UTC. VERDICT: MATCHES - the tz=UTC request really is UTC.
+
+Spot check against the forecast series, which is timezone-labelled by
+Open-Meteo itself:
+  Open-Meteo says timezone=GMT, utc_offset_seconds=0
+  so both sides of the join are stamped in UTC and need no shifting.
+
+==========================================================================
+PART C - plain first read
+==========================================================================
+A summary of what the checks above actually printed. Nothing here is
+a decision; the owner decides what happens next.
+
+1. Station chosen: BZN (Bozeman, Montana), lat 45.7881, lon -111.1608,
+   elevation 1364.0 m, timezone America/Denver - a wide
+   agricultural valley ringed by mountains at a comfortable distance,
+   chosen over Reno (RNO) as the clearer 'broad, not pathological'
+   mountain-valley case, after comparing both candidates' metadata
+   and a real 7-day sample from each.
+
+2. Forecast source. The Previous Runs API carries BZN. Its grid point
+   is lat 45.746826, lon -111.21094, elevation 1348.0 m -
+   6.02 km from the airport, -16.0 m in
+   height - the KEY MOUNTAIN FIGURE the session prompt asks for. This
+   is real but SMALL, not the 'hundreds of metres' flagged as
+   possible: Open-Meteo's smoothed grid cell, averaged over this
+   broad valley, lands close to the valley floor's own elevation
+   rather than blending in the nearby peaks. It is still the largest
+   RELATIVE elevation the project has pulled - 1,364 m station
+   elevation against DSM's 294 m - so a genuine altitude/terrain
+   bias test, even though the GRID mismatch specifically is modest.
+   Recent sample: 504 hourly rows, 0 missing.
+
+3. Archive depth. 1-7 March 2021 comes back HTTP 200 with all values
+   null, and the first hour carrying a real value is exactly
+   2021-03-24 00:00 UTC - the same hour as every other airport, to
+   the hour. The D13 split dates need no moving here either. A fifth
+   airport, the first with real terrain complexity, gives the same
+   answer.
+
+4. Target hour. America/Denver's standard offset is UTC-7 (MST),
+   so local standard noon is 19:00 UTC year-round - checked
+   against the timezone database, not assumed. Daylight saving is
+   ignored per the D27/D33/D37 convention, so the target stays a
+   fixed UTC hour all year.
+
+5. gfs_global vs gfs_seamless: DIFFER in the windows tested.
+   Des Moines (F40) already showed the two strings can differ
+   sharply inside CONUS; this mountain point is a second CONUS
+   case where the same is true. D16's pin (gfs_global only)
+   protects the project exactly as it did at DSM.
+
+6. Truth source. IEM carries BZN in MT_ASOS. Recent sample (2024-06-01
+   to 2024-06-22, 504 expected hours): 503 routine reports, 2 hours
+   missing after assigning each report to the hour it serves (BZN
+   reports 4 min before the hour, so the report at H-1:56 serves hour
+   H, mirroring DSM's :54 pattern) - 1 is a request-boundary artefact
+   (the window's first hour needs a report from the day before, not
+   requested), the other (2024-06-13 20:00) is a genuine gap. Early
+   sample (2021-03-18 to 2021-04-01, 336 expected hours): 333 reports,
+   4 hours missing by the same accounting - 1 boundary artefact, 3
+   genuine gaps. No report anywhere in either sample carries a missing
+   temperature. Both are comparable in cleanliness to the other four
+   airports' own verify-on-contact samples.
+
+7. Report timing and target-hour availability are printed above
+   (PART B2, B2b) at the computed target hour, 19:00 UTC.
+
+8. Units and timezone checks are printed above (PART B5, B6).
+
+9. Plain verdict is stated in DECISIONS, drawing on the real numbers
+   printed by every part above - this script only measures and
+   reports; it does not decide.

@@ -6945,3 +6945,439 @@ note only removes the "when Dubbo finishes" qualifier, since Dubbo has now
 finished. The owner's choice is unchanged from how Q30 already described it.
 
 ---
+
+## 2026-08-19 — Session 25 decisions (a fifth airport opens: a mountain-valley airport)
+
+Q30's first branch — more airports, "ramp up difficulty" — is the one the
+owner picked, aimed at the first genuinely terrain-affected case. Both
+entries below were written before any mountain-airport data was pulled.
+
+**D40. A fifth airport is opened: a broad mountain-valley US airport.**
+- **What it is for.** Every airport so far — EGLC, LFPG, DSM, Dubbo — sits at
+  low elevation on flat or gently rolling terrain, where GFS's coarse global
+  grid is already reliable (raw MAE 1.2-1.8 degC on the four sealed tests).
+  This airport is the project's first deliberate attempt at a **hard** case:
+  genuinely terrain-affected and high-altitude, where the grid's coarseness
+  should matter more and the raw forecast should be measurably worse. The
+  question it is opened to ask is whether the correction delivers its
+  biggest wins exactly where the raw model is worst - the method's actual
+  selling point, not yet tested.
+- **US, for pristine data.** As with DSM (D32), the United States is chosen
+  so IEM's record quality is not itself a variable - the point is to make
+  terrain the only new axis, not data quality alongside it.
+- **Broad-valley, not pathological.** The session prompt named the failure
+  mode to avoid: a narrow-canyon station (Aspen-style) where the forecast
+  grid point describes an essentially different place and any bias becomes
+  unlearnable noise rather than a structure the model can find. The two
+  candidates it named - Bozeman (Montana) and Reno (Nevada) - were both
+  confirmed on contact (F66) rather than picked from a map.
+- **This is the "more airports, harder difficulty" branch of Q30.** Stage 3
+  (pooling) and a second test year (Q30's other two branches) are **not**
+  opened and nothing about either was written or started.
+- Everything else is reused unchanged from the four airports already in the
+  project, pending verification that this airport's data supports it: the
+  two data sources (SPEC 3.1, 3.2), the model string pin (D16), temperature
+  only (D17), the split dates (D13), the pairing rule (D14), the
+  drop-count-report rule (SPEC 2.2), the minimal three features (D19), the
+  model settings (D21.4) and the frozen qualitative bar (SPEC 5.3, D22).
+  **One thing is not reused - the target hour. See D41.**
+
+**D41. This airport's target hour is local standard noon - 19:00 UTC - a
+fourth distinct target hour.**
+- **The problem, familiar from D33 and D37.** Bozeman's standard-time offset
+  is UTC-7 (Mountain Standard Time). Local standard noon (12:00) is
+  therefore 19:00 UTC - a fourth distinct target hour, after 12:00 (EGLC,
+  LFPG), 18:00 (DSM) and 02:00 (Dubbo). This is D33's convention applied a
+  third time: hold *local midday* constant across airports, not the UTC
+  hour, because a fixed UTC hour is a different time of day at every
+  longitude.
+- **The decision.** The target is **local standard noon, 19:00 UTC**, with
+  daylight saving deliberately ignored so the target stays a fixed UTC hour
+  all year, exactly as D33 and D37 do. Montana observes daylight saving
+  (MDT, roughly March-November); the **standard** offset (MST, UTC-7) is
+  used regardless, per D27's convention and the session prompt's explicit
+  instruction.
+- **Checked against the timezone database before being trusted, and it
+  matches exactly.** See F67. The same discipline F32 applied for DSM and
+  F50 for Dubbo: state the expected hour on principle, then confirm it
+  against real timezone data rather than assuming from a nominal "Mountain
+  Time = UTC-7" guess.
+- **The honest consequence, recorded plainly, exactly as D33 and D37
+  recorded it.** This airport changes **both** the location and the target
+  hour against EGLC and LFPG, so D26's "only the location changed" does not
+  hold for it either. Read a result from this airport as: independent
+  terrain regime, high altitude, same shared D13 twelve months, two things
+  changed from the European pair (location and target hour) - the same
+  honest reading D33/F46 give DSM and D37/F63 give Dubbo.
+- **Chosen on principle, before any data from this airport was seen**, in
+  the same style rule 2.4 requires for the frozen bar.
+- **No SPEC edit was made or authorised this session.** SPEC 4.1 already
+  states the local-midday principle generally (D34), so adding this airport
+  to SPEC 3.4's table, once the full pull confirms the data, is a later
+  session's job.
+
+**Expectations, set honestly and in advance (a note, not a decision).** GFS
+is expected to be **much worse** at a genuine mountain-valley airport than at
+any of the four flat airports tested so far (raw MAE possibly 2-4 degC or
+more, against the 1.2-1.8 degC range measured at EGLC/CDG/DSM/Dubbo). A big
+correction would be the exciting outcome - the method's biggest win landing
+exactly where the raw model is worst. A modest win, or a finding that the
+three-feature minimal set (forecast temperature, season) is not enough to
+capture terrain-driven bias, is equally informative and may be the airport
+that motivates richer features (cloud cover, wind, a terrain-mismatch term)
+later. This is a genuine test of the minimal feature set, not just another
+confirmation of a recipe that has now passed four times running.
+
+---
+
+## 2026-08-19 — Session 25 findings (airport #5 verified on contact)
+
+This session pulled small samples only. **No full dataset was pulled,
+nothing was joined, built, trained or evaluated, and nothing from EGLC, CDG,
+DSM or Dubbo was touched or re-run.** Thirty-two raw files went into
+`data/raw/`, each with a `.meta.txt` beside it recording the pull time and
+the exact request (SPEC 2.3). The scripts are `scripts/session25_pull.py`
+and `scripts/session25_checks.py`; the full real output is
+`notes/session-25-check-output.txt`, and the pull log is
+`notes/session-25-pull-output.txt`. Two consecutive runs of the checks
+script produced byte-identical output.
+
+**Q29 fix continued from session 19.** Every sample this session pulls sits
+in 2021 (the archive-start probes, shared with every airport) or 2024
+(comfortably inside training, nowhere near the test year). Nothing here
+touches 2025-08-01 onward.
+
+**F66. The station chosen - Bozeman (BZN) over Reno (RNO) - and the grid
+mismatch measured for both before choosing. The key mountain figure turned
+out real but SMALL for both candidates, not the "hundreds of metres" the
+session prompt flagged as possible.**
+
+Both candidates come from IEM's own metadata, in two DIFFERENT state
+networks (unlike Dubbo's two same-network candidates, session 19) - pulled
+first so nothing is typed in from memory or a map (D28's rule):
+
+```
+IEM's entries, exactly as returned:
+       sid   sname               network   elevation   tzname                archive_begin
+BZN    BZN   BOZEMAN/GALLATIN    MT_ASOS   1364.0 m    America/Denver        1948-01-01
+RNO    RNO   Reno - Tahoe        NV_ASOS   1345.0 m    America/Los_Angeles   1943-01-05
+coordinates:  BZN  lat 45.7881, lon -111.1608
+              RNO  lat 39.4839, lon -119.7711
+METAR_RESET_MINUTE:  BZN = 56    RNO = 55
+```
+
+**Neither candidate's IEM code is an ICAO code** (Bozeman's ICAO code is
+KBZN, Reno's is KRNO) - the same non-ICAO-station-id situation DSM's `DSM`
+already established (F31, Q28, closed by D38's "station code" heading), so
+this is consistent with the existing airport table rather than a new
+wording problem.
+
+A short 7-day comparison sample (2024-06-01 to 2024-06-08, outside the test
+year) was pulled for both, including - new for this session, because the
+session prompt's central ask is the elevation mismatch - a forecast sample
+for each, so the grid-point elevation could be compared before choosing:
+
+```
+        routine METAR      forecast          grid distance   GRID ELEVATION MISMATCH
+BZN     168/168 present    192/192 present   6.02 km         grid 1348.0 m vs station 1364.0 m -> -16.0 m
+RNO     168/168 present    192/192 present   6.02 km         grid 1344.0 m vs station 1345.0 m -> -1.0 m
+```
+
+**Both mismatches are real but small, not the "hundreds of metres" the
+session prompt named as possible** - worth recording as a genuine finding,
+not smoothed over. The reading: Open-Meteo's roughly 0.25-degree GFS grid
+cell, averaged over a genuinely BROAD valley floor at either candidate,
+lands close to the valley's own elevation rather than blending in the
+nearby peaks - which is close to what "broad, not pathological" should look
+like by construction, and is exactly why neither candidate shows the
+dramatic mismatch a narrow canyon station (the Aspen case the prompt says to
+avoid) would produce. It also means the mean-bias-reference watch item the
+session prompt flags for the evaluation session should not be read as "a
+large fixed altitude offset is guaranteed here" - that will depend on
+temperature structure more than on the grid's raw elevation label.
+
+**Bozeman was chosen on the "broad, not pathological" criterion**, weighing
+the two candidates' surrounding terrain rather than the (near-identical)
+grid-mismatch numbers, which did not favour one over the other. Bozeman
+sits in the Gallatin Valley, a wide agricultural valley many kilometres
+across, bounded by the Bridger Range to the north and the Gallatin and
+Tobacco Root ranges to the south and west at a comfortable distance - real
+mountain-terrain effects (elevation, cold-air drainage, a genuine
+winter/summer diurnal range) without the valley narrowing to a canyon. Reno
+sits in the Truckee Meadows, but immediately to its west the Sierra Nevada
+front rises steeply to peaks above 3,000 m within about 20 km - a sharper,
+more abrupt transition right at the edge of the valley than Bozeman's more
+gradually-rising surrounding ranges. Both are legitimate choices under the
+session prompt's own naming of them; Bozeman is the clearer case of the two
+broad-valley candidates.
+
+```
+                latitude   longitude   elevation
+EGLC            51.5053     0.0553         5 m
+LFPG            49.0153     2.5344       109 m
+DSM             41.534    -93.6531       294 m
+YSDU           -32.2167   148.5747       275 m
+BZN             45.7881  -111.1608     1,364 m
+BZN is 7,359 km from EGLC, 1,482 km from DSM (the nearest of the four).
+```
+
+**BZN is by far the highest-elevation airport in the project so far** -
+1,364 m against DSM's 294 m, the next highest - even though the GRID
+mismatch specifically (F66 above) is modest. The altitude itself, not the
+grid-point offset, is the genuine new variable this airport tests.
+
+**F67. The target hour checked, not assumed: local standard noon here really
+is 19:00 UTC.**
+
+D41 fixes the target at local standard noon and says that is 19:00 UTC.
+That was checked against the timezone database, using the timezone name
+IEM's own metadata gives (`America/Denver`):
+
+```
+timezone from IEM metadata     : America/Denver
+mid-summer (daylight saving)   : 12:00 UTC = 06:00 MDT (UTC-6)
+mid-winter (standard time)     : 12:00 UTC = 05:00 MST (UTC-7)
+standard-time offset           : UTC-7  (read from a January date, guaranteed standard time)
+so local standard noon (12:00) = 19:00 UTC
+D41 expects                    = 19:00 UTC
+VERDICT                        : MATCHES
+```
+
+The standard offset was read from a January date, the same way F32 read
+DSM's January date and F50 read Dubbo's July date - each time from
+whichever month is guaranteed to sit outside that hemisphere's
+daylight-saving window. Montana does observe daylight saving; D41 (and the
+session prompt) use the standard offset regardless, per D27's convention.
+
+**F68. The forecast archive starts here on exactly the same hour as at every
+other airport: 2021-03-24 00:00 UTC.**
+
+```
+probe 1, 2021-03-01..2021-03-07 : 168 rows, ALL 168 null
+probe 2, 2021-03-18..2021-03-26 : 216 rows, 72 with a value, 144 null
+                                  first non-null = 2021-03-24T00:00
+                                  value range -2.7 to 7.9 degC
+
+recent sample 2024-06-01..2024-06-21 : 504 rows, 504 with a value, 0 null
+                                       value range 1.4 to 29.2 degC
+```
+
+This is the fifth location, on a fifth kind of terrain, to give the same
+answer down to the hour - including the detail that the API answers HTTP
+200 with all-null values before its archive begins rather than returning an
+error (F1, F20, F33, F51). **The practical consequence: the D13 split dates
+carry over here unchanged.** Training 2021-03-24 to 2025-07-31 and testing
+2025-08-01 to 2026-07-31 are as available at this airport as at the other
+four. The first airport with real terrain complexity gives the same archive
+floor as four flat ones did.
+
+**F69. `gfs_global` and `gfs_seamless` DIFFER here, more sharply than at
+DSM - the check the session prompt asked for, and it matters exactly as
+much as expected at a CONUS mountain point.**
+
+```
+window 2021-03-24..2021-04-05 (early, inside training)    : 312 hours compared, 0 differ
+                                                              (grid points differ, values do not)
+window 2024-08-05..2024-08-15 (out-of-test-year, Q29 fix)  : 264 hours compared, 258 differ
+                                                              largest difference: 16.5 degC
+same grid point in either case : NO (gfs_global and gfs_seamless report
+                                      different grid points throughout, unlike
+                                      at Dubbo where they coincided, F52)
+```
+
+**This is the same shape F40 found at DSM - identical on old data, sharply
+different on recent data - but the recent-data difference is bigger here:
+16.5 degC against DSM's 12.3 degC (F40), on almost the same share of hours
+(258 of 264, 97.7%, against DSM's 259 of 264, 98.1%).** The reading is the
+same as F40's: `gfs_seamless` blends in a higher-resolution CONUS-only NCEP
+model (HRRR, NAM or NBM) where `gfs_global` does not, and a high-resolution
+model should differ from coarse global GFS *most* exactly where terrain is
+complex - which is this airport's whole reason for existing. **Every chunk
+pulled at this airport uses `gfs_global` regardless (D16), so nothing in
+the project depends on this result either way, but D16's pin is doing real
+work again here, in exactly the place it matters most so far.**
+
+**F70. This station reports 4 minutes before the hour (`:56`) - so the D14
+pairing rule applies as written at the 19:00 UTC target, with a small
+4-minute offset, and loses no target-hour day in either sample.**
+
+```
+recent sample 2024-06-01..2024-06-22 : 503 reports, minute-past-hour :56 x503
+early  sample 2021-03-18..2021-04-01 : 333 reports, minute-past-hour :56 x333
+distance from the nearest hour        : 4 min on every report in both samples
+within D14's 15-minute window         : 503 of 503, and 333 of 333
+outside it, so D14 drops them         : 0, and 0
+```
+
+IEM's own station metadata agrees: this station's `METAR_RESET_MINUTE`
+attribute is `56` (F66). **Does D14 need adapting? No.** The report at
+`(H-1):56` serves hour `H` - the same shape DSM's `:54` reporting takes
+(F34), a smaller offset even than DSM's 6 minutes. What D14 would keep at
+this airport's own target hour, observation side only:
+
+```
+recent sample 2024-06-01..2024-06-22  21 calendar days, 21 kept, 0 dropped
+early  sample 2021-03-18..2021-04-01  14 calendar days, 14 kept, 0 dropped
+pairing offset on every kept day      : 4 minutes, min and max alike
+e.g. 2024-06-01 -> report 18:56 UTC, 20.0 degC
+     2021-03-18 -> report 18:56 UTC, 13.89 degC
+```
+
+**Not one report in either sample falls outside D14's tolerance, and every
+day is kept** - the same clean shape DSM showed (F34) and unlike Dubbo's
+messier record (F58, F59). On this evidence D14 needs no adapting here.
+
+**Gap counts, nothing filled (SPEC 2.2).** A `:56`-reporting station needs
+the same "which hour does this report serve" accounting DSM's `:54`
+reporting needed (F34, Q26): the report stamped `(H-1):56` serves hour `H`,
+so a plain on-the-hour gap count would misread every hour as missing. With
+that accounting applied:
+
+```
+recent sample : 504 hours expected, 502 covered, 2 missing
+                (1 is a request-boundary artefact - the window's first hour,
+                2024-06-01 00:00, needs a report from 2024-05-31 23:56, not
+                requested, the same artefact Q26 named for DSM; the other,
+                2024-06-13 20:00, is a genuine gap)
+early  sample : 336 hours expected, 332 covered, 4 missing
+                (1 boundary artefact, 2021-03-18 00:00; 3 genuine gaps -
+                2021-03-20 07:00, 2021-03-22 08:00, 2021-03-30 05:00)
+reports with no temperature : 0 in both samples
+```
+
+Neither the target hour (19:00 UTC) nor any of the genuine gaps falls on
+it in either sample, which is why F70's target-hour count above shows 0
+dropped despite these observation-side gaps existing elsewhere in the day.
+
+**F71. Both non-European-airport risks - whether `tmpc` needs new units
+handling, and whether the `tz=UTC` request really is UTC - were measured
+here too, and both need no new handling, in the same shape DSM showed.**
+
+**Units.** US METARs are written in whole-degree Fahrenheit, so a small
+Celsius/Fahrenheit-derived rounding gap is expected, the same pattern DSM's
+F35 found:
+
+```
+file : iem_asos_BZN_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv   72 rows
+
+valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+2024-06-01 00:56   18.89    66.00          18.89       +0.001
+2024-06-01 01:56   16.67    62.00          16.67       +0.003
+2024-06-01 02:56   16.11    61.00          16.11       -0.001
+
+largest disagreement across all 72 rows : 0.004444 degC
+tmpc range in this sample               : 1.67 to 22.78 degC
+```
+
+`tmpc` is degrees Celsius here, the same field and the same units every
+other airport uses (compare DSM's largest disagreement of 0.0044 degC, F35 -
+essentially the same size gap).
+
+**Timezone.** Every IEM request in this project sends `tz=UTC`. The same
+window was pulled a second time with `tz=America/Denver`; June sits inside
+Mountain Daylight Time (MDT, UTC-6), not the standard offset (MST, UTC-7)
+used for the target hour - this check measures whichever offset is actually
+in force during the sample, exactly as F35's DSM check landed inside
+daylight saving too:
+
+```
+shift (hours)   rows compared   temperatures equal
+        +3              69              5  (7.2%)
+        +4              68              5  (7.4%)
+        +5              67              9  (13.4%)
+        +6              66             66  (100.0%)
+        +7              65              9  (13.8%)
+        +8              64              5  (7.8%)
+        +9              63              5  (7.9%)
+       +10              62              4  (6.5%)
+```
+
+A single clean 100% at +6 hours, and early June is exactly when
+`America/Denver` is on daylight saving at UTC-6. So the `tz=UTC` request
+really is UTC. Open-Meteo labels its own side of the join `timezone=GMT`,
+`utc_offset_seconds=0`, so both series are stamped in UTC and neither needs
+shifting.
+
+**F72. The "special" (SPECI) report stream is genuinely unscheduled here -
+like DSM, unlike EGLC, LFPG and Dubbo.**
+
+```
+recent window 2024-06-01..2024-06-22, 21 days (504 hours)
+  routine rows           : 503
+  routine + special rows : 561
+  special-only rows      : 58
+  distinct minutes used  : 30
+  busiest minutes        : :21 x6, :09 x4, :23 x3, :32 x3, :43 x3, :37 x3
+  most-common minute share: 10.3% of all special-only rows
+```
+
+At EGLC, LFPG and Dubbo the "special" stream turned out to be a second
+SCHEDULED report (F3, F19, F55); at DSM it was genuinely unscheduled,
+spread across 38 minutes with none used more than four times in three
+weeks (F36). Here, 58 special-only reports spread across 30 different
+minutes with the busiest carrying only 10.3% of them - the same
+weather-driven shape DSM shows, not a scheduled second report. **Recorded,
+not acted on.** This airport reuses the routine report as the truth
+observation, exactly as D30 already settled for the other four; there is no
+fallback stream to consider using instead.
+
+**F73. Plain first read - yes, this airport is usable for the recipe the
+same way the other four were, and the mountain-specific check the session
+was opened to make (the elevation mismatch) is now measured rather than
+assumed.** Every verify-on-contact check passed:
+
+- the Previous Runs API carries the location, with a grid point 6.02 km
+  away and a real but modest -16 m elevation mismatch - smaller than the
+  session prompt flagged as possible, and explained by the grid cell
+  averaging over a genuinely broad valley floor (F66);
+- the archive reaches back to the same 2021-03-24 00:00 UTC start hour, so
+  the fixed D13 split dates need no change (F68);
+- `gfs_global` and `gfs_seamless` DIFFER here, more sharply than at DSM
+  (16.5 degC against 12.3 degC on the largest single difference) - the
+  clearest evidence yet that D16's pin matters, at exactly the airport
+  where terrain makes a high-resolution blended model diverge most from
+  coarse global GFS (F69);
+- IEM carries the station in `MT_ASOS` with a clean observation record - 2
+  of 504 hours missing in the recent sample, 4 of 336 in the early sample,
+  each including one request-boundary artefact and the rest genuine short
+  gaps, comparable in cleanliness to DSM's record (F70);
+- the pairing rule needs no adapting: this station reports 4 minutes before
+  the hour, comfortably inside D14's tolerance, losing zero target-hour
+  days in both samples (F70);
+- the units and the timezone need no new handling, in the same shape DSM
+  required (F71);
+- and the one genuinely airport-specific choice, the target hour, was made
+  on principle before any data was seen (D41) and then confirmed against
+  the timezone database (F67).
+
+**A rough, informal sense of the raw forecast error, from the
+out-of-test-year sample only - not a test-year figure and not part of any
+pipeline.** Pairing the 21-day recent forecast sample against the paired
+19:00 UTC observations under D14 gives a rough MAE of **1.233 degC** over 21
+days (min error 0.02, max error 5.36 degC) - inside the 1.2-1.8 degC range
+the four flat airports' *sealed test years* measured (SPEC 5.0), not
+obviously the "2-4 degC+" the session prompt flagged as a plausible
+mountain-airport outcome. **This is not evidence the terrain hypothesis is
+wrong.** Three weeks of June is a small, single-season sample - mountain
+cold-air-drainage and inversion effects that drive large raw-GFS bias are
+typically a winter, clear-night phenomenon (the F44/F45 warm-end story at
+DSM was itself a summer-forecast effect measured only once the whole year
+was joined), and a 21-day summer window cannot see that. The honest
+statement is: this sample does not by itself confirm GFS is badly behaved
+here, and the real test is the full year once pulled and joined - which is
+exactly why the session prompt asks for "a rough sense only" rather than a
+conclusion.
+
+**Nothing found here justifies changing any earlier decision at EGLC, CDG,
+DSM or Dubbo.** The one thing that is not reused - the target hour - was
+decided in advance and its cost to D26's "only the location changed" claim
+is written into D41 rather than glossed over, exactly as D33 and D37 did.
+
+**No new open question is raised this session.** SPEC's per-airport wording
+(D34) already covers a fourth distinct target hour without a fresh
+conflict, the way it was built to; the small grid-elevation mismatch (F66)
+is a genuine, honestly-reported finding rather than a blocker; and every
+other check followed the same shape session 19 already established for a
+non-European, non-ICAO-code airport.
+
+---

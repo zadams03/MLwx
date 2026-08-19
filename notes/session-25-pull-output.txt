@@ -1,0 +1,69 @@
+Airport #5 candidates: Bozeman (BZN, MT_ASOS), Reno (RNO, NV_ASOS)
+Small verification samples only - this is NOT the full pull.
+Q29 fix in effect: every window below is 2021 or 2024, never the 2025-08-01..2026-07-31 test year.
+
+=== 0  IEM station metadata for both candidates' networks ===
+  wrote iem_station_metadata_MT_ASOS.geojson  (37,035 bytes)
+  wrote iem_station_metadata_MT_ASOS.geojson.meta.txt  (915 bytes)
+  BZN (MT_ASOS) position from IEM: lat 45.7881, lon -111.1608, elevation 1364.0 m, tz America/Denver
+  wrote iem_station_metadata_NV_ASOS.geojson  (18,423 bytes)
+  wrote iem_station_metadata_NV_ASOS.geojson.meta.txt  (915 bytes)
+  RNO (NV_ASOS) position from IEM: lat 39.4839, lon -119.7711, elevation 1345.0 m, tz America/Los_Angeles
+
+=== B0  candidate comparison: forecast AND routine-METAR samples for BOTH stations ===
+B0 BZN forecast 2024-06-01 -> 2024-06-08
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-06-01_2024-06-08_candidate.json  (4,864 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-06-01_2024-06-08_candidate.json.meta.txt  (2,143 bytes)
+B0 BZN routine METAR 2024-06-01 -> 2024-06-08
+  wrote iem_asos_BZN_2024-06-01_2024-06-08_candidate-routine.csv  (9,781 bytes)
+  wrote iem_asos_BZN_2024-06-01_2024-06-08_candidate-routine.csv.meta.txt  (1,540 bytes)
+B0 RNO forecast 2024-06-01 -> 2024-06-08
+  wrote openmeteo_previousruns_gfs_global_RNO_2024-06-01_2024-06-08_candidate.json  (4,906 bytes)
+  wrote openmeteo_previousruns_gfs_global_RNO_2024-06-01_2024-06-08_candidate.json.meta.txt  (2,143 bytes)
+B0 RNO routine METAR 2024-06-01 -> 2024-06-08
+  wrote iem_asos_RNO_2024-06-01_2024-06-08_candidate-routine.csv  (9,806 bytes)
+  wrote iem_asos_RNO_2024-06-01_2024-06-08_candidate-routine.csv.meta.txt  (1,540 bytes)
+
+Chosen station: BZN (lat 45.7881, lon -111.1608, elevation 1364.0 m). See DECISIONS for the reasoning.
+
+=== A  forecast (Open-Meteo Previous Runs, gfs_global, BZN) ===
+A1 recent-style sample 2024-06-01 -> 2024-06-21 (2024, Q29 fix)
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-06-01_2024-06-21.json  (12,253 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-06-01_2024-06-21.json.meta.txt  (2,102 bytes)
+A2 archive probe 1 2021-03-01 -> 2021-03-07
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-01_2021-03-07.json  (4,330 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-01_2021-03-07.json.meta.txt  (2,051 bytes)
+A2 archive probe 2 2021-03-18 -> 2021-03-26
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-18_2021-03-26.json  (5,425 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-18_2021-03-26.json.meta.txt  (2,042 bytes)
+
+=== A3  gfs_global vs gfs_seamless ===
+2021-03-24 -> 2021-04-05   (early, inside the training window)
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-24_2021-04-05_seamlesscompare.json  (7,626 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2021-03-24_2021-04-05_seamlesscompare.json.meta.txt  (2,268 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_BZN_2021-03-24_2021-04-05_seamlesscompare.json  (7,628 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_BZN_2021-03-24_2021-04-05_seamlesscompare.json.meta.txt  (2,312 bytes)
+2024-08-05 -> 2024-08-15   (a second out-of-test-year window (Q29 fix))
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-08-05_2024-08-15_seamlesscompare.json  (6,629 bytes)
+  wrote openmeteo_previousruns_gfs_global_BZN_2024-08-05_2024-08-15_seamlesscompare.json.meta.txt  (2,277 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_BZN_2024-08-05_2024-08-15_seamlesscompare.json  (6,633 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_BZN_2024-08-05_2024-08-15_seamlesscompare.json.meta.txt  (2,321 bytes)
+
+=== B  truth (IEM ASOS METARs, BZN) ===
+B1 recent-style routine 2024-06-01 -> 2024-06-22 (2024, Q29 fix)
+  wrote iem_asos_BZN_2024-06-01_2024-06-22_routine.csv  (29,208 bytes)
+  wrote iem_asos_BZN_2024-06-01_2024-06-22_routine.csv.meta.txt  (1,598 bytes)
+B3 early routine 2021-03-18 -> 2021-04-01
+  wrote iem_asos_BZN_2021-03-18_2021-04-01_routine.csv  (19,517 bytes)
+  wrote iem_asos_BZN_2021-03-18_2021-04-01_routine.csv.meta.txt  (1,545 bytes)
+B4 recent routine+special 2024-06-01 -> 2024-06-22
+  wrote iem_asos_BZN_2024-06-01_2024-06-22_routine-and-special.csv  (32,560 bytes)
+  wrote iem_asos_BZN_2024-06-01_2024-06-22_routine-and-special.csv.meta.txt  (1,676 bytes)
+B5 units cross-check 2024-06-01 -> 2024-06-04
+  wrote iem_asos_BZN_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv  (4,650 bytes)
+  wrote iem_asos_BZN_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv.meta.txt  (1,968 bytes)
+B6 timezone cross-check 2024-06-01 -> 2024-06-04 (tz=America/Denver)
+  wrote iem_asos_BZN_2024-06-01_2024-06-04_routine-localtime.csv  (4,215 bytes)
+  wrote iem_asos_BZN_2024-06-01_2024-06-04_routine-localtime.csv.meta.txt  (1,836 bytes)
+
+Done.

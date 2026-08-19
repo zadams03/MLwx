@@ -3,24 +3,26 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 19 August 2026, after session 24._
+_Last updated: 19 August 2026, after session 25._
 
 ---
 
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is in progress.** Four
-airports have now passed the frozen bar (SPEC 5.3), the fourth being Dubbo,
-tested this session (DECISIONS F64). Stage 3 (pooling) is not opened. SPEC
-itself was not edited this session (none was authorised) and still reads
-Dubbo as "in progress" with no test-year row — flagged below and in this
-session's consistency check.
+airports have passed the frozen bar (SPEC 5.3); a fifth, a mountain-valley
+airport, was opened this session and verified on contact only (DECISIONS
+D40, D41, F66–F73) — no full pull, no join, no model. Stage 3 (pooling) is
+not opened. **No SPEC edit was made or authorised this session** — SPEC 3.4
+still has no row for the new airport, and adding one is a later session's
+job, once the full pull confirms the data (mirroring how DSM and Dubbo's own
+rows were added only after their full pulls, D34/D38).
 
 ## Airports
 
-Full per-airport facts live in SPEC 3.4; the full results table is SPEC 5.0
-(SPEC's own copy is now out of date for Dubbo — see "Open questions" below).
-Summary:
+Full per-airport facts for the four PASSED airports live in SPEC 3.4; the
+full results table is SPEC 5.0. The fifth airport is not yet in SPEC (see
+above). Summary:
 
 | airport | stage | status |
 |---|---|---|
@@ -28,6 +30,7 @@ Summary:
 | LFPG (Paris CDG) | 2 | PASSED — sealed test run, single look spent |
 | DSM (Des Moines) | 2 | PASSED — sealed test run, single look spent |
 | YSDU (Dubbo) | 2 | PASSED — sealed test run, single look spent (DECISIONS F64) |
+| BZN (Bozeman, Montana) | 2 | IN PROGRESS — verified on contact only (DECISIONS F66–F73) |
 
 All four passed airports beat both raw GFS and persistence on MAE over their
 own sealed test year (SPEC 5.3). Margins over raw GFS ranged 3.3%–16.3% on
@@ -36,17 +39,23 @@ years fell on the same shared twelve months (SPEC 4.3, D13), so the honest
 figure to quote is the range across eight airport-years, roughly 3%–16%, not
 the best single result (DECISIONS F48, F65).
 
-Dubbo's sealed test (DECISIONS F64): corrected MAE 1.210 degC against raw
-GFS 1.251 (3.3% better) and persistence 2.669 (54.7% better) — the narrowest
-margin over raw GFS of any airport tested so far, and the thinnest evidence
-yet that the correction is structure rather than a constant offset (2.3%
-over the mean-bias reference, against 15.7%/13.0%/3.4% at EGLC/CDG/DSM).
-D39.12's single-season watch-item, recorded before the look, turned out to
-be exactly where the margin eroded: the one season that carried almost the
-whole rehearsal win (autumn SON, Dubbo's own local spring, -0.516 degC of
-the rehearsal's average improvement) shrank to -0.138 degC on the test year,
-which is close to enough on its own to explain the fall from the rehearsal's
-8.2% margin to the test's 3.3% (F64).
+**BZN (Bozeman, Montana) — verified on contact this session, DECISIONS D40,
+D41, F66–F73.** Chosen over Reno (Nevada) as the clearer "broad, not
+pathological" mountain-valley case; both candidates' forecast grid-elevation
+mismatch turned out real but small (BZN −16 m, RNO −1 m — smaller than the
+session prompt flagged as possible for either). BZN is by far the
+highest-elevation airport in the project (1,364 m against DSM's 294 m).
+Target hour computed and checked: local standard noon = 19:00 UTC (a fourth
+distinct target hour, after 12:00/18:00/02:00). Archive floor, pairing rule,
+units and timezone all check out the same way the other four airports did.
+The one genuinely new result: `gfs_global` and `gfs_seamless` DIFFER here
+more sharply than at DSM (largest difference 16.5 degC against DSM's 12.3
+degC) — D16's pin is doing real work at exactly the airport where it matters
+most. A rough, informal 21-day out-of-test-year sample gave raw-GFS MAE
+~1.23 degC, inside the flat airports' range rather than clearly worse — not
+evidence against the terrain hypothesis, since a 21-day June sample cannot
+see the winter/cold-air-drainage effects the hypothesis actually rests on
+(DECISIONS F73). The full pull and join are what will actually test it.
 
 ## Done
 
@@ -59,82 +68,61 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   first non-European airport and the first with a target hour other than
   12:00 UTC (D33).
 - A fourth airport, Dubbo (YSDU), opened (D36, D37) — the project's first
-  Southern Hemisphere airport — verified on contact (session 19, F49–F56)
-  and fully pulled and gap-mapped (session 20, F57–F59).
-- SPEC is current: every passed airport reads "passed" throughout, Dubbo has
-  its own row, and the two outstanding wording items (Q28, Q29) are closed
-  (D38).
+  Southern Hemisphere airport — verified on contact (session 19, F49–F56),
+  fully pulled and gap-mapped (session 20, F57–F59), joined and rehearsed
+  (session 22, F60–F63), locked (session 23, D39) and tested once (session
+  24). **DUBBO PASSES** — corrected MAE 1.210 degC against raw GFS 1.251
+  (3.3% better) and persistence 2.669 (54.7% better), the narrowest raw-GFS
+  margin of the four airports (F64). D39.12's single-season watch-item read
+  true in advance: the one season carrying almost the whole rehearsal win
+  shrank sharply on the test year, which is close to sufficient on its own
+  to explain the fall from an 8.2% rehearsal margin to 3.3% on test (F64).
+  F65 records what four passes now establish (the hemisphere/season-cycle
+  axis is answered; the year axis is not) and flags that the "structure, not
+  offset" claim is now thinnest anywhere (2.3% over the mean-bias
+  reference).
+- SPEC is current for all four passed airports: each reads "passed"
+  throughout, and the two wording items (Q28, Q29) are closed (D38).
 - Session 21: a one-time, authorised documentation restructure — no data,
   model, or pull touched. STATUS.md rewritten as this pure snapshot; SPEC
   3.2's three near-identical per-airport gap paragraphs collapsed into one
   general statement; DECISIONS-archive.md created, holding D1–D12 and four
-  settled EGLC-only findings (F1, F4's block, F6, F11), moved verbatim, with
-  pointers left in DECISIONS.md.
-- Session 22: Dubbo's join and validation rehearsal, mirroring session 16
-  (DSM). The join reconciled exactly against session 20's F59 drop
-  predictions (1,193 / 360 kept rows for inner-training / validation; Dubbo
-  loses one more day than the other three to the shared forecast gap
-  because its 02:00 UTC target falls before the gap's last missing hour, and
-  loses real observation-side days the other airports mostly did not).
-  Dubbo's bias is a fourth distinct shape — CDG's calendar-driven structure,
-  but concentrated into one local season — and the explicit flipped-season
-  check found the largest bias sitting in Dubbo's own summer (Dec–Feb), not
-  copying a Northern shape. The locked recipe, applied unchanged, beat all
-  four references on Dubbo's validation year (F60–F63).
-- Session 23 (this one): Dubbo's method lock, written and verified before
-  the test year opens — the D35-equivalent for Dubbo, mirroring the
-  two-session split used for CDG (D31/F30) and DSM (D35/F47). No model was
-  run and Dubbo's test year was not touched. The lock (DECISIONS D39) is
-  D35 with the airport and target hour swapped; a point-by-point
-  correspondence check against D35 confirms no methodological choice
-  differs beyond location and target hour, plus one genuine structural
-  difference the check names explicitly: unlike DSM's zero, Dubbo's
-  test-year drop prediction (356 of 365 paired rows, from F59's gap map) is
-  not a clean single number for the final scored-day count, because 9
-  scattered observation-side losses interact with persistence's
-  day-before dependency in a way only the test session's actual dates can
-  resolve. A single-season-concentration watch-item was recorded in advance
-  (D39.12), mirroring D35.12's warm-end watch-item. SPEC §6's Dubbo bullet
-  was updated to reflect all five steps completed so far except the test
-  (the only SPEC edit authorised this session). One numbering note: the
-  session prompt suggested D38 for this lock, but session 20 already used
-  D38 for its own entry, so this lock is D39 instead — flagged explicitly
-  in the DECISIONS entry.
-- Session 24: Dubbo's single sealed-test look, executing D39 exactly as
-  written. **DUBBO PASSES** — corrected MAE 1.210 degC against raw GFS 1.251
-  (3.3% better) and persistence 2.669 (54.7% better), the narrowest raw-GFS
-  margin of the four airports (DECISIONS F64). The training refit (1,553
-  rows) and the test-year paired-row count (356 of 365) both reconciled
-  exactly against D39's advance prediction; the scored-day count (347) could
-  not be predicted in advance, as D39.7 said, and every one of the 9
-  observation-side drops plus the 9 further scored-day losses they caused
-  is now named in DECISIONS for the first time. D39.12's single-season
-  watch-item read true: the one season that carried almost the whole
-  rehearsal win shrank sharply on the test year, and that shrinkage is close
-  to sufficient on its own to explain the fall from an 8.2% rehearsal margin
-  to a 3.3% test margin. Two runs were byte-identical apart from the clock.
-  F65 records what four passes now establish (the hemisphere/season-cycle
-  axis is answered; the year axis is not) and flags that the "structure, not
-  offset" claim is now thinnest anywhere (2.3% over the mean-bias
-  reference). No SPEC edit was made or authorised this session.
+  settled EGLC-only findings, moved verbatim, with pointers left in
+  DECISIONS.md.
+- Session 25 (this one): a fifth airport opened — the project's first
+  deliberate "hard" case, a genuinely terrain-affected, high-altitude
+  mountain-valley US airport, aimed at testing whether the correction wins
+  biggest exactly where raw GFS is worst. Bozeman (BZN, Montana) was chosen
+  over Reno (RNO, Nevada) after both candidates were verified on contact,
+  including — new for this session — a forecast-grid-elevation comparison
+  for both before choosing (D40). Its target hour, 19:00 UTC, was computed
+  from its own timezone and checked against the timezone database, not
+  assumed (D41). Every verify-on-contact check passed the same way it did
+  for DSM and Dubbo, with one genuinely new result: `gfs_global` and
+  `gfs_seamless` diverge more sharply here than at any airport tested so
+  far, which is itself evidence the airport is a real terrain-affected case
+  even though the grid's raw elevation mismatch turned out modest (F66–F73).
+  **No full pull, no join, no model, no SPEC edit** — this was
+  verify-on-contact only, mirroring session 19's shape for Dubbo.
 
 ## Next
 
-**An owner decision, not a re-run.** Dubbo's single look is spent (D39.10);
-its result stands as reported (F64) regardless of what happens next. Q30's
-fork (below) is now fully live with all four of Dubbo's five steps finished.
-Two housekeeping items are also outstanding, flagged but not fixed this
-session: SPEC 1, 3.4, 5.0 and 6 still describe Dubbo as "in progress" with
-no test-year row, and no session has yet been asked to update them.
+**The full pull and gap map for BZN, if the owner wants to proceed** —
+mirroring session 20's shape for Dubbo (session 15's for DSM): six yearly
+forecast and observation chunks, a gap map predicting what the eventual join
+should drop, and only then a SPEC 3.4 row added from the real pulled data.
+Nothing about BZN's own five steps (verify ✓, pull/map, join and rehearse,
+lock, test once) beyond the first is done yet. Q30's other two branches (a
+second test year; stage 3, pooling) remain untouched and available as
+alternatives, exactly as before this session.
 
 ## Open questions (live)
 
-- **Q30 (fork now fully live).** The owner already picked its first branch —
-  more airports — by opening Dubbo (D36). Dubbo's own five steps are now all
-  finished (verify ✓, pull/map ✓, join and rehearse ✓, lock ✓, test once ✓,
-  DECISIONS F64), so what comes next is entirely the owner's choice, with
-  nothing left pending: another airport; a second test year (the untouched
-  half of the F30/F46/F48/F65 caveat — all four passes so far share the same
+- **Q30 (unchanged).** The owner has already picked its first branch — more
+  airports, now specifically "ramp up difficulty" — by opening BZN (D40).
+  What comes after BZN's own five steps finish is still the owner's choice:
+  another airport; a second test year (the untouched half of the
+  F30/F46/F48/F65 caveat — all four passed airports so far share the same
   twelve months); or stage 3, pooling (not opened).
 
 No other open question remains live; everything else has been closed by a

@@ -1,0 +1,40 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_BZN_2021-03-01_2021-03-07.json
+purpose     : session 25 - part A2 probe 1 - before the archive's first hour at every earlier airport (F1, F20, F33, F51 all found all-null answers here)
+pulled at   : 2026-08-19 14:16:26 BST (2026-08-19 13:16:26 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=45.7881&longitude=-111.1608&start_date=2021-03-01&end_date=2021-03-07&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 45.7881    (BZN)
+  longitude  = -111.1608
+  start_date = 2021-03-01
+  end_date   = 2021-03-07
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_global
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string: gfs_global (pinned per DECISIONS D16; used for everything the project actually relies on)
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for this station, read out of
+  iem_station_metadata_MT_ASOS.geojson in the same run.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them.
+  Nothing was filled in (SPEC 2.2).
+- Q29 fix: this window is deliberately outside the sealed test year
+  (2025-08-01 to 2026-07-31, D13). Session 17 raised Q29 because
+  earlier airports' verify-on-contact samples all sat inside their
+  test year; session 19 (Dubbo) was the first to avoid it from the
+  start, and this session continues that.
