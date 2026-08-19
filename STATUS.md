@@ -3,11 +3,44 @@
 Read this to catch up fast. It records what is done, what is in progress, and
 what is next.
 
-_Last updated: 19 August 2026 (after session 18)._
+_Last updated: 19 August 2026 (after session 19)._
 
 ---
 
 ## Current stage
+
+**A FOURTH AIRPORT IS OPENING: inland eastern Australia, the project's first
+Southern Hemisphere location.** Session 19 verified it on contact and every
+check passed (DECISIONS F49–F56). **Dubbo (IEM station `YSDU`, network
+`AU__ASOS`) was chosen over Canberra (YSCB)** — both exist on IEM with
+authoritative coordinates and both report cleanly, but Dubbo's flat 275 m
+plain is the closer match to DSM's flat-continental profile, where Canberra
+sits at 577 m ringed by mountains (DECISIONS F49). **Next: the SPEC row and
+the full multi-year pull**, mirroring session 10 (CDG) and session 15 (DSM) —
+not yet started. Nothing was joined, built or trained this session, and
+nothing from EGLC, CDG or DSM was touched or re-run.
+
+**This airport's target hour is 02:00 UTC — local standard noon at UTC+10 — a
+third distinct target hour after 12:00 (EGLC, LFPG) and 18:00 (DSM), confirmed
+against the timezone database before being trusted (DECISIONS D37, F50).**
+Like DSM, this airport changes both the location and the target hour against
+the European pair, so D26's "only the location changed" claim does not hold
+for it either (D37). **The report cadence — the session prompt's named main
+risk for a non-US, non-European airport — turned out to be the easiest case
+of the four**: Dubbo reports exactly on the hour, giving an exact 0-minute
+match at the target hour with no day lost at all in either sample (DECISIONS
+F53), matching DSM as the only other airport to lose no target-hour day in
+its own verify-on-contact sample.
+
+**Session 19 applied the Q29 fix from the start.** Every sample this session
+pulled sits in 2021 (shared archive-start probes) or 2024, never inside the
+2025-08-01–2026-07-31 sealed test year — the fix Q29 (raised in session 17)
+asked every future airport to use. No SPEC edit was made or authorised; this
+was a verify-on-contact session only, mirroring session 08 (CDG) and session
+14 (DSM). **No new open question was raised** — session 19's own prompt
+already built in what would otherwise have become open questions (SPEC
+conflict, chunk-boundary effects, the `gfs_seamless` comparison), because
+Dubbo reports on the hour and D34 already generalised SPEC per airport.
 
 **THE THIRD AIRPORT HAS PASSED. Des Moines (DSM) was tested once, in session
 18, and the corrected forecast beat both raw GFS and persistence on its sealed
@@ -1311,16 +1344,80 @@ result and the honest reading of it.
     (the numbers and the verdict) and **F48** (what three passes do and do not
     establish). **Q30** is new and is the owner's: what opens next.
 
+- **Session 19 — AIRPORT #4 OPENED AND VERIFIED ON CONTACT (inland eastern
+  Australia). Done. Small samples only; nothing was pulled in full, joined,
+  built or trained, and nothing from EGLC, CDG or DSM was touched or re-run.**
+  - **The owner picked Q30's first branch — more airports — and this session
+    opened one (DECISIONS D36, D37).** It is the project's first Southern
+    Hemisphere airport: flipped seasons, a genuinely independent weather cycle,
+    and the first real stress test of whether the model's season-of-year
+    features generalise rather than having quietly learned "Northern
+    Hemisphere summer is warm."
+  - **Station chosen: Dubbo (IEM station `YSDU`, network `AU__ASOS`), over
+    Canberra (`YSCB`).** Both exist on IEM with authoritative coordinates and
+    both passed a real 7-day comparison sample equally well; Dubbo was chosen
+    because its flat 275 m plain matches the "flat-ish, not alpine" criterion
+    and DSM's own continental profile, where Canberra sits at 577 m ringed by
+    the Brindabella Range (DECISIONS F49).
+  - **The target hour is 02:00 UTC — local standard noon at UTC+10 — checked
+    against the timezone database, not assumed (DECISIONS D37, F50).** A third
+    distinct target hour after 12:00 (EGLC, LFPG) and 18:00 (DSM). Like DSM,
+    this airport changes both the location and the target hour against the
+    European pair, so D26's "only the location changed" claim does not hold for
+    it either — the honest cost is written into D37, the same way D33 wrote it
+    for DSM.
+  - **Every verify-on-contact check passed (DECISIONS F49–F56).** The archive
+    starts at the same 2021-03-24 00:00 UTC hour as the other three airports
+    (F51); `gfs_global` and `gfs_seamless` are identical here in both windows
+    tested, confirming F6's original non-CONUS reasoning travels to a second
+    continent even though F40 showed it does not travel to DSM's CONUS
+    location (F52); units and timezone need no new handling, more cleanly than
+    at DSM because Australian METARs are natively whole-degree Celsius (F54);
+    and the "special" report stream is a second scheduled half-hourly report,
+    like EGLC and LFPG, unlike DSM's genuinely unscheduled one (F55).
+  - **The report cadence — the session prompt's named main risk — turned out
+    to be the easiest case of the four.** Dubbo reports exactly on the hour
+    (`:00`), giving D14 an EXACT match at the target hour with a steady
+    0-minute offset, and loses no day at all to off-hour reporting in either
+    sample — 21 of 21 recent days kept, 14 of 14 early days kept (DECISIONS
+    F53). DSM is the only other airport to lose no target-hour day in its own
+    verify-on-contact sample; this airport matches that, with an even cleaner
+    (zero-offset) pairing.
+  - **The Q29 fix was applied from the start, for the first time.** Every
+    sample this session pulled sits in 2021 (shared archive-start probes) or
+    2024, never inside the 2025-08-01–2026-07-31 sealed test year that every
+    earlier airport's verify-on-contact sample touched (Q29, raised by session
+    17). This is the fix Q29 itself suggested future airports use.
+  - **No new open question was raised.** Session 19's own prompt already built
+    in what would otherwise have become fresh open questions the way session
+    14 raised Q25–Q27 for DSM: D34 already generalised SPEC per airport, so
+    D37 opens no SPEC conflict; Dubbo reports on the hour, so there is no
+    DSM-`:54`-style chunk-boundary artefact to name; and the `gfs_seamless`
+    comparison was run in this same session rather than deferred.
+  - **No SPEC edit was made or authorised.** This was a verify-on-contact
+    session only, mirroring session 08 (CDG) and session 14 (DSM). Adding this
+    airport's row to SPEC 3.4 is a later session's job, once the full pull
+    confirms the data the way session 10 and session 15 did for CDG and DSM.
+  - Full real output in `notes/session-19-check-output.txt`; the pull log is
+    `notes/session-19-pull-output.txt`. Scripts are `scripts/session19_pull.py`
+    and `scripts/session19_checks.py`. Two consecutive runs of the checks
+    script produced identical output. The results of record are DECISIONS
+    **F49–F56**.
+
 ## In progress
 
-- Nothing. Session 18 is finished and awaiting the owner's review.
+- Nothing. Session 19 is finished and awaiting the owner's review.
 
 ## Next
 
-1. Owner reviews and commits session 18 — DSM's sealed test and its result.
-   Sessions 08 to 17 are still awaiting review too if they have not been
-   committed yet.
-2. **Q30 is open and it is the owner's** (raised by session 18). Three airports
+1. Owner reviews and commits session 19 — airport #4 opened and verified on
+   contact. Sessions 08 to 18 are still awaiting review too if they have not
+   been committed yet.
+2. **The next step for airport #4 is the full multi-year pull and gap map**,
+   mirroring session 10 (CDG) and session 15 (DSM) — not yet started. That
+   session's own job will also be the first authorised place to add this
+   airport's row to SPEC 3.4.
+3. **Q30 is open and it is the owner's** (raised by session 18). Three airports
    have now passed, all on the same twelve months, and all three single looks
    are spent. Three branches, and nothing about any of them was written or
    started:
@@ -1333,36 +1430,42 @@ result and the honest reading of it.
      deliberately and a written decision about what a second test year means for
      airports whose single authorised look is already spent;
    - **stage 3 — pooling.** **Stage 3 is not opened.**
-3. **SPEC is now out of date about DSM, and the edits need the owner's
-   authorisation.** Session 18 made none and none was authorised. Four places
-   still describe DSM as untested: section 1 ("stage 2, **in progress**"), the
-   stage cell in the 3.4 airport table, the 5.0 results table ("DSM | pending —
-   not yet run | —") and section 6's DSM bullet. This is the same list Q24
-   raised for CDG and D34 then cleared; it is in the consistency check below.
-4. **Q28 is open and it is the owner's.** SPEC 3.4's first column is headed
+4. **SPEC is now out of date about DSM (and, more so, about airport #4), and
+   the edits need the owner's authorisation.** Session 18 made none for DSM and
+   none was authorised; session 19 made none for airport #4 either, on
+   purpose, since it was verify-on-contact only. Four places still describe
+   DSM as untested: section 1 ("stage 2, **in progress**"), the stage cell in
+   the 3.4 airport table, the 5.0 results table ("DSM | pending — not yet
+   run | —") and section 6's DSM bullet. Airport #4 does not exist in SPEC at
+   all yet — no row, no mention. This is the same list Q24 raised for CDG and
+   D34 then cleared; it is in the consistency check below.
+5. **Q28 is open and it is the owner's.** SPEC 3.4's first column is headed
    "ICAO" and DSM's code is not an ICAO code; SPEC 3.1 says each airport is
    requested by its ICAO code, which is not true of DSM either. Nothing depends
    on it and nothing was changed — a note beneath the table states the position
    plainly. The repair is one heading and one sentence, and it needs the owner's
    authorisation.
-5. **Q29 is open and it is the owner's** (raised by session 17). The
-   verify-on-contact samples at all three airports were pulled from the most
-   recent weeks available, which fall inside the sealed test year; a handful of
-   values inside each test window were printed months before the look. Nothing
-   was fitted on them and no method choice came from them, but the wording
-   "never a temperature value" in STATUS and in some log entries is slightly too
-   strong. Two things for the owner: whether that wording is corrected, and
-   whether future airports should sample from **after 2026-07-31**, which D13
-   does not use at all.
-6. **One thing that is available and blocks nothing, and it now matters more.**
+6. **Q29 is half-settled by session 19's own practice, and half still open for
+   the owner** (raised by session 17). The verify-on-contact samples at EGLC,
+   CDG and DSM were pulled from the most recent weeks available, which fall
+   inside the sealed test year; a handful of values inside each test window
+   were printed months before the look. Nothing was fitted on them and no
+   method choice came from them, but the wording "never a temperature value"
+   in STATUS and in some log entries is slightly too strong. **Session 19
+   applied the fix going forward** — its own samples sit in 2021 or 2024,
+   never inside the test year — so future airports need no further decision on
+   that half. What remains for the owner: only whether the existing wording
+   about EGLC, CDG and DSM should be corrected to match what F1/F2, F18/F20 and
+   F34/F35 actually printed.
+7. **One thing that is available and blocks nothing, and it now matters more.**
    SPEC 5.4's deeper evaluation — skill score, statistical significance, formal
    season testing — is optional by D29 and still undone, so no airport's win has
    a significance figure. **At DSM's 6.3% on 365 days that limit bites harder
    than it did at stage 1's 16.3%.** F6's `gfs_global` versus `gfs_seamless`
-   comparison has now been run at DSM (F40) but **still never at LFPG** (Q20's
-   closing note), so stage 2's first airport still cannot make the
-   by-construction claim stage 1 and DSM can.
-7. Nothing is pre-committed beyond that.
+   comparison has now been run at DSM (F40) and at airport #4 (F52), but
+   **still never at LFPG** (Q20's closing note), so stage 2's first airport
+   still cannot make the by-construction claim stage 1, DSM and airport #4 can.
+8. Nothing is pre-committed beyond that.
 
 ## Notes
 
@@ -1410,7 +1513,11 @@ result and the honest reading of it.
   files instead, and all three airports were sampled alike. What it does mean is
   that "never a temperature value" is slightly too strong wording. D35.6 states
   the true position for DSM; D21.6 and D31.6 do not, and are closed and
-  append-only. **Q28, Q29 and Q30 are the open questions.**
+  append-only. **Session 19 applied Q29's suggested fix for the first time**:
+  airport #4's verify-on-contact samples sit in 2021 or 2024, never inside the
+  sealed test year, so the question does not repeat for it. Only the
+  wording-correction half of Q29, about the three earlier airports, is still
+  open for the owner. **Q28, Q29 and Q30 are the open questions.**
 - **EGLC's test year has been opened, exactly once, in session 07** — the one
   authorised look (D21.10). It was never loaded, printed, averaged or fitted on
   in any earlier session. It is not a held-out set any more, so it must not be

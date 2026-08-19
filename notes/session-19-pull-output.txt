@@ -1,0 +1,61 @@
+Airport #4 candidates: Canberra (YSCB), Dubbo (YSDU), IEM network AU__ASOS
+Small verification samples only - this is NOT the full pull.
+Q29 fix in effect: every window below is 2021 or 2024, never the 2025-08-01..2026-07-31 test year.
+
+=== 0  IEM station metadata for the AU__ASOS network ===
+  wrote iem_station_metadata_AU__ASOS.geojson  (61,157 bytes)
+  wrote iem_station_metadata_AU__ASOS.geojson.meta.txt  (928 bytes)
+  YSCB position from IEM: lat -35.3088, lon 149.2003, elevation 577.0 m, tz Australia/Sydney
+  YSDU position from IEM: lat -32.2167, lon 148.5747, elevation 275.0 m, tz Australia/Sydney
+
+=== B0  candidate comparison: short routine-METAR sample for BOTH stations ===
+B0 YSCB 2024-06-01 -> 2024-06-08
+  wrote iem_asos_YSCB_2024-06-01_2024-06-08_candidate-routine.csv  (9,403 bytes)
+  wrote iem_asos_YSCB_2024-06-01_2024-06-08_candidate-routine.csv.meta.txt  (1,546 bytes)
+B0 YSDU 2024-06-01 -> 2024-06-08
+  wrote iem_asos_YSDU_2024-06-01_2024-06-08_candidate-routine.csv  (9,489 bytes)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-08_candidate-routine.csv.meta.txt  (1,546 bytes)
+
+Chosen station: YSDU (lat -32.2167, lon 148.5747, elevation 275.0 m). See DECISIONS for the reasoning.
+
+=== A  forecast (Open-Meteo Previous Runs, gfs_global, YSDU) ===
+A1 recent-style sample 2024-06-01 -> 2024-06-21 (2024, Q29 fix)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-06-01_2024-06-21.json  (12,089 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-06-01_2024-06-21.json.meta.txt  (2,044 bytes)
+A2 archive probe 1 2021-03-01 -> 2021-03-07
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-01_2021-03-07.json  (4,330 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-01_2021-03-07.json.meta.txt  (1,985 bytes)
+A2 archive probe 2 2021-03-18 -> 2021-03-26
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-18_2021-03-26.json  (5,479 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-18_2021-03-26.json.meta.txt  (1,976 bytes)
+
+=== A3  gfs_global vs gfs_seamless (Q30-adjacent) ===
+2021-03-24 -> 2021-04-05   (early, inside the training window)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-24_2021-04-05_seamlesscompare.json  (7,783 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2021-03-24_2021-04-05_seamlesscompare.json.meta.txt  (2,082 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_YSDU_2021-03-24_2021-04-05_seamlesscompare.json  (7,784 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_YSDU_2021-03-24_2021-04-05_seamlesscompare.json.meta.txt  (2,093 bytes)
+2024-08-05 -> 2024-08-15   (a second out-of-test-year window (Q29 fix))
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-08-05_2024-08-15_seamlesscompare.json  (6,555 bytes)
+  wrote openmeteo_previousruns_gfs_global_YSDU_2024-08-05_2024-08-15_seamlesscompare.json.meta.txt  (2,091 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_YSDU_2024-08-05_2024-08-15_seamlesscompare.json  (6,555 bytes)
+  wrote openmeteo_previousruns_gfs_seamless_YSDU_2024-08-05_2024-08-15_seamlesscompare.json.meta.txt  (2,102 bytes)
+
+=== B  truth (IEM ASOS METARs, YSDU) ===
+B1 recent-style routine 2024-06-01 -> 2024-06-22 (2024, Q29 fix)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-22_routine.csv  (28,816 bytes)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-22_routine.csv.meta.txt  (1,604 bytes)
+B3 early routine 2021-03-18 -> 2021-04-01
+  wrote iem_asos_YSDU_2021-03-18_2021-04-01_routine.csv  (19,618 bytes)
+  wrote iem_asos_YSDU_2021-03-18_2021-04-01_routine.csv.meta.txt  (1,551 bytes)
+B4 recent routine+special 2024-06-01 -> 2024-06-22
+  wrote iem_asos_YSDU_2024-06-01_2024-06-22_routine-and-special.csv  (71,216 bytes)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-22_routine-and-special.csv.meta.txt  (1,757 bytes)
+B5 units cross-check 2024-06-01 -> 2024-06-04
+  wrote iem_asos_YSDU_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv  (4,617 bytes)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv.meta.txt  (1,947 bytes)
+B6 timezone cross-check 2024-06-01 -> 2024-06-04 (tz=Australia/Sydney)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-04_routine-localtime.csv  (4,198 bytes)
+  wrote iem_asos_YSDU_2024-06-01_2024-06-04_routine-localtime.csv.meta.txt  (1,981 bytes)
+
+Done.

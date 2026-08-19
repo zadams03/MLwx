@@ -1,0 +1,39 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_seamless_YSDU_2024-08-05_2024-08-15_seamlesscompare.json
+purpose     : session 19 - part A3 - gfs_seamless vs gfs_seamless comparison window (a second out-of-test-year window (Q29 fix)); gfs_global is what the project uses regardless (D16) - this only records whether the two strings agree here
+pulled at   : 2026-08-19 10:12:13 BST (2026-08-19 09:12:13 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=-32.2167&longitude=148.5747&start_date=2024-08-05&end_date=2024-08-15&hourly=temperature_2m_previous_day1&models=gfs_seamless&timezone=UTC
+
+parameters:
+  latitude   = -32.2167    (YSDU)
+  longitude  = 148.5747
+  start_date = 2024-08-05
+  end_date   = 2024-08-15
+  hourly     = temperature_2m_previous_day1
+  models     = gfs_seamless
+  timezone   = UTC
+
+notes:
+- Temperature is requested at the _previous_day1 offset: the value
+  from the model run one day earlier. That is the day-ahead forecast
+  this project corrects (SPEC 3.2). Its true lead time sweeps between
+  about 24 and 30 hours across the day - see DECISIONS F5.
+- The plain temperature_2m variable was deliberately NOT requested. On
+  this endpoint it is the freshest-run series, which is the leakage
+  trap SPEC 2.1b warns about.
+- Model string: gfs_seamless (Q30-adjacent comparison probe only - gfs_global is what the project uses, D16)
+- Temperature only, no extra variables (DECISIONS D17).
+- The coordinates are IEM's own record for this station, read out of
+  iem_station_metadata_AU__ASOS.geojson in the same run.
+- HTTP status 200.
+- Nulls in this file are left exactly as the API returned them.
+  Nothing was filled in (SPEC 2.2).
+- Q29 fix: this window is deliberately outside the sealed test year
+  (2025-08-01 to 2026-07-31, D13). Session 17 raised Q29 because
+  earlier airports' verify-on-contact samples all sat inside their
+  test year; this session does not repeat that.

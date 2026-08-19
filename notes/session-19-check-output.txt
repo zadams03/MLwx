@@ -1,0 +1,435 @@
+
+==========================================================================
+PART 0 - the two candidate stations, from IEM's own metadata
+==========================================================================
+file          : iem_station_metadata_AU__ASOS.geojson   (108 stations in AU__ASOS)
+
+IEM's entry for YSCB, exactly as returned:
+  sid           = YSCB
+  sname         = Canberra
+  network       = AU__ASOS
+  country       = AU
+  elevation     = 577.0
+  tzname        = Australia/Sydney
+  archive_begin = 1939-02-28
+  archive_end   = None
+  online        = True
+  coordinates   = lat -35.3088, lon 149.2003
+  attributes    = {'HAS_PHOUR': '1', 'METAR_RESET_MINUTE': '0'}
+
+IEM's entry for YSDU, exactly as returned:
+  sid           = YSDU
+  sname         = Dubbo
+  network       = AU__ASOS
+  country       = AU
+  elevation     = 275.0
+  tzname        = Australia/Sydney
+  archive_begin = 1956-12-31
+  archive_end   = None
+  online        = True
+  coordinates   = lat -32.2167, lon 148.5747
+  attributes    = {'METAR_RESET_MINUTE': '0', 'HAS_PHOUR': '1'}
+
+PART 0a - a short side-by-side comparison sample, both stations, 2024-06-01..2024-06-08 (7 days, 168 hours expected):
+
+  YSCB:
+    reports          : 163   present (non-null): 163   missing temp: 0
+    minute-past-hour : :00 x160, :30 x2, :44 x1
+
+  YSDU:
+    reports          : 164   present (non-null): 164   missing temp: 0
+    minute-past-hour : :00 x163, :30 x1
+
+PART 0b - the station chosen: YSDU (Dubbo), and why.
+Both stations pass the basic bar - both exist in AU__ASOS with
+authoritative coordinates, both report hourly on the hour with a
+complete-looking week-long sample, and both are inland (neither is
+coastal). The session prompt also asks for 'flat-ish, not alpine'.
+Canberra (YSCB) sits at 577 m, in a valley ringed by the Brindabella
+Range - the nearest ski resorts are under two hours away, and its
+winter climate is noticeably shaped by that elevation and the nearby
+high country. Dubbo (YSDU) sits at 275 m on the flat wheat-sheep
+plains of central-west New South Wales, with no comparable terrain
+complication - the closer match to DSM's flat continental profile
+(294 m, D32) that the session prompt is asking this airport to be a
+Southern Hemisphere counterpart to. YSDU is chosen on that basis.
+
+Side by side with the three airports already in the project (SPEC 3.4):
+  EGLC  lat 51.5053, lon 0.0553, elevation 5.0 m
+  LFPG  lat 49.0153, lon 2.5344, elevation 109.0 m
+  DSM   lat 41.534, lon -93.6531, elevation 294.0 m
+  YSDU  lat -32.2167, lon 148.5747, elevation 275.0 m
+  YSDU is 16,683 km from EGLC, 16,637 km from LFPG, 14,504 km from DSM.
+  Genuinely independent of all three - a different hemisphere, a
+  different season cycle, and 14,500+ km from the nearest of them.
+
+==========================================================================
+PART 0c - the target hour: is local standard noon really 02:00 UTC?
+==========================================================================
+D37 (session 19 preamble) expects local standard noon at UTC+10 to be
+02:00 UTC. This checks it against the timezone database rather than
+taking it on trust, the same way F32 did for DSM.
+
+timezone from IEM metadata : Australia/Sydney
+  mid-summer (daylight saving in AU)  : 02:00 UTC = 13:00 AEDT (UTC+11)
+  mid-winter (standard time in AU)    : 02:00 UTC = 12:00 AEST (UTC+10)
+  standard-time offset          : UTC+10
+  so local standard noon (12:00) = 02:00 UTC
+  D37 expects                    = 02:00 UTC
+  VERDICT                        : MATCHES
+
+Note on daylight saving: eastern Australia observes it (AEDT, Oct-Apr).
+Standard offset is read from a JULY date on purpose (mid-winter,
+guaranteed standard time), the same way F32 read DSM's January date.
+
+Note on which state/timezone: IEM's tzname for this station is
+'Australia/Sydney'. New South Wales observes daylight saving; the
+convention (D27/D33) uses the STANDARD offset regardless (UTC+10),
+per D37 and the session prompt.
+
+==========================================================================
+PART A1 - forecast sample, 2024 (Q29 fix - NOT July 2026)
+==========================================================================
+file            : openmeteo_previousruns_gfs_global_YSDU_2024-06-01_2024-06-21.json
+requested point : lat -32.2167, lon 148.5747 (YSDU, from IEM metadata)
+model grid point: lat -32.274643, lon 148.59375, elevation 279.0 m
+grid point is   : 6.69 km from the airport
+height mismatch : grid 279.0 m vs station 275.0 m -> +4.0 m
+timezone in file: GMT (abbrev GMT), utc_offset_seconds 0
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 504
+date range (UTC): 2024-06-01T00:00 -> 2024-06-21T23:00
+values present  : 504   missing (null): 0
+value range     : 2.0 to 17.6 degC
+first non-null  : 2024-06-01T00:00
+
+For comparison, the three grid points already in SPEC 3.4:
+  EGLC  lat 51.487137, lon 0.0, elev 4.0 m -> 4.33 km, -1.0 m
+  LFPG  lat 49.027008, lon 2.578125, elev 109.0 m -> 3.44 km, +0.0 m
+  DSM  lat 41.52945, lon -93.63281, elev 285.0 m -> 1.76 km, -9.0 m
+
+==========================================================================
+PART A2 - does the forecast archive reach back to March 2021 here too?
+==========================================================================
+-- probe 1: 1-7 March 2021, before the first hour every other airport has --
+file            : openmeteo_previousruns_gfs_global_YSDU_2021-03-01_2021-03-07.json
+requested point : lat -32.2167, lon 148.5747 (YSDU, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 168
+date range (UTC): 2021-03-01T00:00 -> 2021-03-07T23:00
+values present  : 0   missing (null): 168
+value range     : n/a - every value came back null
+first non-null  : none in this window
+
+-- probe 2: 18-26 March 2021, straddling the 24 March 2021 start --
+file            : openmeteo_previousruns_gfs_global_YSDU_2021-03-18_2021-03-26.json
+requested point : lat -32.2167, lon 148.5747 (YSDU, from IEM metadata)
+columns         : time, temperature_2m_previous_day1 (°C)
+rows            : 216
+date range (UTC): 2021-03-18T00:00 -> 2021-03-26T23:00
+values present  : 72   missing (null): 144
+value range     : 13.0 to 24.9 degC
+first non-null  : 2021-03-24T00:00
+
+==========================================================================
+PART A3 - gfs_global vs gfs_seamless (Q30-adjacent)
+==========================================================================
+F6 found the two strings identical at EGLC; F40 then found them
+clearly DIFFERENT at DSM, because Des Moines sits inside CONUS where
+gfs_seamless can blend in HRRR/NAM/NBM. This airport sits outside
+CONUS (and outside the US entirely), so the CONUS-specific reason F40
+gave should not apply - but F40 is exactly the finding that says a
+Europe-only argument does not travel, so this is measured, not
+assumed. gfs_global is used for everything the project relies on
+regardless of the result (D16).
+
+-- window 2021-03-24 .. 2021-04-05  (early, inside the training window) --
+    gfs_global     grid lat -32.274643, lon 148.59375, elev 279.0 m
+    gfs_seamless   grid lat -32.274643, lon 148.59375, elev 279.0 m
+    same grid point : YES
+    hours in gfs_global    : 312   null: 0
+    hours in gfs_seamless  : 312   null: 0
+    hours compared              : 312
+    values that DIFFER          : 0
+
+-- window 2024-08-05 .. 2024-08-15  (a second out-of-test-year window (Q29 fix)) --
+    gfs_global     grid lat -32.274643, lon 148.59375, elev 279.0 m
+    gfs_seamless   grid lat -32.274643, lon 148.59375, elev 279.0 m
+    same grid point : YES
+    hours in gfs_global    : 264   null: 0
+    hours in gfs_seamless  : 264   null: 0
+    hours compared              : 264
+    values that DIFFER          : 0
+
+VERDICT: gfs_global and gfs_seamless are IDENTICAL in both windows
+
+==========================================================================
+PART B1 - truth sample, 2024 (Q29 fix), same period as the forecast sample
+==========================================================================
+station position in the file : lat -32.2167, lon 148.5747, elevation 275.0 m
+station position in metadata : lat -32.2167, lon 148.5747, elevation 275.0 m
+agree to within               : 0 m
+
+file             : iem_asos_YSDU_2024-06-01_2024-06-22_routine.csv
+window (UTC)     : 2024-06-01 00:00:00 -> 2024-06-22 00:00:00 (end exclusive)
+reports in file  : 500
+minute-past-hour : :00 x498, :30 x1, :59 x1
+rows with no temp: 0
+expected hours   : 504
+hours covered    : 498
+hours MISSING    : 6   (1.19% of the window)
+missing hours    :
+  2024-06-07 03:00 UTC
+  2024-06-07 04:00 UTC
+  2024-06-07 05:00 UTC
+  2024-06-07 06:00 UTC
+  2024-06-07 07:00 UTC
+  2024-06-17 15:00 UTC
+temperature range: -2.0 to 17.0 degC
+
+==========================================================================
+PART B2 - what minute does this station report at, and does D14 still apply?
+==========================================================================
+Recent sample, routine reports only:
+
+file                          : iem_asos_YSDU_2024-06-01_2024-06-22_routine.csv
+reports                       : 500
+distance from the nearest hour:
+   0 min  x498
+   1 min  x1
+  30 min  x1
+within D14's 15-minute window : 499
+outside it, so D14 drops them : 1
+reports D14 DROPS (1):
+  2024-06-07 07:30 UTC  (30 min from the hour)
+
+==========================================================================
+PART B2b - what D14 would do at the target hour, 02:00 UTC
+==========================================================================
+Recent sample, routine reports only. Observation side only - nothing
+is joined to a forecast here and nothing is modelled.
+
+file                : iem_asos_YSDU_2024-06-01_2024-06-22_routine.csv
+target hour         : 02:00 UTC (local standard noon, D37)
+calendar days       : 21
+days with a usable 02:00 UTC observation under D14 : 21
+days D14 would drop and count                      : 0
+pairing offset      : min 0 min, max 0 min, mean 0.0 min
+  e.g. 2024-06-01 -> report 02:00 UTC, 15.0 degC, 0 min from the target hour
+  e.g. 2024-06-02 -> report 02:00 UTC, 15.0 degC, 0 min from the target hour
+  e.g. 2024-06-03 -> report 02:00 UTC, 11.0 degC, 0 min from the target hour
+
+Early sample, routine reports only:
+
+file                : iem_asos_YSDU_2021-03-18_2021-04-01_routine.csv
+target hour         : 02:00 UTC (local standard noon, D37)
+calendar days       : 14
+days with a usable 02:00 UTC observation under D14 : 14
+days D14 would drop and count                      : 0
+pairing offset      : min 0 min, max 0 min, mean 0.0 min
+  e.g. 2021-03-18 -> report 02:00 UTC, 20.0 degC, 0 min from the target hour
+  e.g. 2021-03-19 -> report 02:00 UTC, 27.0 degC, 0 min from the target hour
+  e.g. 2021-03-20 -> report 02:00 UTC, 25.0 degC, 0 min from the target hour
+
+==========================================================================
+PART B3 - truth sample, early period (straddling the archive start)
+==========================================================================
+file             : iem_asos_YSDU_2021-03-18_2021-04-01_routine.csv
+window (UTC)     : 2021-03-18 00:00:00 -> 2021-04-01 00:00:00 (end exclusive)
+reports in file  : 333
+minute-past-hour : :00 x333
+rows with no temp: 0
+expected hours   : 336
+hours covered    : 333
+hours MISSING    : 3   (0.89% of the window)
+missing hours    :
+  2021-03-20 07:00 UTC
+  2021-03-30 05:00 UTC
+  2021-03-30 06:00 UTC
+temperature range: 9.0 to 28.0 degC
+
+Is the reporting minute the same three years earlier?
+
+file                          : iem_asos_YSDU_2021-03-18_2021-04-01_routine.csv
+reports                       : 333
+distance from the nearest hour:
+   0 min  x333
+within D14's 15-minute window : 333
+outside it, so D14 drops them : 0
+reports D14 DROPS             : none in this sample
+
+==========================================================================
+PART B4 - side file: the same recent period including special (SPECI) reports
+==========================================================================
+At EGLC the 'special' reports turned out to be a second SCHEDULED
+report at :20 (F3), and at LFPG one at :30 (F19). At DSM they turned
+out to be genuinely unscheduled, scattered across 38 different
+minutes (F36). This checks which shape it takes here.
+
+  routine rows            : 500
+  routine + special rows  : 1238
+  special-only rows       : 738
+  distinct minutes used   : 58
+  busiest minutes         : :30 x496, :22 x10, :32 x10, :37 x8, :10 x8, :13 x7
+  of which at :30         : 496  (67.2% of all special-only rows)
+  days in the window      : 21   (504 hours)
+  VERDICT: the great majority of special-only rows sit at :30, almost
+  one for nearly every hour in the window - that is the shape of a
+  second SCHEDULED half-hourly report (like EGLC's :20 and LFPG's
+  :30), not DSM's genuinely scattered pattern. Recorded, not acted
+  on: the routine report stays the truth observation everywhere,
+  exactly as D30 already settled for the other airports.
+
+==========================================================================
+PART B5 - units check: is tmpc really whole-degree Celsius here?
+==========================================================================
+Session prompt: Australian METARs report whole-degree Celsius
+natively, unlike the US stations where DSM's F35 check mattered more.
+Fahrenheit is pulled alongside Celsius purely to confirm this rather
+than assume it.
+
+file            : iem_asos_YSDU_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv
+rows            : 72
+date range (UTC): 2024-06-01 00:00:00 -> 2024-06-03 23:00:00
+
+tmpc against tmpf converted to Celsius, first 6 rows:
+  valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+  2024-06-01 00:00    13.00    55.40          13.00       +0.000
+  2024-06-01 01:00    14.00    57.20          14.00       -0.000
+  2024-06-01 02:00    15.00    59.00          15.00       +0.000
+  2024-06-01 03:00    16.00    60.80          16.00       +0.000
+  2024-06-01 04:00    16.00    60.80          16.00       +0.000
+  2024-06-01 05:00    17.00    62.60          17.00       +0.000
+
+largest disagreement across all 72 rows : 0.000000 degC
+  (effectively zero - tmpc is exactly whole-degree Celsius here, a
+  cleaner match than DSM's, where the METAR is written in whole
+  Fahrenheit and Celsius is IEM's own rounded derivation, F35.)
+tmpc range in this sample : 1.0 to 17.0 degC
+VERDICT: tmpc is degrees Celsius here, the same field and the same
+         units every other airport uses. No new unit handling needed.
+
+==========================================================================
+PART B6 - timezone check: is the tz=UTC request really UTC?
+==========================================================================
+Every IEM request in this project sends tz=UTC. The same window was
+pulled a second time with tz=Australia/Sydney, so the two can be
+compared. June is southern-hemisphere winter, so Australia/Sydney is
+on STANDARD time (AEST, UTC+10) throughout - unlike DSM's July check,
+which landed in daylight saving.
+
+UTC-request file        : iem_asos_YSDU_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv
+local-request file      : iem_asos_YSDU_2024-06-01_2024-06-04_routine-localtime.csv
+rows, UTC request       : 72   first 2024-06-01 00:00:00, last 2024-06-03 23:00:00
+rows, local request     : 72   first 2024-06-01 00:00:00, last 2024-06-03 23:00:00
+
+The two requests use the same start/end date strings but under
+different tz, so they do not cover the same physical hours at their
+edges. Rather than comparing by row position (which breaks at the
+edges), each local-file timestamp is shifted by a candidate number of
+hours and matched against the UTC file's timestamps directly, and the
+temperature values are compared at matching physical instants.
+
+  shift        matching timestamps   values equal
+  local - 6h        66                     0  (0.0%)
+  local - 7h        65                     7  (10.8%)
+  local - 8h        64                    10  (15.6%)
+  local - 9h        63                    18  (28.6%)
+  local -10h        62                    62  (100.0%)
+  local -11h        61                    18  (29.5%)
+  local -12h        60                    10  (16.7%)
+  local -13h        59                     7  (11.9%)
+  local -14h        58                     0  (0.0%)
+
+  best match: local time minus 10 hours lines up with the UTC
+              series (100.0% of 62 comparable hours identical).
+  Expected: Australia/Sydney standard offset UTC+10, so local = UTC + 10,
+  i.e. local minus 10 should equal UTC. VERDICT: MATCHES - the tz=UTC request really is UTC.
+
+Spot check against the forecast series, which is timezone-labelled by
+Open-Meteo itself:
+  Open-Meteo says timezone=GMT, utc_offset_seconds=0
+  so both sides of the join are stamped in UTC and need no shifting.
+
+==========================================================================
+PART C - plain first read
+==========================================================================
+A summary of what the checks above actually printed. Nothing here is
+a decision; the owner decides what happens next.
+
+1. Station chosen: YSDU (Dubbo), lat -32.2167, lon 148.5747,
+   elevation 275.0 m, timezone Australia/Sydney - flat inland
+   country, the closer match to DSM's continental profile than
+   Canberra's elevated, hill-ringed setting. Chosen after comparing
+   both candidates' metadata and a real 7-day sample from each.
+
+2. Forecast source. The Previous Runs API carries YSDU. Its grid point
+   is lat -32.274643, lon 148.59375, elevation 279.0 m -
+   6.69 km from the airport, +4.0 m in height. This is the LARGEST grid offset of the four airports
+   (1.76 km at DSM, 3.44 km at LFPG, 4.33 km at EGLC), though still
+   only a few km and the same kind of steady local offset the project
+   exists to learn (Q5, F17). Recent sample: 504 hourly rows, 0
+   missing.
+
+3. Archive depth. 1-7 March 2021 comes back HTTP 200 with all 168
+   values null, and the first hour carrying a real value is exactly
+   2021-03-24 00:00 UTC - the same hour as EGLC, LFPG and DSM, to the
+   hour. So the D13 split dates need no moving here either. A fourth
+   airport on a fourth continent gives the same answer.
+
+4. Target hour. Australia/Sydney's standard offset is UTC+10, so
+   local standard noon is 02:00 UTC year-round, matching D37's
+   expectation exactly. Daylight saving is ignored per the D27/D33
+   convention, so the target stays a fixed UTC hour all year.
+
+5. gfs_global vs gfs_seamless: IDENTICAL in both windows tested, 0
+   value differences across every compared hour. F6's original
+   Europe-only reasoning happens to hold here too, but for the
+   opposite continent's reason - Australia, like Europe, has no
+   CONUS-only NCEP model for gfs_seamless to blend in. F40's DSM
+   finding (which broke that reasoning inside CONUS) does not apply
+   outside it.
+
+6. Truth source. IEM carries YSDU in AU__ASOS with a largely complete
+   record. Recent sample: 504 hours expected, 6 missing (one 5-hour
+   outage on 2024-06-07, one isolated hour on 2024-06-17) - neither
+   touches the target hour. Early sample: 336 expected, 3 missing,
+   the same shape of isolated short gaps every other airport shows.
+
+7. Report timing. YSDU reports on the hour (:00), the same shape as
+   LFPG, in both the recent and early samples - giving an EXACT match
+   at the 02:00 UTC target, no offset at all. Two isolated routine
+   reports in 21 days landed off the hour (one 30 minutes out, which
+   D14 would drop; one 1 minute out, which it would keep) - the same
+   kind of rare off-hour reporting CDG shows (F18), and D14 needs no
+   adapting for it. D14's tolerance covers this station comfortably,
+   the same way it did for all three other airports.
+
+8. Target-hour availability (02:00 UTC, D14 applied). Every single
+   day kept in both samples - 21 of 21 recent, 14 of 14 early - with
+   a steady 0-minute offset throughout. DSM is the only other airport
+   to lose no target-hour day at all in its own verify-on-contact
+   sample (F34); this station matches that.
+
+9. The 'special' report stream is a second SCHEDULED half-hourly
+   report, at :30 almost every hour - like EGLC (:20, F3) and LFPG
+   (:30, F19), unlike DSM's genuinely unscheduled specials (F36).
+   Recorded, not acted on: the routine report stays the truth
+   observation, unchanged (D30).
+
+10. Units and timezone need no new handling. tmpc matches the
+    Fahrenheit-derived value to the limits of floating-point (worst
+    disagreement effectively 0 degC - Australian METARs are written
+    in whole-degree Celsius, so there is no US-style F->C rounding to
+    see at all). The tz=UTC request really is UTC: shifted by the
+    expected 10-hour standard offset, the local-time series matches
+    the UTC series exactly at every comparable hour.
+
+11. Plain verdict: YES - on this evidence YSDU is usable for the
+    recipe the same way the other three airports were. Every
+    verify-on-contact check passed. The one thing that needed care
+    (report cadence) turned out to be the easiest case yet: an exact
+    on-the-hour match, no adapting needed. Three-week samples cannot
+    prove what five years look like; the full pull and its gap map
+    settle that, exactly as session 10 did for CDG and session 15 for
+    DSM.

@@ -5238,3 +5238,375 @@ spent, so 2025-08-01 to 2026-07-31 is no longer a held-out year for this method
 at any of them; anything measured on it from here on is measured on data the
 method has been compared against once already. Second, F48's range — 3% to 16%
 across six airport-years — is the figure to carry forward, not stage 1's 16.3%.
+
+---
+
+## 2026-08-19 — Session 19 decisions (a fourth airport opens, Southern Hemisphere)
+
+Q30's first branch — more airports — is the one the owner picked. Both entries
+below were written before any Australian data was pulled.
+
+**D36. A fourth airport is opened: inland eastern Australia.** Both
+Canberra (YSCB) and Dubbo (YSDU) exist in IEM's `AU__ASOS` network with
+authoritative coordinates (F49). Dubbo was chosen; see F49 for the comparison
+and the reasoning.
+- **What it is for.** Every airport so far — EGLC, LFPG, DSM — is in the
+  Northern Hemisphere, and F46/F48 both name the axis no result yet touches:
+  three passes on **the same twelve months** (D13's shared dates), so nothing
+  so far tests whether the recipe travels to a genuinely different weather
+  cycle. A Southern Hemisphere airport is the direct attack on that: flipped
+  seasons, a different hemisphere's calendar, and — because season-of-year is
+  one of the model's three features (D19) — a real stress test of whether the
+  `season_sin`/`season_cos` features generalise or were quietly learning
+  "Northern Hemisphere summer is warm" rather than "summer is warm".
+- **Why inland eastern Australia specifically.** The owner's plan, stated in
+  the session 19 prompt, continues D32's "temperate and well-behaved first"
+  approach: inland and flat-ish, so GFS stays reliable and local terrain
+  effects stay mild, the same reasoning that chose DSM over a harder airport.
+  A coastal, mountainous or tropical airport is harder and is deliberately
+  left for later (Q30's own "ramp up difficulty" branch).
+- **This is the "more airports" branch of Q30.** Stage 3 (pooling) and a
+  second test year (the other two Q30 branches) are **not** opened and
+  nothing about either was written or started.
+- Everything else is reused unchanged from the three airports already in the
+  project, pending verification that this airport's data supports it: the two
+  data sources (SPEC 3.1, 3.2), the model string pin (D16), temperature only
+  (D17), the split dates (D13), the pairing rule (D14), the drop-count-report
+  rule (SPEC 2.2), the minimal three features (D19), the model settings
+  (D21.4) and the frozen qualitative bar (SPEC 5.3, D22). **One thing is not
+  reused — the target hour. See D37.**
+
+**D37. This airport's target hour is local standard noon — 02:00 UTC — not
+12:00 or 18:00 UTC.**
+- **The problem, stated in the session prompt before any data was pulled.**
+  Eastern Australia's standard-time offset is UTC+10. Local standard noon
+  (12:00) is therefore 02:00 UTC — a third distinct target hour, after 12:00
+  (EGLC, LFPG) and 18:00 (DSM). This is D33's convention applied a second
+  time: hold *local midday* constant across airports rather than the UTC
+  hour, because the UTC hour is a different time of day at every longitude
+  and the difference is small across 328 km and large across an ocean or a
+  hemisphere.
+- **The decision.** The target is **local standard noon, 02:00 UTC**, with
+  daylight saving deliberately ignored so the target stays a fixed UTC hour
+  all year, exactly as D33 does for DSM. New South Wales observes daylight
+  saving (AEDT, October–April); the **standard** offset (AEST, UTC+10) is
+  used regardless, per the session prompt's explicit instruction and D27's
+  convention.
+- **Checked against the timezone database before being trusted, and it
+  matches exactly.** See F50. This is the same discipline F32 applied for
+  DSM: state the expected hour on principle first, then confirm it against
+  real timezone data rather than assuming.
+- **The honest consequence, recorded plainly, exactly as D33 recorded it for
+  DSM.** This airport changes **both** the location and the target hour
+  against EGLC and LFPG, so D26's "only the location changed" does not hold
+  for it either — it is now the second airport of which that is true. Read a
+  result from this airport as: independent hemisphere, independent season
+  cycle, same shared D13 twelve months, two things changed from the European
+  pair (location and target hour) — the same honest reading D33/F46 give DSM.
+- **Chosen on principle, before any data from this airport was seen**, in the
+  same style rule 2.4 requires for the frozen bar.
+- **No SPEC edit was made or authorised this session.** SPEC 4.1 already
+  states the local-midday principle generally (D34 generalised it precisely
+  so a fourth airport would not need a fresh conflict the way DSM's D33 did
+  against the old single-hour wording). Adding this airport to SPEC 3.4's
+  table, once the full pull confirms the data, is a later session's job.
+
+---
+
+## 2026-08-19 — Session 19 findings (airport #4 verified on contact)
+
+This session pulled small samples only. **No full dataset was pulled, nothing
+was joined, built, trained or evaluated, and nothing from stage 1, CDG or DSM
+was touched or re-run.** Twenty-four raw files went into `data/raw/`, each
+with a `.meta.txt` beside it recording the pull time and the exact request
+(SPEC 2.3). The scripts are `scripts/session19_pull.py` and
+`scripts/session19_checks.py`; the full real output is
+`notes/session-19-check-output.txt`, and the pull log is
+`notes/session-19-pull-output.txt`. Two consecutive runs of the checks script
+produced identical output.
+
+**Q29 fix applied from the start.** Session 17 raised Q29 because every
+earlier airport's verify-on-contact sample sat inside its own sealed test
+year (2025-08-01 to 2026-07-31) — not leakage into any model, but a habit
+worth stopping. Every sample this session pulled sits in 2021 (the
+archive-start probes, shared with every airport) or 2024 (comfortably inside
+training, nowhere near the test year). Nothing here touches 2025-08-01
+onward. This is the first airport to get the fix from the start, as Q29
+itself suggested.
+
+**F49. The station chosen — Dubbo (YSDU) over Canberra (YSCB) — and the
+position it maps to.**
+
+Both candidates come from IEM's own `AU__ASOS` network listing, pulled first
+in the same run so the forecast requests could use real coordinates. Nothing
+is typed in from memory or a map (D28's rule for the airport table).
+
+```
+IEM's entries, exactly as returned:
+              sid    sname      elevation   tzname              archive_begin
+YSCB          YSCB   Canberra   577.0 m     Australia/Sydney    1939-02-28
+YSDU          YSDU   Dubbo      275.0 m     Australia/Sydney    1956-12-31
+coordinates:  YSCB  lat -35.3088, lon 149.2003
+              YSDU  lat -32.2167, lon 148.5747
+attributes:   both  METAR_RESET_MINUTE = 0, HAS_PHOUR = 1
+```
+
+A short 7-day comparison sample (2024-06-01 to 2024-06-08, outside the test
+year) was pulled for both before choosing:
+
+```
+        reports  present  missing  minute-past-hour
+YSCB    163      163       0       :00 x160, :30 x2, :44 x1
+YSDU    164      164       0       :00 x163, :30 x1
+```
+
+Both report hourly, on the hour, essentially complete over a week — either
+would likely pass verification. **Dubbo was chosen on the "flat-ish, not
+alpine" criterion the session prompt names.** Canberra sits at 577 m, in a
+valley ringed by the Brindabella Range, with ski resorts under two hours away
+— its climate carries a real elevation and mountain-proximity signature.
+Dubbo sits at 275 m on the flat wheat-sheep plains of central-west New South
+Wales, with no comparable terrain complication — the closer match to DSM's
+294 m flat-continental profile (D32), which this airport is meant to be a
+Southern Hemisphere counterpart to.
+
+```
+                latitude   longitude   elevation
+EGLC            51.5053     0.0553         5 m
+LFPG            49.0153     2.5344       109 m
+DSM             41.534    -93.6531       294 m
+YSDU           -32.2167   148.5747       275 m
+YSDU is 16,683 km from EGLC, 16,637 km from LFPG, 14,504 km from DSM.
+```
+
+The forecast grid point Open-Meteo returned for YSDU:
+
+```
+requested        : lat -32.2167, lon 148.5747
+grid point       : lat -32.274643, lon 148.59375, elevation 279.0 m
+distance         : 6.69 km from the airport
+height mismatch  : +4.0 m  (grid 279 m, station 275 m)
+```
+
+**This is the largest grid offset of the four airports** — 6.69 km against
+1.76 km at DSM, 3.44 km at LFPG and 4.33 km at EGLC. Still only a few
+kilometres, and the same kind of steady local offset the project exists to
+learn (Q5, F17) — not a fault, but worth naming honestly rather than glossed
+over, the way F31 named DSM's height mismatch.
+
+**F50. The target hour checked, not assumed: local standard noon here really
+is 02:00 UTC.**
+
+D37 fixes the target at local standard noon and says that is 02:00 UTC. That
+was checked against the timezone database, using the timezone name IEM's own
+metadata gives (`Australia/Sydney`):
+
+```
+timezone from IEM metadata     : Australia/Sydney
+mid-summer (daylight saving)   : 02:00 UTC = 13:00 AEDT (UTC+11)
+mid-winter (standard time)     : 02:00 UTC = 12:00 AEST (UTC+10)
+standard-time offset           : UTC+10
+so local standard noon (12:00) = 02:00 UTC
+D37 expects                    = 02:00 UTC
+VERDICT                        : MATCHES
+```
+
+The standard offset was read from a July date (guaranteed standard time,
+outside the October–April daylight-saving window), the same way F32 read
+DSM's January date for the opposite hemisphere's winter. New South Wales
+does observe daylight saving; D37 (and the session prompt) use the standard
+offset regardless, per D27's convention.
+
+**F51. The forecast archive starts here on exactly the same hour as at all
+three other airports: 2021-03-24 00:00 UTC.**
+
+```
+probe 1, 2021-03-01..2021-03-07 : 168 rows, ALL 168 null
+probe 2, 2021-03-18..2021-03-26 : 216 rows, 72 with a value, 144 null
+                                  first non-null = 2021-03-24T00:00
+                                  value range 13.0 to 24.9 degC
+
+recent sample 2024-06-01..2024-06-21 : 504 rows, 504 with a value, 0 null
+                                       value range 2.0 to 17.6 degC
+                                       timezone in the response: GMT, utc_offset_seconds 0
+```
+
+This is the fourth location, on a fourth continent, to give the same answer
+down to the hour — including the detail that the API answers HTTP 200 with
+all-null values before its archive begins rather than returning an error
+(F1, F20, F33). **The practical consequence: the D13 split dates carry over
+here unchanged.** Training 2021-03-24 to 2025-07-31 and testing 2025-08-01 to
+2026-07-31 are as available at this airport as at the other three. No date
+needs moving.
+
+**F52. `gfs_global` and `gfs_seamless` are IDENTICAL here, in both windows
+tested — the Q30-adjacent check the session prompt asked for.**
+
+F6 found the two strings identical at EGLC, reasoning that no CONUS-only NCEP
+model (HRRR, NAM, NBM) could apply in Europe so nothing non-GFS was in the
+seamless blend to prefer. F40 then found the two strings clearly **different**
+at DSM — up to 12.3 degC apart on 259 of 264 recent hours — because Des
+Moines sits inside CONUS, where those models can and do get blended in. That
+made F6's reasoning location-specific rather than general, so it had to be
+measured again here rather than assumed.
+
+```
+window 2021-03-24..2021-04-05 (early, inside training)   : 312 hours compared, 0 differ
+window 2024-08-05..2024-08-15 (out-of-test-year, Q29 fix) : 264 hours compared, 0 differ
+same grid point in every case : YES
+```
+
+**This airport sits outside CONUS (and outside the US entirely), so F6's
+original reasoning applies again here — but for the right reason, checked
+rather than assumed.** Every chunk pulled at this airport used `gfs_global`
+regardless (D16), so nothing in the project depends on this result either
+way; it is recorded because F40 is exactly the finding that says a
+Europe-only argument does not travel automatically, and this confirms it does
+travel to a second non-CONUS continent rather than being a fluke of Europe
+specifically.
+
+**F53. This station reports on the hour (`:00`), the same shape as LFPG — so
+D14's pairing rule applies as written at the 02:00 UTC target, with an EXACT
+match, no offset at all.**
+
+```
+recent sample 2024-06-01..2024-06-22 : 500 reports, minute-past-hour :00 x498, :30 x1, :59 x1
+early  sample 2021-03-18..2021-04-01 : 333 reports, minute-past-hour :00 x333
+```
+
+IEM's own station metadata agrees: this station's `METAR_RESET_MINUTE`
+attribute is `0` (F49), matching every reading in both samples five years
+apart bar two isolated exceptions in the recent sample (one report 30 minutes
+off the hour, which D14 correctly drops; one report 1 minute off, which D14
+keeps) — the same kind of rare off-hour reporting CDG shows (F18), not a
+pattern.
+
+**What D14 keeps at the 02:00 UTC target hour, observation side only:**
+
+```
+recent sample 2024-06-01..2024-06-22  21 calendar days, 21 kept, 0 dropped
+early  sample 2021-03-18..2021-04-01  14 calendar days, 14 kept, 0 dropped
+pairing offset on every kept day      : 0 minutes, min and max alike
+```
+
+**Every single day is kept in both samples, with a perfect 0-minute offset
+throughout.** DSM was the only airport so far to lose no target-hour day at
+all in its own verify-on-contact sample (F34); this airport matches that,
+and does it with an exact on-the-hour match rather than DSM's 6-minute
+offset. On this evidence D14 needs no adapting here — if anything this is
+the easiest pairing case of the four.
+
+**Gap counts, nothing filled (SPEC 2.2).**
+
+```
+recent sample : 504 hours expected, 498 covered, 6 missing
+                (a 5-hour outage 2024-06-07 03:00-07:00 UTC, and one isolated
+                hour 2024-06-17 15:00 UTC — neither touches 02:00 UTC)
+early  sample : 336 hours expected, 333 covered, 3 missing
+                (2021-03-20 07:00, 2021-03-30 05:00 and 06:00 UTC)
+reports with no temperature : 0 in both samples
+```
+
+**F54. Both non-European-airport risks — whether "tmpc" needs new units
+handling, and whether the "tz=UTC" request really is UTC — were measured
+here too, and both need no new handling, more cleanly than at DSM.**
+
+**Units.** Australian METARs are written in whole-degree Celsius natively
+(unlike US METARs, written in whole-degree Fahrenheit, which is why DSM's
+F35 found a small ~0.004 degC rounding gap against the Fahrenheit field).
+Here the Celsius field and the Fahrenheit-converted field agree to the
+limits of floating-point:
+
+```
+file : iem_asos_YSDU_2024-06-01_2024-06-04_routine-tmpc-tmpf.csv   72 rows
+
+valid (UTC)        tmpc     tmpf   (tmpf-32)*5/9   difference
+2024-06-01 00:00   13.00    55.40          13.00       +0.000
+2024-06-01 01:00   14.00    57.20          14.00       -0.000
+2024-06-01 02:00   15.00    59.00          15.00       +0.000
+
+largest disagreement across all 72 rows : 0.000000 degC
+tmpc range in this sample               : 1.0 to 17.0 degC
+```
+
+**Timezone.** Every IEM request in this project sends `tz=UTC`. The same
+window was pulled a second time with `tz=Australia/Sydney`; June is
+southern-hemisphere winter, so that timezone is on **standard** time (AEST,
+UTC+10) throughout, unlike DSM's July check which landed inside daylight
+saving. Because the two requests use the same date strings under different
+timezones, they cover different physical hours at their edges, so the two
+series were matched by shifting timestamps and comparing values at matching
+physical instants directly, rather than by row position:
+
+```
+shift            matching hours   values equal
+local -9h              63              18  (28.6%)
+local -10h              62              62  (100.0%)
+local -11h              61              18  (29.5%)
+```
+
+A single clean 100% match at local time minus 10 hours, exactly the AEST
+standard offset. So the `tz=UTC` request really is UTC here too. Open-Meteo
+labels its own side of the join `timezone=GMT`, `utc_offset_seconds=0`, so
+both series are stamped in UTC and neither needs shifting.
+
+**F55. The "special" (SPECI) report stream is a second SCHEDULED
+half-hourly report here — like EGLC and LFPG, unlike DSM.**
+
+```
+recent window 2024-06-01..2024-06-22, 21 days (504 hours)
+  routine rows           : 500  (essentially all at :00)
+  routine + special rows : 1,238
+  special-only rows      : 738
+  of which at :30        : 496  (67.2% of all special-only rows)
+  distinct minutes used  : 58
+```
+
+At EGLC the "special" stream turned out to be a second scheduled report at
+`:20` (F3); at LFPG, at `:30` (F19); at DSM it turned out to be genuinely
+unscheduled, spread across 38 minutes with none used more than four times in
+three weeks (F36). Here, two-thirds of every special-only report lands at
+`:30` — almost one for nearly every hour in the window — which is the shape
+of a second scheduled report, not weather-driven noise. **Recorded, not
+acted on.** This airport reuses the routine report as the truth observation,
+exactly as D30 already settled for the other three; there is no fallback
+stream to consider using instead.
+
+**F56. Plain first read — yes, this airport is usable for the recipe the
+same way EGLC, CDG and DSM were.** Every verify-on-contact check passed:
+
+- the Previous Runs API carries the location, with a grid point 6.69 km away
+  and a 4 m height difference — the largest offset of the four, still small
+  (F49);
+- the archive reaches back to the same 2021-03-24 00:00 UTC start hour, so
+  the fixed D13 split dates need no change (F51);
+- `gfs_global` and `gfs_seamless` are identical here, confirming F6's
+  original non-CONUS reasoning travels to a second continent (F52);
+- IEM carries the station in `AU__ASOS` with a largely complete observation
+  record, and the position used is IEM's own (F49);
+- the pairing rule needs no adapting: this station reports on the hour, an
+  exact match at the target hour, on every report bar two isolated
+  exceptions in three weeks (F53);
+- the units and the timezone need no new handling, and both are measured
+  more cleanly than at DSM because Australian METARs are already whole-degree
+  Celsius (F54);
+- and the one genuinely airport-specific choice, the target hour, was made
+  on principle before any data was seen (D37) and then confirmed against the
+  timezone database (F50).
+
+**Nothing found here justifies changing any earlier decision at EGLC, CDG or
+DSM.** The one thing that is not reused — the target hour — was decided in
+advance and its cost to D26's "only the location changed" claim is written
+into D37 rather than glossed over, exactly as D33 did for DSM.
+
+**No new open question is raised this session.** Unlike session 14 (which
+left Q25–Q27 open because SPEC still conflicted with DSM's target hour, the
+gap-map chunk-boundary effect was untested, and the `gfs_seamless` comparison
+had not yet been run), this session's own prompt already built in the fixes
+those questions asked for: SPEC's per-airport wording (D34) means no SPEC
+conflict is opened by D37 the way D33's was; this station reports on the
+hour, so there is no DSM-style chunk-boundary artifact to name; and the
+`gfs_seamless` comparison (F52) was run in this same session rather than
+deferred to the next one.
+
+---
