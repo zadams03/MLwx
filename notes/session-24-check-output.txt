@@ -1,0 +1,813 @@
+
+============================================================================
+SESSION 24 - DUBBO'S SEALED-TEST EVALUATION. ONE LOOK. THE RESULT STANDS.
+============================================================================
+run at        : 2026-08-19 12:26:02 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+airport       : YSDU - Dubbo, Australia (SPEC 3.4) - stage 2
+                (D36, the fourth airport)
+target hour   : 02:00 UTC at YSDU (SPEC 4.1, D37, D39.1)
+training      : 2021-03-24 to 2025-07-31   (D13, D39.5)
+SEALED TEST   : 2025-08-01 to 2026-07-31   (D13, D39.6)
+nothing after : 2026-07-31
+
+This session executes DECISIONS D39 and decides nothing. Nothing is
+tuned, searched, swapped or re-run. If anything did not fit the D39
+record, the run stops and goes back to the owner (D39.11).
+
+TWO THINGS DIFFER FROM DSM'S TEST, NOT ONE: the location AND the
+target hour (D37). This result must not be quoted as though only
+the location had moved (F63).
+
+============================================================================
+PART 0 - checking this script against the lock (DECISIONS D39)
+============================================================================
+
+-- check 1: every value D39 fixes, against what this script will use --
+    what D39 fixes                     D39 says               this run               match?
+    airport (D39.1)                    YSDU                   YSDU                   yes
+    target hour (D39.1)                2                      2                      yes
+    train start (D39.5)                2021-03-24             2021-03-24             yes
+    train end (D39.5)                  2025-07-31             2025-07-31             yes
+    test start (D39.6)                 2025-08-01             2025-08-01             yes
+    test end (D39.6)                   2026-07-31             2026-07-31             yes
+    features (D39.3)                   ['forecast_temp_c', 'season_sin', 'season_cos'] ['forecast_temp_c', 'season_sin', 'season_cos'] yes
+    objective (D39.4)                  regression_l1          regression_l1          yes
+    n_estimators (D39.4)               300                    300                    yes
+    learning_rate (D39.4)              0.05                   0.05                   yes
+    num_leaves (D39.4)                 15                     15                     yes
+    min_child_samples (D39.4)          40                     40                     yes
+    subsample (D39.4)                  1.0                    1.0                    yes
+    colsample_bytree (D39.4)           1.0                    1.0                    yes
+    reg_alpha (D39.4)                  0.0                    0.0                    yes
+    reg_lambda (D39.4)                 0.0                    0.0                    yes
+    random_state (D39.4)               42                     42                     yes
+    n_jobs (D39.4)                     1                      1                      yes
+    deterministic (D39.4)              True                   True                   yes
+    force_row_wise (D39.4)             True                   True                   yes
+    verbose (D39.4)                    -1                     -1                     yes
+    pairing window minutes (D39.7)     15                     15                     yes
+    climatology half window (D39.8)    7.5                    7.5                    yes
+    values checked: 23
+    values that do not match D39: 0
+    (The 15-minute pairing window is the literal in
+     load_obs_target_hour below. Check 3d prints that function's
+     differences from session 18's, so it can be seen that the
+     15 minutes is untouched.)
+
+-- check 2a: model settings, session 05 against this session --
+    setting              session 05             session 24             same?
+    objective            regression_l1          regression_l1          yes
+    n_estimators         300                    300                    yes
+    learning_rate        0.05                   0.05                   yes
+    num_leaves           15                     15                     yes
+    min_child_samples    40                     40                     yes
+    subsample            1.0                    1.0                    yes
+    colsample_bytree     1.0                    1.0                    yes
+    reg_alpha            0.0                    0.0                    yes
+    reg_lambda           0.0                    0.0                    yes
+    random_state         42                     42                     yes
+    n_jobs               1                      1                      yes
+    deterministic        True                   True                   yes
+    force_row_wise       True                   True                   yes
+    verbose              -1                     -1                     yes
+    settings that differ: 0   (D39.4 requires 0)
+
+-- check 2b: the code that must be character-identical to session 05 --
+    Compared character for character with scripts/session05_model.py.
+    all_days()                 identical
+    year_fraction()            identical
+    mae()                      identical
+    describe()                 identical
+    features() is handled separately below: its text differs from
+    session 05's by docstring lines naming the fixed hour and the
+    flipped-season check, and its executable code is compared with
+    docstrings stripped out.
+
+-- check 3a: model settings, session 18 (DSM test) against this session --
+    settings compared: 14
+    settings that differ from DSM's sealed test: 0
+
+-- check 3b: the constants, session 18 (DSM) against session 24 (Dubbo) --
+    Exactly one constant should differ: TARGET_HOUR, 18 -> 2, which
+    is D37 and nothing else. The split dates are shared by every
+    airport (SPEC 4.3), so they must be identical.
+    constant                 session 18 (DSM)                   session 24 (Dubbo)   same?
+    TARGET_HOUR              18                                 2                    NO - DIFFERS
+    TRAIN_START              2021-03-24                                              yes
+    TRAIN_END                2025-07-31                                              yes
+    TEST_START               2025-08-01                                              yes
+    TEST_END                 2026-07-31                                              yes
+    INNER_START              2021-03-24                                              yes
+    INNER_END                2024-07-31                                              yes
+    VALID_START              2024-08-01                                              yes
+    VALID_END                2025-07-31                                              yes
+    CHUNKS                   [('2021-03-24', '2021-12-31'), ('                       yes
+    GAP_START                2023-12-30                                              yes
+    GAP_END                  2024-01-19                                              yes
+    CLIM_HALF_WINDOW_DAYS    7.5                                                     yes
+    FEATURE_NAMES            ['forecast_temp_c', 'season_sin',                       yes
+    constants that differ: 1  ['TARGET_HOUR']
+
+-- check 3c: session 24 against session 18, function by function --
+    This is the 'the airport and the hour changed, and nothing
+    else' claim, checked in code rather than argued. Every
+    function is compared character for character with DSM's
+    sealed test script.
+    all_days()                   identical
+    year_fraction()              identical
+    mae()                        identical
+    describe()                   identical
+    _literal()                   identical
+    top_level()                  identical
+    func_source()                identical
+    climatology_from_training()  differs - shown below
+    fit_on_training()            differs - shown below
+    The remaining functions (join, score_test_year, judge_the_bar,
+    the comparison parts and main) differ in the text they print,
+    which is on the screen anyway, and in which published figures
+    they quote. No arithmetic differs; the diffs below cover every
+    function that does any of the loading, fitting or scoring.
+
+-- check 3d: the functions that DO differ, each shown in full --
+    Nothing is hidden: every diff is printed so the changes can be
+    read rather than taken on trust.
+
+    features() - docstring lines: the sentence naming the fixed hour says 02:00 UTC
+    at Dubbo instead of 18:00 (D37), plus a line naming the
+    flipped-season check (F61) that DSM's docstring has no reason
+    to mention. No executable line differs - proved below with
+    docstrings stripped out.
+      --- session18 features
+      +++ session24 features
+      @@ -6,3 +6,5 @@
+           a number line. Hour of day is not a feature - the hour is fixed at that
+      -    airport's target hour, 18:00 UTC at DSM.
+      +    airport's target hour, 02:00 UTC at Dubbo. The encoding is calendar
+      +    position only - it does not know which hemisphere it is in, which is the
+      +    property session 22's flipped-season check (F61) tested.
+           """
+
+    load_forecast_target_hour() - the docstring's session number and airport name. The file-name
+    template already uses the STATION variable, so the executable
+    code is unchanged.
+      --- session18 load_forecast_target_hour
+      +++ session24 load_forecast_target_hour
+      @@ -1,8 +1,8 @@
+       def load_forecast_target_hour():
+      -    """Return {date: forecast_temp_or_None} for 18:00 UTC, up to the hard end.
+      +    """Return {date: forecast_temp_or_None} for 02:00 UTC, up to the hard end.
+       
+      -    Unlike session 16 there is no seal here: DSM's test year is loaded, because
+      -    this is the one authorised look at it (DECISIONS D35.6, D35.10). The only
+      -    cut-off is the hard end at 2026-07-31, which keeps the test set exactly one
+      -    calendar year (D13).
+      +    Unlike session 22 there is no seal here: Dubbo's test year is loaded,
+      +    because this is the one authorised look at it (DECISIONS D39.6, D39.10).
+      +    The only cut-off is the hard end at 2026-07-31, which keeps the test set
+      +    exactly one calendar year (D13).
+           """
+
+    load_obs_target_hour() - the docstring: Dubbo reports ON the hour (:00, the same shape as
+    LFPG), where DSM reports at :54. The D14 rule, the 15-minute
+    tolerance and the near-target bookkeeping are all unchanged -
+    proved below with docstrings stripped out.
+      --- session18 load_obs_target_hour
+      +++ session24 load_obs_target_hour
+      @@ -1,16 +1,14 @@
+       def load_obs_target_hour():
+      -    """Return {date: observed_temp} for the 18:00 UTC hour, up to the hard end.
+      +    """Return {date: observed_temp} for the 02:00 UTC hour, up to the hard end.
+       
+      -    The D14 pairing rule: the routine report belongs to the hour it is nearest
+      -    to, and only if it is within 15 minutes of it. At DSM the routine report is
+      -    stamped at :54 (F34), so the 17:54 report is the observation for 18:00 - a
+      -    six-minute offset, smaller than EGLC's ten. The next report, 18:54, is 54
+      -    minutes out, so the rule picks 17:54 without ambiguity. Anything further off
+      -    is dropped and counted (D35.7).
+      +    The D14 pairing rule: the routine report belongs to the hour it is
+      +    nearest to, and only if it is within 15 minutes of it. At Dubbo the
+      +    routine report is stamped on the hour (F53), so the 02:00 report is
+      +    itself the observation for 02:00 - an exact match, no offset, the same
+      +    shape as LFPG. Anything more than 15 minutes off is dropped and counted.
+       
+      -    'near_target' separately records every routine report whose nearest whole
+      -    hour is the target hour, with how many minutes it sits from it. That is
+      -    bookkeeping for the drop reconciliation only - it is the same framing
+      -    session 15 counted F41 in - and it changes no pairing, keeps no report the
+      -    rule drops, and drops none the rule keeps.
+      +    'near_target' separately records every routine report whose nearest
+      +    whole hour is the target hour, with how many minutes it sits from it.
+      +    That is bookkeeping for the drop reconciliation only - it changes no
+      +    pairing, keeps no report the rule drops, and drops none the rule keeps.
+           """
+
+    fit_on_training() - printed labels only - D35 references become D39 references and
+    the airport is named. Every fitted quantity is computed by the
+    same lines.
+      --- session18 fit_on_training
+      +++ session24 fit_on_training
+      @@ -3,11 +3,12 @@
+       
+      -    Three things are fitted here: the model, the climatology baseline and the
+      -    mean-bias figure. All three see only DSM 2021-03-24 to 2025-07-31 (D35.5,
+      -    D35.8, SPEC 2.1c).
+      +    Three things are fitted here: the model, the climatology baseline and
+      +    the mean-bias figure. All three see only Dubbo 2021-03-24 to
+      +    2025-07-31 (D39.5, D39.8, SPEC 2.1c).
+           """
+      -    line("PART B - fit on DSM's FULL training window only (D35.5, D35.8)")
+      +    line("PART B - fit on Dubbo's FULL training window only (D39.5, D39.8)")
+       
+      -    print("Everything fitted in this session is fitted here, on DSM's training")
+      -    print("window, and on nothing else: the model, the climatology baseline and")
+      -    print("the mean-bias figure. The test year plays no part in any fit.")
+      +    print("Everything fitted in this session is fitted here, on Dubbo's")
+      +    print("training window, and on nothing else: the model, the climatology")
+      +    print("baseline and the mean-bias figure. The test year plays no part in")
+      +    print("any fit.")
+       
+      @@ -19,6 +20,6 @@
+                 f"({train[0]['date']} to {train[-1]['date']})")
+      -    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D35.3)")
+      +    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D39.3)")
+           print("    target         : residual, observed minus forecast (SPEC 4.2,")
+      -    print("                     D35.2). The model never predicts temperature.")
+      -    print("    settings (locked in D35.4, nothing tuned this session):")
+      +    print("                     D39.2). The model never predicts temperature.")
+      +    print("    settings (locked in D39.4, nothing tuned this session):")
+           for k, v in LGB_PARAMS.items():
+      @@ -30,3 +31,3 @@
+       
+      -    sub("the mean-bias figure (D35.8)")
+      +    sub("the mean-bias figure (D39.8)")
+           mean_bias = float(np.mean(y_tr))
+      @@ -38,11 +39,9 @@
+                 f"{mae(y_tr):.3f} degC")
+      -    print(f"    session 16's inner-training figure was {S16_MEAN_BIAS:+.4f} degC")
+      -    print(f"    (F45). EGLC's constant was {EGLC_TEST_MEAN_BIAS:+.4f} (F16) and")
+      -    print(f"    CDG's {CDG_TEST_MEAN_BIAS:+.4f} (F30). DSM's is the largest of")
+      -    print("    the three, so there is a little more constant offset to take")
+      -    print("    here than in Europe - which is what F43 found on the training")
+      -    print("    side, and it is still small beside a mean |bias| near 2 degC.")
+      +    print(f"    session 22's inner-training figure was {S22_MEAN_BIAS:+.4f} degC")
+      +    print(f"    (F62). EGLC's constant was {EGLC_TEST_MEAN_BIAS:+.4f} (F16),")
+      +    print(f"    CDG's {CDG_TEST_MEAN_BIAS:+.4f} (F30) and DSM's "
+      +          f"{DSM_TEST_MEAN_BIAS:+.4f} (F47).")
+       
+      -    sub("the climatology baseline (D35.8, SPEC 2.1c)")
+      -    print("    seasonal average of the OBSERVED temperature at DSM, from")
+      +    sub("the climatology baseline (D39.8, SPEC 2.1c)")
+      +    print("    seasonal average of the OBSERVED temperature at Dubbo, from")
+           print(f"    training-window days only, +/-{CLIM_HALF_WINDOW_DAYS:.1f} days")
+
+-- check 3e: executable code with docstrings removed --
+    A function whose text differs may still do exactly the same
+    thing. This strips the docstring and the name and compares
+    what is left, against session 18's.
+    all_days()                   IDENTICAL
+    year_fraction()              IDENTICAL
+    features()                   IDENTICAL
+    mae()                        IDENTICAL
+    describe()                   IDENTICAL
+    climatology_from_training()  IDENTICAL
+    load_forecast_target_hour()  IDENTICAL
+    load_obs_target_hour()       IDENTICAL
+    Every loader is expected IDENTICAL here: the pairing itself -
+    nearest report, 15-minute tolerance, drop and count - and the
+    file-name template are unchanged; only the docstrings differ.
+
+============================================================================
+PART A - the join at 02:00 UTC, both windows (D39.6, D39.7)
+============================================================================
+airport     : YSDU - Dubbo, Australia (SPEC 3.4, D39.1)
+target hour : 02:00 UTC (SPEC 4.1, D37, D39.1) -
+              local standard noon at Dubbo, NOT 12:00 or 18:00
+              UTC. Daylight saving is deliberately ignored, so the
+              clock reads 12:00 AEST in winter and 13:00 AEDT in
+              summer either way (D37).
+pairing rule: the routine report nearest the hour, and only if
+              within 15 minutes of it (DECISIONS D14, D39.7). At
+              Dubbo the routine report is stamped on the hour
+              (F53), so 02:00 UTC is served by the 02:00 report -
+              an exact match, no offset, the same shape as LFPG.
+
+DUBBO'S TEST YEAR IS OPENED HERE, for the first and only time
+(D39.10). The two 2026 YSDU raw chunk files are read for the
+first time in this project. Sessions 19, 20 and 22 never opened
+them.
+
+-- what was loaded --
+    forecast chunk files opened : 6 (all six, including both 2026 files)
+    forecast 2:00 rows seen    : 1,956
+    of those, after 2026-07-31 : 0 (not used, D13)
+    forecast 2:00 rows kept    : 1,956
+    observation 2:00 reports seen  : 1,943
+    of those, after 2026-07-31: 0 (not used, D13)
+    observation 2:00 reports kept  : 1,930
+
+-- observation reports rejected by the rules --
+    reports more than 15 min from the hour, dropped (D14): 12
+    reports carrying no temperature (M), dropped (2.2)   : 0
+
+-- the pairing offset actually used, every kept day --
+    offset from 02:00 UTC         all loaded days  of which test year
+    +0 minutes                              1,930                 356
+    F53 and F60 predicted 0 minutes on every kept day. So the
+    pairing at Dubbo is never a matter of choosing the nearer of
+    two reports - the target-hour report either exists or it
+    does not.
+    days with MORE THAN ONE report inside D14's 15-minute window: 1
+    So the pairing is essentially never ambiguous at Dubbo either.
+
+-- rows kept and dropped, by period --
+    period                                         days   kept   drop  no fc  null fc  no obs
+    TRAINING   2021-03-24..2025-07-31             1,591  1,553     38      0       21      17
+    TEST YEAR  2025-08-01..2026-07-31               365    356      9      0        0       9
+      (of which) inner  2021-03-24..2024-07-31    1,226  1,193     33      0       21      12
+      (of which) valid  2024-08-01..2025-07-31      365    360      5      0        0       5
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'   = the forecast series had no row for 2:00;
+             'null fc' = it had a row but the value was null;
+             'no obs'  = no usable observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2, D39.7).
+
+-- reconciliation 1: does the training window add up? (D39.5, D39.11) --
+    The training window is Dubbo's inner-training plus Dubbo's
+    validation year, which session 22 counted separately. Those
+    published counts must add up to this session's training
+    count, or something has drifted and this session must stop.
+    session 22 inner-training kept rows (F60): 1,193
+    session 22 validation kept rows (F60)    :   360
+    published total                          : 1,553
+    this session, training window kept rows  : 1,553
+    this session, of which dated <= 2024-07-31 : 1,193
+    this session, of which dated >= 2024-08-01 : 360
+    reconciles: YES
+    (1,553, not 1,571 like DSM or 1,569 like the two European
+     airports: Dubbo loses 21 gap days instead of 20 - its
+     02:00 target falls before the gap's last missing hour,
+     11:00 UTC - plus 17 real observation-side losses, the first
+     time any airport's training refit loses meaningful rows to
+     something other than the shared gap. D39.5, F59, F60.)
+
+-- the F57/F59 forecast gap, for the record --
+    gap covers 21 calendar days (2023-12-30 to 2024-01-19), all inside training
+    of those, dropped here: 21
+    (21, one more than EGLC/LFPG/DSM's 20: Dubbo's 02:00 target
+     falls BEFORE the gap's last missing hour, 2024-01-19 11:00
+     UTC, so that date is still inside the gap at 02:00 - F59.)
+
+-- THE TEST-YEAR DROP COUNT (D39.7) - every date named, both causes --
+    test-year calendar days : 365
+    paired rows kept        : 356
+    days dropped            : 9
+    UNLIKE EVERY EARLIER AIRPORT, D39.7 predicted this would NOT
+    be zero - Dubbo's own gap map (F59) found 9 observation-side
+    losses inside the test year, with the individual 'no report'
+    dates deliberately left unnamed until this session opened the
+    test year (D39.7). They are named below, for the first time
+    anywhere in this project.
+      2025-08-30  (no usable observation)
+          routine report at 2:00-30 min, temp 10.00  -> nearest the target hour but >15 min out - dropped
+      2025-10-28  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2025-11-15  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2025-11-25  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2025-11-30  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2025-12-03  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2026-01-18  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2026-02-14  (no usable observation)
+          no routine report near the 2:00 hour at all
+      2026-04-12  (no usable observation)
+          no routine report near the 2:00 hour at all
+    Every drop is named. Nothing was filled (SPEC 2.2).
+
+-- reconciliation 2: THE PAIRED-ROW COUNT AGAINST D39.7's ADVANCE PREDICTION --
+    D39.7 wrote these numbers down in session 23, from session 20's
+    gap map, BEFORE Dubbo's test year was opened. A prediction made
+    before the look is a stronger check than a count made after it.
+    A PAIRED-ROW count that will not reconcile is a D39.11 stop
+    signal. D39.7 explicitly did NOT predict a scored-day count -
+    that is reported separately below, not checked here.
+
+    cause                                                predicted  actual  verdict
+    forecast-gap days in the test year (F57, F59)                0       0  MATCHES
+    days lost to an off-hour-only report (F59)                   1       1  MATCHES
+    days lost to no report near the 02:00 hour (F59)             8       8  MATCHES
+    days lost to a report in place with no temperature           0       0  MATCHES
+    paired rows expected (F59)                                 356     356  MATCHES
+
+-- shape check: first and last kept row of each window --
+    training   2021-03-24 -> 2025-07-31   1,553 rows
+    test year  2025-08-01 -> 2026-07-31   356 rows
+
+============================================================================
+PART B - fit on Dubbo's FULL training window only (D39.5, D39.8)
+============================================================================
+Everything fitted in this session is fitted here, on Dubbo's
+training window, and on nothing else: the model, the climatology
+baseline and the mean-bias figure. The test year plays no part in
+any fit.
+
+-- the model --
+    rows fitted on : 1,553  (2021-03-24 to 2025-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (D19, D39.3)
+    target         : residual, observed minus forecast (SPEC 4.2,
+                     D39.2). The model never predicts temperature.
+    settings (locked in D39.4, nothing tuned this session):
+      objective = regression_l1
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+
+-- the mean-bias figure (D39.8) --
+    mean training-window bias (observed - forecast): -0.1914 degC
+    over 1,553 training days. The mean-bias reference is
+    the raw forecast plus this one constant, and nothing else.
+    raw GFS MAE on the training window (in sample): 1.298 degC
+    session 22's inner-training figure was -0.1360 degC
+    (F62). EGLC's constant was -0.1479 (F16),
+    CDG's -0.0600 (F30) and DSM's -0.2715 (F47).
+
+-- the climatology baseline (D39.8, SPEC 2.1c) --
+    seasonal average of the OBSERVED temperature at Dubbo, from
+    training-window days only, +/-7.5 days
+    measured around the circle so late December and early January
+    are neighbours.
+
+============================================================================
+PART C - THE SEALED TEST AT DUBBO (D39.6, D39.8, D39.9)
+============================================================================
+
+-- the common test set (every method judged on the same days) --
+    paired test rows from part A                 : 356
+    dropped: no previous-day 2:00 observation    : 9  (2025-08-31, 2025-10-29, 2025-11-16, 2025-11-26, 2025-12-01, 2025-12-04, 2026-01-19, 2026-02-15, 2026-04-13)
+    days every method is scored on                : 347
+    D39.7 did NOT predict this number in advance - unlike every
+    earlier airport, it could only be pinned once the test year's
+    actual dates were known (module docstring, D39.7). The dates
+    above, if any, are how far below the 356 paired rows it fell,
+    and each is a day whose PREVIOUS calendar day was itself one
+    of the observation-side losses named in PART A.
+    date range                                    : 2025-08-01 to 2026-07-31
+    Persistence needs yesterday's 2:00 observation, a
+    past-only value (SPEC 2.1d). For the first test day,
+    2025-08-01, 'yesterday' is 2025-07-31, which sits in the
+    training window and is not one of F60's named observation-
+    side losses. That is a past observation, so it is legal and
+    it is used - written down in D39.8 in advance so it is not
+    mistaken for leakage. Nothing was filled in (SPEC 2.2).
+    check: the first scored day is 2025-08-01, and its
+           persistence value is +13.0 degC, which is the
+           2025-07-31 2:00 observation (+13.0 degC).
+    climatology: training days behind each value: min 45, max 76, mean 64.0
+
+-- DUBBO TEST-YEAR MAE, 347 common days (2025-08-01 to 2026-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss  part of bar?
+    Raw GFS                    1.251     -0.212      1.748        7.50           YES
+    Persistence                2.669     +0.069      3.765       19.00           YES
+    Climatology                3.143     +1.687      4.061       13.36            no
+    Mean-bias reference        1.238     -0.020      1.735        7.31            no
+    ML-corrected               1.210     +0.144      1.686        6.57     the claim
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+    The bar is raw GFS and persistence only (SPEC 5.2, 5.3, D23).
+
+============================================================================
+PART D - THE VERDICT against the frozen bar (SPEC 5.3, 5.0, D39.9)
+============================================================================
+The bar, frozen before any model existed and unchanged since:
+  an airport passes if the corrected forecast has a LOWER MAE than
+  BOTH raw GFS AND persistence, over that airport's held-out test
+  year. Stage 2 is each further individual airport put to that bar,
+  one at a time; Dubbo is the airport in it now.
+It is qualitative. There is no numeric margin and there never will
+be one (SPEC 5.3, DECISIONS D22). Climatology and the mean-bias
+reference are reported but do not decide pass or fail (D23).
+The bar is judged once per airport, on that airport's own data
+(SPEC 5.0). EGLC's, CDG's and DSM's passes do not excuse a Dubbo
+failure, and Dubbo is measured against Dubbo's own raw GFS and
+Dubbo's own persistence only. Stage 1's 16.3% and stage 2's
+13.5%/6.3% are not targets (D39.9).
+
+-- the two comparisons that decide it --
+    vs Raw GFS                BEATEN      1.210 against 1.251  -> +0.041 degC (+3.3%)
+    vs Persistence            BEATEN      1.210 against 2.669  -> +1.458 degC (+54.7%)
+
+    **********************************************************************
+    *  DUBBO PASSES.                                                    *
+    *  At Dubbo the corrected forecast beats both raw GFS and           *
+    *  persistence over the held-out test year, on mean absolute        *
+    *  error. The recipe travelled to a fourth continent, a             *
+    *  flipped hemisphere and a flipped season cycle, at a              *
+    *  third distinct target hour.                                      *
+    **********************************************************************
+
+-- the size of the margin, stated plainly (D22) --
+    D22 requires the margin to be reported prominently, so that a
+    technical pass by a hair reads as what it is.
+    margin over raw GFS     : +0.041 degC (+3.3% of raw GFS MAE)
+    margin over persistence : +1.458 degC (+54.7% of persistence MAE)
+
+    D39.8 said in advance which half of the bar binds at Dubbo:
+    persistence is far weaker than raw GFS there (2.577 against
+    1.397 on the validation year, F62), so THE RAW-GFS MARGIN IS
+    THE ONE THAT DECIDES THE VERDICT IN PRACTICE. Both halves are
+    still required by the bar.
+    raw GFS MAE       : 1.251 degC
+    persistence MAE   : 2.669 degC  (2.13x raw GFS)
+    days the correction was closer than raw GFS : 182 of 347 (52.4%)
+    days it was further away                    : 165 of 347 (47.6%)
+    days it made no difference                  : 0
+
+-- the two informative references (not part of the bar, D23) --
+    vs Mean-bias reference    BEATEN      1.210 against 1.238  -> +0.028 degC (+2.3%)
+    vs Climatology            BEATEN      1.210 against 3.143  -> +1.933 degC (+61.5%)
+
+    The mean-bias reference is the whole forecast plus one constant -
+    the simplest correction anyone could apply, with no learning in
+    it. Beating it is what separates 'the model learned real
+    structure' from 'the model found an offset'.
+    -> It is beaten, so there is structure in the correction.
+    Note: the mean-bias reference is BETTER than raw GFS here,
+    as D39.8 said it was on Dubbo's validation year (F62,
+    -0.136 on inner-training). So a small constant is worth
+    taking at Dubbo, as at EGLC and DSM and unlike CDG - which
+    makes the margin over this reference the sharper test of
+    whether the model found structure.
+
+-- per season (SPEC 5.4 parks deeper season testing; this is context) --
+    season         days   raw GFS   ML-corr    change   persist
+    winter DJF       83     1.325     1.330    +0.005     2.880
+    spring MAM       90     1.010     0.972    -0.038     2.278
+    summer JJA       90     1.194     1.199    +0.004     1.978
+    autumn SON       84     1.498     1.359    -0.138     3.619
+    'change' is the corrected MAE minus raw GFS MAE for that season.
+    Negative means the correction helped; positive means it hurt.
+    Season labels are Northern-calendar, for column alignment with
+    the other airports; 'autumn SON' is Dubbo's own local spring
+    (D37, F61) - the season D39.12's watch-item names (PART G).
+    The headline verdict above is judged on the whole year, not
+    season by season (SPEC 5.3).
+
+============================================================================
+PART E - the test number beside session 22's Dubbo rehearsal
+============================================================================
+A DIFFERENCE IS EXPECTED AND IS NOT A PROBLEM (D39.5). Three things
+differ between the two columns below:
+  1. a different year of weather - the validation year 2024-08-01 to
+     2025-07-31, against the test year 2025-08-01 to 2026-07-31;
+  2. a model fitted on about 30% more data - Dubbo's full training
+     window here (1,553 rows), Dubbo's inner-training only in
+     session 22 (1,193 rows);
+  3. therefore climatology and the mean-bias figure differ too.
+The recipe is identical. Session 22's figures are quoted from
+notes/session-22-check-output.txt and DECISIONS F62.
+
+-- MAE, side by side (different years - context, not a like-for-like) --
+    method                  s22 valid   s24 test  difference
+    Raw GFS                     1.397      1.251      -0.146
+    Persistence                 2.577      2.669      +0.092
+    Climatology                 2.888      3.143      +0.255
+    Mean-bias reference         1.368      1.238      -0.130
+    ML-corrected                1.283      1.210      -0.073
+    days scored                   355        347
+
+    Read the raw GFS row first. It says how hard the two years were
+    for GFS in the first place, which is the context every other
+    row has to be read against.
+
+-- the margin over raw GFS, which is the comparable quantity --
+    session 22, validation year    +0.114 degC (+8.2%)
+    session 24, sealed test year   +0.041 degC (+3.3%)
+    Margins are more comparable than raw MAE figures, because they
+    divide out how hard the year was. They are still two different
+    years, so this is a sense check, not a measurement.
+
+-- per season, session 22 validation against session 24 test --
+    season        s22 raw   s22 ML  s22 chg   s24 raw   s24 ML  s24 chg
+    winter DJF      1.344    1.290   -0.054     1.325    1.330   +0.005
+    spring MAM      1.219    1.241   +0.022     1.010    0.972   -0.038
+    summer JJA      1.170    1.236   +0.066     1.194    1.199   +0.004
+    autumn SON      1.884    1.368   -0.516     1.498    1.359   -0.138
+    'chg' is the corrected MAE minus raw GFS MAE for that season.
+    F62 found Dubbo's win concentrated almost entirely in 'autumn
+    SON' (Dubbo's own local spring) on the rehearsal. This line
+    says what the test year did in the same season.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                     gain  gain share   splits   s22 share  s22 splits
+    forecast_temp_c           4457.7       45.3%    1,560       47.8%       1,633
+    season_sin                2987.9       30.3%    1,480       30.2%       1,555
+    season_cos                2399.9       24.4%    1,160       22.0%       1,012
+    Both inputs are used and neither is ignored. Session 22 found
+    forecast temperature carrying the largest share of any airport
+    yet, with season_sin second (F62).
+
+-- in-sample check only, training window (NOT a result) --
+    raw GFS MAE on the training window      : 1.298 degC
+    ML-corrected MAE on the training window : 1.005 degC
+    session 22, same figure on inner-training: 0.961 degC
+    A model always looks better on the data it was fitted to, so
+    this proves nothing about performance. It is here only so the
+    number is not a surprise later.
+
+-- the correction the model actually applied over Dubbo's test year --
+    predicted residual added to the forecast
+      n      = 347
+      mean   = -0.356 degC
+      median = -0.303 degC
+      st dev = 0.731 degC
+      min    = -2.2 degC   max = +2.0 degC
+      5th pct = -1.59   25th = -0.87   75th = +0.20   95th = +0.64
+      mean absolute size = 0.635 degC
+    Session 22's corrections over Dubbo's validation year, for
+    scale, are in notes/session-22-check-output.txt.
+
+============================================================================
+PART F - how the recipe travelled: Dubbo beside EGLC (F16), CDG (F30) and DSM (F47)
+============================================================================
+EGLC's figures are session 07's sealed test (F16), CDG's are
+session 13's (F30) and DSM's are session 18's (F47), quoted from
+their notes files.
+
+READ THIS AS CONTEXT, NOT AS A COMPARISON OF LIKE WITH LIKE. SPEC
+5.0 judges each airport on its own data. Three cautions, all
+written down before this look:
+  1. Dubbo changes the LOCATION AND THE TARGET HOUR against every
+     earlier airport (D37, SPEC 4.1, F63) - the same honest caveat
+     D33 attaches to DSM, now doubled: this is the first airport
+     compared against two prior locations that were EACH already
+     not the controlled EGLC/CDG comparison.
+  2. All four airports were tested on THE SAME TWELVE MONTHS,
+     because D13's split dates are shared. Dubbo answers the
+     hemisphere/season-cycle axis (F63) and not the year axis.
+  3. EGLC's 16.3%, CDG's 13.5% and DSM's 6.3% are not targets
+     Dubbo had to reach (D39.9).
+
+-- test-year MAE, each airport on its own test year --
+    method                      EGLC       CDG       DSM     Dubbo
+    Raw GFS                    1.242     1.396     1.815     1.251
+    Persistence                2.096     2.300     4.003     2.669
+    Climatology                2.972     3.774     5.030     3.143
+    Mean-bias reference        1.234     1.389     1.760     1.238
+    ML-corrected               1.040     1.208     1.700     1.210
+    days scored                  363       363       365       347
+    training rows fitted       1,569     1,569     1,571     1,553
+    All five rows are error measures, so larger is worse.
+
+-- the margin over each reference, all four airports --
+    vs                                   EGLC                CDG                DSM              Dubbo
+    Raw GFS                   +0.202 (+16.3%)    +0.188 (+13.5%)     +0.115 (+6.3%)     +0.041 (+3.3%)
+    Persistence               +1.056 (+50.4%)    +1.092 (+47.5%)    +2.303 (+57.5%)    +1.458 (+54.7%)
+    Mean-bias reference       +0.194 (+15.7%)    +0.181 (+13.0%)     +0.060 (+3.4%)     +0.028 (+2.3%)
+    Climatology               +1.932 (+65.0%)    +2.566 (+68.0%)    +3.330 (+66.2%)    +1.933 (+61.5%)
+    Margins are degC of MAE saved by the correction. Positive means
+    the correction is ahead of that reference. The PERCENTAGE is
+    the comparable figure across airports, because it divides out
+    how hard each airport's problem is.
+
+-- rehearsal margin against test margin, at all four airports --
+    airport            rehearsal margin              test margin
+    EGLC             +0.074 degC (6.0%)      +0.202 degC (16.3%)
+    CDG              +0.050 degC (3.5%)      +0.188 degC (13.5%)
+    DSM             +0.282 degC (16.1%)       +0.115 degC (6.3%)
+    Dubbo            +0.114 degC (8.2%)      +0.041 degC (+3.3%)
+    D39.10 named Dubbo's rehearsal margin (8.2%) as sitting
+    between CDG's and DSM's, and said explicitly that this was NOT
+    a reason to expect a pass either way. This line records what
+    actually happened.
+
+-- per season, all four sealed tests --
+    season        EGLC chg   CDG chg   DSM chg  Dubbo raw  Dubbo ML  Dubbo chg
+    winter DJF      -0.007    +0.010    -0.013      1.325     1.330     +0.005
+    spring MAM      -0.066    -0.104    +0.195      1.010     0.972     -0.038
+    summer JJA      -0.618    -0.527    -0.331      1.194     1.199     +0.004
+    autumn SON      -0.111    -0.134    -0.310      1.498     1.359     -0.138
+    'chg' is corrected MAE minus raw GFS MAE for that season.
+    Negative is better than raw GFS; positive is worse. Labels are
+    Northern-calendar; 'autumn SON' is Dubbo's own local spring.
+
+-- seasons where the correction helped, on the sealed test year --
+    EGLC: 4 of 4   CDG: 3 of 4   DSM: 3 of 4   Dubbo: 2 of 4
+    D39.12's watch-item named the validation-year rehearsal's 2-of-4
+    seasons-helped as the fewest of any airport so far (F62). This
+    line is the SAME question asked of the test year.
+
+-- day by day, on each airport's test year --
+    EGLC : closer than raw GFS on 221 of 363 days (60.9%)
+    CDG  : closer than raw GFS on 213 of 363 days (58.7%)
+    DSM  : closer than raw GFS on 195 of 365 days (53.4%)
+    Dubbo: closer than raw GFS on 182 of 347 days (52.4%)
+
+-- feature importances, all four sealed tests --
+    feature             EGLC gain %   CDG gain %   DSM gain %  Dubbo gain %  Dubbo splits
+    forecast_temp_c           51.8%        38.2%        43.4%         45.3%         1,560
+    season_sin                24.5%        34.9%        36.1%         30.3%         1,480
+    season_cos                23.7%        26.9%        20.6%         24.4%         1,160
+    Gain totals depend on the data, so the shares and split counts
+    are what compare meaningfully between airports.
+
+-- one data-source fact that is STRONGER at Dubbo than at DSM (D39.13) --
+    Every Dubbo forecast chunk was pulled with models=gfs_global
+    (D16, F57, read back out of the saved .meta.txt URLs). At DSM
+    the gfs_global versus gfs_seamless comparison found the two
+    strings DIFFER on recent dates - 259 of 264 hours, by up to
+    12.3 degC (F40), because Des Moines is inside CONUS. At Dubbo
+    the same comparison (run in the SAME session as verify-on-
+    contact, F52, rather than deferred) found the two strings
+    IDENTICAL in both windows tested, 312 and 264 hours compared,
+    0 differences in either, at the same grid point throughout.
+    So Dubbo's dataset is confirmed identical to what gfs_seamless
+    would have given - a stronger claim than DSM's data can make
+    and one LFPG's still cannot (Q20 was never re-checked there).
+    Every Dubbo chunk was still pulled with gfs_global regardless,
+    so nothing in the project depends on this result either way.
+
+============================================================================
+PART G - D39.12's single-season watch-item, described (NOT acted on)
+============================================================================
+D39.12 named this before the look, so that any inspection after
+the test is honest: the place to look was written down before
+anyone knew what the result was. F62 measured, on Dubbo's
+validation year, that the correction's win is carried almost
+entirely by one Northern-labelled season (autumn SON, Dubbo's own
+local spring, -0.516 degC of the average improvement) while the
+other three seasons are close to flat or very slightly worse.
+
+THIS IS A DESCRIPTION AND NOTHING ELSE. The method is locked, it
+did not change, and nothing here licenses a re-run or an
+adjustment (D39.10, D39.11, D39.12).
+
+-- what F62 measured on the VALIDATION year, quoted from the lock --
+    season         days   raw GFS   ML-corr    change
+    winter DJF       90     1.344     1.290    -0.055
+    spring MAM       90     1.219     1.241    +0.022
+    summer JJA       90     1.170     1.236    +0.066
+    autumn SON       85     1.884     1.368    -0.516
+    seasons helped, validation year : 2 of 4
+      (the fewest of any airport so far - EGLC, CDG and DSM each
+       improved in 3 of 4)
+    day-by-day win rate, validation year : 53.5% (190 of 355 days, also the lowest of the four)
+
+-- the same seasons, on the TEST year - what actually happened --
+    season         days   raw GFS   ML-corr    change   validation chg   moved?
+    winter DJF       83     1.325     1.330    +0.005           -0.055   FLIPPED
+    spring MAM       90     1.010     0.972    -0.038           +0.022   FLIPPED
+    summer JJA       90     1.194     1.199    +0.004           +0.066   same direction
+    autumn SON       84     1.498     1.359    -0.138           -0.516   same direction
+    seasons helped, test year : 2 of 4
+
+    'autumn SON' (Dubbo's own local spring, D37, F61) is the
+    season the watch-item names as the one to look at first if
+    the overall result swings either way. Its test-year 'change'
+    row, above, is that look - a description, not an adjustment.
+
+    day-by-day win rate, test year : 52.4% (182 of 347 days)
+    day-by-day win rate, validation year : 53.5% (190 of 355 days)
+
+-- the worst single misses of the test year, for the record --
+    date          forecast  observed   raw err    ML err
+    2025-10-26       30.50     23.00      7.50      6.28
+    2026-03-07       32.00     25.00      7.00      6.57
+    2025-10-25       26.50     20.00      6.50      4.48
+    2025-10-09       25.00     19.00      6.00      4.86
+    2026-06-28       11.10     17.00      5.90      6.44
+    Listed because D39.12 asked for the single-season watch-item
+    to be the first place to look if the result behaved oddly.
+    Looking is describing; it changes nothing.
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). Nothing was
+committed. Dubbo's test year was opened once, the locked method
+ran once, and the number above is the result of record (D39.10).
+
+DUBBO: PASSED   ML-corrected test-year MAE = 1.210 degC against raw GFS 1.251 and persistence 2.669
+This output is saved at notes/session-24-check-output.txt

@@ -6562,3 +6562,386 @@ live open question, unchanged by this session.
 **Nothing was committed.**
 
 ---
+
+## 2026-08-19 — Session 24 findings (the Dubbo sealed test)
+
+The single authorised look at Dubbo's test year (D39.10), executing DECISIONS
+D39 exactly as written. The script is `scripts/session24_test.py` and the
+full real output is `notes/session-24-check-output.txt`. Two consecutive runs
+produced byte-identical output apart from the clock time in the header line.
+PART 0 proves against `scripts/session05_model.py` that 0 model settings
+differ, and against `scripts/session18_test.py` (DSM's sealed test) that
+exactly 1 constant differs — TARGET_HOUR, 18 to 2 — which is D37 and nothing
+else; every loader function is IDENTICAL once docstrings are stripped out,
+so "the airport and the hour changed, and nothing else" is checked in code,
+not argued.
+
+**F64. DUBBO PASSES. At Dubbo the corrected forecast beats both raw GFS and
+persistence on the held-out test year — the narrowest margin of the four
+airports, and the one D39.12's watch-item said in advance to read carefully.**
+
+The verdict first, because that is what the session was for:
+
+```
+                        MAE degC   part of bar?
+Raw GFS                    1.251   YES
+Persistence                2.669   YES
+Climatology                3.143   no  (informative)
+Mean-bias reference        1.238   no  (informative)
+ML-corrected               1.210   the claim
+
+vs Raw GFS       BEATEN   1.210 against 1.251  ->  0.041 degC better (3.3%)
+vs Persistence   BEATEN   1.210 against 2.669  ->  1.458 degC better (54.7%)
+```
+
+**Dubbo passes on the frozen bar (SPEC 5.3, 5.0, D39.9): the corrected
+forecast has a lower MAE than both raw GFS and persistence over 2025-08-01
+to 2026-07-31 at Dubbo.** The margin is stated prominently because D22
+requires it. It is **0.041 degC, a 3.3% cut against raw GFS** — a clear pass,
+but the smallest margin any airport has returned on a sealed test year
+(EGLC 16.3%, CDG 13.5%, DSM 6.3%), continuing the same direction DSM's test
+already showed against its own rehearsal.
+
+**The training refit and the test-year join both reconcile exactly against
+what D39 predicted before the look — including the one respect in which
+D39's own prediction was structurally weaker than every earlier lock's.**
+
+```
+training window kept rows            predicted   actual   verdict
+inner-training (F60)                     1,193    1,193    MATCHES
+validation (F60)                           360      360    MATCHES
+full refit total (D39.5)                 1,553    1,553    MATCHES
+
+test-year paired rows (D39.7)         predicted   actual   verdict
+forecast-gap days                            0        0    MATCHES
+days lost to an off-hour-only report         1        1    MATCHES
+days lost to no report near 02:00            8        8    MATCHES
+days lost to a report with no temp           0        0    MATCHES
+paired rows                                356      356    MATCHES
+```
+
+**Every one of the 9 test-year observation-side drops is named here, for the
+first time anywhere in this project** — D39.7 deliberately left them
+unnamed, because naming them would have meant opening the test year early:
+
+```
+2025-08-30   off-hour report only (:30, 30 min out) — dropped by D14
+2025-10-28   no report near 02:00 at all
+2025-11-15   no report near 02:00 at all
+2025-11-25   no report near 02:00 at all
+2025-11-30   no report near 02:00 at all
+2025-12-03   no report near 02:00 at all
+2026-01-18   no report near 02:00 at all
+2026-02-14   no report near 02:00 at all
+2026-04-12   no report near 02:00 at all
+```
+
+**Unlike every earlier airport, the paired-row count (356) and the
+scored-day count (347) are not the same drop.** D39.7 explained why in
+advance: persistence needs the previous calendar day's observation, and with
+9 scattered losses instead of DSM's 0 or CDG's 1, some of those losses cost
+the day *after* them as well. Exactly that happened, on all 9 of the 9 — each
+of the 9 dates above cost persistence its following day too, so 356 paired
+rows became **347 scored days**, all five methods judged on the same 347:
+
+```
+2025-08-31   2025-10-29   2025-11-16   2025-11-26   2025-12-01
+2025-12-04   2026-01-19   2026-02-15   2026-04-13
+```
+
+No day was lost twice — the 9 "day after" losses are all distinct from the 9
+original losses and from each other. This is a genuinely new shape of
+bookkeeping in the project (every earlier airport's paired-row and scored-day
+counts differed by at most one), and it is exactly what D39.7 said would need
+the actual dates to resolve.
+
+**D39.8's persistence note, checked and confirmed as legal.** The first
+scored day, 2025-08-01, takes its persistence value from the 2025-07-31
+02:00 observation (+13.0 degC) — a training-window value, not one of F60's
+named observation-side losses, exactly as D39.8 said in advance.
+
+The full table, all five methods on the same 347 days:
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.251     -0.212      1.748        7.50
+Persistence                2.669     +0.069      3.765       19.00
+Climatology                3.143     +1.687      4.061       13.36
+Mean-bias reference        1.238     -0.020      1.735        7.31
+ML-corrected               1.210     +0.144      1.686        6.57
+```
+
+**D39.8 named the deciding half of the bar in advance and it was right.**
+Persistence at Dubbo is 2.669 degC, **2.13 times raw GFS**, so the raw-GFS
+comparison is what decides the verdict in practice; the persistence half is
+met by a wide margin that says little. Both halves are still required by the
+bar and both were met.
+
+**It beats the mean-bias reference too, but only by 2.3% (1.210 against
+1.238) — the thinnest evidence of learned structure any airport has shown.**
+At EGLC the model beat the mean-bias reference by 15.7%, at CDG by 13.0%, at
+DSM by 3.4%. At Dubbo it beats it by 2.3%. The mean training-window bias
+itself is **-0.1914 degC** — smaller than DSM's -0.2715 but larger than
+CDG's -0.0600 and EGLC's -0.1479 — so a small constant is worth taking here,
+as D39.8 said, and what is left over after taking it is a thin but real win.
+The honest reading: at Dubbo, more of the correction's margin over raw GFS is
+carried by that one constant than at any airport tested so far, and less is
+left over as structure — continuing DSM's direction, not reversing it.
+
+**Day by day, not just on average.** The correction was closer to the truth
+than raw GFS on **182 of 347 days (52.4%)** and further away on 165
+(47.6%), with no day where it made no difference. That is the lowest of the
+four airports — EGLC 60.9% (F16), CDG 58.7% (F30), DSM 53.4% (F47) — a clean
+descending order across the four sealed tests so far, though nothing in the
+recipe orders them; it is simply what each airport's own test year gave.
+
+**Per season, the correction helped in two of the four — the fewest of any
+airport, matching what F62 already found on the rehearsal, but the SEASON
+THAT HELPED IS NOT THE SAME PAIR:**
+
+```
+season         days   raw GFS   ML-corr    change   persistence
+winter DJF       83     1.325     1.330    +0.005         2.880
+spring MAM       90     1.010     0.972    -0.038         2.278
+summer JJA       90     1.194     1.199    +0.004         1.978
+autumn SON       84     1.498     1.359    -0.138         3.619
+```
+
+("change" is corrected MAE minus raw GFS MAE. Negative means better than raw
+GFS.) On the validation year (F62), winter and autumn (SON) helped; on the
+test year, spring and autumn (SON) help — **winter and spring swapped which
+one hurts and which one helps**, while summer stayed a small loss in both
+years and autumn (SON) — Dubbo's own local spring, the season D39.12's
+watch-item named in advance — helped in both, but by much less.
+
+**The single-season watch-item (D39.12), read exactly as it was written down
+before the look: the season that carried almost the entire rehearsal win is
+where almost the entire shrinkage happened.** F62 measured the correction's
+validation-year win as carried overwhelmingly by Northern-labelled autumn
+SON, -0.516 degC of the average improvement on 85 days, with the other three
+seasons close to flat. On the test year that same season, 84 days, improved
+by only -0.138 degC — a swing of **+0.378 degC**, more than two-thirds of
+its own prior margin gone. Weighted across the year, that one season's own
+shrinkage (roughly a quarter of the year's days, losing 0.378 degC of margin)
+is close to sufficient on its own to explain the whole-year margin's fall
+from 0.114 degC (8.2%, F62) to 0.041 degC (3.3%, this session) — winter and
+spring's sign flips roughly cancel each other (winter +0.060 degC worse,
+spring 0.060 degC better) and summer improved slightly (+0.066 to +0.004).
+**This is exactly the exposure D39.12 named before anyone knew the result:
+a win concentrated in one season is more exposed to that season's own
+year-to-year weather than a win spread across all four would be, and here
+that is the visible mechanism behind the narrower test margin — a
+description, not a licence to re-run or adjust anything (D39.10, D39.11).**
+
+**Feature importances, the sanity check that it used what it was meant to:**
+
+```
+feature                 gain  gain share   splits   s22 share  s22 splits
+forecast_temp_c        4457.7       45.3%    1,560       47.8%       1,633
+season_sin              2987.9       30.3%    1,480       30.2%       1,555
+season_cos              2399.9       24.4%    1,160       22.0%       1,012
+```
+
+Nothing is ignored and nothing dominates; the shares are close to session
+22's inner-training-only figures. Beside the other three sealed tests: EGLC
+51.8/24.5/23.7, CDG 38.2/34.9/26.9, DSM 43.4/36.1/20.6. Dubbo's forecast-
+temperature share (45.3%) sits between CDG's and DSM's.
+
+**The test number against session 22's rehearsal number — a difference was
+expected (D39.5) and it is not a problem.**
+
+```
+method                  s22 valid   s24 test  difference
+Raw GFS                     1.397      1.251      -0.146
+Persistence                 2.577      2.669      +0.092
+Climatology                 2.888      3.143      +0.255
+Mean-bias reference         1.368      1.238      -0.130
+ML-corrected                1.283      1.210      -0.073
+days scored                   355        347
+
+margin over raw GFS:  validation +0.114 (8.2%)   test +0.041 (3.3%)
+```
+
+Read the raw GFS row first: the test year was genuinely easier for GFS at
+Dubbo than the validation year was (1.251 against 1.397), and every method's
+raw MAE fell with it except persistence and climatology, which rose slightly.
+**The margin fell more than raw GFS's own difficulty would explain on its
+own** — which is what the season-by-season table above already shows in
+more detail.
+
+**For the record, in-sample MAE on the training window was 1.005 degC
+against raw GFS's 1.298 (session 22's inner-training figure was 0.961).** A
+model always looks better on the data it was fitted to; that figure proves
+nothing and is here only so it is not a surprise later.
+
+**How the recipe travelled, all four sealed tests side by side:**
+
+```
+method                      EGLC       CDG       DSM     Dubbo
+Raw GFS                    1.242     1.396     1.815     1.251
+Persistence                2.096     2.300     4.003     2.669
+Climatology                2.972     3.774     5.030     3.143
+Mean-bias reference        1.234     1.389     1.760     1.238
+ML-corrected               1.040     1.208     1.700     1.210
+days scored                  363       363       365       347
+training rows fitted       1,569     1,569     1,571     1,553
+
+margin over raw GFS        16.3%     13.5%      6.3%      3.3%
+margin over persistence    50.4%     47.5%     57.5%     54.7%
+margin over mean-bias ref  15.7%     13.0%      3.4%      2.3%
+seasons helped               4/4       3/4       3/4       2/4
+day-by-day win rate        60.9%     58.7%     53.4%     52.4%
+```
+
+**Every one of the last four rows moves in the same direction across the
+four airports in the order they were tested** — narrower margins, fewer
+seasons helped, lower day-by-day win rate. Nothing in the recipe orders
+airports this way; it is a description of what each airport's own test year
+gave, not a trend the project predicted or relied on. Read together with
+F63: the recipe travels to a fourth continent, a flipped hemisphere and a
+flipped season cycle, and it still passes — but by the thinnest margin yet,
+on the airport whose rehearsal was already the most concentrated in one
+season of the four (F62).
+
+**Rehearsal margin against test margin, all four airports — Dubbo is the
+second airport, after DSM, where the test margin is SMALLER than the
+rehearsal margin:**
+
+```
+airport            rehearsal margin              test margin
+EGLC             +0.074 degC (6.0%)      +0.202 degC (16.3%)
+CDG              +0.050 degC (3.5%)      +0.188 degC (13.5%)
+DSM              +0.282 degC (16.1%)      +0.115 degC (6.3%)
+Dubbo            +0.114 degC (8.2%)       +0.041 degC (3.3%)
+```
+
+D39.10 named Dubbo's rehearsal margin (8.2%, between CDG's and DSM's) in
+advance and said explicitly that this was not a reason to expect a pass
+either way. What happened: the test margin fell, as DSM's did and the two
+European airports' did not — two airports rising, two falling, on a sample
+of four.
+
+**One data-source fact, confirmed rather than re-run this session (D39.13).**
+Every Dubbo forecast chunk was pulled with `models=gfs_global` (D16, F57).
+The `gfs_global` versus `gfs_seamless` comparison was run at verify-on-
+contact (F52, not deferred) and found the two strings **identical** — unlike
+DSM, where they differ by up to 12.3 degC on 259 of 264 hours (F40) because
+Des Moines sits inside CONUS. So Dubbo's result is confirmed genuine NCEP GFS
+by two independent facts: the D16 pin, and the by-construction equivalence
+F52 already measured. This session re-quoted F52 and F40; it did not re-run
+either comparison.
+
+**What this session did not do, on purpose.**
+- **The script was run once for the result of record, and once more only to
+  confirm byte-identical output** — determinism rests on the fixed seed,
+  `deterministic=True`, `n_jobs=1`, the pinned versions in `requirements.txt`
+  (D24), and this is now confirmed directly rather than only by the pattern
+  in F14, F15, F29, F45 and F47's own single run.
+- **Nothing was analysed beyond the locked run.** The single-season watch-
+  item was described using the figures the run printed. No further pass was
+  made over the test year to explain anything further.
+- **The deeper evaluation (SPEC 5.4) stays optional and was not opened**
+  (D29). The project still has no formal significance figure for any
+  airport's win, and at 3.3% on 347 days that limit bites hardest here of
+  any airport yet.
+- **No SPEC edit was made this session, and none was authorised.** The bar
+  was judged as written. SPEC 1, 3.4, 5.0 and 6 still describe Dubbo as
+  stage 2 "in progress" and carry no test-year row for it; those are now out
+  of date and are flagged for the owner in this session's consistency check
+  rather than changed here — the same choice DSM's session 18 made (F47).
+- **Nothing was committed.**
+
+---
+
+**F65. What four passes now establish, and what is genuinely new: the
+hemisphere/season-cycle axis is answered, and the margin has now shrunk on
+three of the last four data points in a row.**
+
+This is written separately, mirroring F48's role after the third pass,
+because it is easy to over-claim four passes and because Dubbo's result adds
+a specific new piece of information rather than just one more airport.
+
+**1. The hemisphere/season-cycle axis, named untested by F46/F48/D36, is now
+answered.** Dubbo is Southern Hemisphere, 14,504–16,683 km from the three
+existing airports (F49), with a bias shaped like nothing seen before (F61) —
+concentrated in one local season rather than spread across the year, and
+phase-shifted into Dubbo's own summer rather than copying a Northern shape.
+**The same recipe, unchanged, wins there too**, on the sealed test year and
+not only the rehearsal. That is genuinely independent evidence along a third
+axis, after DSM answered the region axis (F48).
+
+**2. The year axis is still not answered, and cannot be by this result.**
+D13's split dates are shared by every airport, so Dubbo's test year is the
+same twelve months EGLC's, CDG's and DSM's were. Four passes on one calendar
+year are not four independent draws of weather. F46 and F63 wrote this down
+before the look and it stands unchanged.
+
+**3. Dubbo is not the controlled comparison EGLC and CDG make between them,
+and it is not even the single-change comparison DSM makes against them.**
+Dubbo changes the location **and** the target hour against every earlier
+airport (D37, SPEC 4.1, F63). A Dubbo result answers "does the recipe travel
+to a fourth continent, a flipped hemisphere and a flipped season cycle, at a
+third distinct local-noon hour". It must not be quoted as if only the
+location had moved.
+
+**4. The margin has now shrunk from rehearsal to test on two of the four
+airports, and Dubbo's test margin is the smallest of any airport yet by a
+wide margin — under half of DSM's, which itself was under half of CDG's.**
+
+```
+airport   rehearsal margin over raw GFS   test margin over raw GFS
+EGLC              +0.074 degC (6.0%)          +0.202 degC (16.3%)
+CDG               +0.050 degC (3.5%)          +0.188 degC (13.5%)
+DSM               +0.282 degC (16.1%)         +0.115 degC (6.3%)
+Dubbo             +0.114 degC (8.2%)          +0.041 degC (3.3%)
+```
+
+F48 read DSM's fall as the shared test year being an easier one for GFS in
+Europe than elsewhere, which flattered the two European rehearsals-to-test
+rises. Dubbo's own fall cannot be read the same way in full: DSM's fall was
+broad-based (F47's season table shows winter and spring both stopped
+helping), while Dubbo's fall is traceable in large part to one specific
+mechanism named in advance — the single season D39.12 flagged shrinking from
+carrying almost the whole win to carrying only a modest share of it (F64).
+**Two different routes to the same direction of result**, which is itself
+informative: it says a concentrated-season win is a genuinely fragile shape,
+not a DSM-specific fact about continental interiors.
+
+**5. So the honest summary across all four airports: the method wins on both
+years at all four places, by 6.0%, 3.5%, 16.1% and 8.2% on the four
+rehearsal years and by 16.3%, 13.5%, 6.3% and 3.3% on the one shared test
+year.** The range across eight airport-years is roughly 3% to 16%, the same
+range F48 already gave across six — Dubbo's two points sit inside it rather
+than widening it, but at its lower edge on the test side. Anyone quoting
+16.3% alone is quoting the best of eight, and anyone quoting only test-year
+figures is quoting a declining sequence that may or may not continue at a
+fifth airport.
+
+**6. The claim that the correction learns structure, not just an offset, is
+now at its thinnest anywhere.** The margin over the mean-bias reference —
+15.7% at EGLC, 13.0% at CDG, 3.4% at DSM, **2.3% at Dubbo** — has fallen at
+every airport since EGLC, with Dubbo the smallest yet. The claim still holds
+in the same direction at all four airports, and it held on Dubbo's own
+rehearsal by 6.3%. But at Dubbo, more of the win is the constant than
+anywhere tested so far, and the amount left over as structure is the
+smallest yet measured.
+
+**7. Nothing here re-opens EGLC's, CDG's or DSM's results.** SPEC 5.0 judges
+each airport once on its own data. F16, F30 and F47 stand as written; F64
+stands beside them, not above or below them.
+
+---
+
+## 2026-08-19 — Q30 status update (not closed, not re-raised — the fork it named is now fully live)
+
+Q30 was raised after session 18 with a parenthetical: the branch it named
+depended on Dubbo finishing its own five steps (verify, pull/map, join and
+rehearse, lock, test once). Session 24 finished the fifth and last of those
+(F64). **Q30 itself is unchanged and still open** — this is not a new
+question and does not close it — but the fork it describes (more airports; a
+second test year, the remaining half of the F30/F48 caveat; or stage 3,
+pooling) is no longer waiting on anything. Nothing was decided here; this
+note only removes the "when Dubbo finishes" qualifier, since Dubbo has now
+finished. The owner's choice is unchanged from how Q30 already described it.
+
+---
