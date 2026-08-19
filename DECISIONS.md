@@ -7,88 +7,7 @@ It records choices made, why they were made, open questions, and findings.
 
 ---
 
-## 2026-08-16 — Initial decisions from planning
-
-**D1. The project is bias-correction, not weather prediction from scratch.**
-We are not building a weather model. GFS already does the physics well. We
-learn and correct its repeated *local* mistakes at one airport. Reason:
-building a weather model from scratch is a solved, resource-heavy problem we
-could only do worse; correcting local bias is tractable, useful, and runs on
-a laptop.
-
-**D2. Location: London City airport (EGLC).** Reason: airports report clean,
-official, standardised hourly observations, which is the "what actually
-happened" truth the method needs.
-
-**D3. Truth data from IEM, not Weather Underground.** Reason: the free
-Weather Underground API was discontinued at the end of 2018, and what remains
-is largely *personal* weather stations (back-garden sensors) of inconsistent
-quality and siting. Those are the wrong ground truth — a forecast should be
-checked against an official station, not a hobbyist sensor. IEM serves
-official airport METARs free, no account. EGLC confirmed live on IEM (a
-current observation was returned dated 10 August 2026).
-
-**D4. Forecast data from Open-Meteo Previous Runs API — NOT the Historical
-Forecast API.** This is a critical, easy-to-get-wrong choice.
-- The **Previous Runs API** gives genuine past forecasts at a fixed lead-time
-  offset (e.g. the value predicted exactly 24 hours before). This is what we
-  want: it is what a real forecast looked like on the day.
-- The **Historical Forecast API**, despite the name, stitches the freshest
-  few hours of many runs into one series — which effectively already contains
-  the answer. Training on it would be look-ahead leakage.
-Open-Meteo's own docs describe the Previous Runs API as the correct dataset
-for training bias-correction models without look-ahead bias.
-
-**D5. Data floor is March 2021.** Confirmed: Open-Meteo's archive of past GFS
-forecasts (2m temperature) goes back to March 2021 — about 4.5 years. Reason
-it can't go earlier: genuine point-resolution past forecasts were not
-routinely archived before then, so that history mostly does not exist to be
-recovered. This is a real floor, not a paywall. 4.5 years is enough for
-stage 1 (covers several full seasonal cycles).
-
-**D6. Reanalysis (e.g. ERA5, back to 1940) is NOT used as the forecast to
-correct.** Reanalysis is a reconstruction of the past made *with* the
-observations fed in — it is not a real forecast and has little forecast error
-to learn from. Using it would quietly turn the project into a weaker,
-different exercise. (It could legitimately help only for computing a
-climatology baseline, but for stage 1 we compute climatology from the IEM
-observations we already have, so ERA5 is not needed at all.)
-
-**D7. Training window: train ~March 2021 to mid-2025; hold out the most
-recent ~12 months as an untouched test period.** Reason: a full-year test set
-judges the result across all four seasons, so a lucky run of easy weather
-cannot flatter it.
-
-**D8. Stage 1 lead time: 24 hours only. 48 hours is a planned later
-addition.** Reason: stage 1's job is to prove the pipeline works end to end;
-one lead time keeps it simplest and most reviewable. Comparing 24h vs 48h
-(how bias grows with lead time) is interesting but comes later.
-
-**D9. Stage 1 target: temperature at one fixed hour of the day.** This
-evolved during planning. The owner ultimately wants a live tool showing a
-corrected temperature *curve* across the day (e.g. the 9am value, the noon
-value, the daily max). But we deliberately keep stage 1 to a single fixed
-hour — the cleanest possible test of "does the core idea work?" — so that a
-weak result points clearly at the idea, not at added complexity. Widening to
-the full hourly curve is stage 5; the daily max then falls out as the peak of
-the curve.
-
-**D10. Evaluation bar (frozen): beat raw GFS AND persistence on MAE over the
-held-out test period.** Beating raw GFS is the core claim; beating persistence
-("tomorrow = today") is the honesty check against the laziest guess.
-Climatology (seasonal average) is an optional third check. The numeric margin
-is left qualitative for now; a specific figure may be fixed just before
-running, but still before seeing results, and logged here at that point.
-
-**D11. Missing data: drop, count, report — never fill.** Reason: filled data
-is invented data and muddies the honest measurement. If gaps turn out
-frequent enough to matter, that is a finding to log here, not something to
-auto-patch.
-
-**D12. Model type: gradient-boosted trees.** Reason: the data is
-table-shaped (one row per forecast, a handful of numeric features), which is
-exactly what tree models handle well, and they run on a laptop CPU with no
-GPU needed.
+[D1–D12, the founding decisions from initial project planning — project scope, location, data sources, split dates, model type — archived verbatim to DECISIONS-archive.md. Settled and now codified as active SPEC rules (D1→§1, D3→§3.1, D4→§2.1b, D5/D8→§3.2, D7→§4.3/D13, D9→§4.1, D10→§5, D11→§2.2, D12→§4.4). Full text preserved there and in git.]
 
 ---
 
@@ -129,50 +48,7 @@ gaps appear.
 
 ---
 
-## 2026-08-16 — Session 01 findings (first real data pull)
-
-Both sources were pulled for real. Q1 and Q2 above are now answered and
-closed. Nothing was filled, cleaned, or joined.
-
-**F1. Q1 answered — yes, the forecast archive reaches March 2021, but it
-starts on 24 March 2021, not 1 March.** A request for 1–7 March 2021 came
-back HTTP 200 with all 168 hourly values null. Stepping the date forward
-found the first hour with a real value: **2021-03-24 00:00 UTC**. Spot checks
-at 15 April 2021, 1 May, 15 May, 15 June, 15 September, 15 December 2021,
-15 March 2022, 15 March 2023 and 15 March 2025 all came back complete, so the
-archive is continuous from that start. This refines D5 rather than
-contradicting it: the floor is real, and about 5 years 5 months of history is
-available up to today. SPEC 3.2 and 4.3 say "March 2021", which is still
-true; the owner may want to write the exact date in.
-
-**F2. Q2 answered — EGLC's observation record is good.** Counting a whole
-hour as covered only if it has a routine report carrying a real temperature:
-- Recent sample, 1–21 July 2026: 504 hours expected, **504 covered, 0 gaps**.
-- Early sample, 18 March – 1 April 2021: 336 hours expected, **333 covered,
-  3 gaps (0.89%)**. The missing hours are 2021-03-20 06:00, 2021-03-30 05:00
-  and 2021-03-30 06:00 UTC.
-All three gaps are whole reports that were never filed, not rows with a blank
-temperature. They sit in the early-morning hours, and two of the three are
-next to each other, which looks like a short outage rather than a pattern.
-Nothing was filled (SPEC 2.2). On this evidence the gap rate is low enough
-that dropping unpaired rows will cost very little data, but that is a
-two-week snapshot, not proof about the whole period.
-
-**F3. EGLC reports twice an hour, not once.** IEM splits its reports into
-"routine" (report_type=3) and "special" (report_type=4). Normally "special"
-means an unscheduled extra report. At EGLC it is not: over 1–21 July 2026
-there were exactly 504 reports at :50 and exactly 504 at :20 — one of each
-per hour, none missing. So EGLC files a scheduled half-hourly report. This
-session used the routine :50 report as the hourly observation and kept the
-combined pull as a second raw file for the record. The extra :20 report is
-spare data available later if it is ever useful.
-
-**F4. The 24-hour-ahead forecast variable is
-`temperature_2m_previous_day1`.** This is the value from the model run one
-day earlier, which is what SPEC 3.2 asks for. The endpoint also offers a
-plain `temperature_2m`, which on this API is the freshest-run series — the
-leakage trap SPEC 2.1b warns about. It was deliberately not requested, so it
-is not in any raw file. The model name used was `gfs_seamless`.
+[F1–F4, session 01's EGLC-only verify-on-contact findings (the archive's apparent start date, later corrected by F11; EGLC's observation record; EGLC's twice-hourly reporting; the forecast variable used) archived verbatim to DECISIONS-archive.md. Settled, and superseded as ongoing precedent by the project-wide findings that followed (F8, F9, D14). Full text preserved there and in git.]
 
 ---
 
@@ -303,72 +179,7 @@ day-ahead forecast at a 24-to-30-hour lead", and this is exactly the dataset
 Open-Meteo recommends for training bias-correction models. Whether to reword
 SPEC is left to the owner — see Q7.
 
-**F6. C2 answered — at EGLC, `gfs_seamless` is purely NCEP GFS, and it returns
-data identical to the explicit `gfs_global` string.**
-
-What "seamless" means: Open-Meteo's documentation says a seamless model
-"combines all models from a given provider into a seamless prediction", and
-for each location picks the highest-resolution model that covers it. For the
-NCEP provider the candidates are GFS (global) and HRRR/NAM/NBM (all
-CONUS-only, that is the United States). HRRR "data are only available for the
-United States, while for other locations, only GFS is used". EGLC is in
-London, so no CONUS model can ever apply, and nothing non-GFS is in the NCEP
-set to mix in.
-
-That was then checked against the live API. The same request was sent with
-several model names, for EGLC, 1–2 July 2026:
-
-```
-https://previous-runs-api.open-meteo.com/v1/forecast
-  ?latitude=51.505&longitude=0.055
-  &hourly=temperature_2m_previous_day1
-  &models=<NAME>
-  &start_date=2026-07-01&end_date=2026-07-02&timezone=UTC
-```
-
-Results:
-
-| model name            | result                                                    |
-|-----------------------|-----------------------------------------------------------|
-| `gfs_seamless`        | OK — 48 hours, 0 missing, grid 51.487137 / 0.0, elev 4 m  |
-| `gfs_global`          | OK — 48 hours, 0 missing, same grid point                 |
-| `ncep_gfs_seamless`   | OK — 48 hours, 0 missing, same grid point                 |
-| `ncep_gfs_global`     | OK — 48 hours, 0 missing, same grid point                 |
-| `gfs013`              | OK — 48 hours, 0 missing, same grid point                 |
-| `gfs025`              | accepted, but all 48 values null (grid 51.5 / 0.0)        |
-| `gfs_graphcast025`    | accepted, but all 48 values null                          |
-| `gfs_global_011`      | rejected — "invalid String value gfs_global_011"          |
-| `gfs_global_025`      | rejected — "invalid String value gfs_global_025"          |
-| `ncep_gfs_global_011` | rejected — "invalid String value ncep_gfs_global_011"     |
-| `ncep_gfs_global_025` | rejected — "invalid String value ncep_gfs_global_025"     |
-| `gfs_hrrr`            | rejected — HTTP 400                                       |
-
-Note that the names shown on the current documentation page (`ncep_gfs_global_011`,
-`ncep_gfs_global_025`) are **not** accepted by this endpoint. The names that
-work are the shorter ones.
-
-`gfs_seamless` and `gfs_global` were then compared value by value over two
-windows:
-- 1–21 July 2026: 504 hours, **identical, 0 differing values**, 0 missing in
-  either.
-- 24 March – 5 April 2021 (the very start of the archive): 312 hours,
-  **identical, 0 differing values**, 0 missing in either.
-
-Also worth recording: `gfs_graphcast025` returns nothing for this variable and
-period, so Google/DeepMind-style AI output is not quietly entering the series
-even in principle.
-
-**Recommendation (for the owner to confirm — nothing was changed).** Pin the
-explicit string **`gfs_global`** for the session 3 pull, instead of
-`gfs_seamless`. At EGLC the two are provably the same data, so this costs
-nothing, but it makes the claim "this is exactly NCEP GFS" true by
-construction rather than by argument, and it stops a future change to
-Open-Meteo's seamless blending from silently changing the dataset underneath
-us. If the owner prefers to keep `gfs_seamless` for consistency with the
-session 01 raw files, that is also defensible on this evidence — but the
-choice should be written down either way. See Q8. Note for stage 2: CDG is
-also in Europe, so the same reasoning applies there, but it should be
-re-checked rather than assumed.
+[F6, the EGLC-only `gfs_seamless`-versus-`gfs_global` equivalence check, archived verbatim to DECISIONS-archive.md. Settled; D16 (pinning `gfs_global`) is the active rule it supports, and the same check was later repeated per airport (F40 at DSM, F52 at Dubbo — see those live entries for the current picture). Full text preserved there and in git.]
 
 **Q5 closed — accepted.** The roughly 4 km gap between the airport and the GFS
 grid point (returned again as lat 51.487137, lon 0.0, elevation 4 m in every
@@ -634,16 +445,7 @@ cut off at 2025-07-31 on load, and the script asserts that no date on or after
 2025-08-01 reached any table. Full output in
 `notes/session-04-check-output.txt`.
 
-**F11. Correction to F1 — the forecast archive is not continuous.** F1
-(session 01) concluded, from nine spot checks, that the archive "is continuous
-from that start". That conclusion is **wrong and is superseded by F8**, which
-mapped every hour and found a single 492-hour gap running 2023-12-30 00:00 to
-2024-01-19 11:00 UTC. F1's other claims stand — the archive does begin at
-2021-03-24 00:00 UTC, and a request for 1 March 2021 does return all nulls.
-Only the continuity claim fails. F1 itself is left exactly as written, because
-this log is append-only; this entry is the correction. The lesson worth keeping:
-spot checks can only ever show that the places you looked have data, never that
-the places you did not look do.
+[F11, the correction to F1's superseded continuity claim, archived verbatim to DECISIONS-archive.md alongside F1. Settled; F8 (kept live here) is the finding that actually maps EGLC's forecast gap. Full text preserved there and in git.]
 
 **F12. The join at 12:00 UTC, rows kept and dropped.** One row per day: date,
 forecast temperature, observed temperature, and the residual the model learns.
@@ -5816,5 +5618,112 @@ justifies changing any earlier decision at EGLC, CDG or DSM, and nothing found
 here changes D14, D30, or how the pairing rule is applied — the same rule is
 used at every airport, including where, as at CDG and now more so at Dubbo, it
 costs real days (SPEC 4.5, D30).
+
+---
+
+## 2026-08-19 — Session 21: ONE-TIME HOUSEKEEPING RESTRUCTURE (documentation
+only, nothing deleted)
+
+This session touched no data, no model and no pull. Its job was to cut the
+per-session token cost of the three living documents by relocating settled
+weight and trimming duplication — never by deleting anything. Two safety
+nets hold everything: **git history** (every prior version of every file)
+and the new **DECISIONS-archive.md** (the moved content, verbatim). This
+entry is the record the session's own end-of-session steps require.
+
+**What moved, and what stayed — the full account.**
+
+Moved verbatim to `DECISIONS-archive.md`, with a one-line pointer left in
+place of each:
+- **D1–D12** (the founding planning decisions: project scope, EGLC as
+  location, IEM over Weather Underground, the Previous-Runs-not-Historical
+  choice, the March 2021 floor, reanalysis excluded, the D13-style split
+  idea, 24-hour lead, the single-fixed-hour target, the frozen bar's shape,
+  drop-not-fill, gradient-boosted trees). Moved because their conclusions
+  are now codified as active SPEC rules — the operative rule lives in SPEC,
+  the DECISIONS entry was only ever the settled "why" behind it.
+- **F1–F4**, session 01's EGLC-only verify-on-contact findings (the
+  archive's apparent start date; EGLC's observation record; EGLC's
+  twice-hourly reporting; the forecast variable pulled). Moved because they
+  are settled, EGLC-only, and superseded as ongoing precedent by the
+  project-wide findings that followed (F8, F9, D14).
+- **F6**, the EGLC-only `gfs_seamless`-versus-`gfs_global` equivalence
+  check. Moved because it is settled and EGLC-only; D16 (kept live) is the
+  active rule it supports, and the same comparison was later repeated,
+  per airport, at DSM (F40) and Dubbo (F52) — both kept live, since those
+  are where the current, airport-specific picture actually lives.
+- **F11**, the correction to F1's superseded continuity claim. Moved to sit
+  beside F1 in the archive, per the session prompt's explicit instruction.
+  F8 (kept live) is the finding that actually maps EGLC's forecast gap;
+  F11 only records that F1's earlier claim about it was wrong.
+
+**Kept live in DECISIONS.md, deliberately, and checked against the session
+prompt's Task 3c list:** every still-active precedent (D13, D14, D16, D17,
+D18, D19, the three locks D21/D31/D35, D22, and the airport-opening/
+convention decisions D26, D27, D30, D32, D33, D36, D37); the results of
+record F16, F30, F47 and F48's honest reading across them; every
+project-wide finding still in play, including the 492-hour gap findings
+(F8, F22, F38, F57 — now cited together in SPEC 3.2, see below) and the
+`gfs_seamless`-differs finding (F40, F52); all Dubbo (in-progress) material
+in full (D36, D37, F49–F59); and every open question, live or closed —
+**Q30 is the only one still open**, and it was left exactly as written.
+Everything not explicitly named for moving was left live, per the prompt's
+"when in doubt, keep it live" instruction (3e) — including D15, P1–P3, and
+every closed Q1–Q29, none of which the prompt asked to move.
+
+**Confirmation each moved block is byte-for-byte identical.** Before
+writing `DECISIONS.md`'s replacement pointers, each of the four blocks
+above was extracted by exact line range from the original file, written
+into the archive, and then checked back against the original text
+programmatically — all four matched byte-for-byte. `git diff` against the
+prior committed version of `DECISIONS.md` will show only those four
+regions removed (replaced by one pointer line each) and this new entry
+appended; nothing else in the file's 5,000-plus other lines was touched.
+
+**SPEC 3.2's three near-identical gap paragraphs are now one general
+statement — and one factual correction was made along the way.** The
+session prompt described the collapse as "shared hour-for-hour by EGLC, CDG
+and DSM (F8, F22, F38) but **not** by Dubbo, which has its own scattered
+gaps instead." That is not what session 20 actually found. **F57 (session
+20) shows Dubbo's forecast series has the exact same 492-hour gap, same
+start hour, same end hour, same length, as the other three** — "four
+airports on four continents now share it hour for hour." What *is*
+Dubbo-specific is a different thing entirely: F58's finding that Dubbo's
+**observation** record (not the forecast archive) carries the highest
+off-hour report rate and real gap count of the four airports. Writing the
+collapsed SPEC 3.2 paragraph the way the prompt suggested would have put a
+false claim into SPEC, so it was not followed literally. SPEC 3.2 now
+states the true, verified fact — the gap is shared hour-for-hour by all
+four airports pulled so far (F8, F11, F22, F38, F57) — and points to each
+airport's own DECISIONS finding for the specifics. This is flagged here,
+in STATUS's consistency check, and in the session's own report to the
+owner, rather than silently corrected. **Nothing about the frozen bar or
+any active rule changed as a result** — this is a wording accuracy fix to
+a factual background paragraph, not a methodological change.
+
+**STATUS.md is now a pure snapshot**, per the session prompt's Task 1. The
+accumulated 20-session narrative (previously 1,663 lines) is unchanged in
+git history; the new file (about 65 lines) holds only the current stage, a
+compact per-airport status table pointing at SPEC 3.4/5.0, a high-level
+"done" list pointing at DECISIONS rather than restating it, the single next
+session, and the one live open question (Q30, partial).
+
+**CLAUDE.md now names DECISIONS-archive.md** as a fourth document, read
+only when a session needs deep history from a passed stage or airport, not
+routinely — and states plainly that STATUS.md is a snapshot whose own
+history lives in git. The "read the three live files in full every
+session" rule is otherwise unchanged.
+
+**What did not happen.** No data was pulled, joined, built, trained or
+evaluated. Dubbo's join and validation rehearsal — the actual next
+modelling session — was not started. No content of any moved decision or
+finding was edited, only relocated. No active rule, no split date, no
+locked setting, and no frozen-bar wording changed in meaning anywhere.
+
+**Append-only resumes, in both files, starting now.** This restructure was
+authorised as a one-time exception to the append-only rule (CLAUDE.md,
+DECISIONS.md's own header). It is not a precedent for rewriting the log
+again; new material goes to the bottom of `DECISIONS.md`, never into
+`DECISIONS-archive.md`, from this point on.
 
 ---

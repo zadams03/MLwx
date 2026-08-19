@@ -22,8 +22,16 @@ The project keeps three living documents. Read all three **in full** at the
 start of every session, in this order, **before** reading the session prompt:
 
 1. **SPEC.md** — the source of truth for *how the project should work*.
-2. **STATUS.md** — the *current state*: what is done, in progress, next.
+2. **STATUS.md** — a *snapshot*, overwritten each session: current stage,
+   what is next, and any open questions still live. It is not a growing log —
+   its history lives in git, not in the file itself.
 3. **DECISIONS.md** — an *append-only* log of choices, findings, and why.
+
+There is also **DECISIONS-archive.md** — settled decisions and findings moved
+out of DECISIONS.md verbatim (nothing deleted, everything reproducible). It is
+**not** part of the routine per-session read. Open it only when a session
+needs deep history from a passed stage or a passed airport; the pointer left
+in DECISIONS.md at each moved block says what is there.
 
 The **critical-rules section of SPEC (section 2)** applies to every session,
 whether or not the session prompt repeats it. It is non-negotiable.

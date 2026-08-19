@@ -126,30 +126,16 @@ hour and with the same all-null answer before it (DECISIONS F33). So the March
 2021 floor is a property of the archive itself, not of one place, and the
 section 4.3 split dates work at all three airports without adjustment.
 
-The archive is **not continuous** at EGLC. From that start date to 2026-07-31
-there is exactly one sizeable gap: **492 hours with no forecast value, from
-2023-12-30 00:00 to 2024-01-19 11:00 UTC**. It falls entirely inside the
-training window (the test window has no forecast gap at all). Those hours are
-dropped and counted, never filled (rule 2.2). See DECISIONS F8, and F11 for the
-correction to F1's earlier claim of continuity.
-
-**CDG has the very same gap — verified, hour by hour.** Session 10 mapped every
-hour of LFPG's forecast series the way session 03b did for EGLC, and found
-**exactly one gap, 492 hours, from 2023-12-30 00:00 to 2024-01-19 11:00 UTC** —
-the same first missing hour, the same last missing hour, the same length. It
-falls entirely inside the training window at CDG too, and CDG's test window has
-no forecast gap at all. So the gap is a property of the archive, not of one
-place, in the same way the March 2021 floor is. Those hours are dropped and
-counted, never filled (rule 2.2). See DECISIONS F22, which closes Q21.
-
-**DSM has the very same gap too — verified, hour by hour.** Session 15 mapped
-every hour of DSM's forecast series the way session 10 did for LFPG, and found
-**exactly one gap, the same 492 hours, from 2023-12-30 00:00 to 2024-01-19
-11:00 UTC**. Same first missing hour, same last missing hour, same length, and
-again entirely inside the training window, with no forecast gap at all in the
-test window. Three airports on two continents now share it hour for hour, so
-the gap is a property of the Open-Meteo archive and not of any place. Those
-hours are dropped and counted, never filled (rule 2.2). See DECISIONS F38.
+**The archive is not continuous.** From the start date to 2026-07-31 there is
+exactly one sizeable gap: **492 hours with no forecast value, from 2023-12-30
+00:00 to 2024-01-19 11:00 UTC**. It falls entirely inside the training window
+(no airport's test window has a forecast gap). Those hours are dropped and
+counted, never filled (rule 2.2). It has now been verified **hour by hour, at
+every airport pulled so far — EGLC, CDG, DSM and Dubbo — same start hour, same
+end hour, same length, on four different continents** (DECISIONS F8, and F11
+for the correction to F1's earlier claim of continuity; F22, closing Q21; F38;
+F57). It is a property of the Open-Meteo archive itself, not of any one place.
+See each airport's own DECISIONS finding for the hour-by-hour specifics.
 
 **3.3 Verify on contact.** Two things can only be checked by pulling real
 data, and must be checked on the first pull **for each new airport**:
