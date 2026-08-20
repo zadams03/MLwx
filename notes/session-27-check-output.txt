@@ -1,0 +1,596 @@
+
+============================================================================
+SESSION 27 - RNO (Reno) join, bias look and validation rehearsal
+============================================================================
+run at        : 2026-08-20 11:53:47 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+airport       : RNO - Reno, Nevada (SPEC 3.4) - stage 2 (D40, D42)
+target hour   : 20:00 UTC (SPEC 4.1, D42, F74) - local standard noon
+inner-training: 2021-03-24 to 2024-07-31   (DECISIONS D18)
+validation    : 2024-08-01 to 2025-07-31   (DECISIONS D18)
+sealed test   : 2025-08-01 onward - NOT LOADED THIS SESSION
+what changed  : the location and the target hour, and nothing else
+                (DECISIONS D40, D42)
+
+============================================================================
+PART 0 - proving the method is the LOCKED one (DECISIONS D21, D39)
+============================================================================
+This does not just claim the method is reused unchanged. It reads
+scripts/session05_model.py and compares it with this file.
+
+Two things are EXPECTED to differ at Reno, and nothing else:
+  1. the location    - RNO, and the files that hold its data (D40, D42)
+  2. the target hour - 20:00 UTC, local standard noon, not 12:00,
+                       18:00 or 02:00 (D42, F74, SPEC 4.1)
+
+-- model settings, session 05 (EGLC) against session 27 (Reno) --
+    setting              session 05             session 27             same?
+    objective            regression_l1          regression_l1          yes
+    n_estimators         300                    300                    yes
+    learning_rate        0.05                   0.05                   yes
+    num_leaves           15                     15                     yes
+    min_child_samples    40                     40                     yes
+    subsample            1.0                    1.0                    yes
+    colsample_bytree     1.0                    1.0                    yes
+    reg_alpha            0.0                    0.0                    yes
+    reg_lambda           0.0                    0.0                    yes
+    random_state         42                     42                     yes
+    n_jobs               1                      1                      yes
+    deterministic        True                   True                   yes
+    force_row_wise       True                   True                   yes
+    verbose              -1                     -1                     yes
+    settings that differ: 0   (D21.4 requires 0 - the method is locked)
+
+-- the constants, session 05 against session 27 --
+    constant                 session 05                         session 27   same?
+    TARGET_HOUR              12                                 20           NO - CHANGED
+    INNER_START              2021-03-24                                      yes
+    INNER_END                2024-07-31                                      yes
+    VALID_START              2024-08-01                                      yes
+    VALID_END                2025-07-31                                      yes
+    SEALED_FROM              2025-08-01                                      yes
+    CHUNKS                   [('2021-03-24', '2021-12-31'), ('2022-01-01', '2022-12-31'), ('2023-01-01', '2023-12-31'), ('2024-01-01', '2024-12-31'), ('2025-01-01', '2025-12-31')]              yes
+    GAP_START                2023-12-30                                      yes
+    GAP_END                  2024-01-19                                      yes
+    CLIM_HALF_WINDOW_DAYS    7.5                                             yes
+    FEATURE_NAMES            ['forecast_temp_c', 'season_sin', 'season_cos']              yes
+    constants that differ: 1   (1 is expected and only 1: TARGET_HOUR, per D42)
+
+-- the code that builds the features, the baselines and the model --
+    Compared character for character with session 05 (EGLC, the
+    locked recipe) and with session 22 (Dubbo, the same script shape).
+    function                     vs session 05    vs session 22   
+    all_days()                   identical        identical       
+    year_fraction()              identical        identical       
+    features()                   DIFFERS          DIFFERS         
+    mae()                        identical        identical       
+    describe()                   identical        identical       
+    climatology_from_inner()     identical        identical       
+    _literal()                   identical        identical       
+    top_level()                  identical        identical       
+    func_source()                identical        identical       
+
+    features() is the one shared function whose TEXT differs, and it
+    differs by docstring lines: the fixed hour is named as 20:00 UTC
+    instead of 12:00. Its executable code is compared separately
+    below, with docstrings stripped out.
+    --- session05 features
+    +++ session27 features
+    @@ -5,3 +5,4 @@
+         that 31 December sits next to 1 January instead of at the opposite end of
+    -    a number line. Hour of day is not a feature - the hour is fixed at 12:00.
+    +    a number line. Hour of day is not a feature - the hour is fixed at that
+    +    airport's target hour, 20:00 UTC at Reno.
+         """
+
+    function                     executable code, docstrings removed
+    all_days()                   IDENTICAL
+    year_fraction()              IDENTICAL
+    features()                   IDENTICAL
+    mae()                        IDENTICAL
+    describe()                   IDENTICAL
+    climatology_from_inner()     IDENTICAL
+    _literal()                   IDENTICAL
+    top_level()                  IDENTICAL
+    func_source()                IDENTICAL
+
+-- the two loaders, which DO differ - the difference shown in full --
+    This is where the location and the target hour live. Everything
+    the loaders do is the same; the file names, the reporting minute
+    and the labels carry Reno's own facts.
+
+    --- session05 load_forecast_12z
+    +++ session27 load_forecast_target_hour
+    @@ -1,3 +1,3 @@
+    -def load_forecast_12z():
+    -    """Return {date: forecast_temp_or_None} for 12:00 UTC, before the seal."""
+    +def load_forecast_target_hour():
+    +    """Return {date: forecast_temp_or_None} for 20:00 UTC, before the seal."""
+         series = {}
+    @@ -6,3 +6,3 @@
+         for start, end in CHUNKS:
+    -        path = RAW / f"openmeteo_previousruns_gfs_global_EGLC_{start}_{end}.json"
+    +        path = RAW / f"openmeteo_previousruns_gfs_global_{STATION}_{start}_{end}.json"
+             with open(path) as f:
+
+    --- session05 load_obs_12z
+    +++ session27 load_obs_target_hour
+    @@ -1,11 +1,14 @@
+    -def load_obs_12z():
+    -    """Return {date: observed_temp} for the 12:00 UTC hour, before the seal.
+    +def load_obs_target_hour():
+    +    """Return {date: observed_temp} for the 20:00 UTC hour, before the seal.
+     
+    -    The D14 pairing rule: the routine :50 report belongs to the hour it is
+    -    nearest to, and only if it is within 15 minutes of it. So EGLC's 11:50
+    -    report is the observation for 12:00. Anything further off is dropped and
+    -    counted.
+    +    The D14 pairing rule: the routine report belongs to the hour it is nearest
+    +    to, and only if it is within 15 minutes of it. At Reno the routine report
+    +    is stamped 5 minutes before the hour (F76: `:55`, zero off-hour reports in
+    +    five years), so the 20:00 report is served by the 19:55 report - a steady
+    +    5-minute offset, the same shape DSM's `:54` reporting gave (F34), only one
+    +    minute closer. Anything more than 15 minutes off is dropped and counted;
+    +    F76 found nothing at Reno that D14 would ever need to drop.
+         """
+         series = {}
+    -    reports_at_12 = 0
+    +    reports_at_target = 0
+         reports_sealed = 0
+    @@ -13,5 +16,6 @@
+         outside_15min = 0
+    +    near_target = {}                   # date -> [(minute offset, temp or None)]
+     
+         for start, end in CHUNKS:
+    -        path = RAW / f"iem_asos_EGLC_{start}_{end}_routine.csv"
+    +        path = RAW / f"iem_asos_{STATION}_{start}_{end}_routine.csv"
+             with open(path) as f:
+    @@ -23,3 +27,3 @@
+                         continue
+    -                reports_at_12 += 1
+    +                reports_at_target += 1
+                     if nearest.date() >= SEALED_FROM:
+    @@ -27,2 +31,6 @@
+                         continue
+    +                off = int((t - nearest).total_seconds() // 60)
+    +                raw = (r.get("tmpc") or "").strip()
+    +                near_target.setdefault(nearest.date(), []).append(
+    +                    (off, raw if raw not in ("M", "", "T", "None") else None))
+                     if abs((t - nearest).total_seconds()) > 15 * 60:
+    @@ -30,3 +38,2 @@
+                         continue
+    -                raw = (r.get("tmpc") or "").strip()
+                     if raw in ("M", "", "T", "None"):
+    @@ -36,2 +43,3 @@
+     
+    -    return series, reports_at_12, reports_sealed, no_temp, outside_15min
+    +    return (series, reports_at_target, reports_sealed, no_temp, outside_15min,
+    +            near_target)
+
+    The loaders are renamed because '12z' would be a false name at
+    an airport whose target hour is 20:00 UTC. The renaming is why
+    they are compared by an explicit old-name/new-name pair above.
+
+    load_obs_target_hour also keeps a 'near_target' record of every
+    report near the target hour with its minute offset - the same
+    bookkeeping sessions 11, 16 and 22 added. It is used by PART A's
+    drop reconciliation and changes no pairing and no value.
+
+============================================================================
+PART A - join RNO's two series at 20:00 UTC
+============================================================================
+airport     : RNO - Reno, Nevada (SPEC 3.4)
+target hour : 20:00 UTC (SPEC 4.1, D42, F74) - local
+              standard noon at Reno, the fourth distinct target hour
+              after 12:00 (EGLC, LFPG), 18:00 (DSM) and 02:00 (Dubbo).
+pairing rule: the routine report nearest the hour, and only if within
+              15 minutes of it (DECISIONS D14). Reno reports at :55
+              (F76), so 20:00 UTC is served by the 19:55 report - a
+              5-minute offset, and F76 found zero off-hour reports in
+              five years, so this offset should be steady every day.
+
+-- the seal on the test year --
+    forecast chunk files opened : 5 (the 2026 file was not opened at all)
+    forecast 20:00 rows seen    : 1,744
+    of those, dropped as sealed : 153 (dated 2025-08-01 or later)
+    forecast 20:00 rows kept    : 1,591
+    observation 20:00 reports seen   : 1,741
+    of those, dropped as sealed      : 153
+    observation 20:00 reports kept   : 1,588
+
+-- observation reports rejected by the rules (not sealed, just unusable) --
+    reports more than 15 min from the hour, dropped (D14): 0
+    reports carrying no temperature (M), dropped (2.2)   : 0
+    F76 found zero off-hour reports in Reno's whole five-year
+    record, so the first line above is expected to read 0.
+
+-- the pairing offset actually used, every kept day --
+    -5 minutes from 20:00 UTC : 1,588 days
+    F76 predicted a steady -5 minutes on every kept day, from Reno's
+    on-the-:55 reporting and its zero off-hour rate.
+    days with MORE THAN ONE report inside D14's 15-minute window: 0
+
+-- rows kept and dropped, by period --
+    period                                   days   kept   drop  no fc  null fc  no obs
+    inner-training 2021-03-24..2024-07-31   1,226  1,203     23      0       20       3
+    validation     2024-08-01..2025-07-31     365    365      0      0        0       0
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'    = the forecast series had no row for 20:00;
+             'null fc'  = it had a row but the value was null;
+             'no obs'   = no usable observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2).
+
+-- RECONCILING THE DROPS against session 26's gap map (F75, F76, F77) --
+    The drops are not just accepted. Session 26 mapped every hour of
+    both Reno series before anything was joined, so it predicted
+    what this join should lose. Anything else is a surprise to stop
+    on. Reno's expected observation side is the cleanest of any
+    airport but DSM's: F76 found zero off-hour reports in five years,
+    so F77 predicted only 3 losses, all genuine reporting outages,
+    none of them off-hour reports.
+
+    cause                                             expected   actual  verdict
+    the 492-hour forecast gap (F75, F77)                    20       20  MATCHES
+    observation-side losses, inner-training (F77)            3        3  MATCHES
+    observation-side losses, validation (F77)                0        0  MATCHES
+    TOTAL days dropped                                      23       23  MATCHES
+
+    period rows                                       expected   actual  verdict
+    inner-training paired rows (F77)                      1203     1203  MATCHES
+    validation paired rows (F77)                           365      365  MATCHES
+
+    the F75 forecast gap covers 21 calendar days (2023-12-30 to 2024-01-19);
+    20 of them are dropped here. Reno's 20:00
+    target, like EGLC's, LFPG's and DSM's (12:00, 12:00, 18:00),
+    falls AFTER the gap's last missing hour (2024-01-19 11:00 UTC),
+    so 2024-01-19 already carries a value and survives - 20 days
+    lost, not the 21 Dubbo lost from the same gap (its 02:00 target
+    falls BEFORE 11:00 UTC).
+    Predicted by F75/F77 in advance: 20 days. Found: 20.
+    dropped run: 2023-12-30 to 2024-01-18, consecutive: yes
+
+    every dropped day that is NOT the forecast gap, with the reports
+    the station actually filed near the target hour:
+      2021-05-02  [inner-training]  no usable observation
+          no routine report nearest the 20:00 hour at all
+      2021-05-03  [inner-training]  no usable observation
+          no routine report nearest the 20:00 hour at all
+      2024-03-21  [inner-training]  no usable observation
+          no routine report nearest the 20:00 hour at all
+
+-- the dropped validation days, named --
+    (none)
+
+-- first and last kept rows of each period (a shape check) --
+    inner-training  2021-03-24 -> 2024-07-31   1,203 rows
+    validation      2024-08-01 -> 2025-07-31   365 rows
+
+-- row counts beside the four prior airports, for context only --
+    period            EGLC kept   CDG kept   DSM kept  Dubbo kept   RNO kept
+    inner-training        1,205      1,204      1,206       1,193      1,203
+    validation              364        365        365         360        365
+
+============================================================================
+PART B - RNO's raw bias, INNER-TRAINING ONLY
+============================================================================
+bias = observed minus forecast. Positive means the station was
+warmer than GFS predicted. Inner-training days only; the validation
+year's values are not looked at here, and the test year not at all.
+
+THE TERRAIN QUESTION (DECISIONS D42): is Reno's bias larger than the
+four flat airports' own mean |bias| (roughly 1.2 to 2.0 degC), and
+does it look especially large or structured in winter, when cold-air
+drainage and downslope (foehn) effects are strongest?
+
+-- overall --
+    bias (observed - forecast), RNO inner-training
+      n      = 1,203
+      mean   = +0.492 degC
+      median = +0.640 degC
+      st dev = 1.758 degC
+      min    = -7.7 degC   max = +7.4 degC
+      5th pct = -2.81   25th = -0.29   75th = +1.50   95th = +3.08
+      mean absolute size = 1.390 degC
+
+    raw GFS MAE on inner-training (in sample): 1.390 degC
+    days the station was warmer than the forecast: 814 of 1,203 (67.7%)
+
+    beside the four prior airports (DECISIONS F13, F28, F43, F61):
+                                  EGLC       CDG       DSM     Dubbo       RNO
+      days                       1,205     1,204     1,206     1,193     1,203
+      mean bias degC            -0.108    +0.050    -0.231    -0.136    +0.492
+      median degC               +0.000    +0.100    -0.200    -0.100    +0.640
+      st dev degC                1.551     1.654     2.550     1.740     1.758
+      mean |bias| degC           1.172     1.248     1.973     1.260     1.390
+      station warmer, %           48.7      51.7      45.5      45.3      67.7
+      min degC                    -7.0      -7.7     -10.4     -12.8      -7.7
+      max degC                    +5.6      +5.8      +9.2      +8.0      +7.4
+      NOTE: EGLC/LFPG are measured at 12:00 UTC, DSM at 18:00 UTC,
+      Dubbo at 02:00 UTC and Reno at 20:00 UTC (D33, D37, D42). All
+      five are their airport's own local midday, which is the thing
+      held constant - not the UTC hour (SPEC 4.1).
+
+    THE TERRAIN READ: Reno's mean |bias| is 1.390 degC.
+    The four flat airports range 1.172 (CDG) to 1.973 (DSM).
+    Reno sits INSIDE the flat airports' own range - no obvious
+    jump from terrain on this measure alone.
+
+-- bias against forecast temperature (warm end or cold end?) --
+    forecast band (degC)     days  mean bias   st dev  mean |bias|     EGLC      CDG      DSM    Dubbo
+    -10 to 0                   27     +0.689    1.361        1.247        -   +1.800   -1.087        -
+    0 to 5                    123     +0.730    2.220        1.752   -0.049   -0.687   -0.781   +0.300
+    5 to 10                   204     +0.562    2.176        1.761   +0.361   +0.223   -0.337   +1.046
+    10 to 15                  161     +0.212    2.085        1.634   +0.387   +0.339   +0.465   +0.252
+    15 to 20                  153     +0.548    1.906        1.541   -0.287   +0.320   +1.098   +0.456
+    20 to 25                  151     +0.722    1.222        1.142   -0.746   -0.142   +0.953   +0.026
+    25 to 30                  163     +0.518    1.183        1.052        -        -   -0.147   -0.630
+    30 to 45                  221     +0.260    1.285        0.998        -        -   -3.089   -1.301
+    Columns are blank where that airport's own published table has
+    no band of that name (F13, F28, F43, F61).
+
+    the coldest and warmest tenths of forecast days, side by side:
+      coldest 10% of forecasts   n= 120  forecast -5.0 to +4.2 degC   mean bias +0.669   mean |bias| 1.617
+        EGLC, same tail (F13)    n= 120  forecast +1.0 to +7.3 degC   mean bias +0.097
+        CDG, same tail (F28)     n= 120  forecast -0.9 to +7.0 degC   mean bias -0.351
+        DSM, same tail (F43)     n= 120  forecast -21.7 to +0.3 degC   mean bias -1.066
+        Dubbo, same tail (F61)   n= 119  forecast +4.7 to +13.0 degC   mean bias +0.499
+      warmest 10% of forecasts   n= 120  forecast +32.8 to +38.2 degC   mean bias +0.076   mean |bias| 0.905
+        EGLC, same tail (F13)    n= 120  forecast +23.1 to +39.4 degC   mean bias -1.155
+        CDG, same tail (F28)     n= 120  forecast +25.6 to +39.6 degC   mean bias -0.784
+        DSM, same tail (F43)     n= 120  forecast +29.8 to +42.7 degC   mean bias -2.993
+        Dubbo, same tail (F61)   n= 119  forecast +31.6 to +39.4 degC   mean bias -1.418
+
+-- bias by month --
+    month      days  mean bias   st dev  mean |bias|  mean forecast
+    Jan          75     +0.462    2.233        1.846          +4.97
+    Feb          85     +0.835    1.631        1.449          +6.18
+    Mar         100     +1.427    1.530        1.696          +8.81
+    Apr         120     +1.227    1.360        1.486         +15.34
+    May         122     +0.874    1.416        1.310         +20.11
+    Jun         120     +0.655    1.252        1.059         +27.27
+    Jul         124     +0.316    1.126        0.864         +32.96
+    Aug          93     +0.183    1.618        1.298         +30.33
+    Sep          90     +0.246    1.310        1.064         +25.82
+    Oct          93     +0.258    1.272        1.031         +18.05
+    Nov          90     -0.302    2.215        1.703         +10.42
+    Dec          91     -0.705    2.813        2.227          +6.05
+    Reno is Northern Hemisphere, same calendar orientation as EGLC,
+    CDG and DSM: December-February is winter, June-August is summer.
+
+-- bias by NORTHERN-CALENDAR season - the WINTER check the terrain --
+hypothesis most cares about
+    Grouped the same way as the four prior airports (DJF/MAM/JJA/SON
+    by calendar month). Cold-air drainage and downslope (foehn)
+    warming are both winter effects, so a large or unusually
+    structured winter bias here (either sign) is the first concrete
+    sign of terrain-driven structure the model has to work with.
+    season         days   RNO bias   st dev  RNO |bias|     EGLC      CDG      DSM    Dubbo
+    winter DJF      251     +0.165    2.382       1.850   +0.356   -0.092   -0.805   -0.973
+    spring MAM      342     +1.159    1.445       1.484   -0.061   +0.614   +0.923   +0.073
+    summer JJA      337     +0.400    1.332       1.053   -0.549   -0.056   -0.208   +0.140
+    autumn SON      273     +0.070    1.668       1.263   -0.052   -0.401   -1.187   +0.027
+
+    Winter (DJF) mean |bias| = 1.850 degC, against 1.053-1.484 degC
+    in the other three seasons. Winter stands out as the largest of the four - consistent with the terrain hypothesis.
+
+============================================================================
+PART C - run the locked method at RNO and rehearse on validation
+============================================================================
+
+-- the model (fitted on RNO inner-training only) --
+    rows fitted on : 1,203  (2021-03-24 to 2024-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (DECISIONS D19)
+    target         : residual, observed minus forecast (SPEC 4.2)
+    settings       : the locked D21.4 set, unchanged from session 05:
+      objective = regression_l1
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+    two consecutive fits, byte-identical predictions on the fit data: YES
+
+-- the common validation set (every method judged on the same days) --
+    paired validation rows from part A           : 365
+    dropped: no previous-day 20:00 observation   : 0
+    days every method is scored on               : 365
+    date range                                   : 2024-08-01 to 2025-07-31
+    Persistence needs yesterday's observation, which is a past-only
+    value (SPEC 2.1d). The first validation day, 2024-08-01, would
+    take it from 2024-07-31, which sits in inner-training - a past
+    observation, so legal, and written down here so it is not
+    mistaken for leakage. Nothing was filled in (SPEC 2.2).
+    climatology: built from RNO inner-training only (SPEC 2.1c), +/-7.5 days
+                 inner-training days behind each value: min 30, max 61, mean 49.4
+    mean-bias reference: forecast + +0.4921 degC, that figure being the
+                 mean RNO inner-training bias and nothing else.
+
+-- RNO VALIDATION-YEAR MAE, 365 common days (2024-08-01 to 2025-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss
+    Raw GFS                    1.493     -0.013      2.183        9.86
+    Persistence                2.756     -0.014      3.632       12.22
+    Climatology                3.774     +0.122      4.769       18.40
+    Mean-bias reference        1.524     -0.505      2.240       10.35
+    ML-corrected               1.499     -0.492      2.100        8.49
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+
+-- does the correction beat each reference on RNO's validation MAE? --
+    vs Raw GFS                NO   1.499 against 1.493  -> -0.006 degC (-0.4%)
+    vs Persistence            YES  1.499 against 2.756  -> +1.257 degC (+45.6%)
+    vs Mean-bias reference    YES  1.499 against 1.524  -> +0.025 degC (+1.7%)
+    vs Climatology            YES  1.499 against 3.774  -> +2.275 degC (+60.3%)   (optional third check, SPEC 5.2)
+
+    THE KEY NUMBER FOR RENO: the margin over the mean-bias reference.
+    1.499 against 1.524 -> +0.025 degC (+1.7%).
+    Beating it well means the model learned TERRAIN-DEPENDENT
+    STRUCTURE, not just a fixed altitude/valley offset. Barely
+    beating it means the mountain's bias is mostly a constant the
+    simple features can't improve on - a genuine, honest finding
+    that would point toward richer features (cloud, wind).
+
+    This is a VALIDATION REHEARSAL, not the frozen bar (SPEC 5.3).
+    The frozen bar is judged once per airport (SPEC 5.0), on that
+    airport's own sealed test year, in a later session. A good number
+    here means the recipe travels and is ready for Reno's single
+    look. IT DOES NOT MEAN RENO HAS PASSED.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                      gain  gain share   splits     EGLC      CDG      DSM    Dubbo
+    forecast_temp_c            3027.6       40.4%    1,842    44.3%    35.9%    45.0%    47.8%
+    season_sin                 2672.4       35.7%    1,173    26.7%    39.9%    37.3%    30.2%
+    season_cos                 1793.9       23.9%    1,185    29.0%    24.2%    17.7%    22.0%
+
+-- in-sample check only (RNO inner-training, NOT a result) --
+    raw GFS MAE on inner-training      : 1.390 degC
+    ML-corrected MAE on inner-training : 1.004 degC
+    EGLC's equivalent  (session 05)    : 0.879 degC
+    CDG's equivalent   (session 11)    : 0.945 degC
+    DSM's equivalent   (session 16)    : 1.221 degC
+    Dubbo's equivalent (session 22)    : 0.961 degC
+    Shown only to confirm the fit did something. A model always
+    looks better on the data it was fitted to, so this number
+    proves nothing about performance.
+
+-- how the correction behaved across RNO's validation year, by season --
+    season         days   raw GFS   ML-corr    change
+    winter DJF       90     2.431     2.275    -0.156
+    spring MAM       92     1.255     1.233    -0.022
+    summer JJA       92     0.807     0.919    +0.112
+    autumn SON       91     1.500     1.586    +0.086
+    ('change' is corrected MAE minus raw GFS MAE for that season.
+     Negative means better than raw GFS.)
+
+    Winter (DJF) change: -0.156 degC. The correction's biggest win sits in winter, consistent with the terrain hypothesis.
+
+-- day by day, not just on average --
+    closer to the truth than raw GFS : 172 of 365 days (47.1%)
+    further away                     : 193 (52.9%)
+    exactly the same                 : 0
+    CDG's rehearsal (F29)            : 202 of 365 (55.3%)
+    DSM's rehearsal (F45)            : 203 of 365 (55.6%)
+    Dubbo's rehearsal (F62)          : 190 of 355 (53.5%)
+
+-- the predicted correction itself, RNO validation year --
+    predicted residual applied to the forecast
+      n      = 365
+      mean   = +0.479 degC
+      median = +0.571 degC
+      st dev = 0.850 degC
+      min    = -2.8 degC   max = +2.1 degC
+      5th pct = -1.51   25th = +0.25   75th = +0.97   95th = +1.50
+      mean absolute size = 0.803 degC
+
+============================================================================
+PART D - how the recipe travelled: Reno beside EGLC, CDG, DSM and Dubbo
+============================================================================
+EGLC's figures are session 05's validation rehearsal (F15), CDG's
+are session 11's (F29), DSM's session 16's (F45), and Dubbo's session
+22's (F62), quoted from their notes files. The five airports are NOT
+scored on the same weather, so this compares results, not a
+controlled difference.
+
+READ RENO'S COLUMN WITH THREE THINGS IN MIND:
+  1. Reno changes the LOCATION AND THE TARGET HOUR against EGLC and
+     CDG (D42, SPEC 4.1), the same honest reading D33/D37 give DSM
+     and Dubbo.
+  2. Reno is the project's first genuinely TERRAIN-HARD airport - a
+     valley against the Sierra Nevada front (D42). The question this
+     session set out to answer: does the correction win BIGGEST
+     where raw GFS is worst, or do the simple features run out of
+     road here?
+  3. This rehearsal year (2024-08-01..2025-07-31) is still the same
+     twelve months every other rehearsal used, because D13's dates
+     are shared by every airport - so it says nothing about what a
+     different YEAR would have done, at any airport.
+
+-- validation MAE, each airport on its own validation year --
+    method                      EGLC       CDG       DSM     Dubbo       RNO
+    Raw GFS                    1.239     1.426     1.748     1.397     1.493
+    Persistence                2.226     2.523     4.108     2.577     2.756
+    Climatology                2.865     3.293     4.772     2.888     3.774
+    Mean-bias reference        1.231     1.435     1.723     1.368     1.524
+    ML-corrected               1.165     1.377     1.466     1.283     1.499
+    days scored                  363       365       365       355       365
+    Every row is an error measure, so lower is better everywhere.
+
+-- the margin over each reference, all five airports --
+    vs                                 EGLC              CDG              DSM            Dubbo              RNO
+    Raw GFS                  +0.074 (+6.0%)   +0.049 (+3.4%)  +0.282 (+16.1%)   +0.114 (+8.2%)   -0.006 (-0.4%)
+    Persistence             +1.061 (+47.7%)  +1.146 (+45.4%)  +2.642 (+64.3%)  +1.294 (+50.2%)  +1.257 (+45.6%)
+    Mean-bias reference      +0.066 (+5.4%)   +0.058 (+4.0%)  +0.257 (+14.9%)   +0.085 (+6.2%)   +0.025 (+1.7%)
+    Climatology             +1.700 (+59.3%)  +1.916 (+58.2%)  +3.306 (+69.3%)  +1.605 (+55.6%)  +2.275 (+60.3%)
+    Margins are degC of MAE saved by the correction. Positive means
+    the correction is ahead of that reference.
+
+-- per NORTHERN-calendar season, all five airports --
+    season        EG raw   EG ML  EG chg   CD raw   CD ML  CD chg   DM raw   DM ML  DM chg   DB raw   DB ML  DB chg   RN raw   RN ML  RN chg
+    winter DJF     0.972   1.059  +0.087    1.512   1.537  +0.025    1.687   1.273  -0.414    1.344   1.290  -0.054    2.431   2.275  -0.156
+    spring MAM     1.337   1.322  -0.015    1.221   1.164  -0.057    1.958   1.774  -0.184    1.219   1.241  +0.022    1.255   1.233  -0.022
+    summer JJA     1.498   1.177  -0.321    1.445   1.323  -0.122    1.532   1.593  +0.061    1.170   1.236  +0.066    0.807   0.919  +0.112
+    autumn SON     1.147   1.098  -0.049    1.531   1.487  -0.044    1.816   1.218  -0.598    1.884   1.368  -0.516    1.500   1.586  +0.086
+    'chg' is corrected MAE minus raw GFS MAE for that season.
+    Negative is better than raw GFS; positive is worse. Labels are
+    the Northern calendar convention; at Dubbo 'winter DJF' is local
+    summer, but Reno (Northern Hemisphere) uses the labels literally.
+
+-- seasons where the correction helped --
+    EGLC : 3 of 4 (session 05 - winter was the one it made worse)
+    CDG  : 3 of 4 (session 11 - winter again)
+    DSM  : 3 of 4 (session 16 - summer this time)
+    Dubbo: 2 of 4 (session 22 - spring and summer)
+    RNO  : 2 of 4
+
+-- feature importances, all five airports --
+    feature                EGLC      CDG      DSM    Dubbo      RNO  RNO splits
+    forecast_temp_c       44.3%    35.9%    45.0%    47.8%    40.4%       1,842
+    season_sin            26.7%    39.9%    37.3%    30.2%    35.7%       1,173
+    season_cos            29.0%    24.2%    17.7%    22.0%    23.9%       1,185
+    Gain totals depend on the data, so the shares and split counts
+    are what compare meaningfully between airports.
+
+-- summary: how did the recipe travel to Reno - did the correction win --
+    biggest where GFS struggles most?
+    corrected MAE:  EGLC 1.165   CDG 1.377   DSM 1.466   Dubbo 1.283   RNO 1.499
+    raw GFS MAE  :  EGLC 1.239   CDG 1.426   DSM 1.748   Dubbo 1.397   RNO 1.493
+    win over raw GFS: EGLC 6.0%   CDG 3.4%   DSM 16.1%   Dubbo 8.2%   RNO -0.4%
+
+    Hardest raw-GFS problem of the five : DSM (1.748 degC MAE)
+    Biggest percentage win of the five  : DSM (16.1%)
+    Raw GFS is not obviously hardest at Reno among the five -
+    the terrain hypothesis is not showing up as expected on
+    this measure.
+
+    Read as: independent terrain regime, same shared D13 twelve
+    months, two things changed from the European pair (location and
+    target hour) - the same honest reading D33/D37 give DSM and
+    Dubbo. A good number here means the recipe is ready for Reno's
+    single sealed-test look, later. IT DOES NOT MEAN RENO HAS
+    PASSED OR FAILED.
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). No Reno
+test-year value was loaded, printed or fitted on. Nothing was
+committed. This is a rehearsal on Reno's validation year. The
+frozen bar (SPEC 5.3) has NOT been judged and Reno HAS NOT PASSED
+(or failed).
+This output is saved at notes/session-27-check-output.txt

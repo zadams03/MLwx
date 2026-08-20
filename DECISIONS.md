@@ -7823,3 +7823,297 @@ fix), would answer it in one request; not done here because it was outside
 this session's authorised scope (A-1 to A-4 plus Parts B/C).
 
 ---
+
+## 2026-08-20 — Session 27 findings (the Reno join, bias look and validation
+rehearsal)
+
+The first modelling session for the fifth airport, Reno. It mirrors session 22
+at Dubbo, which mirrored session 16 at DSM, session 11 at CDG and sessions
+04/05 at EGLC. **Reno's test year was not touched**: the 2026 RNO raw chunk
+file was never opened, the 2025 chunk was cut off at 2025-07-31 on load, and
+the script asserts that no date on or after 2025-08-01 reached any table.
+Nothing was tuned, varied or chosen again — the locked recipe (D21, restated
+per airport as D31/D35/D39) was applied at the fifth location and nothing
+else. The script is `scripts/session27_model.py` and the full real output is
+`notes/session-27-check-output.txt`. PART 0 proves against
+`scripts/session05_model.py` that 0 model settings differ and exactly 1
+constant differs (TARGET_HOUR, 12 to 20), which is D42 and nothing else. Two
+consecutive fits on the fitted data produced byte-identical predictions.
+
+**F78. The join at 20:00 UTC at Reno, and every drop reconciled EXACTLY
+against session 26's gap map (F75, F77) — nothing surprised, nothing stopped.**
+
+One row per day: date, forecast temperature, observed temperature, and the
+residual the model learns.
+
+```
+                                         days   kept   drop  no fc  null fc  no obs
+inner-training 2021-03-24..2024-07-31   1,226  1,203     23      0       20        3
+validation     2024-08-01..2025-07-31     365    365      0      0        0        0
+```
+
+```
+cause                                             expected   actual  verdict
+the 492-hour forecast gap (F75, F77)                    20       20  MATCHES
+observation-side losses, inner-training (F77)            3        3  MATCHES
+observation-side losses, validation (F77)                 0        0  MATCHES
+TOTAL days dropped                                      23       23  MATCHES
+
+inner-training paired rows (F77)                      1,203    1,203  MATCHES
+validation paired rows (F77)                            365      365  MATCHES
+```
+
+**The forecast-gap loss is 20 days, matching EGLC/LFPG/DSM and NOT Dubbo's
+21** — Reno's 20:00 UTC target falls after the gap's last missing hour
+(2024-01-19 11:00 UTC), the same shape as the three airports whose target
+falls after it, so 2024-01-19 survives.
+
+**The observation side is the cleanest pairing behaviour of any airport so
+far.** The 3 dropped days are all inner-training, all "no routine report
+nearest the hour at all" (genuine outages, not off-hour reports): 2021-05-02
+and 2021-05-03 (inside the 59-hour outage F76 found, 2021-05-02 06:00 to
+2021-05-04 16:00 UTC) and 2024-03-21. **Zero days were lost to an off-hour
+report**, matching F76's whole-record zero exactly. Every one of the 1,588
+kept days paired at a steady **-5 minutes** from the target hour (the 19:55
+report serving 20:00) — no variation at all, and **zero days had more than
+one report inside D14's 15-minute window**. Nothing was filled (SPEC 2.2).
+
+Row counts beside the four prior airports: inner-training 1,205 (EGLC), 1,204
+(CDG), 1,206 (DSM), 1,193 (Dubbo), **1,203 (Reno)** — second only to DSM;
+validation 364, 365, 365, 360, **365 (Reno, no day lost)**.
+
+**F79. Reno's bias at 20:00 UTC is a fifth distinct shape: persistently
+positive, unlike any prior airport's sign-flipping pattern, and largest in
+winter — the one measure that lines up with the terrain hypothesis (D42).**
+Inner-training only; the validation year's values were not explored and the
+test year not touched.
+
+Overall, beside EGLC (F13), CDG (F28), DSM (F43) and Dubbo (F61):
+
+```
+                            EGLC       CDG       DSM     Dubbo       RNO
+days                       1,205     1,204     1,206     1,193     1,203
+mean bias degC            -0.108    +0.050    -0.231    -0.136    +0.492
+median degC               +0.000    +0.100    -0.200    -0.100    +0.640
+st dev degC                1.551     1.654     2.550     1.740     1.758
+mean |bias| degC           1.172     1.248     1.973     1.260     1.390
+station warmer, %           48.7      51.7      45.5      45.3      67.7
+min / max degC        -7.0/+5.6 -7.7/+5.8 -10.4/+9.2 -12.8/+8.0  -7.7/+7.4
+```
+
+**Reno's mean |bias| (1.390) sits INSIDE the four flat airports' own range
+(1.172–1.973)** — not above it, so this single headline measure does not by
+itself confirm the terrain hypothesis. What is genuinely new is the **sign**:
+the station ran warmer than GFS on **67.7%** of inner-training days, well
+above every other airport's 45–52%, and the mean bias stayed **positive
+across almost every forecast-temperature band and every season** — a
+steadier, closer-to-constant warm offset than the sign-flipping,
+band-and-season-dependent shapes the other four airports showed (EGLC's
+warm-end-only, CDG's spread-calendar, DSM's both-and-larger, Dubbo's
+single-season). Against forecast temperature:
+
+```
+forecast band (degC)     days  mean bias   st dev  mean |bias|     EGLC      CDG      DSM    Dubbo
+-10 to 0                    27     +0.689    1.361        1.247        -   +1.800   -1.087        -
+0 to 5                     123     +0.730    2.220        1.752   -0.049   -0.687   -0.781   +0.300
+5 to 10                    204     +0.562    2.176        1.761   +0.361   +0.223   -0.337   +1.046
+10 to 15                   161     +0.212    2.085        1.634   +0.387   +0.339   +0.465   +0.252
+15 to 20                   153     +0.548    1.906        1.541   -0.287   +0.320   +1.098   +0.456
+20 to 25                   151     +0.722    1.222        1.142   -0.746   -0.142   +0.953   +0.026
+25 to 30                   163     +0.518    1.183        1.052        -        -   -0.147   -0.630
+30 to 45                   221     +0.260    1.285        0.998        -        -   -3.089   -1.301
+
+coldest 10%  n=120  forecast -5.0 to +4.2 degC  mean bias +0.669  mean |bias| 1.617
+warmest 10%  n=120  forecast +32.8 to +38.2 degC  mean bias +0.076  mean |bias| 0.905
+```
+
+Every single band is positive — the station never runs colder than GFS on
+average at any forecast temperature, the only airport of the five where that
+is true. By season:
+
+```
+season         days   RNO bias   st dev  RNO |bias|     EGLC      CDG      DSM    Dubbo
+winter DJF      251     +0.165    2.382       1.850   +0.356   -0.092   -0.805   -0.973
+spring MAM      342     +1.159    1.445       1.484   -0.061   +0.614   +0.923   +0.073
+summer JJA      337     +0.400    1.332       1.053   -0.549   -0.056   -0.208   +0.140
+autumn SON      273     +0.070    1.668       1.263   -0.052   -0.401   -1.187   +0.027
+```
+
+**Winter is Reno's own largest-magnitude season (mean |bias| 1.850, against
+1.053–1.484 in the other three)** — the one result that does line up with
+the terrain hypothesis: cold-air drainage and downslope (foehn) warming are
+both winter effects, and this is the first sign the model has any structured
+winter signal to learn from. Spring carries the largest **mean** bias
+(+1.159) but with the widest spread relative to season, so winter is the
+season where the *size* of the miss, not just its average direction, stands
+out most.
+
+**F80. The rehearsal: at Reno the correction does NOT beat raw GFS — the
+first such result in the project — though it still beats persistence,
+climatology, and (barely) the mean-bias reference.**
+
+Model: the locked D21/D31/D35/D39 recipe, fitted on Reno's 1,203
+inner-training rows only. All five methods scored on the same 365 common
+validation days (Reno loses no day to a missing previous-day observation):
+
+```
+method                  MAE degC  bias degC  RMSE degC  worst miss
+Raw GFS                    1.493     -0.013      2.183        9.86
+Persistence                2.756     -0.014      3.632       12.22
+Climatology                3.774     +0.122      4.769       18.40
+Mean-bias reference        1.524     -0.505      2.240       10.35
+ML-corrected               1.499     -0.492      2.100        8.49
+```
+
+Verdicts:
+
+```
+vs Raw GFS              NO    1.499 against 1.493  ->  -0.006 degC worse (-0.4%)
+vs Persistence          YES   1.499 against 2.756  ->  +1.257 degC better (45.6%)
+vs Mean-bias reference  YES   1.499 against 1.524  ->  +0.025 degC better (1.7%)
+vs Climatology          YES   1.499 against 3.774  ->  +2.275 degC better (60.3%)
+```
+
+**This is a validation rehearsal, not the frozen bar (SPEC 5.3, 5.0). A poor
+number here does not mean Reno has failed** — the bar is judged once, on the
+sealed test year, in a later session (D18 exists precisely because
+rehearsal and test years can differ; F16 and F64 both record how much the
+weather alone moved a airport's number between the two).
+
+Four things the numbers say, read honestly:
+
+1. **The recipe does not clearly travel to Reno.** Applied unchanged at a
+   fifth location with a fourth distinct target hour, on a bias shaped like
+   nothing seen before (F79, persistently positive rather than sign-flipping),
+   it loses to raw GFS by a hair — 0.006 degC on 365 days, well within noise,
+   but a loss, not a win.
+2. **The margin over the mean-bias reference (1.7%) is the thinnest of any
+   airport's rehearsal** — EGLC 5.3%, CDG 4.0–4.1%, DSM 14.9%, Dubbo 6.3%,
+   Reno 1.7%. The "the model learned structure, not just an offset" claim,
+   already noted as thinnest anywhere for Dubbo on the sealed test (F65,
+   2.3%), is thinner still here, on the rehearsal. F79's finding that Reno's
+   bias looks closer to a constant (persistently positive, less
+   band/season-dependent) than the other four airports' shapes is the
+   likely reason: there is less real structure available for the model to
+   add beyond what the mean-bias reference already captures.
+3. **The seasonal pattern helps in only 2 of 4 seasons, and winter carries
+   essentially the whole win:**
+
+```
+season         days   raw GFS   ML-corr   RNO chg   EGLC chg   CDG chg   DSM chg   Dubbo chg
+winter DJF       90     2.431     2.275    -0.156     +0.087     +0.025    -0.414     -0.054
+spring MAM       92     1.255     1.233    -0.022     -0.015     -0.057    -0.184     +0.022
+summer JJA       92     0.807     0.919    +0.112     -0.321     -0.122    +0.061     +0.066
+autumn SON       91     1.500     1.586    +0.086     -0.049     -0.044    +0.061     +0.086
+```
+
+   Winter is Reno's only season with a win of any real size, and it is
+   consistent with F79's winter-biggest-bias finding — but summer and
+   autumn both got worse, and the winter win (-0.156) is not large enough
+   to pull the full-year average ahead of raw GFS. Day-by-day, the
+   correction was closer to the truth than raw GFS on **172 of 365 days
+   (47.1%)** — below half, and the lowest win rate of any airport's
+   rehearsal (CDG 55.3%, DSM 55.6%, Dubbo 53.5%).
+4. **The in-sample-to-validation gap is the largest yet, consistent with
+   overfitting a mostly-constant signal.** In-sample MAE on Reno
+   inner-training was 1.004 degC against raw GFS's 1.390 (a 27.8%
+   "improvement"), the largest in-sample gain of any airport (EGLC 0.879,
+   CDG 0.945, DSM 1.221, Dubbo 0.961) relative to its own raw-GFS figure,
+   yet it produced the smallest validation gain (-0.4%). That pattern — a
+   flexible model fitting a signal that is close to a constant plus noise
+   very tightly in-sample, then adding little on unseen data — is the
+   ordinary signature of overfitting, and it is coherent with F79's finding
+   that Reno's bias is more constant-like than the other four airports'.
+
+Feature importances:
+
+```
+feature             EGLC gain %  CDG gain %  DSM gain %  Dubbo gain %  RNO gain %  RNO splits
+forecast_temp_c           44.3%       35.9%       45.0%         47.8%       40.4%       1,842
+season_sin                26.7%       39.9%       37.3%         30.2%       35.7%       1,173
+season_cos                29.0%       24.2%       17.7%         22.0%       23.9%       1,185
+```
+
+Nothing is ignored and nothing dominates; Reno's split between temperature
+and season sits inside the range every other airport has shown.
+
+How each reference was built, identical in method to the four prior
+airports, fitted on Reno inner-training only:
+- **Raw GFS** — the forecast value itself, uncorrected.
+- **Persistence** — the previous calendar day's 20:00 UTC observation. Past
+  values only (SPEC 2.1d). The first scored validation day, 2024-08-01,
+  takes its persistence value from 2024-07-31, which sits in inner-training
+  — a past observation, so legal.
+- **Climatology** — the seasonal average of the *observed* temperature at
+  Reno within 7.5 days of that position in the year, training-window only
+  (SPEC 2.1c).
+- **Mean-bias reference** — the forecast plus +0.4921 degC, the mean Reno
+  inner-training bias and nothing else.
+- **ML-corrected** — the forecast plus the model's predicted residual.
+
+Nothing was fitted on the validation year: not the model, not the
+climatology, not the mean bias, not any encoding. **No SPEC edit was made
+and none was authorised.**
+
+**F81. What a Reno rehearsal loss does and does not answer — the honest
+accounting F46/F63 gave DSM and Dubbo, applied to a result that reads the
+other way.**
+
+- **The terrain hypothesis (D42) is not confirmed by the headline measures.**
+  Raw GFS's rehearsal-year error at Reno (1.493) is not the hardest of the
+  five — DSM (1.748) still clearly is, and Reno sits between Dubbo (1.397)
+  and CDG (1.426). Reno's inner-training mean |bias| (1.390, F79) sits
+  inside the four flat airports' own range rather than above it. On these
+  two measures, D42's expectation that Reno would be the hardest raw-GFS
+  problem of the five is not borne out this session.
+- **The one measure that does line up with the terrain hypothesis is
+  winter.** Reno's own worst season for bias size (F79) is also the one
+  season where the correction clearly wins (F80) — directionally consistent
+  with cold-air-drainage/downslope effects being real but not large enough,
+  spread across the rest of the year, to lift the annual figure past raw
+  GFS.
+- **Whether the simple D19 features are enough at Reno is now a genuine,
+  open question rather than a settled one.** F80's four readings together —
+  the outright rehearsal loss, the thinnest-yet margin over the mean-bias
+  reference, the lowest day-by-day win rate, and the largest in-sample/
+  validation gap — point the same direction: more of Reno's residual than
+  at any prior airport looks like it needs information the model does not
+  have (cloud cover, wind, a genuine terrain feature) rather than more of
+  what it already has (forecast temperature, calendar position).
+- **Not the controlled EGLC-CDG comparison.** Reno changes the location
+  **and** the target hour (D42, SPEC 4.1), the same honest caveat D33/D37
+  attach to DSM and Dubbo.
+- **This is a rehearsal result, not a verdict.** SPEC 5.3's bar is judged
+  once per airport (SPEC 5.0), on the sealed test year, in a later session.
+  D18 exists specifically because a rehearsal and a sealed test can differ,
+  sometimes by a lot in either direction (F16, F64). A negative rehearsal
+  does not pre-decide Reno's test result, and per the session-27 prompt the
+  locked recipe proceeds to lock and test regardless — the bar is judged
+  as-is, not adjusted to fit what the rehearsal showed.
+
+**Read as: independent terrain regime, same shared D13 twelve months, two
+things changed from the European pair (location and target hour) — the same
+honest reading D33/D37 give DSM and Dubbo. Unlike every prior rehearsal,
+this one is a loss, not a win — recorded straight, as SPEC 2.4 requires.**
+
+---
+
+## 2026-08-20 — Open question raised by session 27 (not acted on)
+
+**Q32. Should Reno's rehearsal loss against raw GFS (-0.4%, F80) change
+anything about whether or how the recipe is locked and tested at Reno?** The
+session-27 prompt's own instruction was to proceed to lock/test regardless
+and judge the bar as-is if the rehearsal showed the simple features
+struggling, and that instruction was followed — no lock was attempted this
+session, and nothing about the method was varied because of the result
+(SPEC 2.4, D21.11). But every prior airport's rehearsal beat raw GFS by some
+margin, narrow or wide (EGLC 6.0%, CDG 3.4–3.5%, DSM 16.1%, Dubbo 8.2%); Reno
+is the first to come back negative rather than merely narrow. The owner has
+not yet been asked, in so many words, whether that changes their intentions
+for this specific airport (proceed to lock/test unmodified, as the session
+prompt defaults to; or pause before locking to weigh richer features first)
+or for how future terrain-hard airports are approached generally. Nothing
+was decided this session; this is recorded for the owner, the same shape
+Q31 was left in after session 26.
+
+---
