@@ -1,0 +1,792 @@
+
+============================================================================
+SESSION 29 - RENO'S SEALED-TEST EVALUATION. ONE LOOK. THE RESULT STANDS.
+============================================================================
+run at        : 2026-08-20 12:53:02 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+airport       : RNO - Reno, Nevada (SPEC 3.4) - stage 2
+                (D40, D42, the fifth airport)
+target hour   : 20:00 UTC at RNO (SPEC 4.1, D42, D44.1)
+training      : 2021-03-24 to 2025-07-31   (D13, D44.5)
+SEALED TEST   : 2025-08-01 to 2026-07-31   (D13, D44.6)
+nothing after : 2026-07-31
+
+This session executes DECISIONS D44 and decides nothing. Nothing is
+tuned, searched, swapped or re-run. If anything did not fit the D44
+record, the run stops and goes back to the owner (D44.11).
+
+TWO THINGS DIFFER FROM DUBBO'S TEST, NOT ONE: the location AND the
+target hour (D42). Session 27's rehearsal did NOT beat raw GFS
+(1.499 against 1.493, -0.4%) - the first such rehearsal result in
+the project. A sealed-test failure here is an expected, legitimate
+outcome, recorded in advance (D44, D44.12), not a bug.
+
+============================================================================
+PART 0 - checking this script against the lock (DECISIONS D44)
+============================================================================
+
+-- check 1: every value D44 fixes, against what this script will use --
+    what D44 fixes                     D44 says               this run               match?
+    airport (D44.1)                    RNO                    RNO                    yes
+    target hour (D44.1)                20                     20                     yes
+    train start (D44.5)                2021-03-24             2021-03-24             yes
+    train end (D44.5)                  2025-07-31             2025-07-31             yes
+    test start (D44.6)                 2025-08-01             2025-08-01             yes
+    test end (D44.6)                   2026-07-31             2026-07-31             yes
+    features (D44.3)                   ['forecast_temp_c', 'season_sin', 'season_cos'] ['forecast_temp_c', 'season_sin', 'season_cos'] yes
+    objective (D44.4)                  regression_l1          regression_l1          yes
+    n_estimators (D44.4)               300                    300                    yes
+    learning_rate (D44.4)              0.05                   0.05                   yes
+    num_leaves (D44.4)                 15                     15                     yes
+    min_child_samples (D44.4)          40                     40                     yes
+    subsample (D44.4)                  1.0                    1.0                    yes
+    colsample_bytree (D44.4)           1.0                    1.0                    yes
+    reg_alpha (D44.4)                  0.0                    0.0                    yes
+    reg_lambda (D44.4)                 0.0                    0.0                    yes
+    random_state (D44.4)               42                     42                     yes
+    n_jobs (D44.4)                     1                      1                      yes
+    deterministic (D44.4)              True                   True                   yes
+    force_row_wise (D44.4)             True                   True                   yes
+    verbose (D44.4)                    -1                     -1                     yes
+    pairing window minutes (D44.7)     15                     15                     yes
+    climatology half window (D44.8)    7.5                    7.5                    yes
+    values checked: 23
+    values that do not match D44: 0
+    (The 15-minute pairing window is the literal in
+     load_obs_target_hour below. Check 3d prints that function's
+     differences from session 24's, so it can be seen that the
+     15 minutes is untouched.)
+
+-- check 2a: model settings, session 05 against this session --
+    setting              session 05             session 29             same?
+    objective            regression_l1          regression_l1          yes
+    n_estimators         300                    300                    yes
+    learning_rate        0.05                   0.05                   yes
+    num_leaves           15                     15                     yes
+    min_child_samples    40                     40                     yes
+    subsample            1.0                    1.0                    yes
+    colsample_bytree     1.0                    1.0                    yes
+    reg_alpha            0.0                    0.0                    yes
+    reg_lambda           0.0                    0.0                    yes
+    random_state         42                     42                     yes
+    n_jobs               1                      1                      yes
+    deterministic        True                   True                   yes
+    force_row_wise       True                   True                   yes
+    verbose              -1                     -1                     yes
+    settings that differ: 0   (D44.4 requires 0)
+
+-- check 2b: the code that must be character-identical to session 05 --
+    Compared character for character with scripts/session05_model.py.
+    all_days()                 identical
+    year_fraction()            identical
+    mae()                      identical
+    describe()                 identical
+    features() is handled separately below: its text differs from
+    session 05's by docstring lines naming the fixed hour, and its
+    executable code is compared with docstrings stripped out.
+
+-- check 3a: model settings, session 24 (Dubbo test) against this session --
+    settings compared: 14
+    settings that differ from Dubbo's sealed test: 0
+
+-- check 3b: the constants, session 24 (Dubbo) against session 29 (Reno) --
+    Exactly one constant should differ: TARGET_HOUR, 2 -> 20, which
+    is D42 and nothing else. The split dates are shared by every
+    airport (SPEC 4.3), so they must be identical.
+    constant                 session 24 (Dubbo)                 session 29 (Reno)    same?
+    TARGET_HOUR              2                                  20                   NO - DIFFERS
+    TRAIN_START              2021-03-24                                              yes
+    TRAIN_END                2025-07-31                                              yes
+    TEST_START               2025-08-01                                              yes
+    TEST_END                 2026-07-31                                              yes
+    INNER_START              2021-03-24                                              yes
+    INNER_END                2024-07-31                                              yes
+    VALID_START              2024-08-01                                              yes
+    VALID_END                2025-07-31                                              yes
+    CHUNKS                   [('2021-03-24', '2021-12-31'), ('                       yes
+    GAP_START                2023-12-30                                              yes
+    GAP_END                  2024-01-19                                              yes
+    CLIM_HALF_WINDOW_DAYS    7.5                                                     yes
+    FEATURE_NAMES            ['forecast_temp_c', 'season_sin',                       yes
+    constants that differ: 1  ['TARGET_HOUR']
+
+-- check 3c: session 29 against session 24, function by function --
+    This is the 'the airport and the hour changed, and nothing
+    else' claim, checked in code rather than argued. Every
+    function is compared character for character with Dubbo's
+    sealed test script.
+    all_days()                   identical
+    year_fraction()              identical
+    mae()                        identical
+    describe()                   identical
+    _literal()                   identical
+    top_level()                  identical
+    func_source()                identical
+    climatology_from_training()  differs - shown below
+    fit_on_training()            differs - shown below
+    The remaining functions (join, score_test_year, judge_the_bar,
+    the comparison parts and main) differ in the text they print,
+    which is on the screen anyway, and in which published figures
+    they quote. No arithmetic differs; the diffs below cover every
+    function that does any of the loading, fitting or scoring.
+
+-- check 3d: the functions that DO differ, each shown in full --
+    Nothing is hidden: every diff is printed so the changes can be
+    read rather than taken on trust.
+
+    features() - docstring lines: the sentence naming the fixed hour says 20:00 UTC
+    at Reno instead of 02:00 (D42). No executable line differs -
+    proved below with docstrings stripped out.
+      --- session24 features
+      +++ session29 features
+      @@ -1,3 +1,3 @@
+       def features(rows):
+      -    """The D19 feature set: forecast temperature, and season as sin/cos.
+      +    """The D19 minimal feature set: forecast temperature, and season as sin/cos.
+       
+      @@ -6,5 +6,3 @@
+           a number line. Hour of day is not a feature - the hour is fixed at that
+      -    airport's target hour, 02:00 UTC at Dubbo. The encoding is calendar
+      -    position only - it does not know which hemisphere it is in, which is the
+      -    property session 22's flipped-season check (F61) tested.
+      +    airport's target hour, 20:00 UTC at Reno.
+           """
+
+    load_forecast_target_hour() - the docstring's session number and airport name. The file-name
+    template already uses the STATION variable, so the executable
+    code is unchanged.
+      --- session24 load_forecast_target_hour
+      +++ session29 load_forecast_target_hour
+      @@ -1,6 +1,6 @@
+       def load_forecast_target_hour():
+      -    """Return {date: forecast_temp_or_None} for 02:00 UTC, up to the hard end.
+      +    """Return {date: forecast_temp_or_None} for 20:00 UTC, up to the hard end.
+       
+      -    Unlike session 22 there is no seal here: Dubbo's test year is loaded,
+      -    because this is the one authorised look at it (DECISIONS D39.6, D39.10).
+      +    Unlike session 27 there is no seal here: Reno's test year is loaded,
+      +    because this is the one authorised look at it (DECISIONS D44.6, D44.10).
+           The only cut-off is the hard end at 2026-07-31, which keeps the test set
+
+    load_obs_target_hour() - the docstring: Reno reports 5 minutes BEFORE the hour (:55), where
+    Dubbo reports ON the hour (:00). The D14 rule, the 15-minute
+    tolerance and the near-target bookkeeping are all unchanged -
+    proved below with docstrings stripped out.
+      --- session24 load_obs_target_hour
+      +++ session29 load_obs_target_hour
+      @@ -1,9 +1,11 @@
+       def load_obs_target_hour():
+      -    """Return {date: observed_temp} for the 02:00 UTC hour, up to the hard end.
+      +    """Return {date: observed_temp} for the 20:00 UTC hour, up to the hard end.
+       
+           The D14 pairing rule: the routine report belongs to the hour it is
+      -    nearest to, and only if it is within 15 minutes of it. At Dubbo the
+      -    routine report is stamped on the hour (F53), so the 02:00 report is
+      -    itself the observation for 02:00 - an exact match, no offset, the same
+      -    shape as LFPG. Anything more than 15 minutes off is dropped and counted.
+      +    nearest to, and only if it is within 15 minutes of it. At Reno the
+      +    routine report is stamped 5 minutes before the hour (F76: `:55`, zero
+      +    off-hour reports in five years), so the 20:00 report is served by the
+      +    19:55 report - a steady 5-minute offset, the same shape DSM's `:54`
+      +    reporting gave, only one minute closer. Anything more than 15 minutes
+      +    off is dropped and counted.
+       
+
+    fit_on_training() - printed labels only - D39 references become D44 references and
+    the airport is named. Every fitted quantity is computed by the
+    same lines.
+      --- session24 fit_on_training
+      +++ session29 fit_on_training
+      @@ -4,8 +4,8 @@
+           Three things are fitted here: the model, the climatology baseline and
+      -    the mean-bias figure. All three see only Dubbo 2021-03-24 to
+      -    2025-07-31 (D39.5, D39.8, SPEC 2.1c).
+      +    the mean-bias figure. All three see only Reno 2021-03-24 to
+      +    2025-07-31 (D44.5, D44.8, SPEC 2.1c).
+           """
+      -    line("PART B - fit on Dubbo's FULL training window only (D39.5, D39.8)")
+      +    line("PART B - fit on Reno's FULL training window only (D44.5, D44.8)")
+       
+      -    print("Everything fitted in this session is fitted here, on Dubbo's")
+      +    print("Everything fitted in this session is fitted here, on Reno's")
+           print("training window, and on nothing else: the model, the climatology")
+      @@ -20,6 +20,7 @@
+                 f"({train[0]['date']} to {train[-1]['date']})")
+      -    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D39.3)")
+      +    print(f"    features       : {', '.join(FEATURE_NAMES)}  (D19, D44.3)")
+           print("    target         : residual, observed minus forecast (SPEC 4.2,")
+      -    print("                     D39.2). The model never predicts temperature.")
+      -    print("    settings (locked in D39.4, nothing tuned this session):")
+      +    print("                     D44.2). The model never predicts temperature.")
+      +    print("    settings (locked in D44.4, nothing tuned this session, despite")
+      +    print("    the rehearsal loss - D44.11):")
+           for k, v in LGB_PARAMS.items():
+      @@ -31,3 +32,3 @@
+       
+      -    sub("the mean-bias figure (D39.8)")
+      +    sub("the mean-bias figure (D44.8)")
+           mean_bias = float(np.mean(y_tr))
+      @@ -39,9 +40,12 @@
+                 f"{mae(y_tr):.3f} degC")
+      -    print(f"    session 22's inner-training figure was {S22_MEAN_BIAS:+.4f} degC")
+      -    print(f"    (F62). EGLC's constant was {EGLC_TEST_MEAN_BIAS:+.4f} (F16),")
+      -    print(f"    CDG's {CDG_TEST_MEAN_BIAS:+.4f} (F30) and DSM's "
+      -          f"{DSM_TEST_MEAN_BIAS:+.4f} (F47).")
+      +    print(f"    session 27's inner-training figure was {S27_MEAN_BIAS:+.4f} degC")
+      +    print(f"    (F79/F80). EGLC's constant was {EGLC_TEST_MEAN_BIAS:+.4f} (F16),")
+      +    print(f"    CDG's {CDG_TEST_MEAN_BIAS:+.4f} (F30), DSM's "
+      +          f"{DSM_TEST_MEAN_BIAS:+.4f} (F47) and Dubbo's "
+      +          f"{DUBBO_TEST_MEAN_BIAS:+.4f} (F64).")
+      +    print("    Reno's is the first POSITIVE training-window constant of the")
+      +    print("    five - the station runs warmer than GFS on average, not colder.")
+       
+      -    sub("the climatology baseline (D39.8, SPEC 2.1c)")
+      -    print("    seasonal average of the OBSERVED temperature at Dubbo, from")
+      +    sub("the climatology baseline (D44.8, SPEC 2.1c)")
+      +    print("    seasonal average of the OBSERVED temperature at Reno, from")
+           print(f"    training-window days only, +/-{CLIM_HALF_WINDOW_DAYS:.1f} days")
+
+-- check 3e: executable code with docstrings removed --
+    A function whose text differs may still do exactly the same
+    thing. This strips the docstring and the name and compares
+    what is left, against session 24's.
+    all_days()                   IDENTICAL
+    year_fraction()              IDENTICAL
+    features()                   IDENTICAL
+    mae()                        IDENTICAL
+    describe()                   IDENTICAL
+    climatology_from_training()  IDENTICAL
+    load_forecast_target_hour()  IDENTICAL
+    load_obs_target_hour()       IDENTICAL
+    Every loader is expected IDENTICAL here: the pairing itself -
+    nearest report, 15-minute tolerance, drop and count - and the
+    file-name template are unchanged; only the docstrings differ.
+
+============================================================================
+PART A - the join at 20:00 UTC, both windows (D44.6, D44.7)
+============================================================================
+airport     : RNO - Reno, Nevada (SPEC 3.4, D44.1)
+target hour : 20:00 UTC (SPEC 4.1, D42, D44.1) -
+              local standard noon at Reno, NOT 12:00, 18:00 or
+              02:00 UTC. Daylight saving is deliberately ignored,
+              so the clock reads 12:00 PST in winter and 13:00
+              PDT in summer either way (D42).
+pairing rule: the routine report nearest the hour, and only if
+              within 15 minutes of it (DECISIONS D14, D44.7). At
+              Reno the routine report is stamped 5 minutes before
+              the hour (F76), so 20:00 UTC is served by the
+              19:55 report - a steady 5-minute offset.
+
+RENO'S TEST YEAR IS OPENED HERE, for the first and only time
+(D44.10). The test-year rows of the 2026 RNO raw chunk file are
+read for the first time in this project. Sessions 25, 26 and 27
+never opened them.
+
+-- what was loaded --
+    forecast chunk files opened : 6 (all six, including the 2026 file's test-year rows)
+    forecast 20:00 rows seen    : 1,956
+    of those, after 2026-07-31 : 0 (not used, D13)
+    forecast 20:00 rows kept    : 1,956
+    observation 20:00 reports seen  : 1,953
+    of those, after 2026-07-31: 0 (not used, D13)
+    observation 20:00 reports kept  : 1,953
+
+-- observation reports rejected by the rules --
+    reports more than 15 min from the hour, dropped (D14): 0
+    reports carrying no temperature (M), dropped (2.2)   : 0
+
+-- the pairing offset actually used, every kept day --
+    offset from 20:00 UTC         all loaded days  of which test year
+    -5 minutes                              1,953                 365
+    F76 and F78 predicted a steady -5 minutes on every kept day,
+    with zero off-hour reports in five years. So the pairing at
+    Reno is never a matter of choosing the nearer of two reports -
+    the target-hour report either exists or it does not.
+    days with MORE THAN ONE report inside D14's 15-minute window: 0
+    So the pairing is essentially never ambiguous at Reno either.
+
+-- rows kept and dropped, by period --
+    period                                         days   kept   drop  no fc  null fc  no obs
+    TRAINING   2021-03-24..2025-07-31             1,591  1,568     23      0       20       3
+    TEST YEAR  2025-08-01..2026-07-31               365    365      0      0        0       0
+      (of which) inner  2021-03-24..2024-07-31    1,226  1,203     23      0       20       3
+      (of which) valid  2024-08-01..2025-07-31      365    365      0      0        0       0
+
+    columns: days = calendar days in the period; kept = paired rows;
+             drop = days with no usable pair; then the reasons.
+             'no fc'   = the forecast series had no row for 20:00;
+             'null fc' = it had a row but the value was null;
+             'no obs'  = no usable observation within 15 min.
+             A day can fail on more than one reason, so the reason
+             columns can add up to more than 'drop'.
+    Nothing was filled in (SPEC 2.2, D44.7).
+
+-- reconciliation 1: does the training window add up? (D44.5, D44.11) --
+    The training window is Reno's inner-training plus Reno's
+    validation year, which session 27 counted separately. Those
+    published counts must add up to this session's training
+    count, or something has drifted and this session must stop.
+    session 27 inner-training kept rows (F78): 1,203
+    session 27 validation kept rows (F78)    :   365
+    published total                          : 1,568
+    this session, training window kept rows  : 1,568
+    this session, of which dated <= 2024-07-31 : 1,203
+    this session, of which dated >= 2024-08-01 : 365
+    reconciles: YES
+    (1,568, not 1,553 like Dubbo: Reno's 20:00 target falls AFTER
+     the gap's last missing hour, 11:00 UTC, the same shape EGLC,
+     LFPG and DSM share, so it loses 20 gap days, not 21. D44.5,
+     F75, F77, F78.)
+
+-- the F75/F77 forecast gap, for the record --
+    gap covers 21 calendar days (2023-12-30 to 2024-01-19), all inside training
+    of those, dropped here: 20
+    (20, matching EGLC/LFPG/DSM rather than Dubbo's 21: Reno's
+     20:00 target falls AFTER the gap's last missing hour,
+     2024-01-19 11:00 UTC, so that date already carries a value
+     and survives - F75, F77.)
+
+-- THE TEST-YEAR DROP COUNT (D44.7) - every date named, both causes --
+    test-year calendar days : 365
+    paired rows kept        : 365
+    days dropped            : 0
+    UNLIKE DUBBO, D44.7 predicted this WOULD be zero - Reno's own
+    gap map (F75, F77) found no forecast-gap day and no
+    observation-side loss anywhere near the test year, and F76
+    found zero off-hour reports in Reno's whole five-year record.
+    Any date named below is a surprise against that prediction.
+      (none - every test-year day paired cleanly)
+    Every drop, if any, is named. Nothing was filled (SPEC 2.2).
+
+-- reconciliation 2: THE PAIRED-ROW COUNT AGAINST D44.7's ADVANCE PREDICTION --
+    D44.7 wrote these numbers down in session 28, from session 26's
+    gap map, BEFORE Reno's test year was opened. A prediction made
+    before the look is a stronger check than a count made after it.
+    A count that will not reconcile is a D44.11 stop signal.
+
+    cause                                                predicted  actual  verdict
+    forecast-gap days in the test year (F75, F77)                0       0  MATCHES
+    days lost to an off-hour-only report (F76, F77)              0       0  MATCHES
+    days lost to no report near the 20:00 hour (F77)             0       0  MATCHES
+    days lost to a report in place with no temperature           0       0  MATCHES
+    paired rows expected (F77)                                 365     365  MATCHES
+
+-- shape check: first and last kept row of each window --
+    training   2021-03-24 -> 2025-07-31   1,568 rows
+    test year  2025-08-01 -> 2026-07-31   365 rows
+
+============================================================================
+PART B - fit on Reno's FULL training window only (D44.5, D44.8)
+============================================================================
+Everything fitted in this session is fitted here, on Reno's
+training window, and on nothing else: the model, the climatology
+baseline and the mean-bias figure. The test year plays no part in
+any fit.
+
+-- the model --
+    rows fitted on : 1,568  (2021-03-24 to 2025-07-31)
+    features       : forecast_temp_c, season_sin, season_cos  (D19, D44.3)
+    target         : residual, observed minus forecast (SPEC 4.2,
+                     D44.2). The model never predicts temperature.
+    settings (locked in D44.4, nothing tuned this session, despite
+    the rehearsal loss - D44.11):
+      objective = regression_l1
+      n_estimators = 300
+      learning_rate = 0.05
+      num_leaves = 15
+      min_child_samples = 40
+      subsample = 1.0
+      colsample_bytree = 1.0
+      reg_alpha = 0.0
+      reg_lambda = 0.0
+      random_state = 42
+      n_jobs = 1
+      deterministic = True
+      force_row_wise = True
+      verbose = -1
+    trees actually built: 300
+
+-- the mean-bias figure (D44.8) --
+    mean training-window bias (observed - forecast): +0.3746 degC
+    over 1,568 training days. The mean-bias reference is
+    the raw forecast plus this one constant, and nothing else.
+    raw GFS MAE on the training window (in sample): 1.414 degC
+    session 27's inner-training figure was +0.4921 degC
+    (F79/F80). EGLC's constant was -0.1479 (F16),
+    CDG's -0.0600 (F30), DSM's -0.2715 (F47) and Dubbo's -0.1914 (F64).
+    Reno's is the first POSITIVE training-window constant of the
+    five - the station runs warmer than GFS on average, not colder.
+
+-- the climatology baseline (D44.8, SPEC 2.1c) --
+    seasonal average of the OBSERVED temperature at Reno, from
+    training-window days only, +/-7.5 days
+    measured around the circle so late December and early January
+    are neighbours.
+
+============================================================================
+PART C - THE SEALED TEST AT RENO (D44.6, D44.8, D44.9)
+============================================================================
+
+-- the common test set (every method judged on the same days) --
+    paired test rows from part A                 : 365
+    dropped: no previous-day 20:00 observation    : 0
+    days every method is scored on                : 365
+    D44.7 predicted this would be 365 - MATCHES
+    date range                                    : 2025-08-01 to 2026-07-31
+    Persistence needs yesterday's 20:00 observation, a
+    past-only value (SPEC 2.1d). For the first test day,
+    2025-08-01, 'yesterday' is 2025-07-31, which sits in the
+    training window and is not one of F78's named observation-
+    side losses. That is a past observation, so it is legal and
+    it is used - written down in D44.8 in advance so it is not
+    mistaken for leakage. Nothing was filled in (SPEC 2.2).
+    check: the first scored day is 2025-08-01, and its
+           persistence value is +27.8 degC, which is the
+           2025-07-31 20:00 observation (+27.8 degC).
+    climatology: training days behind each value: min 45, max 76, mean 64.4
+
+-- RENO TEST-YEAR MAE, 365 common days (2025-08-01 to 2026-07-31) --
+    method                  MAE degC  bias degC  RMSE degC  worst miss  part of bar?
+    Raw GFS                    1.414     -0.355      1.999        9.89           YES
+    Persistence                2.490     +0.015      3.355       13.88           YES
+    Climatology                4.027     +0.855      5.167       16.20            no
+    Mean-bias reference        1.500     -0.730      2.098       10.26            no
+    ML-corrected               1.458     -0.575      1.990        7.86     the claim
+
+    MAE  = average size of the miss. Lower is better (SPEC 5.1).
+    bias = mean of (observed - method), so a positive figure means
+           the method ran cold. Shown for information only.
+    The bar is raw GFS and persistence only (SPEC 5.2, 5.3, D23).
+
+============================================================================
+PART D - THE VERDICT against the frozen bar (SPEC 5.3, 5.0, D44.9)
+============================================================================
+The bar, frozen before any model existed and unchanged since:
+  an airport passes if the corrected forecast has a LOWER MAE than
+  BOTH raw GFS AND persistence, over that airport's held-out test
+  year. Stage 2 is each further individual airport put to that bar,
+  one at a time; Reno is the airport in it now.
+It is qualitative. There is no numeric margin and there never will
+be one (SPEC 5.3, DECISIONS D22). Climatology and the mean-bias
+reference are reported but do not decide pass or fail (D23).
+The bar is judged once per airport, on that airport's own data
+(SPEC 5.0). EGLC's, CDG's, DSM's and Dubbo's passes do not excuse
+a Reno failure, and Reno is measured against Reno's own raw GFS
+and Reno's own persistence only.
+D44 recorded, in advance, that raw GFS is the half of the bar most
+likely to fail here, given session 27's rehearsal loss (F80).
+
+-- the two comparisons that decide it --
+    vs Raw GFS                NOT BEATEN  1.458 against 1.414  -> -0.044 degC (-3.1%)
+    vs Persistence            BEATEN      1.458 against 2.490  -> +1.032 degC (+41.4%)
+
+    **********************************************************************
+    *  RENO DOES NOT PASS.                                              *
+    *  At Reno the corrected forecast does not beat both raw GFS        *
+    *  and persistence over the held-out test year.                     *
+    *  This is an honest, EXPECTED finding (SPEC 2.4, D44.9,            *
+    *  D44.12) - not a bug and not a reason to re-run or tune.          *
+    *  D44.12's near-constant-bias / overfit pattern is the             *
+    *  pre-recorded expected reason; PART G looks at it, as             *
+    *  description only.                                                *
+    **********************************************************************
+
+-- the size of the margin, stated plainly (D22) --
+    D22 requires the margin to be reported prominently, so that a
+    technical pass by a hair reads as what it is, and so does a
+    technical failure.
+    margin over raw GFS     : -0.044 degC (-3.1% of raw GFS MAE)
+    margin over persistence : +1.032 degC (+41.4% of persistence MAE)
+
+    D44.8 said in advance which half of the bar binds at Reno:
+    persistence is far weaker than raw GFS there (2.756 against
+    1.493 on the rehearsal, F80), so THE RAW-GFS MARGIN IS THE ONE
+    THAT DECIDES THE VERDICT IN PRACTICE. Both halves are still
+    required by the bar.
+    raw GFS MAE       : 1.414 degC
+    persistence MAE   : 2.490 degC  (1.76x raw GFS)
+    days the correction was closer than raw GFS : 159 of 365 (43.6%)
+    days it was further away                    : 206 of 365 (56.4%)
+    days it made no difference                  : 0
+
+-- the two informative references (not part of the bar, D23) --
+    vs Mean-bias reference    BEATEN      1.458 against 1.500  -> +0.041 degC (+2.8%)
+    vs Climatology            BEATEN      1.458 against 4.027  -> +2.569 degC (+63.8%)
+
+    The mean-bias reference is the whole forecast plus one constant -
+    the simplest correction anyone could apply, with no learning in
+    it. Beating it is what separates 'the model learned real
+    structure' from 'the model found an offset'. On the rehearsal
+    (F80) this margin was the thinnest of any airport's, +1.7%.
+    -> It is beaten, so there is structure in the correction.
+    Note: the mean-bias reference is WORSE than raw GFS here,
+    matching what the rehearsal found (F80: 1.524 against
+    1.493) - the constant offset was not enough there either.
+
+-- per season (SPEC 5.4 parks deeper season testing; this is context) --
+    season         days   raw GFS   ML-corr    change   persist
+    winter DJF       90     2.359     2.184    -0.175     2.328
+    spring MAM       92     1.020     1.215    +0.195     3.224
+    summer JJA       92     0.899     1.075    +0.176     1.962
+    autumn SON       91     1.398     1.375    -0.024     2.443
+    'change' is the corrected MAE minus raw GFS MAE for that season.
+    Negative means the correction helped; positive means it hurt.
+    Winter is the season D44.12 names as the first place to look
+    if the result behaves oddly - it was Reno's worst-bias season
+    (F79) and the rehearsal's only clear winning season (F80).
+    The headline verdict above is judged on the whole year, not
+    season by season (SPEC 5.3).
+
+============================================================================
+PART E - the test number beside session 27's Reno rehearsal
+============================================================================
+A DIFFERENCE IS EXPECTED AND IS NOT A PROBLEM (D44.5). Three things
+differ between the two columns below:
+  1. a different year of weather - the validation year 2024-08-01 to
+     2025-07-31, against the test year 2025-08-01 to 2026-07-31;
+  2. a model fitted on about 30% more data - Reno's full training
+     window here (1,568 rows), Reno's inner-training only in
+     session 27 (1,203 rows);
+  3. therefore climatology and the mean-bias figure differ too.
+The recipe is identical. Session 27's figures are quoted from
+notes/session-27-check-output.txt and DECISIONS F80.
+
+GIVEN F80's FINDING THAT RENO'S IN-SAMPLE GAIN DID NOT SURVIVE TO
+VALIDATION (overfitting a near-constant signal, F81), D44.5 named
+the direction of this shift as genuinely unpredictable in advance -
+unlike the four passed airports, where the same move never flipped
+a pass to a fail or back.
+
+-- MAE, side by side (different years - context, not a like-for-like) --
+    method                  s27 valid   s29 test  difference
+    Raw GFS                     1.493      1.414      -0.079
+    Persistence                 2.756      2.490      -0.266
+    Climatology                 3.774      4.027      +0.253
+    Mean-bias reference         1.524      1.500      -0.024
+    ML-corrected                1.499      1.458      -0.041
+    days scored                   365        365
+
+    Read the raw GFS row first. It says how hard the two years were
+    for GFS in the first place, which is the context every other
+    row has to be read against.
+
+-- the margin over raw GFS, which is the comparable quantity --
+    session 27, validation year    -0.006 degC (-0.4%)
+    session 29, sealed test year   -0.044 degC (-3.1%)
+    Margins are more comparable than raw MAE figures, because they
+    divide out how hard the year was. They are still two different
+    years, so this is a sense check, not a measurement.
+
+-- per season, session 27 validation against session 29 test --
+    season        s27 raw   s27 ML  s27 chg   s29 raw   s29 ML  s29 chg
+    winter DJF      2.431    2.275   -0.156     2.359    2.184   -0.175
+    spring MAM      1.255    1.233   -0.022     1.020    1.215   +0.195
+    summer JJA      0.807    0.919   +0.112     0.899    1.075   +0.176
+    autumn SON      1.500    1.586   +0.086     1.398    1.375   -0.024
+    'chg' is the corrected MAE minus raw GFS MAE for that season.
+    F80 found winter the rehearsal's only clear winning season.
+    This line says what the test year did in the same season.
+
+-- what the model used (feature importances, a sanity check) --
+    feature                     gain  gain share   splits   s27 share  s27 splits
+    forecast_temp_c           3259.6       39.1%    1,841       40.4%       1,842
+    season_sin                2948.8       35.4%    1,155       35.7%       1,173
+    season_cos                2122.2       25.5%    1,204       23.9%       1,185
+    Both inputs are used and neither is ignored. Session 27 found
+    forecast temperature carrying the largest share, season_sin
+    second (F80).
+
+-- in-sample check only, training window (NOT a result) --
+    raw GFS MAE on the training window      : 1.414 degC
+    ML-corrected MAE on the training window : 1.060 degC
+    session 27, same figure on inner-training: 1.004 degC
+    A model always looks better on the data it was fitted to, so
+    this proves nothing about performance. It is here only so the
+    number is not a surprise later. F80/F81 already flagged the
+    gap between this figure and the rehearsal's out-of-sample
+    result as the largest of any airport - PART G returns to it.
+
+-- the correction the model actually applied over Reno's test year --
+    predicted residual added to the forecast
+      n      = 365
+      mean   = +0.220 degC
+      median = +0.498 degC
+      st dev = 1.131 degC
+      min    = -3.7 degC   max = +2.1 degC
+      5th pct = -2.55   25th = -0.06   75th = +0.89   95th = +1.39
+      mean absolute size = 0.853 degC
+    Session 27's corrections over Reno's validation year, for
+    scale, are in notes/session-27-check-output.txt.
+
+============================================================================
+PART F - how the recipe travelled: Reno beside EGLC (F16), CDG (F30), DSM (F47) and Dubbo (F64)
+============================================================================
+EGLC's figures are session 07's sealed test (F16), CDG's are
+session 13's (F30), DSM's are session 18's (F47) and Dubbo's are
+session 24's (F64), quoted from their notes files.
+
+READ THIS AS CONTEXT, NOT AS A COMPARISON OF LIKE WITH LIKE. SPEC
+5.0 judges each airport on its own data. Cautions, all written
+down before this look:
+  1. Reno changes the LOCATION AND THE TARGET HOUR against every
+     earlier airport (D42, SPEC 4.1) - the same honest caveat
+     D33/D37 attach to DSM and Dubbo.
+  2. All five airports were tested on THE SAME TWELVE MONTHS,
+     because D13's split dates are shared. Reno answers the
+     terrain/mountain axis, not the year axis.
+  3. EGLC's 16.3%, CDG's 13.5%, DSM's 6.3% and Dubbo's 3.3% are
+     not targets Reno had to reach (D44.9).
+  4. Reno's rehearsal (F80) was the first NEGATIVE one in the
+     project (-0.4%), unlike every prior airport's positive
+     rehearsal margin - so a below-zero test margin here would
+     not be the surprise it would have been for the other four.
+
+-- test-year MAE, each airport on its own test year --
+    method                      EGLC       CDG       DSM     Dubbo      Reno
+    Raw GFS                    1.242     1.396     1.815     1.251     1.414
+    Persistence                2.096     2.300     4.003     2.669     2.490
+    Climatology                2.972     3.774     5.030     3.143     4.027
+    Mean-bias reference        1.234     1.389     1.760     1.238     1.500
+    ML-corrected               1.040     1.208     1.700     1.210     1.458
+    days scored                  363       363       365       347       365
+    training rows fitted       1,569     1,569     1,571     1,553     1,568
+    All five rows are error measures, so larger is worse.
+
+-- the margin over each reference, all five airports --
+    vs                                 EGLC              CDG              DSM            Dubbo             Reno
+    Raw GFS                          +16.3%           +13.5%            +6.3%            +3.3%            -3.1%
+    Persistence                      +50.4%           +47.5%           +57.5%           +54.7%           +41.4%
+    Mean-bias reference              +15.7%           +13.0%            +3.4%            +2.3%            +2.8%
+    Climatology                      +65.0%           +68.0%           +66.2%           +61.5%           +63.8%
+    Percentages divide out how hard each airport's problem is, so
+    they are the comparable figure across airports.
+
+-- rehearsal margin against test margin, all five airports --
+    airport            rehearsal margin              test margin
+    EGLC             +0.074 degC (6.0%)      +0.202 degC (16.3%)
+    CDG              +0.050 degC (3.5%)      +0.188 degC (13.5%)
+    DSM             +0.282 degC (16.1%)       +0.115 degC (6.3%)
+    Dubbo            +0.114 degC (8.2%)       +0.041 degC (3.3%)
+    Reno            -0.006 degC (-0.4%)      -0.044 degC (-3.1%)
+    D44.10 named Reno's rehearsal margin (-0.4%) as the first
+    negative one in the project, and said explicitly that a test
+    result repeating OR reversing that loss should not be treated
+    as a surprise either way. This line records what happened.
+
+-- per season, all five sealed tests --
+    season        EGLC chg   CDG chg   DSM chg  Dubbo chg  Reno raw  Reno ML  Reno chg
+    winter DJF      -0.007    +0.010    -0.013     +0.005     2.359    2.184    -0.175
+    spring MAM      -0.066    -0.104    +0.195     -0.038     1.020    1.215    +0.195
+    summer JJA      -0.618    -0.527    -0.331     +0.005     0.899    1.075    +0.176
+    autumn SON      -0.111    -0.134    -0.310     -0.139     1.398    1.375    -0.024
+    'chg' is corrected MAE minus raw GFS MAE for that season.
+    Negative is better than raw GFS; positive is worse. Labels are
+    Northern-calendar throughout; Reno (Northern Hemisphere) uses
+    them literally, unlike Dubbo's.
+
+-- seasons where the correction helped, on the sealed test year --
+    EGLC: 4 of 4   CDG: 3 of 4   DSM: 3 of 4   Dubbo: 2 of 4   Reno: 2 of 4
+    F80's rehearsal found Reno helped in 2 of 4 seasons (winter and
+    spring), tied with Dubbo's validation rehearsal for the fewest
+    of any airport so far. This line is the SAME question asked of
+    the test year.
+
+-- day by day, on each airport's test year --
+    EGLC : closer than raw GFS on 221 of 363 days (60.9%)
+    CDG  : closer than raw GFS on 213 of 363 days (58.7%)
+    DSM  : closer than raw GFS on 195 of 365 days (53.4%)
+    Dubbo: closer than raw GFS on 182 of 347 days (52.4%)
+    Reno : closer than raw GFS on 159 of 365 days (43.6%)
+    Reno's rehearsal win rate (F80) was 47.1% - the only one of
+    the five below half.
+
+-- feature importances, all five sealed tests --
+    feature             EGLC gain %   CDG gain %   DSM gain %  Dubbo gain %  Reno gain %  Reno splits
+    forecast_temp_c           51.8%        38.2%        43.4%         45.3%        39.1%        1,841
+    season_sin                24.5%        34.9%        36.1%         30.3%        35.4%        1,155
+    season_cos                23.7%        26.9%        20.6%         24.4%        25.5%        1,204
+    Gain totals depend on the data, so the shares and split counts
+    are what compare meaningfully between airports.
+
+============================================================================
+PART G - D44.12's near-constant-bias / overfit watch-item, described (NOT acted on)
+============================================================================
+D44.12 named this before the look, so that any inspection after
+the test is honest: the place to look was written down before
+anyone knew the result, mirroring D39.12's single-season
+watch-item for Dubbo.
+
+F79 and F80 together found, on Reno's rehearsal: the correction
+lost to raw GFS outright (-0.4%); its margin over the mean-bias
+reference was the thinnest of any airport (+1.7%); its day-by-day
+win rate was the lowest of any airport (47.1%, below half); and
+its in-sample-to-validation gap was the largest of any airport
+(27.8% in-sample 'improvement' collapsing to -0.4% out-of-sample).
+F79 explains the likely mechanism: Reno's bias is unusually close
+to a CONSTANT - warmer than GFS in 67.7% of inner-training days
+(against 45-52% elsewhere) and positive in almost every
+forecast-temperature band and every season.
+
+THIS IS A DESCRIPTION AND NOTHING ELSE. The method is locked, it
+did not change, and nothing here licenses a re-run or an
+adjustment (D44.10, D44.11, D44.12).
+
+-- what F79/F80 measured on the VALIDATION year, quoted from the lock --
+    station warmer than forecast, inner-training : 67.7% (against 45-52% at the four flat airports)
+    mean |bias|, inner-training                  : 1.390 degC
+    margin vs raw GFS, rehearsal (F80)            : -0.4%  (the only negative rehearsal)
+    margin vs mean-bias reference, rehearsal (F80): +1.7%  (thinnest of any airport)
+    day-by-day win rate, rehearsal (F80)          : 47.1%  (the only one below half)
+    in-sample improvement over raw GFS, training  : 27.8%  (collapsed to -0.4% out-of-sample)
+
+-- mean |bias| by season, inner-training (F79) - winter is the outlier --
+    season        mean |bias| degC
+    winter DJF               1.850
+    spring MAM               1.484
+    summer JJA               1.053
+    autumn SON               1.263
+    Winter's bias is the largest of the four by a wide margin, and
+    it was also the rehearsal's only clear winning season (F80) -
+    the one measure that lined up with the terrain hypothesis
+    (D42). D44.12 names it as the first place to look if the test
+    result behaves oddly.
+
+-- the SAME four measures, on the TEST year - what actually happened --
+    measure                                         rehearsal    test year
+    margin vs raw GFS                                   -0.4%        -3.1%
+    margin vs mean-bias reference                       +1.7%        +2.8%
+    day-by-day win rate                                 47.1%        43.6%
+    In-sample improvement is unchanged from PART E (the model is
+    the same fit): 27.8% in-sample against -3.1% here, out-of-sample.
+
+-- winter, named in advance as the first place to look --
+                            rehearsal    test year
+    winter raw GFS MAE          2.431        2.359
+    winter ML-corr MAE          2.275        2.184
+    winter change              -0.156       -0.175
+    'change' is corrected MAE minus raw GFS MAE. Negative means the
+    correction helped. Looking here is a description, never a
+    licence to re-run or adjust anything (D44.10, D44.11).
+
+-- the worst single misses of the test year, for the record --
+    date          forecast  observed   raw err    ML err
+    2025-11-27       16.00      6.11      9.89      7.86
+    2025-12-25        2.40     10.00      7.60      7.64
+    2026-05-04        6.90     13.89      6.99      6.00
+    2025-12-13       13.90      7.78      6.12      2.64
+    2026-07-13       29.20     23.33      5.87      6.34
+    Listed because D44.12 asked for the watch-item's place to look
+    to be described if the result behaved oddly. Looking is
+    describing; it changes nothing.
+
+============================================================================
+END
+============================================================================
+Raw files untouched. Nothing was filled (SPEC 2.2). Nothing was
+committed. Reno's test year was opened once, the locked method
+ran once, and the number above is the result of record (D44.10).
+
+RENO: DID NOT PASS   ML-corrected test-year MAE = 1.458 degC against raw GFS 1.414 and persistence 2.490
+This output is saved at notes/session-29-check-output.txt

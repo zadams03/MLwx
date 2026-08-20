@@ -3,67 +3,71 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 August 2026, after session 28._
+_Last updated: 20 August 2026, after session 29._
 
 ---
 
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is in progress.** Four
-airports have passed the frozen bar (SPEC 5.3). The fifth, Reno (RNO), is now
-**joined, rehearsed and locked** (session 28, DECISIONS D44) but **not
-tested** — the sealed test year has still never been touched beyond the
-structural row/gap counts from session 26 (F75–F77).
+airports have passed the frozen bar (SPEC 5.3). The fifth, Reno (RNO), has
+now completed all five steps — verified on contact, pulled and gap-mapped,
+joined and rehearsed, locked, and **tested once (session 29, DECISIONS
+F82)** — and **RENO DOES NOT PASS.**
 
-**Session 28's headline: Reno's method lock, D44, is written and verified —
-the D39-equivalent (Dubbo's lock) with only the airport and the target hour
-swapped.** Nothing about the recipe changed because of session 27's negative
-rehearsal (F80: ML-corrected 1.499 vs raw GFS 1.493, -0.4%). The same three
-features (forecast temperature, season sin/cos) and the same LightGBM
-settings that were used at every prior airport are locked for Reno too — no
-feature added, no setting tuned, no tolerance widened to try to turn the
-rehearsal loss into a pass before the test runs. This session did **not**
-open Reno's test year and ran no model — it is purely a documentation
-session, mirroring session 23's shape for Dubbo.
+**Session 29's headline: Reno's sealed test ran exactly as locked in D44,
+and the corrected forecast does not beat raw GFS over the held-out test
+year (1.458 degC against 1.414, a 3.1% loss) — the project's first
+failure.** It does beat persistence comfortably (2.490, +41.4%). This is
+**the project's first airport that fails the frozen bar**, and it is not a
+surprise: session 28's lock (D44, D44.12) named this exact outcome — raw
+GFS being the half most likely to fail, and a near-constant-bias / overfit
+pattern being the expected reason — *before* the test year was opened.
+Nothing about the recipe was changed to chase a pass; the method ran
+byte-for-byte as locked (proved in the script's own PART 0, 23 of 23 lock
+values matched, and every function compared identical to Dubbo's sealed
+test bar the location/hour swap).
 
-**D44 in brief:**
-- Target: temperature at 20:00 UTC at Reno (KRNO/RNO, NV_ASOS), one row/day.
-- Predicts the residual (observed − forecast); features, model and settings
-  identical to D21/D31/D35/D39.
-- Training data for the test: the full D13 window, 2021-03-24 to 2025-07-31,
-  refit on 1,568 of 1,591 calendar days (1,203 inner-training + 365
-  validation rows, exactly as session 27's F78 join gave; 23 days dropped,
-  all reconciled — 20 to the shared forecast gap, 3 to genuine observation
-  outages).
-- Test data: Reno's 2025-08-01 to 2026-07-31, never opened. Predicted paired
-  rows: **365 of 365, 0 dropped on either side** — the cleanest test-year
-  prediction of any airport so far (F75, F77), unlike Dubbo's bounded-but-
-  unnamed 9-day observation loss (D39.7).
-- Bar: beat raw GFS and persistence, qualitative, judged once. **Recorded in
-  advance: raw GFS is the half of the bar most likely to fail**, given the
-  rehearsal loss — a failure there would be a legitimate, honestly-reported
-  outcome, not a bug.
-- **D44.12 watch-item, recorded before the look:** session 27 found Reno's
-  bias is unusually close to a constant (positive in 67.7% of inner-training
-  days and in almost every band/season, F79) and that the model's large
-  in-sample gain (27.8%) collapsed on validation (-0.4%, F80/F81) — the
-  signature of overfitting a near-constant signal. **If the sealed test also
-  fails to beat raw GFS, this is the expected reason, recorded here in
-  advance, not a surprise to explain after the fact.** Winter — Reno's
-  worst-bias season and the rehearsal's only clear winning season — is named
-  as the first place to look if the test result behaves oddly either way.
-- Correspondence check against D39: every point matches except those
-  following from LOCATION or the target HOUR (D44.1, .3's read-hour, .5's
-  row counts, .7's reporting minute/offset/drop prediction, .8's "fitted on"
-  window). Features (D44.3) and model settings (D44.4) are confirmed
-  byte-for-byte identical to D39/D35/D31/D21, explicitly despite the
-  rehearsal loss.
+**F82 in brief:**
+- Verdict: **RENO DOES NOT PASS.** Fails the raw-GFS half of the bar (1.458
+  vs 1.414, -3.1%); passes the persistence half (1.458 vs 2.490, +41.4%).
+- Training refit: 1,568 of 1,591 calendar days (1,203 inner-training + 365
+  validation), reconciled exactly against D44.5's prediction.
+- Test year: **365 of 365 paired, 365 of 365 scored, 0 dropped anywhere** —
+  D44.7's predicted clean sweep, confirmed exactly. The cleanest test-year
+  result of any airport so far.
+- Day-by-day win rate: 43.6% (159 of 365 days closer than raw GFS) — the
+  only airport below 50%, and lower even than the rehearsal's 47.1%.
+- Per season: helped in winter (-0.175) and autumn (-0.024), hurt in spring
+  (+0.195, the year's worst) and summer (+0.176). Winter — the one season
+  D44.12 named in advance as lining up with the terrain hypothesis — stayed
+  a win and grew slightly stronger, the one measure that continued to line
+  up. Spring and autumn swapped which one helps versus the rehearsal.
+- The near-constant-bias / overfit signature named in advance (D44.12)
+  persisted on the full refit: 25.0% in-sample "improvement" over raw GFS
+  collapsed to a -3.1% out-of-sample loss, and the mean training-window
+  bias is +0.3746 degC — still the only positive (station-runs-warmer)
+  constant of the five airports.
+- **This is a legitimate, honestly-reported result of the method's edge
+  (SPEC 2.4), not a defect in the project.** It does not reopen or call
+  into question EGLC's, CDG's, DSM's or Dubbo's passes (SPEC 5.0 — each
+  airport is judged once, on its own data, and nothing is pooled or
+  re-judged).
+- **The owner intends a planning session next, on when and how to add
+  richer features (cloud cover, wind, a genuine terrain descriptor) to the
+  recipe, with Reno as the motivating case.** That planning has not started
+  — this session only ran the locked recipe and reported the result.
+- **SPEC 3.4 and SPEC 5.0 both need Reno's verdict recorded** — SPEC 3.4's
+  "in progress" cell for Reno and SPEC 5.0's missing Reno row are both still
+  stale as of this session. No SPEC edit was made this session (out of
+  scope); that is pending a future session, per the same discipline that
+  left CDG's, DSM's and Dubbo's own SPEC updates to a dedicated session.
 
 ## Airports
 
 Full per-airport facts for the five airports SPEC currently tracks live in
-SPEC 3.4; the full results table is SPEC 5.0 (unchanged this session — Reno
-has not passed or failed anything yet). Summary:
+SPEC 3.4; the full results table is SPEC 5.0 (unchanged this session — the
+Reno row is not yet added, see above). Summary:
 
 | airport | stage | status |
 |---|---|---|
@@ -71,27 +75,26 @@ has not passed or failed anything yet). Summary:
 | LFPG (Paris CDG) | 2 | PASSED — sealed test run, single look spent |
 | DSM (Des Moines) | 2 | PASSED — sealed test run, single look spent |
 | YSDU (Dubbo) | 2 | PASSED — sealed test run, single look spent (DECISIONS F64) |
-| RNO (Reno, Nevada) | 2 | IN PROGRESS — joined, rehearsed and **locked** (DECISIONS D44); sealed test not yet run |
+| RNO (Reno, Nevada) | 2 | **DID NOT PASS** — sealed test run, single look spent (DECISIONS F82) |
 
-All four passed airports beat both raw GFS and persistence on MAE over their
-own sealed test year (SPEC 5.3). Margins over raw GFS ranged 3.3%–16.3% on
-the sealed test years and 3.5%–16.1% on the rehearsal years — all four test
-years fell on the same shared twelve months (SPEC 4.3, D13), so the honest
-figure to quote is the range across eight airport-years, roughly 3%–16%, not
-the best single result (DECISIONS F48, F65). Reno's rehearsal (session 27)
-sits outside that range, at -0.4% — the project's first negative rehearsal.
-**Reno's sealed test is the next session's job, not this one's.**
+The four passed airports beat both raw GFS and persistence on MAE over
+their own sealed test year (SPEC 5.3). Margins over raw GFS ranged
+3.3%–16.3% on the sealed test years and 3.5%–16.1% on the rehearsal years —
+all four test years fell on the same shared twelve months (SPEC 4.3, D13),
+so the honest figure to quote for them is the range across eight
+airport-years, roughly 3%–16%, not the best single result (DECISIONS F48,
+F65). **Reno's rehearsal (-0.4%, F80) and Reno's sealed test (-3.1%, F82)
+both sit outside that range, on the losing side — the margin widened from
+rehearsal to test rather than narrowing, unlike anything the four passed
+airports showed.**
 
-**RNO (Reno, Nevada) — locked this session, DECISIONS D44.** The lock is a
-faithful, point-by-point copy of D39 (Dubbo's lock) with only the airport and
-the target hour changed, per the correspondence check inside D44 itself. No
-methodological choice was varied because of session 27's rehearsal loss.
-Full detail is in D44 above and in DECISIONS.md directly; the one authorised
-SPEC edit this session updated §6's Reno bullet to say the airport is now
-joined, rehearsed and locked (rehearsal did not beat raw GFS) rather than
-"not yet joined, rehearsed, locked or tested". §3.4's "in progress" cell and
-§5.0's missing Reno row are left as they are, per the session prompt — they
-become accurate once Reno is tested.
+**RNO (Reno, Nevada) — tested this session, DECISIONS F82.** The test ran
+exactly as D44 locked it: same three features, same LightGBM settings, same
+20:00 UTC target, refit on the full training window, one look at the sealed
+test year. It is the project's first mountain/terrain-affected airport, the
+third whose target hour is not 12:00 UTC (D42, SPEC 4.1), and now the
+**first airport to fail the frozen bar (SPEC 5.3)**. Full detail is in F82
+above and in DECISIONS.md directly.
 
 ## Done
 
@@ -109,7 +112,7 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   (session 22, F60–F63), locked (session 23, D39) and tested once (session
   24). **DUBBO PASSES** — corrected MAE 1.210 degC against raw GFS 1.251
   (3.3% better) and persistence 2.669 (54.7% better), the narrowest raw-GFS
-  margin of the four airports (F64).
+  margin of the four passed airports (F64).
 - Session 21: a one-time, authorised documentation restructure — no data,
   model, or pull touched.
 - Session 25: a fifth airport opened — the project's first deliberate "hard"
@@ -136,69 +139,80 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   the thinnest margin of any airport's rehearsal (+1.7%). Method proved
   unchanged from the D21 lock (0 settings differ, TARGET_HOUR the only
   differing constant, per D42). No lock, no test, no SPEC edit.
-- Session 28 (this one): Reno's method lock written and verified as
-  DECISIONS D44 — a faithful copy of D39 (Dubbo's lock) with only the
-  location and the target hour changed, confirmed by a point-by-point
-  correspondence check inside D44. The features and model settings are
-  explicitly unchanged despite session 27's rehearsal loss — nothing was
-  added or tuned to improve Reno's odds. The lock records, in advance, that
-  raw GFS is the half of the bar most likely to fail, and names Reno's
-  near-constant bias / overfit pattern (D44.12) as the expected explanation
-  if the sealed test also comes back negative. §6's stale Reno bullet was
-  corrected (the one authorised SPEC edit). No test year opened, no model
-  run, no other SPEC edit.
+- Session 28: Reno's method lock written and verified as DECISIONS D44 — a
+  faithful copy of D39 (Dubbo's lock) with only the location and the target
+  hour changed, confirmed by a point-by-point correspondence check inside
+  D44. The features and model settings are explicitly unchanged despite
+  session 27's rehearsal loss — nothing was added or tuned to improve
+  Reno's odds. The lock recorded, in advance, that raw GFS is the half of
+  the bar most likely to fail, and named Reno's near-constant bias / overfit
+  pattern (D44.12) as the expected explanation if the sealed test also came
+  back negative. §6's stale Reno bullet was corrected (the one authorised
+  SPEC edit). No test year opened, no model run, no other SPEC edit.
+- Session 29 (this one): Reno's sealed test executed exactly as D44 locked
+  it, one look, opened once. **RENO DOES NOT PASS** — corrected MAE 1.458
+  degC against raw GFS 1.414 (-3.1%, NOT beaten) and persistence 2.490
+  (+41.4%, beaten). The project's first failed airport. Training refit
+  (1,568 rows) and test-year join (365/365 paired and scored, 0 dropped)
+  both reconciled exactly against D44's advance predictions. D44.12's
+  near-constant-bias / overfit watch-item was borne out: 25.0% in-sample
+  improvement collapsed to -3.1% out-of-sample, and winter — the one season
+  the watch-item flagged as consistent with the terrain hypothesis —
+  remained the correction's clearest win. Result appended to DECISIONS as
+  F82. No SPEC edit this session (out of scope, pending a future session).
 
 ## Next
 
-**Reno's single sealed-test evaluation — executing D44 exactly as written.**
-This mirrors session 24's shape for Dubbo (session 18's for DSM, session 13's
-for CDG): open Reno's test year once, run the D44 recipe once, report the
-result straight — pass or fail, with the seasonal breakdown and drop counts,
-reconciled against D44.5's and D44.7's predicted row counts (1,568 of 1,591
-training rows; 365 of 365 test rows, 0 dropped either side).
+**A planning session on richer features, with Reno as the motivating
+case — not started, not scoped, and not this session's job.** Reno's own
+five steps (verify, pull, join/rehearse, lock, test) are now complete, and
+its sealed test failed the frozen bar. D44.12 and F82 both name the same
+mechanism: Reno's bias is unusually close to a persistent, near-constant
+offset that the current three features (forecast temperature, season
+sin/cos) cannot turn into more than a thin, overfit-prone signal. F81
+already named cloud cover, wind, and a genuine terrain descriptor as the
+kind of information that might be needed. None of that work has begun —
+this session only ran the locked recipe once and reported the result
+straight, per its own scope.
 
-**A failure against raw GFS is an expected, legitimate possible outcome of
-this test, not a bug to chase.** Session 27's rehearsal loss (-0.4%) and
-D44.12's near-constant-bias / overfit watch-item are both on record in
-advance, precisely so a negative test result reads as confirmation of an
-already-named pattern rather than a surprise requiring explanation after the
-fact. Equally, a positive test result is possible and would not be
-suspicious — D18 exists because rehearsal and test years can differ, and
-every one of the four passed airports' own numbers moved between validation
-and test (sometimes by more than the gap between any two rehearsal margins
-seen so far).
+**SPEC 3.4 and SPEC 5.0 need Reno's verdict recorded — pending a future,
+dedicated SPEC session**, the same discipline CDG's, DSM's and Dubbo's own
+SPEC updates each received. SPEC 3.4's "stage 2 — in progress" cell for RNO
+and SPEC 5.0's results table (which has no Reno row at all) are both stale
+as of this session. Section 6's Reno bullet (updated last session, D44) will
+also need its "not yet tested" clause replaced with the verdict.
 
-Whatever the result, per D44.10/D44.11 it stands as reported: no re-run, no
-adjustment, no second look. Q30's other two branches (a second test year;
-stage 3, pooling) remain untouched and available as alternatives once Reno's
-five steps are complete. Q31 (whether Reno files a second scheduled report)
-and Q32 (whether the owner wants to weigh in on proceeding given the
-rehearsal loss — answered implicitly this session by proceeding to lock
-per the session-28 prompt's own instruction, but never explicitly asked)
-remain open and unrelated to anything this session changed.
+**Whatever the owner decides about richer features or a further airport,
+Reno's own result stands as reported (D44.10, D44.11) — no re-run, no
+retroactive adjustment.** Q30's other branches (a second test year; stage 3,
+pooling) remain untouched and available, now alongside the richer-features
+question F82 raises. Q31 (whether Reno files a second scheduled report)
+remains open and unrelated to anything this session changed.
 
 ## Open questions (live)
 
-- **Q30 (unchanged).** The owner has already picked its first branch — more
-  airports, "ramp up difficulty" — now specifically Reno (D40, superseded by
-  D42). What comes after Reno's own five steps finish is still the owner's
-  choice: another airport; a second test year (the untouched half of the
-  F30/F46/F48/F65 caveat — all four passed airports so far share the same
-  twelve months); or stage 3, pooling (not opened).
+- **Q30 (unchanged in substance, Reno's own branch now complete).** The
+  owner picked its first branch — more airports, "ramp up difficulty" — and
+  Reno's own five steps are now finished, ending in a failure. What comes
+  next is still the owner's choice: richer features at Reno specifically
+  (the owner's stated intent for the next planning session, per this
+  session's prompt); another airport; a second test year (the untouched
+  half of the F30/F46/F48/F65 caveat); or stage 3, pooling (not opened).
 - **Q31 (unchanged).** Whether Reno files a second scheduled report
   (like EGLC/LFPG/Dubbo) or genuinely unscheduled ones (like DSM and
   Bozeman) has not been checked by any session. SPEC 3.4's "also files at"
   cell for RNO reads "not yet checked". Nothing in the pipeline depends on
   it (D30); it is a bookkeeping gap, not a data one.
-- **Q32 (unchanged, still live).** Should Reno's rehearsal loss against raw
-  GFS (-0.4%, DECISIONS F80) change anything about whether/how the recipe is
-  locked and tested at Reno? Session 28's prompt instructed proceeding to
-  lock regardless and judging the bar as-is, and that instruction was
-  followed (D44 is unmodified from D39's pattern). The owner has still not
-  been asked, in so many words, whether a rehearsal that came back negative
-  changes their intentions for Reno specifically or for how future
-  terrain-hard airports are approached — that question remains open,
-  unchanged from session 27, and is not resolved by locking the recipe.
+- **Q32 (effectively answered by events, left on record rather than
+  formally closed).** Session 27 asked whether Reno's rehearsal loss should
+  change anything about locking/testing Reno; the session-28 and session-29
+  prompts both instructed proceeding regardless, and that is what happened
+  — Reno was locked unmodified (D44) and tested unmodified (F82), and it
+  failed. The owner has still not been asked, in so many words, whether a
+  failed sealed test (as opposed to just a negative rehearsal) changes their
+  intentions for future terrain-hard airports generally — though the
+  planning-session intent noted above (richer features) is the owner's
+  first practical answer for Reno specifically.
 
 No other open question remains live; everything else has been closed by a
 decision or a finding — see DECISIONS.md for the closure record.
