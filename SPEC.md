@@ -517,10 +517,15 @@ to fill in a later stage early, treat it as a warning sign and stop.
   - **Reno (RNO) — IN PROGRESS.** Session 25 verified two mountain-valley
     candidates, Bozeman and Reno, and initially chose Bozeman (D40); the
     owner then switched the choice to Reno (D42, superseding D40). Reno's
-    candidate-comparison checks are recorded in F66, and its full pull and
-    gap map are in F74–F77. It is the project's first mountain/terrain-
-    affected airport, and the third whose target hour is not 12:00 UTC (D42,
-    4.1). Not yet joined, rehearsed, locked or tested.
+    candidate-comparison checks are recorded in F66, its full pull and gap
+    map are in F74–F77, and it was joined and rehearsed in session 27
+    (F78–F81) — the rehearsal correction did **not** beat raw GFS (1.499 vs
+    1.493, -0.4%), the first such rehearsal result in the project, though it
+    still beat persistence and, narrowly, the mean-bias reference. Its
+    method lock, mirroring D39's, is **D44** (session 28) — the recipe is
+    unchanged despite the rehearsal loss. It is the project's first
+    mountain/terrain-affected airport, and the third whose target hour is
+    not 12:00 UTC (D42, 4.1). Not yet tested.
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with
