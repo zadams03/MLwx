@@ -8735,3 +8735,107 @@ Full script, full output and full reconciliation: `scripts/session29_test.py`
 and `notes/session-29-check-output.txt`.
 
 ---
+
+## 2026-09-09 — Session 30 decision: SPEC housekeeping (Reno's verdict
+recorded, target-hour list consolidated to point at 3.4)
+
+**D45. SPEC is brought up to date with Reno's now-complete result (F82) and
+one long-standing staleness item flagged since session 26.** This entry
+documents the four authorised edits (A-1 to A-4, the session 30 prompt) and
+no others. This session made **no other SPEC edit** — no code was touched,
+no model was run, and no figure in SPEC was changed except where named below.
+
+- **A-1 (§3.4 airport table).** KRNO's stage cell changed from `2 — in
+  progress` to **`2 — failed`**. Nothing else in that row changed.
+- **A-2 (§5.0 results table).** A KRNO row was added: `**FAILED** (stage 2,
+  365 test days) | 1.458 vs 1.414 vs 2.490`, using F82's own figures. The
+  paragraph beneath the table was extended to name Reno's figures alongside
+  the other four, to note that all five airports' single looks are now spent
+  on the same twelve months (extending F30/F48/F65's reading one airport
+  further), and to add a short paragraph stating Reno is the first airport
+  not to beat raw GFS, with the near-constant-bias / overfit reading D44.12
+  named in advance and confirmed by F82.
+- **A-3 (§6 build order).** The Reno bullet changed from "IN PROGRESS ...
+  Not yet tested" to "FAILED (tested once, F82)", with the sealed-test
+  figures and verdict added after the existing rehearsal-and-lock summary,
+  mirroring how the DSM and Dubbo bullets already read after their own
+  passes.
+- **A-4 (§4.1 "hours in use" list).** This list had named only EGLC, LFPG
+  and DSM since DSM was added, and was never extended when Dubbo or Reno
+  joined — flagged as stale by session 26 (open question, not acted on
+  then) and left unresolved by every session since. Rather than keep
+  appending one bullet per airport to a list §4.1's own opening sentence
+  already says lives in the airport table (3.4), the list was replaced with
+  a short "for illustration only" paragraph that keeps the two explanatory
+  examples (why EGLC/LFPG and DSM differ) and names Dubbo's and Reno's hours
+  and the decisions that fixed them (D37, D42), while pointing at 3.4 as the
+  one place the hours themselves are recorded. No hour value changed; this
+  is a presentation fix, not a data correction.
+
+**What did not change.** Sections 5.1, 5.2 and 5.3 (the metric, the
+references, and the qualitative bar itself, D22) are untouched. No edit here
+adds anything a result must clear or removes anything it already had to. The
+frozen bar's *meaning* is exactly what it was before this session — checked
+edit by edit, the same discipline sessions 09, 15, 20 and 26 applied to
+their own SPEC edits (D28, D34, D38, D43).
+
+**One remaining staleness item, seen but not authorised to fix.** SPEC
+section 1's own airport list still reads "Reno ... stage 2, in progress" —
+a second place, distinct from the §3.4 table A-1 was scoped to, that also
+needs "failed". The session 30 prompt authorised only A-1 to A-5; changing
+section 1's prose was not one of them, so it is left as found and reported
+in this session's consistency check for the owner to authorise separately,
+the same discipline session 26 applied to its own out-of-scope wording
+question (D43).
+
+---
+
+## 2026-09-09 — Session 30 finding: Q31 closed as immaterial
+
+**F83. Q31 (whether Reno files a second scheduled report) is closed as
+immaterial — not answered, because it cannot be answered from data already
+on hand, and answering it would mean a new IEM pull, which is outside a
+documentation-only session's scope.**
+
+Checked before closing rather than assumed: every one of Reno's saved raw
+IEM pulls (`data/raw/iem_asos_RNO_*_routine.csv` and their `.meta.txt`
+files, from session 26's full six-year pull) was requested with
+`report_type=3` — routine reports only. None of them requested
+`report_type=4` ("special") or the combined routine-plus-special stream that
+answered this same question for EGLC (F3), LFPG (F19), DSM (F36), Dubbo
+(F55) and Bozeman (F72). So the data needed to answer Q31 was never pulled,
+and the honest options are a new request to IEM (a new data pull, out of
+this session's documentation-only scope, SPEC 2.3) or leaving it open
+indefinitely.
+
+**Closed as immaterial rather than left open, because D30 already settled
+that it cannot change anything even once answered.** Nothing in the
+project's pipeline uses the "special" stream as the truth observation at any
+airport (D30) — the routine `:55` report is Reno's truth observation
+regardless of whether a second scheduled report also exists. SPEC 3.4's
+"also files at" cell for RNO keeps its honest current answer, **"not yet
+checked"**, rather than being changed to a guess; "not yet checked" and
+"immaterial" are two different, both-true statements, and this entry closes
+only the open-question status, not the cell's wording. If a future session
+ever pulls Reno's special-report stream for some other reason, the cell can
+be filled in then from that real data, exactly as D28 requires — it does not
+need its own dedicated session to do so.
+
+---
+
+## 2026-09-09 — Session 30 finding: `RESULTS.md` created (no new computation)
+
+**F84. A standalone technical results summary, `RESULTS.md`, was written at
+the project root, drawing only on SPEC's and DECISIONS's already-recorded
+figures — no model was run and no figure was computed for the first time.**
+Every number in it is cited to the DECISIONS finding it comes from (F16,
+F30, F47, F64, F82 for the five sealed-test rows; F48, F65, F82 for the
+cross-airport readings) and was checked against that finding's own text
+before being written down (this session's own consistency sweep, reported
+separately, is the record of that check). `RESULTS.md` is a second,
+reader-facing presentation of facts SPEC and DECISIONS already hold; it does
+not supersede either as the source of truth, and a disagreement between it
+and its cited DECISIONS source would mean `RESULTS.md` is wrong, never the
+other way round.
+
+---

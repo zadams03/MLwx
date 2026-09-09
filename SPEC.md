@@ -30,8 +30,8 @@ The airports so far:
   **passed**.
 - **Des Moines, Iowa (IEM station code DSM)** — stage 2, **passed**.
 - **Dubbo, Australia (ICAO code YSDU)** — stage 2, **passed**.
-- **Reno, Nevada (IEM station code RNO, ICAO code KRNO)** — stage 2, **in
-  progress**. The project's first mountain/terrain-affected airport.
+- **Reno, Nevada (IEM station code RNO, ICAO code KRNO)** — stage 2,
+  **failed**. The project's first mountain/terrain-affected airport.
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -196,7 +196,7 @@ The airport, and where it is (position from IEM, section 3.1):
 | LFPG | Paris Charles de Gaulle (CDG) | 2 — passed | 12:00 | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
 | YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
-| RNO | Reno, Nevada | 2 — in progress | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
+| RNO | Reno, Nevada | 2 — failed | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
 
 The forecast grid point it maps to (from Open-Meteo, section 3.2), and when the
 station reports:
@@ -256,8 +256,11 @@ Notes on the table:
   session 25's verification of Reno went only as deep as the candidate
   comparison against Bozeman (position, grid, elevation mismatch, reporting
   minute on a short sample); whether Reno files a second scheduled report has
-  not been pulled or checked by any session yet, and is logged as an open
-  question rather than guessed.
+  not been pulled or checked by any session, and the question was closed as
+  immaterial rather than pursued further (DECISIONS F83) — nothing in the
+  project's pipeline uses the "special" stream as the truth observation at
+  any airport (D30), so the cell stays an honest "not yet checked" rather
+  than a guess.
 - **All five network codes are now verified by a real pull.** LFPG's
   `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
   session 10 (DECISIONS F24, which closes Q22), DSM's `IA_ASOS` in session 14
@@ -279,14 +282,16 @@ hour each airport uses is a per-airport fact and lives in the airport table
 honest test of whether the whole idea works at all. Widening to more hours comes
 later (section 6).
 
-The hours in use:
-
-- **EGLC and LFPG use 12:00 UTC.** Local standard time in western Europe is
-  UTC+0 and UTC+1, so 12:00 UTC is midday to early afternoon at both.
-- **DSM uses 18:00 UTC**, which is 12:00 Central Standard Time — local standard
-  noon at Des Moines. 12:00 UTC there would be 06:00 local, which is dawn: the
-  one part of the day the reasons below rule out. Checked against the timezone
-  database rather than assumed (DECISIONS D33, F32).
+**For illustration, not as a second source of truth** (section 3.4's table is
+the only place the hours themselves are recorded): EGLC and LFPG both land on
+12:00 UTC because that already is local midday in western Europe (UTC+0 and
+UTC+1). DSM does not: its standard-time offset is UTC−6, so 12:00 UTC there
+is 06:00 local — dawn, the one part of the day the reasons below rule out —
+which is why DSM instead uses 18:00 UTC (local standard noon), checked
+against the timezone database rather than assumed (DECISIONS D33, F32).
+Dubbo (02:00 UTC, DECISIONS D37) and Reno (20:00 UTC, DECISIONS D42) follow
+the same local-standard-noon principle, each checked against the timezone
+database in its own session before being used.
 
 **Daylight saving is deliberately ignored**, so each airport's target stays a
 fixed UTC hour all year round and there is no seasonal jump in the middle of the
@@ -410,16 +415,27 @@ earlier one's, and an earlier pass does not excuse a later failure.
 | LFPG | **PASSED** (stage 2, 363 test days) | 1.208 vs 1.396 vs 2.300 |
 | DSM | **PASSED** (stage 2, 365 test days) | 1.700 vs 1.815 vs 4.003 |
 | YSDU | **PASSED** (stage 2, 347 test days) | 1.210 vs 1.251 vs 2.669 |
+| RNO | **FAILED** (stage 2, 365 test days) | 1.458 vs 1.414 vs 2.490 |
 
 EGLC's figures are the stage 1 record (DECISIONS F16), LFPG's the stage 2
 record for its airport (DECISIONS F30), DSM's the stage 2 record for its
-airport (DECISIONS F47), and YSDU's (Dubbo's) the stage 2 record for its
-airport (DECISIONS F64). All four airports' single authorised looks are now
-spent, and all four fell on **the same twelve months**, so the four margins
-are not four independent draws of weather — see F30's, F48's and F65's
-closing readings. DSM and Dubbo also each changed their target hour against
-the European pair (4.1), so neither result is the same controlled comparison
-EGLC and LFPG make between them.
+airport (DECISIONS F47), YSDU's (Dubbo's) the stage 2 record for its
+airport (DECISIONS F64), and RNO's (Reno's) the stage 2 record for its
+airport (DECISIONS F82). All five airports' single authorised looks are now
+spent, and all five fell on **the same twelve months**, so the margins are
+not five independent draws of weather — see F30's, F48's and F65's closing
+readings. DSM, Dubbo and Reno each changed their target hour against the
+European pair (4.1), so none of their results is the same controlled
+comparison EGLC and LFPG make between them.
+
+**RNO (Reno) is the first airport not to beat raw GFS** — it fails the
+raw-GFS half of the bar (1.458 vs 1.414, -3.1%) while still beating
+persistence by a wide margin (1.458 vs 2.490, +41.4%). The failure was named
+in advance, before the test year was opened, as the expected outcome if the
+method's minimal features proved insufficient there (DECISIONS D44.12):
+Reno's bias is close to a constant offset, and the correctable structure left
+over is small relative to random day-to-day scatter, so a flexible model
+fitting it tightly in-sample adds little out-of-sample. See DECISIONS F82.
 
 **5.1 Metric.** Mean absolute error (MAE) — the average size of the gap
 between forecast and what actually happened, in degrees Celsius. Lower is
@@ -514,18 +530,23 @@ to fill in a later stage early, treat it as a warning sign and stop.
     pulled and mapped (F57–F59), joined and rehearsed (F60–F63), locked (D39)
     and tested once (F64). It is the project's first Southern Hemisphere
     airport, and the second whose target hour is not 12:00 UTC (D37, 4.1).
-  - **Reno (RNO) — IN PROGRESS.** Session 25 verified two mountain-valley
-    candidates, Bozeman and Reno, and initially chose Bozeman (D40); the
-    owner then switched the choice to Reno (D42, superseding D40). Reno's
-    candidate-comparison checks are recorded in F66, its full pull and gap
-    map are in F74–F77, and it was joined and rehearsed in session 27
-    (F78–F81) — the rehearsal correction did **not** beat raw GFS (1.499 vs
-    1.493, -0.4%), the first such rehearsal result in the project, though it
-    still beat persistence and, narrowly, the mean-bias reference. Its
-    method lock, mirroring D39's, is **D44** (session 28) — the recipe is
-    unchanged despite the rehearsal loss. It is the project's first
-    mountain/terrain-affected airport, and the third whose target hour is
-    not 12:00 UTC (D42, 4.1). Not yet tested.
+  - **Reno (RNO) — FAILED (tested once, F82).** Session 25 verified two
+    mountain-valley candidates, Bozeman and Reno, and initially chose Bozeman
+    (D40); the owner then switched the choice to Reno (D42, superseding
+    D40). Reno's candidate-comparison checks are recorded in F66, its full
+    pull and gap map are in F74–F77, and it was joined and rehearsed in
+    session 27 (F78–F81) — the rehearsal correction did **not** beat raw GFS
+    (1.499 vs 1.493, -0.4%), the first such rehearsal result in the project,
+    though it still beat persistence and, narrowly, the mean-bias reference.
+    Its method lock, mirroring D39's, is **D44** (session 28) — the recipe
+    is unchanged despite the rehearsal loss, and D44.12 named the
+    near-constant-bias / overfit pattern as the expected explanation if the
+    sealed test also failed. Session 29 opened the sealed test once: **RNO
+    DOES NOT PASS** — the corrected forecast does not beat raw GFS (1.458 vs
+    1.414, -3.1%), though it beats persistence by a wide margin (+41.4%,
+    F82). It is the project's first airport to fail the frozen bar, the
+    project's first mountain/terrain-affected airport, and the third whose
+    target hour is not 12:00 UTC (D42, 4.1).
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with
