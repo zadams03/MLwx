@@ -1,0 +1,24 @@
+Window: 2025-08-01 .. 2026-07-31 (365 days) -- SEALED TEST YEAR (D48.8)
+Distinct (run_date, cycle, lead) files needed: 1460
+Variables per file: 4  ->  up to 5840 messages, 7300 requests (idx + range-gets)
+Concurrency: 48 threads; disk-free floor: 3 GiB
+
+  100/1460 combos  ok_msgs=400 fail_msgs=0  elapsed=0.3min  rate=4.99 combos/s  eta=4.5min
+  200/1460 combos  ok_msgs=800 fail_msgs=0  elapsed=0.6min  rate=5.82 combos/s  eta=3.6min
+  300/1460 combos  ok_msgs=1200 fail_msgs=0  elapsed=0.8min  rate=5.95 combos/s  eta=3.2min
+  400/1460 combos  ok_msgs=1600 fail_msgs=0  elapsed=1.1min  rate=6.05 combos/s  eta=2.9min
+  500/1460 combos  ok_msgs=2000 fail_msgs=0  elapsed=1.3min  rate=6.38 combos/s  eta=2.5min
+  600/1460 combos  ok_msgs=2400 fail_msgs=0  elapsed=1.6min  rate=6.44 combos/s  eta=2.2min
+  700/1460 combos  ok_msgs=2800 fail_msgs=0  elapsed=1.8min  rate=6.65 combos/s  eta=1.9min
+  800/1460 combos  ok_msgs=3200 fail_msgs=0  elapsed=2.0min  rate=6.81 combos/s  eta=1.6min
+  900/1460 combos  ok_msgs=3600 fail_msgs=0  elapsed=2.2min  rate=6.88 combos/s  eta=1.4min
+  1000/1460 combos  ok_msgs=4000 fail_msgs=0  elapsed=2.4min  rate=6.87 combos/s  eta=1.1min
+  1100/1460 combos  ok_msgs=4400 fail_msgs=0  elapsed=2.7min  rate=6.78 combos/s  eta=0.9min
+  1200/1460 combos  ok_msgs=4800 fail_msgs=0  elapsed=2.9min  rate=6.89 combos/s  eta=0.6min
+  1300/1460 combos  ok_msgs=5200 fail_msgs=0  elapsed=3.1min  rate=7.00 combos/s  eta=0.4min
+  1400/1460 combos  ok_msgs=5600 fail_msgs=0  elapsed=3.3min  rate=7.06 combos/s  eta=0.1min
+  1460/1460 combos  ok_msgs=5840 fail_msgs=0  elapsed=3.5min  rate=6.98 combos/s  eta=0.0min
+
+Done in 3.5 min. combos processed: 1460/1460
+messages ok: 5840  messages failed: 0
+failure manifest: /Users/zacharyadams/Coding Projects/MLwx/data/raw/grib/session40_pull_failures.csv (0 new rows this run)

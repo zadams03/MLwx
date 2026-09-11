@@ -1721,3 +1721,148 @@ feature/window/lapse-rate change, no re-run, no retroactive adjustment. The
 result stands exactly as tested, pass or fail, per airport -- the same rule
 D44.10 and D44.11 already state, applied here to five airports and a new
 recipe rather than one.
+
+---
+
+## 2026-09-12 -- Session 40 finding: GRIB build step 4b -- the sealed pull
+and decode completed cleanly, but the frozen script's own D48.12 self-guard
+stopped the run before any model was fit at any airport
+
+**F92. Session 40 opened the sealed test year (D48.8) for the 5-feature
+GRIB recipe. The pull and decode (Task 1) completed cleanly at all five
+airports, and the existing sealed-year IEM observations (Task 2) were
+reused unchanged. Running the frozen script (Task 3,
+`scripts/session39_sealed_test.py`, confirmed unmodified against the
+session-39 commit by `git diff` before running) tripped its own D48.12 stop
+signal at the first airport it processes, EGLC, before fitting any model.
+Per the session prompt's explicit instruction, this was NOT worked around,
+retried, or patched -- the run stopped there. No sealed-year MAE was
+computed and no PASS/FAIL verdict was reached at EGLC or any other airport.
+D48's one authorised look (D48.13) has therefore not been taken anywhere --
+this is a different situation from Reno's F82, where a look was taken and
+came back negative; here, no look happened at all.**
+
+**Task 1 -- the sealed-year GRIB pull and decode: complete, clean, zero
+drops at every airport.** Script `scripts/session40_grib_pull.py` mirrors
+`scripts/session37_grib_pull.py` exactly (same AWS bucket, same F89
+lead/cycle convention, same variable labels), restricted to
+2025-08-01..2026-07-31 (D48.8, both bounds asserted before any request).
+1,460 distinct (run_date, cycle, lead) files were needed (up to 4/day x 365
+days, EGLC/LFPG sharing one); all 5,840 messages (4 variables x 1,460
+files) fetched cleanly in one pass, zero failures, 3.5 minutes. Raw saved
+under `data/raw/grib/` (gitignored, D47), one `.meta.txt` per file. Full
+output: `notes/session-40-pull-output.txt`.
+
+`scripts/session40_decode.py` mirrors `scripts/session37_decode.py`'s
+Task-4 assembly logic exactly, applying the five FROZEN D48.3 elevation/
+lapse-rate constants unchanged (loaded from session 37's own
+`session37_elevation_correction_params.csv`, not refit) to temperature
+only. **All five airports decoded 365 of 365 window days, zero drops** --
+a materially cleaner forecast-side record than the training window's own
+3-drop history (F90). Output: `data/processed/grib_features_sealed_window.csv`
+(1,825 rows) and `data/processed/grib_features_sealed_window_drops.csv` (0
+rows). Full output: `notes/session-40-decode-output.txt`. Task 2 (sealed-
+year observations) needed no new pull -- the existing IEM chunks covering
+2025-08-01..2026-07-31 at all five airports (pulled for each airport's own
+already-completed 3-feature/Open-Meteo sealed test, F16/F30/F47/F64/F82)
+were read again, unchanged, exactly as D48.8 specified.
+
+**Task 3 -- the frozen script tripped its own D48.12 stop signal.**
+Running `python scripts/session39_sealed_test.py` unchanged produced, for
+EGLC (the first airport in the script's own iteration order):
+
+```
+training rows kept : 1589 (matches F91's own expected 1589 -- MATCH)
+sealed-year rows kept : 364 (no GRIB row: 0, no usable obs: 1)
+existing-recipe (3-feature/Open-Meteo) scored days (F16): 363
+```
+
+364 > 363, which the frozen script's own D48.8 self-guard treats as a stop
+signal ("the sealed pull may score fewer days than the existing-recipe
+history ... never more ... a scored-day count higher ... is a D48.12 stop
+signal"), and it raised `AssertionError` before fitting any model. Partial
+console output (through the point of the stop): `notes/
+session40-sealed-test-output.txt`; no `data/processed/
+session40_sealed_test_summary.csv` was written, because the script never
+reached that line.
+
+**A read-only diagnostic, not a workaround, gives the owner the full
+scope in one pass.** The frozen script's own unmodified functions
+(`load_obs_all`, `load_grib_features`, `join_rows`) were imported and
+called directly, as a library, to compute every airport's sealed-year row
+count against its own D48.8 ceiling -- no guard was bypassed, no model was
+fit, nothing was changed in `scripts/session39_sealed_test.py` or anywhere
+else:
+
+```
+station   sealed rows kept   no_grib   no_obs   D48.8 ceiling   status
+EGLC            364              0        1          363       EXCEEDS
+LFPG            364              0        1          363       EXCEEDS
+DSM             365              0        0          365       within bound (exact match)
+YSDU            356              0        9          347       EXCEEDS
+RNO             365              0        0          365       within bound (exact match)
+```
+
+**Three of five airports (EGLC, LFPG, YSDU) exceed their own D48.8
+ceiling; DSM and RNO land exactly on it.** Had the script's airport
+iteration order been different, it would still have stopped at the first
+of EGLC/LFPG/YSDU it reached -- the outcome is not an EGLC-specific fluke.
+
+**A hypothesis for the mechanism, stated as a hypothesis and not verified
+further this session -- confirming it exactly would mean opening the
+existing 3-feature/Open-Meteo sealed-year forecast files to find the
+specific null dates, which is new investigative work outside this
+session's stop-and-report scope.** This session's GRIB sealed-year decode
+found zero missing days at every one of the five airports (365 kept, 0
+dropped each, Task 1 above) -- a cleaner forecast-side record than the
+existing 3-feature/Open-Meteo recipe's own sealed test evidently had, at
+least at EGLC, LFPG and YSDU (their own published scored-day counts, 363/
+363/347, are all below 365 minus only the observation-side drops this
+session measured). **The D48.8 ceiling rule was written on the assumption
+that a new forecast source could only ever match or lose ground relative
+to the old one** (D48.8's own words: "the observation side cannot supply
+an extra usable pairing that was not there for the existing recipe's own
+sealed test") -- **but the actual divergence here is on the forecast side,
+not the observation side**: GRIB simply appears to have fewer missing days
+than Open-Meteo's own `previous_day1` series had over this particular
+year, at three of the five airports. The rule's own reasoning did not
+anticipate that direction of difference.
+
+**This is the self-guard doing its job, exactly as D48.12 and the session
+prompt describe it -- not a bug, and it was not worked around.** No
+re-tuning, no feature/window/lapse-rate change, no code edit to
+`scripts/session39_sealed_test.py`, and no override was attempted. The
+diagnostic above reused the frozen script's own functions unmodified,
+purely to report values, not to make it proceed.
+
+**What this leaves standing.** D48's one authorised look (D48.13) has not
+been taken at any airport -- the sealed test year was opened (pulled,
+decoded, and partially loaded) but the frozen script never reached
+model-fitting for any airport, so there is no MAE, no PASS/FAIL, and
+nothing yet to compare against the D48.12 pre-registered expectations, at
+any of the five airports. Nothing about any earlier result changes: EGLC
+F16, LFPG F30, DSM F47, YSDU F64 and RNO F82 all stand exactly as
+reported, untouched by this session.
+
+**Flagged for the owner, not decided here.** How to proceed is a real
+choice, not a mechanical one: (a) decide the D48.8 ceiling rule itself was
+too strict as written, and revise it in a new, written DECISIONS entry
+before re-opening the sealed year under a corrected rule; or (b) trace the
+specific dates and confirm the hypothesis above before trusting either
+recipe's coverage; or (c) something else the owner sees that this session
+does not. Whichever path is chosen, D48.13's "one look, and it stands"
+rule means the sealed year should not simply be re-opened and re-run under
+today's unmodified ceiling rule expecting a different outcome -- the rule
+itself, not the data, is what needs a decision first.
+
+**What this session did not do, on purpose.** Did not modify
+`scripts/session39_sealed_test.py` or any part of the D48 recipe -- not
+the features, model, window, elevation constants, or the D48.8 ceiling
+rule. Did not work around, retry, or silently patch the tripped self-guard.
+Did not fit any model or compute any sealed-year MAE, at any airport. Did
+not pull or touch any date outside 2025-08-01..2026-07-31 for the sealed
+pull (both bounds asserted in `scripts/session40_grib_pull.py` and
+`scripts/session40_decode.py` before use). Did not commit the raw sealed-
+year GRIB extracts (gitignored per D47) -- only the processed feature
+file, drop log, and provenance are candidates for commit. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed.
