@@ -1,0 +1,4 @@
+station,target_date,reason
+DSM,2022-11-30,"missing extract(s): tmp2m,tcdc,ugrd10m,vgrd10m"
+YSDU,2022-12-01,"missing extract(s): tmp2m,tcdc,ugrd10m,vgrd10m"
+RNO,2022-11-30,"missing extract(s): tmp2m,tcdc,ugrd10m,vgrd10m"

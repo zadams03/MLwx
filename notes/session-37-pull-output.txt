@@ -1,0 +1,73 @@
+Window: 2021-03-24 .. 2025-07-31 (1591 days)
+Distinct (run_date, cycle, lead) files needed: 6364
+Variables per file: 4  ->  up to 25456 messages, 31820 requests (idx + range-gets)
+Concurrency: 48 threads; disk-free floor: 3 GiB
+
+  100/6364 combos  ok_msgs=400 fail_msgs=0  elapsed=0.3min  rate=5.25 combos/s  eta=19.9min
+  200/6364 combos  ok_msgs=800 fail_msgs=0  elapsed=0.5min  rate=6.22 combos/s  eta=16.5min
+  300/6364 combos  ok_msgs=1200 fail_msgs=0  elapsed=0.8min  rate=6.49 combos/s  eta=15.6min
+  400/6364 combos  ok_msgs=1600 fail_msgs=0  elapsed=1.0min  rate=6.75 combos/s  eta=14.7min
+  500/6364 combos  ok_msgs=2000 fail_msgs=0  elapsed=1.2min  rate=7.18 combos/s  eta=13.6min
+  600/6364 combos  ok_msgs=2400 fail_msgs=0  elapsed=1.5min  rate=6.64 combos/s  eta=14.5min
+  700/6364 combos  ok_msgs=2800 fail_msgs=0  elapsed=1.7min  rate=6.75 combos/s  eta=14.0min
+  800/6364 combos  ok_msgs=3200 fail_msgs=0  elapsed=1.9min  rate=6.94 combos/s  eta=13.4min
+  900/6364 combos  ok_msgs=3600 fail_msgs=0  elapsed=2.1min  rate=7.09 combos/s  eta=12.8min
+  1000/6364 combos  ok_msgs=4000 fail_msgs=0  elapsed=2.3min  rate=7.28 combos/s  eta=12.3min
+  1100/6364 combos  ok_msgs=4400 fail_msgs=0  elapsed=2.5min  rate=7.34 combos/s  eta=12.0min
+  1200/6364 combos  ok_msgs=4800 fail_msgs=0  elapsed=2.7min  rate=7.37 combos/s  eta=11.7min
+  1300/6364 combos  ok_msgs=5200 fail_msgs=0  elapsed=2.9min  rate=7.44 combos/s  eta=11.3min
+  1400/6364 combos  ok_msgs=5600 fail_msgs=0  elapsed=3.1min  rate=7.56 combos/s  eta=10.9min
+  1500/6364 combos  ok_msgs=6000 fail_msgs=0  elapsed=3.3min  rate=7.63 combos/s  eta=10.6min
+  1600/6364 combos  ok_msgs=6400 fail_msgs=0  elapsed=3.5min  rate=7.72 combos/s  eta=10.3min
+  1700/6364 combos  ok_msgs=6800 fail_msgs=0  elapsed=3.6min  rate=7.79 combos/s  eta=10.0min
+  1800/6364 combos  ok_msgs=7200 fail_msgs=0  elapsed=3.8min  rate=7.93 combos/s  eta=9.6min
+  1900/6364 combos  ok_msgs=7600 fail_msgs=0  elapsed=4.0min  rate=8.01 combos/s  eta=9.3min
+  2000/6364 combos  ok_msgs=8000 fail_msgs=0  elapsed=4.1min  rate=8.12 combos/s  eta=9.0min
+  2100/6364 combos  ok_msgs=8400 fail_msgs=0  elapsed=4.3min  rate=8.18 combos/s  eta=8.7min
+  2200/6364 combos  ok_msgs=8800 fail_msgs=0  elapsed=4.5min  rate=8.23 combos/s  eta=8.4min
+  2300/6364 combos  ok_msgs=9200 fail_msgs=0  elapsed=4.6min  rate=8.30 combos/s  eta=8.2min
+  2400/6364 combos  ok_msgs=9600 fail_msgs=0  elapsed=4.8min  rate=8.34 combos/s  eta=7.9min
+  2500/6364 combos  ok_msgs=9988 fail_msgs=12  elapsed=5.0min  rate=8.40 combos/s  eta=7.7min
+  2600/6364 combos  ok_msgs=10388 fail_msgs=12  elapsed=5.1min  rate=8.44 combos/s  eta=7.4min
+  2700/6364 combos  ok_msgs=10788 fail_msgs=12  elapsed=5.3min  rate=8.49 combos/s  eta=7.2min
+  2800/6364 combos  ok_msgs=11188 fail_msgs=12  elapsed=5.5min  rate=8.54 combos/s  eta=7.0min
+  2900/6364 combos  ok_msgs=11588 fail_msgs=12  elapsed=5.7min  rate=8.52 combos/s  eta=6.8min
+  3000/6364 combos  ok_msgs=11988 fail_msgs=12  elapsed=5.9min  rate=8.55 combos/s  eta=6.6min
+  3100/6364 combos  ok_msgs=12388 fail_msgs=12  elapsed=6.0min  rate=8.57 combos/s  eta=6.3min
+  3200/6364 combos  ok_msgs=12788 fail_msgs=12  elapsed=6.2min  rate=8.63 combos/s  eta=6.1min
+  3300/6364 combos  ok_msgs=13188 fail_msgs=12  elapsed=6.3min  rate=8.67 combos/s  eta=5.9min
+  3400/6364 combos  ok_msgs=13588 fail_msgs=12  elapsed=6.5min  rate=8.70 combos/s  eta=5.7min
+  3500/6364 combos  ok_msgs=13988 fail_msgs=12  elapsed=6.7min  rate=8.73 combos/s  eta=5.5min
+  3600/6364 combos  ok_msgs=14388 fail_msgs=12  elapsed=6.8min  rate=8.79 combos/s  eta=5.2min
+  3700/6364 combos  ok_msgs=14788 fail_msgs=12  elapsed=7.0min  rate=8.86 combos/s  eta=5.0min
+  3800/6364 combos  ok_msgs=15188 fail_msgs=12  elapsed=7.1min  rate=8.90 combos/s  eta=4.8min
+  3900/6364 combos  ok_msgs=15588 fail_msgs=12  elapsed=7.2min  rate=8.97 combos/s  eta=4.6min
+  4000/6364 combos  ok_msgs=15988 fail_msgs=12  elapsed=7.4min  rate=9.00 combos/s  eta=4.4min
+  4100/6364 combos  ok_msgs=16388 fail_msgs=12  elapsed=7.5min  rate=9.06 combos/s  eta=4.2min
+  4200/6364 combos  ok_msgs=16788 fail_msgs=12  elapsed=7.7min  rate=9.06 combos/s  eta=4.0min
+  4300/6364 combos  ok_msgs=17188 fail_msgs=12  elapsed=7.9min  rate=9.08 combos/s  eta=3.8min
+  4400/6364 combos  ok_msgs=17588 fail_msgs=12  elapsed=8.1min  rate=9.09 combos/s  eta=3.6min
+  4500/6364 combos  ok_msgs=17988 fail_msgs=12  elapsed=8.2min  rate=9.12 combos/s  eta=3.4min
+  4600/6364 combos  ok_msgs=18388 fail_msgs=12  elapsed=8.4min  rate=9.12 combos/s  eta=3.2min
+  4700/6364 combos  ok_msgs=18788 fail_msgs=12  elapsed=8.6min  rate=9.16 combos/s  eta=3.0min
+  4800/6364 combos  ok_msgs=19188 fail_msgs=12  elapsed=8.7min  rate=9.16 combos/s  eta=2.8min
+  4900/6364 combos  ok_msgs=19588 fail_msgs=12  elapsed=8.9min  rate=9.17 combos/s  eta=2.7min
+  5000/6364 combos  ok_msgs=19988 fail_msgs=12  elapsed=9.1min  rate=9.16 combos/s  eta=2.5min
+  5100/6364 combos  ok_msgs=20388 fail_msgs=12  elapsed=9.2min  rate=9.21 combos/s  eta=2.3min
+  5200/6364 combos  ok_msgs=20788 fail_msgs=12  elapsed=9.4min  rate=9.24 combos/s  eta=2.1min
+  5300/6364 combos  ok_msgs=21188 fail_msgs=12  elapsed=9.6min  rate=9.25 combos/s  eta=1.9min
+  5400/6364 combos  ok_msgs=21588 fail_msgs=12  elapsed=9.7min  rate=9.27 combos/s  eta=1.7min
+  5500/6364 combos  ok_msgs=21988 fail_msgs=12  elapsed=9.9min  rate=9.30 combos/s  eta=1.5min
+  5600/6364 combos  ok_msgs=22388 fail_msgs=12  elapsed=10.0min  rate=9.33 combos/s  eta=1.4min
+  5700/6364 combos  ok_msgs=22788 fail_msgs=12  elapsed=10.2min  rate=9.35 combos/s  eta=1.2min
+  5800/6364 combos  ok_msgs=23188 fail_msgs=12  elapsed=10.3min  rate=9.38 combos/s  eta=1.0min
+  5900/6364 combos  ok_msgs=23588 fail_msgs=12  elapsed=10.4min  rate=9.42 combos/s  eta=0.8min
+  6000/6364 combos  ok_msgs=23988 fail_msgs=12  elapsed=10.6min  rate=9.45 combos/s  eta=0.6min
+  6100/6364 combos  ok_msgs=24388 fail_msgs=12  elapsed=10.7min  rate=9.49 combos/s  eta=0.5min
+  6200/6364 combos  ok_msgs=24788 fail_msgs=12  elapsed=10.9min  rate=9.50 combos/s  eta=0.3min
+  6300/6364 combos  ok_msgs=25188 fail_msgs=12  elapsed=11.0min  rate=9.55 combos/s  eta=0.1min
+  6364/6364 combos  ok_msgs=25444 fail_msgs=12  elapsed=11.2min  rate=9.46 combos/s  eta=0.0min
+
+Done in 11.2 min. combos processed: 6364/6364
+messages ok: 25444  messages failed: 12
+failure manifest: /Users/zacharyadams/Coding Projects/MLwx/data/raw/grib/session37_pull_failures.csv (12 new rows this run)

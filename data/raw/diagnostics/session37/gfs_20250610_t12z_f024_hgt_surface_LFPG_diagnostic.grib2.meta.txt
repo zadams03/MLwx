@@ -1,0 +1,8 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250610/12/atmos/gfs.t12z.pgrb2.0p25.f024
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250610/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx
+byte range requested: 419863094-420355536
+variable: HGT:surface (model terrain elevation), forecast hour f024, cycle 12z, run date 20250610
+purpose: session 37 Task 1 -- one static-terrain sample per airport, to compute the grid-orography-vs-Open-Meteo-grid-elevation gap used for the elevation/lapse-rate downscaling correction.
+pulled (UTC): 2026-09-11T09:39:26Z
+bytes saved: 492443
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

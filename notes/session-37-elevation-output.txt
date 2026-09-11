@@ -1,0 +1,45 @@
+=== Task 1: HGT:surface pull for the four airports without one ===
+  EGLC: fetched gfs_20250610_t12z_f024_hgt_surface_EGLC_diagnostic.grib2 (cycle 12z f024, run 20250610)
+  LFPG: fetched gfs_20250610_t12z_f024_hgt_surface_LFPG_diagnostic.grib2 (cycle 12z f024, run 20250610)
+  DSM: fetched gfs_20250610_t18z_f024_hgt_surface_DSM_diagnostic.grib2 (cycle 18z f024, run 20250610)
+  YSDU: fetched gfs_20250610_t00z_f026_hgt_surface_YSDU_diagnostic.grib2 (cycle 00z f026, run 20250610)
+  RNO: reusing session 36's existing diagnostic pull (no re-fetch)
+
+=== Interpolated model orography at each airport's grid point ===
+station  orog_interp_m  om_grid_elev_m      gap_m
+EGLC            37.47             4.0      33.47
+LFPG            86.15           109.0     -22.85
+DSM            270.11           285.0     -14.89
+YSDU           312.12           279.0      33.12
+RNO           1619.08          1344.0     275.08
+
+=== Reproduction gate BEFORE correction (session 36 as-published) ===
+station   n mean|diff|  mean diff  max|diff|  verdict
+EGLC    19      0.248     -0.248      0.359     PASS
+LFPG    19      0.251      0.217      0.575     PASS
+DSM     19      0.181      0.154      0.684     PASS
+YSDU    19      0.213     -0.108      0.455     PASS
+RNO     19      2.044     -2.044      2.419     FAIL
+
+=== Reproduction gate AFTER correction: standard (6.5 degC/km) ===
+station   n mean|diff|  mean diff  max|diff|  verdict
+EGLC    19      0.049     -0.031      0.141     PASS
+LFPG    19      0.140      0.069      0.467     PASS
+DSM     19      0.128      0.057      0.587     PASS
+YSDU    19      0.171      0.107      0.670     PASS
+RNO     19      0.256     -0.256      0.631     PASS
+all five PASS: True   RNO mean|diff|: 0.256
+
+=== Reproduction gate AFTER correction: RNO-fit (7.429 degC/km) ===
+station   n mean|diff|  mean diff  max|diff|  verdict
+EGLC    19      0.039      0.000      0.110     PASS
+LFPG    19      0.130      0.047      0.488     PASS
+DSM     19      0.126      0.043      0.573     PASS
+YSDU    19      0.182      0.138      0.701     PASS
+RNO     19      0.146      0.000      0.375     PASS
+all five PASS: True   RNO mean|diff|: 0.146
+
+=== Chosen correction: RNO-fit (7.429 degC/km) ===
+all five PASS: True
+
+Wrote correction parameters: /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session37/session37_elevation_correction_params.csv

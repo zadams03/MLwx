@@ -1202,3 +1202,224 @@ total, each under ~900 KB. No date inside the sealed test year
 ≤ 2025-07-31. No final feature pipeline was built, nothing was joined to
 observations, no model was fitted, nothing was locked. `SPEC.md` and
 `RESULTS.md` were not modified. Nothing was committed.
+
+---
+
+## 2026-09-11 — Session 37 finding: GRIB build step 2 — RNO elevation fix,
+v16-only bulk pull, cloud/wind validated, feature dataset assembled
+
+**F90. This session is step 2 of 4 of the GRIB-build sub-project (docs/
+session-37.md): fix RNO's elevation gap (F89), pull the full feature set
+(temperature, cloud cover, 10 m wind) over the v16-only training window at
+all five airports, validate cloud/wind against Open-Meteo on the overlap
+period, and assemble a validated GRIB feature dataset. It joins nothing to
+observations, fits no model, opens no sealed year, and locks nothing.**
+Scripts: `scripts/session37_elevation_fix.py` (Task 1), `scripts/
+session37_grib_pull.py` (Task 2), `scripts/session37_decode.py` (Tasks 3-4).
+Full real output: `notes/session-37-elevation-output.txt`, `notes/
+session-37-pull-output.txt`, `notes/session-37-decode-output.txt`. No date
+after 2025-07-31 was fetched, decoded, or touched at any point (SPEC 2.1a,
+4.3) — asserted in code in both the pull and decode scripts, not just
+stated.
+
+**The v16-only window, restated and now actually enforced in code.** Per
+this session's own prompt: GFS v16.0 became operational 2021-03-22, so the
+window trains only on 2021-03-24 (Open-Meteo's own floor, one day inside
+the v16 era) through 2025-07-31, never touching the ~82 pre-v16 (v15) days
+the AWS bucket's true floor (2021-01-01, F89) would otherwise make
+reachable. A bias-correction model must not cross a model-version boundary,
+so those 82 days stay permanently out of scope for this sub-project, not
+merely unused this session.
+
+**Task 1 — RNO elevation/lapse-rate downscaling: chosen, applied at all
+five airports, and the reproduction gate now PASSES at all five (was 4 of
+5, F89).**
+
+HGT:surface (model terrain) was byte-range-fetched for the four airports
+that did not already have a sample (RNO's session-36 diagnostic pull was
+reused, not re-fetched) and bilinear-interpolated to each airport's own
+established grid point, exactly as temperature is. This gives each
+airport's own static grid-orography-vs-Open-Meteo-grid-elevation gap (SPEC
+3.4's "grid elevation" column — the elevation F89 read as the one
+Open-Meteo's own downscaled value is referenced to):
+
+```
+station   orog_interp_m   om_grid_elev_m   gap_m
+EGLC             37.47              4.0     33.47
+LFPG             86.15            109.0    -22.85
+DSM             270.11            285.0    -14.89
+YSDU            312.12            279.0     33.12
+RNO            1619.08           1344.0    275.08
+```
+
+RNO's own gap (275 m) is an order of magnitude larger than any other
+airport's, consistent with F89's own finding of 246-570 m at the four
+points immediately surrounding RNO's grid point specifically.
+
+Two lapse rates were tried against session 36's already-saved 95-row
+comparison table (`data/raw/diagnostics/session36/
+session36_grib_vs_openmeteo_comparison.csv`), per the session prompt's
+"match Open-Meteo empirically" instruction: the standard environmental
+lapse rate (6.5 degC/km) and a rate solved exactly to zero out RNO's own
+measured mean bias (-2.044 degC, F89) against its own gap, giving
+**7.429 degC/km**. Both candidates bring all five airports to PASS; the
+RNO-fit rate does modestly better at RNO itself (mean|diff| 0.146 vs 0.256
+degC) and is the one adopted:
+
+```
+                          BEFORE correction        AFTER correction (7.429 degC/km)
+station   n   mean|diff|  mean diff  verdict   mean|diff|  mean diff  verdict
+EGLC     19       0.248     -0.248     PASS        0.039      0.000     PASS
+LFPG     19       0.251      0.217     PASS        0.130      0.047     PASS
+DSM      19       0.181      0.154     PASS        0.126      0.043     PASS
+YSDU     19       0.213     -0.108     PASS        0.182      0.138     PASS
+RNO      19       2.044     -2.044     FAIL        0.146      0.000     PASS
+```
+
+**A notable, unplanned cross-check: EGLC's own pre-correction bias-to-gap
+ratio (0.248 degC / 33.47 m = 7.41 degC/km) lands almost exactly on RNO's
+independently-fit rate (7.429 degC/km), even though EGLC's own gap (33 m)
+is two orders of magnitude smaller and the fit used only RNO's data.**
+This is not built into the method — it fell out of applying the same
+constant-per-airport correction everywhere and then reading the four
+"already-passing" airports' own before/after numbers — and reads as real,
+if informal, evidence that this is one genuine physical effect (raw model
+orography above the real/reported elevation, corrected by a roughly
+uniform lapse rate) rather than an RNO-specific patch. The four
+already-good airports' own gaps are small enough (-23 to +33 m) that their
+corrections are proportionately small (-0.17 to +0.25 degC) and do not
+risk their existing PASS — confirmed above, not assumed.
+
+Correction parameters (gap, chosen lapse rate, resulting constant
+degC correction) are saved at `data/raw/diagnostics/session37/
+session37_elevation_correction_params.csv` and applied identically by
+`session37_decode.py` to every temperature extract Task 2 pulled.
+
+**Task 2 — the v16-only bulk pull: 6,364 distinct (run_date, cycle, lead)
+files, 25,456 messages targeted, 25,444 fetched cleanly, 12 failed with a
+real, verified, source-side cause; ~20 GB saved under `data/raw/grib/`.**
+
+Matches F88's own advance estimate almost exactly: up to 4 distinct
+cycle/lead combinations per calendar day (EGLC/LFPG share one; DSM, RNO,
+YSDU each need their own) across 1,591 days = 6,364 files, x4 variables
+(`TMP:2 m above ground`, `TCDC:entire atmosphere`, `UGRD`/`VGRD:10 m above
+ground`) = 25,456 messages, ~31,800 HTTP requests total (idx + range-GETs).
+Run with a pooled `requests.Session` and a 48-thread pool (added to
+`requirements.txt`, pinned, since bare `urllib` — session 36's approach —
+opens a fresh connection per request and would not finish this volume in a
+practical session), a disk-space guard (abort, don't corrupt, below 3 GiB
+free), and full skip-if-exists resume support. Wall time: 11.2 minutes for
+the full run (~9.5 combos/s once warmed up), a second near-instant pass to
+retry the 12 failures.
+
+**The 12 failures (3 combos x 4 variables: RNO target 2022-11-30, DSM
+target 2022-11-30, YSDU target 2022-12-01) were investigated, not just
+retried and accepted.** All 12 failed the magic-marker check (bytes
+returned did not start `GRIB`/end `7777`) on both the original run and a
+clean re-run, which ruled out ordinary transient network corruption.
+Direct inspection of the affected `.idx` files and their real files' HTTP
+`Content-Length` found the actual cause: **the `.idx` file's own last
+listed byte offset exceeds the real GRIB2 file's actual length**, by
+508 KB-2.93 MB depending on the file — e.g. RNO's 2022-11-29 18z f026 idx
+claims a message starting past byte 547,942,907 while the real file is
+only 546,857,316 bytes long. This is a genuine, verified upstream
+archive/index inconsistency for these three specific run/cycle files (all
+clustered on 2022-11-29/30), not a bug in this session's byte-range
+arithmetic (confirmed correct against multiple other dates, both 2021-era
+and 2025-era, before and after this finding) and not a request-layer
+failure (the idx itself fetches fine and looks structurally normal). Per
+SPEC 2.2, these 3 (station, target_date) rows are dropped and counted, not
+guessed at or worked around; they show up as exactly 3 rows in
+`data/processed/grib_features_v16_window_drops.csv` (reason: `missing
+extract(s)`), one at each of RNO, DSM and YSDU. No other date in the
+pull failed for any reason.
+
+**Disk space, flagged for the owner.** The pull used ~20 GB; free space on
+the volume fell from 35 GiB to 14 GiB over the course of this session. SPEC
+2.3/DECISIONS D15 commits raw pulls to version control, so this ~20 GB (in
+25,444 small files) will enter the repository's history once the owner
+commits it — a step-change in repo size versus every prior session. Not
+decided here; noted so the owner can weigh it before committing.
+
+**Task 3 — cloud/wind validated against Open-Meteo on the 2024-01-19 to
+2025-07-31 overlap (F85): wind speed matches tightly; cloud cover matches
+well at the median but has a real, heavy right tail.**
+
+```
+station   cloud mean|diff| (pct)   cloud mean_diff   wind mean|diff| (km/h)   wind mean_diff   verdict (both)
+EGLC              12.601               -0.638                0.250              +0.197              PASS
+LFPG              10.635               -1.982                0.417              -0.342              PASS
+DSM               12.115               -1.197                0.253              -0.078              PASS
+YSDU              12.017               -1.161                1.141              -0.984              PASS
+RNO               10.220               +0.480                1.937              -0.060              PASS
+```
+
+Wind speed (derived as sqrt(UGRD^2 + VGRD^2), converted m/s -> km/h to
+match Open-Meteo's own unit, confirmed from an existing pull's
+`hourly_units`) matches closely at every airport — sub-2 km/h mean
+absolute difference everywhere, no material systematic offset (all five
+mean signed diffs inside +/-1 km/h). **Cloud cover's mean absolute
+difference (10-13 percentage points at every airport) is real, not
+dominated by a few outliers in the way the summary number alone might
+suggest — but the FULL distribution (pooled across all 2,799 comparable
+rows) is stated honestly rather than hidden behind one number:**
+
+```
+percentile:  p50    p75    p90    p95    p99
+|diff| pct:  1.3    12.6   41.8   60.2   88.0
+```
+
+**Half of all rows match within 1.3 percentage points; the top ~10% of
+rows disagree by 40+ points, some (56 of 2,800, 2%) by 80+ points —
+GRIB and Open-Meteo occasionally landing on opposite ends of the 0-100
+scale on the same nominal hour.** No systematic direction (mean signed
+diffs are small and mixed-sign across airports, -2.0 to +0.5), so this
+reads as cloud cover's own high spatial/temporal sensitivity at the 0.25
+deg grid scale in partly-cloudy conditions — a plausibly real
+disagreement about a genuinely fast-changing field, not an offset error
+comparable to RNO's elevation bias — rather than a bug; it was not
+investigated further this session (out of scope: Task 3 asks for
+mean|diff|, direction, and a verdict, not a per-day forensic pass). PASS
+verdicts use thresholds set this session for this diagnostic only (cloud
+15 pct, wind 3 km/h — both stated in `session37_decode.py`'s own
+comments), not a SPEC-frozen bar; the full numbers above are reported
+either way so no reader depends on the threshold alone. **Flagged for the
+owner:** whether the cloud-cover tail is acceptable to carry into step 3
+(the richer-features re-run) as-is, or merits its own investigation first,
+is not decided here.
+
+**Task 4 — assembled dataset: 7,952 rows (of a possible 7,955 = 1,591
+days x 5 airports), 3 dropped (the Task 2 idx-mismatch dates above), saved
+separately from both the raw GRIB extracts and the existing Open-Meteo
+files.**
+
+```
+station   kept   dropped
+EGLC      1591        0
+LFPG      1591        0
+DSM       1590        1
+YSDU      1590        1
+RNO       1590        1
+```
+
+Saved at `data/processed/grib_features_v16_window.csv` (station,
+target_date, target_hour, run_date, cycle, lead,
+temperature_grib_c [elevation-corrected], cloud_cover_grib_pct,
+wind_speed_grib_kmh), `data/processed/grib_features_v16_window_drops.csv`
+(the 3 drops, with reason), and `data/processed/
+grib_vs_openmeteo_cloudwind_validation.csv` (the full 2,800-row Task 3
+comparison). Nothing here is joined to any observation and no model is
+fitted — that is step 3 (docs for step 3 not yet written).
+
+**What this session did not do, on purpose.** Did not use any data before
+2021-03-24 (the ~82 pre-v16 AWS-only days stay excluded, by design, not by
+oversight). Did not pull, decode, or touch any date inside the sealed test
+year (2025-08-01 to 2026-07-31) — both the pull and decode scripts assert
+this in code. Did not join the assembled dataset to any observation, fit
+any model, run any experiment, or lock anything. Did not download any
+whole GRIB file — every message was byte-range-fetched. Did not modify or
+overwrite any existing Open-Meteo data — `session37_decode.py` opens
+`data/raw/features/*.json` read-only for comparison. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+**D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D15 committed raw pulls when raw meant small Open-Meteo JSON. The GRIB pull is ~20 GB, which cannot live in git (binary bloat; GitHub file and repo size limits). For large, re-fetchable public archives such as GFS GRIB, D15s immutable-provenance intent is served by committing the provenance manifest (exact queries, URLs, byte-ranges, and the drop log) plus the processed dataset, and gitignoring the raw bytes -- which are reproducible from the manifest. D15 stands unchanged for small API pulls. The ~20 GB local GRIB cache is disposable and re-fetchable.

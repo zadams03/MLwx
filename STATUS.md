@@ -3,7 +3,62 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 11 September 2026, after session 36._
+_Last updated: 11 September 2026, after session 37._
+
+---
+
+## Session 37 (GRIB build sub-project, step 2 of 4 — RNO elevation fix,
+v16-only bulk pull, cloud/wind validated, feature dataset assembled)
+
+**Step 2 of 4. Fixes RNO's elevation gap (session 36's own finding), pulls
+the full feature set (temperature, cloud cover, 10 m wind) over the
+v16-only training window at all five airports, validates cloud/wind
+against Open-Meteo where a reference exists, and assembles a validated
+GRIB feature dataset. Joins nothing to observations, fits no model, opens
+no sealed year, locks nothing.** Verdict (DECISIONS F90): **RNO fixed —
+the reproduction gate now PASSES at all five airports** (was 4 of 5);
+**bulk pull essentially complete** (25,444 of 25,456 messages fetched
+cleanly across 6,364 files, ~20 GB, 11.2 minutes; the 12 failures traced to
+a real, verified upstream idx/file-size mismatch on 3 specific dates, not
+a script bug — dropped and counted, not worked around); **wind speed
+validates tightly against Open-Meteo, cloud cover matches well at the
+median (1.3 pct) but has a real, heavy tail (p99 88 pct)** on the
+2024-01-19..2025-07-31 overlap; **7,952-row feature dataset assembled**
+(3 rows dropped, matching the 3 idx-mismatch dates).
+
+**The elevation fix.** Model terrain (HGT:surface) was bilinear-
+interpolated to each airport's established grid point, the same way
+temperature is, giving each airport's own static grid-orography-vs-
+Open-Meteo-grid-elevation gap. A lapse rate fit to exactly zero out RNO's
+own measured bias (7.429 degC/km, close to the standard 6.5 degC/km
+figure) brings RNO from FAIL (mean|diff| 2.044 degC) to PASS (0.146 degC)
+without breaking the four airports that already passed (their own small
+gaps produce proportionately small corrections, -0.17 to +0.25 degC). A
+notable, unplanned cross-check: EGLC's own independent bias-to-gap ratio
+(7.41 degC/km) lands almost exactly on RNO's fitted rate, informal evidence
+this is one genuine physical effect rather than an RNO-specific patch.
+
+**Flagged for the owner, not decided this session (see "Next" below):**
+whether the cloud-cover validation tail is acceptable to carry into step 3
+as-is, and the disk-space/repo-size cost of the ~20 GB this session pulled
+(free space fell from 35 GiB to 14 GiB; SPEC 2.3/D15 commits raw pulls, so
+this enters the repo's history once committed — a step-change in repo
+size versus every prior session).
+
+**What this session did not do, on purpose.** No data before 2021-03-24
+(v16-only, by design). No date inside the sealed test year
+(2025-08-01 onward) fetched, decoded, or touched — asserted in code. No
+join to observations, no model fitted, nothing locked. No whole GRIB file
+downloaded — byte-range only. No existing Open-Meteo data modified or
+overwritten — read-only for comparison. `SPEC.md`/`RESULTS.md` not
+modified. Scripts: `scripts/session37_elevation_fix.py`,
+`scripts/session37_grib_pull.py`, `scripts/session37_decode.py`. Full real
+output: `notes/session-37-elevation-output.txt`,
+`notes/session-37-pull-output.txt`, `notes/session-37-decode-output.txt`.
+Raw extracts: `data/raw/grib/` (~20 GB) and
+`data/raw/diagnostics/session37/`. Assembled dataset:
+`data/processed/grib_features_v16_window.csv` and its companion drop/
+validation CSVs.
 
 ---
 
@@ -108,16 +163,25 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
 airports opened so far — four pass, one fails. The GRIB-build sub-project
-(docs/session-36.md) opened this session with step 1 of 4: confirm the
-back-extent and validate the GRIB→point pipeline.** Verdict (DECISIONS
-F89): back-extent confirmed at **2021-01-01, not ~2015** — only ~82 days
-deeper than Open-Meteo's own floor, materially weakening the case for the
-GRIB build as a way to reach further back in time; pipeline **PROVEN at 4 of
-5 airports** (EGLC, LFPG, DSM, YSDU — sub-degree, unbiased against the
-trusted Open-Meteo answer key), **FAILS at RNO** with a named cause (a
-missing elevation/lapse-rate correction — the raw grid's own terrain near
-RNO's point runs 246–570 m higher than RNO's real elevation, enough to
-explain the measured ~-2.04°C bias). No bulk pull, no join, no fit, no lock.
+(docs/session-36.md, docs/session-37.md) is now 2 of 4 steps in: step 1
+confirmed the back-extent and validated the GRIB→point pipeline; step 2
+(this session) fixed RNO's pipeline gap, pulled the full v16-only feature
+set at all five airports, validated cloud/wind against Open-Meteo, and
+assembled a feature dataset.** Verdict (DECISIONS F90): the reproduction
+gate now **PASSES at all five airports** (RNO fixed via an elevation/
+lapse-rate correction, 7.429 degC/km); the bulk pull fetched 25,444 of
+25,456 targeted messages cleanly (~20 GB, 6,364 files, 11.2 minutes; the
+12 failures trace to a verified upstream idx/file-size mismatch on 3
+dates, dropped and counted); wind speed validates tightly against
+Open-Meteo on the 2024-01-19..2025-07-31 overlap, cloud cover matches well
+at the median but has a real heavy tail; the assembled dataset holds 7,952
+rows. No join to observations, no fit, no lock — that is step 3.
+
+Step 1, the session before, confirmed the back-extent at **2021-01-01, not
+~2015** — only ~82 days deeper than Open-Meteo's own floor, materially
+weakening the case for the GRIB build as a way to reach further back in
+time (DECISIONS F89) — and proved the GRIB→point temperature pipeline at
+4 of 5 airports before session 37 fixed the fifth (RNO).
 
 Session 35, before that, was a GFS GRIB source feasibility probe —
 availability and cost only, no pipeline built, no data joined or fitted —
@@ -311,67 +375,99 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   (raw grid points near RNO run 246-570 m higher than RNO's own elevation),
   a missing elevation-correction step, not a pipeline bug. Extracts and
   comparison table saved under `data/raw/diagnostics/session36/`.
+- **Session 37: GRIB build step 2 of 4 -- RNO elevation fix, v16-only bulk
+  pull, cloud/wind validated, feature dataset assembled.** No join, no fit,
+  no lock. Verdict (DECISIONS F90): an elevation/lapse-rate correction
+  (7.429 degC/km, fit to RNO, cross-checked against EGLC's own independent
+  ratio) brings the reproduction gate to **PASS at all five airports**
+  (was 4 of 5). The v16-only bulk pull (2021-03-24..2025-07-31, excluding
+  the ~82 pre-v16 AWS-only days on purpose) fetched 25,444 of 25,456
+  targeted GRIB2 messages (temperature, cloud cover, 10 m wind) across
+  6,364 files, ~20 GB, in 11.2 minutes; the 12 failures (3 dates) trace to
+  a verified upstream idx/file-size mismatch, dropped and counted per SPEC
+  2.2, not a script bug. Cloud/wind validated against Open-Meteo on the
+  2024-01-19..2025-07-31 overlap: wind speed matches tightly (sub-2 km/h
+  mean absolute difference everywhere); cloud cover matches well at the
+  median (1.3 pct) but has a real, heavy tail (p99 88 pct), flagged for the
+  owner rather than resolved. Assembled dataset: 7,952 rows (3 dropped,
+  matching the idx-mismatch dates), saved under `data/processed/`,
+  separate from the raw extracts (`data/raw/grib/`) and the existing
+  Open-Meteo files. Disk space fell from 35 GiB to 14 GiB free -- flagged
+  for the owner given SPEC 2.3/D15 commits raw pulls to version control.
 
 ## Next
 
-**The GRIB-build sub-project (docs/session-36.md) is now mid-flight — step 1
-of 4 done, steps 2-4 not started.** Its own next step, if the owner continues
-it, is step 2: the bulk cloud/wind pull, at EGLC/LFPG/DSM/YSDU on the
-pipeline as validated, with a decision still needed on RNO (below).
+**The GRIB-build sub-project (docs/session-36.md, docs/session-37.md) is
+now mid-flight -- steps 1-2 of 4 done, steps 3-4 not started.** Its own
+next step, if the owner continues it, is step 3: join the assembled
+feature dataset (data/processed/grib_features_v16_window.csv) to
+observations and re-run the richer-features experiment (the F86/F87
+comparison) on the full ~4.3-year v16 window, at all five airports
+including RNO now that its pipeline gap is fixed.
 
-**But session 36's own Task 1 finding re-weights the bigger build-vs-lock
-question session 35 first raised, and the owner has not yet been asked to
-weigh in on that re-weighting specifically:**
-1. **The GRIB route no longer promises materially deeper history.** Session
-   35's framing treated the GRIB build partly as a way to reach further back
-   than Open-Meteo's ~4.3-year window. Session 36 found the AWS bucket's own
-   floor is 2021-01-01 (not ~2015) and NCAR's ds084.1 (now on GDEX) shows no
-   credential-free path — so the confirmed window is ~4.4 years, essentially
-   the same order of magnitude the project already has. **Whatever case
-   remains for building the GRIB pipeline now rests entirely on reaching the
-   full ~4.3-year window for the richer features (cloud/wind), not on extra
-   depth in time** — a narrower, weaker case than F88's original framing.
-2. **Go/no-go on a full locked sealed-test cycle for the richer
-   features — still open.** F87's multi-fold signal (5-feature beats
-   3-feature at 4 of 5 airports and beats raw GFS at 4 of 5) is unchanged by
-   this session. The owner's choice is still three-way: (a) lock the richer
-   method on the existing ~1.5-year window and carry LFPG's caveat, (b)
-   continue the GRIB build (steps 2-4) to reach the full ~4.3-year window
-   first — now a narrower prize than originally framed, per point 1 — or (c)
-   decline richer features for now and pursue a different branch of Q30.
-3. **New, smaller decision: what to do about RNO's elevation gap before any
-   GRIB build reaches step 2 for RNO specifically.** F89 found RNO's raw-GRIB
-   temperature needs an elevation/lapse-rate correction Open-Meteo already
-   applies but this pipeline does not yet — fixable, but not done. The owner
-   can decide this once, when/if step 2 is commissioned, rather than now.
+**Three things flagged for the owner, not decided this session:**
+1. **Go/no-go on a full locked sealed-test cycle for the richer
+   features -- still open, unchanged in substance.** F87's multi-fold
+   signal (5-feature beats 3-feature at 4 of 5 airports and beats raw GFS
+   at 4 of 5) is unchanged by this session; step 3 would test that signal
+   on the full window instead of the existing ~1.5-year one. The owner's
+   choice is still three-way: (a) lock the richer method on the existing
+   ~1.5-year window and carry LFPG's caveat, (b) continue the GRIB build
+   (step 3, then step 4) now that steps 1-2 are done and RNO's pipeline gap
+   is fixed, or (c) decline richer features for now and pursue a different
+   branch of Q30.
+2. **New this session: is the cloud-cover validation tail acceptable to
+   carry into step 3 as-is?** F90's Task 3 found wind speed matches
+   Open-Meteo tightly (sub-2 km/h mean absolute difference everywhere) but
+   cloud cover, while matching well at the median (1.3 pct), has a real
+   heavy tail (p90 41.8 pct, p99 88.0 pct) with no consistent systematic
+   direction. Reads as cloud cover's own high spatial/temporal sensitivity
+   rather than a bug, but was not investigated further (out of this
+   session's scope). Proceeding to step 3 would mean training on that
+   tail as-is unless the owner asks for it to be investigated first.
+3. **New this session: disk space and repo size.** The Task 2 pull used
+   ~20 GB (25,444 small files); free space on the volume fell from 35 GiB
+   to 14 GiB. SPEC 2.3/DECISIONS D15 commits raw pulls to version control,
+   so this ~20 GB enters the repository's history once committed -- a
+   step-change in repo size versus every prior session, and a further
+   sealed-test-year pull at step 4 (a smaller, ~1-year slice) would add
+   more on top. Not decided here; the owner may want to weigh this before
+   committing, or before step 4 pulls the sealed year.
 
-None of this was decided this session (session 36 scope forbids it — report
-and flag only). **Turning any answer into an actual feature-set design, a
-completed GRIB pipeline, or a written lock is still not started.**
+None of this was decided this session (session 37 scope forbids it --
+report and flag only). **Turning the richer-features signal into a joined,
+fitted, locked model is still not started; that is step 3, and step 3's
+own session prompt does not exist yet.**
 
 **Whatever the owner decides about richer features or a further airport,
-Reno's own sealed-test result stands as reported (D44.10, D44.11) — no
+Reno's own sealed-test result stands as reported (D44.10, D44.11) -- no
 re-run, no retroactive adjustment.** Q30's other branches (a second test
 year; stage 3, pooling) remain untouched and available, now alongside the
-richer-features questions F82/F85/F86/F87/F88/F89 raise.
+richer-features questions F82/F85/F86/F87/F88/F89/F90 raise.
 
 ## Open questions (live)
 
-- **Q30 (unchanged in substance, now joined by four richer-features
-  diagnostics).** The owner picked its first branch — more airports, "ramp
-  up difficulty" — and Reno's own five steps are finished, ending in a
-  failure. The richer-features branch of that intent has now taken four
+- **Q30 (unchanged in substance, now joined by five richer-features
+  diagnostics).** The owner picked its first branch -- more airports, "ramp
+  up difficulty" -- and Reno's own five steps are finished, ending in a
+  failure. The richer-features branch of that intent has now taken five
   concrete steps: session 32's scout (DECISIONS F86) found a real but
   short-window-confounded signal; session 33's blocked CV (F87) removed
   most of that confound and found the recipe recovers at 4 of 5 airports,
   with LFPG the unresolved exception; session 35's GRIB feasibility probe
-  (F88) found a deeper source is available but costly; and session 36's GRIB
+  (F88) found a deeper source is available but costly; session 36's GRIB
   build step 1 (F89) found the source is not materially deeper in time than
-  the existing window after all, and validated the GRIB→point pipeline at 4
-  of 5 airports (RNO needs an elevation-correction fix first). What comes
-  next is still the owner's choice: lock on the short window, continue the
-  GRIB build (steps 2-4), open another airport, open a second test year (the
-  untouched half of the F30/F46/F48/F65 caveat), or open stage 3, pooling.
+  the existing window after all, and validated the GRIB->point pipeline at 4
+  of 5 airports (RNO needing an elevation-correction fix); and session 37's
+  GRIB build step 2 (F90) fixed RNO's pipeline gap (all five now PASS),
+  bulk-pulled the v16-only feature set, validated cloud/wind against
+  Open-Meteo (wind tight, cloud cover with a real tail), and assembled a
+  7,952-row feature dataset -- not yet joined to any observation or fitted.
+  What comes next is still the owner's choice: lock on the short window,
+  continue the GRIB build (step 3: join + re-run the richer-features
+  experiment on the full window; then step 4: lock + sealed test), open
+  another airport, open a second test year (the untouched half of the
+  F30/F46/F48/F65 caveat), or open stage 3, pooling.
 - **Q32 (effectively answered by events, left on record rather than
   formally closed).** Session 27 asked whether Reno's rehearsal loss should
   change anything about locking/testing Reno; the session-28 and session-29

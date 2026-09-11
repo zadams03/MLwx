@@ -33,3 +33,4 @@ ENV/
 .vscode/
 *.swp
 Thumbs.db
+data/raw/grib/

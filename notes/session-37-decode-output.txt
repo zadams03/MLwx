@@ -1,0 +1,28 @@
+Elevation corrections (degC, from session37_elevation_fix.py):
+  EGLC: +0.2486
+  LFPG: -0.1697
+  DSM: -0.1106
+  YSDU: +0.2461
+  RNO: +2.0436
+EGLC: 1591 kept, 0 dropped (of 1591 window days)
+LFPG: 1591 kept, 0 dropped (of 1591 window days)
+DSM: 1590 kept, 1 dropped (of 1591 window days)
+YSDU: 1590 kept, 1 dropped (of 1591 window days)
+RNO: 1590 kept, 1 dropped (of 1591 window days)
+
+Wrote assembled dataset: /Users/zacharyadams/Coding Projects/MLwx/data/processed/grib_features_v16_window.csv (7952 rows)
+Wrote drop log: /Users/zacharyadams/Coding Projects/MLwx/data/processed/grib_features_v16_window_drops.csv (3 rows)
+
+=== Task 3: cloud/wind validation against Open-Meteo (2024-01-19 .. 2025-07-31) ===
+EGLC: cloud_cover (pct): n=560 mean|diff|=12.601 mean_diff=-0.638 max|diff|=100.000 -> PASS
+EGLC: wind_speed (km/h): n=560 mean|diff|=0.250 mean_diff=+0.197 max|diff|=1.894 -> PASS
+LFPG: cloud_cover (pct): n=560 mean|diff|=10.635 mean_diff=-1.982 max|diff|=88.796 -> PASS
+LFPG: wind_speed (km/h): n=560 mean|diff|=0.417 mean_diff=-0.342 max|diff|=2.624 -> PASS
+DSM: cloud_cover (pct): n=560 mean|diff|=12.115 mean_diff=-1.197 max|diff|=93.334 -> PASS
+DSM: wind_speed (km/h): n=560 mean|diff|=0.253 mean_diff=-0.078 max|diff|=5.002 -> PASS
+YSDU: cloud_cover (pct): n=559 mean|diff|=12.017 mean_diff=-1.161 max|diff|=96.164 -> PASS
+YSDU: wind_speed (km/h): n=559 mean|diff|=1.141 mean_diff=-0.984 max|diff|=4.579 -> PASS
+RNO: cloud_cover (pct): n=560 mean|diff|=10.220 mean_diff=+0.480 max|diff|=99.107 -> PASS
+RNO: wind_speed (km/h): n=560 mean|diff|=1.937 mean_diff=-0.060 max|diff|=11.692 -> PASS
+
+Wrote cloud/wind validation table: /Users/zacharyadams/Coding Projects/MLwx/data/processed/grib_vs_openmeteo_cloudwind_validation.csv (2800 rows)
