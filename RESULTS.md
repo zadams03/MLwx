@@ -46,9 +46,13 @@ so it falls at that airport's own local solar noon (SPEC 4.1). Local noon is
 in daylight (catches the daytime heating GFS tends to mis-handle), a stable
 well-observed time of day, and clear of dawn/dusk swings. Daylight saving is
 deliberately ignored, so each airport's target stays one fixed UTC hour all
-year. The five airports' hours differ — 12:00 UTC (EGLC, LFPG), 18:00 UTC
-(DSM), 02:00 UTC (Dubbo), 20:00 UTC (Reno) — because local noon is a
-different UTC hour at each longitude (DECISIONS D27, D33, D37, D42).
+year. EGLC and LFPG share 12:00 UTC **by deliberate design**, not by
+coincidence of longitude: 12:00 UTC is London's own local noon, and Paris's
+local noon is closer to 11:00 UTC, but the two were deliberately run at the
+same hour so the comparison between them changes only the location and
+nothing else (DECISIONS D26). DSM (18:00 UTC), Dubbo (02:00 UTC) and Reno
+(20:00 UTC) each instead take their own local-solar-noon UTC hour, because
+12:00 UTC is not their local noon (DECISIONS D27, D33, D37, D42).
 
 **What is learned.** A gradient-boosted tree model (LightGBM) predicts the
 *residual*: observed temperature minus GFS's forecast temperature for that

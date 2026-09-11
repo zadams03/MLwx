@@ -3,7 +3,49 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 11 September 2026, after session 33._
+_Last updated: 11 September 2026, after session 34b._
+
+---
+
+## Session 34 (documentation-only, two parts)
+
+**Session 34a** built a manifest classifying every entry in `DECISIONS.md`
+(as it stood after session 33) as settled (MOVE) or still-needed-live
+(KEEP-LIVE), and flagged one BORDERLINE call for the owner. **Session 34b**
+executed that manifest mechanically — the owner resolved the borderline to
+MOVE — and then codified the workflow change it represents. No code, model,
+data file, or figure was touched in either half; no airport's sealed-test
+verdict changed.
+
+**What moved.** 238 header-matched spans (237 from the manifest plus the
+resolved borderline), 8,698 lines, moved verbatim from `DECISIONS.md` to
+`DECISIONS-archive.md`, in a single line-number partition pass (never
+hand-reproduced). `DECISIONS.md` falls from 9,471 lines to 873 (roughly a
+tenfold cut), of which the last ~100 lines are this session's own new record
+entry (D46). Kept live: D17 and F7 (a correction to session 34a's own
+"expected MOVE" framing — the live richer-features finding F85 depends on
+their specific wording), F85–F87 (the richer-features phase in full), the
+two open questions (Q30, Q32), and the parked items (P1–P3).
+
+**Archiving is now routine, not a one-time exception.** `DECISIONS-archive.md`'s
+header note and `CLAUDE.md`'s "End of every session" list were both amended:
+moving settled entries to the archive is now a standing step in every
+session's end-of-session roundup, applying the same settled-and-not-needed-
+live criterion each time. The append-only / verbatim / nothing-deleted
+guarantees are unchanged. The routine per-session read is now stated
+explicitly as CLAUDE.md + SPEC.md + STATUS.md + live DECISIONS.md, with
+DECISIONS-archive.md and RESULTS.md both read on demand only.
+
+**One deferred docs debt fixed.** `RESULTS.md` §2 previously said all five
+airports' target hours differ "because local noon is a different UTC hour at
+each longitude" — wrong for EGLC/LFPG, which share 12:00 UTC by deliberate
+design (SPEC 4.1, DECISIONS D26), not by coincidence. Fixed; no figure or any
+other section changed.
+
+**Stale note dropped.** This file previously carried no separate "SPEC §1
+Reno in-progress" note to drop — SPEC §1 has read "failed" since session 30
+(D45) — so there was nothing stale here to remove; noted for the record since
+the session prompt asked for the check.
 
 ---
 
@@ -117,19 +159,38 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   the short window itself was the dominant effect almost everywhere. New
   raw data (cloud cover, wind speed forecasts, 2024-01-19 to 2025-07-31,
   all five airports) saved under `data/raw/features/`.
-- **Session 33 (this one): blocked six-fold cross-validation across the
-  whole ~1.5-year feature-complete window, sealed test NOT opened.** Six
-  contiguous ~3-month calendar blocks, each fold training on the other
-  five (~15 months spanning a full seasonal cycle) and testing on the
-  held-out block, for four rungs (raw GFS, +mean-bias, 3-feature,
-  5-feature) at all five airports (DECISIONS F87). **3-feature recovers to
-  beating raw GFS at 4 of 5 airports** (up from 1 of 5 on the scout's
-  6-month window); **5-feature beats 3-feature at 4 of 5 and beats raw GFS
-  at 4 of 5**, including a real positive result at Reno. LFPG is the one
-  airport where neither model beats raw GFS on this window. Overfit gaps
-  are positive but modest everywhere. No recipe was locked, no new raw
-  data was pulled (reused session 32's `data/raw/features/` pull and the
-  existing `data/raw/` chunks).
+- Session 33: blocked six-fold cross-validation across the whole ~1.5-year
+  feature-complete window, sealed test NOT opened. Six contiguous ~3-month
+  calendar blocks, each fold training on the other five (~15 months
+  spanning a full seasonal cycle) and testing on the held-out block, for
+  four rungs (raw GFS, +mean-bias, 3-feature, 5-feature) at all five
+  airports (DECISIONS F87). **3-feature recovers to beating raw GFS at 4 of
+  5 airports** (up from 1 of 5 on the scout's 6-month window); **5-feature
+  beats 3-feature at 4 of 5 and beats raw GFS at 4 of 5**, including a real
+  positive result at Reno. LFPG is the one airport where neither model
+  beats raw GFS on this window. Overfit gaps are positive but modest
+  everywhere. No recipe was locked, no new raw data was pulled (reused
+  session 32's `data/raw/features/` pull and the existing `data/raw/`
+  chunks).
+- **Session 34a: built the DECISIONS.md archive manifest** (a
+  `grep`-based header index, never a full read), classifying every entry
+  as settled (MOVE, 237 spans) or still-needed-live (KEEP-LIVE, 12 spans),
+  plus one BORDERLINE call (the session-21 restructure record) left for
+  the owner. No file was changed. Saved as
+  `notes/session-34-archive-manifest.md`.
+- **Session 34b (this one): executed the archive move and codified the
+  workflow.** The owner resolved the borderline to MOVE. 238 spans,
+  8,698 lines, moved mechanically (single-pass line partition, byte-exact)
+  from `DECISIONS.md` to `DECISIONS-archive.md`, under one new dated
+  section with a pointer to the manifest. `DECISIONS.md` falls from 9,471
+  to 873 live lines (D17, F7, F85–F87, the two open questions, the parked
+  items, and this session's own new record entry, D46, all still live).
+  Archiving settled entries is now a routine end-of-session step
+  (`CLAUDE.md`, `DECISIONS-archive.md` header, both amended), superseding
+  session 21's "one-time exception" framing. One deferred wording fix
+  applied to `RESULTS.md` §2 (why EGLC/LFPG share 12:00 UTC by design,
+  not coincidence). No code, model, data file, or figure touched; no
+  airport's sealed-test verdict changed.
 
 ## Next
 

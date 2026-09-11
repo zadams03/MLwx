@@ -25,13 +25,23 @@ start of every session, in this order, **before** reading the session prompt:
 2. **STATUS.md** — a *snapshot*, overwritten each session: current stage,
    what is next, and any open questions still live. It is not a growing log —
    its history lives in git, not in the file itself.
-3. **DECISIONS.md** — an *append-only* log of choices, findings, and why.
+3. **DECISIONS.md** — an *append-only* log of choices, findings, and why. As
+   of session 34b, this is the **live** file only — settled material is moved
+   out routinely (see "End of every session" below).
 
-There is also **DECISIONS-archive.md** — settled decisions and findings moved
-out of DECISIONS.md verbatim (nothing deleted, everything reproducible). It is
-**not** part of the routine per-session read. Open it only when a session
-needs deep history from a passed stage or a passed airport; the pointer left
-in DECISIONS.md at each moved block says what is there.
+**The routine per-session read is CLAUDE.md + SPEC.md + STATUS.md + live
+DECISIONS.md — nothing else, every session.** Two further files exist and are
+read **on demand only**, never routinely:
+
+- **DECISIONS-archive.md** — settled decisions and findings moved out of
+  DECISIONS.md verbatim (nothing deleted, everything reproducible). Open it
+  only when a session needs deep history from a passed stage or airport, in
+  particular an archived entry's exact wording rather than just its headline.
+  Entry numbers (`Dxx`/`Fxx`) never change when an entry moves, so a citation
+  in any live file always resolves, in either file.
+- **RESULTS.md** — a standalone, reader-facing technical summary, cited back
+  to DECISIONS.md. Open it only when a session needs that summary; it is
+  never a source of truth (SPEC beats it, same as code).
 
 The **critical-rules section of SPEC (section 2)** applies to every session,
 whether or not the session prompt repeats it. It is non-negotiable.
@@ -87,6 +97,13 @@ person looking first.
 2. Run a **consistency check**: re-read all three files and report anything
    that disagrees, any duplicated heading, and any log entry out of order.
    Report only — do not fix silently. The owner decides.
+3. **Archive step:** move any DECISIONS.md entries that became settled this
+   session to DECISIONS-archive.md, per the archive criterion (settled,
+   codified elsewhere or superseded, and not needed word-for-word by any live
+   open question or STATUS.md's "Next" section) — mechanically, verbatim,
+   never by hand-reproducing an entry. This is routine as of session 34b, not
+   a one-time exception; see DECISIONS-archive.md's own header and DECISIONS
+   D46 for the full account.
 
 ## Session prompts
 
