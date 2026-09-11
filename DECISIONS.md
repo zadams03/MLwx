@@ -1468,3 +1468,256 @@ GRIB cloud toward Open-Meteo -- Task 1 only characterised it. Did not
 modify `SPEC.md` or `RESULTS.md`. Did not pull any new raw data (D47 does
 not apply here -- this session wrote only small processed tables under
 `data/processed/`, no new GRIB bytes). Nothing was committed.
+
+---
+
+## 2026-09-12 — Session 39 decision: the 5-feature GRIB recipe is locked for
+the sealed test (D48), no sealed data touched
+
+**D48. The 5-feature richer-features GRIB recipe is LOCKED, at all five
+airports at once. This entry fully specifies what session 40's sealed-test
+session will run. Nothing in it was decided with any sealed-year value in
+view -- no date on or after 2025-08-01 was loaded, computed, or referenced
+anywhere this session.** This mirrors D44's role for Reno (write the lock,
+then a separate session executes it once), widened to cover all five
+airports in one entry because the recipe itself -- source, features, model,
+window -- is now identical across airports; only the per-airport facts
+already on record in SPEC 3.4 (target hour, grid point, pairing offset,
+elevation correction) differ, exactly as they already did for the existing
+locked 3-feature recipe (D21/D31/D35/D39/D44).
+
+**Why now.** F86 (scout) found a real but short-window-confounded signal;
+F87 (1.5-year CV) found the recipe recovers at 4 of 5 airports with LFPG
+unresolved; F89-F90 (GRIB build steps 1-2) built and validated a GRIB-based
+pipeline reaching the full training window, fixing RNO's terrain gap along
+the way; F91 (GRIB build step 3, full ~4.4-year CV) found 5-feature beats
+both 3-feature and raw GFS at **all five airports**, including the two
+previously weak cases (LFPG, Reno). That is the evidence base this lock
+rests on. No new evidence is created this session -- this session only
+writes the recipe down completely and freezes the code that will execute
+it.
+
+**D48.1 — What is predicted.** The **residual**: observed temperature (IEM
+METAR) minus GRIB-forecast temperature, at the airport's own target hour
+(SPEC 4.1, 4.2). The corrected forecast is the GRIB forecast plus the
+predicted residual. Identical in kind to every earlier lock (D21.2, D31.2,
+D35.2, D39.2, D44.2) -- only the forecast source changes, from Open-Meteo to
+GRIB.
+
+**D48.2 — Airports and their own facts (SPEC 3.4, F89, F90 -- nothing here
+is new, only collected in one place).** One row per day, at each airport's
+own established target hour and grid point:
+
+```
+station  target hour  grid lat     grid lon      grid elev  cycle  lead  reports at  pairing offset
+EGLC       12:00 UTC  51.487137    0.0            4.0 m       12z  f024      :50        10 min
+LFPG       12:00 UTC  49.027008    2.578125     109.0 m       12z  f024      :00         0 min
+DSM        18:00 UTC  41.52945    -93.63281     285.0 m       18z  f024      :54         6 min
+YSDU       02:00 UTC -32.274643  148.59375      279.0 m       00z  f026      :00         0 min
+RNO        20:00 UTC  39.537918  -119.765625   1344.0 m       18z  f026      :55         5 min
+```
+
+Cycle/lead follow F89's derived convention exactly: run at cycle
+`floor(HH/6)*6` on day D-1, forecast-hour lead `24 + (HH mod 6)` for target
+hour HH.
+
+**D48.3 — The elevation/lapse-rate temperature correction, per airport, as
+an exact constant (F90).** Lapse rate **7.429 degC/km** (fit to zero out
+RNO's own measured bias, cross-checked against EGLC's independent ratio,
+F90), applied as `corrected = raw_grib_temp_c + (orog_interp_m -
+grid_elev_m) / 1000 * 7.429`. The gap and the resulting constant per
+airport (F90's Task 1 table):
+
+```
+station   gap (orog - grid elev)   constant correction applied
+EGLC              +33.47 m                  +0.249 degC
+LFPG              -22.85 m                  -0.170 degC
+DSM               -14.89 m                  -0.111 degC
+YSDU              +33.12 m                  +0.246 degC
+RNO              +275.08 m                  +2.044 degC
+```
+
+These five constants are fixed. They are not refit this session, next
+session, or ever, without a new DECISIONS entry -- the whole point of fixing
+them now is that the sealed test applies a number decided before it opened,
+not one fit to the sealed year.
+
+**D48.4 — Features (exact).**
+```
+forecast_temp_c   GRIB GFS 2 m temperature (D48.2/D48.3), previous_day1-
+                  equivalent lead, elevation-corrected, bilinear-
+                  interpolated to the airport's established grid point
+season_sin        sin(2 * pi * year_fraction(date))
+season_cos        cos(2 * pi * year_fraction(date))
+cloud_cover       GRIB TCDC (entire atmosphere), same grid->point, same lead
+wind_speed_10m    sqrt(UGRD^2 + VGRD^2) at 10 m, m/s converted to km/h,
+                  same grid->point, same lead
+```
+where `year_fraction` is `(day_of_year - 1) / 365`, or `/ 366` in a leap
+year (identical to D44.3). **Two rungs are fitted and reported, not one**:
+a 3-feature model (`forecast_temp_c`, `season_sin`, `season_cos`) — the
+same feature set as the existing locked recipe, refit on GRIB source — and
+the 5-feature model above (the richer-features claim this whole build
+exists to test). Nothing is hand-picked per airport; the same two feature
+sets are used everywhere.
+
+**D48.5 — Source and pipeline (exact, F89/F90).** GFS 0.25 deg GRIB2 from
+AWS `noaa-gfs-bdp-pds`, byte-range fetched per message (never a whole-file
+download); ecCodes decode; bilinear interpolation to the airport's own
+established `gfs_global` grid point (SPEC 3.4); the D48.3 elevation
+correction applied to temperature only (cloud cover and wind speed are used
+as GRIB reports them, uncorrected -- F91 Task 1 found the cloud tail
+benign-definitional and the session-38 prompt forbade correcting it either
+way).
+
+**D48.6 — Model and settings (identical at every airport, no per-airport
+tuning -- D21.4, unchanged since session 05).**
+```
+objective=regression_l1   n_estimators=300      learning_rate=0.05
+num_leaves=15             min_child_samples=40   subsample=1.0
+colsample_bytree=1.0      reg_alpha=0.0          reg_lambda=0.0
+random_state=42           n_jobs=1               deterministic=True
+force_row_wise=True       verbose=-1
+```
+Library versions pinned in `requirements.txt`: python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0. Both the 3-feature and 5-feature model use these identical
+settings.
+
+**D48.7 — Training window: 2021-03-24 to 2025-07-31 (v16-only, F89/F90),
+trained in FULL -- no inner-training/validation split.** The CV/rehearsal
+phase is finished (F86, F87, F91); the sealed run refits on the whole
+training window, the same move every earlier lock made at its own airport
+(D21.5, D31.5, D35.5, D39.5, D44.5). **Expected training-row count per
+airport, taken directly from F91's own full-window join (`session38_joined
+.csv`) and reused unchanged, since that join already covers exactly this
+training window with no split:**
+```
+station   expected training rows (of 1,591 calendar days)
+EGLC              1,589
+LFPG              1,589
+DSM               1,590
+YSDU              1,573
+RNO               1,587
+```
+A training-row count other than the figure above, at any airport, is a
+D48.12 stop signal -- it means either the training data changed since F91
+(it should not have) or the frozen script's join logic diverges from
+session38_join.py's (it should not).
+
+**D48.8 — Sealed test year: 2025-08-01 to 2026-07-31 (SPEC 4.3, D13), 365
+calendar days, opened ONCE per airport, nothing after 2026-07-31.** This is
+a genuinely new pull for this recipe: the GRIB feature dataset (temperature,
+cloud cover, wind speed) does not yet exist for these dates at any airport,
+and pulling it is session 40's job, following the same byte-range/decode
+pipeline as session 37 (F90), restricted to this window, saved as
+`data/processed/grib_features_sealed_window.csv` in the same column layout
+as `grib_features_v16_window.csv`.
+
+The **observation** side of the sealed year is not new -- IEM chunks
+covering 2025-08-01 to 2026-07-31 already exist under `data/raw/` for all
+five airports (pulled for each airport's own already-completed sealed test
+under the existing 3-feature/Open-Meteo recipe, F16/F30/F47/F64/F82) and
+are read again here, unchanged, read-only. **Expected scored-day counts, to
+reconcile against the observation-side history already on record** (the
+D14 pairing rule and each airport's own reporting pattern are unchanged by
+the switch to GRIB -- only the forecast source differs):
+```
+station   already-published scored days (F16/F30/F47/F64/F82)
+EGLC                    363
+LFPG                    363
+DSM                     365
+YSDU                    347
+RNO                     365
+```
+The richer-features sealed run may reasonably score **fewer** days than the
+figures above, if the new sealed-year GRIB pull hits its own idx-mismatch-
+style gaps the way F90's training-window pull hit three (dropped and
+counted, SPEC 2.2, not worked around) -- that is a legitimate, reportable
+outcome, not an error. It must not score **more** days than the figures
+above, since the observation side cannot supply an extra usable pairing
+that was not there for the existing recipe's own sealed test. A scored-day
+count higher than the relevant figure above, at any airport, is a D48.12
+stop signal.
+
+**D48.9 — Pairing and missing data: the D14 rule (SPEC 4.5), unchanged.**
+Each forecast valid at the airport's target hour is paired with the
+station's nearest routine report to that hour; if none falls within 15
+minutes, the day is dropped and counted. Nothing is ever filled (SPEC 2.2).
+Persistence's previous-day observation may reach back across the training/
+test boundary (e.g. the first test day's "yesterday" is 2025-07-31, inside
+the training window) -- that is a past value, legal under SPEC 2.1d, the
+same note D44.8 made for Reno.
+
+**D48.10 — What is scored, and on what days.** Four rungs, on the same
+common set of days per airport (the days every rung has a value for):
+**raw GFS (GRIB, elevation-corrected)**, **persistence** (previous
+calendar day's observation), **3-feature** (GRIB source, refit on the full
+training window), **5-feature** (the locked richer recipe). This is
+deliberately narrower than D44.8's four-reference list (which also reported
+climatology and the mean-bias reference) -- the session-39 prompt's own
+"what is reported" instruction names exactly these four rungs plus the
+5-vs-3 comparison, and that instruction is followed exactly, not widened.
+
+**D48.11 — The bar (frozen, qualitative, unchanged -- SPEC 5.3, D22).** An
+airport passes if the **5-feature** corrected forecast has a lower MAE than
+**both raw GFS (GRIB) and persistence**, over that airport's own sealed
+test year. No numeric margin. Judged once per airport (SPEC 5.0) -- a pass
+or fail at one airport does not change another's. **The 5-vs-3-feature
+comparison (does the richer recipe actually add value on the true held-out
+year) is reported alongside the bar verdict, but is not itself part of the
+bar** -- the bar is still exactly "beats raw GFS and persistence," as it has
+been at every airport so far. If a given airport passes, the 5-feature GRIB
+recipe folds into SPEC only in a later session, after the result is known
+(same discipline D44's Reno lock followed) -- this session changes neither
+`SPEC.md` nor `RESULTS.md`.
+
+**D48.12 — Pre-registered expectations, recorded before the look (F91,
+mirroring D44.12's naming of Reno's expected failure mode in advance).**
+From the full-window CV: 5-feature is expected to beat **both** raw GFS and
+persistence at **all five airports**; 5-feature is expected to beat
+3-feature at **all five airports**; **LFPG is expected to pass** (it lost on
+the shorter 1.5-year window but won on the full window, F91); **RNO is
+expected to pass** (the richer-features rescue strengthened on the full
+window, +12.7% skill, F91) -- a reversal of RNO's own existing sealed-test
+failure under the 3-feature/Open-Meteo recipe (F82), stated plainly so a
+reversal is read as a genuine result of a different, richer recipe on a
+different data source, not as erasing or re-litigating F82's own result
+(D48.13 below). Any training-row or scored-day count that will not
+reconcile against D48.7 or D48.8, any setting that does not match D48.6, or
+any tempting small improvement noticed once the sealed year is open, is a
+**stop signal**: the executing session stops and raises it with the owner
+rather than deciding on the fly (identical in spirit to D21.11, D31.11,
+D35.11, D39.11, D44.11).
+
+**D48.13 — One look, and the result stands, per airport, and it does not
+touch any earlier result.** Each airport's sealed test year is opened once
+under this recipe, run once, and reported straight, pass or fail. No
+re-tuning, no feature/window/lapse-rate change, no re-run, no retroactive
+adjustment, whatever the result. **This is a new, separate test of a
+different recipe (GRIB source, richer features) -- it does not re-open, retest,
+or overwrite any airport's existing sealed-test verdict under the
+existing 3-feature/Open-Meteo recipe** (EGLC F16, LFPG F30, DSM F47, YSDU
+F64, RNO F82 all stand exactly as reported). If richer-features passes
+where the existing recipe already passed, the project has two independently
+-tested recipes at that airport; if it passes where the existing recipe
+failed (RNO), that is a genuine, separate finding about the richer recipe,
+not an erasure of F82.
+
+**The frozen sealed-test script.** `scripts/session39_sealed_test.py`,
+written and verified this session (parses; imports cleanly, including the
+LightGBM/libomp workaround already proven in every session-3x modelling
+script; logic reviewed line-by-line against D48.1-D48.10 above), but **not
+run against sealed data** -- its sealed-year feature path
+(`data/processed/grib_features_sealed_window.csv`) does not exist yet and
+is session 40's own job to produce. The script asserts, in code: every
+training-window row it loads has `target_date < 2025-08-01`; every
+sealed-year row it loads falls inside `[2025-08-01, 2026-07-31]`, and it
+raises rather than proceeding if either bound is violated; and it refuses
+to run at all (a clear, named error, not a silent skip) if the sealed
+feature file is missing -- which it is, as of this session, on purpose.
+
+**What must not change after the sealed year is opened.** No re-tuning, no
+feature/window/lapse-rate change, no re-run, no retroactive adjustment. The
+result stands exactly as tested, pass or fail, per airport -- the same rule
+D44.10 and D44.11 already state, applied here to five airports and a new
+recipe rather than one.
