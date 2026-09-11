@@ -1,0 +1,8 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250613/12/atmos/gfs.t12z.pgrb2.0p25.f024
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250613/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx
+byte range requested: 428296642-428811663
+variable: TMP:2 m above ground, forecast hour f024, cycle 12z, run date 2025-06-13
+used by airports (target hour, cycle+lead convention): EGLC, LFPG
+pulled (UTC): 2026-09-11T09:00:39Z
+bytes saved: 515022
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

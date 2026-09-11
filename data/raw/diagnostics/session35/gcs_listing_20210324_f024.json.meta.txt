@@ -1,0 +1,6 @@
+Source: NOAA NODD GFS mirror (Google Cloud Storage, bucket "global-forecast-system"), public, no credentials
+URL: https://storage.googleapis.com/storage/v1/b/global-forecast-system/o?prefix=gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024
+Query: GCS JSON API object-listing, plain HTTPS GET, no auth headers used
+Pull time (UTC): 2026-09-11T07:54:02Z (session 35)
+Purpose: confirms the same 2021-03-24 archive is also mirrored on Google Cloud Storage
+         (Task 1's cross-cloud survey), not just AWS. Truncated to first 2000 bytes.

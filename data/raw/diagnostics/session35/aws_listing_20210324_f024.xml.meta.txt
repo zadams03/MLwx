@@ -1,0 +1,9 @@
+Source: NOAA NODD GFS bucket (AWS S3, noaa-gfs-bdp-pds), public, no credentials
+URL: https://noaa-gfs-bdp-pds.s3.amazonaws.com/?list-type=2&prefix=gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024&delimiter=
+Query: S3 ListObjectsV2 API, plain HTTPS GET, no auth headers used
+Pull time (UTC): 2026-09-11T07:54:02Z (session 35)
+Purpose: directory-listing evidence that full-resolution (0.25 deg) global GRIB2 forecast
+         files genuinely exist for 2021-03-24 (the project's forecast-archive floor date)
+         in this bucket, with real byte sizes (~500-550 MB per forecast hour) and
+         LastModified timestamps consistent with 2021 origination. Truncated to first
+         2000 bytes (first two file entries); full response was longer.

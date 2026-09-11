@@ -1,0 +1,8 @@
+Source: NOAA NODD GFS bucket (AWS S3, noaa-gfs-bdp-pds), public, no credentials
+URL: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024
+Query: HTTP GET with byte-range header (Range: bytes=458689927-459519155), per the message
+       offset given by the file's own .idx inventory (see gfs.20250611.t12z.f024.idx)
+Pull time (UTC): 2026-09-11T07:51:xxZ (session 35)
+Purpose: single-message extraction of TCDC:entire atmosphere:24 hour fcst (total cloud
+         cover, whole-atmosphere column) — the direct analogue of Open-Meteo's cloud_cover
+         variable. Confirms a genuine, complete GRIB2 record (GRIB...7777 markers).

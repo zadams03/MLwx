@@ -1,0 +1,8 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250605/18/atmos/gfs.t18z.pgrb2.0p25.f024
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250605/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx
+byte range requested: 427281754-427802441
+variable: TMP:2 m above ground, forecast hour f024, cycle 18z, run date 2025-06-05
+used by airports (target hour, cycle+lead convention): DSM
+pulled (UTC): 2026-09-11T08:59:15Z
+bytes saved: 520688
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

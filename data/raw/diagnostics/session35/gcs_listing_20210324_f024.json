@@ -1,0 +1,39 @@
+{
+  "kind": "storage#objects",
+  "items": [
+    {
+      "kind": "storage#object",
+      "id": "global-forecast-system/gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024/1701990987336831",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/global-forecast-system/o/gfs.20210324%2F00%2Fatmos%2Fgfs.t00z.pgrb2.0p25.f024",
+      "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/global-forecast-system/o/gfs.20210324%2F00%2Fatmos%2Fgfs.t00z.pgrb2.0p25.f024?generation=1701990987336831&alt=media",
+      "name": "gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024",
+      "bucket": "global-forecast-system",
+      "generation": "1701990987336831",
+      "metageneration": "1",
+      "contentType": "binary/octet-stream",
+      "storageClass": "STANDARD",
+      "size": "551458532",
+      "md5Hash": "RQCNDynqYFqQ6VV9oiaszQ==",
+      "crc32c": "EW9wCg==",
+      "etag": "CP+Y2MG6/oIDEAE=",
+      "timeCreated": "2023-12-07T23:16:27.382Z",
+      "updated": "2023-12-07T23:16:27.382Z",
+      "timeStorageClassUpdated": "2023-12-07T23:16:27.382Z",
+      "timeFinalized": "2023-12-07T23:16:27.382Z",
+      "metadata": {
+        "x-goog-source-etag": "\"45008d0f29ea605a90e9557da226accd\""
+      }
+    },
+    {
+      "kind": "storage#object",
+      "id": "global-forecast-system/gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx/1702003270434578",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/global-forecast-system/o/gfs.20210324%2F00%2Fatmos%2Fgfs.t00z.pgrb2.0p25.f024.idx",
+      "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/global-forecast-system/o/gfs.20210324%2F00%2Fatmos%2Fgfs.t00z.pgrb2.0p25.f024.idx?generation=1702003270434578&alt=media",
+      "name": "gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx",
+      "bucket": "global-forecast-system",
+      "generation": "1702003270434578",
+      "metageneration": "1",
+      "contentType": "binary/octet-stream",
+      "storageClass": "STANDARD",
+      "size": "41283",
+      "md5Hash": "PTu6TgIrN

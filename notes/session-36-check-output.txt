@@ -1,0 +1,356 @@
+Session 36 -- GRIB build step 1: confirm back-extent + validate the pipeline
+=============================================================================
+All commands run 2026-09-11 (UTC timestamps as shown). Temperature only --
+no cloud or wind pulled this session. No bulk/multi-year pull. No sealed-
+test-year date touched (all samples <= 2025-07-31). No final pipeline built,
+no join, no fit, no lock.
+
+Scripts:
+  scripts/session36_grib_pull.py -- byte-range GRIB2 temperature pull
+  scripts/session36_validate.py  -- decode, interpolate, reproduce-check
+Raw extracts + comparison table saved under data/raw/diagnostics/session36/,
+each with a .meta.txt (exact source URL/byte range + UTC pull time).
+
+-----------------------------------------------------------------------------
+Task 1 -- confirm the fetchable back-extent
+-----------------------------------------------------------------------------
+
+1a. AWS bucket noaa-gfs-bdp-pds -- true earliest date, by direct listing
+(not assumed):
+
+$ curl -s "https://noaa-gfs-bdp-pds.s3.amazonaws.com/?list-type=2&prefix=gfs.&delimiter=/&max-keys=20"
+-> first CommonPrefixes returned, in ascending lexicographic (= chronological)
+   order: gfs.20210101/, gfs.20210102/, ... gfs.20210120/, IsTruncated=true
+
+RESULT: the bucket's own earliest date folder is 2021-01-01. Direct probes
+of earlier dates (2021-01-01 non-existent guess check via delimiter listing,
+2020-12-31, 2015-01-15, 2010-01-01, 2000-01-01) all returned HTTP 404 for
+gfs.<date>/... paths -- confirmed the bucket holds nothing before 2021-01-01:
+
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20201231/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+404
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20150115/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+404
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20100101/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+404
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20000101/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+404
+
+1b. A wrinkle found and resolved: the 0.25 deg pgrb2 product's PATH changes
+partway through the bucket's own history, which an early flat 404-check
+against the /atmos/ path alone would have misread as "missing before
+2021-03-24" (a false negative this session caught before treating it as an
+availability limit):
+
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20210320/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+404   (looked like "not yet available")
+$ curl -s "https://noaa-gfs-bdp-pds.s3.amazonaws.com/?list-type=2&prefix=gfs.20210320/00/gfs.t00z.pgrb2.0p25&max-keys=10"
+-> Contents: gfs.20210320/00/gfs.t00z.pgrb2.0p25.f000, .f000.idx, .f001, ...
+   all LastModified 2021-03-20 -- the file DOES exist, just with no /atmos/
+   subdirectory in the key.
+$ curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.20210320/00/gfs.t00z.pgrb2.0p25.f024.idx"   (no atmos/)
+200
+
+Bisecting the /atmos/ vs flat-path transition, one 00z-cycle f024.idx check
+per day:
+  20210320 atmos/ -> 404   (flat path only)
+  20210321 atmos/ -> 404   (flat path only)
+  20210322 atmos/ -> 404   (flat path only)
+  20210323 atmos/ -> 200   (atmos/ path begins)
+  20210324 atmos/ -> 200
+
+RESULT: the /atmos/ subdirectory convention starts 2021-03-23 -- one day
+before the project's own established Open-Meteo archive floor (2021-03-24,
+SPEC 3.2). The flat (no-/atmos/) path form was checked back across the full
+bucket history and returns 200 continuously:
+
+$ for d in 20210101 20210102 20210110 20210120 20210201 20210301 20210310 20210320 20210322; do \
+    curl -s -o /dev/null -w "%{http_code}\n" ".../gfs.${d}/00/gfs.t00z.pgrb2.0p25.f024.idx"; done
+20210101 -> 200
+20210102 -> 200
+20210110 -> 200
+20210120 -> 200
+20210201 -> 200
+20210301 -> 200
+20210310 -> 200
+20210320 -> 200
+20210322 -> 200
+
+RESULT: the full-resolution (0.25 deg) 0-360 global GRIB2 pgrb2.0p25 product
+is present, byte-range-fetchable, continuously from the bucket's own true
+floor, 2021-01-01, through the present -- ~82 days deeper than Open-Meteo's
+own 2021-03-24 floor, via a path convention that changes once (flat ->
+/atmos/) on 2021-03-23 but never breaks continuity of the product itself.
+Confirmed by direct listing, not assumed from a doc page (SPEC 3.3 "verify
+on contact" principle).
+
+1c. 2015-2021 slice -- is NCAR's ds084.1 (formerly RDA, now GDEX) reachable,
+credential-free?
+
+$ curl -sI "https://rda.ucar.edu/" -w "HTTPCODE=%{http_code}\n"
+HTTP/2 301
+location: https://gdex.ucar.edu/
+HTTPCODE=301
+-> rda.ucar.edu now redirects its ENTIRE root to gdex.ucar.edu -- the
+   migration flagged as "sunsetting early 2026" in session 35 (F88) has, by
+   this session's date (2026-09-11), already completed; there is no more
+   "rda.ucar.edu" to fall back to.
+
+$ curl -sL "https://gdex.ucar.edu/datasets/ds084.1/" -o gdex_ds084.1.html -w "http_code=%{http_code}\n"
+http_code=200
+$ grep -o -i "sign.\{0,20\}in\|login" gdex_ds084.1.html | sort -u
+Sign In
+-> the dataset's own landing page on the new GDEX platform shows a "Sign In"
+   control; the page's HTML carries no anonymous/API-key/credential-free
+   download link this session could find.
+
+$ curl -sI --max-time 10 "https://data.rda.ucar.edu/" -w "HTTPCODE=%{http_code}\n"
+HTTPCODE=000   (no connection -- old data host no longer resolves/answers)
+
+Two guessed direct-access paths (a plain HTTPS file guess, and a THREDDS
+fileServer guess, both a common alternate NCAR access pattern) were tried
+and both 404'd -- not pursued further once it was clear this needs, at
+minimum, a valid GDEX-side path this session's guesses did not find, and the
+page itself displays a sign-in gate:
+$ curl -sI ".../ds084.1/2015/20150115/gfs.0p25.2015011500.f024.grib2"  -> 404
+$ curl -s -o /dev/null -w "%{http_code}\n" "https://thredds.rda.ucar.edu/thredds/catalog/files/g/ds084.1/2015/20150115/catalog.html"  -> 404
+
+RESULT: no credential-free path to 2015-2021 GFS data was found this
+session, on either the old RDA host (now unreachable, fully redirected to
+GDEX) or the new GDEX platform (dataset page shows a sign-in gate; no
+anonymous path located). This is a "not found this session," not an
+exhaustive proof that none exists -- GDEX's actual API may have a
+registration-then-token or bulk-download path this narrow probe did not
+explore. Reported as-is, per session scope (probe, not a full integration
+attempt).
+
+RESULT (Task 1 headline): the confirmed, credential-free, fetchable window
+is 2021-01-01 onward -- essentially the same order of magnitude as the
+project's existing ~4.3-year (2021-03-24 onward) window, NOT the ~11-year
+(2015+) prize the sub-project's framing hoped to confirm. Flagged prominently
+per the session prompt's own instruction.
+
+-----------------------------------------------------------------------------
+Task 2 -- set up a GRIB reader
+-----------------------------------------------------------------------------
+
+No system package manager (no Homebrew) on this machine (session 35 already
+noted `wgrib2` not found, `pygrib`/`cfgrib` not installed). This session
+found a route that needs no system install:
+
+$ source .venv/bin/activate
+$ pip install eccodes
+Collecting eccodes ... Successfully installed attrs-26.1.0 cffi-2.1.1
+  eccodes-2.48.0 eccodeslib-2.48.0.26 eckitlib-2.1.1.26 findlibs-0.1.3
+  pycparser-3.0
+
+`eccodeslib` is a macOS-arm64 wheel (eccodeslib-2.48.0.26-cp312-cp312-
+macosx_13_0_arm64.whl, ~9.1 MB) that bundles ecCodes' own compiled binary --
+no Homebrew, no separate C-library install, no admin/root needed.
+
+$ python3 -c "import eccodes; print(eccodes.__version__, eccodes.codes_get_api_version())"
+2.48.0 2.48.0
+
+Confirmed it decodes a real downloaded message (see Task 3/4 below for the
+full field-level checks): shortName, name, typeOfLevel, level, units,
+dataDate/dataTime, forecastTime, validityDate/validityTime, Ni/Nj, grid
+extents and increments, and codes_grib_find_nearest() all read back cleanly
+and consistently with the .idx label.
+
+Installed (added to the project's Python environment, .venv, not yet
+recorded in requirements.txt -- see the suggested commit message): eccodes
+2.48.0 and its dependencies (eccodeslib 2.48.0.26, eckitlib 2.1.1.26,
+findlibs 0.1.3, cffi 2.1.1, pycparser 3.0, attrs 26.1.0).
+
+-----------------------------------------------------------------------------
+Task 3 -- pull temperature samples (byte-range, small)
+-----------------------------------------------------------------------------
+
+Sample: an early stretch at Open-Meteo's own archive floor (2021-03-24 to
+2021-03-28, 5 days) and a recent two-week stretch inside Open-Meteo's era
+and outside the sealed test year (2025-06-01 to 2025-06-14, 14 days) -- 19
+target dates total, all <= 2025-07-31.
+
+Byte-range mechanics, confirmed on a real file before scaling up:
+$ curl -s ".../gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx" -o sample_f024.idx
+$ grep -n "TMP:2 m above ground" sample_f024.idx
+581:581:429309045:d=2025061112:TMP:2 m above ground:24 hour fcst:
+582-582:429825251:d=2025061112:SPFH:2 m above ground:24 hour fcst:
+$ curl -sf -r 429309045-429825250 ".../gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024" -o tmp2m_sample.grib2
+$ ls -la tmp2m_sample.grib2   -> 516206 bytes
+$ xxd tmp2m_sample.grib2 | head -1   -> 4752 4942 ...  "GRIB"
+$ xxd tmp2m_sample.grib2 | tail -1   -> ... 3737 3737  "7777"
+-> a complete, well-formed GRIB2 message (start/end markers both present),
+   pulled with one Range request, no full-file download.
+
+$ python3 scripts/session36_grib_pull.py
+Total distinct (run_date, cycle, lead) files to fetch: 76
+  OK   gfs_20210323_t00z_f026_tmp2m  bytes=881150  magic_ok=True  [YSDU]
+  OK   gfs_20210323_t12z_f024_tmp2m  bytes=513954  magic_ok=True  [EGLC,LFPG]
+  OK   gfs_20210323_t18z_f024_tmp2m  bytes=515615  magic_ok=True  [DSM]
+  OK   gfs_20210323_t18z_f026_tmp2m  bytes=513226  magic_ok=True  [RNO]
+  ... (72 more lines, one per distinct run_date/cycle/lead file; every line
+      magic_ok=True) ...
+  OK   gfs_20250613_t18z_f026_tmp2m  bytes=515300  magic_ok=True  [RNO]
+
+Done. 76 files ok, 0 failed.
+
+76 distinct GRIB2 extracts (not 19*5=95, because EGLC and LFPG share the
+same 12z/f024 file on any given run date -- both land on lead 24 from the
+12z cycle) -- matches session 35's F88 "up to 4 distinct cycle/lead
+combinations per calendar day" estimate exactly (4 files/day * 19 days = 76).
+Every file's magic-marker check (GRIB ... 7777) passed. Each saved with a
+.meta.txt: exact source URL, idx URL, byte range requested, variable/lead/
+cycle/run-date, which airport(s) use it, UTC pull time, byte count, and the
+first/last 4 bytes.
+
+-----------------------------------------------------------------------------
+Task 4 -- grid->point interpolation + lead-time convention
+-----------------------------------------------------------------------------
+
+Lead-time convention, derived from SPEC 3.2's own description of how
+Open-Meteo builds previous_day1 (hours 24-29 of each 6-hourly run, stitched)
+and confirmed empirically below: for a target valid hour HH:00 UTC on day D,
+use the run made at cycle floor(HH/6)*6 UTC on day D-1, forecast hour
+24 + (HH mod 6).
+
+  station  target hour  cycle  lead(fXXX)
+  EGLC     12:00 UTC    12z    f024   (exact 24h -- on a cycle boundary)
+  LFPG     12:00 UTC    12z    f024   (exact 24h -- on a cycle boundary)
+  DSM      18:00 UTC    18z    f024   (exact 24h -- on a cycle boundary)
+  YSDU     02:00 UTC    00z    f026   (26h -- 2h past the 00z boundary)
+  RNO      20:00 UTC    18z    f026   (26h -- 2h past the 18z boundary)
+
+Interpolation: bilinear across the 4 grid points ecCodes' own
+codes_grib_find_nearest(npoints=4) returns for each airport's established
+Open-Meteo grid point (SPEC 3.4 "grid latitude"/"grid longitude" columns --
+the exact point the existing, trusted Open-Meteo temperature series already
+answers for, not the raw airport position). Example (EGLC, 2025-06-11 12z
+run, f024, valid 2025-06-12 12:00 UTC):
+
+$ python3 -c "... codes_grib_find_nearest(gid, 51.487137, 0.0, npoints=4) ..."
+51.25 0.25 294.821435625 dist=31.6 km
+51.25 0.00 294.821435625 dist=26.4 km
+51.50 0.25 296.721435625 dist=17.4 km
+51.50 0.00 296.921435625 dist=1.4 km
+-> bilinear (target lon exactly on the 0.0 grid line, so this collapses to a
+   pure latitude interpolation) gives 23.66 degC; Open-Meteo's own value at
+   the same valid hour is 23.9 degC -- a 0.24 degC difference, by hand before
+   the full script existed, first evidence the approach works.
+
+One real bug found and fixed by this check: the GRIB grid's longitudes come
+back from ecCodes in 0-360 convention even when the query point is passed in
+the codebase's normal -180..180 form (`codes_grib_find_nearest` itself
+handles the negative input fine internally, but the neighbour lon0/lon1
+returned are 0-360) -- the first version of the bilinear weight arithmetic
+used the raw -180..180 query longitude against those 0-360 neighbour
+longitudes, giving nonsense weights (dlon in the thousands) and multi-
+hundred-degree "temperatures" at DSM and RNO (the two airports with negative
+longitudes). Fixed by normalising the query longitude to 0-360 before
+computing dlon (scripts/session36_validate.py). EGLC/LFPG/YSDU (all
+non-negative longitudes) were unaffected and passed on the first run,
+confirming the bug was specifically the sign/convention handling, not the
+bilinear formula or grid read itself.
+
+-----------------------------------------------------------------------------
+Task 5 -- reproduce-the-results check (the gate)
+-----------------------------------------------------------------------------
+
+$ python3 scripts/session36_validate.py
+Wrote comparison table: data/raw/diagnostics/session36/session36_grib_vs_openmeteo_comparison.csv  (95 rows)
+
+Per-airport reproduction check (GRIB-derived vs existing Open-Meteo temperature_2m_previous_day1):
+station   n mean|diff|  mean diff  max|diff|  verdict
+EGLC    19      0.248     -0.248      0.359     PASS
+LFPG    19      0.251      0.217      0.575     PASS
+DSM     19      0.181      0.154      0.684     PASS
+YSDU    19      0.213     -0.108      0.455     PASS
+RNO     19      2.044     -2.044      2.419     FAIL
+
+Overall pipeline verdict: NOT PROVEN (4 of 5 airports pass; RNO fails, cause
+identified below, not a formula bug -- see DECISIONS F89 for the full
+read).
+
+All 95 rows: valid_ok (GRIB message's own validityDate/validityTime matches
+the intended target date/hour) True for every row; 0 missing Open-Meteo
+comparison values; 0 script errors. The lead-time convention itself (Task 4)
+reproduces the intended valid hour exactly at all five airports, every
+sample date, both eras -- the RNO gap is a magnitude/bias problem, not a
+wrong-hour problem.
+
+EGLC, LFPG, DSM, YSDU: small (0.18-0.25 degC mean absolute), MIXED-SIGN
+differences (EGLC -0.248, LFPG +0.217, DSM +0.154, YSDU -0.108) -- the shape
+of ordinary interpolation/rounding noise (Open-Meteo's own published values
+are rounded to 1 decimal place), not a systematic bias. PASS at all four.
+
+RNO: a clean, one-sided, systematic bias -- every one of 19 sample days has
+the GRIB-derived value COLDER than Open-Meteo's by 1.80-2.42 degC (mean
+-2.044, essentially equal to the mean absolute difference, the signature of
+an offset rather than scatter):
+
+  early  2021-03-24 .. 2021-03-28: diffs -1.89, -2.26, -1.81, -1.80, -2.14
+  recent 2025-06-01 .. 2025-06-14: diffs -2.19, -1.93, -1.93, -1.90, -2.11,
+                                    -2.11, -2.01, -2.02, -1.93, -2.10, -2.17,
+                                    -1.83, -2.42, -2.28
+
+Likely cause, investigated and confirmed with one small extra diagnostic
+pull (HGT:surface -- model terrain elevation -- for the same 2025-06-10 18z
+f026 file already fetched for temperature; byte-range only, 492 KB,
+`data/raw/diagnostics/session36/gfs_20250610_t18z_f026_hgt_surface_RNO_diagnostic.grib2`):
+
+$ python3 -c "... codes_grib_find_nearest(gid, 39.537918, -119.765625, npoints=4) ..."  (shortName 'orog')
+lat 39.50 lon 240.25  elev_m 1603.4  dist=4.4 km
+lat 39.50 lon 240.00  elev_m 1914.5  dist=20.5 km
+lat 39.75 lon 240.25  elev_m 1590.6  dist=23.6 km
+lat 39.75 lon 240.00  elev_m 1707.7  dist=31.0 km
+
+The four raw-GRIB grid points bracketing Reno's own established grid point
+carry MODEL terrain elevations of 1591-1914 m -- 246-570 m HIGHER than
+Reno's actual/grid elevation (1344-1345 m, SPEC 3.4). At a standard
+environmental lapse rate (~0.65 degC/100 m), that spread alone predicts
+roughly 1.6-3.7 degC of cooling in a plain grid-average temperature relative
+to a point corrected down to the true 1345 m elevation -- squarely
+consistent with the measured -2.04 degC mean bias. Open-Meteo's own
+published value is evidently already elevation-corrected for its target
+point (a known downscaling step, expected especially in complex terrain);
+this session's bilinear-only pipeline is not, and RNO -- alone among the
+five airports -- sits in terrain steep enough (the same Sierra Nevada front
+SPEC 3.4 and DECISIONS D42/F66 already name as Reno's real difficulty) for
+that gap to show up as a multi-degree, one-sided bias rather than noise.
+The other four airports' own grid-to-airport elevation mismatches are all
+under 10 m (SPEC 3.4), so any lapse-rate correction there would be
+sub-tenth-of-a-degree -- consistent with their small, mixed-sign residuals
+being ordinary rounding/interpolation noise rather than a masked version of
+the same effect.
+
+RNO verdict: FAIL, cause named -- not wrong grid points (confirmed: the same
+established SPEC 3.4 point was used), not wrong cycle/lead (valid_ok=True
+every row; the SAME modulo-offset lead-time formula reproduces YSDU cleanly),
+not a unit/label error (shortName '2t', K, matches EGLC/LFPG/DSM/YSDU
+exactly) -- but a missing elevation/lapse-rate correction step this session's
+plain bilinear interpolation does not perform and Open-Meteo's own pipeline
+evidently does, made visible specifically at Reno because of real local
+terrain relief the raw 0.25 deg grid does not resolve.
+
+OVERALL VERDICT: the GRIB->point pipeline is PROVEN for 4 of 5 airports
+(EGLC, LFPG, DSM, YSDU) exactly as pulled (byte-range TMP:2m, the derived
+cycle/lead convention, plain bilinear interpolation) -- sub-degree, unbiased
+differences against the trusted Open-Meteo answer key, at both the archive
+floor and a recent date. It is NOT yet proven at RNO: the interpolation and
+lead-time logic are not implicated (both check out), but a same-terrain
+elevation-correction step is evidently needed before RNO's own richer-feature
+work could trust a raw-GRIB pull the way it trusts Open-Meteo's already-
+corrected series. This is a fix to make before RNO's data enters step 2's
+bulk pull, not a reason to distrust the pipeline at the other four airports.
+
+-----------------------------------------------------------------------------
+What this session did not do, on purpose
+-----------------------------------------------------------------------------
+No cloud or wind variable was pulled (temperature only). No bulk/multi-year
+pull -- 76 small byte-range GRIB2 extracts plus one small diagnostic HGT
+extract, 77 files total, all under ~900 KB each. No date inside the sealed
+test year (2025-08-01 to 2026-07-31) was fetched or touched -- every sample
+date is <= 2025-07-31 (the latest target date, 2025-06-14, and every run
+date derived from it). No final feature pipeline was built, nothing was
+joined to observations, no model was fitted, nothing was locked. SPEC.md and
+RESULTS.md were not modified. Nothing was committed.

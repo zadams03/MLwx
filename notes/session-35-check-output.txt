@@ -1,0 +1,156 @@
+Session 35 — GFS GRIB source feasibility probe — real command output
+======================================================================
+All commands run 2026-09-11 (UTC timestamps as shown). No bulk download,
+no decoding pipeline, no join, no fit. Raw samples saved under
+data/raw/diagnostics/session35/ with .meta.txt provenance per file.
+
+----------------------------------------------------------------------
+Task 1a — is the NODD AWS bucket really a rolling 30-day window, or a
+deep archive? (Direct probe, because a secondary source — NCEI's own
+page — claims "trailing 30-day window".)
+----------------------------------------------------------------------
+
+$ curl -sI "https://noaa-gfs-bdp-pds.s3.amazonaws.com/?list-type=2&prefix=gfs.20210324/" | head -20
+HTTP/1.1 200 OK
+x-amz-bucket-region: us-east-1
+x-amz-bucket-arn: arn:aws:s3:::noaa-gfs-bdp-pds
+Server: AmazonS3
+
+$ curl -s "https://noaa-gfs-bdp-pds.s3.amazonaws.com/?list-type=2&prefix=gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f0&delimiter=" | head -c 4000
+<ListBucketResult ...><Name>noaa-gfs-bdp-pds</Name>
+<Prefix>gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f0</Prefix><KeyCount>200</KeyCount>
+<Contents><Key>gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f000</Key>
+  <LastModified>2021-03-24T03:33:17.000Z</LastModified><Size>514424702</Size></Contents>
+<Contents><Key>gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f000.idx</Key>
+  <LastModified>2021-03-24T03:32:55.000Z</LastModified><Size>31847</Size></Contents>
+<Contents><Key>gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f001</Key>
+  <LastModified>2021-03-24T03:34:18.000Z</LastModified><Size>547565108</Size></Contents>
+... (f002 through f009+ all present, all ~500-550 MB, all LastModified 2021-03-24)
+
+RESULT: full-resolution (0.25 deg) global GRIB2 forecast files genuinely exist for
+2021-03-24 in this bucket, with real byte sizes and 2021-vintage LastModified
+timestamps. The "trailing 30-day window" description found in general documentation
+does NOT hold for this bucket as of this session — contradicts a secondary source,
+resolved by direct probe (same "verify on contact" principle SPEC 3.3 already uses
+for Open-Meteo). Consistent with a 2026 NOAA migration of the historical GFS archive
+(formerly served from NCAR RDA/ds084.1, itself starting 2015-01-15) into this
+previously-rolling AWS bucket, per public reporting that RDA will stop updating this
+dataset in early 2026 in favor of the AWS copy.
+
+----------------------------------------------------------------------
+Task 1b — cross-cloud mirror check (Google Cloud, Azure)
+----------------------------------------------------------------------
+
+$ curl -s -o /dev/null -w "%{http_code}\n" \
+  "https://storage.googleapis.com/global-forecast-system/gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx"
+200
+
+$ curl -s "https://storage.googleapis.com/global-forecast-system/gfs.20210324/00/atmos/gfs.t00z.pgrb2.0p25.f024.idx" | head -3
+1:0:d=2021032400:PRMSL:mean sea level:24 hour fcst:
+2:996531:d=2021032400:CLWMR:1 hybrid level:24 hour fcst:
+3:1078185:d=2021032400:ICMR:1 hybrid level:24 hour fcst:
+
+RESULT: Google Cloud Storage mirrors the identical deep archive, no credentials.
+Azure mirror: guessed container/blob path returned 404 (Windows-Azure-Blob) — the
+exact Azure NODD path was not found under this guess and was not pursued further
+(out of scope for a probe with two working, credential-free, cross-checked sources
+already in hand).
+
+----------------------------------------------------------------------
+Task 2 — variable inventory at two sample dates (near-floor and recent-pre-test)
+----------------------------------------------------------------------
+
+Sample A: gfs.20210324/12/atmos/gfs.t12z.pgrb2.0p25.f024
+  (12z cycle, 24h fcst -> valid 2021-03-25 12:00 UTC; one day after the project's
+   established forecast-archive floor of 2021-03-24 00:00 UTC, SPEC 3.2)
+
+Sample B: gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024
+  (12z cycle, 24h fcst -> valid 2025-06-12 12:00 UTC; < 2025-08-01, outside the
+   sealed test year per SPEC 3.3's from-Dubbo-onward convention)
+
+$ grep -i "TCDC:entire atmosphere:24 hour" gfs.20210324.t12z.f024.idx
+636:456824705:d=2021032412:TCDC:entire atmosphere:24 hour fcst:
+
+$ grep -i "TCDC:entire atmosphere:24 hour" gfs.20250611.t12z.f024.idx
+636:458689927:d=2025061112:TCDC:entire atmosphere:24 hour fcst:
+
+$ grep -i "GRD:10 m above ground" gfs.20210324.t12z.f024.idx
+588:432608986:d=2021032412:UGRD:10 m above ground:24 hour fcst:
+589:433571251:d=2021032412:VGRD:10 m above ground:24 hour fcst:
+
+$ grep -i "GRD:10 m above ground" gfs.20250611.t12z.f024.idx
+588:433948920:d=2025061112:UGRD:10 m above ground:24 hour fcst:
+589:434933261:d=2025061112:VGRD:10 m above ground:24 hour fcst:
+
+RESULT: identical variable/level/step labels at both dates, same relative
+position in the file (line 588/589/636 in both). Total cloud cover
+(TCDC:entire atmosphere) and both 10 m wind components (UGRD, VGRD:10 m above
+ground) are present at both the near-floor and the recent date, at a 24 hour
+forecast step.
+
+----------------------------------------------------------------------
+Task 2b — confirm the messages are real, decodable GRIB2 (not corrupted or
+placeholder) via HTTP byte-range extraction, using the .idx byte offsets —
+no full-file download, no decode library
+----------------------------------------------------------------------
+
+$ URL=".../gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024"
+$ curl -sf -r 433948920-434933260 "$URL" -o ugrd10m_sample.grib2   # UGRD 10m
+$ curl -sf -r 434933261-435894649 "$URL" -o vgrd10m_sample.grib2   # VGRD 10m
+$ curl -sf -r 458689927-459519155 "$URL" -o tcdc_sample.grib2      # TCDC entire atmos
+
+$ xxd -l 8 ugrd10m_sample.grib2   ->  47 52 49 42 00 00 00 02   "GRIB...."
+$ tail -c 8 ugrd10m_sample.grib2 | xxd -> ... 37 37 37 37       "....7777"
+$ xxd -l 8 vgrd10m_sample.grib2   ->  47 52 49 42 00 00 00 02   "GRIB...."
+$ tail -c 8 vgrd10m_sample.grib2 | xxd -> ... 37 37 37 37       "....7777"
+$ xxd -l 8 tcdc_sample.grib2      ->  47 52 49 42 00 00 00 02   "GRIB...."
+$ tail -c 8 tcdc_sample.grib2 | xxd -> ... 37 37 37 37          "....7777"
+
+Sizes: ugrd10m_sample.grib2 984,341 B; vgrd10m_sample.grib2 961,389 B;
+tcdc_sample.grib2 829,229 B (each ~0.03% of the ~514 MB whole-file f000 size,
+i.e. one message out of ~700 in the file).
+
+RESULT: all three extracted messages start with the GRIB2 magic marker and
+end with the "7777" end-of-message marker required by the GRIB2 standard —
+each is a complete, well-formed, individually-addressable GRIB2 record, not
+a truncated or corrupted fragment. This also demonstrates the byte-range
+technique itself: a single point-value pull needs only the ~0.8-1.0 MB
+message, not the ~500+ MB whole file (see Task 3).
+
+----------------------------------------------------------------------
+Task 3a — grid-alignment check: does the existing SPEC 3.4 gfs_global grid
+point line up with the standard regular 0.25 deg pgrb2.0p25 grid?
+----------------------------------------------------------------------
+
+Standard pgrb2.0p25 grid points fall on exact multiples of 0.25 deg
+(0, 0.25, 0.50, ... for both lat and lon). Checked each airport's already-
+established grid point (SPEC 3.4) against that:
+
+  EGLC  51.487137, 0.0          lat remainder from nearest 0.25 mult: 0.0129 deg (not aligned)
+  LFPG  49.027008, 2.578125     lat remainder: 0.0270 deg (not aligned); lon is an exact
+                                 multiple of 1/64 deg (2.578125 = 165/64), not of 0.25
+  DSM   41.52945, -93.63281     lat remainder: 0.0295 deg (not aligned); lon not aligned
+  YSDU  -32.274643, 148.59375   lat remainder: 0.0246 deg (not aligned); lon is an exact
+                                 multiple of 1/32 deg (148.59375 = 4755/32), not of 0.25
+  RNO   39.537918, -119.765625  lat remainder: 0.0379 deg (not aligned); lon is an exact
+                                 multiple of 1/64 deg (-119.765625 = -7665/64), not of 0.25
+
+RESULT: none of the five established grid points sit on the standard regular
+0.25 deg grid the public pgrb2.0p25 product uses, and the two that land on a
+clean fraction at all land on DIFFERENT fractions (1/32 at YSDU, 1/64 at RNO)
+— the signature of a reduced/native model grid whose longitude spacing varies
+with latitude, not of the plain regular output grid. See Task 3 discussion.
+
+----------------------------------------------------------------------
+What this session did not do, on purpose
+----------------------------------------------------------------------
+No .grib2 file was downloaded in full (only single-message byte ranges, each
+under 1 MB). No decode library (wgrib2/pygrib/cfgrib) was installed or run —
+confirmed absent from this environment (checked, not assumed):
+  $ which wgrib2            -> not found
+  $ python3 -c "import pygrib"   -> ModuleNotFoundError
+  $ python3 -c "import cfgrib"   -> ModuleNotFoundError
+No date range was scanned (only two single dates: 2021-03-24 and 2025-06-11,
+both outside the sealed test year 2025-08-01 to 2026-07-31). No join, fit,
+model, or evaluation of any kind was performed. SPEC.md and RESULTS.md were
+not modified. Nothing was committed.

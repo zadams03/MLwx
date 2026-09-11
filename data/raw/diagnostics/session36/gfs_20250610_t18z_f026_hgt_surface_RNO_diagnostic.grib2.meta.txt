@@ -1,0 +1,9 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250610/18/atmos/gfs.t18z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250610/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx
+byte range requested: 421979749-422472191
+variable: HGT:surface (model terrain elevation), forecast hour f026, cycle 18z, run date 2025-06-10
+purpose: ad hoc diagnostic, not part of Task 3's planned sample -- pulled after
+  Task 5's RNO reproduction check failed with a systematic ~-2.04 degC bias,
+  to check whether the raw GRIB grid's own terrain elevation near Reno's
+  established grid point explains it (it does -- see DECISIONS F89).
+pulled (UTC): 2026-09-11T09:03:02Z

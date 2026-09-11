@@ -1,0 +1,8 @@
+Source: NOAA NODD GFS bucket (AWS S3, noaa-gfs-bdp-pds), public, no credentials
+URL: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024
+Query: HTTP GET with byte-range header (Range: bytes=434933261-435894649), per the message
+       offset given by the file's own .idx inventory (see gfs.20250611.t12z.f024.idx)
+Pull time (UTC): 2026-09-11T07:51:xxZ (session 35)
+Purpose: single-message extraction of VGRD:10 m above ground:24 hour fcst (10 m V-wind
+         component) — same rationale as ugrd10m_sample.grib2.meta.txt. Wind speed is
+         derived from U and V (sqrt(u^2+v^2)), so both components were checked.

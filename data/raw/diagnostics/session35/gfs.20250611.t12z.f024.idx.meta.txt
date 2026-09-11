@@ -1,0 +1,7 @@
+Source: NOAA NODD GFS bucket (AWS S3, noaa-gfs-bdp-pds), public, no credentials
+URL: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx
+Query: plain HTTPS GET, no auth headers used
+Pull time (UTC): 2026-09-11T07:50:xxZ (session 35)
+Purpose: GRIB2 inventory (.idx) for the 2025-06-11 12z cycle, 24h forecast (valid 2025-06-12 12:00 UTC)
+         — the recent, pre-test-year sample date for Task 2's variable-availability check
+         (2025-06-11 < 2025-08-01, outside the sealed test year, SPEC 3.3 convention).

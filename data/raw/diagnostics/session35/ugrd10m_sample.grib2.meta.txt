@@ -1,0 +1,9 @@
+Source: NOAA NODD GFS bucket (AWS S3, noaa-gfs-bdp-pds), public, no credentials
+URL: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250611/12/atmos/gfs.t12z.pgrb2.0p25.f024
+Query: HTTP GET with byte-range header (Range: bytes=433948920-434933260), per the message
+       offset given by the file's own .idx inventory (see gfs.20250611.t12z.f024.idx)
+Pull time (UTC): 2026-09-11T07:51:xxZ (session 35)
+Purpose: single-message extraction of UGRD:10 m above ground:24 hour fcst (10 m U-wind
+         component), to confirm the message decodes as a genuine, complete GRIB2 record
+         (starts with "GRIB" magic, ends with "7777" end marker) rather than just trusting
+         the .idx label. No full file was downloaded — only this one message's byte range.

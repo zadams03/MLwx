@@ -1,0 +1,8 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210326/00/atmos/gfs.t00z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210326/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx
+byte range requested: 422852560-423724101
+variable: TMP:2 m above ground, forecast hour f026, cycle 00z, run date 2021-03-26
+used by airports (target hour, cycle+lead convention): YSDU
+pulled (UTC): 2026-09-11T08:57:53Z
+bytes saved: 871542
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

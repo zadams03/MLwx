@@ -1,0 +1,8 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210324/18/atmos/gfs.t18z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210324/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx
+byte range requested: 429357103-429869074
+variable: TMP:2 m above ground, forecast hour f026, cycle 18z, run date 2021-03-24
+used by airports (target hour, cycle+lead convention): RNO
+pulled (UTC): 2026-09-11T08:57:37Z
+bytes saved: 511972
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'
