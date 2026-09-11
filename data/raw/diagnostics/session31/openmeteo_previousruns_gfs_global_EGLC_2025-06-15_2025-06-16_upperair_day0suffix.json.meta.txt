@@ -1,0 +1,12 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_EGLC_2025-06-15_2025-06-16_upperair_day0suffix.json
+purpose     : session 31 Task 2 addendum -- test whether temperature_925hPa_previous_day0 (explicit day-0 offset, should be equivalent to the bare live-forecast series) is accepted, to isolate whether the previous_dayN offset mechanism works at all for pressure-level variables or only day1+ is rejected.
+pulled at   : 2026-09-11 10:19:07 HKT (2026-09-11 02:19:07 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&start_date=2025-06-15&end_date=2025-06-16&hourly=temperature_925hPa_previous_day0&models=gfs_global&timezone=UTC
+
+HTTP status 400.

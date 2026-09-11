@@ -1,0 +1,12 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_EGLC_2025-06-15_2025-06-16_upperair_bare_no_offset.json
+purpose     : session 31 Task 2 addendum -- test whether temperature_925hPa is accepted on this endpoint's grammar at all WITHOUT the _previous_day1 offset suffix, to isolate whether the earlier rejection was about the offset suffix specifically or about pressure-level variables being unsupported outright.
+pulled at   : 2026-09-11 10:18:42 HKT (2026-09-11 02:18:42 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&start_date=2025-06-15&end_date=2025-06-16&hourly=temperature_925hPa&models=gfs_global&timezone=UTC
+
+HTTP status 200.

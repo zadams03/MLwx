@@ -3,15 +3,48 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 9 September 2026, after session 30._
+_Last updated: 11 September 2026, after session 31._
 
 ---
 
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
-airports opened so far — four pass, one fails — and the project is now
-consolidated and current.** Session 30 was documentation-only: no code was
+airports opened so far — four pass, one fails. Session 31 was a pure
+data-availability probe for the next, not-yet-scoped richer-features phase:
+no code was joined, built, fitted or evaluated, and no airport's test year
+was touched.** It settled three things (DECISIONS F85):
+
+1. **Cloud cover, wind speed, dew point and relative humidity all start at
+   exactly the same hour, at all five airports: 2024-01-19 12:00 UTC** —
+   one hour after the shared 492-hour forecast-gap's last missing hour
+   (F8/F22/F38/F57/F75). This confirms and sharpens F7/D17's earlier,
+   coarser dating ("absent 2023-07-01, present 2024-07-01") down to the
+   hour, and shows it is the same underlying archive-build fact at every
+   airport, not a per-location coincidence.
+2. **Upper-air (925/850 hPa) temperature is NOT available in any
+   leakage-safe form.** Every `_previous_dayN`-suffixed spelling tried
+   (four casings/units at day 1, plus an explicit day-0 probe) was
+   HTTP-rejected with the same error; only the bare, no-offset form is
+   accepted, and that is the freshest-run series — the same leakage trap
+   D17 already named for plain `temperature_2m`. This is categorically
+   unavailable via the offset mechanism the project depends on for
+   leakage safety, at every date tried and at every airport, not merely a
+   recency floor the way cloud/wind is. Verdict: effectively
+   separate-source — a genuine day-ahead upper-air forecast would need a
+   different mechanism entirely.
+3. **A five-airport availability table** at a recent pre-test anchor
+   (2025-06-10 to 2025-06-12) confirms every wave-one/wave-two variable
+   fully present everywhere, and upper-air uniformly rejected everywhere.
+
+**A design question this raises for the owner, flagged rather than
+decided:** since cloud/wind-family features are free only from
+2024-01-19 onward, using them means a two-tier training window; since
+upper-air isn't available at all in a leakage-safe form, it is not a
+candidate for that design without a separate data-source effort. Nothing
+about the richer-features design was decided this session.
+
+Session 30, the session before, was documentation-only: no code was
 touched, no model was run, and no new figure was computed anywhere. It did
 three things:
 
@@ -95,10 +128,18 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   bar, in exactly the way D44.12 predicted before the test year opened.
 - Session 21: a one-time, authorised documentation restructure (settled
   material moved to DECISIONS-archive.md, nothing deleted or altered).
-- **Session 30 (this one): a documentation-only consolidation.** SPEC's
-  remaining Reno staleness cleared (D45); Q31 closed as immaterial (F83);
-  `RESULTS.md` written as a standalone technical summary of all five
-  airports (F84). No code touched, no model run, no new figure computed.
+- Session 30: a documentation-only consolidation. SPEC's remaining Reno
+  staleness cleared (D45); Q31 closed as immaterial (F83); `RESULTS.md`
+  written as a standalone technical summary of all five airports (F84). No
+  code touched, no model run, no new figure computed.
+- **Session 31 (this one): a pure data-availability probe for the
+  richer-features phase, confirming and extending F7/D17.** Cloud
+  cover/wind speed/dew point/relative humidity all start at exactly
+  2024-01-19 12:00 UTC at every airport; upper-air (925/850 hPa)
+  temperature is not available in any leakage-safe form on this
+  API/offset at any date or airport (DECISIONS F85). No model built, no
+  join, no fit, no forecast. Data saved under
+  `data/raw/diagnostics/session31/`.
 
 ## Next
 
@@ -110,22 +151,28 @@ mechanism: Reno's bias is unusually close to a persistent, near-constant
 offset that the current three features (forecast temperature, season
 sin/cos) cannot turn into more than a thin, overfit-prone signal. F81
 already named cloud cover, wind, and a genuine terrain descriptor as the
-kind of information that might be needed. The next session's job, per the
-owner's stated intent, is **data availability and experiment design for
-those richer features — not building anything yet.**
+kind of information that might be needed. Session 31 has now settled *what
+data exists and how far back* (F85): cloud cover, wind speed, dew point and
+relative humidity are free from 2024-01-19 12:00 UTC onward at every
+airport (implying a two-tier training window if used); upper-air
+temperature is not available in any leakage-safe form at all, so it is not
+a candidate for that design without a separate data-source effort or a
+static terrain-mismatch feature computed from metadata already on hand.
+**Still not started: turning this into an actual feature-set / experiment
+design.**
 
-**One item flagged this session but not fixed, since it fell outside A-1 to
-A-5's authorised scope (DECISIONS D45):** SPEC section 1's own airport list
-still reads "Reno ... stage 2, in progress" — a second, separate place from
-the SPEC 3.4 table this session's A-1 was scoped to, and it also needs
-"failed". A small, low-risk fix for a future session (or the owner, by
-hand) to make.
+**One item flagged in session 30 is now stale, not a live to-do.** Session
+30's own "Next" note said SPEC section 1's airport list still read "Reno
+... stage 2, in progress" and needed "failed". Checked this session: SPEC
+section 1 (line 33) already reads "stage 2, **failed**" — the fix has
+already happened (by the owner's hand, or a change this file did not track)
+and nothing further is needed here.
 
 **Whatever the owner decides about richer features or a further airport,
 Reno's own result stands as reported (D44.10, D44.11) — no re-run, no
 retroactive adjustment.** Q30's other branches (a second test year; stage 3,
 pooling) remain untouched and available, now alongside the richer-features
-question F82 raises.
+question F82/F85 raise.
 
 ## Open questions (live)
 

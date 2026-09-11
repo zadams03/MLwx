@@ -8839,3 +8839,184 @@ and its cited DECISIONS source would mean `RESULTS.md` is wrong, never the
 other way round.
 
 ---
+
+## 2026-09-11 — Session 31 finding: data-availability probe for the
+richer-features phase (confirms and extends F7/D17)
+
+**F85. Three findings, all from data-availability probes only — nothing was
+joined, built, fitted or evaluated this session, and every probe date is
+outside the sealed test year (SPEC 3.3, from-Dubbo-onward convention,
+F49).** The scripts are `scripts/session31_pull.py` and
+`scripts/session31_checks.py`; the full real output is
+`notes/session-31-check-output.txt` and the pull log is
+`notes/session-31-pull-output.txt`. Every response is saved untouched under
+`data/raw/diagnostics/session31/` (38 JSON files, each with a `.meta.txt`
+recording the exact query URL and UTC pull time, SPEC 2.3).
+
+**1. Cloud cover and wind speed's first real hour is pinned exactly, and it
+matches the shared archive gap's end hour to the minute — at all five
+airports, not just EGLC.**
+
+Bracketing 2023-12-20 to 2024-02-01 at EGLC (`cloud_cover_previous_day1`,
+`wind_speed_10m_previous_day1`, plus `dew_point_2m_previous_day1` and
+`relative_humidity_2m_previous_day1` co-probed in the same request, free):
+
+```
+variable                  present   null   first real hour
+cloud_cover                    324    732   2024-01-19T12:00
+wind_speed_10m                 324    732   2024-01-19T12:00
+dew_point_2m                   324    732   2024-01-19T12:00
+relative_humidity_2m           324    732   2024-01-19T12:00
+```
+
+**All four start at the exact same hour, and that hour is exactly one hour
+after the shared 492-hour forecast-gap's last missing hour** (2023-12-30
+00:00 to 2024-01-19 11:00 UTC — F8, F22, F38, F57, F75). This confirms D17's
+hypothesis (which F7 had only dated to "absent 2023-07-01, present
+2024-07-01") down to the hour: these variables do not merely become
+available "sometime in early 2024" independently of the forecast-gap — they
+switch on at precisely the hour the main temperature series resumes after
+the shared archive gap, which reads as one underlying cause (a change in
+what Open-Meteo's build process retained) rather than two coincidental
+ones.
+
+A targeted check a few days either side of that hour (2024-01-14 to
+2024-01-24, not a full re-scan) at the other four airports found the
+identical hour, with no variation:
+
+```
+station   cloud_cover   wind_speed_10m   dew_point_2m   relative_humidity_2m
+LFPG      2024-01-19T12:00  (same, all four)
+DSM       2024-01-19T12:00  (same, all four)
+YSDU      2024-01-19T12:00  (same, all four)
+RNO       2024-01-19T12:00  (same, all four)
+```
+
+**Five airports on three continents now share this start hour exactly**,
+the same shape the archive floor (F1/F20/F33/F51/F68) and the 492-hour gap
+itself (F8/F22/F38/F57/F75) already showed: a property of the Open-Meteo
+archive build, not of any one place. `dew_point_2m` and
+`relative_humidity_2m` — wave-two features, informational only this phase,
+gating nothing — share the identical start hour at every airport too.
+
+**2. Upper-air (925/850 hPa) temperature: NOT free in any form this project
+could safely use. Verdict: effectively (c) separate-source — not merely a
+recency floor the way cloud/wind is, but a variable class the
+previous-day-offset mechanism does not implement at all on this endpoint.**
+
+The variable string was genuinely uncertain, so four spellings were tried at
+EGLC (recent window, 2025-06-15/16), each its own request so one bad
+spelling could not take a good one down with it. All four were HTTP-rejected
+with the **same** verbatim reason, differing only in the variable name
+quoted back:
+
+```
+temperature_925hPa_previous_day1  -> REJECTED: "Invalid value: Cannot
+    initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay,
+    VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable>
+    from invalid String value temperature_925hPa_previous_day1"
+temperature_850hPa_previous_day1  -> REJECTED, same shape
+temperature_925hpa_previous_day1  -> REJECTED, same shape (lowercase 'hpa')
+temperature_925HPA_previous_day1  -> REJECTED, same shape (uppercase 'HPA')
+temperature_925mb_previous_day1   -> REJECTED, same shape ('mb' suffix)
+```
+
+**The identical error class across every casing and unit variant was the
+clue that the offset suffix itself, not the spelling, was the problem — so
+two follow-up probes isolated that directly, and confirmed it:**
+
+```
+temperature_925hPa                (bare, no offset)  -> ACCEPTED,
+    48/48 present, real values, grid EXACTLY matches EGLC's established
+    gfs_global grid point (51.487137, 0.0, 4.0 m — F17/session 08)
+temperature_925hPa_previous_day0  (explicit day-0)    -> REJECTED, same
+    verbatim error as every _previous_day1 spelling above
+```
+
+**Read together: pressure-level ("upper-air") temperature exists on this
+endpoint only in its bare, current-run form — the `_previous_dayN` offset
+mechanism this whole project depends on for leakage safety (SPEC 2.1b) does
+not parse for this variable class at all, not even at day 0.** The bare form
+is exactly the freshest-run series D17 already named as the leakage trap
+for plain `temperature_2m` ("On this endpoint it is the freshest-run
+series, which is the leakage trap SPEC 2.1b warns about" — D17's own words,
+quoted in `scripts/session25_pull.py`'s own comments): using it as a
+training feature would mean seeing information from at or after the run
+time, not a genuine day-ahead forecast. **So there is no way to pull a
+leakage-safe upper-air forecast from this endpoint at all, at any date.**
+
+This also answers the prompt's specific ask about reach: **the "how far
+back does it reach" question does not apply, because the offset-based
+series does not exist to have a start date.** The same rejection was
+returned at all four date-ladder points (2021-03-24, 2023-07-01,
+2024-07-01, 2025-06-10..12) at **all five airports**, EGLC included — this
+is not a case of upper-air reaching further back than cloud/wind (or less
+far); it is categorically unavailable via the mechanism cloud/wind uses,
+regardless of date.
+
+**DSM and RNO specifically, per the prompt's ask.** The bare (no-offset,
+current-run) form was also pulled at both CONUS airports, and in both cases
+the grid point returned is **exactly** the airport's already-established
+`gfs_global` grid point — DSM 41.52945/-93.63281/285.0 m (F31), RNO
+39.537918/-119.765625/1344.0 m (F66) — confirming genuinely GFS, not a
+silent CONUS-model swap of the kind F40/F69 found for `gfs_seamless`, even
+in this current-run-only form. This is offered only for completeness: since
+the bare form cannot be used without reintroducing leakage, the "genuinely
+GFS" confirmation does not make it usable.
+
+**One-line verdict: (c), separate-source — a genuine day-ahead upper-air
+forecast is not obtainable from this API/offset at all; getting one would
+need a different mechanism (the project's own forward daily archival of
+live runs, or a genuine historical-model-run source with real
+initialization timestamps), which is a real second-source engineering
+lift, not a free addition alongside cloud/wind.**
+
+**3. Five-airport availability table, recent pre-test anchor
+(2025-06-10 to 2025-06-12, `previous_day1`, all present/null counts, nothing
+filled — SPEC 2.2):**
+
+```
+variable                          EGLC          LFPG           DSM          YSDU           RNO
+temperature_2m                  72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+cloud_cover                     72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+wind_speed_10m                  72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+dew_point_2m                    72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+relative_humidity_2m            72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+temperature_925hPa            REJECTED      REJECTED      REJECTED      REJECTED      REJECTED
+temperature_850hPa            REJECTED      REJECTED      REJECTED      REJECTED      REJECTED
+```
+
+Every wave-one and wave-two variable is fully present at all five airports
+at this recent anchor — no nulls, no drops. Upper-air is uniformly rejected
+everywhere, consistent with finding 2 above: this is not a per-airport gap,
+it is the endpoint's own grammar.
+
+**A question for the owner, raised rather than decided (session 31 scope
+forbids deciding the richer-features design).** F81 named cloud cover,
+wind and a genuine terrain descriptor as the kind of information that might
+help at Reno. This session's finding narrows that: cloud cover and wind
+speed (plus dew point and relative humidity) are genuinely free from
+2024-01-19 12:00 UTC onward at every airport, which means any model using
+them needs a **two-tier training window** — a shorter window
+(2024-01-19 onward) with the richer features, alongside (or instead of) the
+existing full window without them — exactly the shape D17 already
+anticipated for stage 1's rejected extra variables, now confirmed to apply
+project-wide. **Upper-air temperature is not available in any leakage-safe
+form at all**, so it is not a candidate for that two-tier design; if the
+owner still wants terrain-descriptive information at Reno, this session's
+finding suggests either restricting richer features to the wave-one/
+wave-two set with a two-tier window, or a genuinely separate upper-air
+source (its own engineering project), or a static terrain-mismatch feature
+computed once from station/grid metadata already on hand (elevation
+difference, distance — no new pull needed). **Nothing about this was
+decided or acted on here** — it is the owner's design choice for the
+richer-features planning session (STATUS's stated next step).
+
+**What this session did not do, on purpose.** No feature matrix, model,
+join, MAE or corrected forecast of any kind was built. No airport's test
+year was touched — every probe date used is 2021-03-24, 2023-07-01,
+2024-07-01, 2024-01-14 to 2024-01-24, or 2025-06-10 to 2025-06-12, all
+`<=` 2025-07-31. `SPEC.md` and `RESULTS.md` were not modified. Nothing was
+committed.
+
+---

@@ -1,0 +1,30 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_DSM_2021-03-24_2021-03-24_upperair_ladder.json
+purpose     : session 31 - Task 2 -- how far back upper-air temperature reaches at DSM, date-ladder point 2021-03-24. Primary spelling (temperature_925hPa/850hPa_previous_day1).
+pulled at   : 2026-09-11 10:16:10 HKT (2026-09-11 02:16:10 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=41.534&longitude=-93.6531&start_date=2021-03-24&end_date=2021-03-24&hourly=temperature_925hPa_previous_day1,temperature_850hPa_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 41.534    (DSM)
+  longitude  = -93.6531
+  start_date = 2021-03-24
+  end_date   = 2021-03-24
+  hourly     = temperature_925hPa_previous_day1,temperature_850hPa_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 400.
+
+notes:
+- This is a data-availability probe only (session 31 scope). Nothing
+  here is joined, filled, fitted or evaluated. A null in this file
+  is left exactly as the API returned it (SPEC 2.2).
+- Sample-date discipline: every date this session probes is
+  <= 2025-07-31, outside the sealed test year (D13, from-Dubbo-
+  onward convention, F49). Nothing here opens any airport's test
+  year.

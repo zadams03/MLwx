@@ -1,0 +1,12 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_RNO_2025-06-15_2025-06-16_upperair_bare_no_offset.json
+purpose     : session 31 Task 2 -- confirm the bare (no previous_day offset) pressure-level request also works at RNO (a CONUS site), and confirm the grid point it returns matches the project's already-established gfs_global grid point, i.e. is genuinely GFS and not a silent CONUS-model swap (F40/F69's concern, now checked for upper-air too).
+pulled at   : 2026-09-11 10:19:42 HKT (2026-09-11 02:19:42 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=39.4839&longitude=-119.7711&start_date=2025-06-15&end_date=2025-06-16&hourly=temperature_925hPa,temperature_850hPa&models=gfs_global&timezone=UTC
+
+HTTP status 200.

@@ -1,0 +1,141 @@
+
+==============================================================================
+TASK 1 -- cloud/wind/dewpoint/humidity: first real hour, EGLC bracket
+==============================================================================
+cloud_cover              bracket 2023-12-20..2024-02-01: 324 present, 732 null, first real hour = 2024-01-19T12:00
+wind_speed_10m           bracket 2023-12-20..2024-02-01: 324 present, 732 null, first real hour = 2024-01-19T12:00
+dew_point_2m             bracket 2023-12-20..2024-02-01: 324 present, 732 null, first real hour = 2024-01-19T12:00
+relative_humidity_2m     bracket 2023-12-20..2024-02-01: 324 present, 732 null, first real hour = 2024-01-19T12:00
+
+cloud_cover: first real hour = 2024-01-19T12:00  ->  MATCHES the gap-end hypothesis exactly
+wind_speed_10m: first real hour = 2024-01-19T12:00  ->  MATCHES the gap-end hypothesis exactly
+
+dew_point_2m and relative_humidity_2m are wave-two features (informational only, gate nothing this phase) -- their own first real hours are printed above for the record.
+
+==============================================================================
+TASK 1 -- targeted check at the other four airports
+==============================================================================
+
+LFPG (window 2024-01-14..2024-01-24):
+  cloud_cover              132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  wind_speed_10m           132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  dew_point_2m             132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  relative_humidity_2m     132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+
+DSM (window 2024-01-14..2024-01-24):
+  cloud_cover              132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  wind_speed_10m           132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  dew_point_2m             132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  relative_humidity_2m     132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+
+YSDU (window 2024-01-14..2024-01-24):
+  cloud_cover              132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  wind_speed_10m           132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  dew_point_2m             132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  relative_humidity_2m     132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+
+RNO (window 2024-01-14..2024-01-24):
+  cloud_cover              132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  wind_speed_10m           132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  dew_point_2m             132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+  relative_humidity_2m     132 present, 132 null, first real hour in this window = 2024-01-19T12:00
+
+==============================================================================
+TASK 2 -- upper-air temperature: spelling probe at EGLC
+==============================================================================
+
+spelling: primary (Open-Meteo docs casing convention)  (temperature_925hPa, temperature_850hPa_previous_day1)
+  HTTP-REJECTED. Verbatim reason: 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+spelling: lowercase 'hpa'  (temperature_925hpa_previous_day1)
+  HTTP-REJECTED. Verbatim reason: 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hpa_previous_day1'
+
+spelling: uppercase 'HPA'  (temperature_925HPA_previous_day1)
+  HTTP-REJECTED. Verbatim reason: 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925HPA_previous_day1'
+
+spelling: 'mb' unit suffix  (temperature_925mb_previous_day1)
+  HTTP-REJECTED. Verbatim reason: 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925mb_previous_day1'
+
+==============================================================================
+TASK 2 -- verdict on spelling
+==============================================================================
+No candidate spelling with a _previous_dayN offset suffix returned real values at EGLC -- all four are HTTP-rejected, verbatim, above.
+
+==============================================================================
+TASK 2 -- addendum: does the offset suffix work AT ALL for pressure-level variables? (isolates why every spelling above was rejected)
+==============================================================================
+Two follow-up probes, run after the spelling rejections above, to find out whether the _previous_dayN mechanism applies to pressure-level ('SurfacePressureAndHeightVariable') variables at all, or only to day1+.
+
+Probe A -- the BARE variable name, no offset suffix at all (temperature_925hPa, EGLC):
+  ACCEPTED: 48 present / 0 null of 48. generationtime_ms=13.136148452758789. grid: lat=51.487137, lon=0.0, elev=4.0  vs known gfs_global grid (51.487137, 0.0, 4.0)  -> MATCHES (genuine gfs_global grid point)
+  This is the FRESHEST-RUN series (no day-ahead offset applied) -- the same leakage trap D17 already named for the plain temperature_2m variable (SPEC 2.1b): using it as a training feature would use information from AFTER the valid time, not a genuine forecast made a day ahead.
+
+Probe B -- explicit _previous_day0 suffix (should be equivalent to the bare form if the offset mechanism works at all for this variable class, EGLC):
+  REJECTED, verbatim -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day0'
+
+VERDICT of the addendum: the _previous_dayN offset mechanism does not parse AT ALL for pressure-level temperature on this endpoint -- not even _previous_day0 is accepted, so this is not a 'day1+ only' restriction the way cloud/wind's archive-start date is. The variable exists on this endpoint's URL only in its bare, current-run form.
+
+==============================================================================
+TASK 2 -- bare (no-offset) form confirmed at DSM and RNO too, same grid point as the project's existing gfs_global data
+==============================================================================
+
+DSM:
+  grid point: lat=41.52945, lon=-93.63281, elev=285.0  vs known gfs_global grid (41.52945, -93.63281, 285.0)  -> MATCHES (genuine gfs_global grid point)
+  temperature_925hPa: 48 present / 0 null of 48
+  temperature_850hPa: 48 present / 0 null of 48
+
+RNO:
+  grid point: lat=39.537918, lon=-119.765625, elev=1344.0  vs known gfs_global grid (39.537918, -119.765625, 1344.0)  -> MATCHES (genuine gfs_global grid point)
+  temperature_925hPa: 48 present / 0 null of 48
+  temperature_850hPa: 48 present / 0 null of 48
+
+Both CONUS airports return the bare-form pressure-level data at EXACTLY their already-established gfs_global grid point (F31 for DSM, F66 for RNO) -- confirming genuinely GFS, not a silent CONUS-model swap, even in this current-run-only form.
+
+==============================================================================
+TASK 2 -- how far back (date ladder, all five airports, primary spelling)
+==============================================================================
+
+EGLC:
+  2021-03-24: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2023-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2024-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2025-06-10..12 (anchor): REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+LFPG:
+  2021-03-24: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2023-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2024-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2025-06-10..12 (anchor): REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+DSM:
+  2021-03-24: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2023-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2024-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2025-06-10..12 (anchor): REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+YSDU:
+  2021-03-24: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2023-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2024-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2025-06-10..12 (anchor): REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+RNO:
+  2021-03-24: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2023-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2024-07-01: REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+  2025-06-10..12 (anchor): REJECTED -- 'Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<ForecastPressureVariable>, ForecastHeightVariable> from invalid String value temperature_925hPa_previous_day1'
+
+==============================================================================
+TASK 3 -- five-airport availability table (anchor 2025-06-10..12)
+==============================================================================
+variable                          EGLC          LFPG           DSM          YSDU           RNO
+----------------------------------------------------------------------------------------------
+temperature_2m                  72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+cloud_cover                     72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+wind_speed_10m                  72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+dew_point_2m                    72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+relative_humidity_2m            72p/0n        72p/0n        72p/0n        72p/0n        72p/0n
+temperature_925hPa            REJECTED      REJECTED      REJECTED      REJECTED      REJECTED
+temperature_850hPa            REJECTED      REJECTED      REJECTED      REJECTED      REJECTED
+
+p = present (non-null), n = null. 'REJECTED' = HTTP-rejected variable name. 'absent' = request accepted but this key never appeared in the response.

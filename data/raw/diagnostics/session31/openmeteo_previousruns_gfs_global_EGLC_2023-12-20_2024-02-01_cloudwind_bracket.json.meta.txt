@@ -1,0 +1,30 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_EGLC_2023-12-20_2024-02-01_cloudwind_bracket.json
+purpose     : session 31 - Task 1 -- pin cloud_cover/wind_speed_10m's first real hour to the day at EGLC, bracketing the ~2024-01-19 hypothesis (F7/D17). dew_point_2m and relative_humidity_2m co-probed as wave-two features -- informational only, gates nothing this phase.
+pulled at   : 2026-09-11 10:15:08 HKT (2026-09-11 02:15:08 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&start_date=2023-12-20&end_date=2024-02-01&hourly=cloud_cover_previous_day1,wind_speed_10m_previous_day1,dew_point_2m_previous_day1,relative_humidity_2m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 51.5053    (EGLC)
+  longitude  = 0.0553
+  start_date = 2023-12-20
+  end_date   = 2024-02-01
+  hourly     = cloud_cover_previous_day1,wind_speed_10m_previous_day1,dew_point_2m_previous_day1,relative_humidity_2m_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 200.
+
+notes:
+- This is a data-availability probe only (session 31 scope). Nothing
+  here is joined, filled, fitted or evaluated. A null in this file
+  is left exactly as the API returned it (SPEC 2.2).
+- Sample-date discipline: every date this session probes is
+  <= 2025-07-31, outside the sealed test year (D13, from-Dubbo-
+  onward convention, F49). Nothing here opens any airport's test
+  year.
