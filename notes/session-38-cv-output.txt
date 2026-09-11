@@ -1,0 +1,328 @@
+
+==============================================================================
+SESSION 38 TASK 3/5 -- seasonal blocked cross-validation, FULL v16 window, GRIB source throughout. SEALED TEST NOT OPENED.
+==============================================================================
+run at        : 2026-09-12 00:15:48 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+CV window     : 2021-03-24 to 2025-07-31 (1591 days)
+sealed test   : 2025-08-01 onward -- NOT LOADED
+blocks (17): B01 [2021-03-24..2021-06-25, 94d], B02 [2021-06-26..2021-09-27, 94d], B03 [2021-09-28..2021-12-30, 94d], B04 [2021-12-31..2022-04-03, 94d], B05 [2022-04-04..2022-07-06, 94d], B06 [2022-07-07..2022-10-08, 94d], B07 [2022-10-09..2023-01-10, 94d], B08 [2023-01-11..2023-04-14, 94d], B09 [2023-04-15..2023-07-17, 94d], B10 [2023-07-18..2023-10-19, 94d], B11 [2023-10-20..2024-01-20, 93d], B12 [2024-01-21..2024-04-22, 93d], B13 [2024-04-23..2024-07-24, 93d], B14 [2024-07-25..2024-10-25, 93d], B15 [2024-10-26..2025-01-26, 93d], B16 [2025-01-27..2025-04-29, 93d], B17 [2025-04-30..2025-07-31, 93d]
+model settings (identical for both fitted models, D21.4): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+3-feature set: ['forecast_temp_c', 'season_sin', 'season_cos']
+5-feature set: ['forecast_temp_c', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m']
+
+==============================================================================
+EGLC -- target hour 12:00 UTC (SPEC 3.4), GRIB source throughout
+==============================================================================
+
+-- rows kept per block (Task 2's join, this airport) --
+    rows kept: 1589 of 1591 window days
+    B01=94, B02=94, B03=94, B04=94, B05=94, B06=94, B07=94, B08=94, B09=93, B10=94, B11=93, B12=93, B13=93, B14=92, B15=93, B16=93, B17=93
+
+-- per-block MAE (degC), four rungs --
+    block    Raw GFS (GRIB)      + mean-bias        3-feature        5-feature
+    B01               1.233            1.261            1.304            1.175
+    B02               1.397            1.366            1.173            1.269
+    B03               1.001            1.036            1.050            0.935
+    B04               0.999            1.064            1.015            0.938
+    B05               1.266            1.257            1.208            1.152
+    B06               1.439            1.372            1.212            1.158
+    B07               0.980            1.048            0.974            0.948
+    B08               1.155            1.204            1.178            1.076
+    B09               1.528            1.506            1.442            1.453
+    B10               1.000            0.955            0.916            0.918
+    B11               0.803            0.905            0.736            0.662
+    B12               0.894            0.971            0.853            0.817
+    B13               1.397            1.365            1.335            1.308
+    B14               1.183            1.150            1.015            1.023
+    B15               1.113            1.110            1.214            1.040
+    B16               1.100            1.109            1.146            1.062
+    B17               1.521            1.486            1.223            1.212
+
+-- pooled out-of-fold MAE and skill vs raw GFS (GRIB) -- the headline --
+    rung              MAE degC   skill vs raw GFS   n days
+    Raw GFS (GRIB)       1.177               0.0%     1589
+    + mean-bias          1.186              -0.8%     1589
+    3-feature            1.117               5.0%     1589
+    5-feature            1.067               9.3%     1589
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 1586 of 1589
+    dropped (no previous-day observation): 3
+    Persistence MAE: 2.045 degC (n=1586)
+    Raw GFS (GRIB) MAE on that same subset: 1.176 degC (for comparability with the persistence figure above)
+
+-- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 25424 train-rows-across-folds) = 0.894   out-of-fold (pooled, 1589 rows) = 1.117   gap = +0.224
+    5-feature    in-sample (pooled, 25424 train-rows-across-folds) = 0.802   out-of-fold (pooled, 1589 rows) = 1.067   gap = +0.266
+
+-- 5-feature importances, averaged across the 17 folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               29.1%        950.5
+    season_sin                    16.8%        824.7
+    season_cos                    15.0%        751.9
+    cloud_cover                   14.2%        637.9
+    wind_speed_10m                24.8%       1035.1
+
+==============================================================================
+LFPG -- target hour 12:00 UTC (SPEC 3.4), GRIB source throughout
+==============================================================================
+
+-- rows kept per block (Task 2's join, this airport) --
+    rows kept: 1589 of 1591 window days
+    B01=94, B02=94, B03=94, B04=94, B05=94, B06=92, B07=94, B08=94, B09=94, B10=94, B11=93, B12=93, B13=93, B14=93, B15=93, B16=93, B17=93
+
+-- per-block MAE (degC), four rungs --
+    block    Raw GFS (GRIB)      + mean-bias        3-feature        5-feature
+    B01               1.147            1.193            1.095            1.063
+    B02               1.439            1.426            1.430            1.342
+    B03               0.998            0.991            0.977            0.975
+    B04               1.255            1.295            1.159            1.208
+    B05               0.953            0.982            0.874            0.924
+    B06               1.514            1.507            1.292            1.310
+    B07               1.185            1.177            1.181            1.048
+    B08               1.079            1.096            1.117            0.981
+    B09               1.428            1.462            1.351            1.377
+    B10               1.249            1.228            1.254            1.201
+    B11               1.012            1.017            1.045            1.027
+    B12               1.147            1.202            1.059            1.087
+    B13               1.472            1.538            1.368            1.395
+    B14               1.141            1.127            1.329            1.307
+    B15               1.775            1.768            1.703            1.699
+    B16               1.258            1.265            1.427            1.270
+    B17               1.472            1.472            1.145            1.169
+
+-- pooled out-of-fold MAE and skill vs raw GFS (GRIB) -- the headline --
+    rung              MAE degC   skill vs raw GFS   n days
+    Raw GFS (GRIB)       1.266               0.0%     1589
+    + mean-bias          1.279              -1.0%     1589
+    3-feature            1.223               3.3%     1589
+    5-feature            1.199               5.3%     1589
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 1586 of 1589
+    dropped (no previous-day observation): 3
+    Persistence MAE: 2.328 degC (n=1586)
+    Raw GFS (GRIB) MAE on that same subset: 1.264 degC (for comparability with the persistence figure above)
+
+-- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 25424 train-rows-across-folds) = 0.968   out-of-fold (pooled, 1589 rows) = 1.223   gap = +0.256
+    5-feature    in-sample (pooled, 25424 train-rows-across-folds) = 0.877   out-of-fold (pooled, 1589 rows) = 1.199   gap = +0.322
+
+-- 5-feature importances, averaged across the 17 folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               26.6%       1033.9
+    season_sin                    21.7%        729.8
+    season_cos                    16.1%        748.4
+    cloud_cover                   17.3%        770.1
+    wind_speed_10m                18.2%        917.9
+
+==============================================================================
+DSM -- target hour 18:00 UTC (SPEC 3.4), GRIB source throughout
+==============================================================================
+
+-- rows kept per block (Task 2's join, this airport) --
+    rows kept: 1590 of 1591 window days
+    B01=94, B02=94, B03=94, B04=94, B05=94, B06=94, B07=93, B08=94, B09=94, B10=94, B11=93, B12=93, B13=93, B14=93, B15=93, B16=93, B17=93
+
+-- per-block MAE (degC), four rungs --
+    block    Raw GFS (GRIB)      + mean-bias        3-feature        5-feature
+    B01               2.048            2.244            1.502            1.511
+    B02               1.743            1.712            1.827            1.786
+    B03               1.222            1.170            1.128            1.088
+    B04               1.675            1.633            1.499            1.488
+    B05               1.974            2.072            1.780            1.689
+    B06               2.766            2.697            1.527            1.502
+    B07               1.703            1.617            1.570            1.550
+    B08               1.575            1.571            1.586            1.505
+    B09               2.090            2.228            1.736            1.762
+    B10               2.908            2.856            1.764            1.824
+    B11               1.222            1.194            1.259            1.268
+    B12               1.672            1.796            1.422            1.514
+    B13               2.595            2.898            1.717            1.695
+    B14               1.928            1.863            1.423            1.451
+    B15               1.665            1.587            1.277            1.300
+    B16               1.644            1.669            1.593            1.559
+    B17               1.646            1.765            1.526            1.575
+
+-- pooled out-of-fold MAE and skill vs raw GFS (GRIB) -- the headline --
+    rung              MAE degC   skill vs raw GFS   n days
+    Raw GFS (GRIB)       1.887               0.0%     1590
+    + mean-bias          1.916              -1.5%     1590
+    3-feature            1.538              18.5%     1590
+    5-feature            1.534              18.7%     1590
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 1589 of 1590
+    dropped (no previous-day observation): 1
+    Persistence MAE: 4.001 degC (n=1589)
+    Raw GFS (GRIB) MAE on that same subset: 1.888 degC (for comparability with the persistence figure above)
+
+-- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 25440 train-rows-across-folds) = 1.201   out-of-fold (pooled, 1590 rows) = 1.538   gap = +0.337
+    5-feature    in-sample (pooled, 25440 train-rows-across-folds) = 1.105   out-of-fold (pooled, 1590 rows) = 1.534   gap = +0.429
+
+-- 5-feature importances, averaged across the 17 folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               30.9%       1142.4
+    season_sin                    26.7%        836.9
+    season_cos                    14.4%        631.1
+    cloud_cover                   12.6%        647.7
+    wind_speed_10m                15.4%        941.8
+
+==============================================================================
+YSDU -- target hour 02:00 UTC (SPEC 3.4), GRIB source throughout
+==============================================================================
+
+-- rows kept per block (Task 2's join, this airport) --
+    rows kept: 1573 of 1591 window days
+    B01=94, B02=94, B03=94, B04=94, B05=94, B06=92, B07=88, B08=93, B09=93, B10=94, B11=93, B12=92, B13=91, B14=92, B15=91, B16=92, B17=92
+
+-- per-block MAE (degC), four rungs --
+    block    Raw GFS (GRIB)      + mean-bias        3-feature        5-feature
+    B01               1.082            1.273            1.158            1.135
+    B02               1.472            1.647            1.567            1.559
+    B03               2.018            1.926            1.564            1.521
+    B04               1.584            1.473            1.160            1.141
+    B05               1.094            1.178            1.142            1.129
+    B06               1.123            1.278            1.113            0.986
+    B07               1.255            1.248            1.144            1.107
+    B08               1.224            1.120            1.102            0.992
+    B09               1.025            1.054            1.151            1.101
+    B10               0.987            0.932            1.004            0.987
+    B11               1.608            1.466            1.093            1.022
+    B12               1.435            1.320            1.254            1.191
+    B13               1.291            1.284            1.319            1.192
+    B14               1.362            1.264            1.257            1.250
+    B15               1.857            1.712            1.287            1.252
+    B16               1.456            1.464            1.583            1.560
+    B17               1.212            1.245            1.175            1.183
+
+-- pooled out-of-fold MAE and skill vs raw GFS (GRIB) -- the headline --
+    rung              MAE degC   skill vs raw GFS   n days
+    Raw GFS (GRIB)       1.358               0.0%     1573
+    + mean-bias          1.346               0.8%     1573
+    3-feature            1.240               8.7%     1573
+    5-feature            1.195              12.0%     1573
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 1558 of 1573
+    dropped (no previous-day observation): 15
+    Persistence MAE: 2.413 degC (n=1558)
+    Raw GFS (GRIB) MAE on that same subset: 1.355 degC (for comparability with the persistence figure above)
+
+-- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 25168 train-rows-across-folds) = 0.999   out-of-fold (pooled, 1573 rows) = 1.240   gap = +0.240
+    5-feature    in-sample (pooled, 25168 train-rows-across-folds) = 0.890   out-of-fold (pooled, 1573 rows) = 1.195   gap = +0.305
+
+-- 5-feature importances, averaged across the 17 folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               31.1%        954.7
+    season_sin                    17.4%        767.6
+    season_cos                    17.0%        838.4
+    cloud_cover                   13.2%        622.9
+    wind_speed_10m                21.2%       1016.4
+
+==============================================================================
+RNO -- target hour 20:00 UTC (SPEC 3.4), GRIB source throughout
+==============================================================================
+
+-- rows kept per block (Task 2's join, this airport) --
+    rows kept: 1587 of 1591 window days
+    B01=92, B02=94, B03=94, B04=94, B05=94, B06=94, B07=93, B08=94, B09=94, B10=94, B11=93, B12=92, B13=93, B14=93, B15=93, B16=93, B17=93
+
+-- per-block MAE (degC), four rungs --
+    block    Raw GFS (GRIB)      + mean-bias        3-feature        5-feature
+    B01               1.149            1.044            0.989            0.981
+    B02               0.953            1.050            1.052            1.071
+    B03               2.014            2.097            1.781            1.723
+    B04               1.500            1.452            1.270            1.342
+    B05               1.309            1.214            1.117            1.076
+    B06               1.024            0.936            1.169            1.195
+    B07               1.697            1.711            1.675            1.489
+    B08               1.950            1.869            1.743            1.558
+    B09               1.466            1.337            1.043            0.998
+    B10               1.109            1.044            1.216            1.237
+    B11               1.925            1.989            2.038            1.718
+    B12               1.691            1.577            1.455            1.202
+    B13               1.062            0.951            0.887            0.870
+    B14               1.111            1.251            1.189            1.102
+    B15               2.624            2.705            2.416            2.022
+    B16               1.766            1.660            1.646            1.480
+    B17               0.869            0.852            0.967            0.953
+
+-- pooled out-of-fold MAE and skill vs raw GFS (GRIB) -- the headline --
+    rung              MAE degC   skill vs raw GFS   n days
+    Raw GFS (GRIB)       1.483               0.0%     1587
+    + mean-bias          1.455               1.9%     1587
+    3-feature            1.391               6.2%     1587
+    5-feature            1.295              12.7%     1587
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 1584 of 1587
+    dropped (no previous-day observation): 3
+    Persistence MAE: 2.681 degC (n=1584)
+    Raw GFS (GRIB) MAE on that same subset: 1.484 degC (for comparability with the persistence figure above)
+
+-- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 25392 train-rows-across-folds) = 1.095   out-of-fold (pooled, 1587 rows) = 1.391   gap = +0.296
+    5-feature    in-sample (pooled, 25392 train-rows-across-folds) = 0.929   out-of-fold (pooled, 1587 rows) = 1.295   gap = +0.367
+
+-- 5-feature importances, averaged across the 17 folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               21.1%        964.1
+    season_sin                    22.3%        692.9
+    season_cos                    17.7%        801.5
+    cloud_cover                   14.1%        637.5
+    wind_speed_10m                24.9%       1104.0
+
+==============================================================================
+Task 5 -- headline reads (report, do NOT decide)
+==============================================================================
+
+-- does 5-feature beat 3-feature out-of-fold, and does 3-feature (and 5-feature) beat raw GFS (GRIB), on the full window? --
+    airport    raw GFS    3-feat    5-feat  3 beats raw?  5 beats 3?  5 beats raw?
+    EGLC         1.177     1.117     1.067           YES         YES           YES
+    LFPG         1.266     1.223     1.199           YES         YES           YES
+    DSM          1.887     1.538     1.534           YES         YES           YES
+    YSDU         1.358     1.240     1.195           YES         YES           YES
+    RNO          1.483     1.391     1.295           YES         YES           YES
+    3-feature beats raw GFS (GRIB) at 5 of 5 airports (F87, 1.5-year Open-Meteo window: 4 of 5)
+    5-feature beats 3-feature at 5 of 5 airports (F87: 4 of 5)
+    5-feature beats raw GFS (GRIB) at 5 of 5 airports (F87: 4 of 5)
+
+-- overfit gap summary, all airports --
+    airport   3-feat gap  5-feat gap
+    EGLC          +0.224      +0.266
+    LFPG          +0.256      +0.322
+    DSM           +0.337      +0.429
+    YSDU          +0.240      +0.305
+    RNO           +0.296      +0.367
+
+-- LFPG specifically -- does the full window recover it? --
+    LFPG raw GFS (GRIB) pooled OOF MAE : 1.266
+    LFPG 3-feature pooled OOF MAE      : 1.223  (beats raw GFS: YES)
+    LFPG 5-feature pooled OOF MAE      : 1.199  (beats 3-feature: YES; beats raw GFS: YES)
+    context: on the 1.5-year Open-Meteo window (F87), LFPG's 3-feature model was the one airport that still lost to raw GFS (-7.7%), and 5-feature narrowed but did not close that loss (-2.1%).
+
+-- Reno specifically -- does the short-window rescue signal hold on the full window? (the headline question for the whole richer-features phase) --
+    RNO raw GFS (GRIB) pooled OOF MAE : 1.483
+    RNO 3-feature pooled OOF MAE      : 1.391  (beats raw GFS: YES)
+    RNO 5-feature pooled OOF MAE      : 1.295  (beats 3-feature: YES; beats raw GFS: YES)
+    RNO 5-feature cloud_cover gain share  : 14.1%
+    RNO 5-feature wind_speed_10m gain share: 24.9%
+    context: F87 (1.5-year Open-Meteo window) found 5-feature beat both 3-feature (+3.8% skill) and raw GFS (+7.3% skill) at Reno -- the scout's own short window (F86) had found no such rescue. This is the same question asked again on the full 4.4-year GRIB window.
+
+-- one-line synthesis (report only, the owner decides) --
+    3-feature beats raw GFS (GRIB) at 5 of 5 airports on the full ~4.4-year window (F87's 1.5-year window: 4 of 5).
+    5-feature beats 3-feature at 5 of 5 and beats raw GFS (GRIB) at 5 of 5 airports.
+    Whether this is now enough evidence to lock the richer method, and on which window, is flagged for the owner in the DECISIONS finding, not decided here.
+Wrote CV summary table: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session38_cv_summary.csv
+
+==============================================================================
+END
+==============================================================================
+Input file untouched (read-only). No forecast or observation date on or after 2025-08-01 was loaded, printed, averaged or fitted on, at any airport or fold. No recipe was locked. Nothing was committed.
+This output is saved at notes/session-38-cv-output.txt

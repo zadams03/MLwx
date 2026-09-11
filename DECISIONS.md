@@ -874,151 +874,13 @@ every prior change by hand.
 
 ---
 
-## 2026-09-11 — Session 35 finding: GFS GRIB source feasibility probe
-(availability-and-cost only, no build, no pipeline)
-
-**F88. Verdict: GO-COSTLY.** A real, credential-free, deep GFS forecast GRIB2
-archive exists and was directly confirmed to carry both needed variables
-(total cloud cover, 10 m wind) back to the project's own archive floor — but
-aligning it to the existing pipeline carries real, concrete costs beyond
-"pull and join." Nothing was built, joined, fitted, or evaluated. No sample
-came from inside the sealed test year (2025-08-01 to 2026-07-31); the two
-dates sampled are 2021-03-24 (one day after the archive floor) and
-2025-06-11. Full real output is `notes/session-35-check-output.txt`; every
-sample file is saved untouched under `data/raw/diagnostics/session35/` with
-a `.meta.txt` per file (SPEC 2.3).
-
-**Task 1 — candidate sources, compared:**
-
-| source | earliest forecast date found | needed variables | lead hours / cycles | access | credentials |
-|---|---|---|---|---|---|
-| AWS S3 `noaa-gfs-bdp-pds` (NODD) | confirmed back to at least 2021-03-24 (this session's direct probe) | yes — confirmed by inventory (Task 2) | 3-hourly to 240h, 12-hourly to 384h; 00/06/12/18z | plain HTTPS / S3 API | **none** |
-| GCS mirror `global-forecast-system` | same, confirmed same date | same (idx content identical) | same | plain HTTPS | **none** |
-| Azure NODD mirror | not confirmed — a guessed container/path 404'd; not pursued further once two working sources were in hand | unknown | unknown | unknown | unknown |
-| NCAR GDEX (formerly RDA) `ds084.1` | 2015-01-15 onward, but **sunsetting in early 2026** — NOAA is migrating this exact historical archive onto the AWS bucket above, which is why AWS now reaches back this far | same 37-variable set, incl. surface winds and cloud, per its own page | 3-hourly to 240h, 12-hourly to 384h; 00/06/12/18z | HTTPS/THREDDS; page shows a "Sign In" option | not tested — the AWS copy is credential-free and equally deep, so this was not chased further |
-| NCEI historical GFS archive | analysis from 2007; NCEI's own page states the **AWS Big Data window is "trailing 30 days"** | not confirmed at 0.25 deg — NCEI's deeper holdings are often lower-res (0.5/1 deg) | varies | HTTPS | none stated |
-| NOMADS live server | rolling 2 days-2 weeks only | n/a, too recent | n/a | HTTPS | none |
-
-**The single most important Task 1 finding is a correction of a secondary
-source by direct probe** — exactly the "verify on contact" principle SPEC
-3.3 already applies to Open-Meteo (F1, F17, F31, F49, F66), now shown to
-matter for a GRIB source too. NCEI's own page states the AWS NODD GFS bucket
-is a **"trailing 30-day window."** This session's own direct listing of
-`noaa-gfs-bdp-pds` contradicts that for the specific bucket checked: files
-for **2021-03-24** are present, at full 0.25 deg global resolution
-(~500-550 MB each), with `LastModified` timestamps from 2021 itself — not a
-30-day rolling set. This reconciles with public reporting that NOAA is
-migrating the deeper NCAR-hosted historical archive (`ds084.1`, 2015-01-15
-onward, itself sunsetting in early 2026) onto this same AWS bucket. The
-NCEI-stated 30-day figure was very likely accurate for this bucket at some
-earlier time and has since been superseded by that migration; either way,
-the only fact this project can rely on is the one checked directly, not the
-one read on a page.
-
-**Task 2 — the two needed variables, confirmed present by inventory, at
-both a near-floor date and a recent pre-test date:**
-
-```
-sample                                   TCDC:entire atmosphere   UGRD:10 m above ground   VGRD:10 m above ground
-2021-03-24 12z, 24h fcst (valid 03-25)   present (line 636)       present (line 588)       present (line 589)
-2025-06-11 12z, 24h fcst (valid 06-12)   present (line 636)       present (line 588)       present (line 589)
-```
-
-Identical variable name, level string, forecast-step label, and even line
-position in the inventory at both dates — no drift observed between them.
-**Confirmed genuinely decodable, not merely labeled**: for the 2025-06-11
-sample, the three messages' exact byte ranges (from the `.idx` offsets) were
-pulled with a single HTTP Range request each — no full-file download, no
-GRIB decode library — and each extracted message starts with the GRIB2
-magic marker (`GRIB`) and ends with the required `7777` end marker, i.e.
-each is a complete, well-formed GRIB2 record. Message sizes: TCDC 829,229 B,
-UGRD 984,341 B, VGRD 961,389 B — each about 0.15-0.2% of the ~514-550 MB
-whole multi-variable file, which is itself the key fact behind the volume
-estimate in Task 3.
-
-**Task 3 — alignment cost, the part that decides "worth it":**
-
-**1. Grid-to-point mismatch (new, not previously quantified).** The public
-`pgrb2.0p25` product is a plain **regular** 0.25 deg lat/lon grid — every
-grid point is an exact multiple of 0.25 deg. Checked against that, **none of
-the five grid points already recorded in SPEC 3.4 land on that grid**: every
-airport's grid latitude sits 0.013-0.038 deg off the nearest 0.25 deg
-multiple, and two of the five longitudes (YSDU, RNO) land on a *different*
-clean fraction each (1/32 deg at YSDU, 1/64 deg at RNO) rather than on 0.25
-deg — the signature of a native or reduced grid whose spacing varies with
-latitude, not of the plain regular output grid Open-Meteo's own point
-happens to be drawn from. Concretely, this means a raw-GRIB cloud/wind value
-read at "the GFS grid point" would come from a **different physical
-location** than the one already baked into the existing temperature column
-— a second, compounding offset on top of the grid-to-airport offset SPEC 3.4
-already documents and accepts as immaterial. This second offset has not
-been measured and is not assumed away here; a real build would need to
-either interpolate to the exact same point Open-Meteo already uses (method
-unconfirmed) or accept an unquantified new discrepancy.
-
-**2. Lead-time/cycle bookkeeping does not reduce to "always use f024."**
-SPEC 3.2 already records that Open-Meteo's `previous_day1` is not a clean
-fixed 24h lead — it sweeps roughly 24-30h across the day because GFS cycles
-only exist every 6 hours (00/06/12/18z) and Open-Meteo stitches hours 24-29
-of each cycle together. The same constraint binds a raw-GRIB build. EGLC/
-LFPG's 12:00 UTC target and DSM's 18:00 UTC target coincide with standard
-cycle hours, so a clean same-cycle `f024` is available for those. **YSDU's
-02:00 UTC and RNO's 20:00 UTC targets do not coincide with any standard
-cycle hour**, so no single cycle offers an exact 24h lead to either — the
-identical reason Open-Meteo's own lead sweeps off 24h. Reproducing Open-
-Meteo's exact per-hour cycle/lead choice (the archived F5 finding, not
-re-derived this session) or deliberately adopting a different, simpler
-convention is a real design decision a build would have to make and record
-— it is not automatic.
-
-**3. Volume/time (measured, not modeled).** One cycle+lead pull needs 3
-messages (TCDC + UGRD + VGRD) at ~0.8-1.0 MB each (~2.8 MB total),
-regardless of how many airports read it, because each message is a global
-field. But because the five airports' target hours differ (12:00, 12:00,
-18:00, 02:00, 20:00 UTC), **up to 4 distinct cycle/lead combinations are
-needed per calendar day**, not 1. Order of magnitude across the ~4.3-year
-training window (~1,570 days): roughly 4 `.idx` fetches + 12 range-GETs per
-day, ~17 GB of message data and **~25,000 HTTP requests** in total. This is
-a materially larger and more custom engineering surface than the existing
-pipeline's one-JSON-call-per-airport-per-pull Open-Meteo method (SPEC 3.2),
-and it requires a GRIB2 decoder this project's environment does not
-currently have (`wgrib2` not found; `pygrib`/`cfgrib` not installed —
-checked, not assumed) on top of the interpolation and lead-time logic in
-points 1-2.
-
-**4. Failure modes, named but not resolved.** Only two single dates were
-checked, both after GFS's FV3-based "v16" implementation (2021-03-22) — so
-both sit inside the same model-version family as the project's entire
-archive window, which is reassuring but does not rule out a later
-sub-version physics update (e.g., a mid-2023 package change) silently
-renaming a level or altering packing somewhere in 2021-2025; this was not
-scanned. Whether the AWS archive carries its own gaps analogous to Open-
-Meteo's known 492-hour gap (SPEC 3.2) is unknown and would need a bulk date
-scan this probe deliberately did not do.
-
-**One-paragraph verdict (Task 4), flagged for the owner and not decided
-here.** **GO-COSTLY.** The two variables genuinely exist, credential-free,
-on two independent clouds, confirmed by both inventory label and a real
-decoded-message check, reaching back to (at least) this project's own
-2021-03-24 archive floor — so the doubt session 33 raised, "is a deeper GFS
-GRIB source even available," is answered **yes**. But the alignment lift is
-real and stacks: an unquantified new grid-to-point offset beyond the one
-already accepted in SPEC 3.4, a lead-time/cycle-bookkeeping problem this
-project has not solved even for two of its five existing airports, a new
-GRIB2-decoding dependency absent from this environment today, and an
-order-of-magnitude ~17 GB / ~25,000-request pull-and-join effort across five
-airports and ~4.3 years — clearly more engineering than any prior
-data-acquisition session in this project undertook. **The build-vs-lock
-choice — build this GRIB pipeline to unlock the full ~4.3-year richer-
-feature window, or lock the richer method on the existing ~1.5-year window
-and carry LFPG's caveat (F87) — is the owner's, not decided here.**
-
-**What this session did not do, on purpose.** No full `.grib2` file was
-downloaded (only three single-message byte ranges, each under 1 MB). No
-decode library was installed. No date range was scanned — only the two
-single dates named above, both outside the sealed test year. No join, fit,
-model, or evaluation of any kind was performed. `SPEC.md` and `RESULTS.md`
-were not modified. Nothing was committed.
+[F88, session 35's GFS GRIB source feasibility probe (verdict: GO-COSTLY) —
+archived verbatim to DECISIONS-archive.md this session (session 38), because
+its own question — whether a deeper, credential-free GFS GRIB archive exists
+and is worth building — is now settled: sessions 36–38 built the pipeline,
+fixed its one gap (RNO elevation, F89/F90), and used it for the full-window
+richer-features CV (F91, below), superseding F88's cost-only verdict with a
+completed result. Full text preserved there and in git.]
 
 ---
 
@@ -1423,3 +1285,186 @@ overwrite any existing Open-Meteo data — `session37_decode.py` opens
 `SPEC.md` or `RESULTS.md`. Nothing was committed.
 
 **D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D15 committed raw pulls when raw meant small Open-Meteo JSON. The GRIB pull is ~20 GB, which cannot live in git (binary bloat; GitHub file and repo size limits). For large, re-fetchable public archives such as GFS GRIB, D15s immutable-provenance intent is served by committing the provenance manifest (exact queries, URLs, byte-ranges, and the drop log) plus the processed dataset, and gitignoring the raw bytes -- which are reproducible from the manifest. D15 stands unchanged for small API pulls. The ~20 GB local GRIB cache is disposable and re-fetchable.
+
+---
+
+## 2026-09-12 — Session 38 finding: GRIB build step 3 -- richer-features CV
+on the full v16 window: 5-feature beats raw GFS at 5 of 5 airports, LFPG
+recovers, Reno's rescue holds
+
+**F91. This session is step 3 of 4 of the GRIB-build sub-project (docs/
+session-38.md): diagnose the session-37 cloud-cover tail, join the
+validated GRIB feature dataset to IEM observations over the full v16 window,
+re-run the richer-features blocked CV on that full ~4.4-year window (GRIB
+source throughout), and sanity-check the source swap. Opens no sealed year,
+locks nothing.** Scripts: `scripts/session38_cloud_diagnostic.py` (Task 1),
+`scripts/session38_join.py` (Task 2), `scripts/session38_cv.py` (Tasks 3 and
+5), `scripts/session38_sanity.py` (Task 4). Full real output: `notes/
+session-38-cloud-diagnostic-output.txt`, `notes/session-38-join-output.txt`,
+`notes/session-38-cv-output.txt`, `notes/session-38-sanity-output.txt`. No
+date on or after 2025-08-01 was loaded, joined, or scored at any point --
+asserted in code in every script, not just stated.
+
+**Task 1 -- cloud-cover tail verdict: BENIGN-DEFINITIONAL. GRIB cloud is
+used as the feature, on its own terms, not corrected toward Open-Meteo (the
+session prompt forbade correcting it either way).** Three checks, all
+against F90's own finding (GRIB TCDC matches Open-Meteo cloud at the median,
+1.3 pct, but with a heavy tail, p90 41.8, p99 88.0):
+- **GRIB TCDC is internally sane over the full 7,952-row window**: every
+  value falls inside [0, 100] at every airport, no missing or garbage
+  values are possible by construction (a failed decode is already a dropped
+  row in `grib_features_v16_window_drops.csv`, F90).
+- **The worst-disagreement rows do NOT cluster on a small shared set of
+  dates** (the artifact signature session 37's own 12-message idx-mismatch
+  failures showed, F90): the 100 highest-|diff| rows out of 2,799 spread
+  across 90 distinct dates, only 10 of them repeated, and no station
+  dominates the list (16-27 rows each).
+- **The disagreement is worst exactly where a genuinely fast-changing,
+  partly-cloudy sky would be expected to disagree most between two
+  different products, not where a bug would concentrate it**: bucketed by
+  Open-Meteo's own reported value, mean|diff| is 7.1-8.9 pct at the clear/
+  overcast extremes (0-10 pct and 90-100 pct, 2,281 of 2,799 rows) against
+  25.6-27.3 pct in the mid-range bands (10-90 pct, the remaining 518 rows).
+  The disagreement's sign is mixed (25.8% GRIB-higher, 36.4% GRIB-lower,
+  38% exactly equal after rounding), pooled mean signed diff only -0.90 pct
+  points -- the signature of noise/disagreement, not a systematic offset
+  (contrast RNO's pre-correction temperature bias, F89: 100% one-sided,
+  mean == mean|diff|).
+
+**Task 2 -- join: 7,928 of a possible 7,955 rows kept (99.7%), every drop
+reconciling against already-known facts.**
+
+```
+airport   GRIB rows available   no usable obs   rows kept
+EGLC             1591                  2           1589
+LFPG             1591                  2           1589
+DSM              1590                  0           1590
+YSDU             1590                 17           1573
+RNO              1590                  3           1587
+```
+
+(GRIB row availability itself already reflects session 37's own 3 idx-
+mismatch drops, one each at DSM/YSDU/RNO, F90 -- not re-counted here.) YSDU's
+larger drop count (17, of which 10 are >15-minute off-hour reports dropped
+by D14) again reproduces Dubbo's own known higher off-hour/no-report rate
+(F58/F59/F87). Joined dataset: `data/processed/session38_joined.csv`.
+
+**Task 3 -- blocked seasonal CV on the FULL v16 window (2021-03-24 to
+2025-07-31, 1,591 days, 17 contiguous ~93-94-day blocks), GRIB source
+throughout. Headline: 3-feature beats raw GFS (GRIB) at 5 of 5 airports; 5-
+feature beats 3-feature at 5 of 5 and beats raw GFS (GRIB) at 5 of 5.**
+
+```
+airport  Raw GFS(GRIB)  +mean-bias      3-feature      5-feature   n days
+EGLC        1.177       1.186 (-0.8%)  1.117 (+5.0%)  1.067 (+9.3%)   1589
+LFPG        1.266       1.279 (-1.0%)  1.223 (+3.3%)  1.199 (+5.3%)   1589
+DSM         1.887       1.916 (-1.5%)  1.538 (+18.5%) 1.534 (+18.7%)  1590
+YSDU        1.358       1.346 (+0.8%)  1.240 (+8.7%)  1.195 (+12.0%)  1573
+RNO         1.483       1.455 (+1.9%)  1.391 (+6.2%)  1.295 (+12.7%)  1587
+```
+
+Every airport wins in some of the 17 blocks and loses in others (full
+per-block tables in the saved output), the same fold-to-fold variance F87
+found on the 1.5-year window -- a full seasonal cycle in training does not
+make every quarter easy, it makes the pooled result robust to any one
+quarter.
+
+**Overfit diagnostic (pooled in-sample vs pooled out-of-fold MAE) -- sane
+and consistent with F87's own reading, slightly larger everywhere because
+each of the 17 training folds is now ~4 years instead of ~15 months:**
+
+```
+airport   3-feat gap   5-feat gap
+EGLC        +0.224       +0.266
+LFPG        +0.256       +0.322
+DSM         +0.337       +0.429
+YSDU        +0.240       +0.305
+RNO         +0.296       +0.367
+```
+
+A positive gap at every airport for both models, the ordinary signature of
+a flexible tree model fitting its own training folds more tightly than it
+generalises -- not alarming on its own, and every gap stays well inside the
+0.2-0.8 degC range F87 already found on the shorter window.
+
+**5-feature importances, averaged across the 17 folds -- nothing is
+ignored, nothing dominates, at any airport:**
+
+```
+airport   forecast_temp_c   season_sin   season_cos   cloud_cover   wind_speed_10m
+EGLC            29.1%           16.8%        15.0%         14.2%           24.8%
+LFPG            26.6%           21.7%        16.1%         17.3%           18.2%
+DSM             30.9%           26.7%        14.4%         12.6%           15.4%
+YSDU            31.1%           17.4%        17.0%         13.2%           21.2%
+RNO             21.1%           22.3%        17.7%         14.1%           24.9%
+```
+
+**Task 4 -- source-swap sanity check: PASSES both checks. The swap from
+Open-Meteo to GRIB temperature did not materially change the baseline.**
+Check 1 (strict, identical rows): on the exact same (station, date) rows
+Task 2 kept, raw-forecast MAE computed with GRIB temperature vs with
+Open-Meteo temperature differs by at most **0.062 degC** at any airport
+(EGLC -0.003, LFPG -0.026, DSM -0.026, YSDU +0.055, RNO +0.062) -- an order
+of magnitude smaller than any of the skill margins in Task 3's table, and
+consistent with F90's own 0.126-0.182 degC (and RNO's post-correction 0.146
+degC) reproduction-gate figures on a smaller sample. Check 2 (context,
+different windows, not a strict comparison): the GRIB-based full-window raw
+and 3-feature CV figures sit in the same general range as each airport's
+own established Open-Meteo rehearsal, sealed-test, and F87 1.5-year-CV
+figures (full table in the saved output) -- no airport lands in a
+materially different regime.
+
+**Task 5 -- the headline reads.**
+
+**Does 5-feature beat 3-feature, and does either beat raw GFS? Yes,
+everywhere.** 3-feature beats raw GFS (GRIB) at **5 of 5** airports (F87's
+1.5-year Open-Meteo window: 4 of 5, LFPG the exception). 5-feature beats
+3-feature at **5 of 5** and beats raw GFS (GRIB) at **5 of 5** (F87: 4 of 5
+on both counts).
+
+**LFPG: the full window recovers it.** LFPG was the one airport where
+neither model beat raw GFS on F87's 1.5-year Open-Meteo window (3-feature
+-7.7%, 5-feature -2.1%, never closing the gap). On the full ~4.4-year GRIB
+window, LFPG's 3-feature model beats raw GFS (GRIB) by +3.3% and 5-feature
+extends that to +5.3% -- both features help, and the loss does not
+reappear. This reads as a window-length effect specific to LFPG (the same
+kind of effect F86/F87 already found dominated the whole richer-features
+story on the 6-month scout window), now resolved by the same full seasonal
+history the locked recipe itself has always trained on, not as a change in
+the method.
+
+**Reno: the short-window rescue signal holds, and strengthens.** F87 found
+5-feature beat both 3-feature (+3.8% skill) and raw GFS (+7.3%) at Reno on
+the 1.5-year Open-Meteo window, the first positive richer-features result
+there after the scout's own null result (F86). On the full v16 GRIB window,
+**Reno's 5-feature model beats 3-feature by a wider margin (1.295 vs 1.391,
+skill vs raw GFS +12.7%, against 3-feature's own +6.2%) and both remain
+comfortably ahead of raw GFS.** `wind_speed_10m`'s gain share at Reno (24.9%,
+importance table above) is again the larger of the two new features,
+consistent with F87's own reading. This is the strongest positive
+richer-features signal Reno has produced across all three experiments
+(F86 null, F87 modest, this session's fuller and larger).
+
+**One-line synthesis, flagged for the owner and not decided here:** on the
+full ~4.4-year v16 GRIB window, with cloud/wind features throughout, the
+richer 5-feature recipe beats both the 3-feature recipe and raw GFS at
+**every one of the five airports**, including LFPG (which never won on the
+shorter window) and Reno (whose rescue signal was previously modest and
+1.5-year-only). This is materially stronger and more complete evidence than
+either the scout (F86) or the 1.5-year CV (F87) produced. **The step-4
+question -- lock the richer method, and on which window (the full ~4.4-year
+GRIB window this session used, or something else) -- is the owner's to
+decide, not made here.** Nothing was fitted on, or scored against, the
+sealed test year at any point.
+
+**What this session did not do, on purpose.** Did not open, load, or score
+the sealed test year (2025-08-01 to 2026-07-31) at any point -- every
+script asserts every loaded date is `< 2025-08-01`. Did not lock any
+recipe. Did not tune any hyperparameter or change settings between the two
+models. Did not add a lagged/recent-observation feature, and did not add a
+terrain/elevation feature (kept the clean 3-vs-5 comparison, per the
+session prompt). Did not hand-pick features per airport. Did not "correct"
+GRIB cloud toward Open-Meteo -- Task 1 only characterised it. Did not
+modify `SPEC.md` or `RESULTS.md`. Did not pull any new raw data (D47 does
+not apply here -- this session wrote only small processed tables under
+`data/processed/`, no new GRIB bytes). Nothing was committed.

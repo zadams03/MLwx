@@ -3,7 +3,62 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 11 September 2026, after session 37._
+_Last updated: 12 September 2026, after session 38._
+
+---
+
+## Session 38 (GRIB build sub-project, step 3 of 4 — richer-features CV on
+the full v16 window)
+
+**Step 3 of 4. Diagnoses the session-37 cloud-cover tail, joins the
+validated GRIB feature dataset (session 37) to the existing IEM
+observations over the full v16 window, re-runs the richer-features blocked
+seasonal CV on that full ~4.4-year window (GRIB source throughout, instead
+of the 1.5-year Open-Meteo window F87 used), and sanity-checks the source
+swap. Opens no sealed year, locks nothing.** Verdict (DECISIONS F91):
+**cloud-cover tail diagnosed BENIGN-DEFINITIONAL** (sane 0-100 GRIB values,
+no concentrated-date artifact, disagreement worst in the genuinely
+ambiguous partly-cloudy mid-range rather than at the clear/overcast
+extremes, no systematic direction) — GRIB cloud used as-is, not corrected
+toward Open-Meteo; **join kept 7,928 of a possible 7,955 rows (99.7%)**;
+**on the full window, 3-feature beats raw GFS (GRIB) at 5 of 5 airports
+(F87's 1.5-year window: 4 of 5) and 5-feature beats both 3-feature and raw
+GFS at 5 of 5 (F87: 4 of 5 on both)** — **LFPG, the one airport that never
+beat raw GFS on the shorter window, now beats it at both rungs (+3.3%/
++5.3%)**, and **Reno's richer-features rescue signal not only holds but
+strengthens (5-feature +12.7% skill vs raw GFS, against 3-feature's
++6.2%)**; the **source-swap sanity check passes** (GRIB-vs-Open-Meteo raw
+MAE differs by at most 0.062 degC on identical rows, an order of magnitude
+below any skill margin above).
+
+**Flagged for the owner, not decided this session:** the step-4 lock
+question — lock the richer (5-feature) method, and on which window (this
+session's full ~4.4-year GRIB window, or something else) — now has
+materially stronger evidence behind it than either the scout (F86) or the
+1.5-year CV (F87) produced: every airport, including the two previously
+unresolved or modest cases (LFPG, Reno), now shows a positive result on
+both counts.
+
+**What this session did not do, on purpose.** No sealed-test date
+(2025-08-01 onward) loaded, joined, or scored — asserted in code in every
+script. No recipe locked. No hyperparameter tuned, no per-airport feature
+selection. No lagged/recent-observation feature added, no terrain/elevation
+feature added (kept the clean 3-vs-5 comparison). No "correction" applied
+to GRIB cloud toward Open-Meteo. `SPEC.md`/`RESULTS.md` not modified. No
+new raw data pulled — only small processed tables written under
+`data/processed/`. Scripts: `scripts/session38_cloud_diagnostic.py`,
+`scripts/session38_join.py`, `scripts/session38_cv.py`,
+`scripts/session38_sanity.py`. Full real output: `notes/
+session-38-cloud-diagnostic-output.txt`, `notes/session-38-join-output.txt`,
+`notes/session-38-cv-output.txt`, `notes/session-38-sanity-output.txt`.
+Processed tables: `data/processed/session38_joined.csv`, `data/processed/
+session38_cv_summary.csv`.
+
+**Archive step this session:** F88 (session 35's GRIB feasibility probe,
+GO-COSTLY) moved to `DECISIONS-archive.md` — its own question is now
+settled by the completed build and this session's result; no live open
+question needs its specific wording. See DECISIONS.md's pointer note where
+F88 used to sit.
 
 ---
 
@@ -162,20 +217,31 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
-airports opened so far — four pass, one fails. The GRIB-build sub-project
-(docs/session-36.md, docs/session-37.md) is now 2 of 4 steps in: step 1
-confirmed the back-extent and validated the GRIB→point pipeline; step 2
-(this session) fixed RNO's pipeline gap, pulled the full v16-only feature
-set at all five airports, validated cloud/wind against Open-Meteo, and
-assembled a feature dataset.** Verdict (DECISIONS F90): the reproduction
-gate now **PASSES at all five airports** (RNO fixed via an elevation/
-lapse-rate correction, 7.429 degC/km); the bulk pull fetched 25,444 of
-25,456 targeted messages cleanly (~20 GB, 6,364 files, 11.2 minutes; the
-12 failures trace to a verified upstream idx/file-size mismatch on 3
-dates, dropped and counted); wind speed validates tightly against
-Open-Meteo on the 2024-01-19..2025-07-31 overlap, cloud cover matches well
-at the median but has a real heavy tail; the assembled dataset holds 7,952
-rows. No join to observations, no fit, no lock — that is step 3.
+airports opened so far — four pass, one fails; none of that changed this
+session. The GRIB-build sub-project (docs/session-36.md through
+docs/session-38.md) is now 3 of 4 steps in: step 1 confirmed the back-extent
+and validated the GRIB→point pipeline; step 2 fixed RNO's pipeline gap,
+pulled the full v16-only feature set, and validated cloud/wind; step 3
+(this session) diagnosed the cloud tail, joined the GRIB features to
+observations, and re-ran the richer-features blocked CV on the full
+~4.4-year window.** Verdict (DECISIONS F91): cloud tail diagnosed
+benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
+5-feature beats both 3-feature and raw GFS at all five airports — including
+LFPG (which never won on the shorter 1.5-year window, F87) and Reno (whose
+richer-features rescue signal strengthens rather than merely holding)**;
+the source-swap sanity check confirms the GRIB/Open-Meteo baseline shift is
+negligible (≤0.062 degC on identical rows). No sealed year opened, no
+recipe locked — that is step 4, not yet started.
+
+Step 2, the session before, fixed RNO's elevation gap (DECISIONS F90): the
+reproduction gate now **PASSES at all five airports** (RNO fixed via an
+elevation/lapse-rate correction, 7.429 degC/km); the bulk pull fetched
+25,444 of 25,456 targeted messages cleanly (~20 GB, 6,364 files, 11.2
+minutes; the 12 failures trace to a verified upstream idx/file-size
+mismatch on 3 dates, dropped and counted); wind speed validated tightly
+against Open-Meteo on the 2024-01-19..2025-07-31 overlap, cloud cover
+matched well at the median but had a real heavy tail (this session's Task 1
+diagnosed that tail); the assembled dataset held 7,952 rows.
 
 Step 1, the session before, confirmed the back-extent at **2021-01-01, not
 ~2015** — only ~82 days deeper than Open-Meteo's own floor, materially
@@ -394,78 +460,101 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   separate from the raw extracts (`data/raw/grib/`) and the existing
   Open-Meteo files. Disk space fell from 35 GiB to 14 GiB free -- flagged
   for the owner given SPEC 2.3/D15 commits raw pulls to version control.
+- **Session 38: GRIB build step 3 of 4 -- richer-features CV on the full
+  v16 window.** No sealed year opened, no lock. Verdict (DECISIONS F91):
+  the session-37 cloud-cover tail diagnosed **BENIGN-DEFINITIONAL** (sane
+  GRIB values, no concentrated-date artifact, disagreement worst in the
+  genuinely ambiguous mid-range rather than at the clear/overcast extremes,
+  no systematic direction) -- used as-is, not corrected. The GRIB feature
+  dataset joined to IEM observations over the full v16 window, keeping
+  7,928 of a possible 7,955 rows (99.7%). Blocked seasonal CV (17
+  ~93-94-day blocks) on the full ~4.4-year window, GRIB source throughout:
+  **3-feature beats raw GFS (GRIB) at 5 of 5 airports** (F87's 1.5-year
+  window: 4 of 5) and **5-feature beats both 3-feature and raw GFS at 5 of
+  5** (F87: 4 of 5 on both) -- **LFPG (never a winner on the shorter
+  window) now beats raw GFS at both rungs, and Reno's richer-features
+  rescue strengthens (5-feature +12.7% skill vs raw GFS, from +6.2% at
+  3-feature)**. Source-swap sanity check passed: GRIB-vs-Open-Meteo raw MAE
+  differs by at most 0.062 degC on identical rows. F88 (GRIB feasibility
+  probe, GO-COSTLY) archived to `DECISIONS-archive.md` this session, its
+  own question now settled by the completed build. Step-4 lock question
+  (which window, whether to proceed) flagged for the owner, not decided.
 
 ## Next
 
-**The GRIB-build sub-project (docs/session-36.md, docs/session-37.md) is
-now mid-flight -- steps 1-2 of 4 done, steps 3-4 not started.** Its own
-next step, if the owner continues it, is step 3: join the assembled
-feature dataset (data/processed/grib_features_v16_window.csv) to
-observations and re-run the richer-features experiment (the F86/F87
-comparison) on the full ~4.3-year v16 window, at all five airports
-including RNO now that its pipeline gap is fixed.
+**The GRIB-build sub-project (docs/session-36.md through docs/session-38.md)
+is now mid-flight -- steps 1-3 of 4 done, step 4 not started.** Its own
+next step, if the owner continues it, is step 4: lock the richer (5-feature)
+method and open the sealed test year (2025-08-01 to 2026-07-31) on the GRIB
+pipeline -- step 4's own session prompt does not exist yet.
 
-**Three things flagged for the owner, not decided this session:**
-1. **Go/no-go on a full locked sealed-test cycle for the richer
-   features -- still open, unchanged in substance.** F87's multi-fold
-   signal (5-feature beats 3-feature at 4 of 5 airports and beats raw GFS
-   at 4 of 5) is unchanged by this session; step 3 would test that signal
-   on the full window instead of the existing ~1.5-year one. The owner's
-   choice is still three-way: (a) lock the richer method on the existing
-   ~1.5-year window and carry LFPG's caveat, (b) continue the GRIB build
-   (step 3, then step 4) now that steps 1-2 are done and RNO's pipeline gap
-   is fixed, or (c) decline richer features for now and pursue a different
-   branch of Q30.
-2. **New this session: is the cloud-cover validation tail acceptable to
-   carry into step 3 as-is?** F90's Task 3 found wind speed matches
-   Open-Meteo tightly (sub-2 km/h mean absolute difference everywhere) but
-   cloud cover, while matching well at the median (1.3 pct), has a real
-   heavy tail (p90 41.8 pct, p99 88.0 pct) with no consistent systematic
-   direction. Reads as cloud cover's own high spatial/temporal sensitivity
-   rather than a bug, but was not investigated further (out of this
-   session's scope). Proceeding to step 3 would mean training on that
-   tail as-is unless the owner asks for it to be investigated first.
-3. **New this session: disk space and repo size.** The Task 2 pull used
-   ~20 GB (25,444 small files); free space on the volume fell from 35 GiB
-   to 14 GiB. SPEC 2.3/DECISIONS D15 commits raw pulls to version control,
-   so this ~20 GB enters the repository's history once committed -- a
-   step-change in repo size versus every prior session, and a further
-   sealed-test-year pull at step 4 (a smaller, ~1-year slice) would add
-   more on top. Not decided here; the owner may want to weigh this before
-   committing, or before step 4 pulls the sealed year.
+**The central open question flagged after session 37 -- go/no-go on a full
+locked sealed-test cycle for the richer features -- now has materially
+stronger evidence than at any earlier point.** F91 (this session) found
+5-feature beats both 3-feature and raw GFS at **all five airports** on the
+full ~4.4-year v16 GRIB window, including the two previously weak cases:
+LFPG (which lost to raw GFS at both rungs on F87's 1.5-year window) now
+wins at both, and Reno's richer-features rescue (first seen only on F87's
+1.5-year window, after the scout found nothing, F86) strengthens further.
+The owner's choice is still, in substance, the one Q30 has named since
+session 18 plus the richer-features branch's own sub-choices:
+1. **Lock the richer (5-feature) method and proceed to step 4** (open the
+   sealed test year on the GRIB pipeline) -- now the best-evidenced of the
+   richer-features branch's options.
+2. **Lock the richer method but on a different window** than this
+   session's full v16 GRIB window, if the owner has a reason to prefer one.
+3. **Decline richer features for now** and pursue a different branch of
+   Q30 (a further airport; a second test year, the untouched half of the
+   F30/F46/F48/F65 caveat; or stage 3, pooling).
 
-None of this was decided this session (session 37 scope forbids it --
-report and flag only). **Turning the richer-features signal into a joined,
-fitted, locked model is still not started; that is step 3, and step 3's
-own session prompt does not exist yet.**
+**Two things carried forward from session 37, not resolved by this
+session:**
+1. **Disk space and repo size.** Session 37's ~20 GB GRIB pull (25,444
+   small files) took free space from 35 GiB to 14 GiB; this session added
+   no new raw bytes (only small `data/processed/` tables), so the figure is
+   unchanged. SPEC 2.3/D15 (as qualified by D47 for large re-fetchable
+   sources) still means this ~20 GB enters the repository's history once
+   committed. A step-4 sealed-year pull (a smaller, ~1-year slice) would add
+   somewhat more on top. Not decided here.
+2. Whether the cloud-cover tail needed investigation before being trusted
+   as a feature is now answered by this session's own Task 1 (BENIGN-
+   DEFINITIONAL, F91) -- this item from session 37's "Next" is resolved,
+   not merely carried forward.
 
 **Whatever the owner decides about richer features or a further airport,
 Reno's own sealed-test result stands as reported (D44.10, D44.11) -- no
 re-run, no retroactive adjustment.** Q30's other branches (a second test
 year; stage 3, pooling) remain untouched and available, now alongside the
-richer-features questions F82/F85/F86/F87/F88/F89/F90 raise.
+richer-features questions F82/F85/F86/F87/F89/F90/F91 raise (F88 archived
+this session, DECISIONS-archive.md, its own question now settled by the
+completed build).
 
 ## Open questions (live)
 
-- **Q30 (unchanged in substance, now joined by five richer-features
+- **Q30 (unchanged in substance, now joined by six richer-features
   diagnostics).** The owner picked its first branch -- more airports, "ramp
   up difficulty" -- and Reno's own five steps are finished, ending in a
-  failure. The richer-features branch of that intent has now taken five
+  failure. The richer-features branch of that intent has now taken six
   concrete steps: session 32's scout (DECISIONS F86) found a real but
   short-window-confounded signal; session 33's blocked CV (F87) removed
   most of that confound and found the recipe recovers at 4 of 5 airports,
   with LFPG the unresolved exception; session 35's GRIB feasibility probe
-  (F88) found a deeper source is available but costly; session 36's GRIB
-  build step 1 (F89) found the source is not materially deeper in time than
-  the existing window after all, and validated the GRIB->point pipeline at 4
-  of 5 airports (RNO needing an elevation-correction fix); and session 37's
-  GRIB build step 2 (F90) fixed RNO's pipeline gap (all five now PASS),
-  bulk-pulled the v16-only feature set, validated cloud/wind against
-  Open-Meteo (wind tight, cloud cover with a real tail), and assembled a
-  7,952-row feature dataset -- not yet joined to any observation or fitted.
-  What comes next is still the owner's choice: lock on the short window,
-  continue the GRIB build (step 3: join + re-run the richer-features
-  experiment on the full window; then step 4: lock + sealed test), open
+  (F88, since archived -- DECISIONS-archive.md) found a deeper source is
+  available but costly; session 36's GRIB build step 1 (F89) found the
+  source is not materially deeper in time than the existing window after
+  all, and validated the GRIB->point pipeline at 4 of 5 airports (RNO
+  needing an elevation-correction fix); session 37's GRIB build step 2
+  (F90) fixed RNO's pipeline gap (all five now PASS), bulk-pulled the
+  v16-only feature set, validated cloud/wind against Open-Meteo (wind
+  tight, cloud cover with a real tail), and assembled a 7,952-row feature
+  dataset; and session 38's GRIB build step 3 (F91) diagnosed that cloud
+  tail as benign, joined the dataset to observations, and found 5-feature
+  beats both 3-feature and raw GFS **at all five airports** on the full
+  ~4.4-year window -- LFPG and Reno, the branch's two previously weak
+  cases, both now show a clear positive result. What comes next is still
+  the owner's choice: lock the richer method (and pick a window -- most
+  likely the full GRIB window this session used, but that is the owner's
+  call), continue to step 4 (lock + sealed test on the GRIB pipeline), open
   another airport, open a second test year (the untouched half of the
   F30/F46/F48/F65 caveat), or open stage 3, pooling.
 - **Q32 (effectively answered by events, left on record rather than

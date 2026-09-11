@@ -8992,3 +8992,157 @@ other way round.
 
 ---
 
+
+## Moved by session 38 (2026-09-12)
+
+The archive criterion (D46, live in `DECISIONS.md`) applied to **F88** only (session 35's GFS GRIB source feasibility probe, verdict GO-COSTLY). F88's own question -- whether a deeper, credential-free GFS GRIB archive exists and is worth building -- is now settled: sessions 36-38 built the pipeline, fixed its one gap (RNO elevation, F89/F90), and used it to re-run the richer-features CV on the full v16 window (F91, live in `DECISIONS.md`), superseding F88's own cost-only verdict with a completed result. No live open question or `STATUS.md`'s own "Next" section needs F88's specific wording -- only its number, which resolves here unchanged; F89 and F90 (both still live) already restate, in their own words, the one F88 figure ("up to 4 distinct cycle/lead combinations per calendar day") they reference, so they do not depend on F88's wording surviving in `DECISIONS.md`. The block below is exactly what was cut, unedited.
+
+---
+
+## 2026-09-11 — Session 35 finding: GFS GRIB source feasibility probe
+(availability-and-cost only, no build, no pipeline)
+
+**F88. Verdict: GO-COSTLY.** A real, credential-free, deep GFS forecast GRIB2
+archive exists and was directly confirmed to carry both needed variables
+(total cloud cover, 10 m wind) back to the project's own archive floor — but
+aligning it to the existing pipeline carries real, concrete costs beyond
+"pull and join." Nothing was built, joined, fitted, or evaluated. No sample
+came from inside the sealed test year (2025-08-01 to 2026-07-31); the two
+dates sampled are 2021-03-24 (one day after the archive floor) and
+2025-06-11. Full real output is `notes/session-35-check-output.txt`; every
+sample file is saved untouched under `data/raw/diagnostics/session35/` with
+a `.meta.txt` per file (SPEC 2.3).
+
+**Task 1 — candidate sources, compared:**
+
+| source | earliest forecast date found | needed variables | lead hours / cycles | access | credentials |
+|---|---|---|---|---|---|
+| AWS S3 `noaa-gfs-bdp-pds` (NODD) | confirmed back to at least 2021-03-24 (this session's direct probe) | yes — confirmed by inventory (Task 2) | 3-hourly to 240h, 12-hourly to 384h; 00/06/12/18z | plain HTTPS / S3 API | **none** |
+| GCS mirror `global-forecast-system` | same, confirmed same date | same (idx content identical) | same | plain HTTPS | **none** |
+| Azure NODD mirror | not confirmed — a guessed container/path 404'd; not pursued further once two working sources were in hand | unknown | unknown | unknown | unknown |
+| NCAR GDEX (formerly RDA) `ds084.1` | 2015-01-15 onward, but **sunsetting in early 2026** — NOAA is migrating this exact historical archive onto the AWS bucket above, which is why AWS now reaches back this far | same 37-variable set, incl. surface winds and cloud, per its own page | 3-hourly to 240h, 12-hourly to 384h; 00/06/12/18z | HTTPS/THREDDS; page shows a "Sign In" option | not tested — the AWS copy is credential-free and equally deep, so this was not chased further |
+| NCEI historical GFS archive | analysis from 2007; NCEI's own page states the **AWS Big Data window is "trailing 30 days"** | not confirmed at 0.25 deg — NCEI's deeper holdings are often lower-res (0.5/1 deg) | varies | HTTPS | none stated |
+| NOMADS live server | rolling 2 days-2 weeks only | n/a, too recent | n/a | HTTPS | none |
+
+**The single most important Task 1 finding is a correction of a secondary
+source by direct probe** — exactly the "verify on contact" principle SPEC
+3.3 already applies to Open-Meteo (F1, F17, F31, F49, F66), now shown to
+matter for a GRIB source too. NCEI's own page states the AWS NODD GFS bucket
+is a **"trailing 30-day window."** This session's own direct listing of
+`noaa-gfs-bdp-pds` contradicts that for the specific bucket checked: files
+for **2021-03-24** are present, at full 0.25 deg global resolution
+(~500-550 MB each), with `LastModified` timestamps from 2021 itself — not a
+30-day rolling set. This reconciles with public reporting that NOAA is
+migrating the deeper NCAR-hosted historical archive (`ds084.1`, 2015-01-15
+onward, itself sunsetting in early 2026) onto this same AWS bucket. The
+NCEI-stated 30-day figure was very likely accurate for this bucket at some
+earlier time and has since been superseded by that migration; either way,
+the only fact this project can rely on is the one checked directly, not the
+one read on a page.
+
+**Task 2 — the two needed variables, confirmed present by inventory, at
+both a near-floor date and a recent pre-test date:**
+
+```
+sample                                   TCDC:entire atmosphere   UGRD:10 m above ground   VGRD:10 m above ground
+2021-03-24 12z, 24h fcst (valid 03-25)   present (line 636)       present (line 588)       present (line 589)
+2025-06-11 12z, 24h fcst (valid 06-12)   present (line 636)       present (line 588)       present (line 589)
+```
+
+Identical variable name, level string, forecast-step label, and even line
+position in the inventory at both dates — no drift observed between them.
+**Confirmed genuinely decodable, not merely labeled**: for the 2025-06-11
+sample, the three messages' exact byte ranges (from the `.idx` offsets) were
+pulled with a single HTTP Range request each — no full-file download, no
+GRIB decode library — and each extracted message starts with the GRIB2
+magic marker (`GRIB`) and ends with the required `7777` end marker, i.e.
+each is a complete, well-formed GRIB2 record. Message sizes: TCDC 829,229 B,
+UGRD 984,341 B, VGRD 961,389 B — each about 0.15-0.2% of the ~514-550 MB
+whole multi-variable file, which is itself the key fact behind the volume
+estimate in Task 3.
+
+**Task 3 — alignment cost, the part that decides "worth it":**
+
+**1. Grid-to-point mismatch (new, not previously quantified).** The public
+`pgrb2.0p25` product is a plain **regular** 0.25 deg lat/lon grid — every
+grid point is an exact multiple of 0.25 deg. Checked against that, **none of
+the five grid points already recorded in SPEC 3.4 land on that grid**: every
+airport's grid latitude sits 0.013-0.038 deg off the nearest 0.25 deg
+multiple, and two of the five longitudes (YSDU, RNO) land on a *different*
+clean fraction each (1/32 deg at YSDU, 1/64 deg at RNO) rather than on 0.25
+deg — the signature of a native or reduced grid whose spacing varies with
+latitude, not of the plain regular output grid Open-Meteo's own point
+happens to be drawn from. Concretely, this means a raw-GRIB cloud/wind value
+read at "the GFS grid point" would come from a **different physical
+location** than the one already baked into the existing temperature column
+— a second, compounding offset on top of the grid-to-airport offset SPEC 3.4
+already documents and accepts as immaterial. This second offset has not
+been measured and is not assumed away here; a real build would need to
+either interpolate to the exact same point Open-Meteo already uses (method
+unconfirmed) or accept an unquantified new discrepancy.
+
+**2. Lead-time/cycle bookkeeping does not reduce to "always use f024."**
+SPEC 3.2 already records that Open-Meteo's `previous_day1` is not a clean
+fixed 24h lead — it sweeps roughly 24-30h across the day because GFS cycles
+only exist every 6 hours (00/06/12/18z) and Open-Meteo stitches hours 24-29
+of each cycle together. The same constraint binds a raw-GRIB build. EGLC/
+LFPG's 12:00 UTC target and DSM's 18:00 UTC target coincide with standard
+cycle hours, so a clean same-cycle `f024` is available for those. **YSDU's
+02:00 UTC and RNO's 20:00 UTC targets do not coincide with any standard
+cycle hour**, so no single cycle offers an exact 24h lead to either — the
+identical reason Open-Meteo's own lead sweeps off 24h. Reproducing Open-
+Meteo's exact per-hour cycle/lead choice (the archived F5 finding, not
+re-derived this session) or deliberately adopting a different, simpler
+convention is a real design decision a build would have to make and record
+— it is not automatic.
+
+**3. Volume/time (measured, not modeled).** One cycle+lead pull needs 3
+messages (TCDC + UGRD + VGRD) at ~0.8-1.0 MB each (~2.8 MB total),
+regardless of how many airports read it, because each message is a global
+field. But because the five airports' target hours differ (12:00, 12:00,
+18:00, 02:00, 20:00 UTC), **up to 4 distinct cycle/lead combinations are
+needed per calendar day**, not 1. Order of magnitude across the ~4.3-year
+training window (~1,570 days): roughly 4 `.idx` fetches + 12 range-GETs per
+day, ~17 GB of message data and **~25,000 HTTP requests** in total. This is
+a materially larger and more custom engineering surface than the existing
+pipeline's one-JSON-call-per-airport-per-pull Open-Meteo method (SPEC 3.2),
+and it requires a GRIB2 decoder this project's environment does not
+currently have (`wgrib2` not found; `pygrib`/`cfgrib` not installed —
+checked, not assumed) on top of the interpolation and lead-time logic in
+points 1-2.
+
+**4. Failure modes, named but not resolved.** Only two single dates were
+checked, both after GFS's FV3-based "v16" implementation (2021-03-22) — so
+both sit inside the same model-version family as the project's entire
+archive window, which is reassuring but does not rule out a later
+sub-version physics update (e.g., a mid-2023 package change) silently
+renaming a level or altering packing somewhere in 2021-2025; this was not
+scanned. Whether the AWS archive carries its own gaps analogous to Open-
+Meteo's known 492-hour gap (SPEC 3.2) is unknown and would need a bulk date
+scan this probe deliberately did not do.
+
+**One-paragraph verdict (Task 4), flagged for the owner and not decided
+here.** **GO-COSTLY.** The two variables genuinely exist, credential-free,
+on two independent clouds, confirmed by both inventory label and a real
+decoded-message check, reaching back to (at least) this project's own
+2021-03-24 archive floor — so the doubt session 33 raised, "is a deeper GFS
+GRIB source even available," is answered **yes**. But the alignment lift is
+real and stacks: an unquantified new grid-to-point offset beyond the one
+already accepted in SPEC 3.4, a lead-time/cycle-bookkeeping problem this
+project has not solved even for two of its five existing airports, a new
+GRIB2-decoding dependency absent from this environment today, and an
+order-of-magnitude ~17 GB / ~25,000-request pull-and-join effort across five
+airports and ~4.3 years — clearly more engineering than any prior
+data-acquisition session in this project undertook. **The build-vs-lock
+choice — build this GRIB pipeline to unlock the full ~4.3-year richer-
+feature window, or lock the richer method on the existing ~1.5-year window
+and carry LFPG's caveat (F87) — is the owner's, not decided here.**
+
+**What this session did not do, on purpose.** No full `.grib2` file was
+downloaded (only three single-message byte ranges, each under 1 MB). No
+decode library was installed. No date range was scanned — only the two
+single dates named above, both outside the sealed test year. No join, fit,
+model, or evaluation of any kind was performed. `SPEC.md` and `RESULTS.md`
+were not modified. Nothing was committed.
+
+---

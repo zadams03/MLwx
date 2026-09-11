@@ -1,0 +1,58 @@
+
+==============================================================================
+SESSION 38 TASK 4 -- source-swap sanity check (GRIB vs Open-Meteo temperature, identical rows)
+==============================================================================
+run at: 2026-09-12 00:16:48 local
+
+==============================================================================
+Check 1 (STRICT) -- raw-forecast MAE, GRIB vs Open-Meteo, on the IDENTICAL (station, date) rows Task 2 kept
+==============================================================================
+    station       n  MAE (GRIB)  MAE (Open-Meteo)    diff  mean sgnd fc diff
+    EGLC       1569       1.184             1.187  -0.003             +0.028
+      (20 of 1589 Task-2 rows have no matching Open-Meteo forecast value at this date/hour -- excluded from this comparison, not filled, SPEC 2.2)
+    LFPG       1569       1.263             1.290  -0.026             +0.023
+      (20 of 1589 Task-2 rows have no matching Open-Meteo forecast value at this date/hour -- excluded from this comparison, not filled, SPEC 2.2)
+    DSM        1570       1.895             1.921  -0.026             -0.043
+      (20 of 1590 Task-2 rows have no matching Open-Meteo forecast value at this date/hour -- excluded from this comparison, not filled, SPEC 2.2)
+    YSDU       1552       1.352             1.298  +0.055             +0.097
+      (21 of 1573 Task-2 rows have no matching Open-Meteo forecast value at this date/hour -- excluded from this comparison, not filled, SPEC 2.2)
+    RNO        1567       1.474             1.413  +0.062             +0.126
+      (20 of 1587 Task-2 rows have no matching Open-Meteo forecast value at this date/hour -- excluded from this comparison, not filled, SPEC 2.2)
+
+-- read --
+    largest |MAE(GRIB) - MAE(Open-Meteo)| across the five airports: 0.062 degC
+    Session 37 (F90) already found the two temperature series agree to within 0.126-0.182 degC mean|diff| at four airports and 0.146 degC at RNO (post-elevation-correction) on a 19-date sample; this check extends that comparison to every row the full CV actually uses. A small, sub-few-tenths-of-a-degree MAE gap here -- much smaller than any skill margin Task 3 reports -- would confirm the source swap changed the baseline only negligibly, not materially.
+
+==============================================================================
+Check 2 (CONTEXT ONLY, different windows) -- this session's full-window GRIB raw-GFS/3-feature CV MAE vs already-published Open-Meteo figures
+==============================================================================
+
+-- raw-GFS-equivalent MAE: this session (GRIB, full ~4.4yr CV) vs locked-recipe rehearsal/sealed-test (Open-Meteo) vs F87 (Open-Meteo, 1.5yr CV) --
+    station   GRIB full-CV  locked rehearsal  locked sealed  F87 1.5yr CV
+    EGLC             1.177             1.239          1.242         1.204
+    LFPG             1.266             1.426          1.396         1.405
+    DSM              1.887             1.748          1.815         1.882
+    YSDU             1.358             1.397          1.251         1.365
+    RNO              1.483             1.493          1.414         1.423
+
+    These four columns are NOT the same evaluation (different windows/folds/years -- rehearsal and sealed-test are single-year held-out figures, F87 and this session are pooled multi-fold CV figures over different-length windows), so they are not expected to match exactly. They are reported side by side only to check the GRIB-based raw-forecast MAE lands in the same general range as the airport's own established Open-Meteo-based numbers, not a wildly different regime.
+
+-- 3-feature MAE: this session (GRIB, full CV) vs F87 (Open-Meteo, 1.5yr CV) --
+    station  GRIB full-CV 3-feat F87 1.5yr CV 3-feat
+    EGLC                   1.117               1.191
+    LFPG                   1.224               1.513
+    DSM                    1.538               1.811
+    YSDU                   1.240               1.278
+    RNO                    1.391               1.369
+
+==============================================================================
+Verdict (report, not a decision)
+==============================================================================
+    Check 1 (strict, identical rows): the raw-forecast MAE gap between the GRIB and Open-Meteo sources is small at every airport (max 0.062 degC) -- consistent with F90's own reproduction-gate finding. The source swap did NOT materially change the baseline.
+    Check 2 (context): the GRIB-based full-window raw/3-feature figures sit in the same general range as the airports' own established Open-Meteo figures across every comparison column above -- no airport is a materially different order of magnitude from its own established numbers.
+
+==============================================================================
+END
+==============================================================================
+Read-only: no raw or processed file was modified. No sealed-test date was loaded. Nothing was committed.
+This output is saved at notes/session-38-sanity-output.txt

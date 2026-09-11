@@ -1,0 +1,72 @@
+
+==============================================================================
+SESSION 38 TASK 1 -- GRIB cloud-cover tail diagnostic (trust-the-feature check, not a correction)
+==============================================================================
+feature rows loaded (full v16 window, all stations): 7952
+validation rows loaded (2024-01-19..2025-07-31 overlap): 2799
+
+==============================================================================
+Part A -- is GRIB TCDC itself sane over the full v16 window?
+==============================================================================
+
+-- range, missing/garbage check, distribution, per airport --
+    station       n      min      max     mean     p10     p50     p90   n<0  n>100   n==0  n==100
+    DSM        1590    0.000  100.000    54.60    0.00   69.61  100.00     0      0    207     432
+    EGLC       1591    0.000  100.000    66.95    4.34   93.08  100.00     0      0     76     563
+    LFPG       1591    0.000  100.000    63.97    2.21   88.46  100.00     0      0     93     448
+    RNO        1590    0.000  100.000    40.05    0.00   12.22  100.00     0      0    325     232
+    YSDU       1590    0.000  100.000    40.46    0.00   17.41  100.00     0      0    358     228
+
+    No missing values are possible here by construction: every row in grib_features_v16_window.csv already survived session 37's own decode/valid-time checks (a failed decode is a dropped row, counted in grib_features_v16_window_drops.csv, not a null value here).
+    Every GRIB TCDC value across all 7,952 rows falls inside [0, 100], as a cloud-fraction percentage must -- no garbage values.
+
+==============================================================================
+Part B -- the shape of the GRIB-vs-Open-Meteo disagreement (2024-01-19..2025-07-31 overlap)
+==============================================================================
+
+-- per-airport mean|diff|, mean diff (direction), and the tail --
+    station      n  mean|diff|  mean diff    p50    p90    p99
+    DSM        560       12.12      -1.20    1.0   46.9   90.1
+    EGLC       560       12.60      -0.64    1.4   43.8   88.7
+    LFPG       560       10.63      -1.98    1.7   34.7   79.9
+    RNO        560       10.22      +0.48    1.4   35.0   83.4
+    YSDU       559       12.02      -1.16    1.4   45.3   86.1
+
+-- do the worst-disagreement rows cluster on specific dates shared across airports (an artifact signature, per session 37's own idx-mismatch precedent) or spread out (a per-row, per-condition signature)? --
+    top 100 highest |diff| rows out of 2799:
+    distinct dates among them: 90 (if this were a handful-of-files artifact, a small number of dates would dominate, the way session 37's 3 idx-mismatch dates did for the 12 pull failures)
+    dates appearing more than once among the top 100: 10
+    the most-repeated dates and their count: 2024-04-07(2), 2025-06-05(2), 2024-03-12(2), 2024-12-23(2), 2024-09-11(2), 2025-05-04(2), 2025-07-14(2), 2024-10-30(2), 2025-01-15(2), 2025-04-04(2)
+    station split among the top 100: DSM=27, EGLC=22, LFPG=18, RNO=16, YSDU=17
+
+-- does the disagreement concentrate where the cloud fraction is MID-RANGE (partly cloudy, genuinely ambiguous/fast-changing) rather than at the extremes (clear or overcast, unambiguous)? -- the signature that would support 'definitional/spatial-temporal sensitivity' over 'bug' --
+    bucketed by Open-Meteo's OWN reported value (the reference side), mean|diff| and row count per bucket:
+    bucket                        n  mean|diff|
+    0-10 (near-clear)          1014        7.14
+    10-40                       271       26.03
+    40-60 (mid-range)           102       27.32
+    60-90                       179       25.62
+    90-100 (near-overcast)     1267        8.90
+
+-- net direction check -- is there one consistent systematic offset, or no consistent direction (mixed sign)? --
+    rows where GRIB > Open-Meteo : 723 (25.8%)
+    rows where GRIB < Open-Meteo : 1018 (36.4%)
+    rows exactly equal           : 1058
+    pooled mean signed diff (all stations): -0.90 pct points
+    A roughly even pos/neg split with a small pooled mean is the signature of noise/disagreement without a systematic bias (contrast with RNO's pre-correction temperature bias, F89: 100% one-sided, mean == mean|diff|, an offset not noise).
+
+==============================================================================
+Verdict (report, not a correction -- GRIB cloud is not adjusted)
+==============================================================================
+    out-of-range values found: no
+    worst-disagreement rows concentrated on a small shared set of dates: no
+    disagreement worse in the mid-range (partly-cloudy) band than at the clear/overcast extremes: yes -- consistent with definitional sensitivity
+    disagreement direction: mixed-sign, no dominant one-sided offset (see net direction check above)
+
+    VERDICT: BENIGN-DEFINITIONAL. GRIB TCDC is internally sane (0-100 range, no missing/garbage values, no concentrated-date artifact signature), the disagreement with Open-Meteo has no consistent sign, and it is worst exactly where a genuinely fast-changing/partly-cloudy sky would be expected to disagree most between two different products -- not where a bug or a bad file would concentrate it. Proceed: GRIB cloud is used as the feature, on its own terms, not corrected toward Open-Meteo.
+
+==============================================================================
+END
+==============================================================================
+This is a diagnostic read only -- no value in either input file was changed, filled, or corrected. Nothing was committed.
+This output is saved at notes/session-38-cloud-diagnostic-output.txt

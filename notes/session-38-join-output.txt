@@ -1,0 +1,83 @@
+
+==============================================================================
+SESSION 38 TASK 2 -- join GRIB features to IEM observations, full v16 window. SEALED TEST NOT OPENED.
+==============================================================================
+run at        : 2026-09-12 00:14:10 local
+window        : 2021-03-24 to 2025-07-31
+sealed test   : 2025-08-01 onward -- NOT LOADED
+
+==============================================================================
+EGLC -- target hour 12:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 2 -- drop counts --
+    calendar days in the v16 window: 1591
+    no GRIB feature row for this date (session 37's own drops -- idx-mismatch or missing extract): 0
+    GRIB row present but no usable observation           : 2
+      (of which, obs >15 min from target hour, dropped by D14: 1)
+      (of which, obs report carried no temperature value): 0
+    rows kept: 1589 of 1591
+    kept date range: 2021-03-24 to 2025-07-31
+
+==============================================================================
+LFPG -- target hour 12:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 2 -- drop counts --
+    calendar days in the v16 window: 1591
+    no GRIB feature row for this date (session 37's own drops -- idx-mismatch or missing extract): 0
+    GRIB row present but no usable observation           : 2
+      (of which, obs >15 min from target hour, dropped by D14: 2)
+      (of which, obs report carried no temperature value): 0
+    rows kept: 1589 of 1591
+    kept date range: 2021-03-24 to 2025-07-31
+
+==============================================================================
+DSM -- target hour 18:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 2 -- drop counts --
+    calendar days in the v16 window: 1591
+    no GRIB feature row for this date (session 37's own drops -- idx-mismatch or missing extract): 1
+    GRIB row present but no usable observation           : 0
+      (of which, obs >15 min from target hour, dropped by D14: 0)
+      (of which, obs report carried no temperature value): 0
+    rows kept: 1590 of 1591
+    kept date range: 2021-03-24 to 2025-07-31
+
+==============================================================================
+YSDU -- target hour 02:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 2 -- drop counts --
+    calendar days in the v16 window: 1591
+    no GRIB feature row for this date (session 37's own drops -- idx-mismatch or missing extract): 1
+    GRIB row present but no usable observation           : 17
+      (of which, obs >15 min from target hour, dropped by D14: 10)
+      (of which, obs report carried no temperature value): 0
+    rows kept: 1573 of 1591
+    kept date range: 2021-03-24 to 2025-07-31
+
+==============================================================================
+RNO -- target hour 20:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 2 -- drop counts --
+    calendar days in the v16 window: 1591
+    no GRIB feature row for this date (session 37's own drops -- idx-mismatch or missing extract): 1
+    GRIB row present but no usable observation           : 3
+      (of which, obs >15 min from target hour, dropped by D14: 0)
+      (of which, obs report carried no temperature value): 0
+    rows kept: 1587 of 1591
+    kept date range: 2021-03-24 to 2025-07-31
+
+-- total across all five airports --
+    total rows kept: 7928 (of a possible 7955)
+
+Wrote joined dataset: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session38_joined.csv (7928 rows)
+
+==============================================================================
+END
+==============================================================================
+Raw files untouched (read-only). Nothing was filled (SPEC 2.2). No forecast or observation date on or after 2025-08-01 was loaded, joined, or written, for any airport. No model fitted, no recipe locked. Nothing was committed.
+This output is saved at notes/session-38-join-output.txt
