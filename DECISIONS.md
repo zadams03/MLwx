@@ -9020,3 +9020,199 @@ year was touched — every probe date used is 2021-03-24, 2023-07-01,
 committed.
 
 ---
+
+## 2026-09-11 — Session 32 finding: richer-features scout (validation-year
+only, sealed test NOT opened)
+
+**F86. The scout: a two-tier same-window comparison of a 3-feature and a
+5-feature (+ cloud_cover, wind_speed_10m) model, fitted on an identical short
+inner-training window at all five airports, judged once on the validation
+year. Five features beat three at 3 of 5 airports; five features beat raw GFS
+at only 2 of 5; and the short window itself — not the extra features — is the
+dominant effect almost everywhere.** No recipe was locked, and the sealed
+test year (2025-08-01 to 2026-07-31) was not opened, pulled or evaluated at
+any airport — this session's own scripts assert every loaded date is
+`< 2025-08-01` before anything is fitted. The scripts are
+`scripts/session32_pull.py` (the new raw pull) and
+`scripts/session32_scout.py` (the join and the ladder); the full real output
+is `notes/session-32-check-output.txt`.
+
+**The design, exactly as the session prompt fixed it in advance.** Because
+cloud_cover and wind_speed_10m are free only from 2024-01-19 12:00 UTC onward
+at every airport (F85), both models are fitted on the identical short window
+**2024-01-19 to 2024-07-31** (~6 months) and judged on the identical
+**2024-08-01 to 2025-07-31** validation year — the same validation year every
+earlier rehearsal used (D18), so raw GFS's own MAE on it should, and does,
+reproduce each airport's already-published validation figure exactly (cross-
+check below). The existing locked 3-feature model's validation figures (F15,
+F29, F45, F62, F80) were deliberately **not** reused as the comparison — a
+fresh 3-feature model was refitted on the same short window as the 5-feature
+model, so any difference between the two rungs is attributable to the two
+extra features alone, not to a confound with window length. Both models use
+the identical locked LightGBM settings (D21.4); nothing was tuned.
+
+**Pull and join (Task 1).** `cloud_cover_previous_day1` and
+`wind_speed_10m_previous_day1` were pulled at all five airports over
+2024-01-19 to 2025-07-31 (one request per airport, `models=gfs_global`
+per D16), saved under `data/raw/features/` with `.meta.txt` provenance. Every
+file's first 12 hours (2024-01-19 00:00–11:00 UTC) are null, matching F85's
+finding to the hour; nothing else in either pulled series is null at any
+airport. Joined to the existing temperature+observation rows at each
+airport's own target hour (SPEC 4.5, D14), drop-and-count, nothing filled
+(SPEC 2.2):
+
+```
+airport  inner rows kept   valid rows kept   scored (common) days
+EGLC     195 of 195        364 of 365        363
+LFPG     195 of 195        365 of 365        365
+DSM      195 of 195        365 of 365        365
+YSDU     191 of 195        360 of 365        355
+RNO      194 of 195        365 of 365        365
+```
+
+Every drop reconciles against facts already on record: EGLC's one validation
+drop is its known missing 2024-08-15 observation (F12/F16's pattern); Dubbo's
+larger drop count (4 inner, 5 validation) reproduces F58/F59's known higher
+off-hour/no-report rate exactly — all five of its persistence-losing
+"yesterday" dates match F59's own whole-period list of named validation-year
+losses (four no-report dates, 2024-09-18/2024-11-17/2024-11-27/2025-07-22,
+and the one off-hour date, 2025-03-08) — and its forecast-null day lands on
+2024-01-19 (the one day Dubbo's 02:00 UTC target still sits inside both the
+shared archive gap and cloud/wind's own not-yet-real window, per F59's
+"Dubbo loses one more day than the other four" finding); Reno's and DSM's
+near-zero drop counts match F41's and F77's own clean observation records. **As a correctness check, not
+a result**: every airport's raw-GFS and common-day count on this validation
+year matches its own already-published rehearsal figure to three decimals —
+EGLC 1.239 (F15), LFPG 1.426 (F29), DSM 1.748 (F45), YSDU 1.397/355 days
+(F62), RNO 1.493 (F80) — confirming the loader reproduces known behaviour
+rather than introducing a new one.
+
+**Task 2 — the ladder, validation-year MAE and skill vs raw GFS (skill =
+1 − model/rawGFS):**
+
+```
+airport  Raw GFS  +mean-bias  3-feat(short)  5-feat(richer)  Persistence
+EGLC      1.239    1.241 (-0.2%)  1.322 (-6.7%)   1.147 (+7.4%)   2.226
+LFPG      1.426    1.648 (-15.5%) 1.793 (-25.7%)  1.618 (-13.5%)  2.523
+DSM       1.748    2.352 (-34.6%) 1.976 (-13.0%)  2.021 (-15.6%)  4.108
+YSDU      1.397    1.335 (+4.4%)  1.317 (+5.8%)   1.294 (+7.4%)   2.577
+RNO       1.493    1.677 (-12.3%) 1.600 (-7.2%)   1.642 (-10.0%)  2.756
+```
+
+**The headline that matters most, and it is not about cloud or wind: the
+freshly-refitted 3-feature (short) model loses to raw GFS at 4 of 5
+airports — EGLC, LFPG, DSM and RNO — and the mean-bias reference, fitted on
+the same six months, loses to raw GFS everywhere except YSDU.** This is the
+short window itself, not the richer features: the existing locked 3-feature
+model at the same five airports, fitted on the full 2021–2024 window, beats
+raw GFS comfortably everywhere (F15, F29, F45, F62, F80 all show a positive
+margin on this same validation year). The likely mechanism is stated plainly
+because the session prompt's own design makes it checkable: **the short
+window (2024-01-19 to 2024-07-31) contains not a single day from August
+through December** — half the calendar year, including the exact months
+(August–December 2024) that open the validation year — so `season_sin`/
+`season_cos` splits are fitted with no example anywhere near several months
+of the validation set's own bias structure (F13/F28/F43/F61/F79 each found a
+airport-specific seasonal bias shape). This is a property of the ~6-month
+window the session prompt fixed in advance (deliberately thin, stated as
+such), not a defect in this session's join or fitting code.
+
+**Does 5-feature beat 3-feature (short), the comparison this scout was built
+to isolate? Yes, at 3 of 5 airports — EGLC, LFPG, YSDU — no at DSM and RNO.**
+
+```
+airport  3-feat MAE  5-feat MAE  5 beats 3?  change   in-sample gap (3-feat / 5-feat)
+EGLC       1.322       1.147       YES      -0.175      +0.364 / +0.290
+LFPG       1.793       1.618       YES      -0.175      +0.737 / +0.625
+DSM        1.976       2.021       no       +0.045      +0.657 / +0.754
+YSDU       1.317       1.294       YES      -0.023      +0.269 / +0.294
+RNO        1.600       1.642       no       +0.042      +0.722 / +0.787
+```
+
+**At EGLC, LFPG and YSDU the extra features improve BOTH the in-sample fit
+and the validation score together** — in-sample MAE fell and validation MAE
+fell at the same three airports, which is the shape of genuinely learned
+structure, not noise-fitting. **At DSM and RNO the extra features improve
+the in-sample fit but WORSEN the validation score** — the in-sample gap widens
+at both (DSM +0.657 to +0.754, RNO +0.722 to +0.787) while the model that
+looked better on training data did worse on unseen data. That is the
+overfitting shape Task 3 was built to catch, and it appears at exactly the
+two airports where the extra features do not help: cloud cover and wind
+speed give the model more ways to fit the ~195-day training sample without
+adding real signal for those two airports' own bias structure.
+
+**5-feature beats raw GFS at only 2 of 5 airports — EGLC (+7.4%) and YSDU
+(+7.4%) — the same two airports where the short-window handicap above was
+weakest to begin with** (YSDU's mean-bias reference already beat raw GFS on
+this window, +4.4%; EGLC's short-window 3-feature loss to raw GFS was the
+smallest of the four losing airports, -6.7%). At LFPG, DSM and RNO the
+5-feature model does not close the gap the short window itself opened.
+
+**Reno specifically (the session prompt's named question).** 3-feature
+(short) MAE 1.600, 5-feature (richer) MAE 1.642 — cloud/wind made Reno's
+correction slightly **worse**, not better, on this window. The 5-feature
+model's own gain shares (cloud_cover 18.5%, wind_speed_10m 17.3%) show the
+tree did lean on both new features rather than ignoring them, but leaning on
+them here reads as the overfitting shape above (Reno's in-sample gap widened
+from +0.722 to +0.787) rather than as captured structure. As the session
+prompt itself anticipated, a null result at Reno is not a surprising one:
+Reno's target is local noon, and the clear-calm cold-pool / downslope
+mechanism cloud and wind would be expected to capture is largely a
+nocturnal effect this target hour does not see. **This scout gives no
+positive evidence that cloud cover and wind speed are the missing structure
+at Reno specifically** — it neither confirms nor rules out F81's
+richer-features hypothesis for Reno, because the short window's own handicap
+dominates the result there.
+
+**Overall: 5-feature beats 3-feature (short) at 3 of 5 airports; 5-feature
+beats raw GFS at 2 of 5 airports.** Read together with the short-window
+finding above, the honest summary is that this scout's design confounds two
+things it was built to separate cleanly at the airport level even though it
+separates them cleanly at the rung level: the two-tier same-window
+comparison does correctly isolate the marginal effect of the two extra
+features from window length (that comparison is 3-feat-short vs 5-feat-short,
+both on identical data), and on that comparison the richer features help at
+three airports and hurt two. But because the ~6-month window itself is
+severely handicapped by missing half the calendar year, **neither rung is a
+fair stand-in for what a full-window richer-feature model would score**, and
+the "beats raw GFS" column mostly reports how much of the short-window
+handicap each airport's own bias shape happened to absorb, not how good the
+richer features are in absolute terms.
+
+**Flagged for the owner, not decided here, per the session prompt:**
+
+**(a) Go/no-go on a full locked sealed-test cycle for the richer features.**
+This scout give a genuine, if noisy, marginal-effect signal (5-feature beats
+3-feature-short at 3 of 5 airports, with a real in-sample/validation
+improvement at those three and a real overfitting signature at the other
+two) but says little about how a richer-feature model would perform if
+fitted on the full available window instead of six months — because the
+richer features are only available from 2024-01-19 onward, "the full
+available window" for a richer model is itself capped at about 1.5 years
+(2024-01-19 to 2025-07-31 inner-training-plus-validation), not the ~4.3-year
+window the locked recipe uses. Whether that longer-but-still-short window is
+enough to fix the seasonal-coverage problem above, and whether the
+marginal 3-of-5 win is worth a full lock-and-test cycle at all, is the
+owner's call.
+
+**(b) Whether the result justifies chasing a deeper cloud/wind source.**
+F85 already established that a real GFS GRIB archive (not reanalysis, which
+would leak per SPEC 2.1b) is the only way to get cloud/wind further back than
+2024-01-19. This scout's own finding — that the dominant effect in every
+number above is the short window, not the two features — is itself an
+argument for what such a deeper source would actually buy: it would let a
+richer-feature model train on the same multi-year window the locked recipe
+uses, removing the seasonal-coverage confound this scout could not avoid,
+rather than merely adding two columns to a six-month sample.
+
+**What this session did not do, on purpose.** No recipe was locked (session
+32 scope forbids it). The sealed test year was not opened, pulled, joined,
+fitted on, or printed at any airport — `scripts/session32_scout.py` asserts
+this at load time for both the forecast and the observation series, at every
+airport, and the only new raw pull (`scripts/session32_pull.py`) requests
+2024-01-19 to 2025-07-31 only. No hyperparameter was tuned and no feature was
+hand-picked per airport — the same five features and the same LightGBM
+settings were used everywhere. `SPEC.md` and `RESULTS.md` were not modified.
+Nothing was committed.
+
+---

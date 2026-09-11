@@ -1,0 +1,31 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2024-01-19_2025-07-31_cloudwind.json
+purpose     : session 32 - richer-features scout (validation-year only). cloud_cover and wind_speed_10m forecast, joined to the existing temperature+observation rows at each airport's target hour (SPEC 4.5) to test whether a 5-feature model beats the existing 3-feature recipe on a short, feature-complete window.
+pulled at   : 2026-09-11 11:23:30 HKT (2026-09-11 03:23:30 UTC)
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2024-01-19&end_date=2025-07-31&hourly=cloud_cover_previous_day1,wind_speed_10m_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153    (LFPG)
+  longitude  = 2.5344
+  start_date = 2024-01-19
+  end_date   = 2025-07-31
+  hourly     = cloud_cover_previous_day1,wind_speed_10m_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 200.
+
+notes:
+- START is 2024-01-19, the first hour cloud_cover/wind_speed_10m
+  can carry a real value at any airport (DECISIONS F85). END is
+  2025-07-31, the end of the shared D18 validation year -- the
+  sealed test year (2025-08-01 onward, D13) is NOT requested.
+- A null in this file (if any remains inside the requested range)
+  is left exactly as the API returned it; nothing is filled
+  (SPEC 2.2). The join in scripts/session32_scout.py drops and
+  counts any null rather than estimating one.

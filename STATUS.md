@@ -3,17 +3,37 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 11 September 2026, after session 31._
+_Last updated: 11 September 2026, after session 32._
 
 ---
 
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
-airports opened so far — four pass, one fails. Session 31 was a pure
-data-availability probe for the next, not-yet-scoped richer-features phase:
-no code was joined, built, fitted or evaluated, and no airport's test year
-was touched.** It settled three things (DECISIONS F85):
+airports opened so far — four pass, one fails. Session 32 was the
+richer-features scout: a two-tier same-window comparison of a 3-feature and
+a 5-feature (+ cloud cover, wind speed) model, fitted on an identical short
+window and judged once on the validation year, at all five airports. No
+recipe was locked and no airport's sealed test year was touched.** The
+headline (DECISIONS F86): 5-feature beats 3-feature (same short window) at
+3 of 5 airports (EGLC, LFPG, YSDU) and beats raw GFS at only 2 of 5 (EGLC,
+YSDU). The bigger finding is that the short window itself (2024-01-19 to
+2024-07-31, ~6 months, missing August through December entirely) is the
+dominant effect almost everywhere: the freshly-refitted 3-feature model on
+this window loses to raw GFS at 4 of 5 airports, where the same recipe on the
+full multi-year window beats raw GFS at all five (F15, F29, F45, F62, F80).
+At Reno specifically, cloud/wind made the correction slightly worse, not
+better — an expected, not a surprising, result given Reno's local-noon target
+and the largely-nocturnal mechanism cloud/wind would be expected to help
+with. Two questions are flagged for the owner, not decided (F86): (a) go/no-go
+on a full locked sealed-test cycle for the richer features, given the richer
+window available for them is capped at ~1.5 years, not the locked recipe's
+~4.3; (b) whether this strengthens the case for a deeper cloud/wind source (a
+real GFS GRIB archive) over the current API's 2024-01-19 floor.
+
+Session 31, the session before, was a pure data-availability probe for the
+richer-features phase: no code was joined, built, fitted or evaluated, and no
+airport's test year was touched. It settled three things (DECISIONS F85):
 
 1. **Cloud cover, wind speed, dew point and relative humidity all start at
    exactly the same hour, at all five airports: 2024-01-19 12:00 UTC** —
@@ -132,38 +152,62 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   staleness cleared (D45); Q31 closed as immaterial (F83); `RESULTS.md`
   written as a standalone technical summary of all five airports (F84). No
   code touched, no model run, no new figure computed.
-- **Session 31 (this one): a pure data-availability probe for the
-  richer-features phase, confirming and extending F7/D17.** Cloud
-  cover/wind speed/dew point/relative humidity all start at exactly
-  2024-01-19 12:00 UTC at every airport; upper-air (925/850 hPa)
-  temperature is not available in any leakage-safe form on this
-  API/offset at any date or airport (DECISIONS F85). No model built, no
-  join, no fit, no forecast. Data saved under
-  `data/raw/diagnostics/session31/`.
+- Session 31: a pure data-availability probe for the richer-features
+  phase, confirming and extending F7/D17. Cloud cover/wind speed/dew
+  point/relative humidity all start at exactly 2024-01-19 12:00 UTC at
+  every airport; upper-air (925/850 hPa) temperature is not available in
+  any leakage-safe form on this API/offset at any date or airport
+  (DECISIONS F85). No model built, no join, no fit, no forecast. Data
+  saved under `data/raw/diagnostics/session31/`.
+- **Session 32 (this one): the richer-features scout — the first actual
+  feature-set experiment, validation-year only, sealed test NOT opened.**
+  A two-tier same-window comparison of a 3-feature and a 5-feature
+  (+ cloud_cover, wind_speed_10m) model, both fitted on the identical
+  short window 2024-01-19 to 2024-07-31 and judged once on the
+  2024-08-01 to 2025-07-31 validation year, at all five airports
+  (DECISIONS F86). 5-feature beat 3-feature (short) at 3 of 5 airports
+  (EGLC, LFPG, YSDU) and beat raw GFS at only 2 of 5 (EGLC, YSDU). The
+  dominant effect almost everywhere was the short window itself, not the
+  features: the freshly-refitted 3-feature model on this six-month window
+  — which contains no day from August through December — lost to raw GFS
+  at 4 of 5 airports, where the same recipe on the full multi-year window
+  beats raw GFS at all five. At Reno, cloud/wind made the correction
+  slightly worse, an expected rather than a surprising result given
+  Reno's local-noon target. No recipe was locked. New raw data (cloud
+  cover, wind speed forecasts, 2024-01-19 to 2025-07-31, all five
+  airports) saved under `data/raw/features/`.
 
 ## Next
 
-**A planning session on richer features, with Reno as the motivating
-case.** Not started, not scoped, and not this session's job. Reno's own
-five steps (verify, pull, join/rehearse, lock, test) are complete, and its
-sealed test failed the frozen bar. D44.12 and F82 both name the same
-mechanism: Reno's bias is unusually close to a persistent, near-constant
-offset that the current three features (forecast temperature, season
-sin/cos) cannot turn into more than a thin, overfit-prone signal. F81
-already named cloud cover, wind, and a genuine terrain descriptor as the
-kind of information that might be needed. Session 31 has now settled *what
-data exists and how far back* (F85): cloud cover, wind speed, dew point and
-relative humidity are free from 2024-01-19 12:00 UTC onward at every
-airport (implying a two-tier training window if used); upper-air
-temperature is not available in any leakage-safe form at all, so it is not
-a candidate for that design without a separate data-source effort or a
-static terrain-mismatch feature computed from metadata already on hand.
-**Still not started: turning this into an actual feature-set / experiment
-design.**
+**Two questions are now on the owner's desk, flagged by session 32's own
+finding (F86), not decided:**
+1. **Go/no-go on a full locked sealed-test cycle for the richer
+   features.** The scout gives a real, if noisy, marginal-effect signal
+   (5-feature beats 3-feature-short at 3 of 5 airports, with a genuine
+   in-sample-and-validation improvement at those three and a genuine
+   overfitting signature at the other two), but the richer features are
+   only available from 2024-01-19 onward, so "the full available window"
+   for a locked richer-feature model is capped at about 1.5 years, not
+   the ~4.3 years the current locked recipe trains on. Whether that is
+   enough to fix the seasonal-coverage problem this scout ran into, and
+   whether a 3-of-5 marginal win is worth a full lock-and-test cycle at
+   all, needs the owner's word before any further richer-features session
+   starts.
+2. **Whether this strengthens the case for a deeper cloud/wind source.**
+   F85 already found a real GFS GRIB archive (not reanalysis) is the only
+   way to get cloud/wind further back than 2024-01-19. F86's own finding —
+   that the short window dominates every number in the scout, not the two
+   features — is itself an argument for what such a source would buy: a
+   richer-feature model trained on the same multi-year window the locked
+   recipe uses, not one confined to six months.
+
+Neither question was decided this session (session 32 scope forbids it).
+**Turning either answer into an actual feature-set design and a written
+lock is still not started.**
 
 **One item flagged in session 30 is now stale, not a live to-do.** Session
 30's own "Next" note said SPEC section 1's airport list still read "Reno
-... stage 2, in progress" and needed "failed". Checked this session: SPEC
+... stage 2, in progress" and needed "failed". Checked in session 31: SPEC
 section 1 (line 33) already reads "stage 2, **failed**" — the fix has
 already happened (by the owner's hand, or a change this file did not track)
 and nothing further is needed here.
@@ -172,17 +216,20 @@ and nothing further is needed here.
 Reno's own result stands as reported (D44.10, D44.11) — no re-run, no
 retroactive adjustment.** Q30's other branches (a second test year; stage 3,
 pooling) remain untouched and available, now alongside the richer-features
-question F82/F85 raise.
+questions F82/F85/F86 raise.
 
 ## Open questions (live)
 
-- **Q30 (unchanged in substance, Reno's own branch now complete).** The
-  owner picked its first branch — more airports, "ramp up difficulty" — and
-  Reno's own five steps are now finished, ending in a failure. What comes
-  next is still the owner's choice: richer features at Reno specifically
-  (the stated intent for the next session); another airport; a second test
-  year (the untouched half of the F30/F46/F48/F65 caveat); or stage 3,
-  pooling (not opened).
+- **Q30 (unchanged in substance, now joined by session 32's own scout
+  result).** The owner picked its first branch — more airports, "ramp up
+  difficulty" — and Reno's own five steps are finished, ending in a
+  failure. The richer-features branch of that intent has now taken its
+  first concrete step: session 32's scout (DECISIONS F86) found a real but
+  short-window-confounded signal, and flagged two questions of its own (see
+  "Next", above) rather than answering them. What comes next is still the
+  owner's choice: settle those two richer-features questions; open another
+  airport; open a second test year (the untouched half of the
+  F30/F46/F48/F65 caveat); or open stage 3, pooling.
 - **Q32 (effectively answered by events, left on record rather than
   formally closed).** Session 27 asked whether Reno's rehearsal loss should
   change anything about locking/testing Reno; the session-28 and session-29
