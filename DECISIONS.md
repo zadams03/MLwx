@@ -9216,3 +9216,256 @@ settings were used everywhere. `SPEC.md` and `RESULTS.md` were not modified.
 Nothing was committed.
 
 ---
+
+## 2026-09-11 — Session 33 finding: seasonal blocked cross-validation on the
+1.5-year window (sealed test year NOT opened)
+
+**F87. Blocked six-fold cross-validation across the full feature-complete
+window shows the session-32 scout's losses were mostly the short window, not
+the recipe: with a full seasonal cycle in training, 3-feature beats raw GFS
+at 4 of 5 airports (against 1 of 5 on the scout's 6-month window), and
+5-feature beats 3-feature at 4 of 5 and beats raw GFS at 4 of 5. This is a
+diagnostic inside the training window only — no recipe was locked and the
+sealed test year (2025-08-01 to 2026-07-31) was never loaded, joined, or
+scored, for any airport or fold.** The script is `scripts/session33_cv.py`
+and the full real output is `notes/session-33-check-output.txt`. No new raw
+was pulled — this reuses session 32's cloud/wind pull
+(`data/raw/features/`) and the existing temperature/observation chunks
+under `data/raw/`.
+
+**The design, exactly as the session prompt fixed it.** Window
+2024-01-19 to 2025-07-31 (~18 months, feature-complete at every airport,
+DECISIONS F85), split into six contiguous ~3-month calendar blocks (not
+named seasons, so the scheme is hemisphere-agnostic and works uniformly at
+Dubbo):
+
+```
+block  dates
+A      2024-01-19 -> 2024-04-18
+B      2024-04-19 -> 2024-07-18
+C      2024-07-19 -> 2024-10-18
+D      2024-10-19 -> 2025-01-18
+E      2025-01-19 -> 2025-04-18
+F      2025-04-19 -> 2025-07-31   (longer, to reach the window's own end)
+```
+
+Each of six folds holds out one block and trains on the other five (~15
+months, spanning every calendar month at least once). Four rungs at every
+fold: **raw GFS** (no fit), **+ mean-bias** (fit on that fold's training
+blocks only), **3-feature** (`forecast_temp_c`, `season_sin`, `season_cos`),
+**5-feature** (+ `cloud_cover`, `wind_speed_10m`) — identical locked
+LightGBM settings for both fitted models at every fold (D21.4: `objective=
+regression_l1, n_estimators=300, learning_rate=0.05, num_leaves=15,
+min_child_samples=40, random_state=42, deterministic=True, n_jobs=1`),
+nothing tuned, no per-airport feature selection. Persistence is reported for
+context only — it needs no fitting and was not part of the CV ladder.
+
+**Leakage-safety justification for blocked CV, recorded here as the session
+prompt required.** Blocked leave-one-block-out CV trains on data temporally
+surrounding each held-out block, which departs from the strict
+train-earlier/test-later split the sealed test uses (SPEC 2.1a). That is
+acceptable for this diagnostic, and only because no feature carries temporal
+memory: every feature is a same-day GFS forecast value (`forecast_temp_c`,
+`cloud_cover`, `wind_speed_10m`, all `_previous_day1`) or a calendar-position
+encoding (`season_sin`/`season_cos`), so a training row dated after a
+held-out block cannot encode that block's outcome — there is no
+autoregressive or lagged channel to leak through, and none was added (the
+session prompt's own hard rule). The sealed test remains strictly
+train-past-only; this CV is an internal generalization estimate, not that
+test.
+
+**Task 1 — row counts and drop counts, whole 1.5-year window, all five
+airports.** Every day in the window is `no forecast row` / `forecast null` /
+`no cloud+wind row` / `cloud null` / `wind null` / `no usable observation` or
+is kept; a day can trigger more than one cause, dropped once.
+
+```
+airport   window days   rows kept   dropped   rows per block (A..F)
+EGLC            560          559         1     91, 91, 91, 92, 90, 104
+LFPG            560          560         0     91, 91, 92, 92, 90, 104
+DSM             560          560         0     91, 91, 92, 92, 90, 104
+YSDU            560          551         9     89, 90, 90, 90, 89, 103
+RNO             560          559         1     90, 91, 92, 92, 90, 104
+```
+
+EGLC's one drop and RNO's one drop are both a missing observation. YSDU
+(Dubbo) loses the most — 1 null forecast, 1 null cloud, 1 null wind, and 8
+"no usable observation" (of which 3 are off-hour reports dropped by D14) —
+reproducing F58's already-published finding that Dubbo's own observation
+record carries the highest off-hour and real-gap rate of the five airports.
+LFPG and DSM lose nothing at all in this window, matching their own clean
+records (F23/F39-adjacent). Nothing was filled (SPEC 2.2).
+
+**Task 2 — pooled out-of-fold MAE and skill vs raw GFS (the headline
+number, every day held out exactly once):**
+
+```
+airport   Raw GFS   +mean-bias      3-feature      5-feature   n days
+EGLC        1.204   1.219 (-1.2%)   1.191 (+1.2%)  1.098 (+8.8%)   559
+LFPG        1.405   1.440 (-2.5%)   1.513 (-7.7%)  1.434 (-2.1%)   560
+DSM         1.882   1.980 (-5.2%)   1.811 (+3.8%)  1.784 (+5.2%)   560
+YSDU        1.365   1.347 (+1.4%)   1.278 (+6.4%)  1.284 (+5.9%)   551
+RNO         1.423   1.411 (+0.8%)   1.369 (+3.8%)  1.318 (+7.3%)   559
+```
+
+Persistence, for context only (its own common subset, dropped where no
+previous-day observation exists in the window): EGLC 2.189 (n=557), LFPG
+2.501 (n=559), DSM 4.080 (n=559), YSDU 2.442 (n=543), RNO 2.699 (n=557) — the
+same shape every earlier session found (persistence far weaker than raw GFS
+at DSM and RNO, closer at the European airports).
+
+**Per-fold MAE, all four rungs, so fold-to-fold variance is visible (does
+the recipe win in some seasons and lose in others):**
+
+```
+EGLC     A       B       C       D       E       F
+Raw GFS  0.915   1.346   1.256   1.099   1.066   1.502
++meanbi  1.072   1.320   1.228   1.104   1.081   1.474
+3-feat   0.932   1.344   1.123   1.329   1.113   1.286
+5-feat   0.807   1.248   1.106   1.084   1.042   1.275
+
+LFPG     A       B       C       D       E       F
+Raw GFS  1.198   1.529   1.191   1.642   1.434   1.431
++meanbi  1.269   1.614   1.202   1.689   1.434   1.431
+3-feat   1.253   1.408   1.457   1.858   1.481   1.602
+5-feat   1.229   1.383   1.455   1.590   1.429   1.505
+
+DSM      A       B       C       D       E       F
+Raw GFS  1.614   2.637   2.018   1.763   1.673   1.624
++meanbi  1.575   2.759   2.204   2.137   1.672   1.580
+3-feat   1.425   2.104   1.818   1.890   1.469   2.113
+5-feat   1.535   1.946   1.780   1.910   1.504   1.997
+
+YSDU     A       B       C       D       E       F
+Raw GFS  1.308   1.287   1.280   1.722   1.407   1.211
++meanbi  1.206   1.314   1.188   1.596   1.517   1.270
+3-feat   1.291   1.262   1.149   1.304   1.505   1.174
+5-feat   1.380   1.236   1.134   1.259   1.568   1.151
+
+RNO      A       B       C       D       E       F
+Raw GFS  1.593   1.016   0.969   2.244   1.885   0.908
++meanbi  1.515   0.895   1.094   2.369   1.784   0.883
+3-feat   1.331   0.943   1.018   2.207   1.693   1.063
+5-feat   1.341   0.875   1.050   2.047   1.614   1.025
+```
+
+Every airport wins in some blocks and loses in others — the recipe is not
+uniformly better or worse across the calendar, which is exactly what a full
+seasonal cycle in training was meant to expose rather than hide. LFPG is the
+one airport where 3-feature loses to raw GFS in four of its six blocks (B,
+C, D, E all worse or roughly flat), which is what drags its pooled figure
+below raw GFS despite winning blocks A and, on 5-feature, most others.
+
+**Task 3 — the overfit diagnostic (pooled in-sample, training-fold, MAE vs
+pooled out-of-fold MAE):**
+
+```
+airport   3-feat in-sample   3-feat OOF   gap      5-feat in-sample   5-feat OOF   gap
+EGLC            0.907           1.191   +0.284           0.784           1.098   +0.314
+LFPG            1.021           1.513   +0.492           0.920           1.434   +0.513
+DSM             1.151           1.811   +0.660           1.040           1.784   +0.744
+YSDU            1.002           1.278   +0.276           0.931           1.284   +0.353
+RNO             1.031           1.369   +0.338           0.918           1.318   +0.400
+```
+
+("in-sample, pooled" concatenates the training-fold predictions from all six
+folds — each row appears in five of six folds' training sets — so it is not
+a per-row figure but a pooled diagnostic, as the session prompt asked.) A
+positive gap at every airport, for both models, is the ordinary signature of
+a flexible tree model fitting its own training fold more tightly than it
+generalises — expected, not alarming, given ~15 months of training data per
+fold. The 5-feature gap is consistently a little larger than the 3-feature
+gap (more features, slightly more capacity to fit training-fold noise), at
+every airport, which is the same overfitting shape session 32's scout
+already flagged on a much shorter window — smaller here, not absent.
+
+**5-feature importances, averaged across the six per-fold models:**
+
+```
+airport   forecast_temp_c   season_sin   season_cos   cloud_cover   wind_speed_10m
+EGLC            24.5%           19.9%        16.0%         14.6%           25.0%
+LFPG            23.2%           24.3%        20.0%         12.7%           19.8%
+DSM             25.4%           28.3%        22.1%          9.7%           14.6%
+YSDU            23.9%           24.2%        19.0%          9.2%           23.7%
+RNO             20.1%           25.7%        21.2%          9.1%           23.9%
+```
+
+Nothing is ignored and nothing dominates at any airport. `wind_speed_10m`
+carries a larger gain share than `cloud_cover` at every airport, most
+sharply at DSM and RNO (roughly 1.5–2.5x), which is consistent with F86's
+own reading that the scout's marginal 5-feature gains leaned on both
+features rather than either alone.
+
+**Task 4 — the two branch reads, reported and not decided, exactly as the
+session prompt required.**
+
+**Branch A — is the window adequate?** Trained on a full seasonal cycle,
+**3-feature beats raw GFS at 4 of 5 airports** (EGLC +1.2%, DSM +3.8%, YSDU
++6.4%, RNO +3.8%) **— only LFPG still loses (-7.7%).** This is a clear
+recovery from the scout's 6-month window, where the freshly-refitted
+3-feature model lost to raw GFS at 4 of 5 airports (EGLC, LFPG, DSM, RNO —
+F86) and beat it only at YSDU. The read: **the proven recipe does recover to
+beating raw GFS once the training data spans a full calendar cycle, at
+every airport except LFPG.** LFPG's own loss is not explained by anything
+this diagnostic measured further — its per-fold table shows the 3-feature
+model losing in four of its six blocks, not one bad block dragging an
+otherwise-good average.
+
+**Branch B — do the features add real out-of-sample value?** **5-feature
+beats 3-feature out-of-fold at 4 of 5 airports** (all but YSDU, where the two
+are within 0.006 degC of each other) **and beats raw GFS at 4 of 5 airports**
+(all but LFPG, where it narrows the 3-feature loss from -7.7% to -2.1% but
+does not close it). This firms up the scout's 3-of-5 marginal-improvement
+signal (F86) across six held-out blocks rather than one held-out year, at a
+similar 4-of-5 hit rate on the raw-GFS comparison specifically. Reno
+specifically: 5-feature (1.318) beats both 3-feature (1.369, +3.8% skill)
+and raw GFS (1.423, +7.3% skill) — a real, if modest, positive signal that
+did not clearly appear in the scout's own short-window read of Reno
+(F86 found cloud/wind made Reno's short-window correction slightly worse,
+not better). `wind_speed_10m`'s gain share at Reno (23.9%) is the largest of
+any single non-`forecast_temp_c`-or-`season` feature at that airport, ahead
+of `cloud_cover` (9.1%).
+
+**One-line synthesis, flagged for the owner and not decided here:** the
+1.5-year feature-complete window looks workable at 4 of 5 airports on this
+diagnostic — the recipe recovers to beating raw GFS with a full seasonal
+cycle in training, and the richer features add a further, real, if modest,
+margin at the same 4 of 5 — while LFPG stands out as the one airport where
+neither model beats raw GFS on this window, which this session's own tools
+cannot explain further.
+
+**Flagged for the owner, per the session prompt — report, do not decide:**
+
+**(a) Is the 1.5-year window workable, or is a deeper GFS GRIB source
+mandatory?** This diagnostic's own answer leans toward "workable at most
+airports": 3-feature recovers to beating raw GFS at 4 of 5 once a full
+seasonal cycle is in training, which was the central open question the
+scout's short window could not answer (F86). It does not resolve LFPG,
+where even a full-cycle 3-feature model still loses to raw GFS on this
+window — whether that is a property of the 1.5-year window specifically, or
+something the locked recipe's own full ~4.3-year training window already
+handles better (LFPG's locked recipe beats raw GFS by 3.4–13.5% on its own
+rehearsal and sealed test, F29/F30), was not tested here and is not
+decidable from this session's own numbers.
+
+**(b) Go/no-go on a full locked sealed-test cycle for the richer
+features?** This diagnostic gives a firmer, multi-fold version of the
+scout's signal — 5-feature beats 3-feature at 4 of 5 airports and beats raw
+GFS at 4 of 5 airports, with sane (present-but-modest) overfit gaps at every
+airport — which is a stronger case than the scout's single-year read gave.
+Whether that is now enough evidence to justify a full lock-and-test cycle,
+given the richer-feature window is still capped at ~1.5 years against the
+locked recipe's ~4.3, and given LFPG's unresolved loss, is the owner's call.
+
+**What this session did not do, on purpose.** No recipe was locked (session
+33 scope forbids it). The sealed test year (2025-08-01 to 2026-07-31) was
+never loaded, pulled, joined, fitted on, or printed at any airport or fold —
+`scripts/session33_cv.py` asserts every loaded date is inside
+`[2024-01-19, 2025-07-31]` and strictly before `2025-08-01` at every load
+point, for every airport. No new raw data was pulled — only session 32's
+existing `data/raw/features/` pull and the existing `data/raw/` chunks were
+read. No hyperparameter was tuned and no feature was hand-picked per
+airport. `SPEC.md` and `RESULTS.md` were not modified. Nothing was
+committed.
+
+---

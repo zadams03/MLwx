@@ -1,0 +1,319 @@
+
+==============================================================================
+SESSION 33 -- seasonal blocked cross-validation, 1.5-year window. SEALED TEST NOT OPENED.
+==============================================================================
+run at        : 2026-09-11 12:08:41 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+CV window     : 2024-01-19 to 2025-07-31
+sealed test   : 2025-08-01 onward -- NOT LOADED
+blocks        : A [2024-01-19..2024-04-18], B [2024-04-19..2024-07-18], C [2024-07-19..2024-10-18], D [2024-10-19..2025-01-18], E [2025-01-19..2025-04-18], F [2025-04-19..2025-07-31]
+model settings (identical for both fitted models, D21.4): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+3-feature set: ['forecast_temp_c', 'season_sin', 'season_cos']
+5-feature set: ['forecast_temp_c', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m']
+
+==============================================================================
+EGLC -- target hour 12:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 1 -- pull/join drop counts (whole 1.5-year window) --
+    calendar days in the window (2024-01-19 to 2025-07-31): 560
+    no forecast row                : 0
+    forecast row present but null  : 0
+    no cloud/wind row               : 0
+    cloud value null                : 0
+    wind value null                 : 0
+    no usable observation           : 1
+      (of which, obs >15 min from hour, dropped by D14: 0)
+      (of which, obs report carried no temperature: 0)
+    rows kept (usable in at least one fold): 559 of 560
+    rows kept per block: A=91, B=91, C=91, D=92, E=90, F=104
+
+-- Task 2 -- per-fold MAE (degC), four rungs --
+    block           Raw GFS      + mean-bias        3-feature        5-feature
+    A                 0.915            1.072            0.932            0.807
+    B                 1.346            1.320            1.344            1.248
+    C                 1.256            1.228            1.123            1.106
+    D                 1.099            1.104            1.329            1.084
+    E                 1.066            1.081            1.113            1.042
+    F                 1.502            1.474            1.286            1.275
+
+-- Task 2 -- pooled out-of-fold MAE and skill vs raw GFS (headline) --
+    rung            MAE degC   skill vs raw GFS   n days
+    Raw GFS            1.204               0.0%      559
+    + mean-bias        1.219              -1.2%      559
+    3-feature          1.191               1.2%      559
+    5-feature          1.098               8.8%      559
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 557 of 559
+    dropped (no previous-day observation in the window): 2
+    Persistence MAE: 2.189 degC  (n=557)
+    Raw GFS MAE on that same subset: 1.205 degC (for comparability with the persistence figure above)
+
+-- Task 3 -- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 2795 train-rows-across-folds) = 0.907   out-of-fold (pooled, 559 rows) = 1.191   gap = +0.284
+    5-feature    in-sample (pooled, 2795 train-rows-across-folds) = 0.784   out-of-fold (pooled, 559 rows) = 1.098   gap = +0.314
+
+-- Task 3 -- 5-feature feature importances, averaged across the six folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               24.5%        505.8
+    season_sin                    19.9%        582.0
+    season_cos                    16.0%        454.3
+    cloud_cover                   14.6%        301.5
+    wind_speed_10m                25.0%        531.7
+
+==============================================================================
+LFPG -- target hour 12:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 1 -- pull/join drop counts (whole 1.5-year window) --
+    calendar days in the window (2024-01-19 to 2025-07-31): 560
+    no forecast row                : 0
+    forecast row present but null  : 0
+    no cloud/wind row               : 0
+    cloud value null                : 0
+    wind value null                 : 0
+    no usable observation           : 0
+      (of which, obs >15 min from hour, dropped by D14: 0)
+      (of which, obs report carried no temperature: 0)
+    rows kept (usable in at least one fold): 560 of 560
+    rows kept per block: A=91, B=91, C=92, D=92, E=90, F=104
+
+-- Task 2 -- per-fold MAE (degC), four rungs --
+    block           Raw GFS      + mean-bias        3-feature        5-feature
+    A                 1.198            1.269            1.253            1.229
+    B                 1.529            1.614            1.408            1.383
+    C                 1.191            1.202            1.457            1.455
+    D                 1.642            1.689            1.858            1.590
+    E                 1.434            1.434            1.481            1.429
+    F                 1.431            1.431            1.602            1.505
+
+-- Task 2 -- pooled out-of-fold MAE and skill vs raw GFS (headline) --
+    rung            MAE degC   skill vs raw GFS   n days
+    Raw GFS            1.405               0.0%      560
+    + mean-bias        1.440              -2.5%      560
+    3-feature          1.513              -7.7%      560
+    5-feature          1.434              -2.1%      560
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 559 of 560
+    dropped (no previous-day observation in the window): 1
+    Persistence MAE: 2.501 degC  (n=559)
+    Raw GFS MAE on that same subset: 1.404 degC (for comparability with the persistence figure above)
+
+-- Task 3 -- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 2800 train-rows-across-folds) = 1.021   out-of-fold (pooled, 560 rows) = 1.513   gap = +0.492
+    5-feature    in-sample (pooled, 2800 train-rows-across-folds) = 0.920   out-of-fold (pooled, 560 rows) = 1.434   gap = +0.513
+
+-- Task 3 -- 5-feature feature importances, averaged across the six folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               23.2%        590.5
+    season_sin                    24.3%        561.8
+    season_cos                    20.0%        495.5
+    cloud_cover                   12.7%        231.3
+    wind_speed_10m                19.8%        518.5
+
+==============================================================================
+DSM -- target hour 18:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 1 -- pull/join drop counts (whole 1.5-year window) --
+    calendar days in the window (2024-01-19 to 2025-07-31): 560
+    no forecast row                : 0
+    forecast row present but null  : 0
+    no cloud/wind row               : 0
+    cloud value null                : 0
+    wind value null                 : 0
+    no usable observation           : 0
+      (of which, obs >15 min from hour, dropped by D14: 0)
+      (of which, obs report carried no temperature: 0)
+    rows kept (usable in at least one fold): 560 of 560
+    rows kept per block: A=91, B=91, C=92, D=92, E=90, F=104
+
+-- Task 2 -- per-fold MAE (degC), four rungs --
+    block           Raw GFS      + mean-bias        3-feature        5-feature
+    A                 1.614            1.575            1.425            1.535
+    B                 2.637            2.759            2.104            1.946
+    C                 2.018            2.204            1.818            1.780
+    D                 1.763            2.137            1.890            1.910
+    E                 1.673            1.672            1.469            1.504
+    F                 1.624            1.580            2.113            1.997
+
+-- Task 2 -- pooled out-of-fold MAE and skill vs raw GFS (headline) --
+    rung            MAE degC   skill vs raw GFS   n days
+    Raw GFS            1.882               0.0%      560
+    + mean-bias        1.980              -5.2%      560
+    3-feature          1.811               3.8%      560
+    5-feature          1.784               5.2%      560
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 559 of 560
+    dropped (no previous-day observation in the window): 1
+    Persistence MAE: 4.080 degC  (n=559)
+    Raw GFS MAE on that same subset: 1.885 degC (for comparability with the persistence figure above)
+
+-- Task 3 -- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 2800 train-rows-across-folds) = 1.151   out-of-fold (pooled, 560 rows) = 1.811   gap = +0.660
+    5-feature    in-sample (pooled, 2800 train-rows-across-folds) = 1.040   out-of-fold (pooled, 560 rows) = 1.784   gap = +0.744
+
+-- Task 3 -- 5-feature feature importances, averaged across the six folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               25.4%        571.0
+    season_sin                    28.3%        616.2
+    season_cos                    22.1%        471.7
+    cloud_cover                    9.7%        272.7
+    wind_speed_10m                14.6%        482.8
+
+==============================================================================
+YSDU -- target hour 02:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 1 -- pull/join drop counts (whole 1.5-year window) --
+    calendar days in the window (2024-01-19 to 2025-07-31): 560
+    no forecast row                : 0
+    forecast row present but null  : 1
+    no cloud/wind row               : 0
+    cloud value null                : 1
+    wind value null                 : 1
+    no usable observation           : 8
+      (of which, obs >15 min from hour, dropped by D14: 3)
+      (of which, obs report carried no temperature: 0)
+    rows kept (usable in at least one fold): 551 of 560
+    rows kept per block: A=89, B=90, C=90, D=90, E=89, F=103
+
+-- Task 2 -- per-fold MAE (degC), four rungs --
+    block           Raw GFS      + mean-bias        3-feature        5-feature
+    A                 1.308            1.206            1.291            1.380
+    B                 1.287            1.314            1.262            1.236
+    C                 1.280            1.188            1.149            1.134
+    D                 1.722            1.596            1.304            1.259
+    E                 1.407            1.517            1.505            1.568
+    F                 1.211            1.270            1.174            1.151
+
+-- Task 2 -- pooled out-of-fold MAE and skill vs raw GFS (headline) --
+    rung            MAE degC   skill vs raw GFS   n days
+    Raw GFS            1.365               0.0%      551
+    + mean-bias        1.347               1.4%      551
+    3-feature          1.278               6.4%      551
+    5-feature          1.284               5.9%      551
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 543 of 551
+    dropped (no previous-day observation in the window): 8
+    Persistence MAE: 2.442 degC  (n=543)
+    Raw GFS MAE on that same subset: 1.352 degC (for comparability with the persistence figure above)
+
+-- Task 3 -- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 2755 train-rows-across-folds) = 1.002   out-of-fold (pooled, 551 rows) = 1.278   gap = +0.276
+    5-feature    in-sample (pooled, 2755 train-rows-across-folds) = 0.931   out-of-fold (pooled, 551 rows) = 1.284   gap = +0.353
+
+-- Task 3 -- 5-feature feature importances, averaged across the six folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               23.9%        499.3
+    season_sin                    24.2%        532.2
+    season_cos                    19.0%        483.3
+    cloud_cover                    9.2%        236.8
+    wind_speed_10m                23.7%        607.2
+
+==============================================================================
+RNO -- target hour 20:00 UTC (SPEC 3.4)
+==============================================================================
+
+-- Task 1 -- pull/join drop counts (whole 1.5-year window) --
+    calendar days in the window (2024-01-19 to 2025-07-31): 560
+    no forecast row                : 0
+    forecast row present but null  : 0
+    no cloud/wind row               : 0
+    cloud value null                : 0
+    wind value null                 : 0
+    no usable observation           : 1
+      (of which, obs >15 min from hour, dropped by D14: 0)
+      (of which, obs report carried no temperature: 0)
+    rows kept (usable in at least one fold): 559 of 560
+    rows kept per block: A=90, B=91, C=92, D=92, E=90, F=104
+
+-- Task 2 -- per-fold MAE (degC), four rungs --
+    block           Raw GFS      + mean-bias        3-feature        5-feature
+    A                 1.593            1.515            1.331            1.341
+    B                 1.016            0.895            0.943            0.875
+    C                 0.969            1.094            1.018            1.050
+    D                 2.244            2.369            2.207            2.047
+    E                 1.885            1.784            1.693            1.614
+    F                 0.908            0.883            1.063            1.025
+
+-- Task 2 -- pooled out-of-fold MAE and skill vs raw GFS (headline) --
+    rung            MAE degC   skill vs raw GFS   n days
+    Raw GFS            1.423               0.0%      559
+    + mean-bias        1.411               0.8%      559
+    3-feature          1.369               3.8%      559
+    5-feature          1.318               7.3%      559
+
+-- Persistence (context only -- not part of the CV ladder) --
+    rows with a usable previous-day observation: 557 of 559
+    dropped (no previous-day observation in the window): 2
+    Persistence MAE: 2.699 degC  (n=557)
+    Raw GFS MAE on that same subset: 1.423 degC (for comparability with the persistence figure above)
+
+-- Task 3 -- overfit diagnostic: pooled in-sample vs pooled out-of-fold MAE --
+    3-feature    in-sample (pooled, 2795 train-rows-across-folds) = 1.031   out-of-fold (pooled, 559 rows) = 1.369   gap = +0.338
+    5-feature    in-sample (pooled, 2795 train-rows-across-folds) = 0.918   out-of-fold (pooled, 559 rows) = 1.318   gap = +0.400
+
+-- Task 3 -- 5-feature feature importances, averaged across the six folds --
+    feature             mean gain share  mean splits
+    forecast_temp_c               20.1%        539.5
+    season_sin                    25.7%        523.3
+    season_cos                    21.2%        505.3
+    cloud_cover                    9.1%        238.0
+    wind_speed_10m                23.9%        577.2
+
+==============================================================================
+Task 4 -- the two branch reads (report, do NOT decide)
+==============================================================================
+
+-- Branch A -- trained on a full calendar cycle, does 3-feature beat raw GFS? --
+    airport    raw GFS  3-feature   beats?   skill %
+    EGLC         1.204      1.191      YES     +1.2
+    LFPG         1.405      1.513       no     -7.7
+    DSM          1.882      1.811      YES     +3.8
+    YSDU         1.365      1.278      YES     +6.4
+    RNO          1.423      1.369      YES     +3.8
+    3-feature beats raw GFS (full-cycle CV) at 4 of 5 airports
+    Session 32's scout (6-month window): 3-feature lost to raw GFS at 4 of 5 airports (EGLC, LFPG, DSM, RNO).
+
+-- Branch B -- does 5-feature beat 3-feature out-of-fold, and beat raw GFS? --
+    airport     3-feat    5-feat  5 beats 3?  5 beats raw?
+    EGLC         1.191     1.098         YES           YES
+    LFPG         1.513     1.434         YES            no
+    DSM          1.811     1.784         YES           YES
+    YSDU         1.278     1.284          no           YES
+    RNO          1.369     1.318         YES           YES
+    5-feature beats 3-feature at 4 of 5 airports
+    5-feature beats raw GFS at 4 of 5 airports
+
+-- Reno specifically --
+    RNO raw GFS pooled OOF MAE      : 1.423
+    RNO 3-feature pooled OOF MAE    : 1.369
+    RNO 5-feature pooled OOF MAE    : 1.318
+    RNO 5-feature cloud_cover gain share  : 9.1%
+    RNO 5-feature wind_speed_10m gain share: 23.9%
+
+-- overfit gap summary, all airports --
+    airport   3-feat gap  5-feat gap
+    EGLC          +0.284      +0.314
+    LFPG          +0.492      +0.513
+    DSM           +0.660      +0.744
+    YSDU          +0.276      +0.353
+    RNO           +0.338      +0.400
+
+-- one-line synthesis (report only, the owner decides) --
+    Branch A: 3-feature beats raw GFS at 4 of 5 airports with a full seasonal cycle in training (against 1 of 5 on the session-32 short window).
+    Branch B: 5-feature beats 3-feature at 4 of 5 airports and beats raw GFS at 4 of 5 airports.
+    Whether this points to "the 1.5-year window is workable" or "a deeper source is needed" is flagged for the owner in the DECISIONS finding, not decided here.
+
+==============================================================================
+END
+==============================================================================
+Raw files untouched (no new raw pulled or written). Nothing was filled (SPEC 2.2). No forecast or observation date on or after 2025-08-01 was loaded, printed, averaged or fitted on, at any airport or fold. No recipe was locked. Nothing was committed.
+This output is saved at notes/session-33-check-output.txt
