@@ -1,0 +1,6 @@
+station,train_rows,test_rows,raw_mae,persist_mae,f3_mae,f5_mae,passes_raw,passes_persist,verdict
+EGLC,1589,364,1.2536,2.0964,1.0367,1.0000,True,True,PASS
+LFPG,1589,364,1.3822,2.3003,1.1775,1.1561,True,True,PASS
+DSM,1590,365,1.7334,4.0029,1.6940,1.6358,True,True,PASS
+YSDU,1573,356,1.3167,2.6686,1.2834,1.1786,True,True,PASS
+RNO,1587,365,1.5116,2.4901,1.4551,1.3460,True,True,PASS

@@ -2053,3 +2053,160 @@ and earlier sessions already pulled were read, all read-only. Did not take
 D48's authorised look (D48.13) -- that remains session 42's job, now
 against a corrected ceiling. Did not modify `SPEC.md` or `RESULTS.md`.
 Nothing was committed.
+
+---
+
+## 2026-09-12 -- Session 42 finding: D48's one authorised look, taken. The
+5-feature GRIB recipe PASSES the frozen bar at all five airports, exactly
+matching the D48.12 pre-registration.
+
+**F94. This is the single authorised look at the sealed test year for the
+5-feature GRIB recipe (D48.13). It stands exactly as reported below -- no
+re-tuning, no re-run, no retroactive adjustment.** `scripts/
+session39_sealed_test.py` was confirmed unchanged since the F93 commit
+(`git diff HEAD` empty against it) and run exactly as-is, once, with no
+argument, against session 40's already-pulled `grib_features_sealed_
+window.csv` and the existing sealed-year IEM chunks -- no new data pulled.
+It completed cleanly: every self-guard (training-row reconciliation,
+D48.7; the corrected sealed-row ceiling, D48.8/F93; the in-window date
+assertions) passed at every airport, no guard tripped, no unforeseen
+error. Full real output: `notes/session40-sealed-test-output.txt` (the
+file name is the frozen script's own, unchanged since session 39 -- this
+is session 42's real run, replacing session 40's earlier partial output up
+to its guard-trip). Summary table: `data/processed/
+session40_sealed_test_summary.csv`.
+
+**Task 1 result -- sealed-year MAE, four rungs, all five airports:**
+
+```
+airport  Raw GFS (GRIB)  Persistence  3-feature  5-feature  n (test_rows)
+EGLC          1.254          2.096       1.037       1.000        364
+LFPG          1.382          2.300       1.177       1.156        364
+DSM           1.733          4.003       1.694       1.636        365
+YSDU          1.317          2.669       1.283       1.179        356
+RNO           1.512          2.490       1.455       1.346        365
+```
+
+**D48.11 bar verdict -- 5-feature vs raw GFS (GRIB) and persistence, per
+airport:**
+
+```
+airport  5f vs raw GFS         5f vs persistence      VERDICT
+EGLC     1.000 vs 1.254 (+20.2%)  1.000 vs 2.096 (+52.3%)   PASS
+LFPG     1.156 vs 1.382 (+16.4%)  1.156 vs 2.300 (+49.7%)   PASS
+DSM      1.636 vs 1.733 (+5.6%)   1.636 vs 4.003 (+59.1%)   PASS
+YSDU     1.179 vs 1.317 (+10.5%)  1.179 vs 2.669 (+55.8%)   PASS
+RNO      1.346 vs 1.512 (+11.0%)  1.346 vs 2.490 (+45.9%)   PASS
+```
+
+**5 of 5 airports PASS the frozen bar (SPEC 5.3, D22, D48.11).** This is
+the project's first result where every opened airport passes under one
+recipe -- including LFPG (which never passed under the existing 3-feature/
+Open-Meteo recipe's own rehearsal read at the same window, F86/F87's
+5-of-5 read on the diagnostic notwithstanding) and RNO (whose EXISTING
+sealed test, F82, failed).
+
+**5-vs-3-feature comparison (reported alongside the bar, not part of it,
+D48.10/D48.11) -- 5-feature beats 3-feature at all five airports:**
+
+```
+airport  3-feature  5-feature  5-vs-3 skill
+EGLC       1.037      1.000       +3.5%
+LFPG       1.177      1.156       +1.8%
+DSM        1.694      1.636       +3.4%
+YSDU       1.283      1.179       +8.2%
+RNO        1.455      1.346       +7.5%
+```
+
+**Task 2 -- scoring-consistency check, confirmed with one genuine, minor,
+verdict-irrelevant finding.** The frozen script's own `passes_persist =
+f5_mae < persist_mae` compares `f5_mae` (computed over all of
+`test_rows`) against `persist_mae` (computed over the narrower
+`common_persist` subset -- days with a usable previous-day observation,
+SPEC 2.1d). Where the sealed year has zero days missing a previous-day
+observation (DSM, RNO: `no_prev=0`) the two sets are identical and no
+question arises. Where it does not (EGLC 1 day, LFPG 1 day, YSDU 9 days)
+this is a real day-set mismatch against the shared-day-set convention
+F93 documented every prior airport's own sealed test as using for every
+rung (raw, persistence, ML-corrected) together. **A read-only diagnostic**
+(`scripts/session42_scoring_check.py`, importing `session39_sealed_test.py`
+unmodified as a library -- same pattern as session 41's `session41_verify.py`
+-- reusing its own fitted models and predictions, fitting nothing new)
+recomputed raw/3-feature/5-feature MAE restricted to exactly the
+`common_persist` day set, and compared the two bases directly. Full output:
+`notes/session-42-scoring-check-output.txt`.
+
+```
+station  n(full)  n(common)  no_prev  5f MAE(full)  5f MAE(common)  persist MAE  frozen verdict  common-basis verdict
+EGLC        364        363        1       1.000          1.001         2.096          PASS              PASS
+LFPG        364        363        1       1.156          1.157         2.300          PASS              PASS
+DSM         365        365        0       1.636          1.636         4.003          PASS              PASS
+YSDU        356        347        9       1.179          1.165         2.669          PASS              PASS
+RNO         365        365        0       1.346          1.346         2.490          PASS              PASS
+```
+
+**All five airports give the identical PASS verdict under both day
+bases**, against both raw GFS and persistence (the raw-GFS comparison was
+never at risk -- raw, 3-feature and 5-feature are all computed on the same
+`test_rows` set already, D48.10). The largest MAE shift from restricting
+to the common-persist day set is YSDU's, 1.179 -> 1.165 (a 0.014 degC
+change on 9 of 356 days), nowhere close to closing a 55.8%-skill margin
+against persistence. **Verdict: the mismatch is real and is a genuine,
+reportable deviation from the shared-day-set convention F93 named, but it
+is verdict-irrelevant at every airport this run** -- reported straight,
+per the session prompt's own instruction, rather than silently accepted or
+used to withhold the result. It is flagged here for whoever eventually
+folds this recipe into SPEC/RESULTS (a later, separate consolidation
+session, D48.11), so the frozen script's own day-basis choice is on record
+rather than rediscovered.
+
+**Task 3 -- comparison against the D48.12 pre-registration: full,
+exact match, no divergence.** D48.12 (recorded before any sealed data was
+seen, from F91) predicted: 5-feature beats both raw GFS and persistence at
+all five airports; 5-feature beats 3-feature at all five airports; LFPG
+passes; RNO passes (a reversal of its own existing sealed-test failure
+under the different, existing 3-feature/Open-Meteo recipe, F82, not an
+erasure of it, D48.13). **Every one of those four predictions came true,
+at every airport, with no exception and no close call** -- the narrowest
+raw-GFS margin (DSM, +5.6%) and the narrowest persistence margin (RNO,
++45.9%) are both comfortably positive, and the narrowest 5-vs-3 margin
+(LFPG, +1.8%) is still a genuine, if modest, win. **This is the first
+pre-registered expectation in the project's history to be confirmed
+without exception at every airport it named** (contrast D44.12's Reno
+prediction, which named the existing recipe's failure mode in advance and
+was also confirmed -- but as a failure, not a clean sweep of passes).
+
+**What this does and does not mean for the project's existing results,
+stated per D48.13.** This is a new, separate test of a different recipe
+(GRIB source, richer features) on the same sealed test year. It does
+**not** re-open, re-test, or overwrite any airport's existing sealed-test
+verdict under the existing 3-feature/Open-Meteo recipe -- EGLC F16, LFPG
+F30, DSM F47, YSDU F64 and RNO F82 all stand exactly as reported. At EGLC,
+DSM and YSDU the project now has two independently-tested, independently-
+passing recipes. At LFPG and RNO, the richer GRIB recipe passes where the
+existing recipe's own sealed test did not (RNO, F82) or where the honest
+reading of the existing recipe's cross-airport comparison never singled it
+out as a clean win (LFPG's F30 pass stands on its own terms; the richer
+recipe's win here is a separate, additional result, not a correction to
+F30). Whether/how to fold the 5-feature GRIB recipe into `SPEC.md`/
+`RESULTS.md` as the project's primary method is a later, separate
+consolidation session's decision, not made here.
+
+**What this session did not do, on purpose.** Did not modify
+`scripts/session39_sealed_test.py` in any way (confirmed by `git diff HEAD`
+before and after running it -- empty). Did not re-run, re-tune, or adjust
+anything after seeing the results -- the numbers above are the single
+authorised look and stand as reported (D48.13). Did not pull any new raw
+or processed data -- reused session 40's `grib_features_sealed_window.csv`
+and the existing sealed-year IEM chunks, all read-only. Did not touch any
+date outside 2025-08-01..2026-07-31 for the sealed side, or before
+2021-03-24 for the training side -- enforced by the frozen script's own
+assertions, which raised on none of them. Did not modify `SPEC.md` or
+`RESULTS.md` -- folding the method in is a separate consolidation session.
+Did not re-open, re-score, or adjust any existing airport's sealed-test
+verdict (EGLC F16, LFPG F30, DSM F47, YSDU F64, RNO F82 all untouched).
+Nothing was committed. Scripts: `scripts/session39_sealed_test.py` (run
+unmodified), `scripts/session42_scoring_check.py` (new, read-only
+diagnostic). Full real output: `notes/session40-sealed-test-output.txt`,
+`notes/session-42-scoring-check-output.txt`. Summary table: `data/
+processed/session40_sealed_test_summary.csv`.

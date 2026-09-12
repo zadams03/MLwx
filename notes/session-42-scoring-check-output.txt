@@ -1,0 +1,13 @@
+Session 42 Task 2 -- scoring-consistency check (read-only, no frozen-script change)
+Reproduces the frozen script's own fitted models and predictions; compares the
+frozen script's own day-mismatched 5-vs-persistence comparison against an
+apples-to-apples version restricted to the days persistence is actually defined on.
+
+station  n_full n_common no_prev |  raw(full)  3f(full)  5f(full) |  raw(cmn)  3f(cmn)  5f(cmn)  persist |  frozen>persist?  common>persist?  same verdict?
+EGLC        364      363       1 |      1.254     1.037     1.000 |     1.253    1.037    1.001    2.096 |              YES              YES           SAME
+LFPG        364      363       1 |      1.382     1.177     1.156 |     1.378    1.177    1.157    2.300 |              YES              YES           SAME
+DSM         365      365       0 |      1.733     1.694     1.636 |     1.733    1.694    1.636    4.003 |              YES              YES           SAME
+YSDU        356      347       9 |      1.317     1.283     1.179 |     1.305    1.267    1.165    2.669 |              YES              YES           SAME
+RNO         365      365       0 |      1.512     1.455     1.346 |     1.512    1.455    1.346    2.490 |              YES              YES           SAME
+
+All five airports give the SAME pass/fail verdict under both day bases: True

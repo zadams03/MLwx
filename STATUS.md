@@ -3,7 +3,93 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 41._
+_Last updated: 12 September 2026, after session 42._
+
+---
+
+## Session 42 (the sealed test, clean run — D48's one authorised look,
+taken. VERDICT: 5-feature GRIB recipe PASSES at all five airports)
+
+**The verdict, for real this time. Runs the frozen `scripts/
+session39_sealed_test.py` once, unchanged, against session 40's
+already-pulled sealed-year GRIB feature set and the corrected D48.8
+ceiling (session 41, F93). It completed cleanly — no self-guard tripped —
+and every one of the five airports PASSES the frozen bar, exactly matching
+the D48.12 pre-registration with no exception. Full account: DECISIONS
+F94.** Script run: `scripts/session39_sealed_test.py` (confirmed unchanged
+since the F93 commit, `git diff HEAD` empty, before and after running).
+Full real output: `notes/session40-sealed-test-output.txt` (the file name
+is the frozen script's own; this is session 42's real, complete run).
+Summary table: `data/processed/session40_sealed_test_summary.csv`.
+
+**Task 1 — sealed-year MAE, four rungs, all five airports:**
+
+```
+airport  Raw GFS (GRIB)  Persistence  3-feature  5-feature  n
+EGLC          1.254          2.096       1.037       1.000    364
+LFPG          1.382          2.300       1.177       1.156    364
+DSM           1.733          4.003       1.694       1.636    365
+YSDU          1.317          2.669       1.283       1.179    356
+RNO           1.512          2.490       1.455       1.346    365
+```
+
+**D48.11 bar: 5 of 5 airports PASS** — 5-feature beats both raw GFS (GRIB)
+and persistence at every airport, with the narrowest raw-GFS margin at DSM
+(+5.6%) and the narrowest persistence margin at RNO (+45.9%). **This is
+the project's first result where every opened airport passes under one
+recipe** — including LFPG and RNO, whose results under the *existing*
+3-feature/Open-Meteo recipe were, respectively, a pass that never showed a
+clean multi-window win (F30, contrast F87's own 1.5-year diagnostic where
+LFPG lost) and an outright sealed-test failure (RNO, F82). **5-feature
+also beats 3-feature at all five airports** (EGLC +3.5%, LFPG +1.8%, DSM
++3.4%, YSDU +8.2%, RNO +7.5%).
+
+**Task 2 — scoring-consistency check: one real, minor, verdict-irrelevant
+finding.** The frozen script compares `f5_mae` (all `test_rows`) against
+`persist_mae` (the narrower `common_persist` subset, days with a usable
+previous-day observation) — a day-set mismatch wherever `no_prev > 0`
+(EGLC 1 day, LFPG 1 day, YSDU 9 days; DSM and RNO have none). A read-only
+diagnostic (`scripts/session42_scoring_check.py`, importing the frozen
+script unmodified, same pattern as session 41's verifier) recomputed
+5-feature MAE restricted to exactly the common-persist day set and
+compared both bases directly: **all five airports give the identical PASS
+verdict under both day bases** — the largest shift is YSDU's, 1.179 to
+1.165 on 9 of 356 days, nowhere near closing a 55.8%-skill margin. Full
+output: `notes/session-42-scoring-check-output.txt`.
+
+**Task 3 — comparison against D48.12's pre-registration: exact match, no
+divergence, at every airport.** All four pre-registered predictions came
+true with no exception: 5-feature beats both raw GFS and persistence
+everywhere; 5-feature beats 3-feature everywhere; LFPG passes; RNO passes
+(a reversal of RNO's *existing* recipe's sealed-test failure, F82 — a
+separate finding about a different, richer recipe on a different data
+source, not an erasure of F82, per D48.13).
+
+**What this does not change.** Per D48.13, this new recipe's results do
+not re-open, re-test, or overwrite any airport's existing sealed-test
+verdict under the existing 3-feature/Open-Meteo recipe — EGLC F16, LFPG
+F30, DSM F47, YSDU F64 and RNO F82 all stand exactly as before. Whether/how
+to fold the 5-feature GRIB recipe into `SPEC.md`/`RESULTS.md` is a later,
+separate consolidation session's decision — not made here.
+
+**What this session did not do, on purpose.** Did not modify
+`scripts/session39_sealed_test.py` at all (confirmed by `git diff`, empty,
+both before and after running it). Did not re-run, re-tune, or adjust
+anything after seeing the results. Did not pull any new data — reused
+session 40's sealed feature file and the existing sealed-year IEM chunks,
+read-only. Did not touch any date outside the training/sealed windows —
+enforced by the frozen script's own assertions, none of which raised. Did
+not modify `SPEC.md` or `RESULTS.md`. Did not re-open or adjust any
+existing airport's sealed-test verdict. Nothing was committed. Scripts:
+`scripts/session39_sealed_test.py` (unmodified, run as-is),
+`scripts/session42_scoring_check.py` (new, read-only diagnostic).
+
+**Archive step this session:** none taken — F89/F90/F91 (the GRIB build's
+own evidence base) and D48/F92/F93 (the lock and the guard correction)
+all stay live until the consolidation session folds this recipe's proven
+result into `SPEC.md`/`RESULTS.md`; this session's own new finding, F94,
+is obviously live. Nothing else in `DECISIONS.md` became newly settled
+this session.
 
 ---
 
@@ -427,28 +513,31 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 ## Current stage
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
-airports opened so far — four pass, one fails; none of that changed this
-session. The GRIB-build sub-project (docs/session-36.md through
-docs/session-41.md) is now unblocked, but step 4b's actual sealed-test run
-still has not happened: step 1 confirmed the back-extent and validated the
-GRIB→point pipeline; step 2 fixed RNO's pipeline gap, pulled the full
-v16-only feature set, and validated cloud/wind; step 3 diagnosed the cloud
-tail, joined the GRIB features to observations, and re-ran the
-richer-features blocked CV on the full ~4.4-year window; step 4a locked
-the 5-feature recipe in full (DECISIONS D48) and froze the sealed-test
-script; step 4b's first attempt (session 40) pulled and decoded the
-sealed-year GRIB feature set cleanly, then tripped the frozen script's own
-D48.12 self-guard before fitting any model, because three of five
-airports' sealed-year row counts exceeded their own D48.8 scored-day
-ceiling (DECISIONS F92); **session 41 verified those "extra" days are
-BENIGN — a guard mis-specification (the ceiling compared two different
-stages of the same pipeline, not a real GRIB-vs-Open-Meteo coverage
-difference) rather than a data problem — and corrected the D48.8 ceiling
-in the frozen script accordingly (DECISIONS F93), with no model fit and no
-sealed-year result seen.** No airport has a sealed-test verdict under the
-5-feature GRIB recipe yet, and D48's one authorised look has not been
-taken anywhere — that is now step 4b's still-pending actual run, a new
-session's job.
+airports opened so far under the EXISTING 3-feature/Open-Meteo recipe —
+four pass, one fails; none of that changed this session (D48.13).
+The GRIB-build sub-project (docs/session-36.md through docs/session-42.md)
+has now run its full four-step build and its one authorised look: step 1
+confirmed the back-extent and validated the GRIB→point pipeline; step 2
+fixed RNO's pipeline gap, pulled the full v16-only feature set, and
+validated cloud/wind; step 3 diagnosed the cloud tail, joined the GRIB
+features to observations, and re-ran the richer-features blocked CV on
+the full ~4.4-year window; step 4a locked the 5-feature recipe in full
+(DECISIONS D48) and froze the sealed-test script; step 4b's first attempt
+(session 40) pulled and decoded the sealed-year GRIB feature set cleanly,
+then tripped the frozen script's own D48.12 self-guard before fitting any
+model, because three of five airports' sealed-year row counts exceeded
+their own D48.8 scored-day ceiling (DECISIONS F92); session 41 verified
+those "extra" days are BENIGN — a guard mis-specification, not a data
+problem — and corrected the D48.8 ceiling in the frozen script accordingly
+(DECISIONS F93). **Session 42 then took D48's one authorised look: the
+frozen script ran cleanly, no guard tripped, and the 5-feature GRIB recipe
+PASSES the frozen bar at all five airports — EGLC, LFPG, DSM, YSDU and
+RNO — exactly matching the D48.12 pre-registration with no exception
+(DECISIONS F94).** This is a separate, additional result under a different
+recipe (GRIB source, richer features); it does not alter any airport's
+existing sealed-test verdict under the existing recipe (D48.13). Whether
+and how to fold this recipe into `SPEC.md`/`RESULTS.md` is a later,
+separate consolidation session's decision — not made yet.
 
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
@@ -540,8 +629,12 @@ leakage-safe form on this API/offset, at any date or airport.
 ## Airports
 
 Full per-airport facts live in SPEC 3.4; the full results table is now SPEC
-5.0, complete for all five airports and matching `RESULTS.md`'s own table.
-Summary:
+5.0, complete for all five airports and matching `RESULTS.md`'s own table
+— **this table is the existing 3-feature/Open-Meteo recipe only, unchanged
+by this session (D48.13).** The separate 5-feature GRIB recipe's own
+sealed-test result (session 42, DECISIONS F94: PASS at all five airports)
+is not yet folded into either SPEC or RESULTS — that is a later
+consolidation session's job. Summary:
 
 | airport | stage | status |
 |---|---|---|
@@ -752,64 +845,77 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   unchanged) and made with no model fit and no sealed-year result seen
   (DECISIONS F93). `SPEC.md`/`RESULTS.md` not modified. Nothing was
   committed.
+- **Session 42: the sealed test, clean run -- D48's one authorised look,
+  taken.** The frozen `scripts/session39_sealed_test.py` (confirmed
+  unchanged since the F93 commit) was run once, unchanged, against
+  session 40's already-pulled sealed-year GRIB feature set: no self-guard
+  tripped, no error. **Verdict (DECISIONS F94): the 5-feature GRIB recipe
+  PASSES the frozen bar at all five airports** -- EGLC (+20.2% skill vs
+  raw GFS), LFPG (+16.4%), DSM (+5.6%), YSDU (+10.5%), RNO (+11.0%) --
+  and beats persistence by 45.9-59.1% everywhere; 5-feature beats
+  3-feature at all five airports too (+1.8% to +8.2%). This is the
+  project's first result where every opened airport passes under one
+  recipe, and it matches the D48.12 pre-registration exactly, with no
+  divergence at any airport. A read-only scoring-consistency check
+  (`scripts/session42_scoring_check.py`) confirmed a real but
+  verdict-irrelevant day-set mismatch in the frozen script's own
+  5-vs-persistence comparison at three airports (EGLC, LFPG, YSDU) --
+  recomputed on a fair, apples-to-apples day basis, all five verdicts are
+  unchanged. Per D48.13, this is a separate, additional result under a
+  different recipe and does not alter any airport's existing sealed-test
+  verdict (EGLC F16, LFPG F30, DSM F47, YSDU F64, RNO F82 all stand
+  exactly as before). `SPEC.md`/`RESULTS.md` not modified -- folding this
+  recipe in is a later consolidation session's job. Nothing was
+  committed.
 
 ## Next
 
-**The GRIB-build sub-project (docs/session-36.md through docs/session-41.md)
-is now UNBLOCKED, but step 4b's actual sealed-test run still has not
-happened.** The recipe is frozen (DECISIONS D48) and the sealed-year GRIB
-feature set is pulled and decoded, cleanly, at all five airports
-(`data/processed/grib_features_sealed_window.csv`). Session 40 found the
-frozen test script (`scripts/session39_sealed_test.py`) tripped its own
-D48.12 self-guard before fitting any model, because three of five
-airports' sealed-year row counts exceeded their own D48.8 scored-day
-ceiling (F92). **Session 41 traced this to a guard mis-specification
-(comparing two different stages of the same pipeline, not a real
-GRIB-vs-Open-Meteo coverage difference -- DECISIONS F93) and corrected the
-ceiling in the frozen script.** **D48's one authorised look has STILL not
-been taken anywhere** -- session 41 deliberately fit no model and computed
-no sealed-year result, exactly per its own scope.
+**The GRIB-build sub-project (docs/session-36.md through docs/session-42.md)
+has now completed its full four-step build AND its one authorised look.**
+Session 42 ran the frozen sealed-test script once, cleanly, and the
+5-feature GRIB recipe **PASSES the frozen bar at all five airports**
+(DECISIONS F94), exactly matching the D48.12 pre-registration. Per D48.13
+("one look, and it stands"), this result is now final and unmodifiable --
+no re-run, no re-tune, whatever a later session might wish were different.
 
-**Running the corrected script (the actual sealed test) is a new session's
-job -- not decided or done here, and not mechanical to skip to.** Per
-D48.13 ("one look, and it stands"), this is the first time the ceiling
-will be run against a corrected rule, so it should be treated as the
-genuine first attempt at D48.13's one look, not a retry. Session 41's own
-scope stopped short of running `scripts/session39_sealed_test.py` to
-completion on purpose (its Task 2 corrected the guard; taking D48's
-authorised look was explicitly session 42's job, not this one).
+**What is not yet done: folding the proven recipe into `SPEC.md` and
+`RESULTS.md`.** This is explicitly a separate, later consolidation
+session's job (D48.11, session-42's own prompt) -- not started, not
+decided here. It would need to address, among other things: whether the
+5-feature GRIB recipe becomes the project's primary/recorded method at
+each airport (alongside or instead of the existing 3-feature/Open-Meteo
+recipe's own results, which stand unchanged per D48.13); how SPEC 5.0's
+results table and `RESULTS.md`'s own summary should present two
+independently-tested recipes at the same five airports; and the minor
+scoring-basis note from session 42's Task 2 (a real but verdict-irrelevant
+day-set mismatch in the frozen script's own 5-vs-persistence comparison at
+three airports, F94) is on record for whoever writes that consolidation.
 
-**Pre-registered expectations, recorded in D48 before any sealed data was
-seen (from F91), still untested:** 5-feature beats both raw GFS and
-persistence at all five airports; 5-feature beats 3-feature at all five;
-LFPG passes (recovered on the full window, F91); Reno passes (the rescue
-signal strengthened to +12.7% skill on the full window, F91) -- a reversal
-of Reno's own existing sealed-test failure under the different, existing
-3-feature/Open-Meteo recipe (F82), not an erasure of it (D48.13). None of
-this has been checked against real sealed-year numbers yet, at any
-airport.
-
-**Disk space and repo size, updated.** Session 37's ~20 GB GRIB pull took
-free space from 35 GiB to 14 GiB; this session's sealed-year pull added a
-further ~4.62 GiB (5,840 small files), free space now ~13 GiB. SPEC 2.3/D15
-(as qualified by D47 for large re-fetchable sources) means both this
-session's raw bytes and session 37's enter the repository's history once
+**Disk space and repo size, still relevant for that or a future session.**
+Session 37's ~20 GB GRIB pull took free space from 35 GiB to 14 GiB;
+session 40's sealed-year pull added a further ~4.62 GiB (5,840 small
+files), free space now ~13 GiB. SPEC 2.3/D15 (as qualified by D47 for
+large re-fetchable sources) means both enter the repository's history once
 committed -- not decided here.
 
-**Whatever the eventual sealed test finds, Reno's own EXISTING sealed-test
-result (under the 3-feature/Open-Meteo recipe) stands as reported (D44.10,
-D44.11, F82) -- no re-run, no retroactive adjustment.** Q30's other
-branches (a further airport; a second test year; stage 3, pooling) remain
-untouched and available once step 4b eventually concludes.
+**Reno's own EXISTING sealed-test result (under the 3-feature/Open-Meteo
+recipe) stands exactly as reported (D44.10, D44.11, F82) -- no re-run, no
+retroactive adjustment**, even though the separate, richer GRIB recipe now
+passes at Reno too (F94) -- two independent findings about two different
+recipes, not one overwriting the other (D48.13). Q30's other branches (a
+further airport; a second test year; stage 3, pooling) remain untouched
+and are now fully available, since the richer-features branch itself is
+resolved (see "Open questions" below).
 
 ## Open questions (live)
 
-- **Q30 (unchanged in substance, now joined by eight richer-features
-  diagnostics, and its richer-features branch is one step from resolving on
-  its own).** The owner picked its first branch -- more airports, "ramp up
-  difficulty" -- and Reno's own five steps are finished, ending in a
-  failure. The richer-features branch of that intent has now taken eight
-  concrete steps: session 32's scout (DECISIONS F86) found a real but
+- **Q30 (its richer-features branch is now RESOLVED by session 42; the
+  question itself stays open because its other two branches remain the
+  owner's choice).** The owner picked its first branch -- more airports,
+  "ramp up difficulty" -- and Reno's own five steps are finished, ending
+  in a failure under the existing recipe. The richer-features branch of
+  that intent took nine concrete steps and has now reached its answer:
+  session 32's scout (DECISIONS F86) found a real but
   short-window-confounded signal; session 33's blocked CV (F87) removed
   most of that confound and found the recipe recovers at 4 of 5 airports,
   with LFPG the unresolved exception; session 35's GRIB feasibility probe
@@ -832,15 +938,20 @@ untouched and available once step 4b eventually concludes.
   decode completed cleanly at all five airports, but the frozen script's
   own D48.12 self-guard stopped it before any model was fit, because three
   of five airports' sealed-year row counts exceeded their own D48.8
-  scored-day ceiling; and session 41 (F93) verified those extra days are
-  BENIGN -- the ceiling compared two different stages of the same
-  pipeline, not a real GRIB-vs-Open-Meteo coverage difference -- and
-  corrected the D48.8 guard, again with no model fit and no sealed-year
-  result seen. **D48's one authorised look has STILL not been taken
-  anywhere.** Running the corrected script to completion is a new
-  session's job, and settles the richer-features branch of Q30 once it
-  happens; Q30's other branches (a further airport, a second test year,
-  stage 3 pooling) remain open regardless of how that run turns out.
+  scored-day ceiling; session 41 (F93) verified those extra days are
+  BENIGN -- a guard mis-specification, not a real GRIB-vs-Open-Meteo
+  coverage difference -- and corrected the D48.8 guard, again with no
+  model fit and no sealed-year result seen; and **session 42 (F94) took
+  D48's one authorised look: the 5-feature GRIB recipe PASSES the frozen
+  bar at all five airports, exactly matching the D48.12 pre-registration
+  with no exception.** The richer-features branch is now answered as far
+  as a sealed-test result can answer it -- what remains open is not a
+  richer-features question anymore but a documentation one (folding the
+  proven recipe into `SPEC.md`/`RESULTS.md`, a later consolidation
+  session's job, not decided). **Q30's other two branches -- a further
+  airport, and a second test year (the remaining half of the F30/F48
+  caveat) -- and stage 3 (pooling) remain fully open and are the owner's
+  choice**, unaffected by how the richer-features branch resolved.
 - **Q32 (effectively answered by events, left on record rather than
   formally closed).** Session 27 asked whether Reno's rehearsal loss should
   change anything about locking/testing Reno; the session-28 and session-29

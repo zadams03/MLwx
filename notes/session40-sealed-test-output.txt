@@ -2,7 +2,7 @@
 ==============================================================================
 SESSION 40 -- sealed test of the LOCKED 5-feature GRIB recipe (DECISIONS D48). ONE LOOK PER AIRPORT.
 ==============================================================================
-run at        : 2026-09-12 01:05:55 local
+run at        : 2026-09-12 09:41:21 local
 python        : 3.12.2
 numpy         : 2.5.2
 lightgbm      : 4.7.0
@@ -21,6 +21,159 @@ EGLC -- target hour 12:00 UTC (SPEC 3.4, D48.2)
     expected (F91, session38_joined.csv): 1589
     reconciled: MATCH
 
--- D48.8 -- sealed-year row count, reported and reconciled against prior (different-recipe) history --
+-- D48.8 -- sealed-year row count, reported and reconciled against the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, not the old recipe's scored-day count) --
     sealed-year rows kept : 364 (no GRIB row: 0, no usable obs: 1)
-    existing-recipe scored days (F16/F30/F47/F64/F82): 363
+    corrected ceiling -- GRIB+obs availability (F93): 364
+    reconciled: within bound (<=)
+
+-- D48.10 -- sealed-year MAE, four rungs --
+    Raw GFS (GRIB)  : 1.254  (n=364)
+    Persistence     : 2.096  (n=363, dropped for no previous-day obs: 1)
+    3-feature       : 1.037  (n=364)
+    5-feature       : 1.000  (n=364)
+
+-- D48.11 -- the bar: 5-feature vs raw GFS (GRIB) and persistence --
+    5-feature beats raw GFS (GRIB)?  YES (1.000 vs 1.254, +20.2% skill)
+    5-feature beats persistence?     YES (1.000 vs 2.096, +52.3% skill)
+    VERDICT: PASS
+
+-- 5-vs-3-feature comparison (reported alongside the bar, not part of it) --
+    3-feature : 1.037
+    5-feature : 1.000  (beats 3-feature, +3.5% skill vs 3-feature)
+
+==============================================================================
+LFPG -- target hour 12:00 UTC (SPEC 3.4, D48.2)
+==============================================================================
+
+-- D48.7 -- training-row count reconciliation --
+    training rows kept : 1589 (no GRIB row: 0, no usable obs: 2)
+    expected (F91, session38_joined.csv): 1589
+    reconciled: MATCH
+
+-- D48.8 -- sealed-year row count, reported and reconciled against the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, not the old recipe's scored-day count) --
+    sealed-year rows kept : 364 (no GRIB row: 0, no usable obs: 1)
+    corrected ceiling -- GRIB+obs availability (F93): 364
+    reconciled: within bound (<=)
+
+-- D48.10 -- sealed-year MAE, four rungs --
+    Raw GFS (GRIB)  : 1.382  (n=364)
+    Persistence     : 2.300  (n=363, dropped for no previous-day obs: 1)
+    3-feature       : 1.177  (n=364)
+    5-feature       : 1.156  (n=364)
+
+-- D48.11 -- the bar: 5-feature vs raw GFS (GRIB) and persistence --
+    5-feature beats raw GFS (GRIB)?  YES (1.156 vs 1.382, +16.4% skill)
+    5-feature beats persistence?     YES (1.156 vs 2.300, +49.7% skill)
+    VERDICT: PASS
+
+-- 5-vs-3-feature comparison (reported alongside the bar, not part of it) --
+    3-feature : 1.177
+    5-feature : 1.156  (beats 3-feature, +1.8% skill vs 3-feature)
+
+==============================================================================
+DSM -- target hour 18:00 UTC (SPEC 3.4, D48.2)
+==============================================================================
+
+-- D48.7 -- training-row count reconciliation --
+    training rows kept : 1590 (no GRIB row: 1, no usable obs: 0)
+    expected (F91, session38_joined.csv): 1590
+    reconciled: MATCH
+
+-- D48.8 -- sealed-year row count, reported and reconciled against the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, not the old recipe's scored-day count) --
+    sealed-year rows kept : 365 (no GRIB row: 0, no usable obs: 0)
+    corrected ceiling -- GRIB+obs availability (F93): 365
+    reconciled: within bound (<=)
+
+-- D48.10 -- sealed-year MAE, four rungs --
+    Raw GFS (GRIB)  : 1.733  (n=365)
+    Persistence     : 4.003  (n=365, dropped for no previous-day obs: 0)
+    3-feature       : 1.694  (n=365)
+    5-feature       : 1.636  (n=365)
+
+-- D48.11 -- the bar: 5-feature vs raw GFS (GRIB) and persistence --
+    5-feature beats raw GFS (GRIB)?  YES (1.636 vs 1.733, +5.6% skill)
+    5-feature beats persistence?     YES (1.636 vs 4.003, +59.1% skill)
+    VERDICT: PASS
+
+-- 5-vs-3-feature comparison (reported alongside the bar, not part of it) --
+    3-feature : 1.694
+    5-feature : 1.636  (beats 3-feature, +3.4% skill vs 3-feature)
+
+==============================================================================
+YSDU -- target hour 02:00 UTC (SPEC 3.4, D48.2)
+==============================================================================
+
+-- D48.7 -- training-row count reconciliation --
+    training rows kept : 1573 (no GRIB row: 1, no usable obs: 17)
+    expected (F91, session38_joined.csv): 1573
+    reconciled: MATCH
+
+-- D48.8 -- sealed-year row count, reported and reconciled against the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, not the old recipe's scored-day count) --
+    sealed-year rows kept : 356 (no GRIB row: 0, no usable obs: 9)
+    corrected ceiling -- GRIB+obs availability (F93): 356
+    reconciled: within bound (<=)
+
+-- D48.10 -- sealed-year MAE, four rungs --
+    Raw GFS (GRIB)  : 1.317  (n=356)
+    Persistence     : 2.669  (n=347, dropped for no previous-day obs: 9)
+    3-feature       : 1.283  (n=356)
+    5-feature       : 1.179  (n=356)
+
+-- D48.11 -- the bar: 5-feature vs raw GFS (GRIB) and persistence --
+    5-feature beats raw GFS (GRIB)?  YES (1.179 vs 1.317, +10.5% skill)
+    5-feature beats persistence?     YES (1.179 vs 2.669, +55.8% skill)
+    VERDICT: PASS
+
+-- 5-vs-3-feature comparison (reported alongside the bar, not part of it) --
+    3-feature : 1.283
+    5-feature : 1.179  (beats 3-feature, +8.2% skill vs 3-feature)
+
+==============================================================================
+RNO -- target hour 20:00 UTC (SPEC 3.4, D48.2)
+==============================================================================
+
+-- D48.7 -- training-row count reconciliation --
+    training rows kept : 1587 (no GRIB row: 1, no usable obs: 3)
+    expected (F91, session38_joined.csv): 1587
+    reconciled: MATCH
+
+-- D48.8 -- sealed-year row count, reported and reconciled against the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, not the old recipe's scored-day count) --
+    sealed-year rows kept : 365 (no GRIB row: 0, no usable obs: 0)
+    corrected ceiling -- GRIB+obs availability (F93): 365
+    reconciled: within bound (<=)
+
+-- D48.10 -- sealed-year MAE, four rungs --
+    Raw GFS (GRIB)  : 1.512  (n=365)
+    Persistence     : 2.490  (n=365, dropped for no previous-day obs: 0)
+    3-feature       : 1.455  (n=365)
+    5-feature       : 1.346  (n=365)
+
+-- D48.11 -- the bar: 5-feature vs raw GFS (GRIB) and persistence --
+    5-feature beats raw GFS (GRIB)?  YES (1.346 vs 1.512, +11.0% skill)
+    5-feature beats persistence?     YES (1.346 vs 2.490, +45.9% skill)
+    VERDICT: PASS
+
+-- 5-vs-3-feature comparison (reported alongside the bar, not part of it) --
+    3-feature : 1.455
+    5-feature : 1.346  (beats 3-feature, +7.5% skill vs 3-feature)
+
+==============================================================================
+Summary -- all five airports (D48.11 verdicts)
+==============================================================================
+    airport    raw GFS   persist    3-feat    5-feat  verdict
+    EGLC         1.254     2.096     1.037     1.000     PASS
+    LFPG         1.382     2.300     1.177     1.156     PASS
+    DSM          1.733     4.003     1.694     1.636     PASS
+    YSDU         1.317     2.669     1.283     1.179     PASS
+    RNO          1.512     2.490     1.455     1.346     PASS
+
+    5 of 5 airports PASS the D48.11 bar.
+    Pre-registered expectation (D48.12, from F91): PASS at all five airports, including LFPG and RNO.
+
+Wrote summary: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session40_sealed_test_summary.csv
+
+==============================================================================
+END
+==============================================================================
+This is the one authorised look at the sealed test year for the 5-feature GRIB recipe (D48.13), per airport. The result stands exactly as reported above -- no re-tuning, no re-run, no retroactive adjustment. It does not alter any airport's existing sealed-test verdict under the existing 3-feature/Open-Meteo recipe (F16/F30/F47/F64/F82).
+This output is saved at notes/session40-sealed-test-output.txt
