@@ -84,14 +84,32 @@ EXPECTED_TRAIN_ROWS = {
     "RNO": 1587,
 }
 
-# D48.8: each airport's already-published sealed-test scored-day count under
-# the EXISTING 3-feature/Open-Meteo recipe (F16/F30/F47/F64/F82). The
-# richer-features GRIB run may score fewer (a new GRIB-side gap), never more.
-PRIOR_SCORED_DAYS = {
-    "EGLC": 363,
-    "LFPG": 363,
+# D48.8 (CORRECTED, session 41, F93). The ceiling is each airport's own
+# GRIB-side sealed-year availability -- the count of calendar days with a
+# valid paired GRIB forecast AND a valid observation (D14) -- NOT the
+# existing 3-feature/Open-Meteo recipe's own published scored-day count
+# (F16/F30/F47/F64/F82), which is what this constant held before session 41.
+# Session 41 (F93) verified, from the real sealed-year pull (session 40) and
+# the real Open-Meteo sealed-year archive, that the ORIGINAL ceiling
+# compared two different stages of the SAME pipeline -- this recipe's own
+# pre-persistence join count against the old recipe's post-persistence
+# "days every method is scored on" count (which drops one further day
+# whenever YESTERDAY's observation is missing, for the persistence rung
+# only) -- not two forecast sources' actual coverage. Open-Meteo's own
+# sealed-year forecast series is, in fact, equally clean (365/365 present,
+# non-null, at every airport); at the pre-persistence join stage the two
+# recipes match EXACTLY, row for row, at all five airports. The "extra"
+# days were never a GRIB-vs-Open-Meteo coverage difference.
+# These corrected figures are session 41's own verified GRIB+obs join
+# counts, fixed here as a pre-registered expectation -- the same role
+# EXPECTED_TRAIN_ROWS plays for the training window -- not a live
+# recomputation, since session 42 reads the identical, already-pulled
+# sealed feature file session 40 produced.
+SEALED_ROW_CEILING = {
+    "EGLC": 364,
+    "LFPG": 364,
     "DSM": 365,
-    "YSDU": 347,
+    "YSDU": 356,
     "RNO": 365,
 }
 
@@ -329,17 +347,17 @@ def run_airport(station, target_hour, results):
     print("    reconciled: MATCH")
 
     sub("D48.8 -- sealed-year row count, reported and reconciled against "
-        "prior (different-recipe) history")
+        "the CORRECTED ceiling (session 41, F93 -- GRIB+obs availability, "
+        "not the old recipe's scored-day count)")
     print(f"    sealed-year rows kept : {len(test_rows)} "
           f"(no GRIB row: {test_no_grib}, no usable obs: {test_no_obs})")
-    prior = PRIOR_SCORED_DAYS[station]
-    print(f"    existing-recipe scored days (F16/F30/F47/F64/F82): {prior}")
-    if len(test_rows) > prior:
+    ceiling = SEALED_ROW_CEILING[station]
+    print(f"    corrected ceiling -- GRIB+obs availability (F93): {ceiling}")
+    if len(test_rows) > ceiling:
         raise AssertionError(
             f"D48.12 STOP SIGNAL: {station} sealed-year row count "
-            f"{len(test_rows)} exceeds the existing recipe's own scored-day "
-            f"count {prior}. The observation side cannot supply an extra "
-            "pairing that was not there before -- stop and raise this.")
+            f"{len(test_rows)} exceeds the corrected D48.8 ceiling "
+            f"{ceiling} (F93). Stop and raise this with the owner.")
     print("    reconciled: within bound (<=)")
 
     x3_tr = features_3(train_rows)

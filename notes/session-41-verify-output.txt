@@ -1,0 +1,222 @@
+
+====================================================================================
+SESSION 41 TASK 1 -- verify the D48.8-EXCEEDS extra sealed-year days (F92) are legitimate, not a bug. NO MODEL IS FIT. NO SEALED-YEAR MAE, SKILL OR VERDICT IS COMPUTED ANYWHERE BELOW.
+====================================================================================
+run at : 2026-09-12 01:59:35 local
+Reuses scripts/session39_sealed_test.py's own load_obs_all, load_grib_features and join_rows, unmodified, as a library.
+
+====================================================================================
+PRE-CHECK -- grib_features_sealed_window.csv: duplicates / mis-dating
+====================================================================================
+    total rows in file            : 1,825
+    distinct (station, date) keys : 1,825
+    duplicate (station, date) keys: 0
+    rows with an unparseable or out-of-window date: 0
+    verdict: NO DUPLICATES, NO MIS-DATED ROWS
+
+====================================================================================
+EGLC -- target hour 12:00 UTC
+====================================================================================
+
+-- new (GRIB) recipe -- join_rows, exactly as session39_sealed_test.py computes it --
+    sealed-year calendar days : 365
+    no GRIB row               : 0
+    no usable observation     : 1
+    rows kept (test_rows)     : 364
+
+-- OLD recipe's stage-B narrowing (the persistence-availability common set) -- reproduced from raw data, not copied from notes --
+    of the 364 GRIB-paired rows, dropped because YESTERDAY's observation is missing: 1
+    stage-B common-day count (this session's own recomputation) : 363
+    D48.8 PRIOR_SCORED_DAYS (F16/F30/F47/F64/F82, the existing recipe's own published 'days every method is scored on')       : 363
+    MATCH: YES -- PRIOR_SCORED_DAYS is the stage-B (post-persistence-drop) figure, not the raw join figure
+
+-- OLD recipe's stage-A (independently rebuilt from the real Open-Meteo sealed-year JSON, not assumed) --
+    Open-Meteo sealed-year rows at this hour        : 365
+    of those, value present (non-null)               : 365
+    of those, value null (present row, null value)   : 0
+    stage-A join (Open-Meteo forecast present AND own-day obs present): 364
+    new (GRIB) recipe's test_rows count               : 364
+    MATCH: YES -- the new recipe exactly reproduces the OLD recipe row-for-row at the pre-persistence join stage
+
+-- the 1 'extra' day(s) beyond D48.8's PRIOR_SCORED_DAYS ceiling --
+    2025-11-22:
+        GRIB forecast_temp_c = 6.464, cloud = 100.0, wind = 27.6  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 8.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 6.4  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    cross-check against the dates already named in the existing sealed-test notes file: EXACT MATCH
+
+====================================================================================
+LFPG -- target hour 12:00 UTC
+====================================================================================
+
+-- new (GRIB) recipe -- join_rows, exactly as session39_sealed_test.py computes it --
+    sealed-year calendar days : 365
+    no GRIB row               : 0
+    no usable observation     : 1
+    rows kept (test_rows)     : 364
+
+-- OLD recipe's stage-B narrowing (the persistence-availability common set) -- reproduced from raw data, not copied from notes --
+    of the 364 GRIB-paired rows, dropped because YESTERDAY's observation is missing: 1
+    stage-B common-day count (this session's own recomputation) : 363
+    D48.8 PRIOR_SCORED_DAYS (F16/F30/F47/F64/F82, the existing recipe's own published 'days every method is scored on')       : 363
+    MATCH: YES -- PRIOR_SCORED_DAYS is the stage-B (post-persistence-drop) figure, not the raw join figure
+
+-- OLD recipe's stage-A (independently rebuilt from the real Open-Meteo sealed-year JSON, not assumed) --
+    Open-Meteo sealed-year rows at this hour        : 365
+    of those, value present (non-null)               : 365
+    of those, value null (present row, null value)   : 0
+    stage-A join (Open-Meteo forecast present AND own-day obs present): 364
+    new (GRIB) recipe's test_rows count               : 364
+    MATCH: YES -- the new recipe exactly reproduces the OLD recipe row-for-row at the pre-persistence join stage
+
+-- the 1 'extra' day(s) beyond D48.8's PRIOR_SCORED_DAYS ceiling --
+    2026-07-09:
+        GRIB forecast_temp_c = 32.882, cloud = 5.0, wind = 16.1  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 30.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 33.0  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    cross-check against the dates already named in the existing sealed-test notes file: EXACT MATCH
+
+====================================================================================
+DSM -- target hour 18:00 UTC
+====================================================================================
+
+-- new (GRIB) recipe -- join_rows, exactly as session39_sealed_test.py computes it --
+    sealed-year calendar days : 365
+    no GRIB row               : 0
+    no usable observation     : 0
+    rows kept (test_rows)     : 365
+
+-- OLD recipe's stage-B narrowing (the persistence-availability common set) -- reproduced from raw data, not copied from notes --
+    of the 365 GRIB-paired rows, dropped because YESTERDAY's observation is missing: 0
+    stage-B common-day count (this session's own recomputation) : 365
+    D48.8 PRIOR_SCORED_DAYS (F16/F30/F47/F64/F82, the existing recipe's own published 'days every method is scored on')       : 365
+    MATCH: YES -- PRIOR_SCORED_DAYS is the stage-B (post-persistence-drop) figure, not the raw join figure
+
+-- OLD recipe's stage-A (independently rebuilt from the real Open-Meteo sealed-year JSON, not assumed) --
+    Open-Meteo sealed-year rows at this hour        : 365
+    of those, value present (non-null)               : 365
+    of those, value null (present row, null value)   : 0
+    stage-A join (Open-Meteo forecast present AND own-day obs present): 365
+    new (GRIB) recipe's test_rows count               : 365
+    MATCH: YES -- the new recipe exactly reproduces the OLD recipe row-for-row at the pre-persistence join stage
+
+-- the 0 'extra' day(s) beyond D48.8's PRIOR_SCORED_DAYS ceiling --
+    (none -- this airport's new count already equals the published ceiling)
+
+====================================================================================
+YSDU -- target hour 02:00 UTC
+====================================================================================
+
+-- new (GRIB) recipe -- join_rows, exactly as session39_sealed_test.py computes it --
+    sealed-year calendar days : 365
+    no GRIB row               : 0
+    no usable observation     : 9
+    rows kept (test_rows)     : 356
+
+-- OLD recipe's stage-B narrowing (the persistence-availability common set) -- reproduced from raw data, not copied from notes --
+    of the 356 GRIB-paired rows, dropped because YESTERDAY's observation is missing: 9
+    stage-B common-day count (this session's own recomputation) : 347
+    D48.8 PRIOR_SCORED_DAYS (F16/F30/F47/F64/F82, the existing recipe's own published 'days every method is scored on')       : 347
+    MATCH: YES -- PRIOR_SCORED_DAYS is the stage-B (post-persistence-drop) figure, not the raw join figure
+
+-- OLD recipe's stage-A (independently rebuilt from the real Open-Meteo sealed-year JSON, not assumed) --
+    Open-Meteo sealed-year rows at this hour        : 365
+    of those, value present (non-null)               : 365
+    of those, value null (present row, null value)   : 0
+    stage-A join (Open-Meteo forecast present AND own-day obs present): 356
+    new (GRIB) recipe's test_rows count               : 356
+    MATCH: YES -- the new recipe exactly reproduces the OLD recipe row-for-row at the pre-persistence join stage
+
+-- the 9 'extra' day(s) beyond D48.8's PRIOR_SCORED_DAYS ceiling --
+    2025-08-31:
+        GRIB forecast_temp_c = 15.989, cloud = 0.0, wind = 6.4  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 14.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 15.4  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2025-10-29:
+        GRIB forecast_temp_c = 17.454, cloud = 98.8, wind = 6.9  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 19.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 17.2  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2025-11-16:
+        GRIB forecast_temp_c = 29.717, cloud = 1.5, wind = 26.3  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 29.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 29.6  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2025-11-26:
+        GRIB forecast_temp_c = 32.475, cloud = 60.6, wind = 22.1  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 23.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 32.4  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2025-12-01:
+        GRIB forecast_temp_c = 20.417, cloud = 100.0, wind = 26.7  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 21.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 20.4  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2025-12-04:
+        GRIB forecast_temp_c = 31.488, cloud = 55.1, wind = 17.0  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 32.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 31.4  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2026-01-19:
+        GRIB forecast_temp_c = 29.866, cloud = 8.2, wind = 21.7  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 30.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 29.7  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2026-02-15:
+        GRIB forecast_temp_c = 28.173, cloud = 0.1, wind = 16.5  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 28.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 28.1  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    2026-04-13:
+        GRIB forecast_temp_c = 19.650, cloud = 0.0, wind = 18.7  (a real, decoded value -- confirmed present, F92 Task 1: 0 GRIB drops)
+        this day's own observation = 19.0 degC (paired within the D14 15-min rule -- guaranteed by load_obs_all's own construction)
+        Open-Meteo's OWN forecast for this exact date/hour  = 19.5  <- F92's hypothesis predicts this should be missing/null; if it is a real value instead, the day is NOT a forecast-side gap
+        yesterday's observation missing (why the OLD recipe's persistence rung, not the forecast rung, drops this day) = True
+    cross-check against the dates already named in the existing sealed-test notes file: EXACT MATCH
+
+====================================================================================
+RNO -- target hour 20:00 UTC
+====================================================================================
+
+-- new (GRIB) recipe -- join_rows, exactly as session39_sealed_test.py computes it --
+    sealed-year calendar days : 365
+    no GRIB row               : 0
+    no usable observation     : 0
+    rows kept (test_rows)     : 365
+
+-- OLD recipe's stage-B narrowing (the persistence-availability common set) -- reproduced from raw data, not copied from notes --
+    of the 365 GRIB-paired rows, dropped because YESTERDAY's observation is missing: 0
+    stage-B common-day count (this session's own recomputation) : 365
+    D48.8 PRIOR_SCORED_DAYS (F16/F30/F47/F64/F82, the existing recipe's own published 'days every method is scored on')       : 365
+    MATCH: YES -- PRIOR_SCORED_DAYS is the stage-B (post-persistence-drop) figure, not the raw join figure
+
+-- OLD recipe's stage-A (independently rebuilt from the real Open-Meteo sealed-year JSON, not assumed) --
+    Open-Meteo sealed-year rows at this hour        : 365
+    of those, value present (non-null)               : 365
+    of those, value null (present row, null value)   : 0
+    stage-A join (Open-Meteo forecast present AND own-day obs present): 365
+    new (GRIB) recipe's test_rows count               : 365
+    MATCH: YES -- the new recipe exactly reproduces the OLD recipe row-for-row at the pre-persistence join stage
+
+-- the 0 'extra' day(s) beyond D48.8's PRIOR_SCORED_DAYS ceiling --
+    (none -- this airport's new count already equals the published ceiling)
+
+====================================================================================
+SUMMARY -- all five airports
+====================================================================================
+    station   test_rows  stage-A  stage-B  PRIOR  extra   matches stage-A?  matches stage-B (=PRIOR)?
+    EGLC            364      364      363    363      1                YES                        YES
+    LFPG            364      364      363    363      1                YES                        YES
+    DSM             365      365      365    365      0                YES                        YES
+    YSDU            356      356      347    347      9                YES                        YES
+    RNO             365      365      365    365      0                YES                        YES
+
+====================================================================================
+VERDICT
+====================================================================================
+    BENIGN. At every airport, the new (GRIB) recipe's sealed-year join count exactly reproduces the OLD recipe's own stage-A (forecast+obs join, pre-persistence) row count -- not a new, wider, or cleaner forecast-side coverage. Every 'extra' day beyond D48.8's PRIOR_SCORED_DAYS ceiling is a day the OLD recipe's own persistence rung separately dropped (because YESTERDAY's observation was missing), while raw GFS / 3-feature / 5-feature themselves had a perfectly valid pair that day under BOTH the old and new forecast sources. The D48.8 ceiling compared the new recipe's pre-persistence row count against the old recipe's post-persistence 'scored day' count -- two different stages of the same pipeline, not two different forecast sources' coverage. No pairing bug, no double-count, no mis-dated row, no forecast-side gap.
+
+This output is saved at notes/session-41-verify-output.txt

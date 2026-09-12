@@ -3,7 +3,72 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 40._
+_Last updated: 12 September 2026, after session 41._
+
+---
+
+## Session 41 (verify the F92 "EXCEEDS" days, then correct the D48.8 guard
+— no model fit, sealed test still not run)
+
+**Verifies the three airports (EGLC, LFPG, YSDU) that tripped session 40's
+D48.8 self-guard, and sanity-checks the two exact matches (DSM, RNO).
+Verdict: BENIGN — but the true mechanism is more precise than session 40's
+own hypothesis. No model was fit and no sealed-year MAE, skill, or verdict
+was computed anywhere this session.** Full account: DECISIONS F93. Script:
+`scripts/session41_verify.py` (a read-only diagnostic, imports session
+39's frozen script as an unmodified library). Full real output:
+`notes/session-41-verify-output.txt`.
+
+**What was actually found.** Session 40 (F92) guessed the GRIB sealed-year
+pull might simply have a cleaner forecast-side record than Open-Meteo's
+own series. This session rebuilt Open-Meteo's sealed-year forecast series
+directly from the real archive files and found that guess is **false**:
+Open-Meteo's own coverage is 365 of 365, zero gaps, at every airport — as
+clean as GRIB's. **The real cause: the D48.8 ceiling compared two
+different stages of the same pipeline.** Every prior airport's own sealed
+test computes row counts in two stages — stage A (plain forecast+
+observation join) and stage B (stage A further narrowed to days where
+YESTERDAY's observation is also available, because persistence needs a
+past value). The old `PRIOR_SCORED_DAYS` ceiling held stage-B numbers
+(363/363/365/347/365, from F16/F30/F47/F64/F82's own "days every method is
+scored on" figure), but the new recipe's `join_rows()` — the function the
+guard actually checks — only performs stage A. Comparing a stage-A count
+against a stage-B ceiling is what produced the apparent "EXCEEDS" — not
+any GRIB-vs-Open-Meteo coverage difference. This session independently
+rebuilt both stages, from raw data, at every airport: both reconcile
+**exactly** (5 of 5 airports, stage A matches the new recipe's own count,
+stage B matches the old ceiling). Every one of the 11 individual "extra"
+days (EGLC 1, LFPG 1, YSDU 9) was checked and is a genuine, correctly
+paired GRIB+observation row, with Open-Meteo's own forecast for that exact
+date also present and non-null (directly refuting the forecast-side-gap
+guess) and yesterday's observation confirmed missing (the real, verified
+reason). No pairing bug, no double-count, no mis-dated row, at any
+airport.
+
+**The D48.8 guard is corrected — a guard-only change.** In
+`scripts/session39_sealed_test.py`, `PRIOR_SCORED_DAYS` (old recipe
+stage-B figures) is replaced with `SEALED_ROW_CEILING` (this session's own
+verified stage-A, GRIB+obs availability figures: **EGLC 364, LFPG 364, DSM
+365, YSDU 356, RNO 365**). Features, model settings, training window,
+elevation constants (D48.3), the bar (D48.11), and every other self-guard
+are unchanged — confirmed by `git diff` and reported in full in DECISIONS
+F93. The script still parses and imports cleanly after the edit
+(`py_compile` + a clean import, `main()` not invoked).
+
+**What this session did not do, on purpose.** Did not fit any model or
+compute any sealed-year MAE/skill/verdict anywhere. Did not touch the
+features, model settings, training window, elevation constants, or the
+bar — only the D48.8 ceiling values and the block that reads them. Did not
+pull any new data — reused session 40's already-decoded sealed feature
+file and the existing sealed-year observation/forecast files, all
+read-only. Did not take D48's authorised look (D48.13) — that is session
+42's job now, against the corrected ceiling. `SPEC.md`/`RESULTS.md` not
+modified. Nothing was committed.
+
+**Archive step this session: none.** The sealed test is still open and
+unresolved (session 42's job); D48, F91, F92 and this session's own F93
+all remain live — F93 documents a correction to a guard session 42 is
+about to exercise, and stays needed word-for-word until that session runs.
 
 ---
 
@@ -364,21 +429,26 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
 airports opened so far — four pass, one fails; none of that changed this
 session. The GRIB-build sub-project (docs/session-36.md through
-docs/session-40.md) reached step 4b this session but did not complete it:
-step 1 confirmed the back-extent and validated the GRIB→point pipeline;
-step 2 fixed RNO's pipeline gap, pulled the full v16-only feature set, and
-validated cloud/wind; step 3 diagnosed the cloud tail, joined the GRIB
-features to observations, and re-ran the richer-features blocked CV on the
-full ~4.4-year window; step 4a locked the 5-feature recipe in full
-(DECISIONS D48) and froze the sealed-test script; step 4b (this session)
-pulled and decoded the sealed-year GRIB feature set cleanly, then ran the
-frozen script — which stopped itself on its own D48.12 self-guard before
-fitting any model, because three of five airports' sealed-year row counts
-exceeded their own D48.8 scored-day ceiling (DECISIONS F92).** No airport
-has a sealed-test verdict under the 5-feature GRIB recipe yet, and D48's
-one authorised look has not been taken anywhere. The owner needs to decide
-how to resolve the ceiling-rule question before step 4b can actually run
-to completion.
+docs/session-41.md) is now unblocked, but step 4b's actual sealed-test run
+still has not happened: step 1 confirmed the back-extent and validated the
+GRIB→point pipeline; step 2 fixed RNO's pipeline gap, pulled the full
+v16-only feature set, and validated cloud/wind; step 3 diagnosed the cloud
+tail, joined the GRIB features to observations, and re-ran the
+richer-features blocked CV on the full ~4.4-year window; step 4a locked
+the 5-feature recipe in full (DECISIONS D48) and froze the sealed-test
+script; step 4b's first attempt (session 40) pulled and decoded the
+sealed-year GRIB feature set cleanly, then tripped the frozen script's own
+D48.12 self-guard before fitting any model, because three of five
+airports' sealed-year row counts exceeded their own D48.8 scored-day
+ceiling (DECISIONS F92); **session 41 verified those "extra" days are
+BENIGN — a guard mis-specification (the ceiling compared two different
+stages of the same pipeline, not a real GRIB-vs-Open-Meteo coverage
+difference) rather than a data problem — and corrected the D48.8 ceiling
+in the frozen script accordingly (DECISIONS F93), with no model fit and no
+sealed-year result seen.** No airport has a sealed-test verdict under the
+5-feature GRIB recipe yet, and D48's one authorised look has not been
+taken anywhere — that is now step 4b's still-pending actual run, a new
+session's job.
 
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
@@ -663,35 +733,51 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   authorised look has not been taken anywhere (DECISIONS F92). Nothing
   about any earlier airport result changed. `SPEC.md`/`RESULTS.md` not
   modified. Nothing was committed.
+- **Session 41: verified session 40's "EXCEEDS" days are BENIGN and
+  corrected the D48.8 guard -- no model fit, sealed test still not run.**
+  Independently rebuilt Open-Meteo's own sealed-year forecast series from
+  the real archive files and found it, too, is 365/365 present at every
+  airport -- refuting session 40's own "GRIB is cleaner" hypothesis. The
+  real cause: D48.8's ceiling compared the new recipe's pre-persistence
+  row count against the old recipe's post-persistence "scored day" count
+  -- two different stages of the same pipeline, both independently
+  rebuilt and reconciled exactly (5 of 5 airports) this session. Every one
+  of the 11 individual extra days (EGLC 1, LFPG 1, YSDU 9) checked and
+  confirmed a genuine, correctly-paired row, exactly matching the dates
+  already named in each airport's own existing sealed-test notes.
+  `scripts/session39_sealed_test.py`'s D48.8 constant was corrected
+  (`PRIOR_SCORED_DAYS` -> `SEALED_ROW_CEILING`, values 364/364/365/356/
+  365) -- a guard-only change, confirmed by diff to touch nothing else
+  (features, model, window, elevation constants, bar, other guards all
+  unchanged) and made with no model fit and no sealed-year result seen
+  (DECISIONS F93). `SPEC.md`/`RESULTS.md` not modified. Nothing was
+  committed.
 
 ## Next
 
-**The GRIB-build sub-project (docs/session-36.md through docs/session-40.md)
-is now 4b of 4 attempted, and blocked.** The recipe is frozen (DECISIONS
-D48) and the sealed-year GRIB feature set is pulled and decoded, cleanly,
-at all five airports (`data/processed/grib_features_sealed_window.csv`).
-But running the frozen test script (`scripts/session39_sealed_test.py`)
-tripped its own D48.12 self-guard before fitting any model, because three
-of five airports' sealed-year row counts exceed their own D48.8 scored-day
-ceiling (EGLC 364 vs 363, LFPG 364 vs 363, YSDU 356 vs 347 -- DSM and RNO
-land exactly on their own ceiling). **D48's one authorised look has not
-been taken anywhere.** See DECISIONS F92 for the full account and the
-mechanism hypothesis.
+**The GRIB-build sub-project (docs/session-36.md through docs/session-41.md)
+is now UNBLOCKED, but step 4b's actual sealed-test run still has not
+happened.** The recipe is frozen (DECISIONS D48) and the sealed-year GRIB
+feature set is pulled and decoded, cleanly, at all five airports
+(`data/processed/grib_features_sealed_window.csv`). Session 40 found the
+frozen test script (`scripts/session39_sealed_test.py`) tripped its own
+D48.12 self-guard before fitting any model, because three of five
+airports' sealed-year row counts exceeded their own D48.8 scored-day
+ceiling (F92). **Session 41 traced this to a guard mis-specification
+(comparing two different stages of the same pipeline, not a real
+GRIB-vs-Open-Meteo coverage difference -- DECISIONS F93) and corrected the
+ceiling in the frozen script.** **D48's one authorised look has STILL not
+been taken anywhere** -- session 41 deliberately fit no model and computed
+no sealed-year result, exactly per its own scope.
 
-**The owner's decision is now the blocking step, not a pull or a script
-run.** Per D48.13 ("one look, and it stands"), the sealed year should not
-simply be re-opened and re-run under today's unmodified D48.8 ceiling rule
-hoping for a different outcome -- the rule itself needs a decision first.
-Two paths flagged in F92, neither chosen here: (a) revise the D48.8 ceiling
-rule in a new, written DECISIONS entry (e.g. to allow a new source
-legitimately having cleaner raw coverage than the old one, rather than
-treating "more scored days" as inherently suspect) and then re-open the
-sealed year under the corrected rule; or (b) trace the specific dates
-behind the divergence (why did GRIB have zero missing sealed-year days at
-every airport, while the existing 3-feature/Open-Meteo recipe's own sealed
-tests did not) before trusting either recipe's coverage at all. Whichever
-path is chosen, it is a new session's job, with its own session prompt --
-not a call this session made or should have made.
+**Running the corrected script (the actual sealed test) is a new session's
+job -- not decided or done here, and not mechanical to skip to.** Per
+D48.13 ("one look, and it stands"), this is the first time the ceiling
+will be run against a corrected rule, so it should be treated as the
+genuine first attempt at D48.13's one look, not a retry. Session 41's own
+scope stopped short of running `scripts/session39_sealed_test.py` to
+completion on purpose (its Task 2 corrected the guard; taking D48's
+authorised look was explicitly session 42's job, not this one).
 
 **Pre-registered expectations, recorded in D48 before any sealed data was
 seen (from F91), still untested:** 5-feature beats both raw GFS and
@@ -718,11 +804,11 @@ untouched and available once step 4b eventually concludes.
 
 ## Open questions (live)
 
-- **Q30 (unchanged in substance, now joined by seven richer-features
+- **Q30 (unchanged in substance, now joined by eight richer-features
   diagnostics, and its richer-features branch is one step from resolving on
   its own).** The owner picked its first branch -- more airports, "ramp up
   difficulty" -- and Reno's own five steps are finished, ending in a
-  failure. The richer-features branch of that intent has now taken seven
+  failure. The richer-features branch of that intent has now taken eight
   concrete steps: session 32's scout (DECISIONS F86) found a real but
   short-window-confounded signal; session 33's blocked CV (F87) removed
   most of that confound and found the recipe recovers at 4 of 5 airports,
@@ -741,18 +827,20 @@ untouched and available once step 4b eventually concludes.
   window -- LFPG and Reno, the branch's two previously weak cases, both now
   show a clear positive result; session 39's GRIB build step 4a (D48)
   locked the 5-feature recipe completely and froze the sealed-test script,
-  with no sealed data touched; and session 40's GRIB build step 4b (F92)
-  opened the sealed test year for the first time -- the pull and decode
-  completed cleanly at all five airports, but the frozen script's own
-  D48.12 self-guard stopped it before any model was fit, because three of
-  five airports' sealed-year row counts exceed their own D48.8 scored-day
-  ceiling. **D48's one authorised look has not been taken anywhere yet.**
-  The owner needs to decide how to resolve the ceiling-rule question
-  (revise the rule, or trace the underlying date divergence first) before
-  step 4b can actually run to completion and settle the richer-features
-  branch of Q30; Q30's other branches (a further airport, a second test
-  year, stage 3 pooling) remain open regardless of how step 4b eventually
-  turns out.
+  with no sealed data touched; session 40's GRIB build step 4b attempt
+  (F92) opened the sealed test year for the first time -- the pull and
+  decode completed cleanly at all five airports, but the frozen script's
+  own D48.12 self-guard stopped it before any model was fit, because three
+  of five airports' sealed-year row counts exceeded their own D48.8
+  scored-day ceiling; and session 41 (F93) verified those extra days are
+  BENIGN -- the ceiling compared two different stages of the same
+  pipeline, not a real GRIB-vs-Open-Meteo coverage difference -- and
+  corrected the D48.8 guard, again with no model fit and no sealed-year
+  result seen. **D48's one authorised look has STILL not been taken
+  anywhere.** Running the corrected script to completion is a new
+  session's job, and settles the richer-features branch of Q30 once it
+  happens; Q30's other branches (a further airport, a second test year,
+  stage 3 pooling) remain open regardless of how that run turns out.
 - **Q32 (effectively answered by events, left on record rather than
   formally closed).** Session 27 asked whether Reno's rehearsal loss should
   change anything about locking/testing Reno; the session-28 and session-29

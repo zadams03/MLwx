@@ -1866,3 +1866,190 @@ pull (both bounds asserted in `scripts/session40_grib_pull.py` and
 year GRIB extracts (gitignored per D47) -- only the processed feature
 file, drop log, and provenance are candidates for commit. Did not modify
 `SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+---
+
+## 2026-09-12 -- Session 41 finding: the F92 "EXCEEDS" days are BENIGN, and
+the true mechanism is more precise than F92's own hypothesis -- the D48.8
+guard compared two different stages of the same pipeline, not two forecast
+sources' coverage. The guard is corrected; no model fit, no sealed-year
+result seen.
+
+**F93. Session 41 verifies the three "EXCEEDS" airports F92 found (EGLC,
+LFPG, YSDU) and sanity-checks the two exact matches (DSM, RNO). Verdict:
+BENIGN -- confirmed by real data, not assumed -- but the actual mechanism
+is NOT the one F92 proposed as a hypothesis. No model was fit and no
+sealed-year MAE, skill, or verdict was computed anywhere in this session
+(the integrity boundary the session prompt set).** Script:
+`scripts/session41_verify.py`, a read-only diagnostic that imports
+`scripts/session39_sealed_test.py` as an unmodified library (its
+`load_obs_all`, `load_grib_features`, `join_rows` and `AIRPORTS`/`SEALED_
+FROM`/`SEALED_UNTIL` constants) and adds nothing that touches a model.
+Full real output: `notes/session-41-verify-output.txt`. No new data was
+pulled -- session 40's already-decoded `grib_features_sealed_window.csv`
+and the existing sealed-year IEM/Open-Meteo files already on disk were the
+only inputs, all read-only.
+
+**What F92 guessed, restated.** F92 hypothesized that GRIB's sealed-year
+pull had a cleaner (zero-gap) forecast-side record than Open-Meteo's own
+`previous_day1` series had over the same year, at the three EXCEEDS
+airports -- i.e. a genuine, if unanticipated, direction of source-quality
+difference.
+
+**What this session actually found: that hypothesis is FALSE.** Open-Meteo's
+own sealed-year forecast series is independently rebuilt in this session,
+row by row, straight from the real archive files
+(`openmeteo_previousruns_gfs_global_<station>_2025-01-01_2025-12-31.json`
+and `..._2026-01-01_2026-07-31.json`) -- not assumed, not quoted from an
+older session. **At every one of the five airports, Open-Meteo's sealed-year
+forecast series is 100% present and non-null: 365 of 365 rows at the target
+hour, zero gaps.** There is no forecast-side coverage difference between
+GRIB and Open-Meteo in the sealed year, at any airport. GRIB is not cleaner
+than Open-Meteo here -- both are perfectly clean.
+
+**The real mechanism: D48.8's ceiling compared the new recipe's PRE-
+persistence row count against the old recipe's POST-persistence "scored
+day" count -- two different stages of the same pipeline.** Every prior
+airport's own sealed-test script (`session07_test.py` EGLC,
+`session13_test.py` LFPG, `session18_test.py` DSM, `session24_test.py`
+YSDU, `session29_test.py` RNO) computes its test-year row count in TWO
+stages, not one:
+- **stage A** ("paired test rows from part A" in each script's own saved
+  output): the plain forecast+observation join, D14 pairing rule, nothing
+  about persistence involved yet;
+- **stage B** ("days every method is scored on", the "common" set): stage A
+  further narrowed to days where YESTERDAY's observation is also available,
+  because the persistence rung needs a genuine past value (SPEC 2.1d) and
+  every rung -- raw GFS, persistence, climatology, mean-bias, ML-corrected
+  -- is deliberately scored on the SAME shared day set in every prior
+  session's design.
+
+**D48.8's `PRIOR_SCORED_DAYS` constant held stage B's numbers (363, 363,
+365, 347, 365 -- from the "days every method is scored on" line in each
+airport's own saved sealed-test output, matching F16/F30/F47/F64/F82).**
+But `scripts/session39_sealed_test.py`'s own `join_rows()` -- the function
+that produces the new recipe's `test_rows`, whose count the guard
+checks -- performs only stage A (a GRIB+observation join; it does not
+narrow further for persistence availability, and by design its
+`raw_mae`/`f3_mae`/`f5_mae` rungs are scored on the full stage-A set, with
+only the separate `persist_mae` rung narrowed further inside `run_airport`
+itself). **Comparing a stage-A count against a stage-B ceiling is comparing
+two different definitions of "how many days were scored" within the very
+same pipeline shape D48 already specifies -- not a genuine difference in
+what either forecast source covers.**
+
+**This session independently rebuilt BOTH stages, from raw data, for every
+airport, and both reconcile exactly:**
+
+```
+station   test_rows(new)   OLD stage-A (rebuilt)   OLD stage-B=PRIOR   extra   extra=stage-A-vs-B gap?
+EGLC            364               364                    363            1     YES (1 persistence-narrowed day)
+LFPG            364               364                    363            1     YES (1 persistence-narrowed day)
+DSM             365               365                    365            0     YES (no persistence narrowing at DSM)
+YSDU            356               356                    347            9     YES (9 persistence-narrowed days)
+RNO             365               365                    365            0     YES (no persistence narrowing at RNO)
+```
+
+**"OLD stage-A (rebuilt)" is this session's own independent reconstruction
+of the existing recipe's pre-persistence join, straight from the real
+Open-Meteo sealed-year archive and the same `obs_full` series
+`session39_sealed_test.py` already loads -- not copied from any note.** It
+matches the new (GRIB) recipe's own `test_rows` count EXACTLY, row for row,
+at all five airports. And "OLD stage-B" (this session's own recomputation
+of the persistence-narrowed common set, mirroring `run_airport()`'s own
+`common_persist` loop character-for-character) matches D48.8's
+`PRIOR_SCORED_DAYS` figures exactly too. **Both reconciliations are 5-for-5
+exact matches, not approximate.**
+
+**Every individual "extra" day was checked and is a genuine, single,
+correctly-paired row -- not a double-count, duplicate, mis-dated row, or
+wrong-day pairing.** For all 11 extra days (EGLC's 2025-11-22; LFPG's
+2026-07-09; YSDU's nine: 2025-08-31, 2025-10-29, 2025-11-16, 2025-11-26,
+2025-12-01, 2025-12-04, 2026-01-19, 2026-02-15, 2026-04-13 -- every one
+independently reproduced by this session and an EXACT MATCH against the
+specific dates already named in each airport's own existing sealed-test
+notes file, `notes/session-07/13/24-check-output.txt`):
+- the day has a real, decoded GRIB forecast (confirmed present, F92's own
+  Task 1: zero GRIB decode drops anywhere) and a real IEM observation
+  paired within the D14 15-minute rule (guaranteed by `load_obs_all`'s own
+  construction -- a report outside 15 minutes never enters the series at
+  all);
+- Open-Meteo's OWN forecast for that exact date and hour is also a real,
+  present, non-null value (printed for every extra day in the saved
+  output) -- directly falsifying F92's forecast-side-gap hypothesis for
+  every single one of these 11 days, not just in aggregate;
+- YESTERDAY's observation is confirmed missing for every one of the 11 --
+  the actual, verified reason the OLD recipe's stage-B narrowing (not any
+  forecast-side gap) drops each of these specific days from its own
+  published scored-day count.
+
+**Duplicate/mis-dating check on the sealed GRIB feature file itself:**
+`grib_features_sealed_window.csv` holds exactly 1,825 rows, 1,825 distinct
+(station, date) keys, zero duplicates, zero unparseable or out-of-window
+dates -- confirmed by a direct scan, not assumed from F92's own "0 drops"
+claim.
+
+**DSM and RNO's exact matches are now confirmed correct for the right
+reason, not coincidental.** Both reconcile at stage A AND stage B
+simultaneously (365=365=365 at each), because neither airport has any
+persistence-narrowing loss in the sealed year (0 days at each, matching
+F82's own "paired rows kept: 365" and D44.7's advance prediction) --
+there was never a second stage to diverge from at these two airports,
+which is exactly why they never showed an EXCEEDS symptom in F92.
+
+**Verdict: BENIGN.** Every extra day is a legitimate GRIB-forecast/
+observation pair the old recipe's own raw+obs join also produces
+identically; the divergence F92 found is fully and exactly explained by
+which of the OLD recipe's own two internal stages `PRIOR_SCORED_DAYS` was
+built from, not by any GRIB-vs-Open-Meteo coverage difference. No pairing
+bug, no double-count, no mis-dated row, at any of the 11 extra days or at
+either of the two exact-match airports.
+
+**D48.8's guard is corrected accordingly -- a guard-only change, nothing
+outcome-affecting.** `PRIOR_SCORED_DAYS` (the old recipe's stage-B, "days
+every method is scored on" figures: 363/363/365/347/365) is replaced with
+`SEALED_ROW_CEILING` (this session's own verified stage-A, GRIB+obs
+availability figures: **EGLC 364, LFPG 364, DSM 365, YSDU 356, RNO 365**
+-- exactly the `test_rows` counts already reconciled above), because
+stage A -- the plain forecast+observation join -- is what `join_rows()`
+and the guard it feeds actually measure; comparing it against anything
+but another stage-A figure was the mis-specification. The corrected
+figures are fixed as a pre-registered expectation, the same role
+`EXPECTED_TRAIN_ROWS` already plays for the training window, not a live
+recomputation -- session 42 reads the identical, already-pulled sealed
+feature file session 40 produced, so these counts will not change between
+sessions. **Explicitly unchanged: the features (D48.4), the model and its
+settings (D48.6), the training window (D48.7) and its `EXPECTED_TRAIN_
+ROWS` guard, the five elevation/lapse-rate constants (D48.3), the bar
+(D48.11), and every other self-guard (out-of-window date, missing-file).
+This correction was made with NO model fit and NO sealed-year result of
+any kind seen -- only availability/row counts, which say nothing about
+whether the 5-feature model beats raw GFS and are shared identically
+across all four rungs (raw GFS, persistence, 3-feature, 5-feature) --
+exactly the integrity boundary the session prompt set out in advance.**
+
+**The exact script edit**, limited to the D48.8 constant and the block that
+reads it in `run_airport()` (full diff verified via `git diff`, reproduced
+in the session's own report): the `PRIOR_SCORED_DAYS` dict (values 363,
+363, 365, 347, 365, with a comment describing it as the "existing recipe's
+own scored-day count") is renamed `SEALED_ROW_CEILING` (values 364, 364,
+365, 356, 365, with a comment recording this session's finding), and the
+`sub()`/print/`AssertionError` text in `run_airport()` is updated to name
+the corrected basis and cite F93 instead of F16/F30/F47/F64/F82. The
+comparison itself (`if len(test_rows) > ceiling: raise`) is unchanged in
+shape -- only the constant's values, name, and surrounding comments
+changed. Confirmed by `py_compile` and a clean import (exercising the same
+LightGBM/libomp workaround every session-3x script uses) after the edit,
+without running `main()` or fitting anything.
+
+**What this session did not do, on purpose.** Did not fit any model. Did
+not compute any sealed-year MAE, skill, or verdict, for any rung, at any
+airport. Did not change the features (D48.4), the model or its settings
+(D48.6), the training window or `EXPECTED_TRAIN_ROWS` (D48.7), the five
+elevation/lapse-rate constants (D48.3), or the bar (D48.11) -- confirmed by
+diff. Did not touch the out-of-window-date, training-row-count, or
+missing-file guards. Did not pull any new data -- only files session 40
+and earlier sessions already pulled were read, all read-only. Did not take
+D48's authorised look (D48.13) -- that remains session 42's job, now
+against a corrected ceiling. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed.
