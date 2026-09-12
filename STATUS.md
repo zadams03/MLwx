@@ -3,7 +3,54 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 43._
+_Last updated: 12 September 2026, after session 44._
+
+---
+
+## Session 44 (consolidation part 2 — rewrite RESULTS.md to cover both
+methods; documentation only)
+
+**Rewrites `RESULTS.md` — the standalone technical summary — so it tells
+the whole story: the minimal method (four passes, Reno fails) and the
+proven richer 5-feature GRIB method (five passes, Reno passes), with the
+honest framing SPEC deliberately deferred to this file. Documentation
+only — no code, model, data, or figure touched.** Full account: DECISIONS
+F95.
+
+**What changed.** The intro was re-dated and now states the project has
+two proven methods. Sections 2–4 (the minimal method's own method
+description, five-airport results table, and six findings) are left
+substantially intact, with three forward pointers added so a reader lands
+on the new section 5 at the right moment (the section-2 intro, a note
+under the section-3 table, and a closing sentence on finding 4 — the Reno
+failure). A new **section 5, "Act two: the richer-features GRIB method,"**
+covers what differs from the minimal method, pre-sealed-test validation,
+the lock and sealed test with the F94 results table in full, and three
+centrepieces: **the honest Reno decomposition** (leads with the 5-vs-3
+margin, +7.5%, not the +11.0% vs-raw-GFS margin; states plainly that
+Reno's GRIB raw-GFS baseline, 1.512, is measurably weaker than the
+Open-Meteo baseline the minimal method faced, 1.414, F82; and shows the
+pass is robust to that difference, a recomputed ~+4.8% margin against an
+Open-Meteo-quality baseline); **the LFPG window story** (failed the richer
+features on the 1.5-year window, passes on the full 4.4-year window and
+the sealed test — a "more data was the fix" finding); and a closing
+synthesis on honest magnitude and the non-comparability of the two
+methods' raw-GFS baselines. Section 6 (formerly section 5, "Limitations
+and open directions") was updated: the richer-features-at-Reno parked item
+is marked done with what it showed; the single-shared-test-year
+limitation now covers both methods; a new cross-method-comparability
+caveat was added; the completed item was removed from the parked list.
+
+**What this session did not do, on purpose.** Did not touch `SPEC.md`. Did
+not alter any minimal-method verdict, figure, or finding. Did not
+recompute anything — every number in the new section is cited to D48/
+F85–F94; the two small derived percentages (the ~+4.8% Reno recomputation)
+show their own arithmetic from numbers already on record. Did not run the
+archive pass — session 45's job, per this session's own prompt, once
+`RESULTS.md` also carries the headline. Nothing was committed.
+
+**Archive step this session:** none — per the session prompt, the archive
+pass is session 45's job.
 
 ---
 
@@ -573,9 +620,10 @@ RNO — exactly matching the D48.12 pre-registration with no exception
 (DECISIONS F94).** This is a separate, additional result under a different
 recipe (GRIB source, richer features); it does not alter any airport's
 existing sealed-test verdict under the existing recipe (D48.13). **Session
-43 (this file's own latest entry, above) folded this proven method into
-`SPEC.md` as a new section 7, documentation only (DECISIONS D49).**
-`RESULTS.md` and the archive pass are session 44's job, not done yet.
+43 folded this proven method into `SPEC.md` as a new section 7, documentation
+only (DECISIONS D49). Session 44 (this file's own latest entry, above) then
+rewrote `RESULTS.md` to cover both methods, also documentation only
+(DECISIONS F95).** The archive pass is session 45's job, not done yet.
 
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
@@ -669,11 +717,12 @@ leakage-safe form on this API/offset, at any date or airport.
 Full per-airport facts live in SPEC 3.4; the full results table is still
 SPEC 5.0, complete for all five airports and matching `RESULTS.md`'s own
 table — **this table is the minimal 3-feature/Open-Meteo method only,
-unchanged by session 42 or 43 (D48.13).** The separate 5-feature GRIB
+unchanged by session 42, 43 or 44 (D48.13).** The separate 5-feature GRIB
 method's own sealed-test result (session 42, DECISIONS F94: PASS at all
-five airports) now has its own results table in **SPEC section 7**, folded
-in by session 43 (DECISIONS D49); it is not yet folded into `RESULTS.md` —
-that is session 44's job. Summary (minimal method):
+five airports) has its own results table in **SPEC section 7**, folded
+in by session 43 (DECISIONS D49), and is now also folded into `RESULTS.md`
+as its own "act two" section by session 44 (DECISIONS F95). Summary
+(minimal method):
 
 | airport | stage | status |
 |---|---|---|
@@ -922,36 +971,52 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   DECISIONS source (D48, F85-F94); nothing was recomputed. `RESULTS.md` not
   touched (session 44's job). Recorded as DECISIONS D49. Nothing was
   committed.
+- **Session 44: consolidation part 2 -- rewrote `RESULTS.md` to cover both
+  methods, documentation only.** The minimal method's own sections
+  (method, five-airport results table, six findings) were preserved
+  substantially intact, with three forward pointers added to the new
+  section. A new section 5, "Act two: the richer-features GRIB method,"
+  covers what differs from the minimal method, pre-sealed-test validation,
+  the lock and sealed test with the F94 results table in full, the honest
+  Reno decomposition (leads with the 5-vs-3 margin, +7.5%, states the
+  GRIB-raw-baseline caveat plainly, and shows the pass is robust to it),
+  the LFPG window story ("more data was the fix"), and a synthesis on
+  honest magnitude and cross-method baseline non-comparability. The former
+  section 5 ("Limitations and open directions") became section 6, updated
+  to mark the richer-features-at-Reno item done and add a
+  cross-method-comparability caveat. Every figure is copied from and cited
+  to its DECISIONS/SPEC source; nothing was recomputed. `SPEC.md` not
+  touched. Recorded as DECISIONS F95. Nothing was committed.
 
 ## Next
 
 **The GRIB-build sub-project (docs/session-36.md through docs/session-42.md)
 has completed its full four-step build and its one authorised look, and
-session 43 has folded that proven result into `SPEC.md`.** Session 42 ran
-the frozen sealed-test script once, cleanly, and the 5-feature GRIB recipe
-**PASSES the frozen bar at all five airports** (DECISIONS F94), exactly
-matching the D48.12 pre-registration. Per D48.13 ("one look, and it
-stands"), this result is now final and unmodifiable -- no re-run, no
-re-tune, whatever a later session might wish were different. Session 43
-then wrote this proven method into `SPEC.md` as a new section 7 (DECISIONS
-D49) — SPEC now describes both methods, cleanly separated.
+sessions 43-44 have folded that proven result into both `SPEC.md` and
+`RESULTS.md`.** Session 42 ran the frozen sealed-test script once, cleanly,
+and the 5-feature GRIB recipe **PASSES the frozen bar at all five airports**
+(DECISIONS F94), exactly matching the D48.12 pre-registration. Per D48.13
+("one look, and it stands"), this result is now final and unmodifiable --
+no re-run, no re-tune, whatever a later session might wish were different.
+Session 43 wrote this proven method into `SPEC.md` as a new section 7
+(DECISIONS D49); session 44 then rewrote `RESULTS.md` to cover both methods,
+including the honest Reno decomposition and the LFPG window story
+(DECISIONS F95) — SPEC and RESULTS now both describe both methods, cleanly
+separated.
 
-**What is not yet done: `RESULTS.md` and the archive pass — session 44's
-job, per session 43's own prompt.** It would need to address, among other
-things: how `RESULTS.md`'s own reader-facing summary should present two
-independently-tested recipes at the same five airports, including the
-raw-GFS-margin non-comparability between the GRIB and Open-Meteo baselines
-(SPEC section 7.5 flags this but does not resolve it); the minor
-scoring-basis note from session 42's Task 2 (a real but verdict-irrelevant
-day-set mismatch in the frozen script's own 5-vs-persistence comparison at
-three airports, F94), on record for whoever writes RESULTS; and the
-archive pass itself (moving settled DECISIONS entries — the GRIB build's
-own evidence base, F85-F94, and D48 — to `DECISIONS-archive.md`, per
-`CLAUDE.md`'s routine end-of-session step), which session 43 explicitly did
-not run, per its own prompt, so that SPEC and RESULTS both carry the
-headlines first.
+**What is not yet done: the archive pass — session 45's job, per session
+44's own prompt.** Moving settled DECISIONS entries — the GRIB build's own
+evidence base, F85-F94, and D48 — to `DECISIONS-archive.md`, per
+`CLAUDE.md`'s routine end-of-session step, is the one remaining
+consolidation step; sessions 43 and 44 both explicitly deferred it so that
+SPEC and RESULTS could each carry the headlines first, per their own
+prompts. The minor scoring-basis note from session 42's Task 2 (a real but
+verdict-irrelevant day-set mismatch in the frozen script's own
+5-vs-persistence comparison at three airports, F94) stays on record in
+DECISIONS; session 44 did not surface it in RESULTS.md itself, since the
+session-44 prompt's own scope did not ask for it.
 
-**Disk space and repo size, still relevant for that or a future session.**
+**Disk space and repo size, still relevant for a future session.**
 Session 37's ~20 GB GRIB pull took free space from 35 GiB to 14 GiB;
 session 40's sealed-year pull added a further ~4.62 GiB (5,840 small
 files), free space now ~13 GiB. SPEC 2.3/D15 (as qualified by D47 for
@@ -1005,10 +1070,10 @@ resolved (see "Open questions" below).
   D48's one authorised look: the 5-feature GRIB recipe PASSES the frozen
   bar at all five airports, exactly matching the D48.12 pre-registration
   with no exception.** The richer-features branch is now answered as far
-  as a sealed-test result can answer it -- what remains open is not a
-  richer-features question anymore but a documentation one (folding the
-  proven recipe into `SPEC.md`/`RESULTS.md`, a later consolidation
-  session's job, not decided). **Q30's other two branches -- a further
+  as a sealed-test result can answer it, and its documentation follow-up is
+  also done -- session 43 folded the proven recipe into `SPEC.md` (D49) and
+  session 44 folded it into `RESULTS.md` (F95); only the archive pass
+  (session 45) remains. **Q30's other two branches -- a further
   airport, and a second test year (the remaining half of the F30/F48
   caveat) -- and stage 3 (pooling) remain fully open and are the owner's
   choice**, unaffected by how the richer-features branch resolved.

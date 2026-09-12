@@ -2298,3 +2298,62 @@ documentation only, no code or data, nothing committed:**
 
 Neither correction changes any number, verdict, or finding — both are
 clarifications of exactly what section 7 already meant.
+
+---
+
+## 2026-09-12 — Session 44 finding: RESULTS.md rewritten to cover both
+methods, documentation only
+
+**F95. `RESULTS.md` is rewritten so it tells the whole story: the minimal
+method (sections 2–4, unchanged in substance — four passes, Reno fails) and
+the proven richer 5-feature GRIB method (new section 5, "act two" — five
+passes, Reno passes). This is a documentation-only consolidation, mirroring
+session 43's own SPEC fold-in (D49) one level down. No code, model, data,
+or figure was touched, and no DECISIONS finding or verdict was changed.
+Every number in the rewrite was checked against its DECISIONS/SPEC source
+before being written down.**
+
+**What changed in `RESULTS.md`, in full.** The intro (section 1) was
+re-dated to session 44 and now states the project has two proven methods.
+Sections 2–4 (the minimal method's own method description, results table,
+and six findings) are left substantially intact — three forward pointers
+were added (the intro to section 2, a note under the section-3 results
+table, and a closing sentence on finding 4) so a reader lands on section 5
+at the point where the minimal method's own Reno ceiling is described,
+without any finding's own wording being rewritten. A new
+**section 5, "Act two: the richer-features GRIB method"**, covers: what
+differs from the minimal method (D48.2–D48.7); pre-sealed-test validation
+(F89–F91); the lock and sealed test (D48, F92–F94) with the F94 results
+table in full (5-feature MAE, raw-GFS-GRIB MAE, persistence MAE, 3-feature
+MAE, and all three skill margins, at all five airports); **the honest Reno
+decomposition** (section 5.4) — leading with the 5-vs-3 margin (+7.5%), not
+the vs-raw-GFS margin (+11.0%), naming plainly that the GRIB raw-GFS
+baseline at Reno (1.512) is measurably weaker than the Open-Meteo baseline
+the minimal method faced (1.414, F82), and showing the pass is robust to
+that difference (a recomputed ~+4.8% margin against an Open-Meteo-quality
+baseline) rather than an artifact of it; **the LFPG window story** (section
+5.5) — LFPG failed the richer features on the 1.5-year window (F86 −7.7%
+3-feature / F87 −2.1% 5-feature) but passes on the full 4.4-year window and
+the sealed test (F91, F94), naming the short window, not the features, as
+the binding constraint that was fixed; and a closing synthesis (section
+5.6) on honest magnitude (5-vs-3 ranges +1.8% to +8.2%) and the
+non-comparability of the two methods' raw-GFS baselines (SPEC 7.5). Section
+6 (formerly section 5, "Limitations and open directions") was updated: the
+"richer features at Reno" parked item is marked done, with what it showed
+and its honest caveat; the single-shared-test-year limitation is restated
+to cover both methods; a new bullet on cross-method margin comparability
+was added; the parked-directions list had the now-completed richer-features
+item removed. The closing footer was re-dated and now cites this entry
+(F95).
+
+**What this session deliberately did not do.** Did not touch `SPEC.md`.
+Did not alter any minimal-method verdict, figure, or finding — every number
+in sections 2–4 matches the pre-session file exactly. Did not recompute
+anything — every number in the new section 5 is copied from and cited to
+D48/F85–F94, and the two derived percentages stated explicitly as
+recomputed-for-context (the ~+4.8% Reno figure, `1 − 1.346/1.414`) are
+computed only from numbers already on record, shown with their arithmetic
+so they can be checked. Did not run the archive pass (session 45's job,
+per this session's own prompt). Nothing was committed.
+
+---
