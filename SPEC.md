@@ -31,7 +31,9 @@ The airports so far:
 - **Des Moines, Iowa (IEM station code DSM)** — stage 2, **passed**.
 - **Dubbo, Australia (ICAO code YSDU)** — stage 2, **passed**.
 - **Reno, Nevada (IEM station code RNO, ICAO code KRNO)** — stage 2,
-  **failed**. The project's first mountain/terrain-affected airport.
+  **failed the minimal method** (DECISIONS F82); **passes the richer
+  5-feature GRIB method** (DECISIONS F94) — see section 7. The project's
+  first mountain/terrain-affected airport.
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -61,7 +63,13 @@ see information from the future it is trying to predict. Specifically:
   for past forecasts. Do **not** use its **Historical Forecast API**. The
   Historical Forecast API stitches together the freshest slice of many runs,
   which effectively already contains the answer. (See DECISIONS for the full
-  reasoning.)
+  reasoning.) **Section 7's richer method uses a different source (a GFS
+  GRIB archive) and satisfies this same rule by a different route**: it
+  reads a genuine archived past forecast run at a fixed forecast-hour lead,
+  never the freshest run for a given valid time, so no future-stitching is
+  possible there either (DECISIONS F89). This does not change what the
+  method in sections 1–6 uses — Open-Meteo's Previous Runs API remains its
+  source.
 - **2.1c Climatology from training data only.** The climatology baseline
   (section 5) must be computed using only the training period. If it is
   averaged over all years including the test period, that is leakage too.
@@ -108,7 +116,11 @@ column of the airport table, section 3.4); the routine report (IEM
 
 **3.2 Forecast data (what GFS predicted).** Past GFS forecasts for the
 airport's location. Source: Open-Meteo **Previous Runs API**, model string
-**`gfs_global`** (see DECISIONS D16). Free, no account needed.
+**`gfs_global`** (see DECISIONS D16). Free, no account needed. This section
+describes the source for the method in sections 1–6. Section 7 describes a
+second, later method with its own forecast source (a GFS GRIB archive); the
+rest of this section (lead time, archive floor, the shared gap) is about the
+Open-Meteo source only, unless section 7 says otherwise.
 
 The lead time is the API's 1-day offset (`previous_day1`). This is a
 **nominal** 24-hour lead, not an exact one. GFS runs every 6 hours, and
@@ -437,6 +449,12 @@ Reno's bias is close to a constant offset, and the correctable structure left
 over is small relative to random day-to-day scatter, so a flexible model
 fitting it tightly in-sample adds little out-of-sample. See DECISIONS F82.
 
+**A separate, richer-feature method has since been tested against this same
+frozen bar, with its own results table — see section 7.** It does not
+replace or re-judge anything in the table above; the results above are the
+record of the method described in sections 1–6, and they stand unchanged
+(DECISIONS D48.13).
+
 **5.1 Metric.** Mean absolute error (MAE) — the average size of the gap
 between forecast and what actually happened, in degrees Celsius. Lower is
 better.
@@ -546,7 +564,10 @@ to fill in a later stage early, treat it as a warning sign and stop.
     1.414, -3.1%), though it beats persistence by a wide margin (+41.4%,
     F82). It is the project's first airport to fail the frozen bar, the
     project's first mountain/terrain-affected airport, and the third whose
-    target hour is not 12:00 UTC (D42, 4.1).
+    target hour is not 12:00 UTC (D42, 4.1). **A separate, richer 5-feature
+    GRIB method (section 7) was built and tested later, and passes at Reno
+    too (DECISIONS F94)** — this does not change or erase the record above;
+    both results stand (D48.13).
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once.
 - **Stage 3 — pool airports.** Combine airports into one model with
@@ -568,3 +589,128 @@ to fill in a later stage early, treat it as a warning sign and stop.
 opens them. Stage 2 needs no section of its own, however many airports it comes
 to hold: the sections above are written per airport, so opening one means
 adding a row to the airport table, not adding a design.)*
+
+---
+
+## 7. The richer-features GRIB method (a second, proven method)
+
+Sections 1–6 describe the project's original, minimal method: three
+features, Open-Meteo as the forecast source. That method is unchanged by
+this section, and its results (section 5.0) stand exactly as reported. This
+section describes a second, later, more complete method — five features, a
+different forecast source — that was built, locked and tested once, and
+passed at every airport, including Reno, where the minimal method failed.
+**Both methods are real, proven results. Neither erases the other**
+(DECISIONS D48.13).
+
+**7.1 Motivation.** The minimal method beats both baselines at four of five
+airports but fails at Reno (section 5.0, DECISIONS F82). Reno's own error
+looks like a near-constant offset sitting under large day-to-day scatter,
+rather than a learnable pattern (DECISIONS F79) — the kind of shape a model
+can fit tightly in-sample without gaining anything out-of-sample. This
+method asks whether adding two more pieces of physical information, cloud
+cover and wind speed, gives the model enough real structure to do better —
+at Reno, and everywhere else.
+
+**7.2 What is different from the minimal method.** Everything not listed
+here is unchanged from sections 1–6: the same airports, the same target
+hour per airport (4.1), the same training/test split dates (4.3), the same
+pairing rule (4.5), and the same frozen bar (5.3).
+
+- **Features.** The minimal method's three features (GFS forecast
+  temperature, `season_sin`, `season_cos`) plus two more: `cloud_cover`
+  (total cloud cover) and `wind_speed_10m` (10 m wind speed). Two model
+  variants are fitted and compared at every airport — a 3-feature model
+  (the same feature set as the minimal method, refit on the new source) and
+  the 5-feature model (all five) — so the effect of the two extra features
+  can be read cleanly against an otherwise-identical baseline (DECISIONS
+  D48.4).
+- **Forecast source.** GFS 0.25° GRIB2 files, pulled directly from the
+  public AWS archive `noaa-gfs-bdp-pds`, not Open-Meteo. This is a genuine
+  archived past forecast at a fixed forecast-hour lead — never the freshest
+  run for a given valid time — so it satisfies the no-look-ahead rule the
+  same way Open-Meteo's Previous Runs API does (2.1b, DECISIONS F89). Each
+  value is bilinear-interpolated from the surrounding grid points to the
+  airport's already-established grid point (3.4). The lead-time
+  convention: for a target hour `HH:00 UTC`, use the run made at cycle
+  `floor(HH/6)*6` UTC on the day before, forecast hour `24 + (HH mod 6)`
+  (DECISIONS D48.2, F89).
+- **Elevation correction.** GFS's own model terrain, at the resolution of a
+  0.25° grid, can sit well above or below an airport's real elevation —
+  negligible at four airports but 275 m at Reno, in mountainous terrain.
+  This 0.25° grid cell is the raw GRIB model's own terrain, coarser than
+  and different from the Open-Meteo grid point section 3.4 already
+  established (whose elevation sits within 1 m of Reno's own) — the two
+  methods interpolate onto different grids, so the two elevation-mismatch
+  figures describe two different things and are not in conflict. A fixed
+  lapse-rate correction (7.429 °C/km, fit once and never refit) is applied
+  to temperature only, as a constant per airport (DECISIONS D48.3, F90).
+  Cloud cover and wind speed are used exactly as GRIB reports them,
+  uncorrected (DECISIONS F91).
+- **Training window.** 2021-03-24 to 2025-07-31, restricted to GFS's v16
+  model version (v16 went operational 2021-03-22; using an earlier model
+  version inside the same training window would mix two different physical
+  models, so the roughly 82 days before 2021-03-24 that the raw archive
+  could otherwise reach are deliberately excluded). The sealed test year is
+  the same 2025-08-01 to 2026-07-31 window every airport already uses
+  (4.3). See DECISIONS D48.7, D48.8.
+- **Model.** The same LightGBM settings as the minimal method (DECISIONS
+  D21.4), unchanged — nothing tuned per airport, nothing tuned between the
+  3-feature and 5-feature variants.
+
+**7.3 Validation done before the sealed test.** Before any sealed-year data
+was touched: the GRIB-based pipeline was checked against the trusted
+Open-Meteo temperature series and matched it closely at every airport once
+the elevation correction was applied (within 0.062 °C on identical rows —
+DECISIONS F89, F90); cloud cover and wind speed were checked against
+Open-Meteo's own values over the period both exist and matched well, with a
+real but explainable disagreement in cloud cover during genuinely
+fast-changing partly-cloudy conditions (DECISIONS F90, F91); and a blocked
+cross-validation across the whole training window showed the 5-feature
+model beating the 3-feature model, and both beating raw GFS, at every one
+of the five airports — including the two previously weak cases, LFPG and
+Reno (DECISIONS F86, F87, F91).
+
+**7.4 Lock and sealed test.** The complete recipe — features, source,
+pipeline, elevation constants, model settings, training window, and
+pre-registered expectations — was written down and frozen before the
+sealed year was opened (DECISIONS D48), the same discipline the minimal
+method's own locks followed (DECISIONS D21, D31, D35, D39, D44). The sealed
+test year was then opened once. A row-count guard tripped on its first run
+and was traced to a guard-specification error, not a data problem, and
+corrected before any model was fit or any sealed-year result was seen
+(DECISIONS F92, F93). The frozen script was then run once, unchanged
+(DECISIONS D48.13).
+
+**Result: the 5-feature model passes the frozen bar (5.3) at all five
+airports** (DECISIONS F94):
+
+| airport | 5-feature MAE | vs raw GFS (GRIB) | vs persistence | vs 3-feature |
+|---|---|---|---|---|
+| EGLC | 1.000 | +20.2% | +52.3% | +3.5% |
+| LFPG | 1.156 | +16.4% | +49.7% | +1.8% |
+| DSM  | 1.636 | +5.6%  | +59.1% | +3.4% |
+| YSDU | 1.179 | +10.5% | +55.8% | +8.2% |
+| RNO  | 1.346 | +11.0% | +45.9% | +7.5% |
+
+The clearest, source-independent evidence that the two extra features
+genuinely help is the last column: the 5-feature and 3-feature models are
+trained and tested on the identical elevation-corrected GRIB temperature,
+so they differ *only* in whether cloud cover and wind speed are included —
+and the 5-feature model wins at every airport.
+
+**7.5 What this does and does not mean.** This is a separate, additional,
+independently-tested result under a different recipe (GRIB source, richer
+features). It does **not** re-open, re-test, or overwrite any airport's
+existing sealed-test verdict under the minimal method (section 5.0) — EGLC
+(F16), LFPG (F30), DSM (F47), YSDU (F64) and RNO (F82) all stand exactly as
+reported. **Reno in particular failed the minimal method (F82) and passes
+this richer method (F94) — both are true, and neither erases the other**
+(DECISIONS D48.13). At EGLC, LFPG, DSM and YSDU the project now has two
+independently-tested, independently-passing methods — every airport that
+passed the minimal method also passes the richer one; only Reno has just
+one passing method. Raw GFS (GRIB) is not
+the same series as raw GFS (Open-Meteo) — the two sources agree closely but
+are not identical (7.3) — so the margins above are not directly comparable,
+airport for airport, to section 5.0's minimal-method margins; a fuller
+discussion of that comparison belongs in RESULTS.md, not here.

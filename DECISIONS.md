@@ -2210,3 +2210,91 @@ unmodified), `scripts/session42_scoring_check.py` (new, read-only
 diagnostic). Full real output: `notes/session40-sealed-test-output.txt`,
 `notes/session-42-scoring-check-output.txt`. Summary table: `data/
 processed/session40_sealed_test_summary.csv`.
+
+---
+
+## 2026-09-12 — Session 43 decision: the proven 5-feature GRIB method is
+folded into SPEC.md as a new section 7, documentation only
+
+**D49. `SPEC.md` now describes two methods: the original minimal method
+(sections 1–6, unchanged) and the richer 5-feature GRIB method (new section
+7), proven by F94. This is a documentation-only consolidation — no code,
+model, data, or figure was touched, and no DECISIONS finding or verdict was
+changed.** Every number folded into section 7 is copied from, and cited to,
+its DECISIONS source (D48, F85–F94) — nothing was recomputed.
+
+**What changed in `SPEC.md`, in full (see the session's own diff for exact
+wording):**
+- **New `## 7. The richer-features GRIB method`**, placed after section 6
+  (not inserted mid-document as a "4A") specifically so sections 5 and 6 —
+  cited by number throughout this file and `STATUS.md` — never need
+  renumbering. It covers: motivation (Reno's near-constant-bias shape,
+  F79/F82); what differs from the minimal method (features, GRIB source and
+  lead convention, the elevation/lapse-rate correction, the v16-only
+  training window, the unchanged model settings — D48.2–D48.7); validation
+  done before the sealed test (F89–F91); the lock and sealed test (D48,
+  F92–F94); the sealed-year results table (F94, 5-feature MAE and its skill
+  vs raw GFS/persistence/3-feature at all five airports); and a closing
+  paragraph stating plainly what this does and does not mean (D48.13) —
+  including that raw GFS (GRIB) and raw GFS (Open-Meteo) are not the same
+  series, so section 7's margins are not directly comparable, airport for
+  airport, to section 5.0's.
+- **§1 airports list** — Reno's bullet reworded from "failed" to "failed the
+  minimal method (F82); passes the richer 5-feature GRIB method (F94) — see
+  section 7."
+- **§2.1b (leakage rule)** — one sentence added noting the GRIB archive is a
+  genuine archived past forecast at a fixed lead (F89), so it satisfies the
+  rule's intent by a different route than Open-Meteo's Previous Runs API;
+  the rule itself, and what the minimal method uses, is unchanged.
+- **§3.2 (forecast source)** — one sentence added pointing out this section
+  describes the minimal method's source only, with section 7 having its
+  own.
+- **§5.0 (results)** — one paragraph added after the existing Reno
+  discussion, pointing to section 7's own results table; the existing
+  results table and its wording are untouched.
+- **§6 (Reno / stage-2 bullet)** — one sentence added noting the richer
+  method later passed at Reno (F94, section 7); the existing failure
+  record (F82) is untouched.
+
+**The results-table placement choice, decided this session.** The
+richer-method's sealed-year results table (F94's own numbers) was placed
+directly inside the new section 7, not deferred to `RESULTS.md`. Reasoning:
+the numbers are already fully cited to a single DECISIONS finding (F94), so
+placing them in section 7 keeps that section self-contained and gives
+`STATUS.md`/future sessions one place to point at for the method's own
+proven result. `RESULTS.md`'s own job (session 44) is the narrative and
+caveat treatment — in particular, the raw-GFS-margin non-comparability
+between the GRIB and Open-Meteo baselines — not a restatement of the raw
+numbers.
+
+**What this session deliberately did not do.** Did not touch `RESULTS.md`
+(session 44's job). Did not run the archive pass (session 44's job, once
+both `SPEC.md` and `RESULTS.md` carry the headlines). Did not change any
+DECISIONS finding, verdict, or the frozen bar. Did not restructure or
+reword any part of sections 1–6 beyond the five pointed edits listed above.
+Did not recompute any figure — every number in section 7 is copied from
+D48/F85–F94. Nothing was committed.
+
+**Two corrections made to section 7 in a same-day follow-up, both
+documentation only, no code or data, nothing committed:**
+1. **§7.5's independently-passing-methods sentence was incomplete.** It
+   originally read "At EGLC, DSM and YSDU the project now has two
+   independently-tested, independently-passing methods," omitting LFPG.
+   LFPG passes the minimal method (F30) and the richer method (F94), the
+   same as EGLC, DSM and YSDU — the omission was a drafting slip, not a new
+   finding. Corrected to name all four, with an explicit closing clause:
+   every airport that passed the minimal method also passes the richer
+   one; only Reno has just one passing method.
+2. **§7.2's elevation-correction bullet could be read as contradicting
+   SPEC 3.4's own grid-elevation table.** SPEC 3.4 records Reno's
+   Open-Meteo grid point as 1 m from the airport's own elevation (the
+   established `gfs_global` point this whole project already uses); §7.2
+   separately states a 275 m gap at Reno for the richer method's own GRIB
+   grid. Both figures are correct — they describe two different grids
+   (Open-Meteo's own downscaled point vs. the raw 0.25° GFS GRIB cell,
+   DECISIONS F89's Task 5 finding), not two conflicting measurements of the
+   same one. Added one clarifying clause to §7.2 naming this explicitly, so
+   a reader comparing the two sections does not read them as inconsistent.
+
+Neither correction changes any number, verdict, or finding — both are
+clarifications of exactly what section 7 already meant.

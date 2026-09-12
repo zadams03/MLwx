@@ -3,7 +3,44 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 42._
+_Last updated: 12 September 2026, after session 43._
+
+---
+
+## Session 43 (consolidation part 1 — fold the proven 5-feature GRIB method
+into SPEC.md; documentation only)
+
+**Folds the now-proven 5-feature GRIB method (F94, 5/5 pass) into
+`SPEC.md`, alongside the original minimal method, without disturbing the
+minimal method's own text or results. Documentation only — no code, model,
+data, or figure touched.** Full account: DECISIONS D49.
+
+**What changed.** A new `## 7. The richer-features GRIB method` section was
+added (placed after section 6, so sections 5/6 need no renumbering),
+covering motivation, what differs from the minimal method (features, GRIB
+source and lead convention, the elevation correction, the v16-only
+training window, the unchanged model settings), pre-sealed-test validation,
+the lock and sealed test, the F94 results table, and a closing paragraph on
+what the result does and does not mean (D48.13) — including that GRIB's
+raw-GFS baseline is not the same series as Open-Meteo's, so section 7's
+margins are not directly comparable to section 5.0's. Five light pointer/
+status edits were made to the existing sections: §1's Reno bullet ("failed"
+→ "failed the minimal method (F82); passes the richer method (F94) — see
+§7"), §2.1b (a sentence on the GRIB source's own leakage-safety), §3.2 (a
+pointer that it describes the minimal method's source only), §5.0 (a
+pointer to section 7's own results table), and §6's Reno bullet (a sentence
+noting the later richer-method pass). The minimal method's own sections and
+results are otherwise untouched.
+
+**What this session did not do, on purpose.** Did not touch `RESULTS.md` —
+that is session 44's job. Did not run the archive pass — also session 44,
+once both `SPEC.md` and `RESULTS.md` carry the headlines. Did not change
+any DECISIONS finding, verdict, or the frozen bar. Did not recompute any
+figure — every number in the new section is copied from and cited to D48/
+F85–F94. Nothing was committed.
+
+**Archive step this session:** none — per the session prompt, the archive
+pass is session 44's job, once RESULTS.md also carries the headline.
 
 ---
 
@@ -535,9 +572,10 @@ PASSES the frozen bar at all five airports — EGLC, LFPG, DSM, YSDU and
 RNO — exactly matching the D48.12 pre-registration with no exception
 (DECISIONS F94).** This is a separate, additional result under a different
 recipe (GRIB source, richer features); it does not alter any airport's
-existing sealed-test verdict under the existing recipe (D48.13). Whether
-and how to fold this recipe into `SPEC.md`/`RESULTS.md` is a later,
-separate consolidation session's decision — not made yet.
+existing sealed-test verdict under the existing recipe (D48.13). **Session
+43 (this file's own latest entry, above) folded this proven method into
+`SPEC.md` as a new section 7, documentation only (DECISIONS D49).**
+`RESULTS.md` and the archive pass are session 44's job, not done yet.
 
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
@@ -628,13 +666,14 @@ leakage-safe form on this API/offset, at any date or airport.
 
 ## Airports
 
-Full per-airport facts live in SPEC 3.4; the full results table is now SPEC
-5.0, complete for all five airports and matching `RESULTS.md`'s own table
-— **this table is the existing 3-feature/Open-Meteo recipe only, unchanged
-by this session (D48.13).** The separate 5-feature GRIB recipe's own
-sealed-test result (session 42, DECISIONS F94: PASS at all five airports)
-is not yet folded into either SPEC or RESULTS — that is a later
-consolidation session's job. Summary:
+Full per-airport facts live in SPEC 3.4; the full results table is still
+SPEC 5.0, complete for all five airports and matching `RESULTS.md`'s own
+table — **this table is the minimal 3-feature/Open-Meteo method only,
+unchanged by session 42 or 43 (D48.13).** The separate 5-feature GRIB
+method's own sealed-test result (session 42, DECISIONS F94: PASS at all
+five airports) now has its own results table in **SPEC section 7**, folded
+in by session 43 (DECISIONS D49); it is not yet folded into `RESULTS.md` —
+that is session 44's job. Summary (minimal method):
 
 | airport | stage | status |
 |---|---|---|
@@ -867,29 +906,50 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   exactly as before). `SPEC.md`/`RESULTS.md` not modified -- folding this
   recipe in is a later consolidation session's job. Nothing was
   committed.
+- **Session 43: consolidation part 1 -- folded the proven 5-feature GRIB
+  method into `SPEC.md` as a new section 7, documentation only.**
+  Sections 1-6 (the minimal method) were preserved untouched except for
+  five pointed edits: §1's Reno bullet reworded ("failed" -> "failed the
+  minimal method (F82); passes the richer method (F94) -- see §7"), §2.1b
+  (a sentence on the GRIB source's own leakage-safety), §3.2 (a pointer
+  that it describes the minimal method's source only), §5.0 (a pointer to
+  §7's own results table), and §6's Reno bullet (a sentence noting the
+  later richer-method pass). The new §7 covers motivation, what differs
+  from the minimal method, pre-sealed-test validation, the lock and sealed
+  test, the F94 results table, and what the result does and does not mean
+  (D48.13) -- placed after §6 (not as a mid-document "4A") so §5/§6's
+  existing numbering never shifts. Every figure is copied from and cited to its
+  DECISIONS source (D48, F85-F94); nothing was recomputed. `RESULTS.md` not
+  touched (session 44's job). Recorded as DECISIONS D49. Nothing was
+  committed.
 
 ## Next
 
 **The GRIB-build sub-project (docs/session-36.md through docs/session-42.md)
-has now completed its full four-step build AND its one authorised look.**
-Session 42 ran the frozen sealed-test script once, cleanly, and the
-5-feature GRIB recipe **PASSES the frozen bar at all five airports**
-(DECISIONS F94), exactly matching the D48.12 pre-registration. Per D48.13
-("one look, and it stands"), this result is now final and unmodifiable --
-no re-run, no re-tune, whatever a later session might wish were different.
+has completed its full four-step build and its one authorised look, and
+session 43 has folded that proven result into `SPEC.md`.** Session 42 ran
+the frozen sealed-test script once, cleanly, and the 5-feature GRIB recipe
+**PASSES the frozen bar at all five airports** (DECISIONS F94), exactly
+matching the D48.12 pre-registration. Per D48.13 ("one look, and it
+stands"), this result is now final and unmodifiable -- no re-run, no
+re-tune, whatever a later session might wish were different. Session 43
+then wrote this proven method into `SPEC.md` as a new section 7 (DECISIONS
+D49) — SPEC now describes both methods, cleanly separated.
 
-**What is not yet done: folding the proven recipe into `SPEC.md` and
-`RESULTS.md`.** This is explicitly a separate, later consolidation
-session's job (D48.11, session-42's own prompt) -- not started, not
-decided here. It would need to address, among other things: whether the
-5-feature GRIB recipe becomes the project's primary/recorded method at
-each airport (alongside or instead of the existing 3-feature/Open-Meteo
-recipe's own results, which stand unchanged per D48.13); how SPEC 5.0's
-results table and `RESULTS.md`'s own summary should present two
-independently-tested recipes at the same five airports; and the minor
+**What is not yet done: `RESULTS.md` and the archive pass — session 44's
+job, per session 43's own prompt.** It would need to address, among other
+things: how `RESULTS.md`'s own reader-facing summary should present two
+independently-tested recipes at the same five airports, including the
+raw-GFS-margin non-comparability between the GRIB and Open-Meteo baselines
+(SPEC section 7.5 flags this but does not resolve it); the minor
 scoring-basis note from session 42's Task 2 (a real but verdict-irrelevant
 day-set mismatch in the frozen script's own 5-vs-persistence comparison at
-three airports, F94) is on record for whoever writes that consolidation.
+three airports, F94), on record for whoever writes RESULTS; and the
+archive pass itself (moving settled DECISIONS entries — the GRIB build's
+own evidence base, F85-F94, and D48 — to `DECISIONS-archive.md`, per
+`CLAUDE.md`'s routine end-of-session step), which session 43 explicitly did
+not run, per its own prompt, so that SPEC and RESULTS both carry the
+headlines first.
 
 **Disk space and repo size, still relevant for that or a future session.**
 Session 37's ~20 GB GRIB pull took free space from 35 GiB to 14 GiB;
