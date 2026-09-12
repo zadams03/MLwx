@@ -3,7 +3,62 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 44._
+_Last updated: 12 September 2026, after session 45._
+
+---
+
+## Session 45 (close out the build — archive settled GRIB-build findings,
+one RESULTS wording fix; documentation only)
+
+**The last session of the GRIB build. Two tasks, both documentation only —
+no code, model, data, or figure touched.** Full account: DECISIONS D50.
+
+**Task 1 — RESULTS.md §5.5 fix.** The sentence "3-feature −7.7%,
+5-feature −2.1%, on the scout and the follow-up CV respectively (DECISIONS
+F86, F87)" mis-paired the two figures with their sources — both numbers are
+actually the follow-up CV's own LFPG figures (F87); the scout (F86) gives
+LFPG a different pair (−25.7% / −13.5%). Reworded to the neutral form that
+avoids the mis-pairing: "both models stayed negative across the scout and
+the follow-up CV (DECISIONS F86, F87)." No figure anywhere else in
+`RESULTS.md` was touched.
+
+**Task 2 — the archive pass.** Applied the D46 criterion (settled, and no
+live open question or `STATUS.md`'s own "Next" section needs the specific
+wording, only the headline) to every build-era `DECISIONS.md` entry,
+session 31 onward. **Moved: F85, F86, F87, F89, F90, F91, F92, F93, D48**
+(1,797 lines, byte-exact, mechanical line-range extraction — `sed`, not
+hand-reproduced) to a new dated section in `DECISIONS-archive.md`,
+`## Moved by session 45 (2026-09-12)`, with a pointer to `SPEC.md` §7 /
+`RESULTS.md` §5 for the headlines. F88 was already archived in session 38.
+**Kept live:** D46 (the archiving-workflow decision itself, not build-era),
+the existing F88 pointer note, D47 (a standing rule, split out of the same
+session-37 entry F90 sat in), D49 and F95 (fresh consolidation records
+`STATUS.md` still cites directly), and Q30/Q32/the parked items/D17/F7 (all
+pre-build-era, untouched). **F94 (the headline sealed-test pass) meets the
+same MOVE criterion but was deliberately flagged rather than moved** — it
+is very fresh, and the owner may prefer to keep it live a little longer;
+it stays in `DECISIONS.md` pending that call. `DECISIONS.md` falls from
+2,359 to 636 live lines. No entry was edited, reworded, renumbered, or
+deleted — every `(Dxx)`/`(Fxx)` citation resolves exactly as before, now
+into `DECISIONS-archive.md` for the moved set.
+
+**What this session did not do, on purpose.** Did not edit, reword, or
+delete any moved entry — verbatim relocation only. Did not renumber
+anything or rewrite any citation. Did not touch `SPEC.md`, and touched
+`RESULTS.md` only for the §5.5 clause. Did not touch any code, data,
+model, or figure. Nothing was committed.
+
+**With this session, the GRIB-build sub-project (docs/session-36.md
+through docs/session-45.md) is fully closed**: built (steps 1–4, sessions
+36–39), tested once (sessions 40–42, DECISIONS F94), folded into `SPEC.md`
+and `RESULTS.md` (sessions 43–44, D49/F95), and now archived (session 45,
+D50). Nothing further is expected from this sub-project unless the owner
+reopens it.
+
+**Archive step this session: the archive pass itself (Task 2 above) — the
+sub-project's own detailed evidence base moved out of the live file, per
+`CLAUDE.md`'s routine end-of-session step, batched here because the whole
+sub-project came due at once.**
 
 ---
 
@@ -621,9 +676,13 @@ RNO — exactly matching the D48.12 pre-registration with no exception
 recipe (GRIB source, richer features); it does not alter any airport's
 existing sealed-test verdict under the existing recipe (D48.13). **Session
 43 folded this proven method into `SPEC.md` as a new section 7, documentation
-only (DECISIONS D49). Session 44 (this file's own latest entry, above) then
-rewrote `RESULTS.md` to cover both methods, also documentation only
-(DECISIONS F95).** The archive pass is session 45's job, not done yet.
+only (DECISIONS D49). Session 44 then rewrote `RESULTS.md` to cover both
+methods, also documentation only (DECISIONS F95). Session 45 (this file's
+own latest entry, above) then ran the archive pass, moving F85–F93 and D48
+to `DECISIONS-archive.md` (DECISIONS D50) — every citation above still
+resolves by number, now into the archive for the moved set; F94 stays live,
+flagged rather than moved.** The GRIB-build sub-project is now fully
+closed — built, tested, folded into SPEC/RESULTS, and archived.
 
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
@@ -987,34 +1046,45 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   cross-method-comparability caveat. Every figure is copied from and cited
   to its DECISIONS/SPEC source; nothing was recomputed. `SPEC.md` not
   touched. Recorded as DECISIONS F95. Nothing was committed.
+- **Session 45: the archive pass, plus one RESULTS.md wording fix,
+  documentation only.** Fixed a mis-paired LFPG figure in RESULTS §5.5
+  (DECISIONS D50). Applied the D46 criterion to every build-era DECISIONS
+  entry and moved F85, F86, F87, F89, F90, F91, F92, F93 and D48 to
+  `DECISIONS-archive.md` (1,797 lines, byte-exact) under a new "Moved by
+  session 45" section; D47 (a standing rule) was split out of the same
+  entry F90 sat in and kept live; D49 and F95 stay live as fresh
+  consolidation records; F94 meets the same criterion but was flagged for
+  the owner rather than moved, since it is the very fresh headline result.
+  `DECISIONS.md` falls from 2,359 to 636 live lines. This closes the
+  GRIB-build sub-project (docs/session-36.md through docs/session-45.md)
+  for good. Nothing was committed.
 
 ## Next
 
-**The GRIB-build sub-project (docs/session-36.md through docs/session-42.md)
-has completed its full four-step build and its one authorised look, and
-sessions 43-44 have folded that proven result into both `SPEC.md` and
-`RESULTS.md`.** Session 42 ran the frozen sealed-test script once, cleanly,
-and the 5-feature GRIB recipe **PASSES the frozen bar at all five airports**
-(DECISIONS F94), exactly matching the D48.12 pre-registration. Per D48.13
-("one look, and it stands"), this result is now final and unmodifiable --
-no re-run, no re-tune, whatever a later session might wish were different.
-Session 43 wrote this proven method into `SPEC.md` as a new section 7
-(DECISIONS D49); session 44 then rewrote `RESULTS.md` to cover both methods,
-including the honest Reno decomposition and the LFPG window story
-(DECISIONS F95) — SPEC and RESULTS now both describe both methods, cleanly
-separated.
+**The GRIB-build sub-project (docs/session-36.md through docs/session-45.md)
+is now fully closed.** It completed its full four-step build and its one
+authorised look (session 42, DECISIONS F94: 5-feature GRIB recipe PASSES
+the frozen bar at all five airports, exactly matching the D48.12
+pre-registration); sessions 43-44 folded that proven result into both
+`SPEC.md` (new section 7, DECISIONS D49) and `RESULTS.md` (new section 5,
+"act two," DECISIONS F95); and session 45 ran the archive pass, moving the
+sub-project's own settled evidence base (F85, F86, F87, F89, F90, F91, F92,
+F93, D48) to `DECISIONS-archive.md` under a new "Moved by session 45"
+section (DECISIONS D50). Per D48.13 ("one look, and it stands"), the F94
+result itself is final and unmodifiable -- no re-run, no re-tune, whatever
+a later session might wish were different. **F94 stays live in
+`DECISIONS.md`, deliberately not archived yet** -- it met the same D46
+criterion but was flagged for the owner rather than moved silently, since
+it is the headline five-of-five-airports result and very fresh; a future
+session may archive it once the owner says so. The minor scoring-basis
+note from session 42's Task 2 (a real but verdict-irrelevant day-set
+mismatch in the frozen script's own 5-vs-persistence comparison at three
+airports, F94) stays on record in DECISIONS; it was never surfaced in
+`RESULTS.md` itself, since no session's prompt asked for that.
 
-**What is not yet done: the archive pass — session 45's job, per session
-44's own prompt.** Moving settled DECISIONS entries — the GRIB build's own
-evidence base, F85-F94, and D48 — to `DECISIONS-archive.md`, per
-`CLAUDE.md`'s routine end-of-session step, is the one remaining
-consolidation step; sessions 43 and 44 both explicitly deferred it so that
-SPEC and RESULTS could each carry the headlines first, per their own
-prompts. The minor scoring-basis note from session 42's Task 2 (a real but
-verdict-irrelevant day-set mismatch in the frozen script's own
-5-vs-persistence comparison at three airports, F94) stays on record in
-DECISIONS; session 44 did not surface it in RESULTS.md itself, since the
-session-44 prompt's own scope did not ask for it.
+**What is genuinely next is now Q30's own remaining branches (see "Open
+questions" below), unblocked by anything GRIB-build-related.** Nothing in
+the sub-project's own scope is outstanding.
 
 **Disk space and repo size, still relevant for a future session.**
 Session 37's ~20 GB GRIB pull took free space from 35 GiB to 14 GiB;
@@ -1071,9 +1141,11 @@ resolved (see "Open questions" below).
   bar at all five airports, exactly matching the D48.12 pre-registration
   with no exception.** The richer-features branch is now answered as far
   as a sealed-test result can answer it, and its documentation follow-up is
-  also done -- session 43 folded the proven recipe into `SPEC.md` (D49) and
-  session 44 folded it into `RESULTS.md` (F95); only the archive pass
-  (session 45) remains. **Q30's other two branches -- a further
+  also done -- session 43 folded the proven recipe into `SPEC.md` (D49),
+  session 44 folded it into `RESULTS.md` (F95), and session 45 archived
+  the sub-project's own settled evidence base (D50) -- the richer-features
+  branch, and the GRIB-build sub-project it took nine sessions to run, are
+  now fully closed. **Q30's other two branches -- a further
   airport, and a second test year (the remaining half of the F30/F48
   caveat) -- and stage 3 (pooling) remain fully open and are the owner's
   choice**, unaffected by how the richer-features branch resolved.

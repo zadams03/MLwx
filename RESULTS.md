@@ -412,8 +412,8 @@ LFPG is the other airport worth telling a full story about, because its own
 path through this method is a clean illustration of *why* the GRIB build
 was worth doing at all. On the short 1.5-year feature-complete window that
 Open-Meteo alone could supply, LFPG's richer-features result never beat raw
-GFS — 3-feature −7.7%, 5-feature −2.1%, on the scout and the follow-up CV
-respectively (DECISIONS F86, F87). Once the GRIB source made the full
+GFS — both models stayed negative across the scout and the follow-up CV
+(DECISIONS F86, F87). Once the GRIB source made the full
 ~4.4-year training window available with cloud cover and wind speed
 included throughout, LFPG's own result flipped: 3-feature +3.3%, 5-feature
 +5.3% on the full-window cross-validation (DECISIONS F91), and now +16.4%
