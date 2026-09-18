@@ -3,7 +3,104 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 12 September 2026, after session 45._
+_Last updated: 18 September 2026, after session 46._
+
+---
+
+## Session 46 (multi-year generalisation backtest of the current models,
+24h lead — a descriptive profile, not a new verdict)
+
+**Opens the next phase after the GRIB build's close (session 45): the
+multi-year robustness profile of the EXISTING FROZEN 3-feature and
+5-feature GRIB recipes, walking the train/test cutoff forward one year at
+a time and refitting each recipe, unchanged, on each fold's own training
+window. This is a descriptive measurement, benchmarked against F94, not a
+new sealed test — it decides no pass/fail and does not re-open, re-tune, or
+overwrite F94 or F16–F82, which stand exactly as reported.** Full account:
+DECISIONS F96. Script: `scripts/session46_backtest.py` (new). Full real
+output: `notes/session-46-backtest-output.txt`. Tables:
+`data/processed/session46_backtest_profile.csv` (150 rows) and
+`data/processed/session46_fold_table.csv` (50 rows).
+
+**Mid-session correction, owner-confirmed before Task 1 was built.** The
+session prompt (docs/session-46.md) restricted the 5-feature folds to
+training windows starting no earlier than 2024-01-19, citing F85 (cloud
+cover/wind speed unavailable earlier). That citation holds for
+**Open-Meteo**, the source F85 actually tested — it does not hold for the
+**GRIB** source this session uses, which the GRIB build (sessions 36–38,
+F90/F91, archived) specifically pulled across the full v16 window
+(2021-03-24 onward) to close that exact gap (SPEC §7.2). Checked directly
+before use: `grib_features_v16_window.csv` carries real, non-null cloud
+cover and wind speed values back to 2021-03-24, zero blanks across 7,952 +
+1,825 rows. Flagged to the owner mid-session (CLAUDE.md: stop and flag a
+session-prompt/SPEC disagreement) rather than resolved unilaterally; the
+owner confirmed widening the 5-feature folds to match 3-feature's four
+training starts, subject to the non-null check (enforced in code) and
+never crossing the 2021-03-24 v16 floor (D48.7, a model-version boundary,
+not a data-availability one). The two original thin 2024-01-19-start folds
+were kept alongside the widened ones, not replaced.
+
+**The fold design.** 3-feature: four rolling folds, training from
+2021-03-24 through 2022-07-31/2023-07-31/2024-07-31/2025-07-31, each
+testing the following Aug 1–Jul 31 year (2022-23, 2023-24, 2024-25,
+2025-26). 5-feature: the same four full-window folds plus the two original
+thin folds (training from 2024-01-19). The 2022-23 fold (~1.35yr training)
+and both thin folds are explicitly flagged THIN — a weaker read, not an
+equal one.
+
+**The profile — 3-feature beats raw GFS (GRIB) at 18 of 20 airport-years;
+5-feature at 19 of 20; 5-feature beats 3-feature at 17 of 20 full-window
+airport-years (not all 20 — see below).** The only raw-GFS losses (EGLC
+-0.6%, YSDU -4.6%/-5.3%) fall in the single thinnest fold, 2022-23 — a
+thin-training-window effect, not an airport-fragility one: DSM, LFPG and
+RNO win against raw GFS at every one of their four full-window years,
+under both feature sets. The two thin 5-feature folds fare markedly worse
+(2024-25-thin: only 2 of 5 airports beat raw GFS, closely reproducing
+session 32's scout finding, F86, that a starved window — not the extra
+features — was the dominant effect). **The 5-vs-3-feature comparison is
+more nuanced than a clean sweep**: cloud cover and wind speed reliably
+help at EGLC, LFPG and RNO (4/4 years each), help variably at YSDU (3/4),
+and are marginal to slightly negative at DSM (5-feature loses to 3-feature
+in 2 of 4 years) — DSM's three-feature model already appears to capture
+most of its own learnable bias, leaving little room for the extra
+features to add.
+
+**Consistency check: exact reproduction of F94.** The `2025-26` fold (both
+feature sets) uses exactly D48's own training and sealed-test windows —
+every row count matches F94 exactly and every MAE matches to within 0.0005
+degC, confirming the backtest pipeline correctly reproduces the frozen
+recipe rather than approximating it.
+
+**The honest read (Task 4, report only).** Whether 2025-26 was a
+flattering test year has no single project-wide answer: EGLC and LFPG's
+sealed-year margins are clearly the largest of their own four years
+(supporting F48's concern), while DSM's sealed-year margin is clearly its
+*weakest* of the four — the opposite pattern. **RNO's 5-feature skill vs
+raw GFS is remarkably stable across all four years (+10.2% to +11.5%)** —
+the tightest band of any airport in the profile, and the strongest
+evidence yet that Reno's richer-features rescue (F94, reversing the
+existing recipe's own sealed-test failure, F82) is a real, repeatable
+effect rather than a single-year artifact. The 5-feature multi-year read
+is less limited than the original session prompt expected, now that GRIB's
+own cloud/wind coverage is confirmed back to 2021-03-24 — it covers the
+same four years as 3-feature, not just two — though all four years still
+come from one continuous, overlapping weather record, not independent
+climate samples, and the profile is GRIB-source-only (it says nothing new
+about the existing 3-feature/Open-Meteo recipe's own robustness).
+
+**What this session did not do, on purpose.** Did not pull any new data —
+reused the existing GRIB feature files and IEM chunks, read-only. Did not
+run +48h lead. Did not tune, select, or add any feature or hyperparameter
+— both recipes are refit-only. Did not test any fold on a date it trained
+on (asserted in code). Did not treat this as a sealed test or compute any
+pass/fail verdict. Did not re-open, re-litigate, or restate F94 or F16–F82
+as changed. Did not modify `SPEC.md` or `RESULTS.md`. Nothing was
+committed.
+
+**Archive step this session:** none. Nothing newly settled this session
+that a live open question or STATUS.md's own "Next" section does not still
+need in full — F96 is brand new and obviously live; nothing else in
+`DECISIONS.md` changed status.
 
 ---
 
@@ -684,6 +781,31 @@ resolves by number, now into the archive for the moved set; F94 stays live,
 flagged rather than moved.** The GRIB-build sub-project is now fully
 closed — built, tested, folded into SPEC/RESULTS, and archived.
 
+**Session 46 (this file's own latest entry, above) opened the next phase:
+a multi-year rolling-origin generalisation backtest of the existing frozen
+3-feature and 5-feature GRIB recipes, 24h lead, existing data only
+(DECISIONS F96).** This is a descriptive profile, not a new sealed test —
+it decides no pass/fail and does not touch F94 or F16–F82. Walking the
+train/test cutoff forward one year at a time and refitting each frozen
+recipe unchanged: **3-feature beats raw GFS (GRIB) at 18 of 20
+airport-years and 5-feature at 19 of 20** (the only losses fall in the
+single thinnest training fold); **5-feature beats 3-feature at 17 of 20
+full-window airport-years** — reliably at EGLC/LFPG/RNO, variably at
+YSDU, marginal-to-slightly-negative at DSM (where three features already
+capture most of the learnable bias); the `2025-26` fold reproduces F94 to
+within 0.0005 degC at every airport, confirming the backtest pipeline is a
+correct reproduction of the frozen recipe. The headline read: **RNO's
+5-feature skill vs raw GFS is stable across all four independent years
+(+10.2% to +11.5%)**, the tightest band of any airport — strong evidence
+Reno's richer-features rescue (F94) is a repeatable effect, not a
+single-year artifact. A mid-session correction (owner-confirmed) widened
+the 5-feature folds beyond the session prompt's own original 2024-01-19
+floor, once this session's own data check showed the prompt's stated
+reason (F85) does not apply to the GRIB source — see F96 for the full
+account. This is now the benchmark future feature-selection work will be
+measured against; that work still needs its own fresh, untouched test
+year, and is not started by this session.
+
 Step 3, the session before, found (DECISIONS F91): cloud tail diagnosed
 benign-definitional; join kept 7,928 of 7,955 rows; **on the full window,
 5-feature beats both 3-feature and raw GFS at all five airports — including
@@ -1060,6 +1182,19 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   for good. Nothing was committed.
 
 ## Next
+
+**Session 46 built the multi-year generalisation benchmark (DECISIONS F96)
+that the next phase's own opening (docs/session-46.md) called for — a
+descriptive rolling-origin profile of the existing frozen GRIB recipes,
+not a new verdict.** It stands as the benchmark future feature work is
+measured against. What is genuinely next: **feature-selection work (adding,
+removing, or trying new features) still needs its own fresh, untouched test
+year** — this backtest reused the sealed year legitimately only because it
+tuned nothing; a future session that wants to try a new feature cannot
+simply read this profile and pick a winner. A +48h-lead version of this
+same backtest is a separate, later step (the session prompt kept it out of
+scope, since it needs a fresh pull). Q30's own remaining branches (below)
+are otherwise unaffected and still open.
 
 **The GRIB-build sub-project (docs/session-36.md through docs/session-45.md)
 is now fully closed.** It completed its full four-step build and its one

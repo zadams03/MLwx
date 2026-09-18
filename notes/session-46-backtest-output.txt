@@ -1,0 +1,351 @@
+
+==============================================================================
+SESSION 46 -- multi-year rolling-origin generalisation backtest, 24h lead, GRIB source, EXISTING FROZEN recipes only. DESCRIPTIVE PROFILE, NOT A NEW SEALED TEST OR VERDICT.
+==============================================================================
+run at        : 2026-09-18 14:34:42 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+v16 floor (never crossed): 2021-03-24
+data available through  : 2026-07-31
+model settings (D48.6/D21.4, identical for every fold/airport/feature set): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+3-feature set: ['forecast_temp_c', 'season_sin', 'season_cos']
+5-feature set: ['forecast_temp_c', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m']
+
+INTEGRITY BOUNDARY: reusing the sealed year here is legitimate only
+because this is a profile, not a pass/fail -- the recipes are frozen
+and refit-only, nothing is tuned or selected. This does not re-open,
+re-litigate, or overwrite F94 or F16-F82. Feature *selection* work
+later still needs its own fresh, untouched test year.
+
+MID-SESSION CORRECTION (DECISIONS F96): session-46.md's own fold
+list restricted 5-feature training to start no earlier than
+2024-01-19, citing F85 (Open-Meteo's cloud/wind gap). That citation
+does not apply to the GRIB source used throughout this project's
+richer-features work -- GRIB cloud/wind exist back to 2021-03-24,
+the full training window (checked directly against
+grib_features_v16_window.csv before this script was written: zero
+blank cloud/wind/temperature fields in 7,952 + 1,825 rows). The
+owner confirmed widening the 5-feature folds to match 3-feature's
+training starts, subject to (1) the non-null check above and (2)
+never using data before 2021-03-24 (the v16 model-version floor,
+D48.7 -- unrelated to data availability). The two original thin
+2024-01-19-start folds are kept alongside the widened ones, not
+replaced.
+
+==============================================================================
+Per-airport, per-fold results
+==============================================================================
+
+-- EGLC -- target hour 12:00 UTC -- join over the full available span 2021-03-24..2026-07-31 --
+    joined rows: 1953  (no GRIB row: 0, no usable obs: 3, of which >15min from target hour: 1, of which report carried no temperature: 0)
+
+    -- 3-feature folds --
+    EGLC 3-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=495 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.226 RMSE=1.654 bias=+0.315
+        persistence     : MAE=1.793 RMSE=2.453 bias=-0.003 (n=363)
+        3-feature       : MAE=1.234 RMSE=1.659 bias=+0.145  skill vs raw=-0.6%  skill vs persist=+31.2%
+    EGLC 3-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=859 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.015 RMSE=1.310 bias=-0.033
+        persistence     : MAE=2.016 RMSE=2.595 bias=-0.016 (n=366)
+        3-feature       : MAE=0.953 RMSE=1.261 bias=-0.110  skill vs raw=+6.1%  skill vs persist=+52.8%
+    EGLC 3-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1225 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.236 RMSE=1.624 bias=+0.312
+        persistence     : MAE=2.226 RMSE=2.928 bias=+0.017 (n=363)
+        3-feature       : MAE=1.158 RMSE=1.558 bias=+0.232  skill vs raw=+6.3%  skill vs persist=+48.0%
+    EGLC 3-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1589 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.254 RMSE=1.685 bias=+0.401
+        persistence     : MAE=2.096 RMSE=2.775 bias=+0.008 (n=363)
+        3-feature       : MAE=1.037 RMSE=1.413 bias=+0.254  skill vs raw=+17.3%  skill vs persist=+50.5%
+
+    -- 5-feature folds (widened per F96; thin originals kept) --
+    EGLC 5-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=495 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.226 RMSE=1.654 bias=+0.315
+        persistence     : MAE=1.793 RMSE=2.453 bias=-0.003 (n=363)
+        5-feature       : MAE=1.168 RMSE=1.580 bias=+0.276  skill vs raw=+4.8%  skill vs persist=+34.9%
+    EGLC 5-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=859 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.015 RMSE=1.310 bias=-0.033
+        persistence     : MAE=2.016 RMSE=2.595 bias=-0.016 (n=366)
+        5-feature       : MAE=0.947 RMSE=1.253 bias=-0.046  skill vs raw=+6.7%  skill vs persist=+53.0%
+    EGLC 5-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1225 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.236 RMSE=1.624 bias=+0.312
+        persistence     : MAE=2.226 RMSE=2.928 bias=+0.017 (n=363)
+        5-feature       : MAE=1.086 RMSE=1.457 bias=+0.161  skill vs raw=+12.1%  skill vs persist=+51.2%
+    EGLC 5-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1589 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.254 RMSE=1.685 bias=+0.401
+        persistence     : MAE=2.096 RMSE=2.775 bias=+0.008 (n=363)
+        5-feature       : MAE=1.000 RMSE=1.341 bias=+0.289  skill vs raw=+20.2%  skill vs persist=+52.3%
+    EGLC 5-feature 2024-25-thin   train=2024-01-19..2024-07-31 (195d  THIN) test=2024-08-01..2025-07-31
+        n_train=195 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.236 RMSE=1.624 bias=+0.312
+        persistence     : MAE=2.226 RMSE=2.928 bias=+0.017 (n=363)
+        5-feature       : MAE=1.153 RMSE=1.535 bias=+0.337  skill vs raw=+6.8%  skill vs persist=+48.2%
+    EGLC 5-feature 2025-26-thin   train=2024-01-19..2025-07-31 (560d  THIN) test=2025-08-01..2026-07-31
+        n_train=559 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.254 RMSE=1.685 bias=+0.401
+        persistence     : MAE=2.096 RMSE=2.775 bias=+0.008 (n=363)
+        5-feature       : MAE=1.061 RMSE=1.428 bias=+0.294  skill vs raw=+15.3%  skill vs persist=+49.4%
+
+-- LFPG -- target hour 12:00 UTC -- join over the full available span 2021-03-24..2026-07-31 --
+    joined rows: 1953  (no GRIB row: 0, no usable obs: 3, of which >15min from target hour: 2, of which report carried no temperature: 0)
+
+    -- 3-feature folds --
+    LFPG 3-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.265 RMSE=1.699 bias=+0.231
+        persistence     : MAE=2.173 RMSE=2.872 bias=+0.019 (n=365)
+        3-feature       : MAE=1.193 RMSE=1.608 bias=+0.155  skill vs raw=+5.7%  skill vs persist=+45.1%
+    LFPG 3-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=858 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.223 RMSE=1.631 bias=-0.264
+        persistence     : MAE=2.369 RMSE=3.036 bias=-0.030 (n=366)
+        3-feature       : MAE=1.195 RMSE=1.578 bias=-0.274  skill vs raw=+2.3%  skill vs persist=+49.6%
+    LFPG 3-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1224 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.409 RMSE=1.879 bias=+0.445
+        persistence     : MAE=2.523 RMSE=3.278 bias=+0.014 (n=365)
+        3-feature       : MAE=1.370 RMSE=1.862 bias=+0.474  skill vs raw=+2.8%  skill vs persist=+45.7%
+    LFPG 3-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1589 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.382 RMSE=1.828 bias=+0.525
+        persistence     : MAE=2.300 RMSE=3.097 bias=-0.008 (n=363)
+        3-feature       : MAE=1.177 RMSE=1.616 bias=+0.374  skill vs raw=+14.8%  skill vs persist=+48.8%
+
+    -- 5-feature folds (widened per F96; thin originals kept) --
+    LFPG 5-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.265 RMSE=1.699 bias=+0.231
+        persistence     : MAE=2.173 RMSE=2.872 bias=+0.019 (n=365)
+        5-feature       : MAE=1.158 RMSE=1.594 bias=+0.277  skill vs raw=+8.4%  skill vs persist=+46.7%
+    LFPG 5-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=858 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.223 RMSE=1.631 bias=-0.264
+        persistence     : MAE=2.369 RMSE=3.036 bias=-0.030 (n=366)
+        5-feature       : MAE=1.161 RMSE=1.533 bias=-0.221  skill vs raw=+5.1%  skill vs persist=+51.0%
+    LFPG 5-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1224 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.409 RMSE=1.879 bias=+0.445
+        persistence     : MAE=2.523 RMSE=3.278 bias=+0.014 (n=365)
+        5-feature       : MAE=1.328 RMSE=1.797 bias=+0.470  skill vs raw=+5.7%  skill vs persist=+47.4%
+    LFPG 5-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1589 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.382 RMSE=1.828 bias=+0.525
+        persistence     : MAE=2.300 RMSE=3.097 bias=-0.008 (n=363)
+        5-feature       : MAE=1.156 RMSE=1.598 bias=+0.377  skill vs raw=+16.4%  skill vs persist=+49.7%
+    LFPG 5-feature 2024-25-thin   train=2024-01-19..2024-07-31 (195d  THIN) test=2024-08-01..2025-07-31
+        n_train=195 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.409 RMSE=1.879 bias=+0.445
+        persistence     : MAE=2.523 RMSE=3.278 bias=+0.014 (n=365)
+        5-feature       : MAE=1.722 RMSE=2.279 bias=+1.278  skill vs raw=-22.2%  skill vs persist=+31.8%
+    LFPG 5-feature 2025-26-thin   train=2024-01-19..2025-07-31 (560d  THIN) test=2025-08-01..2026-07-31
+        n_train=560 n_test=364 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.382 RMSE=1.828 bias=+0.525
+        persistence     : MAE=2.300 RMSE=3.097 bias=-0.008 (n=363)
+        5-feature       : MAE=1.257 RMSE=1.707 bias=+0.436  skill vs raw=+9.1%  skill vs persist=+45.4%
+
+-- DSM -- target hour 18:00 UTC -- join over the full available span 2021-03-24..2026-07-31 --
+    joined rows: 1955  (no GRIB row: 1, no usable obs: 0, of which >15min from target hour: 0, of which report carried no temperature: 0)
+
+    -- 3-feature folds --
+    DSM 3-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=495 n_test=364 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=2.094 RMSE=2.732 bias=+0.792
+        persistence     : MAE=3.991 RMSE=5.290 bias=-0.011 (n=364)
+        3-feature       : MAE=1.750 RMSE=2.320 bias=+0.638  skill vs raw=+16.4%  skill vs persist=+56.1%
+    DSM 3-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=859 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=2.035 RMSE=2.653 bias=-0.091
+        persistence     : MAE=3.699 RMSE=4.901 bias=-0.014 (n=366)
+        3-feature       : MAE=1.522 RMSE=1.936 bias=-0.293  skill vs raw=+25.2%  skill vs persist=+58.9%
+    DSM 3-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1225 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.704 RMSE=2.157 bias=+0.351
+        persistence     : MAE=4.108 RMSE=5.470 bias=+0.017 (n=365)
+        3-feature       : MAE=1.433 RMSE=1.877 bias=+0.319  skill vs raw=+15.9%  skill vs persist=+65.1%
+    DSM 3-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1590 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.733 RMSE=2.310 bias=+0.560
+        persistence     : MAE=4.003 RMSE=5.453 bias=-0.000 (n=365)
+        3-feature       : MAE=1.694 RMSE=2.303 bias=+0.432  skill vs raw=+2.3%  skill vs persist=+57.7%
+
+    -- 5-feature folds (widened per F96; thin originals kept) --
+    DSM 5-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=495 n_test=364 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=2.094 RMSE=2.732 bias=+0.792
+        persistence     : MAE=3.991 RMSE=5.290 bias=-0.011 (n=364)
+        5-feature       : MAE=1.726 RMSE=2.330 bias=+0.584  skill vs raw=+17.6%  skill vs persist=+56.7%
+    DSM 5-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=859 n_test=366 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=2.035 RMSE=2.653 bias=-0.091
+        persistence     : MAE=3.699 RMSE=4.901 bias=-0.014 (n=366)
+        5-feature       : MAE=1.579 RMSE=2.023 bias=-0.309  skill vs raw=+22.4%  skill vs persist=+57.3%
+    DSM 5-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1225 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.704 RMSE=2.157 bias=+0.351
+        persistence     : MAE=4.108 RMSE=5.470 bias=+0.017 (n=365)
+        5-feature       : MAE=1.440 RMSE=1.882 bias=+0.285  skill vs raw=+15.5%  skill vs persist=+64.9%
+    DSM 5-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1590 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.733 RMSE=2.310 bias=+0.560
+        persistence     : MAE=4.003 RMSE=5.453 bias=-0.000 (n=365)
+        5-feature       : MAE=1.636 RMSE=2.266 bias=+0.417  skill vs raw=+5.6%  skill vs persist=+59.1%
+    DSM 5-feature 2024-25-thin   train=2024-01-19..2024-07-31 (195d  THIN) test=2024-08-01..2025-07-31
+        n_train=195 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.704 RMSE=2.157 bias=+0.351
+        persistence     : MAE=4.108 RMSE=5.470 bias=+0.017 (n=365)
+        5-feature       : MAE=2.001 RMSE=2.513 bias=+1.436  skill vs raw=-17.4%  skill vs persist=+51.3%
+    DSM 5-feature 2025-26-thin   train=2024-01-19..2025-07-31 (560d  THIN) test=2025-08-01..2026-07-31
+        n_train=560 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.733 RMSE=2.310 bias=+0.560
+        persistence     : MAE=4.003 RMSE=5.453 bias=-0.000 (n=365)
+        5-feature       : MAE=1.756 RMSE=2.378 bias=+0.508  skill vs raw=-1.3%  skill vs persist=+56.1%
+
+-- YSDU -- target hour 02:00 UTC -- join over the full available span 2021-03-24..2026-07-31 --
+    joined rows: 1929  (no GRIB row: 1, no usable obs: 26, of which >15min from target hour: 12, of which report carried no temperature: 0)
+
+    -- 3-feature folds --
+    YSDU 3-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=357 no_prev(persist)=4
+        raw GFS (GRIB)  : MAE=1.139 RMSE=1.550 bias=+0.185
+        persistence     : MAE=2.278 RMSE=3.172 bias=-0.017 (n=353)
+        3-feature       : MAE=1.191 RMSE=1.593 bias=+0.022  skill vs raw=-4.6%  skill vs persist=+47.7%
+    YSDU 3-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=850 n_test=363 no_prev(persist)=3
+        raw GFS (GRIB)  : MAE=1.328 RMSE=1.860 bias=+0.617
+        persistence     : MAE=2.442 RMSE=3.345 bias=+0.025 (n=360)
+        3-feature       : MAE=1.224 RMSE=1.746 bias=+0.267  skill vs raw=+7.9%  skill vs persist=+49.9%
+    YSDU 3-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1213 n_test=360 no_prev(persist)=5
+        raw GFS (GRIB)  : MAE=1.490 RMSE=2.147 bias=+0.525
+        persistence     : MAE=2.577 RMSE=3.451 bias=-0.020 (n=355)
+        3-feature       : MAE=1.318 RMSE=1.939 bias=+0.071  skill vs raw=+11.5%  skill vs persist=+48.9%
+    YSDU 3-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1573 n_test=356 no_prev(persist)=9
+        raw GFS (GRIB)  : MAE=1.317 RMSE=1.850 bias=+0.372
+        persistence     : MAE=2.669 RMSE=3.765 bias=-0.069 (n=347)
+        3-feature       : MAE=1.283 RMSE=1.755 bias=-0.120  skill vs raw=+2.5%  skill vs persist=+51.9%
+
+    -- 5-feature folds (widened per F96; thin originals kept) --
+    YSDU 5-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=357 no_prev(persist)=4
+        raw GFS (GRIB)  : MAE=1.139 RMSE=1.550 bias=+0.185
+        persistence     : MAE=2.278 RMSE=3.172 bias=-0.017 (n=353)
+        5-feature       : MAE=1.199 RMSE=1.593 bias=+0.033  skill vs raw=-5.3%  skill vs persist=+47.4%
+    YSDU 5-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=850 n_test=363 no_prev(persist)=3
+        raw GFS (GRIB)  : MAE=1.328 RMSE=1.860 bias=+0.617
+        persistence     : MAE=2.442 RMSE=3.345 bias=+0.025 (n=360)
+        5-feature       : MAE=1.126 RMSE=1.645 bias=+0.216  skill vs raw=+15.2%  skill vs persist=+53.9%
+    YSDU 5-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1213 n_test=360 no_prev(persist)=5
+        raw GFS (GRIB)  : MAE=1.490 RMSE=2.147 bias=+0.525
+        persistence     : MAE=2.577 RMSE=3.451 bias=-0.020 (n=355)
+        5-feature       : MAE=1.303 RMSE=1.903 bias=+0.066  skill vs raw=+12.5%  skill vs persist=+49.4%
+    YSDU 5-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1573 n_test=356 no_prev(persist)=9
+        raw GFS (GRIB)  : MAE=1.317 RMSE=1.850 bias=+0.372
+        persistence     : MAE=2.669 RMSE=3.765 bias=-0.069 (n=347)
+        5-feature       : MAE=1.179 RMSE=1.655 bias=-0.065  skill vs raw=+10.5%  skill vs persist=+55.8%
+    YSDU 5-feature 2024-25-thin   train=2024-01-19..2024-07-31 (195d  THIN) test=2024-08-01..2025-07-31
+        n_train=192 n_test=360 no_prev(persist)=5
+        raw GFS (GRIB)  : MAE=1.490 RMSE=2.147 bias=+0.525
+        persistence     : MAE=2.577 RMSE=3.451 bias=-0.020 (n=355)
+        5-feature       : MAE=1.334 RMSE=1.980 bias=-0.007  skill vs raw=+10.5%  skill vs persist=+48.3%
+    YSDU 5-feature 2025-26-thin   train=2024-01-19..2025-07-31 (560d  THIN) test=2025-08-01..2026-07-31
+        n_train=552 n_test=356 no_prev(persist)=9
+        raw GFS (GRIB)  : MAE=1.317 RMSE=1.850 bias=+0.372
+        persistence     : MAE=2.669 RMSE=3.765 bias=-0.069 (n=347)
+        5-feature       : MAE=1.201 RMSE=1.697 bias=-0.183  skill vs raw=+8.8%  skill vs persist=+55.0%
+
+-- RNO -- target hour 20:00 UTC -- join over the full available span 2021-03-24..2026-07-31 --
+    joined rows: 1952  (no GRIB row: 1, no usable obs: 3, of which >15min from target hour: 0, of which report carried no temperature: 0)
+
+    -- 3-feature folds --
+    RNO 3-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=364 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.560 RMSE=2.021 bias=-0.575
+        persistence     : MAE=2.526 RMSE=3.372 bias=+0.008 (n=364)
+        3-feature       : MAE=1.444 RMSE=1.907 bias=-0.448  skill vs raw=+7.4%  skill vs persist=+42.8%
+    RNO 3-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=857 n_test=365 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.454 RMSE=1.872 bias=-0.498
+        persistence     : MAE=2.596 RMSE=3.482 bias=+0.002 (n=364)
+        3-feature       : MAE=1.371 RMSE=1.769 bias=-0.191  skill vs raw=+5.7%  skill vs persist=+47.2%
+    RNO 3-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1222 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.613 RMSE=2.341 bias=+0.183
+        persistence     : MAE=2.756 RMSE=3.632 bias=+0.014 (n=365)
+        3-feature       : MAE=1.582 RMSE=2.190 bias=+0.520  skill vs raw=+2.0%  skill vs persist=+42.6%
+    RNO 3-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1587 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.512 RMSE=2.146 bias=+0.493
+        persistence     : MAE=2.490 RMSE=3.355 bias=-0.015 (n=365)
+        3-feature       : MAE=1.455 RMSE=2.002 bias=+0.462  skill vs raw=+3.7%  skill vs persist=+41.6%
+
+    -- 5-feature folds (widened per F96; thin originals kept) --
+    RNO 5-feature 2022-23        train=2021-03-24..2022-07-31 (495d  THIN) test=2022-08-01..2023-07-31
+        n_train=493 n_test=364 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.560 RMSE=2.021 bias=-0.575
+        persistence     : MAE=2.526 RMSE=3.372 bias=+0.008 (n=364)
+        5-feature       : MAE=1.401 RMSE=1.845 bias=-0.545  skill vs raw=+10.2%  skill vs persist=+44.5%
+    RNO 5-feature 2023-24        train=2021-03-24..2023-07-31 (860d) test=2023-08-01..2024-07-31
+        n_train=857 n_test=365 no_prev(persist)=1
+        raw GFS (GRIB)  : MAE=1.454 RMSE=1.872 bias=-0.498
+        persistence     : MAE=2.596 RMSE=3.482 bias=+0.002 (n=364)
+        5-feature       : MAE=1.297 RMSE=1.651 bias=-0.261  skill vs raw=+10.8%  skill vs persist=+50.0%
+    RNO 5-feature 2024-25        train=2021-03-24..2024-07-31 (1226d) test=2024-08-01..2025-07-31
+        n_train=1222 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.613 RMSE=2.341 bias=+0.183
+        persistence     : MAE=2.756 RMSE=3.632 bias=+0.014 (n=365)
+        5-feature       : MAE=1.427 RMSE=1.982 bias=+0.610  skill vs raw=+11.5%  skill vs persist=+48.2%
+    RNO 5-feature 2025-26        train=2021-03-24..2025-07-31 (1591d) test=2025-08-01..2026-07-31
+        n_train=1587 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.512 RMSE=2.146 bias=+0.493
+        persistence     : MAE=2.490 RMSE=3.355 bias=-0.015 (n=365)
+        5-feature       : MAE=1.346 RMSE=1.860 bias=+0.499  skill vs raw=+11.0%  skill vs persist=+45.9%
+    RNO 5-feature 2024-25-thin   train=2024-01-19..2024-07-31 (195d  THIN) test=2024-08-01..2025-07-31
+        n_train=194 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.613 RMSE=2.341 bias=+0.183
+        persistence     : MAE=2.756 RMSE=3.632 bias=+0.014 (n=365)
+        5-feature       : MAE=1.690 RMSE=2.430 bias=+0.975  skill vs raw=-4.8%  skill vs persist=+38.7%
+    RNO 5-feature 2025-26-thin   train=2024-01-19..2025-07-31 (560d  THIN) test=2025-08-01..2026-07-31
+        n_train=559 n_test=365 no_prev(persist)=0
+        raw GFS (GRIB)  : MAE=1.512 RMSE=2.146 bias=+0.493
+        persistence     : MAE=2.490 RMSE=3.355 bias=-0.015 (n=365)
+        5-feature       : MAE=1.308 RMSE=1.845 bias=+0.415  skill vs raw=+13.4%  skill vs persist=+47.5%
+
+==============================================================================
+Consistency check -- does the 2025-26 fold reproduce F94?
+==============================================================================
+(3-feature full-window fold and 5-feature full-window fold both use
+ exactly D48's own training window (2021-03-24..2025-07-31) and test
+ window (2025-08-01..2026-07-31) -- this should closely reproduce
+ F94's numbers, since it is the same recipe on the same data.)
+    EGLC: n(F94)=364 n(here)=364 MATCH  raw 1.254 vs 1.254 (-0.0004)  persist 2.096 vs 2.096 (+0.0004)  f3 1.037 vs 1.037 (-0.0003)  f5 1.000 vs 1.000 (+0.0000)
+    LFPG: n(F94)=364 n(here)=364 MATCH  raw 1.382 vs 1.382 (+0.0002)  persist 2.300 vs 2.300 (+0.0003)  f3 1.177 vs 1.177 (+0.0005)  f5 1.156 vs 1.156 (+0.0001)
+    DSM: n(F94)=365 n(here)=365 MATCH  raw 1.733 vs 1.733 (+0.0004)  persist 4.003 vs 4.003 (-0.0001)  f3 1.694 vs 1.694 (+0.0000)  f5 1.636 vs 1.636 (-0.0002)
+    YSDU: n(F94)=356 n(here)=356 MATCH  raw 1.317 vs 1.317 (-0.0003)  persist 2.669 vs 2.669 (-0.0004)  f3 1.283 vs 1.283 (+0.0004)  f5 1.179 vs 1.179 (-0.0004)
+    RNO: n(F94)=365 n(here)=365 MATCH  raw 1.512 vs 1.512 (-0.0004)  persist 2.490 vs 2.490 (+0.0001)  f3 1.455 vs 1.455 (+0.0001)  f5 1.346 vs 1.346 (+0.0000)
+
+    largest absolute MAE difference from F94 across all airports/rungs: 0.0005 degC
+    (nonzero rounding-level differences are expected: F94's own script reports MAE to 3 decimal places and this script recomputes from the same inputs independently; a difference at the thousandths place is reproduction, not divergence.)
+
+Wrote profile table: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session46_backtest_profile.csv (150 rows)
+Wrote fold table: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session46_fold_table.csv (50 rows)
+
+==============================================================================
+END
+==============================================================================
+This is a descriptive multi-year profile of the EXISTING frozen
+recipes, not a new sealed test. It does not re-open, re-litigate, or
+overwrite F94 or F16-F82, which stand exactly as reported. Feature
+selection work later still needs its own fresh, untouched test year.
+This output is saved at notes/session-46-backtest-output.txt

@@ -633,3 +633,220 @@ file, or figure was touched. Nothing was committed — the owner reviews and
 commits this and every prior change by hand.
 
 ---
+
+## 2026-09-18 — Session 46 finding: multi-year rolling-origin generalisation
+backtest of the existing frozen recipes (24h lead, GRIB source). A
+descriptive profile, not a new verdict.
+
+**F96. This is a descriptive multi-year robustness profile of the EXISTING
+FROZEN 3-feature and 5-feature GRIB recipes (SPEC §7, D21.4/D48.6), refit
+per fold on each fold's own training window and scored on the following
+year, walking the cutoff forward one year at a time. It is not a sealed
+test and decides no pass/fail — F94 and F16–F82 stand exactly as reported,
+untouched.** Script: `scripts/session46_backtest.py` (new). Full real
+output: `notes/session-46-backtest-output.txt`. Tables:
+`data/processed/session46_backtest_profile.csv` (150 rows: 5 airports x 10
+feature-set/fold combinations x 3 rungs) and
+`data/processed/session46_fold_table.csv` (50 rows).
+
+**The integrity boundary, honoured throughout.** Reusing the sealed year
+here is legitimate only because nothing is tuned, added, or selected — both
+recipes are refit-only, with identical features and identical LightGBM
+settings (D21.4) in every fold. The output is a description, used to build
+a benchmark for future feature work, never to pick a winner. Feature
+*selection* later still needs its own fresh, untouched test year — this
+backtest does not substitute for that.
+
+**Mid-session correction to the session prompt itself (docs/session-46.md),
+made before Task 1 was built, owner-confirmed.** The session prompt's own
+"Reference — the data spans" section stated the 5-feature set is
+unavailable before 2024-01-19, citing F85, and restricted the 5-feature
+folds to that floor. That citation does not hold for the GRIB source this
+session uses: F85 (session 31) found the gap in **Open-Meteo's** own
+cloud-cover/wind-speed coverage, not GRIB's — the entire point of the GRIB
+build (sessions 36–38, F90/F91, archived; SPEC §7.2) was pulling cloud
+cover and wind speed across the full v16 window specifically because
+Open-Meteo's window was too short. Checked directly, before any fold was
+built: `data/processed/grib_features_v16_window.csv` carries real,
+non-null `cloud_cover_grib_pct` and `wind_speed_grib_kmh` values back to
+2021-03-24 — zero blank fields across all 7,952 (training) + 1,825
+(sealed) rows in the two GRIB feature files. Flagged to the owner mid-session
+rather than resolved unilaterally (CLAUDE.md: stop and flag a session-prompt/
+SPEC disagreement). **The owner confirmed widening the 5-feature folds to
+the same four training starts as 3-feature (2021-03-24 onward), subject to
+two conditions this session's script enforces in code: (1) the non-null
+check above, done before any fold uses the data — `load_grib_features()`
+raises on any blank cloud/wind/temperature field; (2) never using data
+before 2021-03-24 regardless — that boundary is the v16 model-version floor
+(D48.7), unrelated to data availability, and stays fixed.** The two
+original thin 2024-01-19-start 5-feature folds from the session prompt were
+KEPT alongside the widened ones, not replaced, so the "does more training
+data help" read has a direct within-recipe comparison and the session
+prompt's own explicit fold list is still fully present in the output.
+
+**Task 1 — the fold design, as actually run.**
+
+3-feature folds (train → test), full window throughout:
+```
+fold      train start   train end     train days   test
+2022-23   2021-03-24    2022-07-31    495 (THIN)   2022-08-01..2023-07-31
+2023-24   2021-03-24    2023-07-31    860          2023-08-01..2024-07-31
+2024-25   2021-03-24    2024-07-31    1226         2024-08-01..2025-07-31
+2025-26   2021-03-24    2025-07-31    1591         2025-08-01..2026-07-31
+```
+
+5-feature folds (widened + the two original thin folds kept for comparison):
+```
+fold           train start   train end     train days   test
+2022-23        2021-03-24    2022-07-31    495 (THIN)   2022-08-01..2023-07-31
+2023-24        2021-03-24    2023-07-31    860          2023-08-01..2024-07-31
+2024-25        2021-03-24    2024-07-31    1226         2024-08-01..2025-07-31
+2025-26        2021-03-24    2025-07-31    1591         2025-08-01..2026-07-31
+2024-25-thin   2024-01-19    2024-07-31    195 (THIN)   2024-08-01..2025-07-31
+2025-26-thin   2024-01-19    2025-07-31    560 (THIN)   2025-08-01..2026-07-31
+```
+The 2022-23 fold (~1.35 years of training) and both `-thin` folds are
+explicitly flagged THIN in the output — a weaker read, not an equal one,
+per the session prompt's own instruction. `2024-25-thin` (~6 months
+training) is the same starved-window shape session 32's scout saw (F86,
+archived).
+
+**Task 2/3 — the profile (skill vs raw GFS (GRIB), 3-feature and 5-feature
+full-window folds; all four years; +/- = beats/loses to raw GFS):**
+
+```
+station   2022-23        2023-24        2024-25        2025-26
+          3f     5f       3f     5f      3f     5f       3f     5f
+EGLC     -0.6%  +4.8%    +6.1%  +6.7%   +6.3%  +12.1%   +17.3% +20.2%
+LFPG     +5.7%  +8.4%    +2.3%  +5.1%   +2.8%  +5.7%    +14.8% +16.4%
+DSM     +16.4% +17.6%   +25.2% +22.4%  +15.9% +15.5%    +2.3%  +5.6%
+YSDU     -4.6%  -5.3%    +7.9% +15.2%  +11.5% +12.5%    +2.5%  +10.5%
+RNO      +7.4% +10.2%    +5.7% +10.8%   +2.0% +11.5%    +3.7%  +11.0%
+```
+
+3-feature beats raw GFS (GRIB) at **18 of 20** airport-years (both losses —
+EGLC and YSDU, both narrow — fall in the thinnest fold, 2022-23). 5-feature
+beats raw GFS (GRIB) at **19 of 20** airport-years (the one loss is also
+YSDU's 2022-23). **5-feature beats 3-feature at 17 of the 20 full-window
+airport-years, not all 20** — the three exceptions are DSM 2023-24
+(5-feature MAE 1.579 vs 3-feature 1.522, 3-feature better), DSM 2024-25
+(1.440 vs 1.433, 3-feature better, a very narrow gap) and the thin YSDU
+2022-23 fold (1.199 vs 1.191, 3-feature better). The two `-thin` 5-feature
+folds (2024-01-19 start, kept from the original prompt) fare markedly
+worse still: `2024-25-thin` beats raw GFS at only 2 of 5 airports (LFPG
+-22.2%, DSM -17.4%, RNO -4.8%), closely reproducing session 32's scout
+finding (F86) that a starved training window, not the extra features, was
+the dominant effect; `2025-26-thin` recovers to 4 of 5 (only DSM -1.3%).
+
+**Reading the 5-vs-3 exceptions honestly, by airport, across the four
+full-window years:** cloud cover and wind speed reliably help at EGLC
+(4/4), LFPG (4/4) and RNO (4/4) — 5-feature beats 3-feature every year at
+each of those three. They help variably at YSDU (3/4, the one exception
+in the thinnest fold). **At DSM they are marginal to slightly negative**
+— 5-feature loses to 3-feature in 2 of 4 years, and even where it wins
+(2022-23, 2025-26) the margin is the smallest of any airport. DSM is the
+one airport in this project whose target hour sits at dawn-adjacent local
+standard noon behind a large, well-behaved seasonal cycle (SPEC 4.1); the
+honest reading is that three features (temperature, season_sin,
+season_cos) already capture most of DSM's own learnable bias, leaving
+little room for cloud cover and wind speed to add anything — unlike
+EGLC/LFPG/RNO, where the extra features consistently earn their keep.
+
+**Consistency check against F94 — exact reproduction, at every airport.**
+The `2025-26` fold, for both feature sets, uses exactly D48's own training
+window (2021-03-24..2025-07-31) and sealed test window
+(2025-08-01..2026-07-31) — the identical recipe on the identical data.
+Every row count matches F94 exactly (EGLC/LFPG 364, DSM/RNO 365, YSDU 356)
+and every MAE (raw GFS, persistence, 3-feature, 5-feature, all five
+airports) matches to within 0.0005 degC — a pure independent-recompute
+rounding difference, not a divergence. This is strong evidence the backtest
+pipeline (join, features, model settings) is a correct reproduction of the
+frozen recipe, not a re-implementation that happens to look similar.
+
+**Task 4 — the honest read.**
+
+*Does the 3-feature model consistently beat raw GFS across years, or was
+2025-26 flattering?* The answer differs by airport, and is worth stating
+plainly rather than as one number. **EGLC and LFPG's sealed-year margins
+are clearly the largest of their own four years** (EGLC: -0.6/+6.1/+6.3/
+**+17.3%**; LFPG: +5.7/+2.3/+2.8/**+14.8%**) — real evidence supporting the
+concern F48 already named, that the shared 2025-26 test year may be
+somewhat flattering at these two airports specifically. **DSM shows the
+opposite pattern** — its sealed-year margin (+2.3%) is clearly its
+*weakest* of the four years, well below 2022-23/2023-24/2024-25's
+15–25% margins — so "was 2025-26 a flattering year" does not have one
+project-wide answer; it depends on the airport. YSDU and RNO's sealed-year
+margins sit within their own historical range, neither the best nor the
+worst of their four years.
+
+*Year-to-year variance per airport (raw GFS MAE, an indication of how much
+the weather itself varied year to year, independent of any model):* DSM
+varies most (1.704–2.094 degC across the four years); RNO is the most
+stable (1.454–1.613); EGLC, LFPG and YSDU fall in between. This is
+context for reading the skill margins above, not a finding on its own.
+
+*Is any airport's skill fragile — wins some years, loses others?* Only in
+the thinnest fold. Every airport passes at 3 and 4 of the full-window
+years; the only two losses in the whole 20-airport-year full-window grid
+are EGLC and YSDU, both in the 2022-23 fold (the shortest training
+window), both narrow (-0.6%/-4.6% for 3-feature, -5.3% for YSDU's
+5-feature — EGLC's 5-feature actually holds at 2022-23, +4.8%). This reads
+as a thin-training-window effect, not a fragile-airport trait: DSM, LFPG
+and RNO win at every one of their four full-window years under both
+feature sets, and RNO in particular is now the most consistent airport in
+the whole profile.
+
+**RNO's richer-features rescue specifically — the headline read of this
+whole profile.** RNO's 5-feature skill vs raw GFS is remarkably stable
+across all four independent years: +10.2%, +10.8%, +11.5%, +11.0% — a
+tighter band than any other airport shows. F94's single-sealed-year RNO
+pass (+11.0%) was always going to invite the question "was that one lucky
+year." This profile answers it: RNO's richer-features win reproduces
+closely across three prior years the sealed test never touched, under a
+strictly time-ordered refit each time. This is the strongest evidence yet
+that Reno's richer-features result (F94, reversing the existing recipe's
+own sealed-test failure, F82) is a real, repeatable effect rather than a
+single-year artifact — though it remains, and stays, a separate finding
+about a separate recipe from F82, not an erasure of it (D48.13).
+
+*Is the 5-feature multi-year read still limited, as the original session
+prompt expected?* Less than the prompt assumed, now that the GRIB source's
+own cloud/wind coverage is confirmed back to 2021-03-24 (this session's own
+correction, above) — the widened 5-feature folds now cover the same four
+independent years as 3-feature, not just two. What remains genuinely
+limited: all four years are drawn from expanding, overlapping training
+windows over one continuous ~5.4-year weather record, not four fully
+independent samples of climate, and the whole profile — like every result
+in this project so far — is GRIB-source-only; it says nothing new about
+the existing 3-feature/Open-Meteo recipe's own robustness (F16/F30/F47/
+F64/F82), which used a different forecast source entirely and is not
+re-examined here.
+
+**One-line synthesis (report only, per the session prompt's own
+instruction — not a decision).** Both frozen GRIB recipes beat raw GFS
+in the large majority of the 20 airport-years tested (18/20 3-feature,
+19/20 5-feature), with the only losses confined to the thinnest training
+window; the 5-feature model's edge over 3-feature holds at 17 of the 20
+full-window airport-years, reliably at EGLC/LFPG/RNO and variably at YSDU,
+but is marginal-to-slightly-negative at DSM, where three features already
+capture most of the learnable bias — a materially more robust and more
+nuanced picture than a single sealed year could show on its own, and RNO's
+richer-features rescue in particular now reads as a repeatable, not a
+one-off, effect. This is the benchmark future feature-selection work will
+be measured against, not a verdict on any of it.
+
+**What this session did not do, on purpose.** Did not pull any new data —
+reused `grib_features_v16_window.csv` and `grib_features_sealed_window.csv`
+(sessions 37/40) and the existing IEM chunk files, all read-only. Did not
+run +48h lead — 24h only. Did not tune, select, or add any feature or
+hyperparameter — both recipes are refit-only, identical settings (D21.4) in
+every fold. Did not test any fold on a date it trained on — asserted in
+code, per fold, per airport (`train_end < test_start`, plus a per-row date
+range assertion). Did not treat this as a sealed test or a new pass/fail —
+no verdict field is computed or printed anywhere in the script or its
+output. Did not re-open, re-litigate, or restate F94 or F16–F82 as changed
+— both stand exactly as reported; the consistency check above confirms
+reproduction, not revision. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed.
+
+---
