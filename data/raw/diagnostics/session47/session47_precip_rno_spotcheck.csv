@@ -1,0 +1,5 @@
+family,var_key,var_code,level_requested,present_v16_floor,steps_v16_floor,present_recent,steps_recent,decode_station,decode_error,decoded_step_decoded,decoded_short_name,decoded_units,decoded_valid_date,decoded_valid_time,decoded_grid_min,decoded_grid_max,decoded_point_value,decoded_bytes
+precip,apcp_sfc,APCP,surface,,,,,RNO,,24-26 hour acc fcst,tp,kg m**-2,20250615,2000,0.0,64.5,0.0,285890
+precip,prate_sfc,PRATE,surface,,,,,RNO,,26 hour fcst,prate,kg m**-2 s**-1,20250615,2000,0.0,0.013869600000000003,0.0,586683
+precip,snod_sfc,SNOD,surface,,,,,RNO,,26 hour fcst,sde,m,20250615,2000,0.0,2.33304,0.0,438512
+precip,weasd_sfc,WEASD,surface,,,,,RNO,,26 hour fcst,sdwe,kg m**-2,20250615,2000,0.0,587.248,0.0,402984

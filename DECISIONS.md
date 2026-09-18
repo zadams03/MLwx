@@ -850,3 +850,157 @@ reproduction, not revision. Did not modify `SPEC.md` or `RESULTS.md`.
 Nothing was committed.
 
 ---
+
+## 2026-09-18 — Session 47 finding: feature-family availability probe
+(radiation, upper-air, moisture, pressure, precipitation) — a map, not an
+experiment
+
+**F97. A cheap availability probe, the same shape as sessions 31 (F85) and
+35 (F88): finds out which new GRIB feature families exist, under what exact
+label/level, at the project's own forecast lead, and how far back — so a
+later session can plan feature-experiment ordering on facts rather than
+guesses. It builds nothing, models nothing, pulls no bulk data, derives no
+feature, and picks no ordering.** Script: `scripts/session47_availability_
+probe.py` (new, read-only against the public GRIB archive). Raw idx extracts
+and their `.meta.txt` provenance: `data/raw/diagnostics/session47/` (8 `.idx`
+files, one per sample-date x cycle/lead combination). Summary tables:
+`data/raw/diagnostics/session47/session47_availability_map.csv` (27 rows) and
+`session47_precip_rno_spotcheck.csv` (4 rows).
+
+**Method.** Two sample dates, both outside the sealed test year (2025-08-01
+onward, SPEC 2.1a/4.3): the v16 floor (2021-03-24, run date 2021-03-23) and a
+recent pre-test date (2025-06-15, run date 2025-06-14). For each, the four
+distinct (cycle, forecast-hour) combinations the five airports' own target
+hours already select (SPEC 3.4, DECISIONS F89's lead convention: cycle
+floor(HH/6)*6 on day D-1, forecast hour 24 + (HH mod 6)) — cycle 12z/lead
+f024 (EGLC, LFPG), cycle 18z/lead f024 (DSM), cycle 00z/lead f026 (YSDU),
+cycle 18z/lead f026 (RNO). For every candidate variable: presence and exact
+label/level was read directly from the real `.idx` inventory at both dates
+(never assumed), and a real value was confirmed by byte-range-fetching the
+message and decoding it with eccodes — at EGLC's own established Open-Meteo
+grid point (SPEC 3.4) for the general spot-check, and additionally at RNO's
+own grid point for the precipitation family (of particular interest there).
+No bulk pull, no date range, no all-five-airport pull — one location's grid
+is enough to prove a variable exists (the inventory is global) and decodes
+to a real number.
+
+**Result: every one of the 27 candidate variables is present, identically
+labelled, at both the v16 floor and the recent date, at the airports' own
+forecast lead, and decodes to a real, non-null value.** No candidate was
+found absent at either date. Full per-family detail:
+
+```
+RADIATION (spot-check: EGLC, 2025-06-15T12:00 UTC; also present 2021-03-24)
+  variable        label found              v16  recent  lead  timing
+  DSWRF:surface   surface                  Y    Y       Y     18-24h ave (EGLC/LFPG/DSM); 24-26h ave (YSDU/RNO)
+  USWRF:surface   surface                  Y    Y       Y     same averaging pattern as DSWRF
+  USWRF:toa       top of atmosphere        Y    Y       Y     same averaging pattern as DSWRF
+  DLWRF:surface   surface                  Y    Y       Y     same averaging pattern as DSWRF
+  ULWRF:surface   surface                  Y    Y       Y     same averaging pattern as DSWRF
+  ULWRF:toa       top of atmosphere        Y    Y       Y     same averaging pattern as DSWRF
+  LCDC            low cloud layer          Y    Y       Y     BOTH instantaneous (Nh fcst) and 6h/2h-ave variant exist
+  MCDC            middle cloud layer       Y    Y       Y     BOTH variants exist, same as LCDC
+  HCDC            high cloud layer         Y    Y       Y     BOTH variants exist, same as LCDC
+  (DSWRF/DLWRF exist at surface only, not top of atmosphere — confirmed absent there, not just unchecked)
+
+UPPER-AIR / VERTICAL STRUCTURE (spot-check: EGLC)
+  variable        label found     v16  recent  lead  timing
+  TMP:925 mb      925 mb          Y    Y       Y     instantaneous (Nh fcst)
+  TMP:850 mb      850 mb          Y    Y       Y     instantaneous
+  TMP:700 mb      700 mb          Y    Y       Y     instantaneous
+  HGT:500 mb      500 mb          Y    Y       Y     instantaneous
+  HGT:850 mb      850 mb          Y    Y       Y     instantaneous
+  UGRD:850 mb     850 mb          Y    Y       Y     instantaneous
+  VGRD:850 mb     850 mb          Y    Y       Y     instantaneous
+  RH:850 mb       850 mb          Y    Y       Y     instantaneous
+
+MOISTURE (spot-check: EGLC)
+  variable        label found                                    v16  recent  lead  timing
+  RH:2m           2 m above ground                                Y    Y       Y     instantaneous
+  DPT:2m          2 m above ground                                Y    Y       Y     instantaneous
+  SPFH:2m         2 m above ground                                Y    Y       Y     instantaneous
+  PWAT            entire atmosphere (considered as a single layer) Y    Y       Y     instantaneous
+
+PRESSURE / SYNOPTIC (spot-check: EGLC)
+  variable        label found      v16  recent  lead  timing
+  PRMSL           mean sea level   Y    Y       Y     instantaneous
+  PRES:surface    surface          Y    Y       Y     instantaneous
+
+PRECIPITATION (spot-check: EGLC, and RNO's own grid point)
+  variable        label found     v16  recent  lead  timing
+  APCP:surface    surface         Y    Y       Y     TWO accumulation windows exist: a short one matching the ave-field
+                                                       window (18-24h at lead 24, 24-26h at lead 26) and a cumulative
+                                                       one since forecast start ("0-1 day" at lead 24, "0-26 hour" at
+                                                       lead 26 — a labelling-format quirk, day vs hour units)
+  PRATE:surface   surface         Y    Y       Y     BOTH instantaneous (Nh fcst) and 18-24h/24-26h-ave variant exist
+  SNOD:surface    surface         Y    Y       Y     instantaneous (a state field, not an accumulation, despite the name)
+  WEASD:surface   surface         Y    Y       Y     instantaneous (a state field, same as SNOD)
+```
+
+**Per-family read.**
+
+*Radiation — available but awkward.* All eight fields exist, correctly
+labelled, back to the v16 floor. The awkward part: the "ave fcst" window is
+not fixed — it runs from the nearest preceding synoptic 6-hour mark to the
+forecast lead, so it is a genuine 6-hour average at EGLC/LFPG/DSM (lead 24,
+window 18-24h) but only a 2-hour average at YSDU/RNO (lead 26, window
+24-26h). A feature built from these fields would carry a different averaging
+window at different airports purely as a byproduct of each airport's own
+target hour (SPEC 4.1) — a real cross-airport inconsistency to design around,
+not a missing-data problem. Cloud-layer fields (LCDC/MCDC/HCDC) additionally
+carry an instantaneous variant at the same level, matching the convention the
+project's own `TCDC` feature already uses (session 37's own disambiguation
+code, DECISIONS-archive F90); a richer-features experiment using low/mid/high
+cloud instead of (or alongside) total cloud cover could reuse that same
+instantaneous convention directly.
+
+*Upper-air / vertical structure — available and clean, the headline result.*
+Every field named in the session prompt (TMP at 925/850/700 mb, HGT at
+500/850 mb, UGRD/VGRD/RH at 850 mb) is present, identically labelled, back to
+the v16 floor, genuinely a forecast field at the airports' own ~24-26h lead
+(not an analysis-only field), and instantaneous — no averaging-window
+complication at all. **This is the exact thing DECISIONS F85 found blocked on
+Open-Meteo** ("upper-air (925/850 hPa) temperature is not available in any
+leakage-safe form on this API/offset, at any date or airport") — the family
+the GRIB build was specifically expected to unlock (session 47's own opening
+framing) is confirmed genuinely unlocked, with no caveat.
+
+*Moisture — available and clean.* All four fields (RH:2m, DPT:2m, SPFH:2m,
+PWAT) are present, correctly labelled, instantaneous, back to the v16 floor.
+Dew-point-vs-temperature spread is derivable later from DPT:2m plus the
+already-used temperature field, but nothing was derived this session, per
+scope.
+
+*Pressure / synoptic — available and clean.* PRMSL and PRES:surface are both
+present, correctly labelled, instantaneous, back to the v16 floor. Pressure
+*tendency* would need two consecutive runs' worth of this field to derive
+later — only the base fields were confirmed here, per scope.
+
+*Precipitation — available but awkward.* All four fields exist back to the
+v16 floor. APCP carries two different accumulation windows (see table above),
+so a feature built from it must pick one deliberately, and that choice
+interacts with the same lead-dependent-window issue radiation has. PRATE
+mirrors APCP's own instantaneous/averaged duality. SNOD and WEASD are both
+clean instantaneous state fields (not accumulations, despite what their names
+might suggest). **The RNO spot-check (2025-06-15T20:00 UTC) returned zero for
+all four precipitation fields at Reno's own grid point** — this is a real,
+plausible dry/snow-free reading, not a decode failure: each field's own
+grid-wide maximum on the same message is well above zero (e.g. APCP's grid
+max 64.5 kg/m^2 elsewhere on the same field), so the field itself is not
+all-null at that valid time, only Reno's own point is dry.
+
+**What this does not decide.** No feature-experiment ordering was chosen —
+that is explicitly out of scope for this session and is planned separately,
+with this map in hand. No feature was derived, joined, or added to any
+dataset. No model was touched. Nothing about F16–F96 changed.
+
+**What this session did not do, on purpose.** Did not pull any bulk or
+date-range data — 8 `.idx` text inventories and 31 small byte-range message
+fetches (27 general spot-checks + 4 Reno-specific precipitation spot-checks),
+all outside the sealed test year. Did not use any date before 2021-03-24
+(v15 is excluded, D48.7) as available. Did not decide which family to try
+first, or in what order. Did not derive any feature (e.g. dew-point spread,
+pressure tendency) from the confirmed ingredients. Did not modify `SPEC.md`
+or `RESULTS.md`. Nothing was committed.
+
+---

@@ -3,7 +3,57 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 18 September 2026, after session 46._
+_Last updated: 18 September 2026, after session 47._
+
+---
+
+## Session 47 (feature-family availability probe — radiation, upper-air,
+moisture, pressure, precipitation; a map, not an experiment)
+
+**A cheap availability probe, the same shape as sessions 31 and 35: finds
+out which new GRIB feature families exist, under what exact label/level, at
+the project's own forecast lead, and how far back — so a later session can
+plan feature-experiment ordering on facts rather than guesses. Builds
+nothing, models nothing, pulls no bulk data, derives no feature, and picks
+no ordering.** Full account: DECISIONS F97. Script:
+`scripts/session47_availability_probe.py` (new). Raw idx extracts + `.meta.txt`
+provenance: `data/raw/diagnostics/session47/` (8 files). Summary tables:
+`data/raw/diagnostics/session47/session47_availability_map.csv` (27 rows)
+and `session47_precip_rno_spotcheck.csv` (4 rows).
+
+**Result: all 27 candidate variables across all five families (radiation,
+upper-air, moisture, pressure, precipitation) are present, identically
+labelled, at both the v16 floor (2021-03-24) and a recent date (2025-06-15),
+at the airports' own forecast lead, and decode to a real, non-null value.**
+No candidate was found absent at either date. **The headline: upper-air /
+vertical structure (TMP at 925/850/700 mb, HGT at 500/850 mb, UGRD/VGRD/RH
+at 850 mb) is confirmed genuinely available, instantaneous, and clean at the
+forecast lead — with no caveat** — this is exactly the family DECISIONS F85
+found blocked on Open-Meteo ("not available in any leakage-safe form... at
+any date or airport"), and the family the GRIB build was specifically
+expected to unlock. Moisture (RH/DPT/SPFH:2m, PWAT) and pressure (PRMSL,
+PRES:surface) are likewise available and clean. Radiation and precipitation
+are both available but awkward: the "averaged"/"accumulated" fields
+(DSWRF/USWRF/DLWRF/ULWRF, APCP, PRATE's averaged variant) carry a window
+that depends on each airport's own forecast lead — a genuine 6-hour average
+at EGLC/LFPG/DSM (lead 24) but only a 2-hour average at YSDU/RNO (lead 26) —
+a real cross-airport inconsistency to design around, not a missing-data
+problem. A Reno-specific spot-check of the precipitation family (RNO's own
+grid point) returned zero for all four fields on the sample date — a real
+dry/snow-free reading (each field's own grid-wide maximum is well above
+zero on the same message), not a decode failure.
+
+**What this session did not do, on purpose.** Did not pull any bulk or
+date-range data — 8 idx inventories and 31 small byte-range spot-check
+messages only. Did not use any date before 2021-03-24 (v15 excluded,
+D48.7). Did not decide a feature-experiment ordering, or which family to
+try first — that is a separate, later planning step, done with this map in
+hand. Did not derive any feature (dew-point spread, pressure tendency) from
+the confirmed ingredients. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed.
+
+**Archive step this session:** none — F97 is brand new and obviously live;
+nothing else in `DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -781,10 +831,22 @@ resolves by number, now into the archive for the moved set; F94 stays live,
 flagged rather than moved.** The GRIB-build sub-project is now fully
 closed — built, tested, folded into SPEC/RESULTS, and archived.
 
-**Session 46 (this file's own latest entry, above) opened the next phase:
-a multi-year rolling-origin generalisation backtest of the existing frozen
-3-feature and 5-feature GRIB recipes, 24h lead, existing data only
-(DECISIONS F96).** This is a descriptive profile, not a new sealed test —
+**Session 47 (this file's own latest entry, above) built a feature-family
+availability map — radiation, upper-air, moisture, pressure, precipitation —
+across the GRIB archive (DECISIONS F97).** This is a probe, not an
+experiment: it decides no ordering and builds no feature. All 27 candidate
+variables are present and decode to real values at both the v16 floor and a
+recent date; the headline is that upper-air/vertical structure — the family
+blocked on Open-Meteo (F85) and the one the GRIB build was meant to unlock —
+is confirmed genuinely available, clean and instantaneous at the forecast
+lead. Radiation and precipitation are available but carry a lead-dependent
+averaging/accumulation window that differs across airports. This map is
+what future feature-experiment planning now works from.
+
+Session 46, the session before, opened a different next phase: a multi-year
+rolling-origin generalisation backtest of the existing frozen 3-feature and
+5-feature GRIB recipes, 24h lead, existing data only (DECISIONS F96). This
+is a descriptive profile, not a new sealed test —
 it decides no pass/fail and does not touch F94 or F16–F82. Walking the
 train/test cutoff forward one year at a time and refitting each frozen
 recipe unchanged: **3-feature beats raw GFS (GRIB) at 18 of 20
@@ -1183,18 +1245,29 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
 
 ## Next
 
-**Session 46 built the multi-year generalisation benchmark (DECISIONS F96)
-that the next phase's own opening (docs/session-46.md) called for — a
-descriptive rolling-origin profile of the existing frozen GRIB recipes,
-not a new verdict.** It stands as the benchmark future feature work is
-measured against. What is genuinely next: **feature-selection work (adding,
-removing, or trying new features) still needs its own fresh, untouched test
-year** — this backtest reused the sealed year legitimately only because it
-tuned nothing; a future session that wants to try a new feature cannot
-simply read this profile and pick a winner. A +48h-lead version of this
-same backtest is a separate, later step (the session prompt kept it out of
-scope, since it needs a fresh pull). Q30's own remaining branches (below)
-are otherwise unaffected and still open.
+**Session 47 built the feature-family availability map (DECISIONS F97) that
+feature-experiment planning now needs.** All five candidate families
+(radiation, upper-air, moisture, pressure, precipitation) are confirmed
+available back to the v16 floor; upper-air is the clean headline unlock,
+radiation and precipitation both need a deliberate choice of which
+averaging/accumulation window to use before either can become a feature.
+**What is genuinely next: choosing a feature-experiment ordering from this
+map (not done by session 47 on purpose) and then trying it — which still
+needs its own fresh, untouched test year**, exactly as session 46's own
+benchmark (below) requires for any feature-selection work.
+
+Session 46 (the session before) built the multi-year generalisation
+benchmark (DECISIONS F96) that the previous phase's own opening
+(docs/session-46.md) called for — a descriptive rolling-origin profile of
+the existing frozen GRIB recipes, not a new verdict. It stands as the
+benchmark future feature work is measured against. **Feature-selection work
+(adding, removing, or trying new features) still needs its own fresh,
+untouched test year** — session 46's backtest reused the sealed year
+legitimately only because it tuned nothing; a future session that wants to
+try a new feature cannot simply read that profile and pick a winner. A
++48h-lead version of that same backtest is a separate, later step (its own
+session prompt kept it out of scope, since it needs a fresh pull). Q30's own
+remaining branches (below) are otherwise unaffected and still open.
 
 **The GRIB-build sub-project (docs/session-36.md through docs/session-45.md)
 is now fully closed.** It completed its full four-step build and its one

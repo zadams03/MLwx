@@ -1,0 +1,3 @@
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250614/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx
+pulled (UTC): 2026-09-18T19:05:42Z
+lines: 743
