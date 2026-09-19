@@ -1,0 +1,33 @@
+==============================================================================
+SESSION 48 -- reserved-confirmation-year guard, verified BY
+CONSTRUCTION ONLY. No data loaded, no model fit, no result
+computed on 2024-25 or any other year.
+==============================================================================
+
+reserved confirmation year : 2024-08-01 .. 2025-07-31 (D51)
+sealed test year (untouched, separate, F94): 2025-08-01 .. 2026-07-31
+v16 floor (D48.7)          : 2021-03-24
+
+-- Positive check: every EXPERIMENT_FOLDS entry must pass the guard --
+    2022-23    train=2021-03-24..2022-07-31 (495d)  test=2022-08-01..2023-07-31  -- PASS (guard did not raise)
+    2023-24    train=2021-03-24..2023-07-31 (860d)  test=2023-08-01..2024-07-31  -- PASS (guard did not raise)
+    2025-26    train=2021-03-24..2024-07-31 (1226d)  test=2025-08-01..2026-07-31  -- PASS (guard did not raise)
+
+-- Negative check: deliberately reserved-year-touching folds must raise --
+    2025-26 (F96 original, train crosses the reserved year): raised as expected -- 2025-26 (F96 original, train crosses the reserved year): training window 2021-03-24..2025-07-31 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+    hypothetical test-on-reserved-year fold: raised as expected -- hypothetical test-on-reserved-year fold: test window 2024-08-01..2025-07-31 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+    hypothetical train-into-reserved-year fold: raised as expected -- hypothetical train-into-reserved-year fold: training window 2021-03-24..2025-01-01 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+
+-- Honest cost: training data lost to the reservation --
+    F96's own fold that tested 2025-26 trained on 2021-03-24..2025-07-31 (1591 days).
+    The equivalent session-48 experiment fold trains on 2021-03-24..2024-07-31 (1226 days) -- 365 fewer days (1.00 years), because training may not reach into the reserved year.
+    The '2022-23' fold remains the thinnest (495 days, ~1.36 years) -- unchanged by the reservation, since it never reached 2024-25 in the first place.
+    Net effect: the feature-selection programme runs on three folds
+    (2022-23, 2023-24, 2025-26-truncated) instead of F96's four, and the
+    fold nearest the sealed year loses about a year of training data --
+    the price of a clean, genuinely out-of-sample confirmation year.
+
+==============================================================================
+END -- guard verified by construction only. No feature experiment was
+run. No result was computed on 2024-25.
+==============================================================================

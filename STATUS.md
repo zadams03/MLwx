@@ -3,7 +3,77 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 18 September 2026, after session 47._
+_Last updated: 19 September 2026, after session 48._
+
+---
+
+## Session 48 (reserve the 2024-25 confirmation year — setup only, no
+experiments)
+
+**A small discipline-setup session, run before any feature experiment.
+Formally reserves 2024-08-01 to 2025-07-31 as an untouchable confirmation
+year for the upcoming feature-selection programme, and enforces the
+reservation in code so no later experiment can accidentally touch it. Runs
+no experiment, fits no feature model, and reads no result on the reserved
+year.** Full account: DECISIONS D51. Script: `scripts/
+session48_reserved_year.py` (new, date-arithmetic only — no data loaded, no
+model fit). Full real output: `notes/session-48-guard-check-output.txt`.
+
+**Why now.** F96 (session 46) already used every year 2022-2026
+descriptively for the existing frozen recipes — legitimate there only
+because nothing was tuned. A feature-selection programme chooses between
+feature sets on held-out performance, which is itself a form of fitting to
+data, so it needs its own fresh, never-touched year or it has no honest
+finish line. The owner chose 2024-25: feature-complete for every candidate
+family (F97) and a solid middle year, distinct from the 2025-26 sealed year
+(F94).
+
+**The rule (D51).** No feature experiment — train or test, any feature set
+— may touch 2024-08-01..2025-07-31 until a single pre-chosen final feature
+set is confirmed on it once, at the end of the programme, and that result
+stands as reported. It does not disturb the 2025-26 sealed year (F94) or any
+existing minimal-method verdict.
+
+**The harness change.** `scripts/session48_reserved_year.py` defines the
+reservation and a guard, `assert_reserved_year_excluded()`, that raises if a
+proposed fold's training or test window overlaps the reserved year. It also
+defines `EXPERIMENT_FOLDS` — three folds for a future feature-experiment
+session to build from (F96's rolling-origin list minus the fold testing
+2024-25, with the fold testing 2025-26 truncated so training stops at
+2024-07-31, before the reserved year, so it never enters an experiment's
+training pool either):
+
+```
+label      train                    test
+2022-23    2021-03-24..2022-07-31   2022-08-01..2023-07-31
+2023-24    2021-03-24..2023-07-31   2023-08-01..2024-07-31
+2025-26    2021-03-24..2024-07-31   2025-08-01..2026-07-31   (train truncated)
+```
+
+**Verified by construction only.** All three `EXPERIMENT_FOLDS` entries pass
+the guard; three deliberately reserved-year-touching folds (one mirroring
+F96's own original, unreserved "2025-26" fold; one testing the reserved year
+directly; one training into it) all raise `ValueError` as expected. No
+model was fit and no data was loaded anywhere in the verification — pure
+date-range checks.
+
+**The honest cost.** The "2025-26" experiment fold loses 365 days (1.00
+years) of training data versus F96's own equivalent fold (1,591 to 1,226
+days), because training may not reach into the reserved year. The
+feature-selection programme now works from three folds instead of F96's
+four; the "2022-23" fold (495 days, thinnest) is unaffected, since it never
+reached 2024-25 in the first place.
+
+**What this session did not do, on purpose.** Did not run any feature
+experiment, fit any feature model, or compute any result on 2024-25 or any
+other year. Did not pull any new data. Did not touch the 2025-26 sealed year
+or restate any existing verdict. Did not choose or lock a feature-experiment
+ordering — that is a later, separate session's job, using the F97
+availability map (session 47). Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed.
+
+**Archive step this session:** none — D51 is brand new and obviously live;
+nothing else in `DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -831,17 +901,29 @@ resolves by number, now into the archive for the moved set; F94 stays live,
 flagged rather than moved.** The GRIB-build sub-project is now fully
 closed — built, tested, folded into SPEC/RESULTS, and archived.
 
-**Session 47 (this file's own latest entry, above) built a feature-family
-availability map — radiation, upper-air, moisture, pressure, precipitation —
-across the GRIB archive (DECISIONS F97).** This is a probe, not an
-experiment: it decides no ordering and builds no feature. All 27 candidate
-variables are present and decode to real values at both the v16 floor and a
-recent date; the headline is that upper-air/vertical structure — the family
-blocked on Open-Meteo (F85) and the one the GRIB build was meant to unlock —
-is confirmed genuinely available, clean and instantaneous at the forecast
-lead. Radiation and precipitation are available but carry a lead-dependent
-averaging/accumulation window that differs across airports. This map is
-what future feature-experiment planning now works from.
+**Session 48 (this file's own latest entry, above) reserved 2024-25 as the
+feature-selection programme's untouchable confirmation year and enforced it
+in code (DECISIONS D51).** No feature experiment, backtest, or model fit —
+setup only. `scripts/session48_reserved_year.py` carries the reservation, a
+guard (`assert_reserved_year_excluded()`) that raises on any fold touching
+2024-08-01..2025-07-31, and `EXPERIMENT_FOLDS`, the three-fold list (F96's
+rolling-origin folds minus 2024-25, with the fold nearest the sealed year
+truncated so training never reaches the reserved year either) a future
+feature-experiment session should build from. Verified by construction only
+— no data loaded, no result computed on any year.
+
+Session 47, the session before, built a feature-family availability map —
+radiation, upper-air, moisture, pressure, precipitation — across the GRIB
+archive (DECISIONS F97). This is a probe, not an experiment: it decides no
+ordering and builds no feature. All 27 candidate variables are present and
+decode to real values at both the v16 floor and a recent date; the headline
+is that upper-air/vertical structure — the family blocked on Open-Meteo
+(F85) and the one the GRIB build was meant to unlock — is confirmed
+genuinely available, clean and instantaneous at the forecast lead.
+Radiation and precipitation are available but carry a lead-dependent
+averaging/accumulation window that differs across airports. This map, and
+now session 48's reserved year and guard, is what future feature-experiment
+planning works from.
 
 Session 46, the session before, opened a different next phase: a multi-year
 rolling-origin generalisation backtest of the existing frozen 3-feature and
@@ -1242,19 +1324,52 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   `DECISIONS.md` falls from 2,359 to 636 live lines. This closes the
   GRIB-build sub-project (docs/session-36.md through docs/session-45.md)
   for good. Nothing was committed.
+- **Session 46: multi-year rolling-origin generalisation backtest of the
+  existing frozen recipes, 24h lead, GRIB source (DECISIONS F96).** A
+  descriptive profile, not a new sealed test. 3-feature beats raw GFS
+  (GRIB) at 18 of 20 airport-years, 5-feature at 19 of 20; 5-feature beats
+  3-feature at 17 of 20 full-window airport-years. RNO's 5-feature skill is
+  stable across all four years (+10.2% to +11.5%), the strongest evidence
+  yet its richer-features rescue (F94) is repeatable. The `2025-26` fold
+  reproduces F94 to within 0.0005 degC at every airport. Now the benchmark
+  future feature work is measured against. Nothing was committed.
+- **Session 47: feature-family availability probe — radiation, upper-air,
+  moisture, pressure, precipitation (DECISIONS F97).** A map, not an
+  experiment. All 27 candidate variables present and decode cleanly at both
+  the v16 floor and a recent date; upper-air/vertical structure (the family
+  blocked on Open-Meteo, F85) confirmed genuinely unlocked with no caveat;
+  radiation and precipitation available but carry a lead-dependent
+  averaging/accumulation window. Nothing was committed.
+- **Session 48: reserved 2024-25 as the feature-selection programme's
+  confirmation year, enforced in code (DECISIONS D51).** Setup only — no
+  feature experiment run, no model fit, no result computed on 2024-25 or
+  any other year. `scripts/session48_reserved_year.py` (new) carries the
+  reservation, a guard that raises on any fold touching the reserved year,
+  and the three-fold `EXPERIMENT_FOLDS` list a future feature-experiment
+  session should build from. Verified by construction only. Nothing was
+  committed.
 
 ## Next
 
-**Session 47 built the feature-family availability map (DECISIONS F97) that
-feature-experiment planning now needs.** All five candidate families
-(radiation, upper-air, moisture, pressure, precipitation) are confirmed
-available back to the v16 floor; upper-air is the clean headline unlock,
-radiation and precipitation both need a deliberate choice of which
-averaging/accumulation window to use before either can become a feature.
-**What is genuinely next: choosing a feature-experiment ordering from this
-map (not done by session 47 on purpose) and then trying it — which still
-needs its own fresh, untouched test year**, exactly as session 46's own
-benchmark (below) requires for any feature-selection work.
+**Session 48 reserved the 2024-25 confirmation year and put a code guard in
+place (DECISIONS D51); this is the fresh, untouched test year the
+feature-selection programme needs.** No feature experiment has been run
+against it — the reservation exists precisely so none can be, until a
+single pre-chosen final feature set is confirmed on it once, at the end.
+**What is genuinely next: choosing a feature-experiment ordering from
+session 47's own availability map (F97; not done by that session on
+purpose) and then building the actual experiment(s) on `scripts/
+session48_reserved_year.py`'s `EXPERIMENT_FOLDS` (2022-23, 2023-24, and a
+truncated 2025-26 — three folds, thinner than F96's four, per D51's own
+honest-cost note) — never on the reserved 2024-25 year, which the guard now
+refuses by construction.**
+
+Session 47 built the feature-family availability map (DECISIONS F97) that
+feature-experiment planning needs. All five candidate families (radiation,
+upper-air, moisture, pressure, precipitation) are confirmed available back
+to the v16 floor; upper-air is the clean headline unlock, radiation and
+precipitation both need a deliberate choice of which averaging/accumulation
+window to use before either can become a feature.
 
 Session 46 (the session before) built the multi-year generalisation
 benchmark (DECISIONS F96) that the previous phase's own opening

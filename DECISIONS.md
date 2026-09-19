@@ -1004,3 +1004,94 @@ pressure tendency) from the confirmed ingredients. Did not modify `SPEC.md`
 or `RESULTS.md`. Nothing was committed.
 
 ---
+
+## 2026-09-19 — Session 48 decision: reserve 2024-25 as the feature-selection
+programme's confirmation year, enforced in code
+
+**D51. The 2024-25 year (2024-08-01 to 2025-07-31) is reserved as the
+untouchable confirmation year for the upcoming feature-selection
+programme.** No feature experiment — no backtest run, no model fit, no
+result read — may use it, for training or for evaluation, until a single
+pre-chosen final feature set is confirmed on it once, at the very end. This
+is setup only: no feature experiment, feature model, or 2024-25 result was
+run or computed this session (SPEC 2.4's frozen-before-running discipline,
+applied here to a confirmation year instead of a bar).
+
+**Why, and why now (cites F96).** F96's own rolling-origin backtest already
+used every year 2022–2026 descriptively — as training data, test data, or
+both — for the *existing* frozen recipes. That reuse was legitimate only
+because nothing was tuned or selected (F96's own "integrity boundary" note).
+A feature-selection programme is different in kind: it chooses between
+feature sets on the basis of held-out performance, which is itself a form of
+fitting to data. Left unreserved, any "winning" feature set chosen from
+F96's own years would be chosen in the light of data already seen — the same
+selection-bias problem the sealed test (SPEC 5.3, D22) exists to prevent for
+a final recipe. F96 having used all the years is exactly why a fresh year
+had to be carved out now, before any feature experiment exists to
+contaminate it.
+
+**Distinct from, and does not disturb, the 2025-26 sealed year.** F94 (the
+5-feature GRIB recipe's one authorised look at 2025-08-01..2026-07-31)
+stands exactly as reported. This reservation is a separate held-out year for
+a separate purpose — confirming a *selected* feature set, not re-judging any
+already-locked recipe — and no minimal-method verdict (F16/F30/F47/F64/F82)
+is touched either.
+
+**The confirmation rule.** Feature experiments run on the non-reserved years
+only. The winning feature set is chosen there. Then the single, pre-committed
+final model is evaluated on 2024-25 exactly once, and that result stands as
+reported — the same one-look discipline as every other frozen-bar test in
+this project (D21, D31, D35, D39, D44, D48.13).
+
+**Enforced in code, not left to discipline alone.** `scripts/
+session48_reserved_year.py` (new) defines the reservation
+(`RESERVED_YEAR_START`/`RESERVED_YEAR_END` = 2024-08-01/2025-07-31) and a
+guard, `assert_reserved_year_excluded()`, that raises `ValueError` if a
+proposed fold's training window *or* test window overlaps any part of the
+reserved year — the same "stop rather than allow" pattern as the sealed-test
+self-guards (D48.8/F93). It also defines `EXPERIMENT_FOLDS`, the fold list a
+future feature-experiment session should build from: F96's own rolling-origin
+fold list, minus the fold that tested 2024-25, with the fold that tests
+2025-26 truncated so its training window stops at 2024-07-31 — before the
+reserved year starts — so the reserved year never enters an experiment's
+training pool either, not just its test set.
+
+```
+label      train                    test
+2022-23    2021-03-24..2022-07-31   2022-08-01..2023-07-31
+2023-24    2021-03-24..2023-07-31   2023-08-01..2024-07-31
+2025-26    2021-03-24..2024-07-31   2025-08-01..2026-07-31   (train truncated; see below)
+```
+
+**The guard was verified by construction only — no experiment run, no
+2024-25 result computed.** Running `scripts/session48_reserved_year.py`
+(real output: `notes/session-48-guard-check-output.txt`) confirms: all three
+`EXPERIMENT_FOLDS` entries pass the guard (no raise); three deliberately
+reserved-year-touching folds — one mirroring F96's own original "2025-26"
+fold (train crossing straight through the reserved year), one testing the
+reserved year directly, one training into it — all raise `ValueError` as
+expected, with no model fit and no data loaded anywhere in the script (it is
+pure date-range arithmetic).
+
+**The honest cost, stated plainly.** Truncating the "2025-26" experiment
+fold's training window to stop before the reserved year costs it 365 days
+(1.00 years) of training data versus F96's own equivalent fold (1,591 days
+down to 1,226 days) — the price of making the later confirmation genuinely
+out-of-sample, not merely unused-for-selection. The feature-selection
+programme now has three folds (2022-23, 2023-24, 2025-26-truncated) instead
+of F96's four, and the "2022-23" fold remains the thinnest (495 days,
+~1.36 years) exactly as it was in F96 — unaffected by the reservation, since
+it never reached 2024-25 in the first place.
+
+**What this session did not do, on purpose.** Did not run any feature
+experiment, fit any feature model, or compute any result on 2024-25 or any
+other year — the guard-verification script above uses only date arithmetic,
+no CSV, no model fit. Did not pull any new data. Did not touch the 2025-26
+sealed year or restate any existing verdict. Did not choose or lock a
+feature-experiment ordering (E1/upper-air or otherwise) — that is a later,
+separate session's job, using the F97 availability map. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed. Script: `scripts/
+session48_reserved_year.py` (new). Full real output: `notes/
+session-48-guard-check-output.txt`.
+
+---
