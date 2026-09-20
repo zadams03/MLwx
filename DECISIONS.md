@@ -1998,3 +1998,199 @@ identical handling at all five airports throughout. Did not modify
 session-55-radiation-output.txt`.
 
 ---
+
+## 2026-09-20 — Session 56 finding: the staged E4 (radiation) experiment — a
+reading, not a verdict; reserved year untouched
+
+**F103. Fits four feature variants (B, B+R, B+Rv, B+v) on the three
+non-reserved `EXPERIMENT_FOLDS` (D51) to read whether the radiation family
+(built and validated in session 55, F102) adds skill on top of the frozen
+5-feature GRIB baseline, and specifically whether it adds anything BEYOND
+`cloud_cover`, which is already in the baseline and is the dominant control
+on how much shortwave reaches the ground (F97). This is a LEARNING
+experiment, not a sealed-bar test — it reports a grid, not a pass/fail
+verdict (the family call is the owner's review decision in session 57, per
+the session prompt). The reserved 2024-08-01..2025-07-31 confirmation year
+was never read, at all, this session.** Script:
+`scripts/session56_e4_experiment.py` (new). Full real output: `notes/
+session-56-e4-experiment-output.txt`. Tables: `data/processed/
+session56_e4_experiment_grid.csv` (60 rows: 5 airports x 3 folds x 4
+variants) and `data/processed/session56_e4_experiment_summary.csv` (36
+rows: fold-averaged-per-airport, airport-averaged-per-fold, and
+grand-overall).
+
+**Preamble — a print-text-only cleanup, done first.** F102 flagged a
+cosmetic bug in `scripts/session55_radiation_pull.py`'s Step-0 printed
+DECISION summary: its final per-combo loop iterated over `windows_seen`,
+which also held the lead-2 helper file (e.g. f022, fetched only to
+de-accumulate the lead-24 airports' own standard-lead message), so it
+wrongly described f022 itself as needing further de-accumulation against a
+nonexistent "f020" file. Fixed by changing the loop's iteration source from
+`windows_seen.items()` to the real top-level `combos.items()` (the four
+actual (cycle, lead) airport combos), reading `windows_seen.get((cycle,
+lead), set())` for the printed window. Confirmed by re-reading the changed
+lines: only the summary loop's iteration source changed — `build_combos`,
+`process_combo`, `build_joined`, the lead/window arithmetic functions, and
+every fetch count are byte-for-byte unchanged. The session-55 pull was not
+re-run; this session reads session 55's already-committed output files
+unchanged, and F102's own numbers stand exactly as reported.
+
+**The four variants, all on D21.4/D48.6's unchanged LightGBM settings, no
+per-airport feature selection:**
+- **B** — the frozen 5-feature set, REFIT on these three folds (not a
+  reuse of F94/F96/F99/F100/F101). Not B+L, B+D, or B+T either — D52/D53/
+  D54's own "measurement baseline is unchanged" rule.
+- **B+R** — B plus the resolved `dswrf_2h_wm2` feature (F102's own single
+  physically-consistent 2-hour-window shortwave feature).
+- **B+Rv** — B+R plus the two raw de-accumulation-endpoint columns,
+  `dswrf_ave_to_lead_wm2` and `dswrf_ave_to_lead_minus2_wm2`.
+- **B+v** — B plus those two raw endpoint columns, WITHOUT the resolved
+  `dswrf_2h_wm2`.
+
+**E4's raw set differs in KIND from E1-E3's (session prompt's own framing,
+confirmed in the output).** E1-E3's raw fields were independent physical
+variables; E4's two raw endpoints are instead the two accumulation-window
+averages the resolved `dswrf_2h_wm2` is itself DERIVED FROM. So B+Rv/B+v
+test whether the model does better with the raw energy endpoints than with
+the clean, physically-resolved 2-hour rate — not whether an independent
+variable adds anything.
+
+**A design decision this session had to make, not specified by the session
+prompt, reported plainly.** `dswrf_ave_to_lead_minus2_wm2` is blank in the
+session-55 output files at YSDU and RNO (the lead-26 airports) — F102's own
+build never fetched a second message there, because the native window is
+already the target 2-hour window, so no de-accumulation and no second
+endpoint exist. To give B+Rv/B+v a well-defined, identically-shaped feature
+vector at all five airports without inventing a number (SPEC 2.2),
+`dswrf_ave_to_lead_minus2_wm2` was set equal to `dswrf_ave_to_lead_wm2` at
+those two airports — the honest statement that no distinct earlier endpoint
+exists there, not a filled gap (0 substitutions at EGLC/LFPG/DSM; every row
+substituted at YSDU/RNO, 1,590 each). **The direct consequence, confirmed in
+the grid: B+R, B+Rv and B+v are mathematically IDENTICAL models at YSDU and
+RNO** (byte-identical MAE at every fold) — so the "does the model do better
+with raw endpoints than the resolved rate" question is only meaningfully
+answerable at the three lead-24 airports (EGLC, LFPG, DSM); at YSDU/RNO all
+three radiation variants collapse to the same single feature value.
+
+**Sanity check 1 (reserved-year guard) — PASS.** All three
+`EXPERIMENT_FOLDS` entries cleared `assert_reserved_year_excluded()` before
+any data was loaded; a defensive per-row scan found 0 reserved-year rows in
+the loaded data.
+
+**Sanity check 2 (feature-resolution check) — PASS, checked on every row,
+not a spot check.** At the three lead-24 airports (EGLC, LFPG, DSM),
+`dswrf_2h_wm2 == (dswrf_ave_to_lead_wm2*6 - dswrf_ave_to_lead_minus2_wm2*4)
+/ 2` within a 0.01 W/m2 tolerance (comfortably above the ~0.0025 W/m2
+rounding error the stored 3-decimal values can introduce); at the two
+lead-26 airports (YSDU, RNO), `dswrf_2h_wm2 == dswrf_ave_to_lead_wm2`
+directly. Max abs diff: EGLC 0.002000, LFPG 0.002000, DSM 0.002000 (all
+pure rounding noise, well inside tolerance), YSDU 0.000000, RNO 0.000000
+(exact). Checked across all 7,952 rows of both session55 output files.
+
+**An unplanned but strong internal-consistency signal, the same check
+F99/F100/F101 ran.** The `2025-26` fold's `B` variant (refit 5-feature
+baseline, trained on one fewer year than F94 because training may not
+reach the reserved year) reproduces F94/F96/F99/F100/F101's own raw-GFS and
+persistence MAE and row counts almost exactly at every airport: EGLC raw
+1.2536 vs 1.254 (n=364 vs 364), LFPG 1.3822 vs 1.382 (n=364 vs 364), DSM
+1.7334 vs 1.733 (n=365 vs 365), YSDU 1.3167 vs 1.317 (n=356 vs 356), RNO
+1.5116 vs 1.512 (n=365 vs 365) — confirming the pipeline (join, features,
+model settings) is a correct reproduction of the frozen recipe.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, n=15
+airport-folds per variant):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+R       1.266      -0.018      +1.4%
+B+Rv      1.260      -0.024      +1.9%
+B+v       1.263      -0.020      +1.6%
+```
+
+**Fold-averaged per airport (mean across the three folds), skill vs B:**
+
+```
+station   B+R     B+Rv    B+v
+EGLC     +3.8%   +5.4%   +4.7%
+LFPG     +2.4%   +3.2%   +2.3%
+DSM      -0.2%   +0.1%   +0.0%
+YSDU     +1.2%   +1.2%   +1.2%
+RNO      +0.8%   +0.8%   +0.8%
+```
+
+(YSDU/RNO's three columns are identical by construction — see the design
+decision above.)
+
+**E4's own max grand-overall skill against E1/E2/E3, stated plainly, per
+the session prompt's own instruction.** E1's max (B+Lv, F99): +2.0%. E2's
+max (B+Dv, F100): +4.1%. E3's max (B+T, F101): +0.9%. **E4's max (B+Rv,
+this session): +1.9%** — E4 sits just below E1, comfortably above E3, and
+well below E2.
+
+**The specific question this experiment answers, read with the real
+numbers.** `cloud_cover` is already in the frozen baseline B, and cloud is
+the dominant control on shortwave reaching the ground (F97). This is a
+marginal-over-cloud test, not a from-scratch test — and the answer is a
+real, non-trivial positive one at most airports, not the null result a
+"radiation is redundant with cloud" prior might have predicted: radiation
+adds skill beyond cloud at four of five airports, clearly at EGLC and LFPG,
+modestly at YSDU and RNO (see the design-decision caveat above), and not at
+all at DSM.
+
+**EGLC and LFPG — the family's two strongest results, and the only two
+airports where the raw-vs-resolved contrast is genuinely tested (both are
+lead-24 airports with a real second endpoint).** EGLC's B+Rv (+5.4%) is the
+single best airport-variant reading in this family — and at both airports
+adding the raw endpoints on top of the resolved rate helps further (EGLC:
+Rv +5.4% > v +4.7% > R +3.8%; LFPG: Rv +3.2% > R +2.4% > v +2.3%) — the same
+"raw-plus-derived never hurts" shape E1 (F99) and E2 (F100) showed, and
+E3 (F101) was the one family that broke.
+
+**DSM, the diagnostic (F96: most headroom, cloud/wind already marginal
+there) — the one airport where radiation adds nothing, consistent with the
+marginal-over-cloud framing.** B+R is actually slightly negative (-0.2%),
+B+Rv and B+v are both essentially flat (+0.1%, +0.0%). Unlike E1 (F99,
++2.7%) and E2 (F100, +6.2%), where DSM showed a clear positive signal,
+radiation joins E3 (F101, -0.3%/-1.0% for B+Tv/B+v) as a family that does
+not rescue DSM — the honest reading, per the session prompt's own framing,
+is that DSM's already-marginal cloud/wind signal leaves shortwave with
+nothing further to add once cloud is already in the model.
+
+**YSDU and RNO — a real, modest, single-valued result, not a genuine
+raw-vs-resolved reading.** Both post a real positive skill (+1.2%, +0.8%)
+that holds identically across B+R/B+Rv/B+v, by construction (see the design
+decision above) — the resolved feature itself carries real signal there,
+but this family's own "does raw help over resolved" question is silent at
+these two airports specifically, a genuine limitation of this experiment at
+the lead-26 airports.
+
+**Per-fold spread — this family does NOT reverse in the most recent
+fold, unlike E3.** Airport-averaged per fold: 2022-23 (thinnest, per
+F96/D52/D53/D54's own established caution) shows the family's smallest
+benefit (B+R +0.6%, B+Rv +1.0%, B+v +0.4%); 2023-24 shows its largest
+(B+R +2.5%, B+Rv +3.4%, B+v +2.9%); 2025-26 (the most recent, least-trusted
+fold per prior sessions) stays POSITIVE across all three variants (B+R
++1.0%, B+Rv +1.3%, B+v +1.6%) — unlike E3 (F101), which reversed to
+negative across every variant in this same fold. Full fold-by-fold detail:
+`data/processed/session56_e4_experiment_grid.csv`.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — session55's own output files already exclude it, and this
+session's own defensive per-row scan found 0 reserved-year rows, on top of
+the guard check on all three folds before any data was loaded. Did not
+compute any pass/fail verdict anywhere — the four-variant grid is
+reported; the family call is left to the owner's review in session 57, per
+the session prompt. Did not do any per-airport feature selection —
+identical features at every airport, in every variant, RNO included. Did
+not add `lapse_rate_t2_t850` (D52), `dewpoint_depression_t2m_floored`
+(D53), or `pressure_tendency_3h_hpa` (D54) to B — B stays the frozen
+5-feature set only. Did not touch the E5 (precipitation) family. Did not
+re-pull or re-derive any radiation field, or re-run session 55's own pull —
+reused session 55's own committed output files unchanged. Did not change
+any data-path logic in `scripts/session55_radiation_pull.py` — the preamble
+fix was print-text only, confirmed by re-reading the changed lines. Did not
+modify `SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+---

@@ -392,7 +392,8 @@ def step0_window_resolution():
               "step, at every (cycle, lead) file, both sample dates. "
               "De-accumulating to a common 2-hour window ending at each "
               "airport's own target hour (session prompt Step 0, item 2):")
-        for (cycle, lead), windows in sorted(windows_seen.items()):
+        for (cycle, lead), _stations in sorted(combos.items()):
+            windows = windows_seen.get((cycle, lead), set())
             dur = lead - window_start(lead)
             if dur == 2:
                 print(f"  cycle={cycle:02d}z lead=f{lead:03d}: native window "
