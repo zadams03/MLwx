@@ -3,7 +3,115 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 51._
+_Last updated: 20 September 2026, after session 52._
+
+---
+
+## Session 52 (the E2 moisture experiment — fit the moisture variants on the
+three non-reserved folds and read the result; a reading, not a verdict)
+
+**Fits four moisture feature variants (B, B+D, B+Dv, B+v) on the three
+non-reserved `EXPERIMENT_FOLDS` (D51) at all five airports, mirroring
+session 50/F99's own E1 shape exactly. This is a LEARNING experiment: it
+reports a grid, not a pass/fail verdict — the E2 family call is made in
+review, next session. The reserved 2024-08-01..2025-07-31 confirmation
+year was never read, at all, this session.** Full account: DECISIONS F100.
+Script: `scripts/session52_e2_experiment.py` (new). Full real output:
+`notes/session-52-e2-experiment-output.txt`. Tables: `data/processed/
+session52_e2_experiment_grid.csv` (60 rows: 5 airports x 3 folds x 4
+variants) and `data/processed/session52_e2_experiment_summary.csv` (36
+rows: fold-averaged-per-airport, airport-averaged-per-fold, and grand
+overall).
+
+**Three sanity checks, all PASS, run before any model was fit.** (1) The
+reserved-year guard cleared on all three `EXPERIMENT_FOLDS` entries before
+any data was loaded. (2) `dewpoint_depression_t2m == round(t2m_raw -
+dew_point_2m, 3)` checked on EVERY row of both session51 output files
+(7,952 rows, not a spot check) — exact match everywhere (max abs diff
+0.0), zero null fields in `relative_humidity_2m`, `dew_point_2m` or
+`specific_humidity_2m`. (3) The depression floor
+(`dewpoint_depression_t2m_floored = max(dewpoint_depression_t2m, 0)`)
+changed exactly 1 of 7,952 rows — DSM 2024-01-26, -0.003 -> 0.000, the
+same saturation-boundary row session 51 already flagged — the original
+column kept intact, the floor applied only in the feature matrix.
+
+**A strong internal-consistency signal, the same check F99 ran:** the
+`2025-26` fold's `B` variant (the refit 5-feature baseline) reproduces
+F94/F96's own raw-GFS and persistence MAE and row counts almost exactly at
+every airport (e.g. EGLC raw 1.2536 vs F94's 1.254, n=364 vs 364; RNO raw
+1.5116 vs 1.512, n=365 vs 365) — confirming this session's pipeline is a
+correct reproduction, not an independent re-implementation that happens to
+look similar.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, 15
+airport-folds each):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+D       1.233      -0.051      +4.0%
+B+Dv      1.231      -0.053      +4.1%
+B+v       1.235      -0.049      +3.8%
+```
+
+**The staged question, answered plainly.** (a) `dewpoint_depression_t2m_
+floored` alone (B+D) already captures nearly all of the family's
+grand-overall benefit: +4.0% of the +4.1% maximum (B+Dv), on one added
+feature. (b) Adding the raw fields on top (B+Dv) adds almost nothing
+further (+4.1%, a 0.1-point gain over B+D) — the same shape E1's B+Lv
+showed over B+L. (c) **Unlike E1, the raw fields alone (B+v, +3.8%) trail
+the derived form (B+D, +4.0%) by only 0.2 points grand-overall** — not the
+clear-weakest-addition shape F99 found for E1's raw pressure levels — and
+at two airports (LFPG, DSM) B+v ties or beats B+D outright.
+
+**DSM, the diagnostic (F96: most headroom; F99: upper-air did help there):
+the moisture family's strongest and most fold-robust result.** DSM leads
+every airport under every variant (B+D +6.2%, B+Dv +6.4%, B+v +6.4%) and
+is the only airport whose three per-fold readings are all positive and
+close together (+5.7%/+6.9%/+5.9% for B+D) — a fold-robust result, not one
+fold carrying the average.
+
+**Per-fold caution — two airports where the fold average hides a real
+split.** **EGLC's B+D fold average (+2.9%) is carried entirely by the two
+earlier folds and reverses in the most recent one**: 2022-23 +5.8%,
+2023-24 +4.2%, 2025-26 -1.6% (all three moisture variants lose to B at
+EGLC in the 2025-26 fold specifically). **RNO's B+D is flat-to-slightly-
+negative in the thinnest fold** (2022-23 -0.2%) but strong in the other
+two (2023-24 +7.0%, 2025-26 +7.7%) — the same thin-fold weak-read pattern
+already named for 2022-23 generally (F96, D52), not a new concern. LFPG,
+DSM and YSDU are positive in all three folds under every variant.
+
+**Feature importances (gain-based, per airport, averaged across the three
+folds) — B+D and B+v, per the session prompt's own instruction.**
+`dewpoint_depression_t2m_floored` is B+D's leading or near-leading feature
+at every airport (17.8% at RNO to 27.3% at EGLC) — real signal, not noise.
+In B+v, `relative_humidity_2m` is the clear leading raw moisture field at
+every airport (12.7%-23.4%), well ahead of `specific_humidity_2m`
+(7.3-8.8%) and `dew_point_2m` (4.3-7.9%). One citation inaccuracy in the
+session prompt, noted plainly, not a SPEC/DECISIONS conflict: it describes
+this diagnostic as "the same diagnostic F99 reported," but F99's own
+script and output contain no feature-importance section — the instruction
+itself was followed regardless.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — enforced by session51's own output files already excluding it,
+plus this session's own defensive per-row scan (0 hits) and the guard
+check on all three folds before any data was loaded. Did not compute any
+pass/fail verdict — the four-variant grid is reported, the family call is
+left to review. Did not do any per-airport feature selection — identical
+features at every airport, in every variant. Did not add
+`lapse_rate_t2_t850` (E1's own adopted feature, D52) to B — B stays the
+frozen 5-feature set only, per D52's own "measurement baseline is
+unchanged" rule. Did not touch any E3+ family (pressure, radiation,
+precipitation). Did not pull any new data — reused session 51's own output
+files unchanged. Did not modify `SPEC.md` or `RESULTS.md`. Nothing was
+committed.
+
+**Archive step this session:** none — F100 is brand new and obviously
+live; D51/D52/F97/F98/F99 all remain live inputs to a still-open
+feature-selection programme; nothing else in `DECISIONS.md` became newly
+settled this session.
 
 ---
 
@@ -1166,7 +1274,31 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 51 (this file's own latest entry, above) recorded the E1 family
+**Session 52 (this file's own latest entry, above) ran the staged E2
+(moisture) experiment — a reading, not a verdict (DECISIONS F100).** Four
+feature variants (B, B+D, B+Dv, B+v) were fit on the three non-reserved
+`EXPERIMENT_FOLDS` (D51) at all five airports, mirroring session 50/F99's
+own E1 shape exactly; all three sanity checks (the reserved-year guard;
+the `dewpoint_depression_t2m` reconstruction, checked on every row; the
+depression floor, changing exactly 1 of 7,952 rows) PASS; the reserved
+2024-25 year was never read. Headline: `dewpoint_depression_t2m_floored`
+alone (B+D) already captures nearly all of the family's grand-overall
+benefit (+4.0% skill vs the refit baseline, against a +4.1% maximum for
+B+Dv) — the same shape E1 showed — but **unlike E1, the raw moisture
+fields alone (B+v, +3.8%) trail the derived form by only 0.2 points, not a
+clear-weakest-addition gap**. DSM is again the standout and, uniquely
+among the five airports, fold-robust (all three per-fold readings
+positive and close together). Two airports show a real per-fold split
+worth reading directly rather than only fold-averaged: EGLC's B+D benefit
+reverses to a loss in the most recent (2025-26) fold, and RNO's is
+flat-to-slightly-negative in the thinnest (2022-23) fold. Feature
+importances confirm the derived depression and, among the raw fields,
+relative humidity specifically, carry real signal at every airport. No
+pass/fail verdict was computed; the E2 family call — adopt the derived
+depression, add the raw fields too, or neither — is for review next
+session.
+
+**Session 51, the session before, recorded the E1 family
 verdict and built the E2 (moisture) feature set — data build only.**
 DECISIONS D52: `lapse_rate_t2_t850` is adopted into the eventual
 combine-phase sweep baseline; the raw pressure-level temperatures
@@ -1180,7 +1312,7 @@ Magnus internal-consistency check and an Open-Meteo cross-check both
 passing at four airports with a real but modest, RNO-consistent gap at the
 fifth. No model was fit; the reserved 2024-25 year was never touched.
 
-Session 50, the session before, ran the staged E1 upper-air experiment — a
+Session 50, the session before that, ran the staged E1 upper-air experiment — a
 reading, not a verdict (DECISIONS F99). Four
 feature variants (B, B+L, B+Lv, B+v) were fit on the three non-reserved
 `EXPERIMENT_FOLDS` (D51) at all five airports; both sanity checks (the
@@ -1735,40 +1867,56 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   (non-reserved overlap only) both agree closely at four airports, with a
   real but modest, RNO-consistent gap at the fifth. No model fit. Reserved
   year never touched. Nothing was committed.
+- **Session 52: ran the staged E2 (moisture) experiment (DECISIONS F100) —
+  a reading, not a verdict.** Fit four feature variants (B, B+D, B+Dv, B+v)
+  on the three non-reserved `EXPERIMENT_FOLDS` (D51), all five airports,
+  mirroring session 50/F99's own E1 shape. All three sanity checks passed
+  (reserved-year guard; the depression reconstruction, checked on every row
+  of 7,952; the depression floor, changing exactly 1 row). Grand-overall:
+  `dewpoint_depression_t2m_floored` alone (B+D) captures +4.0% of the +4.1%
+  maximum (B+Dv); unlike E1, the raw fields alone (B+v, +3.8%) trail the
+  derived form by only 0.2 points, not a clear-weakest gap. DSM is the
+  strongest and only fold-robust airport; EGLC's benefit reverses in the
+  most recent fold and RNO's is flat in the thinnest fold — both reported
+  explicitly, not hidden in the fold average. No pass/fail verdict
+  computed — the family call is for review. Reserved year never touched.
+  Nothing was committed.
 
 ## Next
 
-**Next planning session: session 52 — the E2 moisture experiment (fit the
-moisture variants against the frozen 5-feature baseline B on the three
-non-reserved `EXPERIMENT_FOLDS`, reserved year untouched), a reading not a
-verdict, with the family call made in review.**
+**Next planning session: session 53 — open, for the owner's review: the E2
+moisture family verdict from this session's grid, then (if E2 is adopted
+into the combine-phase baseline) the start of the next family's build (E3,
+pressure/synoptic — lead with the derived tendency, per the roadmap).**
 
-**The E1 family verdict is now decided (DECISIONS D52, this file's own
-latest entry, above), so the item that was open at the end of session 50
-is resolved.** `lapse_rate_t2_t850` is adopted into the eventual
-combine-phase sweep baseline; the raw pressure-level temperatures
-(`t850`/`t925`/`t700`) are not, with RNO's own raw-level skill increment
-parked as an explicit combine-phase candidate rather than carried into the
-sweep. This is provisional, like every family, until the reserved-year
-finish-line check (D51) — not settled for good yet.
+**The E2 experiment is done (DECISIONS F100, this file's own latest entry,
+above); the E2 family verdict is now the owner's call, the same review
+step D52 already took for E1.** The grid: `dewpoint_depression_t2m_
+floored` alone (B+D) captures +4.0% of the +4.1% grand-overall maximum
+(B+Dv); the raw moisture fields alone (B+v, +3.8%) trail the derived form
+by only 0.2 points — unlike E1, where the raw levels were clearly the
+weakest addition everywhere but RNO. DSM is the strongest and only
+fold-robust airport; EGLC's and RNO's benefits are each carried unevenly
+across folds (EGLC's reverses in 2025-26, RNO's is flat in 2022-23) — both
+reported explicitly in DECISIONS F100 rather than only fold-averaged. Full
+per-fold table: `data/processed/session52_e2_experiment_grid.csv`.
 
-**E2's own data build is complete and validated (this session, above) —
-session 52's job is the experiment, mirroring how session 50 followed
-session 49.** The E2 feature set (RH, DPT, SPFH at 2 m, plus
-`dewpoint_depression_t2m`) is joined onto the existing 5-feature dataset
-at `data/processed/session51_v16_window_with_moisture.csv` and
-`data/processed/session51_sealed_window_with_moisture.csv`, with zero pull
-failures, zero join drops, and zero blanks. Session 52 should mirror
-session 50's own experiment shape exactly: fit variants of the moisture
-family against the frozen baseline B (not against `B+L` — D52's own
-"measurement baseline is unchanged" instruction) on the three non-reserved
-`EXPERIMENT_FOLDS` (D51), report the grid, and leave the family call for
-review, the same "a reading, not a verdict" discipline F99 used.
+**If E2 is adopted into the combine-phase sweep baseline, session 53's own
+next job is the E3 (pressure/synoptic) family build** — mirroring how
+session 51 followed session 50's own E1 verdict with E2's build. F97's own
+availability map confirms PRMSL and PRES:surface are both present, clean
+and instantaneous back to the v16 floor; the session-52 prompt's own
+roadmap note says E3 should lead with the *derived pressure tendency* (a
+feature needing two consecutive runs' worth of the base field, not yet
+derived by any session) rather than the raw pressure fields alone — a
+design choice for session 53's own prompt to make explicit, not decided
+here.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 51's own build or session 52's own experiment.
+session 51's own build, session 52's own experiment, or any session before
+the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,

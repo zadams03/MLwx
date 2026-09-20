@@ -1408,3 +1408,148 @@ or compute any new figure — every number above is copied from and cited to
 F99. Did not touch the reserved 2024-08-01..2025-07-31 confirmation year.
 
 ---
+
+## 2026-09-20 — Session 52 finding: the staged E2 (moisture) experiment — a
+reading, not a verdict; reserved year untouched
+
+**F100. Fits four feature variants (B, B+D, B+Dv, B+v) on the three
+non-reserved `EXPERIMENT_FOLDS` (D51) to read whether the moisture family
+(built and validated in session 51, no DECISIONS finding number of its
+own assigned there) adds skill on top of the frozen 5-feature GRIB
+baseline. This is a LEARNING experiment, not a sealed-bar test — it
+reports a grid, not a pass/fail verdict (the family call is made in
+review, per the session prompt, mirroring F99). The reserved
+2024-08-01..2025-07-31 confirmation year was never read, at all, this
+session.** Script: `scripts/session52_e2_experiment.py` (new). Full real
+output: `notes/session-52-e2-experiment-output.txt`. Tables: `data/
+processed/session52_e2_experiment_grid.csv` (60 rows: 5 airports x 3 folds
+x 4 variants) and `data/processed/session52_e2_experiment_summary.csv`
+(36 rows: fold-averaged-per-airport, airport-averaged-per-fold, and
+grand-overall).
+
+**The four variants, all on D21.4/D48.6's unchanged LightGBM settings, no
+per-airport feature selection:**
+- **B** — the frozen 5-feature set, REFIT on these three folds (not a
+  reuse of F94/F96). Not B+L either — D52's own baseline-unchanged rule.
+- **B+D** — B plus `dewpoint_depression_t2m_floored` (one added feature).
+- **B+Dv** — B+D plus the raw moisture fields, `v = {relative_humidity_2m,
+  specific_humidity_2m, dew_point_2m}` (four added total).
+- **B+v** — B plus the raw moisture fields only, WITHOUT the derived
+  depression.
+
+**Task 1, item 1 (reserved-year guard) — PASS.** All three `EXPERIMENT_
+FOLDS` entries cleared `assert_reserved_year_excluded()` before any data
+was loaded.
+
+**Task 1, item 2 (moisture-feature integrity check) — PASS, checked on
+every row, not a spot check.** `dewpoint_depression_t2m == round(t2m_raw -
+dew_point_2m, 3)` holds exactly (max abs diff 0.0) at all 7,952 rows of
+both session51 output files, across all five airports; zero null fields in
+`relative_humidity_2m`, `dew_point_2m` or `specific_humidity_2m` anywhere.
+
+**Task 1, item 3 (the depression floor) — applied, one row changed, exactly
+as expected.** `dewpoint_depression_t2m_floored = max(dewpoint_depression_
+t2m, 0)` changed exactly 1 of 7,952 rows — DSM 2024-01-26, -0.003 -> 0.000
+— the same saturation-boundary row session 51's own build already
+flagged. The original column is kept intact; the floor applies only
+in the feature matrix.
+
+**An unplanned but strong internal-consistency signal, the same check F99
+ran.** The `2025-26` fold's `B` variant (refit 5-feature baseline, trained
+on one fewer year than F94 because training may not reach the reserved
+year) reproduces F94/F96's own raw-GFS and persistence MAE and row counts
+almost exactly at every airport: EGLC raw 1.2536 vs F94 1.254 (n=364 vs
+364), LFPG 1.3822 vs 1.382 (n=364 vs 364), DSM 1.7334 vs 1.733 (n=365 vs
+365), YSDU 1.3167 vs 1.317 (n=356 vs 356), RNO 1.5116 vs 1.512 (n=365 vs
+365) — confirming the pipeline (join, features, model settings) is a
+correct reproduction of the frozen recipe.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, n=15
+airport-folds per variant):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+D       1.233      -0.051      +4.0%
+B+Dv      1.231      -0.053      +4.1%
+B+v       1.235      -0.049      +3.8%
+```
+
+**Fold-averaged per airport (mean across the three folds), skill vs B:**
+
+```
+station   B+D     B+Dv    B+v
+EGLC     +2.9%   +2.1%   +1.4%
+LFPG     +2.7%   +2.0%   +2.7%
+DSM      +6.2%   +6.4%   +6.4%
+YSDU     +2.0%   +3.2%   +3.1%
+RNO      +4.8%   +5.5%   +4.1%
+```
+
+**The staged question, answered plainly.** (a) `dewpoint_depression_t2m_
+floored` alone (B+D) already captures nearly all of the family's
+grand-overall benefit: +4.0% of the +4.1% maximum (B+Dv), on one added
+feature. (b) Adding the raw fields on top (B+Dv) adds almost nothing
+further at the grand level (+4.1%, a 0.1-point gain over B+D) — the same
+shape E1's B+Lv showed over B+L. (c) Unlike E1, the raw fields WITHOUT the
+derived form (B+v) are close behind the derived form rather than clearly
+weaker — B+v (+3.8%) trails B+D (+4.0%) by only 0.2 points grand-overall,
+and at two airports (LFPG, DSM) B+v ties or beats B+D outright. Moisture's
+raw fields carry real standalone signal in a way E1's raw pressure-level
+temperatures did not (F99's B+v was clearly the weakest addition
+everywhere but RNO; E2's is not).
+
+**DSM, the diagnostic (F96: most headroom; F99: upper-air did help there):
+the moisture family's strongest and most fold-robust result.** DSM is the
+best-skilled airport under every variant (B+D +6.2%, B+Dv +6.4%, B+v
++6.4%) and the only airport where all three per-fold readings are positive
+and close together (+5.7%/+6.9%/+5.9% for B+D) — a fold-robust result, not
+one fold carrying the average.
+
+**Per-fold caution — two airports where the fold-averaged figure hides a
+real split.** **EGLC's B+D fold average (+2.9%) is carried entirely by the
+two earlier folds and reverses in the most recent one**: 2022-23 +5.8%,
+2023-24 +4.2%, but 2025-26 -1.6% (B+Dv -2.1%, B+v -3.1% — all three
+moisture variants lose to B at EGLC in the 2025-26 fold specifically).
+**RNO's B+D is flat-to-slightly-negative in the thinnest fold** (2022-23
+-0.2%) but strong in the other two (2023-24 +7.0%, 2025-26 +7.7%) — the
+same thin-fold weak-read pattern F96 and D52 already named for the
+2022-23 fold generally, not a new concern. No other airport shows this
+kind of fold split; LFPG, DSM and YSDU are positive in all three folds
+under every variant.
+
+**Feature importances (gain-based, percent of the variant's own total
+gain, averaged across the three folds) — B+D and B+v, per airport, per
+the session prompt's own instruction.** `dewpoint_depression_t2m_floored`
+is B+D's leading or near-leading feature at every airport (17.8% at RNO to
+27.3% at EGLC), clearly above any single baseline feature at four of five
+airports — real signal, not noise. In B+v, `relative_humidity_2m` is the
+clear leading raw moisture field at every airport (12.7% at RNO to 23.4%
+at EGLC), well ahead of `specific_humidity_2m` (7.3-8.8%) and `dew_point_
+2m` (4.3-7.9%) — the raw fields' own signal is carried mostly by relative
+humidity, not the other two. Full per-fold breakdown in the real output.
+**One inaccuracy in the session-52 prompt's own citation, noted for the
+record, not a SPEC/DECISIONS conflict:** the prompt describes this
+importance diagnostic as "the same diagnostic F99 reported" — F99's own
+script and output (session 50) contain no feature-importance section at
+all. The instruction to report importances was followed regardless, since
+it is unambiguous on its own terms independent of that citation.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — session51's own output files already exclude it, and this
+session's own defensive per-row scan found 0 reserved-year rows, on top of
+the guard check on all three folds before any data was loaded. Did not
+compute any pass/fail verdict anywhere — the four-variant grid is
+reported; the family call is left to review, per the session prompt. Did
+not do any per-airport feature selection — identical features at every
+airport, in every variant. Did not add `lapse_rate_t2_t850` (E1's own
+adopted feature, D52) to B — B stays the frozen 5-feature set only,
+per D52's "measurement baseline is unchanged" rule. Did not touch any
+E3+ family (pressure, radiation, precipitation). Did not pull any new
+data — reused session 51's own output files unchanged. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed. Script: `scripts/
+session52_e2_experiment.py` (new). Full real output: `notes/
+session-52-e2-experiment-output.txt`.
+
+---
