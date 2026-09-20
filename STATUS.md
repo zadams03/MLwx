@@ -3,7 +3,114 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 54._
+_Last updated: 20 September 2026, after session 55._
+
+---
+
+## Session 55 (record the E3 family verdict, D54; build and validate the
+E4 (radiation) feature set — data build only, no model fit)
+
+**Two tasks. Task 1 records the owner's E3 family verdict from review of
+session 54's own F101 grid as a new decision entry (DECISIONS D54) — no
+code, no SPEC/RESULTS edit. Task 2 builds and validates the E4 (radiation)
+feature set — `DSWRF:surface` only, resolved to a single physically
+consistent 2-hour-average feature at every airport — mirroring session
+49/51/53's own build shape, with one extra step E1–E3 did not need: a
+lead-dependent averaging window that had to be resolved to one consistent
+feature before the field could be used. No model was fit anywhere this
+session; the reserved 2024-08-01..2025-07-31 year was never loaded,
+pulled, or joined.** Full account: DECISIONS D54, F102.
+
+**Task 1 — DECISIONS D54, the E3 family verdict.**
+`pressure_tendency_3h_hpa` (the `B+T` variant) is adopted into the
+eventual combine-phase sweep baseline; the two raw pressure fields are
+NOT adopted, and — unlike E1 and E2 — nothing from this family is parked
+as a combine-phase candidate either. E3's raw fields never cleared the
+"real, fold-robust standalone signal" bar E1/E2's parked candidates
+cleared: `B+v` is flat-to-negative grand-overall and `B+Tv` does not beat
+`B+T` at all, and the one bright spot (RNO's `B+Tv` +2.2%) rests mainly on
+the least-trusted (2025-26) fold, read as fold-noise rather than a durable
+effect. E3 is the weakest family so far (+0.9% max, vs E1 +2.0%, E2
++4.1%) — a small adopted contribution, recorded honestly as such.
+
+**Task 2 — the E4 (radiation) feature build.** Script:
+`scripts/session55_radiation_pull.py` (new). Full real output: `notes/
+session-55-radiation-output.txt`. Outputs: `data/processed/
+session55_v16_window_with_radiation.csv` (6,128 rows), `data/processed/
+session55_sealed_window_with_radiation.csv` (1,826 rows), `data/processed/
+session55_radiation_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session55/session55_pull_manifest.csv` (9,542 rows), `data/raw/diagnostics/
+session55/session55_window_resolution.csv` (12 rows).
+
+**Step 0's own window-resolution decision, checked directly rather than
+reused from F97 (whose own 2025-06-15 sample now falls inside the
+reserved year, D51).** Every idx line matching `DSWRF:surface` was
+enumerated (not just the first) at every forecast-hour file this session
+needs (f022, f024, f026), at the v16 floor and a fresh recent date
+(2024-06-15) outside both the sealed and reserved years. **No
+instantaneous DSWRF:surface variant exists anywhere checked — only the
+"ave fcst" step, always exactly one line per file.** So the feature is
+de-accumulated to a common 2-hour window ending at each airport's own
+target hour: YSDU/RNO's native "24-26 hour ave fcst" (lead 26) already IS
+that 2h window, used directly; EGLC/LFPG/DSM's native "18-24 hour ave
+fcst" (lead 24, 6h) is de-accumulated against a second message at lead-2
+("18-22 hour ave fcst", 4h, same 18h reset mark, confirmed by direct
+`eccodes` `startStep`/`endStep` decode) via energy subtraction. Both raw
+endpoints are kept as their own columns for transparency (E3's own
+`pressure_msl_lead_minus3_hpa` convention). No per-airport statistical
+standardisation was used — the achieved consistency is physical, not
+cosmetic. One minor, verdict-irrelevant cosmetic bug was found and
+reported (not fixed mid-run): Step 0's own printed summary mis-describes
+the intermediate f022 file as itself needing further de-accumulation
+against a nonexistent file — a console-narration artifact only; the
+actual pull/join code is unaffected and correct (confirmed by the exact
+message counts below).
+
+**Pull, join, validate: complete, zero failures, zero drops, zero
+blanks.** 6,361 distinct (run_date, cycle, lead) combos (3,181 needing
+de-accumulation, 2 messages each; 3,180 already-native-2h, 1 message
+each) -> 9,542 message fetches, **0 FAIL rows**, 40.7 minutes at 48-way
+concurrency. Join drops: 0 at every airport, both spans (row counts match
+the existing 5-feature dataset exactly). `dswrf_2h_wm2` is null-free
+everywhere (n=7,952 total rows), all values non-negative, means ranging
+427-719 W/m2 across the five airports.
+
+**A real, plainly reportable premise error in the session prompt itself —
+flagged, not silently resolved (CLAUDE.md: stop and flag a
+session-prompt/SPEC disagreement).** The session prompt expected YSDU
+(02:00 UTC) to read as NIGHT and RNO (20:00 UTC) as "near/after sunset"
+— both wrong. YSDU (683.62 W/m2 mean) and RNO (719.36 W/m2 mean) are the
+HIGHEST of all five airports, not the lowest. This is not a data defect:
+SPEC 4.1's own design principle is that every airport's target hour is
+chosen to fall at LOCAL STANDARD NOON, in daylight, precisely to avoid
+dawn/dusk swings — Dubbo's 02:00 UTC (D37) and Reno's 20:00 UTC (D42) are
+each local standard noon at their own UTC offset, not night or dusk. No
+airport in this project is a low-sun airport by design; the measured data
+sides with SPEC/DECISIONS, not the session prompt's mistaken premise. The
+pull and the resolved feature itself are unaffected and correct.
+
+**Open-Meteo cross-check on `shortwave_radiation`: a real, larger gap than
+temperature/pressure showed, at every airport, exactly as anticipated.**
+Mean|diff| 39.44-50.16 W/m2 across all five airports, consistently
+negative (this session's own 2h-window value runs 13.5-31.8 W/m2 below
+Open-Meteo's own value) — a materially larger gap than the sub-0.5-unit
+gaps temperature/pressure showed, consistent with Open-Meteo likely using
+a different averaging convention. Reported, not chased, per the session
+prompt.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV. Did not read, load, or join a single row
+of the reserved 2024-08-01..2025-07-31 confirmation year (D51). Did not
+pull any radiation field beyond `DSWRF:surface`, or any precipitation
+(E5) field. Did not use per-airport statistical standardisation. Did not
+do any per-airport feature selection. Did not modify `SPEC.md` or
+`RESULTS.md`. Nothing was committed.
+
+**Archive step this session:** none — D54 and F102 are both brand new and
+live (D54 is provisional pending the finish-line reserved-year check; F102
+is its own build finding and stays live with it); D51/D52/D53/F96-F101 all
+remain live inputs to a still-open feature-selection programme; nothing
+else in `DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -1516,7 +1623,24 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 54 (this file's own latest entry, above) ran the staged E3
+**Session 55 (this file's own latest entry, above) recorded the E3 family
+verdict (DECISIONS D54) and built the E4 (radiation) feature set — data
+build only.** `pressure_tendency_3h_hpa` is adopted into the eventual
+combine-phase sweep baseline; the two raw pressure fields are not, and —
+unlike E1 and E2 — nothing from this family is parked as a combine-phase
+candidate either (E3's raw fields never showed the fold-robust standalone
+signal E1's RNO levels or E2's relative humidity showed). E4's own build
+(`DSWRF:surface` only, resolved to a single 2-hour-average feature at
+every airport via de-accumulation, since no instantaneous variant exists)
+is complete and validated: 0 pull failures across 9,542 messages, 0 join
+drops, 0 blanks, all values non-negative. A real premise error in the
+session prompt itself was found and flagged: YSDU and RNO were expected to
+read as low-sun/night airports but instead post the HIGHEST shortwave
+means of all five, because both airports' target hours are, by SPEC 4.1's
+own design, local standard noon — not night or dusk (D37, D42). No model
+was fit; the reserved 2024-25 year was never touched.
+
+**Session 54, the session before, ran the staged E3
 (pressure/synoptic) experiment — a reading, not a verdict (DECISIONS
 F101).** Four feature variants (B, B+T, B+Tv, B+v) were fit on the three
 non-reserved `EXPERIMENT_FOLDS` (D51) at all five airports, mirroring
@@ -1537,7 +1661,7 @@ in the most recent (2025-26) fold specifically — flagged as fold-quality,
 consistent with F96/D52/D53. No pass/fail verdict was computed; the E3
 family call is for review next session.
 
-**Session 53, the session before, recorded the E2 family
+**Session 53, the session before that, recorded the E2 family
 verdict (DECISIONS D53) and built the E3 (pressure/synoptic) feature set —
 data build only.** `dewpoint_depression_t2m_floored` is adopted into the
 eventual combine-phase sweep baseline; the three raw moisture fields are
@@ -2188,52 +2312,76 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   every variant — reported as fold-quality, not family weakness. No
   pass/fail verdict computed — the family call is for review. Reserved
   year never touched. Nothing was committed.
+- **Session 55: recorded the E3 family verdict (DECISIONS D54) and built
+  the E4 (radiation) feature set — data build only.**
+  `pressure_tendency_3h_hpa` adopted into the eventual combine-phase sweep
+  baseline; the raw pressure fields are not, and nothing from this family
+  is parked either (unlike E1/E2). The E4 build (`DSWRF:surface`,
+  de-accumulated to a common 2-hour window at every airport since no
+  instantaneous variant exists) pulled cleanly (0 of 9,542 messages
+  failed, 0 join drops, 0 blanks). A session-prompt premise error was
+  found and flagged: YSDU and RNO were expected to read low/night but
+  instead post the highest shortwave means of the five airports, since
+  both target hours are local standard noon by SPEC 4.1's own design, not
+  night or dusk. No model fit. Reserved year never touched. Nothing was
+  committed.
 
 ## Next
 
-**Next planning session: session 55 — the owner records the E3 family
-verdict (DECISIONS D54, from review of session 54's own F101 grid), then
-the session builds and validates the E4 (radiation) feature set.** E4's
-own known awkwardness (F97): the averaging window is lead-dependent — a
-genuine 6-hour average at EGLC/LFPG/DSM (lead 24) but only a 2-hour
-average at YSDU/RNO (lead 26) — and must be normalised to a same-meaning
-feature across airports before it can be used as a model input; that
-normalisation choice is session 55's own job, not decided here.
+**Next planning session: session 56 — the staged E4 (radiation) experiment.**
+Four variants — `B`, `B+R`, `B+Rv`, `B+v` (using `R` for the resolved
+radiation feature `dswrf_2h_wm2`) — fit on the three `EXPERIMENT_FOLDS`
+(D51), mirroring session 50/52/54's own E1/E2/E3 experiment shape exactly.
+**E4's expected payoff is genuinely uncertain, unlike E1-E3 at the point
+they were run**: cloud cover is already in the frozen baseline B and
+proxies much of shortwave (F97) — DSWRF and cloud cover are two views of
+much the same physical signal (how much sun reaches the ground). So
+session 56's experiment is specifically a test of whether radiation adds
+anything BEYOND what cloud cover already captures, not a test of whether
+sunshine matters at all. Full feature data: `data/processed/
+session55_v16_window_with_radiation.csv` and `data/processed/
+session55_sealed_window_with_radiation.csv`.
 
-**The E3 (pressure/synoptic) experiment is now run (DECISIONS F101, this
-file's own latest entry, above) — a reading, not a verdict.** Four
-variants (`B`, `B+T`, `B+Tv`, `B+v`) were fit on the three non-reserved
-`EXPERIMENT_FOLDS` at all five airports; both sanity checks (the tendency
-arithmetic, checked on every one of 7,952 rows; the reserved-year guard,
-on every fold) PASS. Headline: `pressure_tendency_3h_hpa` alone (B+T) is
-the family's own best variant grand-overall (+0.9%) — unlike E1 (F99) and
-E2 (F100), where adding the raw fields on top of the derived feature never
-hurt, here it does (B+Tv, +0.7%); the raw fields alone are flat (B+v,
--0.0%). This is by far the smallest maximum grand-overall skill of the
-three families explored so far (E1 +2.0%, E2 +4.1%, E3 +0.9%). DSM is the
-one airport, uniquely across all three families, where the raw-plus-
-derived combination underperforms the derived feature alone. RNO shows no
-below-ground-style anomaly — PRMSL is sea-level-normalised, unlike the
-upper-air family's extrapolation issue (F98/F99) — and instead posts the
-family's single strongest fold-averaged result (B+Tv +2.2%). The whole
-family reverses to negative, across every added-feature variant, in the
-most recent (2025-26) fold specifically — reported as fold-quality per
-F96/D52/D53's own established pattern, not family weakness. No pass/fail
-verdict was computed; the family call (adopt the tendency, add the raw
-fields too, or neither) is for review, session 55.
+**The E3 (pressure/synoptic) family verdict is now recorded (DECISIONS
+D54, this file's own latest entry, above): `pressure_tendency_3h_hpa` is
+adopted into the eventual combine-phase sweep baseline; the two raw
+pressure fields are not, and — unlike E1 and E2 — nothing from this
+family is parked as a combine-phase candidate either.** E3's raw fields
+never cleared the "real, fold-robust standalone signal" bar E1's RNO
+raw-levels or E2's relative humidity cleared — the one bright spot (RNO's
+`B+Tv` +2.2%) rests mainly on the least-trusted 2025-26 fold, read as
+fold-noise. E3 is the weakest family so far (+0.9% max grand-overall skill,
+vs E1's +2.0% and E2's +4.1%).
 
-**If E3 is adopted into the combine-phase sweep baseline, the E4
-(radiation) build follows in the same session, per the session-54 prompt's
-own instruction.** F97's own availability map leaves radiation and
-precipitation as the two remaining candidate families (moisture, upper-air
-and pressure are now all closed out — E1, E2, E3) — both flagged
-"available but awkward" for the same lead-dependent-window reason.
+**The E4 (radiation) feature build is also done, this session's own Task
+2, with an extra step E1-E3 did not need.** F97 found `DSWRF:surface` is a
+time-averaged field whose window length is a byproduct of each airport's
+own forecast lead (6h at EGLC/LFPG/DSM, 2h at YSDU/RNO) — a raw feature
+built from it would mean a different physical thing at different
+airports. This session confirmed directly (fresh idx checks, not reused
+from F97, since F97's own recent sample date is now inside the reserved
+year) that no instantaneous DSWRF variant exists, then de-accumulated to a
+common, physically real 2-hour window ending at each airport's own target
+hour — native already at YSDU/RNO, recovered by energy subtraction
+(`ave(18-24h)*6 - ave(18-22h)*4`, divided by 2) at EGLC/LFPG/DSM. Pulled
+cleanly: 0 of 9,542 messages failed, 0 join drops, 0 blanks, at all five
+airports, both spans.
+
+**A session-prompt premise error was found and flagged, not silently
+resolved (DECISIONS F102).** The session prompt expected YSDU (02:00 UTC)
+to read as night and RNO (20:00 UTC) as near-sunset — instead both post
+the HIGHEST shortwave means of the five airports (683.62 and 719.36 W/m2
+respectively), because SPEC 4.1's own design principle puts every
+airport's target hour at LOCAL STANDARD NOON, in daylight, specifically to
+avoid dawn/dusk swings (D37, D42). No airport in this project is a
+low-sun airport by design; this is worth remembering if a future session
+prompt makes a similar assumption about any airport's target hour.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 54's own experiment, session 55's own verdict or E4 build, or any
-session before the finish line.
+session 55's own build, session 56's own experiment, or any session
+before the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,

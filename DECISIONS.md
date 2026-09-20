@@ -1768,3 +1768,233 @@ session 53's own output files unchanged. Did not modify `SPEC.md` or
 session-54-e3-experiment-output.txt`.
 
 ---
+
+## 2026-09-20 — Session 55 decision: the E3 (pressure/synoptic) family
+verdict, from the owner's review of F101
+
+**D54. Verdict: E3's adopted contribution to the eventual combine-phase
+sweep baseline is the single derived feature `pressure_tendency_3h_hpa`
+(the `B+T` variant). The two raw pressure fields — `pressure_msl_hpa` and
+`pressure_surface_hpa` — are NOT adopted into the sweep, and — unlike E1
+and E2 — nothing from this family is parked as a combine-phase candidate
+either.**
+
+**Why nothing is parked (the point that distinguishes E3 from E1/E2).**
+E1 parked RNO's raw pressure LEVELS and E2 parked relative humidity
+because each showed a real, fold-ROBUST standalone signal at some airport,
+just not one general enough to adopt. E3's raw fields do not clear that
+bar: `B+v` (raw fields alone) is flat-to-negative grand-overall (-0.0%)
+and negative at three of five airports (F101), and `B+Tv` does not beat
+`B+T` grand-overall (+0.7% vs +0.9%) — the first family in the programme
+where adding the raw fields on top of the derived feature does not help at
+all. The one bright spot — RNO's `B+Tv` at +2.2% fold-averaged — rests
+mainly on the 2025-26 fold, which F101 reports went negative for the WHOLE
+pressure family across every airport and variant, and which F96/D52/D53
+already flag as the least representative of the three folds. A signal
+whose only support sits inside the least-trusted fold is read as
+fold-noise, not a durable Reno effect worth carrying forward — the
+opposite of E1's RNO raw-levels signal, which was positive in all three
+folds. So the raw pressure fields are dropped, not parked.
+
+**Rationale for the adoption itself, kept plain.** `pressure_tendency_3h_
+hpa` is the family's own best variant grand-overall (+0.9%, F101), and it
+is a single derived feature — consistent with the programme's "lead with
+the derived form" principle (the same shape as D52's lapse rate and D53's
+dew-point depression). E3 is the weakest family so far (+0.9% max, vs E1
++2.0%, E2 +4.1%), so this is a small adopted contribution — recorded
+honestly as such, not inflated.
+
+**This is provisional.** Like every family in the sweep, `pressure_
+tendency_3h_hpa` is confirmed only when the single final feature set is
+checked on the reserved year once, at the finish line (D51) — not now.
+
+**Measurement baseline is unchanged.** E4 and every later family in the
+sweep are measured against the frozen 5-feature baseline B, **not** against
+`B+T` or any other adopted feature. Adopted features enter only at the
+combine phase. Cites F101.
+
+**What this decision did not do.** Did not touch `SPEC.md` or `RESULTS.md`.
+Did not fit any model or compute any new figure. Did not touch the
+reserved 2024-08-01..2025-07-31 confirmation year.
+
+---
+
+## 2026-09-20 — Session 55 finding: E4 (radiation) feature set built and
+validated — a data build, no model fit, reserved year untouched
+
+**F102. Pulls, decodes, joins, and RESOLVES the E4 radiation feature
+(`DSWRF:surface`, downward shortwave at the surface) onto the existing
+5-feature GRIB dataset, at every date that dataset already carries OUTSIDE
+the reserved 2024-25 confirmation year (D51). Data-build-only, per the
+session prompt: no model was fit, no MAE or CV was computed, and
+2024-08-01..2025-07-31 was never loaded, pulled, or joined. DSWRF:surface
+only — not the full eight-field radiation set F97 catalogued.** Script:
+`scripts/session55_radiation_pull.py` (new). Full real output: `notes/
+session-55-radiation-output.txt`. Outputs: `data/processed/
+session55_v16_window_with_radiation.csv` (6,128 rows), `data/processed/
+session55_sealed_window_with_radiation.csv` (1,826 rows), `data/processed/
+session55_radiation_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session55/session55_pull_manifest.csv` (9,542 rows), `data/raw/diagnostics/
+session55/session55_window_resolution.csv` (12 rows).
+
+**Step 0 — the window-resolution problem, unique to this family, resolved
+before any bulk pull.** F97 found DSWRF:surface carries only a
+time-AVERAGED "ave fcst" GRIB field, whose window LENGTH is a byproduct of
+each airport's own forecast lead (6h at the lead-24 airports EGLC/LFPG/DSM,
+2h at the lead-26 airports YSDU/RNO) — a raw feature built from it would
+mean a different physical thing at different airports. This session
+checked, directly and freshly (not reusing F97's own idx files, since one
+of F97's two sample dates, 2025-06-15, now falls inside the reserved year
+established by D51 one session after F97 ran — the same wrinkle session
+49 already noted for its own spot-check): does an INSTANTANEOUS
+`DSWRF:surface` variant exist alongside the averaged one, the way F97
+found for the cloud-layer fields (LCDC/MCDC/HCDC)? Checked by enumerating
+EVERY idx line matching `DSWRF:surface` (not just the first) at every
+distinct forecast-hour file this session needs — f024, f026 (each
+combo's own standard lead) and f022 (the candidate de-accumulation
+endpoint for the lead-24 airports) — at two sample dates, the v16 floor
+(2021-03-24) and a recent date outside both the sealed year and the
+reserved year (2024-06-15, since F97's own 2025-06-15 sample is now
+reserved). **Result: NO instantaneous variant exists anywhere checked —
+exactly one `DSWRF:surface` line per idx file, always an "ave fcst" step,
+at all 6 files, both dates.** Real decoded values (`eccodes` `startStep`/
+`endStep`, not just the idx label text) confirmed the exact window bounds
+at every file: f024 = 18-24h (6h), f022 = 18-22h (4h), f026 = 24-26h (2h) —
+all sharing the same 18h/24h reset marks, at both dates.
+
+**Decision: de-accumulate to a common 2-hour window ending at each
+airport's own target hour (session prompt Step 0, item 2).**
+- **YSDU, RNO (lead 26):** the native "24-26 hour ave fcst" message IS
+  ALREADY the 2-hour window ending at the target hour — used directly, no
+  de-accumulation, no second message fetched.
+- **EGLC, LFPG, DSM (lead 24):** the native message is a 6-hour average
+  ("18-24 hour ave fcst"). A second message at forecast hour 22 carries
+  "18-22 hour ave fcst" (4h), the same 18h reset window one GFS
+  output-hour earlier, confirmed present and correctly timed by direct
+  byte-range fetch and decode (Step 0) before the bulk pull. The trailing
+  2-hour average is recovered by energy subtraction: `energy(22h..24h) =
+  ave(18h..24h)*6 - ave(18h..22h)*4`, `dswrf_2h_wm2 = energy(22h..24h)/2`.
+  Both raw endpoints are kept as their own columns
+  (`dswrf_ave_to_lead_wm2`, `dswrf_ave_to_lead_minus2_wm2`) for
+  transparency, mirroring E3's own `pressure_msl_lead_minus3_hpa`
+  convention. No per-airport statistical standardisation was used
+  anywhere — the consistency achieved is physical (an identical, real
+  2-hour window, ending at the target hour, at every airport), not
+  cosmetic (session prompt Step 0, item 3).
+
+Units: GRIB decodes DSWRF directly in W m**-2 (confirmed by direct
+decode) — no unit conversion needed, unlike pressure's Pa->hPa (E3).
+
+**One minor, verdict-irrelevant reporting artifact, noted plainly.** Step
+0's own printed decision summary (a console-narration loop over every
+forecast-hour file it happened to check, including the intermediate f022
+file) mis-describes f022 itself as needing a further de-accumulation
+against a nonexistent "f020" file. This is a cosmetic bug in the summary
+text only — the actual pull/join code (`build_combos`, `process_combo`,
+`build_joined`) computes whether an airport needs de-accumulation solely
+from that airport's OWN final standard lead (24 or 26), never treats f022
+as a top-level combo of its own, and correctly fetched exactly 1 or 2
+messages per airport-date throughout (confirmed exactly by the message
+counts below). No computed value is affected; reported for the record
+rather than silently left unremarked, the same discipline earlier
+sessions applied to their own minor found issues (e.g. F92/F93).
+
+**Guard check (Step 1) — PASS.** The date list was built from the
+existing 5-feature dataset's own real rows: train span
+2021-03-24..2024-07-31 (1,226 dates), sealed span 2025-08-01..2026-07-31
+(365 dates) — identical to E1/E2/E3's own spans. `assert_reserved_year_
+excluded()` passed on both spans; a defensive per-date scan of all 1,591
+dates found 0 reserved-year dates before any pull request was made.
+
+**Pull (Step 2) — complete, zero failures.** 6,361 distinct (run_date,
+cycle, lead) combos (3,181 needing de-accumulation, 2 messages each;
+3,180 already-native-2h, 1 message each) -> 9,542 total message fetches
+(+9,542 idx fetches, one per message) — **0 FAIL rows** in the manifest,
+40.7 minutes at 48-way concurrency. Per-field: `dswrf_to_lead`
+requested=7,952 decoded_ok=7,952 failed=0; `dswrf_to_lead_minus2`
+requested=4,772 decoded_ok=4,772 failed=0 (4,772 = the exact row count of
+the three de-accumulating airports, EGLC+LFPG+DSM, both spans combined).
+No raw GRIB2 bytes were kept on disk — fetch-decode-discard, the same
+pattern E1/E2/E3 used. Free disk space: 10.65 GiB before, 10.39 GiB after
+— the modest drop is scratch-file churn during the pull (E3's own pull,
+needing two idx fetches per combo, showed a similar-sized drop), not a
+retained cache.
+
+**Join + derive (Step 3) — exact, zero drops, at every airport.** Row
+counts before and after the join match exactly at all five airports, both
+spans (v16_window: EGLC/LFPG 1,226, DSM/YSDU/RNO 1,225; sealed_window: all
+five 365) — `session55_radiation_join_drops.csv` is empty.
+
+**Validate (Step 4) — 0 nulls; all values non-negative; one real, plainly
+reportable premise error in the session prompt itself, not a data
+defect.** `dswrf_2h_wm2` is null-free at every airport, both spans
+(n=1,591 EGLC/LFPG, n=1,590 DSM/YSDU/RNO). Min/mean/max, all W m**-2, no
+negative values anywhere:
+
+```
+station  min     mean     max
+EGLC      4.10   427.36   888.47
+LFPG      3.53   464.67   910.32
+DSM       8.34   567.08   964.46
+YSDU     11.94   683.62  1106.46
+RNO      40.73   719.36  1031.10
+```
+
+**The session prompt asked this step to check whether YSDU and RNO "read
+appropriately low" as low-sun airports — they do not, and the reason is
+that the premise itself is wrong, flagged here rather than silently
+resolved (CLAUDE.md: stop and flag a session-prompt/SPEC disagreement).**
+The session prompt states YSDU's 02:00 UTC target hour is NIGHT and RNO's
+20:00 UTC is "near/after sunset for much of the year," expecting
+near-zero shortwave there as a correctness check. The measured means
+directly contradict this: YSDU (683.62 W/m2) and RNO (719.36 W/m2) are the
+HIGHEST of all five airports, not the lowest — broad daylight, not night
+or dusk. This is not a pipeline defect: SPEC 4.1's own foundational design
+principle is that EVERY airport's target hour is deliberately chosen to
+fall at that airport's own local STANDARD NOON, specifically so it sits in
+daylight and avoids the dawn/dusk swings a lower-sun hour would bring.
+Dubbo's 02:00 UTC target hour was established as local standard noon
+(UTC+10 standard time) in DECISIONS D37; Reno's 20:00 UTC was established
+as local standard noon (UTC-8 standard time) in DECISIONS D42 — both
+checked against the timezone database at the time, not assumed. So the
+session prompt's own "night"/"near-sunset" framing for these two airports
+contradicts SPEC 4.1 and D37/D42 directly, and the real, measured data
+sides with SPEC and DECISIONS, not with the session prompt's premise. No
+airport in this project is a low-sun airport by design — that is
+precisely SPEC 4.1's point. The pull, the join, and `dswrf_2h_wm2` itself
+are unaffected and correct; only the session prompt's own expectation
+about which airports should read low was mistaken.
+
+**Open-Meteo cross-check on `shortwave_radiation`, non-reserved overlap
+only: a real, larger gap than the temperature/pressure cross-checks
+showed, at every airport, exactly as anticipated — reported, not
+chased.** Compared over 2024-01-19..2024-07-31 (pre-reservation) and
+2025-08-01..2026-07-31 (the sealed span), the same two non-reserved
+windows E2/E3's own cross-checks used. Mean|diff| ranges 39.44-50.16 W/m2
+across all five airports (EGLC 39.72, LFPG 41.09, DSM 50.16, YSDU 50.15,
+RNO 39.44), with a consistently NEGATIVE mean signed difference at every
+airport (-13.50 to -31.82 W/m2 — this session's own resolved 2h-window
+value runs below Open-Meteo's own `shortwave_radiation` throughout). This
+is a materially larger gap than the temperature (<=0.062 degC, F89/F90),
+pressure (0.044-0.421 hPa at four airports, session 53's own build — not
+separately given its own DECISIONS finding number) or moisture
+cross-checks showed, consistent with the session prompt's own expectation
+that Open-Meteo's own shortwave averaging convention likely differs from
+this session's own resolved 2-hour window — a real, expected reason for a
+larger gap, reported here rather than investigated further this session.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV. Did not read, load, join, or score a
+single row of the reserved 2024-08-01..2025-07-31 confirmation year (D51)
+— enforced by the shared guard function plus a defensive per-date scan
+(0 hits) before any pull request was made. Did not pull any radiation
+field beyond `DSWRF:surface`, or any E5/precipitation field. Did not use
+per-airport statistical standardisation to paper over the window
+mismatch — the resolved feature is a physically identical 2-hour window
+at every airport. Did not do any per-airport feature selection —
+identical handling at all five airports throughout. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed. Script:
+`scripts/session55_radiation_pull.py` (new). Full real output: `notes/
+session-55-radiation-output.txt`.
+
+---
