@@ -3,7 +3,119 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 50._
+_Last updated: 20 September 2026, after session 51._
+
+---
+
+## Session 51 (record the E1 family verdict; build and validate the E2
+moisture feature set — data build only, no modeling)
+
+**Two tasks. Task 1 records the owner's E1 family verdict from review of
+session 50's F99 grid as a new decision entry (DECISIONS D52) — no code, no
+SPEC/RESULTS edit. Task 2/3 build and validate the E2 (moisture) feature
+set — RH, DPT and SPFH at 2 m, plus a derived dew-point-depression feature
+— mirroring session 49/F98's build-then-experiment shape exactly. No model
+was fit anywhere this session; the reserved 2024-08-01..2025-07-31 year was
+never loaded, pulled, or joined.**
+
+**Task 1 — DECISIONS D52, the E1 family verdict.** `lapse_rate_t2_t850`
+(the `B+L` variant) is adopted into the eventual combine-phase sweep
+baseline; the three raw pressure-level temperatures (`t850`/`t925`/`t700`)
+are NOT adopted into the sweep, on parsimony grounds (`B+L` captures +1.9%
+of the +2.0% maximum grand-overall skill, F99, on one feature instead of
+four). RNO's own real, fold-robust raw-level skill increment (`B+v` +1.4%/
++2.0%/+2.7% across the three folds, F99) is parked as an explicit
+combine-phase candidate, not carried into the sweep now — RNO is already
+carried to about +11% skill by cloud/wind in the frozen baseline (F94,
+F96), and the DSM case for the raw levels rests on a single fold (2025-26,
+the year F96 flagged unrepresentative). This is provisional, like every
+family in the sweep: confirmed only when the single final feature set is
+checked on the reserved year once, at the finish line (D51). E2 and every
+later family are measured against the frozen baseline B, not against
+`B+L` — `B+L` enters only at the combine phase.
+
+**Task 2/3 — the E2 (moisture) feature build, mirroring session 49/F98
+exactly.** Pulled `relative_humidity_2m` (RH), `dew_point_2m` (DPT) and
+`specific_humidity_2m` (SPFH), all at 2 m, for every date the existing
+5-feature GRIB dataset carries outside the reserved 2024-25 year, and
+derived `dewpoint_depression_t2m = t2m_raw - dew_point_2m` on the raw
+(grid-elevation) basis, per the session prompt's own design decision.
+Script: `scripts/session51_moisture_pull.py` (new). Full real output:
+`notes/session-51-moisture-output.txt`. Outputs: `data/processed/
+session51_v16_window_with_moisture.csv` (6,128 rows incl. header),
+`data/processed/session51_sealed_window_with_moisture.csv` (1,826 rows
+incl. header), `data/processed/session51_moisture_join_drops.csv` (0
+rows), `data/raw/diagnostics/session51/session51_pull_manifest.csv`
+(19,083 rows).
+
+**Three design decisions confirmed and printed before any pull ran.** (1)
+The depression uses `t2m_raw` (recovered algebraically from
+`temperature_grib_c` and each airport's own D48.3/F90 correction constant,
+no new 2 m-temperature pull), not the elevation-corrected
+`temperature_grib_c` — a same-basis-difference requirement, not a style
+choice. (2) No elevation/lapse-rate correction applied to RH, DPT or SPFH
+— bilinear horizontal interpolation only, the same convention cloud
+cover/wind speed (F91) and the upper-air levels (F98) already use. (3) No
+raw GRIB2 bytes kept on disk (disk-space-forced, ~11.3 GiB free at session
+start) — fetch-decode-discard, a per-request manifest standing in as the
+provenance record, same pattern as F98.
+
+**Pull and join: complete, zero failures, zero drops, zero blanks.**
+6,361 distinct (run_date, cycle, lead) combos, 19,083 message fetches
+(3 fields x 6,361), **0 FAIL rows** in the manifest, 63.4 minutes at
+48-way concurrency. Join drops: 0 at every airport, both spans (row counts
+match the existing 5-feature dataset exactly). Every one of the five new
+columns is null-free at every airport, both spans (n=7,952 total rows).
+Free disk space essentially unchanged after the pull (11.30 to 11.28 GiB),
+confirming no bytes leaked past the decode-then-discard step.
+
+**Validation: one real, isolated, verdict-irrelevant physical-sanity
+finding; otherwise clean.** `dew_point_2m <= t2m_raw` holds at 7,951 of
+7,952 rows; the single exception (DSM, 2024-01-26: dew_point_2m 1.113 vs
+t2m_raw 1.110, RH reported exactly 100.0%) is a 0.003 degC crossing at the
+saturation boundary, not a systematic basis or decode error — dew point
+and 2 m temperature/RH are independently bilinear-interpolated fields, and
+a thousandth-of-a-degree divergence at RH=100% is ordinary
+interpolation/rounding noise, reported rather than clipped or dropped, per
+instruction. `relative_humidity_2m` in [0, 100] and `specific_humidity_2m`
+>= 0 hold at every one of the 7,952 rows, no exception. The Magnus
+internal-consistency self-check (recomputing RH from `t2m_raw` and
+`dew_point_2m`) agrees closely everywhere (mean|diff| 0.124-0.359 pct);
+DSM's own max|diff| (17.4 pct) is a single-row artifact of the same
+near-saturation boundary case above, where the Magnus relation's
+exponential is most sensitive to small input differences — not a
+systematic DSM issue.
+
+**Cross-check against Open-Meteo (the non-reserved portion of the overlap
+only): agreement is close at four airports, real and larger but still
+modest at RNO.** A new small Open-Meteo pull (dew_point_2m,
+relative_humidity_2m, Previous Runs API, `_previous_day1`) covered exactly
+the two non-reserved windows — 2024-01-19..2024-07-31 (before the
+reservation starts) and 2025-08-01..2026-07-31 (the sealed span, entirely
+after it ends) — saved under `data/raw/diagnostics/session51/` with
+`.meta.txt` provenance per file. Dew point mean|diff| ranges 0.153-0.208
+degC at EGLC/LFPG/DSM/YSDU, 0.809 degC at RNO (max 2.406 degC); RH
+mean|diff| ranges 0.460-0.885 pct at the same four, 1.969 pct at RNO (max
+13.1 pct). RNO's larger gap is consistent with its own already-known
+grid/elevation complications (D48.3/F90's own largest elevation-correction
+constant, +2.044 degC) and is reported plainly, not investigated further —
+out of this session's data-build-only scope.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV — data build and validation only. Did not
+read, load, join, or score a single row of the reserved
+2024-08-01..2025-07-31 confirmation year (D51) — enforced by the shared
+guard function plus a defensive per-date scan (0 hits) before any pull
+request was made. Did not pull moisture, pressure, radiation or
+precipitation beyond the three E2 fields named in the session prompt. Did
+not modify `SPEC.md` or `RESULTS.md`. Did not do any per-airport feature
+selection — identical fields and handling at all five airports throughout,
+including the Open-Meteo cross-check pull. Nothing was committed.
+
+**Archive step this session:** none — D52 and F99 are both brand new and
+live (D52 is provisional pending the finish-line reserved-year check; F99
+is D52's own citation basis and stays live with it); nothing else in
+`DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -1054,8 +1166,22 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 50 (this file's own latest entry, above) ran the staged E1
-upper-air experiment — a reading, not a verdict (DECISIONS F99).** Four
+**Session 51 (this file's own latest entry, above) recorded the E1 family
+verdict and built the E2 (moisture) feature set — data build only.**
+DECISIONS D52: `lapse_rate_t2_t850` is adopted into the eventual
+combine-phase sweep baseline; the raw pressure-level temperatures
+(`t850`/`t925`/`t700`) are not, though RNO's own real raw-level skill
+increment is parked as a combine-phase candidate. This is provisional
+until the reserved-year finish-line check (D51). E2's own build (RH, DPT,
+SPFH at 2 m, plus `dewpoint_depression_t2m`) is complete and validated: 0
+pull failures across 19,083 messages, 0 join drops, 0 blanks, one isolated
+saturation-boundary physical-sanity finding (DSM, single row), and a
+Magnus internal-consistency check and an Open-Meteo cross-check both
+passing at four airports with a real but modest, RNO-consistent gap at the
+fifth. No model was fit; the reserved 2024-25 year was never touched.
+
+Session 50, the session before, ran the staged E1 upper-air experiment — a
+reading, not a verdict (DECISIONS F99). Four
 feature variants (B, B+L, B+Lv, B+v) were fit on the three non-reserved
 `EXPERIMENT_FOLDS` (D51) at all five airports; both sanity checks (the
 `t2m_raw` derivation, checked on every row; the reserved-year guard, on
@@ -1596,35 +1722,53 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   carry real skill there (+2.0%, RNO's own best variant). No pass/fail
   verdict computed — the family call is for review. Reserved year never
   touched. Nothing was committed.
+- **Session 51: recorded the E1 family verdict (DECISIONS D52) and built
+  the E2 moisture feature set — data build only.** `lapse_rate_t2_t850` is
+  adopted into the eventual combine-phase sweep baseline; the raw
+  pressure-level temperatures are not, though RNO's own raw-level skill
+  increment is parked as a combine-phase candidate — provisional until the
+  reserved-year finish-line check. The E2 build (RH, DPT, SPFH at 2 m,
+  plus `dewpoint_depression_t2m`) pulled cleanly (0 of 19,083 messages
+  failed, 0 join drops, 0 blanks) and validated cleanly except one isolated
+  saturation-boundary row at DSM, reported not fixed. A Magnus
+  internal-consistency check and a new small Open-Meteo cross-check pull
+  (non-reserved overlap only) both agree closely at four airports, with a
+  real but modest, RNO-consistent gap at the fifth. No model fit. Reserved
+  year never touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 51 — open, for the owner's review.**
-Session 50 (this file's own latest entry, above) produced the four-variant
-E1 grid (DECISIONS F99) but deliberately computed no verdict — the session
-prompt's own instruction was that "the family call is made in review," not
-by the session itself. Two things are genuinely open for that review, not
-decided here:
+**Next planning session: session 52 — the E2 moisture experiment (fit the
+moisture variants against the frozen 5-feature baseline B on the three
+non-reserved `EXPERIMENT_FOLDS`, reserved year untouched), a reading not a
+verdict, with the family call made in review.**
 
-- **The E1 family verdict itself.** Does `lapse_rate_t2_t850` alone (B+L)
-  get adopted, given it captures nearly all of the grand-overall benefit
-  (+1.9%) on a single added feature? Do the raw levels (`t850`/`t925`/
-  `t700`) get added on top despite adding almost nothing at the grand
-  level (+2.0% for B+Lv over B+L's +1.9%), given they clearly do help at
-  DSM (+2.7%) and are the only variant that helps at RNO (B+v +2.0%,
-  RNO's own best, against B+L's flat +0.0% there)? Or does the family get
-  dropped as not worth the complexity for a ~2-point grand-overall gain?
-  This is exactly the kind of per-family judgment call the session prompt
-  reserved for review rather than automating.
-- **Whether E1 moves to a cumulative combine or the programme moves to E2
-  moisture next.** Session 47's own availability map (F97) confirmed
-  moisture (RH/DPT/SPFH:2m, PWAT) is available and clean, same as
-  upper-air was. Neither path is decided by this session.
+**The E1 family verdict is now decided (DECISIONS D52, this file's own
+latest entry, above), so the item that was open at the end of session 50
+is resolved.** `lapse_rate_t2_t850` is adopted into the eventual
+combine-phase sweep baseline; the raw pressure-level temperatures
+(`t850`/`t925`/`t700`) are not, with RNO's own raw-level skill increment
+parked as an explicit combine-phase candidate rather than carried into the
+sweep. This is provisional, like every family, until the reserved-year
+finish-line check (D51) — not settled for good yet.
+
+**E2's own data build is complete and validated (this session, above) —
+session 52's job is the experiment, mirroring how session 50 followed
+session 49.** The E2 feature set (RH, DPT, SPFH at 2 m, plus
+`dewpoint_depression_t2m`) is joined onto the existing 5-feature dataset
+at `data/processed/session51_v16_window_with_moisture.csv` and
+`data/processed/session51_sealed_window_with_moisture.csv`, with zero pull
+failures, zero join drops, and zero blanks. Session 52 should mirror
+session 50's own experiment shape exactly: fit variants of the moisture
+family against the frozen baseline B (not against `B+L` — D52's own
+"measurement baseline is unchanged" instruction) on the three non-reserved
+`EXPERIMENT_FOLDS` (D51), report the grid, and leave the family call for
+review, the same "a reading, not a verdict" discipline F99 used.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 50's own reading.
+session 51's own build or session 52's own experiment.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,
@@ -1674,9 +1818,15 @@ the sub-project's own scope is outstanding.
 **Disk space and repo size, still relevant for a future session.**
 Session 37's ~20 GB GRIB pull took free space from 35 GiB to 14 GiB;
 session 40's sealed-year pull added a further ~4.62 GiB (5,840 small
-files), free space now ~13 GiB. SPEC 2.3/D15 (as qualified by D47 for
-large re-fetchable sources) means both enter the repository's history once
-committed -- not decided here.
+files), free space ~13 GiB after that. Sessions 49 and 51 (E1 upper-air
+and E2 moisture) each used the fetch-decode-discard pattern instead
+(D47's "manifest, not bytes" policy taken one step further, no disposable
+local cache kept), so free space is essentially unchanged since —
+session 51 measured 11.30 GiB before its own pull and 11.28 GiB after.
+SPEC 2.3/D15 (as qualified by D47 for large re-fetchable sources) means
+the session-37/40 raw pulls enter the repository's history once
+committed; the session-49/51 pulls leave no raw bytes to commit at all,
+only their manifests -- not decided here.
 
 **Reno's own EXISTING sealed-test result (under the 3-feature/Open-Meteo
 recipe) stands exactly as reported (D44.10, D44.11, F82) -- no re-run, no

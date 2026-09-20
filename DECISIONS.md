@@ -1366,3 +1366,45 @@ session 49's own output files unchanged. Did not modify `SPEC.md` or
 session-50-e1-experiment-output.txt`.
 
 ---
+
+## 2026-09-20 — Session 51 decision: the E1 (upper-air) family verdict, from
+the owner's review of F99
+
+**D52. Verdict: E1's adopted contribution to the eventual combine-phase
+sweep baseline is the single derived feature `lapse_rate_t2_t850` (the
+`B+L` variant). The three raw pressure-level temperatures — `t850`,
+`t925`, `t700` — are NOT adopted into the sweep baseline.**
+
+**RNO's raw-level signal is parked, not dropped.** In the F99 grid the raw
+pressure levels carry a real, fold-robust skill increment at RNO
+specifically (`B+v` skill vs B was +1.4% / +2.0% / +2.7% across the three
+folds, while `B+L` was flat-to-slightly-negative there — F99's own
+fold-by-fold table). This is recorded as an explicit candidate to revisit
+in the later combine phase, where joint value and redundancy across
+families are weighed — it is not carried into the E-sweep now.
+
+**Rationale, kept plain.**
+(a) `B+L` captures +1.9% of the +2.0% maximum grand-overall skill (F99) on
+one added feature instead of four — parsimony with near-equal skill.
+(b) The only fold-robust reason to add the raw levels is RNO, and RNO is
+already carried to about +11% skill by cloud/wind in the frozen baseline
+(F94, stable across all four years in F96), so E1 need not also rescue it.
+(c) The DSM case for the raw levels is a single fold (2025-26, F99's own
+table), the year F96 flagged as unrepresentative — the weakest evidence in
+the grid. Per-fold basis: `data/processed/session50_e1_experiment_grid.csv`.
+
+**This is provisional.** Like every family in the sweep, `lapse_rate_t2_t850`
+is confirmed only when the single final feature set is checked on the
+reserved year once, at the finish line (D51) — not now.
+
+**Measurement baseline is unchanged.** E2 and every later family in the
+sweep are measured against the frozen 5-feature baseline B, **not** against
+`B+L`. `B+L` enters only at the combine phase. Cites F99.
+
+**What this decision did not do.** Did not touch `SPEC.md` or `RESULTS.md`
+— the feature-selection programme is exploratory work toward a possible
+future locked method, not yet folded into the spec. Did not fit any model
+or compute any new figure — every number above is copied from and cited to
+F99. Did not touch the reserved 2024-08-01..2025-07-31 confirmation year.
+
+---

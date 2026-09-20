@@ -1,0 +1,146 @@
+==============================================================================
+SESSION 51 Task 2/3 -- moisture (E2) feature build + validation.
+Data-build only: no model fit, no MAE, no CV. The reserved year
+(2024-08-01..2025-07-31, DECISIONS D51) is never loaded, pulled, or
+joined.
+==============================================================================
+
+Three design decisions confirmed before any pull runs (session prompt
+Task 2):
+  1. dewpoint_depression_t2m uses the RAW 2 m temperature (t2m_raw),
+     recovered algebraically as t2m_raw = temperature_grib_c -
+     correction_c (each airport's own fixed D48.3/F90 constant) --
+     NOT the elevation-corrected temperature_grib_c. No new 2 m-
+     temperature GRIB pull is needed.
+  2. NO elevation/lapse-rate correction is applied to RH, DPT or SPFH
+     anywhere in this script. SPEC 7.2's 7.429 degC/km correction is a
+     temperature-only fix for a surface grid-cell elevation mismatch;
+     it does not apply to a humidity ratio, a specific humidity, or a
+     dew point used to form a depression -- bilinear horizontal
+     interpolation only, same as cloud cover/wind speed (F91) and the
+     upper-air pressure levels (F98).
+  3. No raw GRIB2 bytes are kept on disk (disk-space-forced, as in
+     F98) -- fetch, decode with eccodes, discard; a per-request
+     manifest (no bytes) stands in as the provenance record.
+
+Free disk space BEFORE pull: 11.30 GiB
+
+Date list built from the existing 5-feature dataset, reserved year excluded:
+  train span : 2021-03-24 .. 2024-07-31  (1226 distinct dates)
+  sealed span: 2025-08-01 .. 2026-07-31  (365 distinct dates)
+
+Guard check PASSED (scripts/session48_reserved_year.py, assert_reserved_year_excluded, plus a defensive per-date scan of all 1591 dates): no reserved-year date is in the pull list.
+
+Distinct (run_date, cycle, lead) combos to fetch: 6361
+3 fields/combo -> up to 6361 idx fetches + 19083 message fetches (25444 total requests)
+  500/6361 combos  elapsed=5.0min  rate=1.66/s  eta=58.9min
+  1000/6361 combos  elapsed=10.0min  rate=1.67/s  eta=53.4min
+  1500/6361 combos  elapsed=14.7min  rate=1.71/s  eta=47.5min
+  2000/6361 combos  elapsed=19.4min  rate=1.72/s  eta=42.3min
+  2500/6361 combos  elapsed=25.0min  rate=1.67/s  eta=38.5min
+  3000/6361 combos  elapsed=29.9min  rate=1.67/s  eta=33.5min
+  3500/6361 combos  elapsed=34.8min  rate=1.67/s  eta=28.5min
+  4000/6361 combos  elapsed=39.8min  rate=1.68/s  eta=23.5min
+  4500/6361 combos  elapsed=44.7min  rate=1.68/s  eta=18.5min
+  5000/6361 combos  elapsed=49.5min  rate=1.68/s  eta=13.5min
+  5500/6361 combos  elapsed=54.6min  rate=1.68/s  eta=8.5min
+  6000/6361 combos  elapsed=59.5min  rate=1.68/s  eta=3.6min
+  6361/6361 combos  elapsed=63.4min  rate=1.67/s  eta=0.0min
+
+Pull+decode done in 63.4 min.
+
+=== Validation (a): messages requested vs. decoded, per field ===
+(counted per station-instance -- a shared combo like EGLC+LFPG counts twice)
+  relative_humidity_2m (RH:2 m above ground): requested=7952 decoded_ok=7952 failed=0
+  dew_point_2m (DPT:2 m above ground): requested=7952 decoded_ok=7952 failed=0
+  specific_humidity_2m (SPFH:2 m above ground): requested=7952 decoded_ok=7952 failed=0
+
+Wrote pull manifest (provenance record, no raw bytes kept): /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session51/session51_pull_manifest.csv (19083 rows, 0 FAIL)
+
+Free disk space AFTER pull: 11.28 GiB (before: 11.30 GiB)
+
+Elevation corrections used to recover t2m_raw (D48.3/F90, unchanged, NOT
+applied to relative_humidity_2m/dew_point_2m/specific_humidity_2m):
+  EGLC: +0.2486 degC
+  LFPG: -0.1697 degC
+  DSM: -0.1106 degC
+  YSDU: +0.2461 degC
+  RNO: +2.0436 degC
+
+=== Task 3 check 1: row counts before/after the join, per airport ===
+
+  span=v16_window -> session51_v16_window_with_moisture.csv
+    EGLC: before=1226 after=1226
+    LFPG: before=1226 after=1226
+    DSM: before=1225 after=1225
+    YSDU: before=1225 after=1225
+    RNO: before=1225 after=1225
+
+  span=sealed_window -> session51_sealed_window_with_moisture.csv
+    EGLC: before=365 after=365
+    LFPG: before=365 after=365
+    DSM: before=365 after=365
+    YSDU: before=365 after=365
+    RNO: before=365 after=365
+
+Wrote join-drop log: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session51_moisture_join_drops.csv (0 rows)
+
+=== Task 3 check 2: availability -- zero blanks across the whole v16 window, per airport ===
+  EGLC (n=1591): 0 nulls in every new column
+  LFPG (n=1591): 0 nulls in every new column
+  DSM (n=1590): 0 nulls in every new column
+  YSDU (n=1590): 0 nulls in every new column
+  RNO (n=1590): 0 nulls in every new column
+  Zero blanks across every new column, every airport, both spans.
+
+=== Task 3 check 3: physical sanity ===
+  dew_point_2m > t2m_raw (violates dew_point_2m <= t2m_raw): 1 row(s)
+    ('DSM', '2024-01-26', 1.113, 1.11)
+  relative_humidity_2m outside [0, 100]: 0 row(s)
+  specific_humidity_2m < 0: 0 row(s)
+
+=== Task 3 check 4: internal-consistency self-check -- RH recomputed from t2m_raw and dew_point_2m via the Magnus relation, vs. pulled relative_humidity_2m ===
+  EGLC (n=1591): mean|diff|=0.159 pct  max|diff|=0.732 pct  mean_diff=+0.090 pct
+  LFPG (n=1591): mean|diff|=0.124 pct  max|diff|=0.752 pct  mean_diff=+0.054 pct
+  DSM (n=1590): mean|diff|=0.359 pct  max|diff|=17.402 pct  mean_diff=-0.106 pct
+  YSDU (n=1590): mean|diff|=0.181 pct  max|diff|=1.017 pct  mean_diff=+0.148 pct
+  RNO (n=1590): mean|diff|=0.175 pct  max|diff|=1.727 pct  mean_diff=-0.003 pct
+
+=== Task 3 check 5: cross-check against Open-Meteo, non-reserved overlap only ===
+  Open-Meteo carries dew_point_2m and relative_humidity_2m from 2024-01-19 (F85). Compared only on the portion of that overlap OUTSIDE the reserved year: 2024-01-19..2024-07-31 (pre-reservation) and 2025-08-01..2026-07-31 (the sealed span, entirely after the reservation ends). specific_humidity_2m has no Open-Meteo counterpart and is checked only by checks 3 and 4 above.
+
+  -- window pre_reserved: 2024-01-19 .. 2024-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2024-01-19_2024-07-31_pre_reserved.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2024-01-19_2024-07-31_pre_reserved.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2024-01-19_2024-07-31_pre_reserved.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2024-01-19_2024-07-31_pre_reserved.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2024-01-19_2024-07-31_pre_reserved.json
+
+  -- window sealed: 2025-08-01 .. 2026-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2025-08-01_2026-07-31_sealed.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2025-08-01_2026-07-31_sealed.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2025-08-01_2026-07-31_sealed.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2025-08-01_2026-07-31_sealed.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2025-08-01_2026-07-31_sealed.json
+
+  Per-airport agreement, combined across both non-reserved windows:
+  EGLC: n_compared=560 n_no_openmeteo_value=0
+    dew_point_2m (degC, GRIB - OpenMeteo): n=560 mean|diff|=0.153 max|diff|=0.591 mean_diff=-0.132
+    relative_humidity_2m (pct, GRIB - OpenMeteo): n=560 mean|diff|=0.460 max|diff|=2.908 mean_diff=+0.305
+  LFPG: n_compared=560 n_no_openmeteo_value=0
+    dew_point_2m (degC, GRIB - OpenMeteo): n=560 mean|diff|=0.176 max|diff|=0.951 mean_diff=+0.146
+    relative_humidity_2m (pct, GRIB - OpenMeteo): n=560 mean|diff|=0.567 max|diff|=4.669 mean_diff=-0.089
+  DSM: n_compared=560 n_no_openmeteo_value=0
+    dew_point_2m (degC, GRIB - OpenMeteo): n=560 mean|diff|=0.206 max|diff|=1.425 mean_diff=+0.181
+    relative_humidity_2m (pct, GRIB - OpenMeteo): n=560 mean|diff|=0.885 max|diff|=12.166 mean_diff=+0.513
+  YSDU: n_compared=559 n_no_openmeteo_value=1
+    dew_point_2m (degC, GRIB - OpenMeteo): n=559 mean|diff|=0.208 max|diff|=1.706 mean_diff=-0.094
+    relative_humidity_2m (pct, GRIB - OpenMeteo): n=559 mean|diff|=0.740 max|diff|=6.372 mean_diff=-0.182
+  RNO: n_compared=560 n_no_openmeteo_value=0
+    dew_point_2m (degC, GRIB - OpenMeteo): n=560 mean|diff|=0.809 max|diff|=2.406 mean_diff=-0.767
+    relative_humidity_2m (pct, GRIB - OpenMeteo): n=560 mean|diff|=1.969 max|diff|=13.139 mean_diff=+1.883
+
+==============================================================================
+END. No model was fit. The reserved year (2024-08-01..2025-07-31) was
+never loaded, pulled, or referenced by any date used above.
+==============================================================================
