@@ -3,7 +3,124 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 53._
+_Last updated: 20 September 2026, after session 54._
+
+---
+
+## Session 54 (the staged E3 pressure/synoptic experiment — a reading, not
+a verdict; the reserved year was never touched)
+
+**Fits four feature variants (B, B+T, B+Tv, B+v — see DECISIONS F101) on
+the three non-reserved `EXPERIMENT_FOLDS` (D51) to read whether the
+pressure/synoptic family (session 53's own build) adds skill on top of the
+frozen 5-feature GRIB baseline. This is a LEARNING experiment: it reports
+a grid, not a pass/fail verdict — the family call is made by the owner in
+review, next session, mirroring sessions 50 and 52's own E1/E2 shape
+exactly. The reserved 2024-08-01..2025-07-31 confirmation year was never
+read, at all, this session.** Full account: DECISIONS F101. Script:
+`scripts/session54_e3_experiment.py` (new). Full real output: `notes/
+session-54-e3-experiment-output.txt`. Tables: `data/processed/
+session54_e3_experiment_grid.csv` (60 rows: 5 airports x 3 folds x 4
+variants) and `data/processed/session54_e3_experiment_summary.csv` (36
+rows: fold-averaged-per-airport, airport-averaged-per-fold, and grand
+overall).
+
+**Both sanity checks, both PASS, run before any model was fit.** (1)
+`pressure_tendency_3h_hpa == round(pressure_msl_hpa -
+pressure_msl_lead_minus3_hpa, 3)` checked on EVERY row of both session53
+output files (7,952 rows, not a spot check) — exact match everywhere (max
+abs diff 0.0) at all five airports, matching session 53's own already-
+passed check. (2) All three `EXPERIMENT_FOLDS` entries cleared
+`assert_reserved_year_excluded()` before any data was loaded, plus a
+defensive per-row scan (0 hits) confirmed no reserved-year rows in the
+loaded data.
+
+**A strong internal-consistency signal, the same check F99/F100 ran:** the
+`2025-26` fold's `B` variant (the refit 5-feature baseline) reproduces
+F94/F96/F99/F100's own raw-GFS and persistence MAE and row counts almost
+exactly at every airport (e.g. EGLC raw 1.2536 vs F94's 1.254, n=364 vs
+364; RNO raw 1.5116 vs 1.512, n=365 vs 365) — confirming this session's
+pipeline is a correct reproduction, not an independent re-implementation
+that happens to look similar.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, 15
+airport-folds each):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+T       1.273      -0.011      +0.9%
+B+Tv      1.274      -0.009      +0.7%
+B+v       1.284      +0.000      -0.0%
+```
+
+**The staged question, answered plainly.** (a) `pressure_tendency_3h_hpa`
+alone (B+T) already captures the bulk of the family's own grand-overall
+benefit — and, unlike E1 and E2, it is the family's OWN BEST variant
+(+0.9% vs B+Tv's +0.7%). (b) Adding the raw fields on top of the tendency
+(B+Tv) does not add further skill grand-overall — a small reversal of the
+"raw-on-top-of-derived never hurts" pattern both E1 (F99) and E2 (F100)
+showed. (c) The raw fields alone (B+v, -0.0%) are flat grand-overall — the
+family's clearly weakest single addition. **This is by far the smallest
+maximum grand-overall skill of the three families explored so far** (E1's
++2.0%, F99; E2's +4.1%, F100; E3's own maximum, B+T, +0.9%).
+
+**DSM, the diagnostic (F96: most headroom): the one airport where adding
+the raw fields on top of the derived feature makes things worse, not
+better.** B+T +0.7%, but B+Tv -0.3% and B+v -1.0% — DSM is the only
+airport where both raw-field variants underperform the frozen baseline
+outright, a reversal of the pattern both E1 and E2 showed for DSM
+specifically (where the raw-plus-derived variant beat the derived-alone
+variant).
+
+**RNO, pre-registered to possibly NOT show an anomaly (PRMSL is
+sea-level-normalised, unlike the below-ground upper-air extrapolation,
+F98/F99) — the prediction held, cleanly.** RNO shows the strongest
+fold-averaged result of any airport in this family: B+T +1.6%, B+Tv +2.2%
+(RNO's own best variant, and the single best airport-variant combination
+anywhere in the fold-averaged grid). RNO ran with the identical feature
+set as every other airport throughout. Unlike upper-air's below-ground
+anomaly at RNO (F98/F99), pressure/synoptic shows no RNO-specific
+degradation at all.
+
+**A real per-fold reversal, project-wide, in the most recent (2025-26)
+fold — flagged as fold-quality, not family weakness, per F96/D52/D53's own
+established pattern.** The whole family is positive in 2022-23 and mildly
+positive in 2023-24 (airport-averaged), but turns negative across all
+three variants in 2025-26 — the only one of the three E-families whose
+airport-averaged fold reading is negative for every added-feature variant
+simultaneously in the most recent fold. Driven mainly by EGLC (2025-26
+B+Tv -5.2%, the family's single worst fold-airport reading) and RNO
+(2025-26 B+T -3.1%); DSM and LFPG stay positive or flat in the same fold.
+
+**Feature importances (gain-based, per airport, averaged across the three
+folds) — B+T and B+v, per the session prompt's own instruction.**
+`pressure_tendency_3h_hpa` sits in the 14.7%-18.1% range at every airport
+in B+T — real but not dominant. In B+v, `pressure_msl_hpa` outweighs
+`pressure_surface_hpa` at four of five airports, but the two are nearly
+equal at RNO (11.8% vs 11.7%) — `pressure_surface_hpa`'s importance is
+markedly higher at RNO than anywhere else (11.7% vs 5.6-8.1% elsewhere),
+consistent with RNO's own much lower absolute surface pressure (D48.3/F90)
+making it a more separable signal there.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — enforced by session53's own output files already excluding it,
+plus this session's own defensive per-row scan (0 hits) and the guard
+check on all three folds before any data was loaded. Did not compute any
+pass/fail verdict — the four-variant grid is reported, the family call is
+left to review. Did not do any per-airport feature selection — identical
+features at every airport, in every variant, RNO included. Did not add
+`lapse_rate_t2_t850` (D52) or `dewpoint_depression_t2m_floored` (D53) to
+B — B stays the frozen 5-feature set only. Did not touch any E4/E5 family
+(radiation, precipitation). Did not re-pull or re-derive any pressure
+field — reused session 53's own output files unchanged. Did not modify
+`SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+**Archive step this session:** none — F101 is brand new and obviously
+live; D51/D52/D53/F96-F100 all remain live inputs to a still-open
+feature-selection programme; nothing else in `DECISIONS.md` became newly
+settled this session.
 
 ---
 
@@ -1399,7 +1516,28 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 53 (this file's own latest entry, above) recorded the E2 family
+**Session 54 (this file's own latest entry, above) ran the staged E3
+(pressure/synoptic) experiment — a reading, not a verdict (DECISIONS
+F101).** Four feature variants (B, B+T, B+Tv, B+v) were fit on the three
+non-reserved `EXPERIMENT_FOLDS` (D51) at all five airports, mirroring
+sessions 50/52's own E1/E2 shape exactly; both sanity checks (the tendency
+arithmetic, checked on every one of 7,952 rows; the reserved-year guard,
+on every fold) PASS; the reserved 2024-25 year was never read. Headline:
+`pressure_tendency_3h_hpa` alone (B+T) is the family's own best variant
+grand-overall (+0.9% skill vs the refit baseline) — unlike E1 and E2,
+adding the raw fields on top (B+Tv, +0.7%) does not add further skill, and
+this is by far the smallest maximum grand-overall skill of the three
+families explored so far (E1 +2.0%, E2 +4.1%). DSM is, uniquely among the
+three families, the one airport where adding the raw fields on top of the
+derived feature makes things worse rather than better. RNO shows no
+below-ground-style anomaly (PRMSL is sea-level-normalised) and instead
+posts the family's single strongest fold-averaged result (B+Tv +2.2%).
+The whole family reverses to negative, across every added-feature variant,
+in the most recent (2025-26) fold specifically — flagged as fold-quality,
+consistent with F96/D52/D53. No pass/fail verdict was computed; the E3
+family call is for review next session.
+
+**Session 53, the session before, recorded the E2 family
 verdict (DECISIONS D53) and built the E3 (pressure/synoptic) feature set —
 data build only.** `dewpoint_depression_t2m_floored` is adopted into the
 eventual combine-phase sweep baseline; the three raw moisture fields are
@@ -2032,50 +2170,70 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   Open-Meteo cross-check agrees closely at four airports with a real,
   RNO-consistent larger gap at the fifth. No model fit. Reserved year
   never touched. Nothing was committed.
+- **Session 54: ran the staged E3 (pressure/synoptic) experiment
+  (DECISIONS F101) — a reading, not a verdict.** Fit four feature variants
+  (B, B+T, B+Tv, B+v) on the three non-reserved `EXPERIMENT_FOLDS` (D51),
+  all five airports, mirroring session 50/52's own E1/E2 shape. Both
+  sanity checks passed (tendency arithmetic, checked on every row of
+  7,952; the reserved-year guard, on every fold). `pressure_tendency_3h_
+  hpa` alone (B+T) is the family's own best variant grand-overall (+0.9%),
+  unlike E1/E2 where adding raw fields on top of the derived feature never
+  hurt — here it does (B+Tv +0.7%); the raw fields alone are flat (B+v,
+  -0.0%). By far the smallest maximum grand-overall skill of the three
+  families so far. DSM is the one airport where the raw-plus-derived
+  combination underperforms the derived feature alone. RNO shows no
+  below-ground-style anomaly (PRMSL is sea-level-normalised) and instead
+  posts the family's single strongest fold-averaged result. The whole
+  family reverses to negative in the most recent (2025-26) fold across
+  every variant — reported as fold-quality, not family weakness. No
+  pass/fail verdict computed — the family call is for review. Reserved
+  year never touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 54 — run the staged E3 experiment (four
-variants — B, B+tendency, B+tendency+raw, B+raw — on the three
-non-reserved `EXPERIMENT_FOLDS`), mirroring session 50/52's own E1/E2
-experiment shape exactly.**
+**Next planning session: session 55 — the owner records the E3 family
+verdict (DECISIONS D54, from review of session 54's own F101 grid), then
+the session builds and validates the E4 (radiation) feature set.** E4's
+own known awkwardness (F97): the averaging window is lead-dependent — a
+genuine 6-hour average at EGLC/LFPG/DSM (lead 24) but only a 2-hour
+average at YSDU/RNO (lead 26) — and must be normalised to a same-meaning
+feature across airports before it can be used as a model input; that
+normalisation choice is session 55's own job, not decided here.
 
-**The E2 family verdict is now recorded (DECISIONS D53, this file's own
-latest entry, above): `dewpoint_depression_t2m_floored` is adopted into
-the eventual combine-phase sweep baseline; the three raw moisture fields
-are not, with `relative_humidity_2m` specifically parked as the strongest
-combine-phase candidate.** This mirrors D52's own E1 verdict shape exactly
-— parsimony on near-equal grand-overall skill (+4.0% of +4.1%).
+**The E3 (pressure/synoptic) experiment is now run (DECISIONS F101, this
+file's own latest entry, above) — a reading, not a verdict.** Four
+variants (`B`, `B+T`, `B+Tv`, `B+v`) were fit on the three non-reserved
+`EXPERIMENT_FOLDS` at all five airports; both sanity checks (the tendency
+arithmetic, checked on every one of 7,952 rows; the reserved-year guard,
+on every fold) PASS. Headline: `pressure_tendency_3h_hpa` alone (B+T) is
+the family's own best variant grand-overall (+0.9%) — unlike E1 (F99) and
+E2 (F100), where adding the raw fields on top of the derived feature never
+hurt, here it does (B+Tv, +0.7%); the raw fields alone are flat (B+v,
+-0.0%). This is by far the smallest maximum grand-overall skill of the
+three families explored so far (E1 +2.0%, E2 +4.1%, E3 +0.9%). DSM is the
+one airport, uniquely across all three families, where the raw-plus-
+derived combination underperforms the derived feature alone. RNO shows no
+below-ground-style anomaly — PRMSL is sea-level-normalised, unlike the
+upper-air family's extrapolation issue (F98/F99) — and instead posts the
+family's single strongest fold-averaged result (B+Tv +2.2%). The whole
+family reverses to negative, across every added-feature variant, in the
+most recent (2025-26) fold specifically — reported as fold-quality per
+F96/D52/D53's own established pattern, not family weakness. No pass/fail
+verdict was computed; the family call (adopt the tendency, add the raw
+fields too, or neither) is for review, session 55.
 
-**The E3 (pressure/synoptic) feature build is also done, this session's
-own Task 2.** `pressure_msl_hpa`, `pressure_surface_hpa`, and the derived
-`pressure_tendency_3h_hpa` (a same-run, lead-vs-lead-3 difference,
-leakage-safe per SPEC 2.1b) are built and validated at all five airports,
-both spans — 0 pull failures across 19,083 messages, 0 join drops, 0
-blanks, the tendency arithmetic checked exact on every one of 7,952 rows.
-Session 54's own job is to read whether the family adds skill on top of
-the frozen 5-feature baseline, the same reading-not-verdict shape sessions
-50 and 52 already used for E1 and E2 — four variants: `B` (the frozen
-baseline, refit on the three folds), `B+tendency` (B plus
-`pressure_tendency_3h_hpa`), `B+tendency+raw` (B+tendency plus the raw
-fields), and `B+raw` (B plus the raw fields only, without the derived
-tendency). Full feature data: `data/processed/
-session53_v16_window_with_pressure.csv` and `data/processed/
-session53_sealed_window_with_pressure.csv`.
-
-**If E3 is adopted into the combine-phase sweep baseline, the session
-after that's own job is the E4 family build** — F97's own availability map
-leaves radiation and precipitation as the two remaining candidate
-families (moisture and upper-air both now closed out, E1/E2), both
-flagged "available but awkward": a lead-dependent averaging/accumulation
-window (18-24h at EGLC/LFPG/DSM, 24-26h at YSDU/RNO) needs a deliberate
-design choice before either can become a feature — not decided here.
+**If E3 is adopted into the combine-phase sweep baseline, the E4
+(radiation) build follows in the same session, per the session-54 prompt's
+own instruction.** F97's own availability map leaves radiation and
+precipitation as the two remaining candidate families (moisture, upper-air
+and pressure are now all closed out — E1, E2, E3) — both flagged
+"available but awkward" for the same lead-dependent-window reason.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 53's own build, session 54's own experiment, or any session before
-the finish line.
+session 54's own experiment, session 55's own verdict or E4 build, or any
+session before the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,
