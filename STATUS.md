@@ -3,7 +3,203 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 56._
+_Last updated: 20 September 2026, after session 57._
+
+---
+
+## Session 57 (record the E4 (radiation) family verdict, D55; build and
+validate the E5 (precipitation) feature set — the LAST family in the
+programme)
+
+**Two tasks. Task 1 records the owner's E4 family verdict from review of
+session 56's own F103 grid as a new decision entry (DECISIONS D55) — a file
+append only, no code, no SPEC/RESULTS edit. Task 2 builds and validates the
+E5 (precipitation) feature set — `APCP:surface`'s cumulative-since-
+forecast-start accumulation, turned into one mean precipitation rate
+(mm/h) — the LAST family in the feature-selection programme. No model was
+fit anywhere this session; the reserved 2024-08-01..2025-07-31 confirmation
+year (D51) was never loaded, pulled, or joined.** Full account: DECISIONS
+D55 (Task 1, the E4 verdict, appended verbatim per the session prompt) and
+F104 (Task 2, the E5 build — added in a same-session follow-up, mirroring
+F102's own E4-build shape, once the owner asked for it explicitly; see the
+"Numbering note" near the end of this section for the full account of why
+it was not part of the session prompt's own Task 2 instructions). Script:
+`scripts/session57_precip_pull.py` (new). Full real
+output: `notes/session-57-precip-output.txt`. Outputs: `data/processed/
+session57_v16_window_with_precip.csv` (6,128 rows), `data/processed/
+session57_sealed_window_with_precip.csv` (1,826 rows), `data/processed/
+session57_precip_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session57/session57_pull_manifest.csv` (6,361 rows), `data/raw/diagnostics/
+session57/session57_window_resolution.csv` (8 rows).
+
+**Task 1 — DECISIONS D55, the E4 family verdict.** `dswrf_2h_wm2` (the
+`B+R` variant) is adopted into the eventual combine-phase sweep baseline;
+the two raw de-accumulation-endpoint columns are NOT adopted, and — as
+with E3 — nothing from this family is parked as a combine-phase candidate
+either, because those two raw columns are not a separate physical variable
+at all: they are the two accumulation-window averages `dswrf_2h_wm2` is
+itself derived from (redundant by construction), and they are unevenly
+defined (identical to the resolved feature at YSDU/RNO). The real
+raw-vs-resolved benefit seen at EGLC/LFPG is logged as an on-record
+observation for the combine phase, not a formal parked candidate. E4 is a
+mid-strength family (+1.4% adopted, +1.9% max grand-overall skill — above
+E3's +0.9%, below E1's +2.0% and E2's +4.1%).
+
+**A drafting slip made and caught within this session, reported plainly
+(CLAUDE.md's own end-of-session consistency check is what caught it).**
+The first attempt to append D55 verbatim matched its old_string against a
+generic "This is provisional..." sentence that also appears, word-for-word
+in shape, inside D54 (the E3 verdict) — so the edit landed D55's text
+*inside* D54, between D54's own "This is provisional" paragraph and its own
+closing "Measurement baseline is unchanged" / "What this decision did not
+do" paragraphs, rather than at the true end of the live file. Caught
+immediately by this session's own heading-order check (`grep -n '^## '
+DECISIONS.md`), which showed the new D55 heading sitting before the
+already-live F102/F103 headings it should follow. Fixed by removing the
+misplaced text and re-appending it, unchanged, after F103 at the true end
+of the file. Verified afterward: D54's own text is restored byte-for-byte
+(diffed against the pre-session file), no D/F number is duplicated, and
+every heading in `DECISIONS.md` now appears in session order. No entry's
+content was altered by the slip or the fix — the final file matches what
+Task 1 asked for exactly.
+
+**Task 2 — the E5 (precipitation) feature build.** Mirrors session 55's
+own E4 build shape (date-list construction, guard, fetch-decode-discard,
+join-and-validate), but takes the session prompt's own pre-decided
+ONE-MESSAGE path — no de-accumulation, unlike E4 — since `APCP:surface`
+exposes its own since-forecast-start cumulative accumulation directly at
+every lead.
+
+**Step 0 — window-handling confirmation, checked freshly (not reused from
+F97, whose own 2025-06-15 sample now falls inside the reserved year, same
+wrinkle sessions 49/55 already noted), PASS at all 4 real (cycle, lead)
+combos x 2 sample dates (v16 floor 2021-03-24, recent 2024-06-15).** Every
+idx enumerated exactly 2 `APCP:surface` lines (the short ave-window-
+matching one and the cumulative since-start one); the cumulative line was
+identified by its own step text (`0-N hour/day acc fcst`, always starting
+"0-"), decoded, and confirmed at every combo/date: `startStep=0`,
+`endStep=24` (EGLC/LFPG/DSM) or `26` (YSDU/RNO), decoded units `kg m**-2`
+(== mm, no conversion needed), and valid time exactly matching the
+airport's own target hour. This is the session prompt's own pre-decided
+choice, confirmed, not re-decided.
+
+**Guard check (Step 1) — PASS.** Date list built from the existing
+5-feature dataset's own real rows: train span 2021-03-24..2024-07-31
+(1,226 dates), sealed span 2025-08-01..2026-07-31 (365 dates), 1,591 dates
+total. `assert_reserved_year_excluded()` passed on both spans; a defensive
+per-date scan of all 1,591 dates found 0 reserved-year dates before any
+pull request was made.
+
+**Pull (Step 2) — complete, zero failures.** 6,361 distinct (run_date,
+cycle, lead) combos, ONE APCP message each (no de-accumulation) -> 6,361
+message fetches (+6,361 idx fetches) — **0 FAIL rows**, 12.8 minutes at
+48-way concurrency (~8.27 combos/s). Per-station-instance decode count:
+requested=7,952 decoded_ok=7,952 failed=0. No raw GRIB2 bytes kept on disk
+(fetch-decode-discard, E1-E4 precedent) — free disk space unchanged, 10.71
+GiB before and after.
+
+**Join + derive (Step 3) — exact, zero drops, at every airport.** Row
+counts before and after the join match exactly at all five airports, both
+spans (v16_window: EGLC/LFPG 1,226, DSM/YSDU/RNO 1,225; sealed_window: all
+five 365) — `session57_precip_join_drops.csv` is empty.
+
+**Validate (Step 4) — 0 nulls, no negative values, per-airport stats and
+zero-fraction reported descriptively (no pass/fail, no pre-registered
+"driest airport" expectation, per the session prompt's own instruction not
+to repeat F102's own wrong-premise shape).**
+
+```
+station   min    mean    max (mm/h)   zero_fraction (of apcp_cumulative_mm == 0)
+EGLC      0.0000 0.0813  1.8370       0.2866 (456/1591)
+LFPG      0.0000 0.0868  2.0028       0.3136 (499/1591)
+DSM       0.0000 0.1020  3.0229       0.4642 (738/1590)
+YSDU      0.0000 0.0691  2.2790       0.5333 (848/1590)
+RNO       0.0000 0.0510  4.4858       0.6195 (985/1590)
+```
+
+RNO reads driest by zero-fraction (62.0% of rows dry) and EGLC wettest
+(28.7% dry) — reported as measured, with no expectation set in advance
+either way.
+
+**Open-Meteo cross-check on `precipitation`, non-reserved overlap only: a
+real gap, as anticipated, not chased.** mean|diff| ranges 0.0627 (RNO) to
+0.1328 (DSM) mm/h — expected, since this session's `precip_rate_mmh` is a
+mean over a 24-26h since-forecast-start window while Open-Meteo's own
+`precipitation_previous_day1` is a single hour's own accumulation, a
+different convention entirely. Wet/dry co-occurrence (both > 0 vs both ==
+0) agrees on 47.9% (EGLC) to 68.6% (RNO) of compared rows — modest, again
+consistent with the two series measuring different things, reported per
+the session prompt's own instruction, not investigated further.
+
+**The structural finding this family's own design forces, stated plainly
+per the session prompt's own Step 0 instruction.** `precip_window_hours`
+is a CONSTANT per airport (24 at EGLC/LFPG/DSM, 26 at YSDU/RNO), so
+`apcp_cumulative_mm` and `precip_rate_mmh` are monotone transforms of each
+other within any one airport's own rows — LightGBM's tree splits are
+invariant to that transform, so **E5 carries effectively ONE precipitation
+feature**, not a raw-vs-resolved pair the way E1-E4 did. `precip_rate_mmh`
+is kept as the headline form (a common mm/h scale across airports);
+`apcp_cumulative_mm` is kept only for transparency. **Session 58's own E5
+experiment should therefore be planned as a clean B vs B+P, not a
+four-variant grid.**
+
+**A real cross-airport inconsistency, flagged plainly, not papered over
+(same discipline E4's own report used for its window mismatch).** Unlike
+E4's resolved feature (an identical 2-hour window at every airport), this
+since-start window is 24h at three airports and 26h at two — a mean over
+different span lengths. Rate-normalisation handles the magnitude, not the
+span difference itself. No per-airport statistical standardisation was
+used to hide this.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV. Did not read, load, or join a single row of
+the reserved 2024-08-01..2025-07-31 confirmation year (D51) — enforced by
+the shared guard function plus a defensive per-date scan (0 hits) before
+any pull request was made. Did not pull any precipitation field beyond
+`APCP:surface` (no PRATE/SNOD/WEASD), or any other family. Did not use any
+transform on `precip_rate_mmh` (no log1p, no binary wet/dry flag) — kept
+as one continuous feature, per the session prompt. Did not do any
+per-airport feature selection — identical handling at all five airports
+throughout. Did not modify `SPEC.md` or `RESULTS.md`. Nothing was
+committed.
+
+**Numbering note (updated).** The session prompt's own literal Task 1
+instructions gave exact verbatim text to append for D55 (the E4 verdict)
+only — Task 2's own instructions (Steps 0-4, then the end-of-session steps)
+never said to write to `DECISIONS.md`, unlike session 55's own prompt,
+which produced a distinct build finding (F102) alongside its own verdict
+entry (D54). Session 51 (E1 verdict + E2 build) and session 53 (E2 verdict
++ E3 build) took a third shape again — both tasks folded into one
+D-numbered entry with no separate build finding at all. **The owner then
+asked, in a same-session follow-up, for the E5 build to be written up as
+its own numbered DECISIONS finding, mirroring F102's own structure — done
+as DECISIONS F104**, appended verbatim after D55 at the true end of the
+live file (git diff: 216 insertions, 0 deletions — a pure append, no
+existing entry touched). F104 covers, in F102's own shape: the build scope
+and script/output paths; Step 0's window confirmation (the cumulative
+since-start line, `startStep=0`/`endStep=24-or-26`, confirmed by direct
+`eccodes` decode at all 4 real combos x 2 sample dates) and the
+one-message choice; the monotone-equivalence structural finding
+(`precip_window_hours` constant per airport -> `apcp_cumulative_mm` and
+`precip_rate_mmh` are monotone transforms -> effectively one feature ->
+session 58 is B vs B+P); the honest 24h-vs-26h cross-airport window
+inconsistency, explicitly NOT claimed as E4-level physical consistency;
+the sparsity handling (raw continuous rate, no transform, zeros are real
+kept values, per-airport zero-fraction table); the Step 1-4 guard/pull/
+join/validate numbers; the Open-Meteo cross-check table; and a closing
+"what this session did not do" paragraph. Every number in F104 is the same
+real output already reported in this STATUS.md section and in
+`notes/session-57-precip-output.txt` — nothing was recomputed to write it.
+
+**Archive step this session:** none — D55 and F104 are both brand new and
+obviously live; D51/D52/D53/D54/F96-F103 all remain live inputs to a still-
+open feature-selection programme; nothing else in `DECISIONS.md` became
+newly settled this session. Re-checked directly (heading order, D/F-number
+duplicates, git diff for unintended removals) after F104's own append —
+see the "drafting slip" note above for the one thing an earlier pass of
+this same check actually caught (D55's own append, now fixed); F104's own
+append landed cleanly at the true end of the file on the first attempt, no
+correction needed.
 
 ---
 
@@ -1740,7 +1936,32 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 56 (this file's own latest entry, above) ran the staged E4
+**Session 57 (this file's own latest entry, above) recorded the E4
+(radiation) family verdict (DECISIONS D55) and built the E5 (precipitation)
+feature set — the LAST family in the programme, data build only (DECISIONS
+F104, added in a same-session follow-up once the owner asked for it).**
+`dswrf_2h_wm2` is adopted into the eventual combine-phase sweep baseline;
+the two raw endpoint columns are not, and nothing from this family is
+parked either (the same shape D54's E3 verdict took). The E5 build
+(`APCP:surface`'s own since-forecast-start cumulative accumulation, turned
+into one mean rate in mm/h, ONE message per airport-date — no
+de-accumulation, unlike E4) is complete and validated: 0 pull failures
+across 6,361 messages, 0 join drops, 0 nulls, no negative values. A
+structural finding this family's own design forces: `precip_window_hours`
+is a constant per airport (24h at EGLC/LFPG/DSM, 26h at YSDU/RNO), so the
+raw total and the mean rate are monotone transforms of each other within
+any one airport — E5 carries effectively ONE feature, so session 58's own
+experiment should be a clean B vs B+P, not a four-variant grid the way
+E1-E4 were. A drafting slip in this session's own DECISIONS.md append (D55
+briefly landed inside D54's own text, matched against a generic sentence
+shared by both entries) was caught by this session's own consistency check
+and fixed before review — D54 is restored exactly, D55 sits correctly at
+the true end of the file, and no entry's content was altered. No model was
+fit; the reserved 2024-25 year was never touched. With E5's own build done
+and its experiment next, the whole E1-E5 family sweep is one session
+(session 58) from complete.
+
+**Session 56, the session before, ran the staged E4
 (radiation) experiment — a reading, not a verdict (DECISIONS F103).** Four
 feature variants (B, B+R, B+Rv, B+v) were fit on the three non-reserved
 `EXPERIMENT_FOLDS` (D51) at all five airports, mirroring sessions
@@ -2481,54 +2702,64 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   recent fold, unlike E3. No pass/fail verdict computed — the family call
   is for review next session. Reserved year never touched. Nothing was
   committed.
+- **Session 57: recorded the E4 family verdict (DECISIONS D55) and built
+  the E5 (precipitation) feature set — the LAST family — data build only
+  (DECISIONS F104).** `dswrf_2h_wm2` adopted into the eventual combine-phase
+  sweep baseline; the two raw endpoint columns are not, and nothing from
+  this family is parked either (unlike E1/E2, same shape as E3's D54). The
+  E5 build (`APCP:surface`'s own cumulative-since-start accumulation,
+  turned into one mean rate mm/h, ONE message per airport-date, no
+  de-accumulation) pulled cleanly (0 of 6,361 messages failed, 0 join
+  drops, 0 nulls, no negative values). A structural finding: the window
+  length is a constant per airport (24h or 26h), so the raw total and the
+  mean rate are monotone transforms of each other — E5 is effectively ONE
+  feature, so session 58's own experiment is a clean B vs B+P, not a
+  four-variant grid. A drafting slip in this session's own DECISIONS.md
+  append (D55 briefly landed inside D54's own text) was caught by this
+  session's own consistency check and fixed before review, with D54
+  restored exactly and no entry's content altered; F104 (added in a
+  same-session follow-up) landed cleanly on the first attempt. No model
+  fit. Reserved year never touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 57 — record the E4 (radiation) family
-verdict (the owner's review of this session's F103 grid, recorded as the
-next decision entry, D55), then build and validate the E5 (precipitation)
-feature set — the LAST family in the programme.** E5 is flagged as awkward
-for the same reason radiation was — F97 found APCP/PRATE both carry a
-lead-dependent accumulation window (a real 6-hour window at EGLC/LFPG/DSM,
-only 2 hours at YSDU/RNO) needing resolution to one consistent feature —
-**plus a second complication radiation did not have: sparsity**
-(precipitation is mostly zero, including a confirmed all-zero spot-check
-at RNO's own grid point on a real dry day, F97). So session 57's own Step 0
-must settle both the window handling (mirroring F102's own de-accumulation
-approach) and how the mostly-zero distribution is represented, before any
-bulk pull.
+**Next planning session: session 58 — run the staged E5 (precipitation)
+experiment on the three non-reserved `EXPERIMENT_FOLDS` (D51), a clean B
+vs B+P (one precipitation feature — see this session's own Step 0
+monotone-equivalence observation, not a four-variant raw-vs-resolved grid
+the way E1-E4 were), reading per-airport with DSM as the diagnostic and the
+reserved year untouched; then, with E5's verdict recorded, the whole
+E1-E5 family sweep is complete and the combine phase / reserved-year
+finish line is next.**
 
-**The E4 (radiation) family verdict itself is not yet made — F103's own
-grid is a reading, not a pass/fail call.** E4's max grand-overall skill
-(+1.9%, B+Rv) sits just below E1 (+2.0%, F99/D52) and comfortably above E3
-(+0.9%, F101/D54), well below E2 (+4.1%, F100/D53). Radiation adds skill
-beyond the already-present `cloud_cover` feature at four of five airports
-— clearly at EGLC (+5.4% max) and LFPG (+3.2% max), where the
-raw-vs-resolved contrast is genuinely tested (both lead-24, a real second
-endpoint) and adding the raw endpoints on top of the resolved rate helps
-further; modestly at YSDU/RNO, where B+R/B+Rv/B+v collapse to an identical
-model by construction (a design decision this session made and reported,
-not a finding about raw vs. resolved); not at all at DSM (F96's
-diagnostic, -0.2% to +0.1%), the second family after E3 where DSM shows no
-positive signal. Unlike E3, this family does not reverse to negative in
-the most recent (2025-26) fold. Full grid: `data/processed/
-session56_e4_experiment_grid.csv`.
+**The E4 (radiation) family verdict was recorded this session (DECISIONS
+D55): `dswrf_2h_wm2` is adopted into the eventual combine-phase sweep
+baseline; the two raw de-accumulation-endpoint columns are not, and —
+as with E3 — nothing from this family is parked as a combine-phase
+candidate either, because those two columns are not a separate physical
+variable at all (they are the two accumulation-window averages the
+adopted feature is itself derived from, and are unevenly defined across
+airports).** E4 is a mid-strength family (+1.4% adopted, +1.9% max
+grand-overall skill — above E3's +0.9%, below E1's +2.0% and E2's +4.1%).
+The EGLC/LFPG raw-endpoint-on-top-of-resolved benefit is logged as an
+on-record combine-phase observation, not a formal parked candidate.
 
-**The E3 (pressure/synoptic) family verdict was recorded last session
-(DECISIONS D54): `pressure_tendency_3h_hpa` is adopted into the eventual
-combine-phase sweep baseline; the two raw pressure fields are not, and —
-unlike E1 and E2 — nothing from this family is parked as a combine-phase
-candidate either.** E3's raw fields never cleared the "real, fold-robust
-standalone signal" bar E1's RNO raw-levels or E2's relative humidity
-cleared — the one bright spot (RNO's `B+Tv` +2.2%) rests mainly on the
-least-trusted 2025-26 fold, read as fold-noise. E3 remains the weakest
-family measured so far by its own maximum grand-overall skill (+0.9%).
+**All four families run so far now have a recorded verdict, each measured
+against the same frozen 5-feature baseline B, none yet combined:** E1 —
+`lapse_rate_t2_t850` (D52, F99); E2 — `dewpoint_depression_t2m_floored`
+(D53, F100); E3 — `pressure_tendency_3h_hpa` (D54, F101); E4 —
+`dswrf_2h_wm2` (D55, F103). E1 and E2 each also parked one further raw-field
+candidate for the combine phase (RNO's raw pressure-level temperatures;
+relative humidity); E3 and E4 parked nothing. **E5 (precipitation) is the
+only family left to run its own staged experiment and receive a verdict**
+— its feature set is now built and validated (this session, DECISIONS
+F104, see above), so session 58 can proceed straight to the experiment.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 55/56's own build/experiment, session 57's own E5 build, or any session
-before the finish line.
+session 57's own build (this session), session 58's own E5 experiment, or
+any session before the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,
@@ -2587,11 +2818,17 @@ session 51 measured 11.30 GiB before its own pull and 11.28 GiB after.
 fetches per combo instead of one (the lead file and the lead-3 file), and
 free space fell further, from 11.32 GiB before to 9.87 GiB after** — still
 no raw bytes retained; the larger drop is attributable to scratch-file
-churn during the pull, not a retained cache. SPEC 2.3/D15 (as qualified by
+churn during that pull, not a retained cache. **Session 57 (E5
+precipitation) needed only ONE idx/message fetch per combo (no
+de-accumulation, unlike E4's own two-message combos) and free space was
+exactly unchanged, 10.71 GiB before and after** — the cleanest disk-space
+result of any family build so far, consistent with the one-message design.
+(Session 55's own E4 pull free-space figures were not separately restated
+here; see its own STATUS.md entry above.) SPEC 2.3/D15 (as qualified by
 D47 for large re-fetchable sources) means the session-37/40 raw pulls
-enter the repository's history once committed; the session-49/51/53 pulls
-leave no raw bytes to commit at all, only their manifests -- not decided
-here.
+enter the repository's history once committed; the session-49/51/53/57
+pulls leave no raw bytes to commit at all, only their manifests -- not
+decided here.
 
 **Reno's own EXISTING sealed-test result (under the 3-feature/Open-Meteo
 recipe) stands exactly as reported (D44.10, D44.11, F82) -- no re-run, no

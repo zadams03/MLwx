@@ -1,0 +1,21 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_RNO_2025-08-01_2026-07-31_sealed.json
+purpose     : session 57 Step 4 -- Open-Meteo precipitation cross-check, the non-reserved portion of the overlap only
+pulled at   : 2026-09-20T21:54:44Z
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=39.4839&longitude=-119.7711&start_date=2025-08-01&end_date=2026-07-31&hourly=precipitation_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 39.4839    (RNO)
+  longitude  = -119.7711
+  start_date = 2025-08-01
+  end_date   = 2026-07-31
+  hourly     = precipitation_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 200.

@@ -1,0 +1,9 @@
+sample,run_date,cycle,lead,status,detail
+v16_floor,2021-03-23,0,26,OK,step=0-26 hour acc fcst value=0.000kg_m2 startStep=0 endStep=26 units=kg m**-2 expected_valid=2021-03-24T02:00:00 got_valid=2021-03-24T02:00:00 step_match=OK valid_match=OK
+v16_floor,2021-03-23,12,24,OK,step=0-1 day acc fcst value=0.000kg_m2 startStep=0 endStep=24 units=kg m**-2 expected_valid=2021-03-24T12:00:00 got_valid=2021-03-24T12:00:00 step_match=OK valid_match=OK
+v16_floor,2021-03-23,18,24,OK,step=0-1 day acc fcst value=0.006kg_m2 startStep=0 endStep=24 units=kg m**-2 expected_valid=2021-03-24T18:00:00 got_valid=2021-03-24T18:00:00 step_match=OK valid_match=OK
+v16_floor,2021-03-23,18,26,OK,step=0-26 hour acc fcst value=0.006kg_m2 startStep=0 endStep=26 units=kg m**-2 expected_valid=2021-03-24T20:00:00 got_valid=2021-03-24T20:00:00 step_match=OK valid_match=OK
+recent,2024-06-14,0,26,OK,step=0-26 hour acc fcst value=3.025kg_m2 startStep=0 endStep=26 units=kg m**-2 expected_valid=2024-06-15T02:00:00 got_valid=2024-06-15T02:00:00 step_match=OK valid_match=OK
+recent,2024-06-14,12,24,OK,step=0-1 day acc fcst value=5.096kg_m2 startStep=0 endStep=24 units=kg m**-2 expected_valid=2024-06-15T12:00:00 got_valid=2024-06-15T12:00:00 step_match=OK valid_match=OK
+recent,2024-06-14,18,24,OK,step=0-1 day acc fcst value=4.872kg_m2 startStep=0 endStep=24 units=kg m**-2 expected_valid=2024-06-15T18:00:00 got_valid=2024-06-15T18:00:00 step_match=OK valid_match=OK
+recent,2024-06-14,18,26,OK,step=0-26 hour acc fcst value=4.875kg_m2 startStep=0 endStep=26 units=kg m**-2 expected_valid=2024-06-15T20:00:00 got_valid=2024-06-15T20:00:00 step_match=OK valid_match=OK

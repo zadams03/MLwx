@@ -1,0 +1,178 @@
+==============================================================================
+SESSION 57 Task 2 -- precipitation (E5) feature build + validation.
+APCP:surface only, cumulative-since-start, ONE message per
+airport-date (no de-accumulation). Data-build only: no model fit,
+no MAE, no CV. The reserved year (2024-08-01..2025-07-31,
+DECISIONS D51) is never loaded, pulled, or joined.
+==============================================================================
+==============================================================================
+STEP 0 -- window-handling confirmation for APCP:surface.
+Read-only. No bulk pull. Checks every idx line matching
+APCP:surface (not just the first) at every distinct (cycle, lead)
+combo this session needs, at two sample dates. Confirms the
+session prompt's own pre-decided choice (cumulative-since-start,
+one message, no de-accumulation) -- does not re-decide it.
+==============================================================================
+
+v16-floor sample date : 2021-03-24  (D48.7)
+recent sample date    : 2024-06-15  (before reserved year 2024-08-01, before sealed year 2025-08-01 -- confirmed by the assertion above)
+
+Distinct (cycle, lead) combinations across the five airports: 4
+  cycle 00z, lead f026  <- YSDU
+  cycle 12z, lead f024  <- EGLC,LFPG
+  cycle 18z, lead f024  <- DSM
+  cycle 18z, lead f026  <- RNO
+
+(No lead-2 or other helper file is needed this session -- Task 2's own one-message design has no de-accumulation step, unlike E4.)
+  [v16_floor] cycle=00z lead=f026: 2 APCP:surface line(s) found:
+    step='24-26 hour acc fcst'  -> short/other window
+    step='0-26 hour acc fcst'  -> CUMULATIVE (26h since start)
+    decoded: tp=0.000 kg m**-2 startStep=0 endStep=26 (OK) expected_valid=2021-03-24T02:00:00 got_valid=2021-03-24T02:00:00 (OK)
+  [v16_floor] cycle=12z lead=f024: 2 APCP:surface line(s) found:
+    step='18-24 hour acc fcst'  -> short/other window
+    step='0-1 day acc fcst'  -> CUMULATIVE (24h since start)
+    decoded: tp=0.000 kg m**-2 startStep=0 endStep=24 (OK) expected_valid=2021-03-24T12:00:00 got_valid=2021-03-24T12:00:00 (OK)
+  [v16_floor] cycle=18z lead=f024: 2 APCP:surface line(s) found:
+    step='18-24 hour acc fcst'  -> short/other window
+    step='0-1 day acc fcst'  -> CUMULATIVE (24h since start)
+    decoded: tp=0.006 kg m**-2 startStep=0 endStep=24 (OK) expected_valid=2021-03-24T18:00:00 got_valid=2021-03-24T18:00:00 (OK)
+  [v16_floor] cycle=18z lead=f026: 2 APCP:surface line(s) found:
+    step='24-26 hour acc fcst'  -> short/other window
+    step='0-26 hour acc fcst'  -> CUMULATIVE (26h since start)
+    decoded: tp=0.006 kg m**-2 startStep=0 endStep=26 (OK) expected_valid=2021-03-24T20:00:00 got_valid=2021-03-24T20:00:00 (OK)
+  [recent] cycle=00z lead=f026: 2 APCP:surface line(s) found:
+    step='24-26 hour acc fcst'  -> short/other window
+    step='0-26 hour acc fcst'  -> CUMULATIVE (26h since start)
+    decoded: tp=3.025 kg m**-2 startStep=0 endStep=26 (OK) expected_valid=2024-06-15T02:00:00 got_valid=2024-06-15T02:00:00 (OK)
+  [recent] cycle=12z lead=f024: 2 APCP:surface line(s) found:
+    step='18-24 hour acc fcst'  -> short/other window
+    step='0-1 day acc fcst'  -> CUMULATIVE (24h since start)
+    decoded: tp=5.096 kg m**-2 startStep=0 endStep=24 (OK) expected_valid=2024-06-15T12:00:00 got_valid=2024-06-15T12:00:00 (OK)
+  [recent] cycle=18z lead=f024: 2 APCP:surface line(s) found:
+    step='18-24 hour acc fcst'  -> short/other window
+    step='0-1 day acc fcst'  -> CUMULATIVE (24h since start)
+    decoded: tp=4.872 kg m**-2 startStep=0 endStep=24 (OK) expected_valid=2024-06-15T18:00:00 got_valid=2024-06-15T18:00:00 (OK)
+  [recent] cycle=18z lead=f026: 2 APCP:surface line(s) found:
+    step='24-26 hour acc fcst'  -> short/other window
+    step='0-26 hour acc fcst'  -> CUMULATIVE (26h since start)
+    decoded: tp=4.875 kg m**-2 startStep=0 endStep=26 (OK) expected_valid=2024-06-15T20:00:00 got_valid=2024-06-15T20:00:00 (OK)
+
+Wrote window-resolution check: /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session57/session57_window_resolution.csv (8 rows)
+
+------------------------------------------------------------------------------
+CONFIRMED: at every (cycle, lead) combo and both sample dates, exactly one APCP:surface line parses as a since-forecast-start cumulative accumulation (0-24h at lead 24, 0-26h at lead 26), decodes to a real, non-negative value in kg m**-2 (== mm), and its startStep/endStep and validity time exactly match the airport's own target hour. The session prompt's own pre-decided one-message, cumulative-since-start path is used as specified -- not re-decided here.
+------------------------------------------------------------------------------
+
+Free disk space BEFORE pull: 10.71 GiB
+
+=== Step 1: date list built from the existing 5-feature dataset, reserved year excluded ===
+  train span : 2021-03-24 .. 2024-07-31  (1226 distinct dates)
+  sealed span: 2025-08-01 .. 2026-07-31  (365 distinct dates)
+
+Guard check PASSED (scripts/session48_reserved_year.py, assert_reserved_year_excluded, plus a defensive per-date scan of all 1591 dates): no reserved-year date is in the pull list.
+
+=== Step 2: bulk pull ===
+Distinct (run_date, cycle, lead) combos to fetch: 6361 (1 APCP message each -- no de-accumulation, unlike E4)
+Total message fetches: 6361 (+ 6361 idx fetches, one per message)
+  500/6361 combos  elapsed=1.1min  rate=7.71/s  eta=12.7min
+  1000/6361 combos  elapsed=2.1min  rate=7.90/s  eta=11.3min
+  1500/6361 combos  elapsed=3.1min  rate=8.07/s  eta=10.0min
+  2000/6361 combos  elapsed=4.1min  rate=8.17/s  eta=8.9min
+  2500/6361 combos  elapsed=5.1min  rate=8.22/s  eta=7.8min
+  3000/6361 combos  elapsed=6.1min  rate=8.26/s  eta=6.8min
+  3500/6361 combos  elapsed=7.1min  rate=8.27/s  eta=5.8min
+  4000/6361 combos  elapsed=8.1min  rate=8.27/s  eta=4.8min
+  4500/6361 combos  elapsed=9.1min  rate=8.24/s  eta=3.8min
+  5000/6361 combos  elapsed=10.1min  rate=8.24/s  eta=2.8min
+  5500/6361 combos  elapsed=11.1min  rate=8.24/s  eta=1.7min
+  6000/6361 combos  elapsed=12.1min  rate=8.24/s  eta=0.7min
+  6361/6361 combos  elapsed=12.8min  rate=8.27/s  eta=0.0min
+
+Pull+decode done in 12.8 min.
+
+=== Validation (a): messages requested vs. decoded ===
+  apcp_cumulative: requested=7952 decoded_ok=7952 failed=0
+
+Wrote pull manifest (provenance record, no raw bytes kept): /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session57/session57_pull_manifest.csv (6361 rows, 0 FAIL)
+
+Free disk space AFTER pull: 10.71 GiB (before: 10.71 GiB)
+
+=== Step 3: join and derive ===
+
+  span=v16_window -> session57_v16_window_with_precip.csv
+    EGLC: before=1226 after=1226
+    LFPG: before=1226 after=1226
+    DSM: before=1225 after=1225
+    YSDU: before=1225 after=1225
+    RNO: before=1225 after=1225
+
+  span=sealed_window -> session57_sealed_window_with_precip.csv
+    EGLC: before=365 after=365
+    LFPG: before=365 after=365
+    DSM: before=365 after=365
+    YSDU: before=365 after=365
+    RNO: before=365 after=365
+
+Wrote join-drop log: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session57_precip_join_drops.csv (0 rows)
+
+=== Step 4: validate ===
+
+-- null counts, apcp_cumulative_mm and precip_rate_mmh (expect 0 throughout) --
+  EGLC (n=1591): 0 nulls
+  LFPG (n=1591): 0 nulls
+  DSM (n=1590): 0 nulls
+  YSDU (n=1590): 0 nulls
+  RNO (n=1590): 0 nulls
+  Zero blanks in apcp_cumulative_mm and precip_rate_mmh across every airport, both spans.
+
+-- non-negativity check (precipitation cannot be negative) --
+  EGLC: min(apcp_cumulative_mm)=0.000
+  LFPG: min(apcp_cumulative_mm)=0.000
+  DSM: min(apcp_cumulative_mm)=0.000
+  YSDU: min(apcp_cumulative_mm)=0.000
+  RNO: min(apcp_cumulative_mm)=0.000
+  No negative values anywhere.
+
+-- min/mean/max, precip_rate_mmh (mm/h), and zero-fraction (descriptive only -- no pass/fail, no pre-registered expectation of which airport is driest) --
+  EGLC: min=0.0000 mean=0.0813 max=1.8370 mm/h (n=1591)  zero_fraction=0.2866 (456/1591 rows with apcp_cumulative_mm == 0)
+  LFPG: min=0.0000 mean=0.0868 max=2.0028 mm/h (n=1591)  zero_fraction=0.3136 (499/1591 rows with apcp_cumulative_mm == 0)
+  DSM: min=0.0000 mean=0.1020 max=3.0229 mm/h (n=1590)  zero_fraction=0.4642 (738/1590 rows with apcp_cumulative_mm == 0)
+  YSDU: min=0.0000 mean=0.0691 max=2.2790 mm/h (n=1590)  zero_fraction=0.5333 (848/1590 rows with apcp_cumulative_mm == 0)
+  RNO: min=0.0000 mean=0.0510 max=4.4858 mm/h (n=1590)  zero_fraction=0.6195 (985/1590 rows with apcp_cumulative_mm == 0)
+
+-- structural note (Step 0's own monotone-transform observation, confirmed numerically here) --
+  EGLC: precip_window_hours=24 (constant per airport) -- apcp_cumulative_mm and precip_rate_mmh are monotone transforms of each other within this airport's own rows.
+  LFPG: precip_window_hours=24 (constant per airport) -- apcp_cumulative_mm and precip_rate_mmh are monotone transforms of each other within this airport's own rows.
+  DSM: precip_window_hours=24 (constant per airport) -- apcp_cumulative_mm and precip_rate_mmh are monotone transforms of each other within this airport's own rows.
+  YSDU: precip_window_hours=26 (constant per airport) -- apcp_cumulative_mm and precip_rate_mmh are monotone transforms of each other within this airport's own rows.
+  RNO: precip_window_hours=26 (constant per airport) -- apcp_cumulative_mm and precip_rate_mmh are monotone transforms of each other within this airport's own rows.
+
+-- Open-Meteo cross-check on precipitation, non-reserved overlap only --
+  Compared only on the portion of the moisture-era overlap OUTSIDE the reserved year: 2024-01-19..2024-07-31 (pre-reservation) and 2025-08-01..2026-07-31 (the sealed span, entirely after the reservation ends), the same two windows E2/E3/E4's own cross-checks used.
+  A LARGE magnitude gap is EXPECTED, not a defect: this session's precip_rate_mmh is a mean over a 24-26h since-forecast-start window; Open-Meteo's precipitation_previous_day1 is a single hour's own accumulation -- different accumulation conventions entirely. Reported, not chased (session prompt Step 4).
+
+  -- window pre_reserved: 2024-01-19 .. 2024-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2024-01-19_2024-07-31_pre_reserved.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2024-01-19_2024-07-31_pre_reserved.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2024-01-19_2024-07-31_pre_reserved.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2024-01-19_2024-07-31_pre_reserved.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2024-01-19_2024-07-31_pre_reserved.json
+
+  -- window sealed: 2025-08-01 .. 2026-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2025-08-01_2026-07-31_sealed.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2025-08-01_2026-07-31_sealed.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2025-08-01_2026-07-31_sealed.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2025-08-01_2026-07-31_sealed.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2025-08-01_2026-07-31_sealed.json
+
+  Per-airport agreement, combined across both non-reserved windows:
+  EGLC: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.1238 max|diff|=4.7537 mean_diff=-0.0241 mm/h  wet/dry co-occurrence: both_wet=115 both_dry=153 disagree=292  agree_fraction=0.4786
+  LFPG: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.1149 max|diff|=5.3191 mean_diff=-0.0042 mm/h  wet/dry co-occurrence: both_wet=123 both_dry=162 disagree=275  agree_fraction=0.5089
+  DSM: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.1328 max|diff|=4.0102 mean_diff=+0.0462 mm/h  wet/dry co-occurrence: both_wet=58 both_dry=246 disagree=256  agree_fraction=0.5429
+  YSDU: n_compared=559 n_no_openmeteo_value=1 mean|diff|=0.0652 max|diff|=3.2665 mean_diff=+0.0020 mm/h  wet/dry co-occurrence: both_wet=51 both_dry=325 disagree=183  agree_fraction=0.6726
+  RNO: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.0627 max|diff|=2.6797 mean_diff=+0.0103 mm/h  wet/dry co-occurrence: both_wet=37 both_dry=347 disagree=176  agree_fraction=0.6857
+
+==============================================================================
+END. No model was fit. The reserved year (2024-08-01..2025-07-31) was
+never loaded, pulled, or referenced by any date used above.
+==============================================================================

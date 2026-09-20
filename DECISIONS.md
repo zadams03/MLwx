@@ -2194,3 +2194,219 @@ fix was print-text only, confirmed by re-reading the changed lines. Did not
 modify `SPEC.md` or `RESULTS.md`. Nothing was committed.
 
 ---
+
+## 2026-09-20 — Session 57 decision: the E4 (radiation) family verdict, from the owner's review of F103
+
+**D55. Verdict: E4's adopted contribution to the eventual combine-phase sweep
+baseline is the single resolved feature `dswrf_2h_wm2` (the `B+R` variant) — the
+physically-consistent 2-hour-average downward-shortwave rate F102 built. The two raw
+de-accumulation-endpoint columns — `dswrf_ave_to_lead_wm2` and
+`dswrf_ave_to_lead_minus2_wm2` — are NOT adopted into the sweep, and — as with E3 —
+nothing from this family is parked as a combine-phase candidate either.**
+
+**Why nothing is parked (the point that separates E4 from E1/E2).** E1 parked RNO's
+raw pressure LEVELS (D52) and E2 parked relative humidity (D53) because each was a
+genuinely SEPARATE physical variable carrying a real, fold-robust standalone signal at
+some airport. E4's two raw columns are not a separate variable at all: they are the two
+accumulation-window averages that `dswrf_2h_wm2` is itself DERIVED FROM (F103). Adopting
+them would add no new physical information — it would only let the model re-do the
+de-accumulation the resolved feature already performs, maximally redundant with `R` by
+construction. They are also unevenly defined: identical to `dswrf_2h_wm2` at the two
+lead-26 airports (YSDU, RNO) by construction, so `B+R`, `B+Rv` and `B+v` are the same
+model there (F103). A redundant, unevenly-defined pair is not a portable combine-phase
+candidate — so it is dropped, not parked.
+
+**Rationale for the adoption itself, kept plain.** `dswrf_2h_wm2` is a single, clean,
+physically-resolved feature — an identical real 2-hour shortwave rate at every airport
+(F102) — consistent with the programme's "lead with the resolved form" principle (the
+same shape as D52's lapse rate, D53's dew-point depression, D54's pressure tendency). It
+carries +1.4% grand-overall skill (F103), of the family's +1.9% maximum (`B+Rv`). The
++0.5pp the raw endpoints add on top rests entirely on the two lead-24 airports EGLC and
+LFPG, and — being redundant-by-construction — is read as the model re-deriving the
+resolution rather than as new signal. E4 is a mid-strength family (+1.4% adopted, +1.9%
+max — above E3's +0.9%, below E1's +2.0% and E2's +4.1%), recorded honestly as such.
+
+**On-record observation for the combine phase (NOT a parked candidate).** At EGLC and
+LFPG — the only airports where the raw-vs-resolved contrast is both real and non-flat
+(DSM is genuinely tested but reads flat: `B+R` -0.2%, `B+Rv` +0.1%, `B+v` +0.0%;
+YSDU/RNO are silent by construction) — the raw endpoints add a little further skill on
+top of the resolved rate (EGLC `B+Rv` +5.4% vs `B+R` +3.8%; LFPG `B+Rv` +3.2% vs `B+R`
++2.4%, F103). This is logged as an observation for the combine phase to be aware of, NOT
+as a formal parked candidate: it is a fold-AVERAGED read only (no per-fold-per-airport
+robustness certification, unlike E1's parked RNO signal), and it is
+redundant-by-construction with the adopted feature rather than a separate variable.
+Grid: `data/processed/session56_e4_experiment_grid.csv`.
+
+**This is provisional.** Like every family in the sweep, `dswrf_2h_wm2` is confirmed
+only when the single final feature set is checked on the reserved year once, at the
+finish line (D51) — not now.
+
+**Measurement baseline is unchanged.** E5 and any later work in the sweep are measured
+against the frozen 5-feature baseline B, NOT against `B+R` or any other adopted feature.
+Adopted features enter only at the combine phase. Cites F103.
+
+**What this decision did not do.** Did not touch `SPEC.md` or `RESULTS.md`. Did not fit
+any model or compute any new figure — every number above is copied from and cited to
+F103. Did not touch the reserved 2024-08-01..2025-07-31 confirmation year.
+
+---
+
+## 2026-09-20 — Session 57 finding: E5 (precipitation) feature set built and
+validated — a data build, no model fit, reserved year untouched
+
+**F104. Pulls, decodes, and joins the E5 precipitation feature
+(`APCP:surface`'s own since-forecast-start cumulative accumulation, turned
+into one mean precipitation rate, `precip_rate_mmh`) onto the existing
+5-feature GRIB dataset, at every date that dataset already carries OUTSIDE
+the reserved 2024-25 confirmation year (D51). Data-build-only, per the
+session prompt: no model was fit, no MAE/skill/CV was computed, and
+2024-08-01..2025-07-31 was never loaded, pulled, or joined. APCP:surface
+only — not PRATE/SNOD/WEASD, and no radiation field.** Script:
+`scripts/session57_precip_pull.py` (new). Full real output: `notes/
+session-57-precip-output.txt`. Outputs: `data/processed/
+session57_v16_window_with_precip.csv` (6,128 rows), `data/processed/
+session57_sealed_window_with_precip.csv` (1,826 rows), `data/processed/
+session57_precip_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session57/session57_pull_manifest.csv` (6,361 rows), `data/raw/diagnostics/
+session57/session57_window_resolution.csv` (8 rows).
+
+**Step 0 — window handling, the session prompt's own pre-decided choice
+(cumulative-since-start, ONE message, no de-accumulation), confirmed
+directly and freshly before any bulk pull, not re-decided.** F97 found
+`APCP:surface` exposes TWO accumulation windows at each lead: a short one
+matching the ave-field window (the same window `DSWRF:surface`, E4, used)
+and a cumulative-since-forecast-start one ("0-1 day acc fcst" at lead 24,
+"0-26 hour acc fcst" at lead 26 — a day-vs-hour labelling quirk for the
+same "since hour 0" idea). This session checked, directly and freshly (not
+reusing F97's own idx files, since one of F97's two sample dates,
+2025-06-15, now falls inside the reserved year established by D51 one
+session after F97 ran — the same wrinkle sessions 49/55 already noted for
+their own spot-checks): every idx line matching `APCP:surface` (not just
+the first) at all four distinct real (cycle, lead) combos the five
+airports' own target hours select, at two sample dates, the v16 floor
+(2021-03-24) and a recent date outside both the sealed year and the
+reserved year (2024-06-15). **Result: at every combo/date, exactly one
+line parses as the since-start cumulative accumulation** (identified by
+its own step text, "0-N hour/day acc fcst", always starting "0-", never
+true of the short ave-window-matching line). Real decoded values
+(`eccodes` `startStep`/`endStep`, not just the idx label text) confirmed
+the exact window bounds at every one of the 8 checks: `startStep=0`,
+`endStep=24` at the lead-24 combos (EGLC/LFPG cycle 12z, DSM cycle 18z) and
+`endStep=26` at the lead-26 combos (YSDU cycle 00z, RNO cycle 18z), decoded
+units `kg m**-2` (== mm, no conversion needed), and valid time exactly
+matching the airport's own target hour, at both sample dates. Unlike E4,
+this family needs **no second message and no de-accumulation** — the
+session prompt's own one-message design is confirmed workable as
+specified, not re-decided.
+
+**A structural finding this family's own one-message design forces,
+stated plainly per the session prompt's own Step 0 instruction, not a
+defect.** `precip_window_hours` is a CONSTANT per airport (24 at
+EGLC/LFPG/DSM, 26 at YSDU/RNO), so `apcp_cumulative_mm` and
+`precip_rate_mmh` differ only by a fixed per-airport scale — monotone
+transforms of each other. LightGBM's tree splits are invariant to a
+monotone per-feature transform, so within any single airport's model the
+raw total and the mean rate are the SAME feature. **E5 therefore carries
+effectively ONE precipitation feature**, not a raw-vs-resolved pair the
+way E1–E4 did; `precip_rate_mmh` is kept as the headline form (a common
+mm/h scale across airports), `apcp_cumulative_mm` only for transparency.
+**Session 58's own E5 experiment should therefore be planned as a clean B
+vs B+P, not a four-variant grid.**
+
+**A real cross-airport inconsistency, flagged plainly, not papered over —
+explicitly NOT E4-level physical consistency.** Unlike E4's resolved
+feature (a physically identical 2-hour window at every airport), this
+since-start window is 24h at EGLC/LFPG/DSM but 26h at YSDU/RNO — so
+`precip_rate_mmh` is a mean over a 24h span at three airports and a 26h
+span at two. Rate-normalisation handles the magnitude/scale, not the span
+difference itself — reported honestly as a genuine mild inconsistency, per
+the session prompt's own instruction, with no per-airport statistical
+standardisation used to hide it.
+
+**Sparsity handling, per the session prompt's own instruction.**
+`precip_rate_mmh` is used as one continuous feature, with NO transform (no
+log1p, no binary wet/dry flag) — LightGBM handles a zero-inflated
+continuous feature natively via its splits. A decoded zero is a REAL, kept
+value (a dry forecast), not missing data: SPEC 2.2's drop-and-count applies
+only to a genuinely missing message or an unpaired observation row, never
+to a legitimate zero. Per-airport zero-fraction, reported descriptively
+with no pre-registered expectation of which airport should read driest
+(unlike F102's own session prompt, which carried a wrong "which airport
+reads low" premise for radiation — not repeated here):
+
+```
+station   min      mean     max (mm/h)   zero_fraction
+EGLC      0.0000   0.0813   1.8370       0.2866 (456/1591)
+LFPG      0.0000   0.0868   2.0028       0.3136 (499/1591)
+DSM       0.0000   0.1020   3.0229       0.4642 (738/1590)
+YSDU      0.0000   0.0691   2.2790       0.5333 (848/1590)
+RNO       0.0000   0.0510   4.4858       0.6195 (985/1590)
+```
+
+RNO reads driest by zero-fraction (62.0% of rows dry) and EGLC wettest
+(28.7% dry) — measured, not assumed in advance either way.
+
+**Guard check (Step 1) — PASS.** The date list was built from the existing
+5-feature dataset's own real rows, exactly as sessions 49/51/53/55 built
+theirs: train span 2021-03-24..2024-07-31 (1,226 dates), sealed span
+2025-08-01..2026-07-31 (365 dates), 1,591 dates total.
+`assert_reserved_year_excluded()` passed on both spans; a defensive
+per-date scan of all 1,591 dates found 0 reserved-year dates before any
+pull request was made.
+
+**Pull (Step 2) — complete, zero failures.** 6,361 distinct (run_date,
+cycle, lead) combos, ONE APCP message each (no de-accumulation, unlike
+E4's own up-to-two-message combos) -> 6,361 message fetches (+6,361 idx
+fetches, one per message) — **0 FAIL rows**, 12.8 minutes at 48-way
+concurrency (~8.27 combos/s). Per-station-instance decode count:
+requested=7,952 decoded_ok=7,952 failed=0. No raw GRIB2 bytes kept on disk
+(fetch-decode-discard, E1–E4 precedent) — free disk space exactly
+unchanged, 10.71 GiB before and after, the cleanest disk-space result of
+any family build so far, consistent with the one-message design (contrast
+E3's two-idx-fetch-per-combo drop, 11.32 to 9.87 GiB).
+
+**Join + derive (Step 3) — exact, zero drops, at every airport.** Row
+counts before and after the join match exactly at all five airports, both
+spans (v16_window: EGLC/LFPG 1,226, DSM/YSDU/RNO 1,225; sealed_window: all
+five 365) — `session57_precip_join_drops.csv` is empty.
+
+**Validate (Step 4) — 0 nulls; all values non-negative.** `apcp_cumulative_
+mm` and `precip_rate_mmh` are null-free at every airport, both spans
+combined (n=1,591 EGLC/LFPG, n=1,590 DSM/YSDU/RNO). `min(apcp_cumulative_
+mm)=0.000` at every airport — no negative values anywhere. Per-airport
+min/mean/max and zero-fraction: see the table above.
+
+**Open-Meteo cross-check on `precipitation`, non-reserved overlap only: a
+real gap, exactly as anticipated, not chased.** Compared over
+2024-01-19..2024-07-31 (pre-reservation) and 2025-08-01..2026-07-31 (the
+sealed span), the same two non-reserved windows E2/E3/E4's own cross-checks
+used. mean|diff| ranges 0.0627 mm/h (RNO) to 0.1328 mm/h (DSM) — a large
+gap relative to the means above, expected and reported rather than chased,
+since this session's `precip_rate_mmh` is a mean over a 24-26h
+since-forecast-start window while Open-Meteo's own
+`precipitation_previous_day1` is a single hour's own accumulation, a
+different convention entirely. Wet/dry co-occurrence (both > 0 vs both ==
+0) agrees on 47.9% (EGLC) to 68.6% (RNO) of compared rows:
+
+```
+station   n_compared   mean|diff| (mm/h)   mean_diff (mm/h)   agree_fraction
+EGLC      560          0.1238               -0.0241             0.4786
+LFPG      560          0.1149               -0.0042             0.5089
+DSM       560          0.1328               +0.0462             0.5429
+YSDU      559          0.0652               +0.0020             0.6726
+RNO       560          0.0627               +0.0103             0.6857
+```
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV. Did not read, load, or join a single row of
+the reserved 2024-08-01..2025-07-31 confirmation year (D51) — enforced by
+the shared guard function plus a defensive per-date scan (0 hits) before
+any pull request was made. Did not pull any precipitation field beyond
+`APCP:surface` (no PRATE/SNOD/WEASD), or any radiation field. Did not use
+any transform on `precip_rate_mmh` (no log1p, no binary wet/dry flag) —
+kept as one continuous feature, per the session prompt. Did not do any
+per-airport feature selection — identical handling at all five airports
+throughout. Did not modify `SPEC.md` or `RESULTS.md`. Nothing was
+committed.
+
+---
