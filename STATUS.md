@@ -3,7 +3,102 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 49._
+_Last updated: 20 September 2026, after session 50._
+
+---
+
+## Session 50 (the staged E1 upper-air experiment — a reading, not a
+verdict; the reserved year was never touched)
+
+**Fits four feature variants (B, B+L, B+Lv, B+v — see DECISIONS F99) on the
+three non-reserved `EXPERIMENT_FOLDS` (session 48, D51) to read whether the
+upper-air/vertical-structure family (session 49, F98) adds skill on top of
+the frozen 5-feature GRIB baseline. This is a LEARNING experiment: it
+reports a grid, not a pass/fail verdict — the family call is made in
+review. The reserved 2024-08-01..2025-07-31 confirmation year was never
+read, at all, this session.** Full account: DECISIONS F99. Script:
+`scripts/session50_e1_experiment.py` (new). Full real output: `notes/
+session-50-e1-experiment-output.txt`. Tables: `data/processed/
+session50_e1_experiment_grid.csv` (60 rows: 5 airports x 3 folds x 4
+variants) and `data/processed/session50_e1_experiment_summary.csv` (36
+rows: fold-averaged-per-airport, airport-averaged-per-fold, and grand
+overall).
+
+**Two sanity checks, both PASS, run before any model was fit.** (1)
+`t2m_raw`'s derivation (`t2m_raw == temperature_grib_c - elevation_constant`,
+D48.3/F90) checked on EVERY row of both session49 output files (7,952 rows
+total, not a spot check) — exact match everywhere, max absolute difference
+0.0 at all five airports. (2) All three `EXPERIMENT_FOLDS` entries cleared
+`assert_reserved_year_excluded()` before any data was loaded.
+
+**A strong internal-consistency signal, not asked for but worth recording:**
+the `2025-26` fold's `B` variant (the refit 5-feature baseline, same
+features as F94/F96, though trained on one fewer year — 1,222-1,225 days
+vs F94's 1,591, because training may not reach the reserved year)
+reproduces F94/F96's own raw-GFS and persistence MAE and row counts almost
+exactly at every airport (e.g. EGLC raw 1.2536 vs F94's 1.254, n=364 vs
+364; RNO raw 1.5116 vs 1.512, n=365 vs 365) — confirming this session's
+pipeline (join, features, model settings) is a correct reproduction, not an
+independent re-implementation that happens to look similar.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, 15
+airport-folds each):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+L       1.260      -0.024       +1.9%
+B+Lv      1.258      -0.026       +2.0%
+B+v       1.271      -0.013       +1.0%
+```
+
+**The staged question, answered plainly.** (a) `lapse_rate_t2_t850` alone
+(B+L) already captures nearly all of the family's benefit: +1.9% skill vs
+the refit baseline, on one added feature. (b) Adding the raw levels on top
+(B+Lv) adds almost nothing further (+2.0%, a 0.1-point gain over B+L) — the
+derived form is doing almost all of the work overall. (c) The raw levels
+WITHOUT the derived form (B+v) underperform B+L at every fold-averaged
+airport except RNO (+1.0% overall, clearly the weakest of the three
+additions) — the model does better handed the physically-motivated
+difference directly than left to reconstruct it from three raw
+temperatures.
+
+**DSM, the diagnostic (F96 flagged it as the airport with the most
+headroom, since cloud/wind were marginal-to-slightly-negative there): a
+real positive signal, and one of two airports where the raw levels add
+something the derived form alone does not.** Fold-averaged skill vs B:
+B+L +2.2%, B+Lv +2.7% (DSM's own best variant), B+v -0.1% (flat/negative,
+the same shape cloud/wind showed at DSM in F96). So the honest read at DSM
+is not "upper-air doesn't help" — lapse rate helps, and the raw levels add
+a further real increment on top of it, unlike cloud/wind's own marginal
+read there.
+
+**RNO, pre-registered to behave oddly (F98: t925 there is a below-ground
+extrapolation, `lapse_rate_t2_t850` partly degenerate) — the prediction
+held, with a genuinely interesting twist.** Fold-averaged skill vs B: B+L
++0.0% (flat — the derived lapse-rate feature adds nothing at RNO, exactly
+as F98 predicted), but B+Lv +1.8% and B+v +2.0% (RNO's own best variant) —
+the RAW pressure-level temperatures still carry real, usable skill at RNO
+even though the specific derived difference (`t2m_raw - t850`) does not.
+RNO ran with the identical feature set as every other airport throughout
+— no exclusion, no RNO-specific feature.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — enforced by session49's own output files already excluding it,
+plus this session's own defensive per-row scan (0 hits) and the guard check
+on all three folds before any data was loaded. Did not compute any
+pass/fail verdict — the four-variant grid is reported, the family call is
+left to review. Did not do any per-airport feature selection — identical
+features at every airport, in every variant. Did not touch any E2+ family
+(moisture, pressure, radiation, precipitation). Did not pull any new data
+— reused session 49's own output files unchanged. Did not modify `SPEC.md`
+or `RESULTS.md`. Nothing was committed.
+
+**Archive step this session:** none — F99 is brand new and obviously live;
+D51/F97/F98 all remain live inputs to a still-open feature-selection
+programme; nothing else in `DECISIONS.md` became newly settled this
+session.
 
 ---
 
@@ -959,20 +1054,38 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 49 (this file's own latest entry, above) built and validated the
-E1 (upper-air/vertical-structure) feature set — TMP at 925/850/700 hPa,
+**Session 50 (this file's own latest entry, above) ran the staged E1
+upper-air experiment — a reading, not a verdict (DECISIONS F99).** Four
+feature variants (B, B+L, B+Lv, B+v) were fit on the three non-reserved
+`EXPERIMENT_FOLDS` (D51) at all five airports; both sanity checks (the
+`t2m_raw` derivation, checked on every row; the reserved-year guard, on
+every fold) PASS; the reserved 2024-25 year was never read. Headline:
+`lapse_rate_t2_t850` alone (B+L) already captures nearly all of the
+family's grand-overall benefit (+1.9% skill vs the refit baseline); adding
+the raw levels on top (B+Lv) adds almost nothing further (+2.0%); the raw
+levels without the derived form (B+v) are clearly the weakest addition
+(+1.0%) at every airport but RNO. DSM (F96's own diagnostic) shows a real
+positive signal from upper-air, unlike cloud/wind's marginal read there.
+RNO behaved exactly as pre-registered — the derived lapse-rate feature is
+flat there (+0.0%) — but with a genuine twist: the raw pressure-level
+temperatures still carry real skill at RNO (B+v +2.0%, RNO's own best
+variant) even though the specific derived difference does not. No pass/
+fail verdict was computed; the family call — keep lapse rate, add the raw
+levels too, or neither — is for review.
+
+**Session 49, the session before, built and validated the E1
+(upper-air/vertical-structure) feature set — TMP at 925/850/700 hPa,
 plus a derived lapse-rate feature — for every date the existing 5-feature
 GRIB dataset already carries outside the reserved 2024-25 confirmation year
 (DECISIONS D51, F98). Data build only: 0 pull failures across 19,083
 messages, 0 join drops at any airport, and the reserved year was never
 loaded, pulled, or joined. One real, reportable data-character finding
-surfaced (not a decode failure, not fixed this session): at RNO, and only
-at RNO, mean temperature does not fall monotonically with height across
-925/850/700 hPa, plausibly because Reno's own 1,345 m elevation sits at or
-above the standard-atmosphere altitude of those pressure surfaces — flagged
-for session 50, which runs the actual staged E1 experiment (baseline
-refit, then the lapse-rate feature alone, then, only if needed, the full
-family) on the output this session produced.**
+surfaced there (not a decode failure): at RNO, and only at RNO, mean
+temperature does not fall monotonically with height across 925/850/700
+hPa, plausibly because Reno's own 1,345 m elevation sits at or above the
+standard-atmosphere altitude of those pressure surfaces — this session
+(50, above) confirmed the predicted effect directly: RNO's own derived
+lapse-rate feature is flat, exactly as expected.**
 
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
 airports opened so far under the EXISTING 3-feature/Open-Meteo recipe —
@@ -1469,26 +1582,49 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   Reno's 1,345 m elevation relative to those pressure surfaces' own
   standard-atmosphere altitudes. Reserved year never touched. Nothing was
   committed.
+- **Session 50: the staged E1 upper-air experiment — a reading, not a
+  verdict (DECISIONS F99).** Fit four feature variants (B, B+L, B+Lv, B+v)
+  on the three non-reserved `EXPERIMENT_FOLDS` (D51), all five airports.
+  Both sanity checks passed (the `t2m_raw` derivation, checked on every row
+  of 7,952; the reserved-year guard, on every fold). `lapse_rate_t2_t850`
+  alone (B+L) captures nearly all of the family's grand-overall skill
+  (+1.9%); the raw levels add almost nothing further on top of it (+2.0%
+  for B+Lv) and are clearly weakest alone (+1.0% for B+v) at every airport
+  but RNO. DSM shows a real positive upper-air signal (unlike cloud/wind's
+  marginal read there, F96); RNO's derived lapse-rate feature is flat
+  (+0.0%, exactly as pre-registered, F98) but the raw levels alone still
+  carry real skill there (+2.0%, RNO's own best variant). No pass/fail
+  verdict computed — the family call is for review. Reserved year never
+  touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 50 — the staged E1 experiment.** Session
-49 (this file's own latest entry, above) built and validated the E1
-upper-air feature set (DECISIONS F98): `t925`, `t850`, `t700`, and
-`lapse_rate_t2_t850`, joined onto the existing 5-feature GRIB dataset for
-every date outside the reserved 2024-25 year, with 0 pull failures and 0
-join drops. **Session 50's job: refit the 5-feature baseline on the three
-`EXPERIMENT_FOLDS` (2022-23, 2023-24, truncated 2025-26 — `scripts/
-session48_reserved_year.py`), then test `lapse_rate_t2_t850` alone against
-it, then — only if that doesn't fully capture the family's own
-contribution — add `t850`/`t925`/`t700` directly, all per-airport with DSM
-as the diagnostic, per docs/session-49.md's own closing instruction.** The
-reserved 2024-25 year stays untouched throughout — the guard in `scripts/
-session48_reserved_year.py` refuses any fold that reaches it. Session 49's
-own RNO anomaly (above) is worth watching specifically once session 50
-starts comparing feature sets airport by airport, since it gives a
-concrete physical reason RNO's own lapse-rate feature might behave
-differently from the other four airports', not just an oddity.
+**Next planning session: session 51 — open, for the owner's review.**
+Session 50 (this file's own latest entry, above) produced the four-variant
+E1 grid (DECISIONS F99) but deliberately computed no verdict — the session
+prompt's own instruction was that "the family call is made in review," not
+by the session itself. Two things are genuinely open for that review, not
+decided here:
+
+- **The E1 family verdict itself.** Does `lapse_rate_t2_t850` alone (B+L)
+  get adopted, given it captures nearly all of the grand-overall benefit
+  (+1.9%) on a single added feature? Do the raw levels (`t850`/`t925`/
+  `t700`) get added on top despite adding almost nothing at the grand
+  level (+2.0% for B+Lv over B+L's +1.9%), given they clearly do help at
+  DSM (+2.7%) and are the only variant that helps at RNO (B+v +2.0%,
+  RNO's own best, against B+L's flat +0.0% there)? Or does the family get
+  dropped as not worth the complexity for a ~2-point grand-overall gain?
+  This is exactly the kind of per-family judgment call the session prompt
+  reserved for review rather than automating.
+- **Whether E1 moves to a cumulative combine or the programme moves to E2
+  moisture next.** Session 47's own availability map (F97) confirmed
+  moisture (RH/DPT/SPFH:2m, PWAT) is available and clean, same as
+  upper-air was. Neither path is decided by this session.
+
+The reserved 2024-25 confirmation year (D51) stays untouched until a
+single, pre-chosen final feature set is confirmed on it once, at the very
+end of the whole feature-selection programme — not before, and not by
+session 50's own reading.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,

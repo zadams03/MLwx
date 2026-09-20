@@ -1,0 +1,241 @@
+
+==============================================================================
+SESSION 50 -- E1 (upper-air/vertical-structure) staged feature experiment. A LEARNING READING, NOT A PASS/FAIL GATE. Runs ONLY on the three non-reserved EXPERIMENT_FOLDS. The reserved 2024-25 confirmation year (D51) is never read this session.
+==============================================================================
+run at        : 2026-09-20 01:35:42 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+reserved confirmation year (never touched): 2024-08-01 .. 2025-07-31
+model settings (D48.6/D21.4, identical for every variant/fold/airport): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+B     features: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m']
+B+L   features: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'lapse_rate_t2_t850']
+B+Lv  features: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'lapse_rate_t2_t850', 't850', 't925', 't700']
+B+v   features: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 't850', 't925', 't700']
+
+==============================================================================
+Sanity check 1 -- t2m_raw's derivation (t2m_raw == temperature_grib_c - elevation_constant, D48.3/F90), checked on EVERY row of both session49 output files
+==============================================================================
+    station   correction_c   sign  n_checked   max_abs_diff
+    EGLC            0.2486      +       1591    0.000000000
+    LFPG           -0.1697      -       1591    0.000000000
+    DSM            -0.1106      -       1590    0.000000000
+    YSDU            0.2461      +       1590    0.000000000
+    RNO             2.0436      +       1590    0.000000000
+
+    PASS -- t2m_raw == round(temperature_grib_c - correction_c, 3) exactly (within 1e-6 float tolerance) at all 7952 rows checked, across all five airports.
+
+==============================================================================
+Sanity check 2 -- the reserved-year guard, run on every EXPERIMENT_FOLDS entry before anything is loaded or fit
+==============================================================================
+    2022-23    train=2021-03-24..2022-07-31  test=2022-08-01..2023-07-31  -- PASS (guard did not raise)
+    2023-24    train=2021-03-24..2023-07-31  test=2023-08-01..2024-07-31  -- PASS (guard did not raise)
+    2025-26    train=2021-03-24..2024-07-31  test=2025-08-01..2026-07-31  -- PASS (guard did not raise)
+
+    PASS -- all 3 EXPERIMENT_FOLDS entries cleared assert_reserved_year_excluded() before any data was loaded.
+
+==============================================================================
+Loading upper-air features and observations (both sanity checks passed)
+==============================================================================
+    upper-air feature files loaded, reserved-year rows: 0 found (defensive scan, per load_upper_air_features()).
+
+==============================================================================
+Per-airport, per-fold, per-variant results
+==============================================================================
+
+-- EGLC -- target hour 12:00 UTC -- join over 2021-03-24..2026-07-31 (session49's own available span, reserved year already excluded) --
+    joined rows: 1589  (no upper-air row: 365, no usable obs: 2)
+    EGLC 2022-23    train=2021-03-24..2022-07-31 (495d) test=2022-08-01..2023-07-31 (364d) no_prev(persist)=1
+        raw GFS (GRIB) : 1.226   persistence: 1.793
+        B     MAE=1.168  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.122  delta_vs_B=-0.046  skill_vs_B=+3.9%
+        B+Lv  MAE=1.127  delta_vs_B=-0.040  skill_vs_B=+3.4%
+        B+v   MAE=1.146  delta_vs_B=-0.022  skill_vs_B=+1.9%
+    EGLC 2023-24    train=2021-03-24..2023-07-31 (859d) test=2023-08-01..2024-07-31 (366d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.015   persistence: 2.016
+        B     MAE=0.947  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=0.901  delta_vs_B=-0.046  skill_vs_B=+4.9%
+        B+Lv  MAE=0.926  delta_vs_B=-0.021  skill_vs_B=+2.3%
+        B+v   MAE=0.920  delta_vs_B=-0.027  skill_vs_B=+2.8%
+    EGLC 2025-26    train=2021-03-24..2024-07-31 (1225d) test=2025-08-01..2026-07-31 (364d) no_prev(persist)=1
+        raw GFS (GRIB) : 1.254   persistence: 2.096
+        B     MAE=1.008  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.015  delta_vs_B=+0.007  skill_vs_B=-0.7%
+        B+Lv  MAE=1.019  delta_vs_B=+0.011  skill_vs_B=-1.1%
+        B+v   MAE=1.007  delta_vs_B=-0.001  skill_vs_B=+0.1%
+
+-- LFPG -- target hour 12:00 UTC -- join over 2021-03-24..2026-07-31 (session49's own available span, reserved year already excluded) --
+    joined rows: 1588  (no upper-air row: 365, no usable obs: 3)
+    LFPG 2022-23    train=2021-03-24..2022-07-31 (493d) test=2022-08-01..2023-07-31 (365d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.265   persistence: 2.173
+        B     MAE=1.158  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.161  delta_vs_B=+0.003  skill_vs_B=-0.3%
+        B+Lv  MAE=1.160  delta_vs_B=+0.001  skill_vs_B=-0.1%
+        B+v   MAE=1.145  delta_vs_B=-0.013  skill_vs_B=+1.1%
+    LFPG 2023-24    train=2021-03-24..2023-07-31 (858d) test=2023-08-01..2024-07-31 (366d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.223   persistence: 2.369
+        B     MAE=1.161  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.131  delta_vs_B=-0.029  skill_vs_B=+2.5%
+        B+Lv  MAE=1.130  delta_vs_B=-0.031  skill_vs_B=+2.7%
+        B+v   MAE=1.134  delta_vs_B=-0.027  skill_vs_B=+2.3%
+    LFPG 2025-26    train=2021-03-24..2024-07-31 (1224d) test=2025-08-01..2026-07-31 (364d) no_prev(persist)=1
+        raw GFS (GRIB) : 1.382   persistence: 2.300
+        B     MAE=1.199  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.132  delta_vs_B=-0.067  skill_vs_B=+5.6%
+        B+Lv  MAE=1.149  delta_vs_B=-0.049  skill_vs_B=+4.1%
+        B+v   MAE=1.198  delta_vs_B=-0.001  skill_vs_B=+0.1%
+
+-- DSM -- target hour 18:00 UTC -- join over 2021-03-24..2026-07-31 (session49's own available span, reserved year already excluded) --
+    joined rows: 1590  (no upper-air row: 366, no usable obs: 0)
+    DSM 2022-23    train=2021-03-24..2022-07-31 (495d) test=2022-08-01..2023-07-31 (364d) no_prev(persist)=0
+        raw GFS (GRIB) : 2.094   persistence: 3.991
+        B     MAE=1.726  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.704  delta_vs_B=-0.022  skill_vs_B=+1.3%
+        B+Lv  MAE=1.727  delta_vs_B=+0.000  skill_vs_B=-0.0%
+        B+v   MAE=1.752  delta_vs_B=+0.025  skill_vs_B=-1.5%
+    DSM 2023-24    train=2021-03-24..2023-07-31 (859d) test=2023-08-01..2024-07-31 (366d) no_prev(persist)=0
+        raw GFS (GRIB) : 2.035   persistence: 3.699
+        B     MAE=1.579  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.521  delta_vs_B=-0.057  skill_vs_B=+3.6%
+        B+Lv  MAE=1.520  delta_vs_B=-0.059  skill_vs_B=+3.7%
+        B+v   MAE=1.561  delta_vs_B=-0.018  skill_vs_B=+1.2%
+    DSM 2025-26    train=2021-03-24..2024-07-31 (1225d) test=2025-08-01..2026-07-31 (365d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.733   persistence: 4.003
+        B     MAE=1.665  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.634  delta_vs_B=-0.031  skill_vs_B=+1.9%
+        B+Lv  MAE=1.591  delta_vs_B=-0.074  skill_vs_B=+4.4%
+        B+v   MAE=1.663  delta_vs_B=-0.002  skill_vs_B=+0.1%
+
+-- YSDU -- target hour 02:00 UTC -- join over 2021-03-24..2026-07-31 (session49's own available span, reserved year already excluded) --
+    joined rows: 1569  (no upper-air row: 366, no usable obs: 21)
+    YSDU 2022-23    train=2021-03-24..2022-07-31 (493d) test=2022-08-01..2023-07-31 (357d) no_prev(persist)=4
+        raw GFS (GRIB) : 1.139   persistence: 2.278
+        B     MAE=1.199  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.181  delta_vs_B=-0.018  skill_vs_B=+1.5%
+        B+Lv  MAE=1.179  delta_vs_B=-0.020  skill_vs_B=+1.7%
+        B+v   MAE=1.166  delta_vs_B=-0.033  skill_vs_B=+2.7%
+    YSDU 2023-24    train=2021-03-24..2023-07-31 (850d) test=2023-08-01..2024-07-31 (363d) no_prev(persist)=3
+        raw GFS (GRIB) : 1.328   persistence: 2.442
+        B     MAE=1.126  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.108  delta_vs_B=-0.019  skill_vs_B=+1.7%
+        B+Lv  MAE=1.118  delta_vs_B=-0.008  skill_vs_B=+0.8%
+        B+v   MAE=1.145  delta_vs_B=+0.019  skill_vs_B=-1.7%
+    YSDU 2025-26    train=2021-03-24..2024-07-31 (1213d) test=2025-08-01..2026-07-31 (356d) no_prev(persist)=9
+        raw GFS (GRIB) : 1.317   persistence: 2.669
+        B     MAE=1.190  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.153  delta_vs_B=-0.037  skill_vs_B=+3.1%
+        B+Lv  MAE=1.170  delta_vs_B=-0.020  skill_vs_B=+1.7%
+        B+v   MAE=1.186  delta_vs_B=-0.004  skill_vs_B=+0.4%
+
+-- RNO -- target hour 20:00 UTC -- join over 2021-03-24..2026-07-31 (session49's own available span, reserved year already excluded) --
+    joined rows: 1587  (no upper-air row: 366, no usable obs: 3)
+    RNO 2022-23    train=2021-03-24..2022-07-31 (493d) test=2022-08-01..2023-07-31 (364d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.560   persistence: 2.526
+        B     MAE=1.401  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.402  delta_vs_B=+0.001  skill_vs_B=-0.1%
+        B+Lv  MAE=1.394  delta_vs_B=-0.007  skill_vs_B=+0.5%
+        B+v   MAE=1.382  delta_vs_B=-0.019  skill_vs_B=+1.4%
+    RNO 2023-24    train=2021-03-24..2023-07-31 (857d) test=2023-08-01..2024-07-31 (365d) no_prev(persist)=1
+        raw GFS (GRIB) : 1.454   persistence: 2.596
+        B     MAE=1.297  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.294  delta_vs_B=-0.004  skill_vs_B=+0.3%
+        B+Lv  MAE=1.253  delta_vs_B=-0.044  skill_vs_B=+3.4%
+        B+v   MAE=1.271  delta_vs_B=-0.027  skill_vs_B=+2.0%
+    RNO 2025-26    train=2021-03-24..2024-07-31 (1222d) test=2025-08-01..2026-07-31 (365d) no_prev(persist)=0
+        raw GFS (GRIB) : 1.512   persistence: 2.490
+        B     MAE=1.430  delta_vs_B=+0.000  skill_vs_B=+0.0%
+        B+L   MAE=1.433  delta_vs_B=+0.003  skill_vs_B=-0.2%
+        B+Lv  MAE=1.409  delta_vs_B=-0.021  skill_vs_B=+1.4%
+        B+v   MAE=1.391  delta_vs_B=-0.038  skill_vs_B=+2.7%
+
+Wrote grid: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session50_e1_experiment_grid.csv (60 rows)
+
+==============================================================================
+Fold-averaged per airport (mean across the three EXPERIMENT_FOLDS)
+==============================================================================
+
+    EGLC:
+        B     mean_MAE=1.041  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_folds=3)
+        B+L   mean_MAE=1.013  delta_vs_B=-0.028  skill_vs_B=+2.7%  (n_folds=3)
+        B+Lv  mean_MAE=1.024  delta_vs_B=-0.017  skill_vs_B=+1.6%  (n_folds=3)
+        B+v   mean_MAE=1.024  delta_vs_B=-0.017  skill_vs_B=+1.6%  (n_folds=3)
+
+    LFPG:
+        B     mean_MAE=1.173  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_folds=3)
+        B+L   mean_MAE=1.142  delta_vs_B=-0.031  skill_vs_B=+2.6%  (n_folds=3)
+        B+Lv  mean_MAE=1.146  delta_vs_B=-0.026  skill_vs_B=+2.2%  (n_folds=3)
+        B+v   mean_MAE=1.159  delta_vs_B=-0.014  skill_vs_B=+1.2%  (n_folds=3)
+
+    DSM:
+        B     mean_MAE=1.657  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_folds=3)
+        B+L   mean_MAE=1.620  delta_vs_B=-0.037  skill_vs_B=+2.2%  (n_folds=3)
+        B+Lv  mean_MAE=1.613  delta_vs_B=-0.044  skill_vs_B=+2.7%  (n_folds=3)
+        B+v   mean_MAE=1.658  delta_vs_B=+0.002  skill_vs_B=-0.1%  (n_folds=3)
+
+    YSDU:
+        B     mean_MAE=1.172  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_folds=3)
+        B+L   mean_MAE=1.147  delta_vs_B=-0.025  skill_vs_B=+2.1%  (n_folds=3)
+        B+Lv  mean_MAE=1.155  delta_vs_B=-0.016  skill_vs_B=+1.4%  (n_folds=3)
+        B+v   mean_MAE=1.166  delta_vs_B=-0.006  skill_vs_B=+0.5%  (n_folds=3)
+
+    RNO:
+        B     mean_MAE=1.376  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_folds=3)
+        B+L   mean_MAE=1.376  delta_vs_B=+0.000  skill_vs_B=-0.0%  (n_folds=3)
+        B+Lv  mean_MAE=1.352  delta_vs_B=-0.024  skill_vs_B=+1.8%  (n_folds=3)
+        B+v   mean_MAE=1.348  delta_vs_B=-0.028  skill_vs_B=+2.0%  (n_folds=3)
+
+==============================================================================
+Airport-averaged per fold (mean across the five airports)
+==============================================================================
+
+    2022-23:
+        B     mean_MAE=1.330  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_airports=5)
+        B+L   mean_MAE=1.314  delta_vs_B=-0.017  skill_vs_B=+1.2%  (n_airports=5)
+        B+Lv  mean_MAE=1.317  delta_vs_B=-0.013  skill_vs_B=+1.0%  (n_airports=5)
+        B+v   mean_MAE=1.318  delta_vs_B=-0.012  skill_vs_B=+0.9%  (n_airports=5)
+
+    2023-24:
+        B     mean_MAE=1.222  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_airports=5)
+        B+L   mean_MAE=1.191  delta_vs_B=-0.031  skill_vs_B=+2.5%  (n_airports=5)
+        B+Lv  mean_MAE=1.189  delta_vs_B=-0.033  skill_vs_B=+2.7%  (n_airports=5)
+        B+v   mean_MAE=1.206  delta_vs_B=-0.016  skill_vs_B=+1.3%  (n_airports=5)
+
+    2025-26:
+        B     mean_MAE=1.298  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n_airports=5)
+        B+L   mean_MAE=1.274  delta_vs_B=-0.025  skill_vs_B=+1.9%  (n_airports=5)
+        B+Lv  mean_MAE=1.268  delta_vs_B=-0.031  skill_vs_B=+2.4%  (n_airports=5)
+        B+v   mean_MAE=1.289  delta_vs_B=-0.010  skill_vs_B=+0.7%  (n_airports=5)
+
+==============================================================================
+Grand overall (mean across all five airports and all three folds)
+==============================================================================
+    B     mean_MAE=1.284  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=15)
+    B+L   mean_MAE=1.260  delta_vs_B=-0.024  skill_vs_B=+1.9%  (n=15)
+    B+Lv  mean_MAE=1.258  delta_vs_B=-0.026  skill_vs_B=+2.0%  (n=15)
+    B+v   mean_MAE=1.271  delta_vs_B=-0.013  skill_vs_B=+1.0%  (n=15)
+
+Wrote summary: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session50_e1_experiment_summary.csv (36 rows)
+
+==============================================================================
+Framing notes (session prompt's own reading guidance, printed with the real numbers behind them -- no verdict computed)
+==============================================================================
+
+    DSM is the diagnostic (F96: cloud/wind were marginal-to-slightly-
+    negative there). Its fold-averaged deltas vs. B, printed above under
+    'Fold-averaged per airport', are the figures to read with that in mind.
+
+    RNO is expected to behave oddly (F98: t925 there is a below-ground
+    extrapolation, and lapse_rate_t2_t850 is partly degenerate). It ran
+    with the SAME features as every other airport -- no exclusion, no
+    RNO-specific feature. Its fold-averaged deltas are printed above under
+    'Fold-averaged per airport'; a small, null, or negative upper-air
+    effect there is EXPECTED, not a failure of the family.
+
+==============================================================================
+END
+==============================================================================
+This session reports the four-variant grid only. NO pass/fail verdict
+was computed anywhere in this script -- the family call is made in
+review (session prompt). No row of the reserved 2024-08-01..2025-07-31
+confirmation year was read, loaded, or scored at any point.
+This output is saved at notes/session-50-e1-experiment-output.txt
