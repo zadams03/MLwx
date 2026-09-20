@@ -1,0 +1,21 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_LFPG_2025-08-01_2026-07-31_sealed.json
+purpose     : session 53 Step 4 -- Open-Meteo pressure_msl cross-check, the non-reserved portion of the overlap only
+pulled at   : 2026-09-20T15:24:32Z
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=49.0153&longitude=2.5344&start_date=2025-08-01&end_date=2026-07-31&hourly=pressure_msl_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = 49.0153    (LFPG)
+  longitude  = 2.5344
+  start_date = 2025-08-01
+  end_date   = 2026-07-31
+  hourly     = pressure_msl_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 200.

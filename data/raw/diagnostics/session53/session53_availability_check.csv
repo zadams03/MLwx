@@ -1,0 +1,9 @@
+sample,run_date,cycle,lead_minus3,stations,status,detail
+v16_floor,2021-03-23,0,23,YSDU,OK,value=1005.519hPa expected_valid=2021-03-23T23:00:00 got_valid=2021-03-23T23:00:00 match=OK
+v16_floor,2021-03-23,12,21,"EGLC,LFPG",OK,value=1021.273hPa expected_valid=2021-03-24T09:00:00 got_valid=2021-03-24T09:00:00 match=OK
+v16_floor,2021-03-23,18,21,DSM,OK,value=1004.007hPa expected_valid=2021-03-24T15:00:00 got_valid=2021-03-24T15:00:00 match=OK
+v16_floor,2021-03-23,18,23,RNO,OK,value=1019.817hPa expected_valid=2021-03-24T17:00:00 got_valid=2021-03-24T17:00:00 match=OK
+recent,2024-06-14,0,23,YSDU,OK,value=1017.401hPa expected_valid=2024-06-14T23:00:00 got_valid=2024-06-14T23:00:00 match=OK
+recent,2024-06-14,12,21,"EGLC,LFPG",OK,value=998.795hPa expected_valid=2024-06-15T09:00:00 got_valid=2024-06-15T09:00:00 match=OK
+recent,2024-06-14,18,21,DSM,OK,value=1015.581hPa expected_valid=2024-06-15T15:00:00 got_valid=2024-06-15T15:00:00 match=OK
+recent,2024-06-14,18,23,RNO,OK,value=1012.054hPa expected_valid=2024-06-15T17:00:00 got_valid=2024-06-15T17:00:00 match=OK

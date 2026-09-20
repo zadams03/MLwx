@@ -1,0 +1,21 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_YSDU_2024-01-19_2024-07-31_pre_reserved.json
+purpose     : session 53 Step 4 -- Open-Meteo pressure_msl cross-check, the non-reserved portion of the overlap only
+pulled at   : 2026-09-20T15:24:22Z
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python urllib
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=-32.2167&longitude=148.5747&start_date=2024-01-19&end_date=2024-07-31&hourly=pressure_msl_previous_day1&models=gfs_global&timezone=UTC
+
+parameters:
+  latitude   = -32.2167    (YSDU)
+  longitude  = 148.5747
+  start_date = 2024-01-19
+  end_date   = 2024-07-31
+  hourly     = pressure_msl_previous_day1
+  models     = gfs_global  (pinned per DECISIONS D16)
+  timezone   = UTC
+
+HTTP status 200.

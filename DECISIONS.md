@@ -1553,3 +1553,54 @@ session52_e2_experiment.py` (new). Full real output: `notes/
 session-52-e2-experiment-output.txt`.
 
 ---
+
+## 2026-09-20 — Session 53 decision: the E2 (moisture) family verdict, from
+the owner's review of F100
+
+**D53. Verdict: E2's adopted contribution to the eventual combine-phase
+sweep baseline is the single derived feature `dewpoint_depression_t2m_
+floored` (the `B+D` variant). The three raw moisture fields —
+`relative_humidity_2m`, `specific_humidity_2m`, `dew_point_2m` — are NOT
+adopted into the sweep baseline.**
+
+**The raw moisture fields are parked, not dropped, with `relative_
+humidity_2m` singled out as the strongest candidate.** In the F100 grid,
+`B+v` (raw fields alone, no derived feature) trails `B+D` by only 0.2
+points grand-overall (+3.8% vs +4.0%) and ties or beats it outright at two
+airports (LFPG, DSM) — closer to the derived form than E1's own raw
+pressure levels ever got to `B+L` (D52). F100's own importance breakdown
+shows `relative_humidity_2m` carries almost all of the raw fields' signal
+(12.7-23.4% of B+v's gain, well ahead of specific humidity and dew point).
+This is recorded as an explicit candidate for the combine phase, most
+plausibly led by relative humidity alone rather than the full three-field
+set — not carried into the E-sweep now.
+
+**Rationale, kept plain.**
+(a) `B+D` captures +4.0% of the +4.1% maximum grand-overall skill (F100)
+on one added feature instead of three — parsimony with near-equal skill,
+the same shape as D52's E1 call.
+(b) The closeness of `B+v` to `B+D` is read as the raw fields mostly
+re-expressing the same signal the derived feature already captures
+directly, not as separate additional information: `B+Dv` (both together)
+barely improves on `B+D` alone (+4.1% vs +4.0%, a 0.1-point gain) — if the
+raw fields carried real information beyond the derived feature, combining
+them should have added more than that.
+(c) The fold-level caution in F100 (EGLC's benefit reversing in the
+2025-26 fold; RNO flat in the thin 2022-23 fold) is not read as evidence
+against the family — it matches the same fold-quality pattern F96 and D52
+already named, not a new concern specific to moisture.
+
+**This is provisional.** Like every family in the sweep, `dewpoint_
+depression_t2m_floored` is confirmed only when the single final feature
+set is checked on the reserved year once, at the finish line (D51) — not
+now.
+
+**Measurement baseline is unchanged.** E3 and every later family in the
+sweep are measured against the frozen 5-feature baseline B, **not**
+against `B+D`. `B+D` enters only at the combine phase. Cites F100.
+
+**What this decision did not do.** Did not touch `SPEC.md` or `RESULTS.md`.
+Did not fit any model or compute any new figure. Did not touch the
+reserved 2024-08-01..2025-07-31 confirmation year.
+
+---

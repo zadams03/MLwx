@@ -3,7 +3,132 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 52._
+_Last updated: 20 September 2026, after session 53._
+
+---
+
+## Session 53 (record the E2 verdict, D53, from the owner's review of
+session 52's F100 grid; build and validate the E3 pressure/synoptic feature
+set — data build only, no model fit)
+
+**Two tasks. Task 1 records the owner's E2 family verdict from review of
+session 52's F100 grid as a new decision entry (DECISIONS D53) — no code, no
+SPEC/RESULTS edit. Task 2 builds and validates the E3 (pressure/synoptic)
+feature set — PRMSL and PRES:surface at each airport's own standard
+forecast lead, plus PRMSL at lead-3 (same run) to derive a 3-hour pressure
+tendency — mirroring session 49/51's own build-then-experiment shape
+exactly. No model was fit anywhere this session; the reserved
+2024-08-01..2025-07-31 year was never loaded, pulled, or joined.**
+
+**Task 1 — DECISIONS D53, the E2 family verdict.**
+`dewpoint_depression_t2m_floored` (the `B+D` variant) is adopted into the
+eventual combine-phase sweep baseline; the three raw moisture fields
+(`relative_humidity_2m`/`specific_humidity_2m`/`dew_point_2m`) are NOT
+adopted into the sweep, on the same parsimony grounds as D52's E1 call
+(`B+D` captures +4.0% of the +4.1% maximum grand-overall skill, F100, on
+one feature instead of three). Unlike E1, the raw fields trail the derived
+form by only 0.2 points (B+v +3.8% vs B+D +4.0%) and tie or beat it at two
+airports (LFPG, DSM) — `relative_humidity_2m` specifically is parked as the
+strongest combine-phase candidate (12.7-23.4% of B+v's own gain, F100's
+importance breakdown). This is provisional, like every family in the sweep,
+confirmed only when the single final feature set is checked on the reserved
+year once, at the finish line (D51). E3 and every later family are measured
+against the frozen baseline B, not against `B+D` — `B+D` enters only at the
+combine phase.
+
+**Task 2 — the E3 (pressure/synoptic) feature build, mirroring session
+49/51 exactly.** Pulled `PRMSL` (mean sea level pressure) and
+`PRES:surface` at each airport's own standard forecast lead, plus `PRMSL`
+at lead-3 from the SAME run, for every date the existing 5-feature GRIB
+dataset carries outside the reserved 2024-25 year, and derived
+`pressure_tendency_3h_hpa = pressure_msl_hpa - pressure_msl_lead_minus3_hpa`.
+Script: `scripts/session53_pressure_pull.py` (new). Full real output:
+`notes/session-53-pressure-output.txt`. Outputs: `data/processed/
+session53_v16_window_with_pressure.csv` (6,128 rows incl. header),
+`data/processed/session53_sealed_window_with_pressure.csv` (1,826 rows
+incl. header), `data/processed/session53_pressure_join_drops.csv` (0
+rows), `data/raw/diagnostics/session53/session53_pull_manifest.csv`
+(19,083 rows), `data/raw/diagnostics/session53/
+session53_availability_check.csv` (8 rows).
+
+**Four design decisions confirmed and printed before any pull ran.** (1)
+The tendency is a SAME-RUN, two-lead-time difference (lead vs lead-3, one
+run made on day D-1) — leakage-safe the same way every other feature in
+the project already is (SPEC 2.1b), not a cross-run comparison. (2) Raw
+companion fields (`pressure_msl_hpa`, `pressure_surface_hpa`) are pulled
+at the standard lead, mirroring E1's raw pressure levels and E2's raw
+moisture fields. (3) No elevation correction is applied to any of the
+three new fields — PRMSL is mean-sea-level by definition (already
+elevation-normalized); PRES:surface and the tendency get bilinear
+horizontal interpolation only, the same convention cloud/wind (F91),
+upper-air (F98) and moisture (E2) already use. (4) Units converted from
+GRIB's native Pa to hPa (divide by 100) for every new column.
+
+**Step 0 — availability check, PASS at every combo, both sample dates.**
+Before any bulk pull: confirmed `PRMSL` present, correctly labelled, and
+decoding to a real value at the lead-3 offset (f021, f023) at both the v16
+floor (2021-03-24) and a recent non-reserved date (2024-06-15), at all
+four distinct (cycle, lead) combos the five airports select. Every one of
+the 8 checks (4 combos x 2 dates) confirmed presence and a decoded value
+landing at the exact expected valid time — including YSDU's own
+calendar-day wraparound (cycle 00z, lead 26 -> lead-3=f023 valid the
+PREVIOUS calendar day, 23:00 UTC, computed from absolute time rather than
+assumed, and confirmed exactly).
+
+**Pull and join: complete, zero failures, zero drops, zero blanks.** 6,361
+distinct (run_date, cycle, lead) combos, 19,083 message fetches (3 fields
+x 6,361: PRMSL@lead, PRES:surface@lead, PRMSL@lead-3), **0 FAIL rows** in
+the manifest, 96.1 minutes at 48-way concurrency (slower than E1/E2's
+~56-64 minutes, since each combo now needs 2 idx fetches instead of 1 —
+31,805 total requests against E1/E2's ~25,444). Join drops: 0 at every
+airport, both spans (row counts match the existing 5-feature dataset
+exactly: EGLC/LFPG 1,226/365, DSM/YSDU/RNO 1,225/365). Every one of the
+four new columns is null-free at every airport, both spans (n=7,952 total
+rows). The derived-tendency arithmetic (`pressure_tendency_3h_hpa ==
+round(pressure_msl_hpa - pressure_msl_lead_minus3_hpa, 3)`) was checked on
+EVERY row, not a spot check — 0 mismatches across all 7,952 rows. Free
+disk space fell from 11.32 to 9.87 GiB (a larger drop than E1/E2's own
+~0.02 GiB, from the scratch-file churn of twice as many idx fetches per
+combo — no raw bytes were kept, per the fetch-decode-discard pattern; the
+drop is attributable to scratch-file overhead during the pull, not a
+retained cache).
+
+**Validation: every sanity range holds; RNO's elevation signature
+confirmed exactly where expected.** `pressure_msl_hpa` ranges 962-1049 hPa
+across all five airports (means 1014.3-1016.9 hPa), inside the expected
+950-1050 hPa sea-level band. `pressure_surface_hpa` sits visibly lower at
+RNO than everywhere else, as expected from its 1,345 m elevation (SPEC
+3.4's highest by a wide margin): RNO's own mean is 837.7 hPa against
+980.4-1010.4 hPa at the other four — RNO's own mean surface pressure is
+confirmed the LOWEST of the five, reported not corrected, per design
+decision 3. `pressure_tendency_3h_hpa` stays well inside the -15..+15
+hPa/3h sanity band at every airport (max magnitude 8.987 hPa at EGLC),
+zero outliers anywhere.
+
+**Open-Meteo cross-check on `pressure_msl_hpa`, non-reserved overlap
+only: close agreement at four airports, a real and larger gap at RNO.**
+Mean|diff| ranges 0.044-0.421 hPa at EGLC/LFPG/DSM/YSDU; RNO's own gap is
+2.659 hPa (max 7.799 hPa) — real and larger, consistent with RNO's own
+already-known grid/elevation complications (D48.3/F90's own largest
+elevation-correction constant), though PRMSL is a different physical
+quantity (already sea-level-normalized) than E1's below-ground
+extrapolation (F98) or E2's moisture gap (F91), so the three RNO figures
+are reported separately, not scaled against one another, per design
+decision 3's own instruction.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, skill, or CV. Did not read, load, or join a single row of
+the reserved 2024-08-01..2025-07-31 confirmation year (D51) — enforced by
+the shared guard function plus a defensive per-date scan (0 hits) before
+any pull request was made. Did not pull radiation or precipitation (the
+remaining E4/E5 families). Did not do any per-airport feature selection —
+identical fields and handling at all five airports throughout. Did not
+modify `SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+**Archive step this session:** none — D53 is brand new and live
+(provisional pending the finish-line reserved-year check); D51/D52/F96-F100
+all remain live inputs to a still-open feature-selection programme;
+nothing else in `DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -1274,7 +1399,21 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 52 (this file's own latest entry, above) ran the staged E2
+**Session 53 (this file's own latest entry, above) recorded the E2 family
+verdict (DECISIONS D53) and built the E3 (pressure/synoptic) feature set —
+data build only.** `dewpoint_depression_t2m_floored` is adopted into the
+eventual combine-phase sweep baseline; the three raw moisture fields are
+not, though `relative_humidity_2m` specifically is parked as the strongest
+combine-phase candidate. E3's own build (PRMSL and PRES:surface at each
+airport's own lead, plus PRMSL at lead-3 to derive a same-run 3-hour
+pressure tendency) is complete and validated: 0 pull failures across
+19,083 messages, 0 join drops, 0 blanks, the tendency derivation checked
+exact on every one of 7,952 rows, and RNO's own elevation signature
+confirmed exactly where physically expected (its mean surface pressure the
+lowest of the five airports). No model was fit; the reserved 2024-25 year
+was never touched.
+
+**Session 52, the session before, ran the staged E2
 (moisture) experiment — a reading, not a verdict (DECISIONS F100).** Four
 feature variants (B, B+D, B+Dv, B+v) were fit on the three non-reserved
 `EXPERIMENT_FOLDS` (D51) at all five airports, mirroring session 50/F99's
@@ -1881,41 +2020,61 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   explicitly, not hidden in the fold average. No pass/fail verdict
   computed — the family call is for review. Reserved year never touched.
   Nothing was committed.
+- **Session 53: recorded the E2 family verdict (DECISIONS D53) and built
+  the E3 pressure/synoptic feature set — data build only.**
+  `dewpoint_depression_t2m_floored` adopted into the eventual combine-phase
+  sweep baseline; the raw moisture fields are not, though relative
+  humidity is parked as the strongest combine-phase candidate. The E3
+  build (PRMSL, PRES:surface, plus a same-run 3-hour PRMSL tendency at
+  lead-3) pulled cleanly (0 of 19,083 messages failed, 0 join drops, 0
+  blanks) and validated cleanly — RNO's own mean surface pressure
+  confirmed the lowest of the five airports, as elevation predicts; the
+  Open-Meteo cross-check agrees closely at four airports with a real,
+  RNO-consistent larger gap at the fifth. No model fit. Reserved year
+  never touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 53 — open, for the owner's review: the E2
-moisture family verdict from this session's grid, then (if E2 is adopted
-into the combine-phase baseline) the start of the next family's build (E3,
-pressure/synoptic — lead with the derived tendency, per the roadmap).**
+**Next planning session: session 54 — run the staged E3 experiment (four
+variants — B, B+tendency, B+tendency+raw, B+raw — on the three
+non-reserved `EXPERIMENT_FOLDS`), mirroring session 50/52's own E1/E2
+experiment shape exactly.**
 
-**The E2 experiment is done (DECISIONS F100, this file's own latest entry,
-above); the E2 family verdict is now the owner's call, the same review
-step D52 already took for E1.** The grid: `dewpoint_depression_t2m_
-floored` alone (B+D) captures +4.0% of the +4.1% grand-overall maximum
-(B+Dv); the raw moisture fields alone (B+v, +3.8%) trail the derived form
-by only 0.2 points — unlike E1, where the raw levels were clearly the
-weakest addition everywhere but RNO. DSM is the strongest and only
-fold-robust airport; EGLC's and RNO's benefits are each carried unevenly
-across folds (EGLC's reverses in 2025-26, RNO's is flat in 2022-23) — both
-reported explicitly in DECISIONS F100 rather than only fold-averaged. Full
-per-fold table: `data/processed/session52_e2_experiment_grid.csv`.
+**The E2 family verdict is now recorded (DECISIONS D53, this file's own
+latest entry, above): `dewpoint_depression_t2m_floored` is adopted into
+the eventual combine-phase sweep baseline; the three raw moisture fields
+are not, with `relative_humidity_2m` specifically parked as the strongest
+combine-phase candidate.** This mirrors D52's own E1 verdict shape exactly
+— parsimony on near-equal grand-overall skill (+4.0% of +4.1%).
 
-**If E2 is adopted into the combine-phase sweep baseline, session 53's own
-next job is the E3 (pressure/synoptic) family build** — mirroring how
-session 51 followed session 50's own E1 verdict with E2's build. F97's own
-availability map confirms PRMSL and PRES:surface are both present, clean
-and instantaneous back to the v16 floor; the session-52 prompt's own
-roadmap note says E3 should lead with the *derived pressure tendency* (a
-feature needing two consecutive runs' worth of the base field, not yet
-derived by any session) rather than the raw pressure fields alone — a
-design choice for session 53's own prompt to make explicit, not decided
-here.
+**The E3 (pressure/synoptic) feature build is also done, this session's
+own Task 2.** `pressure_msl_hpa`, `pressure_surface_hpa`, and the derived
+`pressure_tendency_3h_hpa` (a same-run, lead-vs-lead-3 difference,
+leakage-safe per SPEC 2.1b) are built and validated at all five airports,
+both spans — 0 pull failures across 19,083 messages, 0 join drops, 0
+blanks, the tendency arithmetic checked exact on every one of 7,952 rows.
+Session 54's own job is to read whether the family adds skill on top of
+the frozen 5-feature baseline, the same reading-not-verdict shape sessions
+50 and 52 already used for E1 and E2 — four variants: `B` (the frozen
+baseline, refit on the three folds), `B+tendency` (B plus
+`pressure_tendency_3h_hpa`), `B+tendency+raw` (B+tendency plus the raw
+fields), and `B+raw` (B plus the raw fields only, without the derived
+tendency). Full feature data: `data/processed/
+session53_v16_window_with_pressure.csv` and `data/processed/
+session53_sealed_window_with_pressure.csv`.
+
+**If E3 is adopted into the combine-phase sweep baseline, the session
+after that's own job is the E4 family build** — F97's own availability map
+leaves radiation and precipitation as the two remaining candidate
+families (moisture and upper-air both now closed out, E1/E2), both
+flagged "available but awkward": a lead-dependent averaging/accumulation
+window (18-24h at EGLC/LFPG/DSM, 24-26h at YSDU/RNO) needs a deliberate
+design choice before either can become a feature — not decided here.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 51's own build, session 52's own experiment, or any session before
+session 53's own build, session 54's own experiment, or any session before
 the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
@@ -1969,12 +2128,17 @@ session 40's sealed-year pull added a further ~4.62 GiB (5,840 small
 files), free space ~13 GiB after that. Sessions 49 and 51 (E1 upper-air
 and E2 moisture) each used the fetch-decode-discard pattern instead
 (D47's "manifest, not bytes" policy taken one step further, no disposable
-local cache kept), so free space is essentially unchanged since —
+local cache kept), so free space was essentially unchanged by either —
 session 51 measured 11.30 GiB before its own pull and 11.28 GiB after.
-SPEC 2.3/D15 (as qualified by D47 for large re-fetchable sources) means
-the session-37/40 raw pulls enter the repository's history once
-committed; the session-49/51 pulls leave no raw bytes to commit at all,
-only their manifests -- not decided here.
+**Session 53 (E3 pressure) used the same pattern but needed two idx
+fetches per combo instead of one (the lead file and the lead-3 file), and
+free space fell further, from 11.32 GiB before to 9.87 GiB after** — still
+no raw bytes retained; the larger drop is attributable to scratch-file
+churn during the pull, not a retained cache. SPEC 2.3/D15 (as qualified by
+D47 for large re-fetchable sources) means the session-37/40 raw pulls
+enter the repository's history once committed; the session-49/51/53 pulls
+leave no raw bytes to commit at all, only their manifests -- not decided
+here.
 
 **Reno's own EXISTING sealed-test result (under the 3-feature/Open-Meteo
 recipe) stands exactly as reported (D44.10, D44.11, F82) -- no re-run, no

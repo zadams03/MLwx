@@ -1,0 +1,161 @@
+==============================================================================
+SESSION 53 Task 2 -- pressure/synoptic (E3) feature build + validation.
+Data-build only: no model fit, no MAE, no CV. The reserved year
+(2024-08-01..2025-07-31, DECISIONS D51) is never loaded, pulled, or
+joined.
+==============================================================================
+
+Four design decisions confirmed before any pull runs (session prompt
+Task 2, 'Design decisions'):
+  1. pressure_tendency_3h_hpa is a SAME-RUN, two-lead-time difference
+     (lead vs lead-3, one run made on day D-1) -- not a cross-run
+     comparison. Leakage-safe the same way every other feature already
+     is (SPEC 2.1b).
+  2. Raw companion fields pressure_msl_hpa and pressure_surface_hpa are
+     pulled at the standard lead, mirroring E1's raw pressure levels
+     and E2's raw moisture fields.
+  3. NO elevation correction on any of the three new fields. PRMSL is
+     mean-sea-level by definition (already elevation-normalized);
+     PRES:surface and the tendency get bilinear horizontal
+     interpolation only, same as cloud/wind (F91), upper-air (F98) and
+     moisture (E2).
+  4. Units: GRIB Pa -> hPa (divide by 100) for every new column.
+==============================================================================
+STEP 0 -- availability check: PRMSL at lead-3 (f021/f023), two dates.
+Read-only. No bulk pull. Mirrors F97's own method.
+==============================================================================
+
+v16-floor sample date : 2021-03-24  (D48.7)
+recent sample date    : 2024-06-15  (before reserved year 2024-08-01, before sealed year 2025-08-01 -- confirmed by the assertion above)
+
+Distinct (cycle, lead) combinations across the five airports: 4
+  [v16_floor] cycle=00z lead-3=f023 (YSDU): PRESENT, decoded prmsl=1005.52 hPa (expected valid 2021-03-23T23:00:00, got 2021-03-23T23:00:00) -- OK
+  [v16_floor] cycle=12z lead-3=f021 (EGLC,LFPG): PRESENT, decoded prmsl=1021.27 hPa (expected valid 2021-03-24T09:00:00, got 2021-03-24T09:00:00) -- OK
+  [v16_floor] cycle=18z lead-3=f021 (DSM): PRESENT, decoded prmsl=1004.01 hPa (expected valid 2021-03-24T15:00:00, got 2021-03-24T15:00:00) -- OK
+  [v16_floor] cycle=18z lead-3=f023 (RNO): PRESENT, decoded prmsl=1019.82 hPa (expected valid 2021-03-24T17:00:00, got 2021-03-24T17:00:00) -- OK
+  [recent] cycle=00z lead-3=f023 (YSDU): PRESENT, decoded prmsl=1017.40 hPa (expected valid 2024-06-14T23:00:00, got 2024-06-14T23:00:00) -- OK
+  [recent] cycle=12z lead-3=f021 (EGLC,LFPG): PRESENT, decoded prmsl=998.80 hPa (expected valid 2024-06-15T09:00:00, got 2024-06-15T09:00:00) -- OK
+  [recent] cycle=18z lead-3=f021 (DSM): PRESENT, decoded prmsl=1015.58 hPa (expected valid 2024-06-15T15:00:00, got 2024-06-15T15:00:00) -- OK
+  [recent] cycle=18z lead-3=f023 (RNO): PRESENT, decoded prmsl=1012.05 hPa (expected valid 2024-06-15T17:00:00, got 2024-06-15T17:00:00) -- OK
+
+Wrote availability check: /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session53/session53_availability_check.csv (8 rows)
+
+Step 0 PASSED: PRMSL at lead-3 is present, decodes to a real value, and lands at the expected valid time at every (cycle, lead) combo, both sample dates. Proceeding to the bulk pull.
+
+Free disk space BEFORE pull: 11.32 GiB
+
+=== Step 1: date list built from the existing 5-feature dataset, reserved year excluded ===
+  train span : 2021-03-24 .. 2024-07-31  (1226 distinct dates)
+  sealed span: 2025-08-01 .. 2026-07-31  (365 distinct dates)
+
+Guard check PASSED (scripts/session48_reserved_year.py, assert_reserved_year_excluded, plus a defensive per-date scan of all 1591 dates): no reserved-year date is in the pull list.
+
+=== Step 2: bulk pull ===
+Distinct (run_date, cycle, lead) combos to fetch: 6361
+Each combo needs 2 idx fetches (lead, lead-3) + 3 message fetches (PRMSL@lead, PRES:surface@lead, PRMSL@lead-3) -> 12722 idx + 19083 message = 31805 total requests
+  500/6361 combos  elapsed=5.3min  rate=1.57/s  eta=62.1min
+  1000/6361 combos  elapsed=10.3min  rate=1.62/s  eta=55.1min
+  1500/6361 combos  elapsed=15.4min  rate=1.62/s  eta=49.9min
+  2000/6361 combos  elapsed=20.3min  rate=1.64/s  eta=44.3min
+  2500/6361 combos  elapsed=25.3min  rate=1.65/s  eta=39.1min
+  3000/6361 combos  elapsed=30.8min  rate=1.62/s  eta=34.6min
+  3500/6361 combos  elapsed=36.8min  rate=1.59/s  eta=30.1min
+  4000/6361 combos  elapsed=64.1min  rate=1.04/s  eta=37.8min
+  4500/6361 combos  elapsed=72.0min  rate=1.04/s  eta=29.8min
+  5000/6361 combos  elapsed=80.5min  rate=1.03/s  eta=21.9min
+  5500/6361 combos  elapsed=87.2min  rate=1.05/s  eta=13.7min
+  6000/6361 combos  elapsed=92.5min  rate=1.08/s  eta=5.6min
+  6361/6361 combos  elapsed=96.1min  rate=1.10/s  eta=0.0min
+
+Pull+decode done in 96.1 min.
+
+=== Validation (a): messages requested vs. decoded, per field ===
+(counted per station-instance -- a shared combo like EGLC+LFPG counts twice)
+  pressure_msl_hpa (PRMSL:mean sea level): requested=7952 decoded_ok=7952 failed=0
+  pressure_surface_hpa (PRES:surface): requested=7952 decoded_ok=7952 failed=0
+  pressure_msl_lead_minus3_hpa (PRMSL:mean sea level): requested=7952 decoded_ok=7952 failed=0
+
+Wrote pull manifest (provenance record, no raw bytes kept): /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session53/session53_pull_manifest.csv (19083 rows, 0 FAIL)
+
+Free disk space AFTER pull: 9.87 GiB (before: 11.32 GiB)
+
+=== Step 3: join and derive ===
+
+  span=v16_window -> session53_v16_window_with_pressure.csv
+    EGLC: before=1226 after=1226
+    LFPG: before=1226 after=1226
+    DSM: before=1225 after=1225
+    YSDU: before=1225 after=1225
+    RNO: before=1225 after=1225
+
+  span=sealed_window -> session53_sealed_window_with_pressure.csv
+    EGLC: before=365 after=365
+    LFPG: before=365 after=365
+    DSM: before=365 after=365
+    YSDU: before=365 after=365
+    RNO: before=365 after=365
+
+Wrote join-drop log: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session53_pressure_join_drops.csv (0 rows)
+
+=== Step 4: validate ===
+
+-- null counts (expect 0 throughout) --
+  EGLC (n=1591): 0 nulls in every new column
+  LFPG (n=1591): 0 nulls in every new column
+  DSM (n=1590): 0 nulls in every new column
+  YSDU (n=1590): 0 nulls in every new column
+  RNO (n=1590): 0 nulls in every new column
+  Zero blanks across every new column, every airport, both spans.
+
+-- min/mean/max, pressure_msl_hpa and pressure_surface_hpa (sanity range roughly 950-1050 hPa at sea level; pressure_surface_hpa should sit visibly lower at RNO given its elevation) --
+  EGLC pressure_msl_hpa: min=962.25 mean=1014.93 max=1045.95 (n=1591)
+  EGLC pressure_surface_hpa: min=957.92 mean=1010.42 max=1041.17 (n=1591)
+  LFPG pressure_msl_hpa: min=976.33 mean=1016.42 max=1042.43 (n=1591)
+  LFPG pressure_surface_hpa: min=966.38 mean=1006.11 max=1031.62 (n=1591)
+  DSM pressure_msl_hpa: min=990.95 mean=1015.73 max=1048.73 (n=1590)
+  DSM pressure_surface_hpa: min=960.18 mean=983.57 max=1011.27 (n=1590)
+  YSDU pressure_msl_hpa: min=996.79 mean=1016.86 max=1034.66 (n=1590)
+  YSDU pressure_surface_hpa: min=960.24 mean=980.44 max=997.25 (n=1590)
+  RNO pressure_msl_hpa: min=998.13 mean=1014.31 max=1037.07 (n=1590)
+  RNO pressure_surface_hpa: min=819.57 mean=837.73 max=851.40 (n=1590)
+
+  pressure_surface_hpa means, all airports: EGLC=1010.4, LFPG=1006.1, DSM=983.6, YSDU=980.4, RNO=837.7
+  RNO's own mean surface pressure is the LOWEST of the five airports: True (RNO sits at 1,345 m elevation, SPEC 3.4's highest by a wide margin -- lower surface pressure there is the expected physical signature of elevation, reported not corrected, per design decision 3).
+
+-- min/mean/max, pressure_tendency_3h_hpa (sanity range roughly -15 to +15 hPa per 3h; outliers reported plainly, not clipped or dropped) --
+  EGLC: min=-6.971 mean=-0.330 max=8.987 (n=1591) outside_[-15,15]=0
+  LFPG: min=-5.578 mean=-0.550 max=6.561 (n=1591) outside_[-15,15]=0
+  DSM: min=-6.381 mean=-0.999 max=7.880 (n=1590) outside_[-15,15]=0
+  YSDU: min=-5.151 mean=-1.783 max=2.713 (n=1590) outside_[-15,15]=0
+  RNO: min=-6.923 mean=-2.321 max=3.420 (n=1590) outside_[-15,15]=0
+
+-- Open-Meteo cross-check on pressure_msl_hpa, non-reserved overlap only --
+  Compared only on the portion of the moisture-era overlap OUTSIDE the reserved year: 2024-01-19..2024-07-31 (pre-reservation) and 2025-08-01..2026-07-31 (the sealed span, entirely after the reservation ends), the same two windows E2's own cross-check used.
+
+  -- window pre_reserved: 2024-01-19 .. 2024-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2024-01-19_2024-07-31_pre_reserved.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2024-01-19_2024-07-31_pre_reserved.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2024-01-19_2024-07-31_pre_reserved.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2024-01-19_2024-07-31_pre_reserved.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2024-01-19_2024-07-31_pre_reserved.json
+
+  -- window sealed: 2025-08-01 .. 2026-07-31 --
+    EGLC: HTTP 200 -> openmeteo_previousruns_gfs_global_EGLC_2025-08-01_2026-07-31_sealed.json
+    LFPG: HTTP 200 -> openmeteo_previousruns_gfs_global_LFPG_2025-08-01_2026-07-31_sealed.json
+    DSM: HTTP 200 -> openmeteo_previousruns_gfs_global_DSM_2025-08-01_2026-07-31_sealed.json
+    YSDU: HTTP 200 -> openmeteo_previousruns_gfs_global_YSDU_2025-08-01_2026-07-31_sealed.json
+    RNO: HTTP 200 -> openmeteo_previousruns_gfs_global_RNO_2025-08-01_2026-07-31_sealed.json
+
+  Per-airport agreement, combined across both non-reserved windows:
+  EGLC: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.044 max|diff|=1.430 mean_diff=+0.018 hPa
+  LFPG: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.103 max|diff|=1.564 mean_diff=+0.020 hPa
+  DSM: n_compared=560 n_no_openmeteo_value=0 mean|diff|=0.257 max|diff|=2.051 mean_diff=+0.143 hPa
+  YSDU: n_compared=559 n_no_openmeteo_value=1 mean|diff|=0.421 max|diff|=1.511 mean_diff=+0.332 hPa
+  RNO: n_compared=560 n_no_openmeteo_value=0 mean|diff|=2.659 max|diff|=7.799 mean_diff=+2.376 hPa
+
+  Design decision 3's own report-only question: RNO's PRMSL cross-check gap is mean|diff|=2.659 hPa. This is a different physical quantity (mean-sea-level pressure, already elevation-normalized) than E1's below-ground-extrapolation anomaly (F98) or E2's larger Open-Meteo dew-point/RH gap (F91's own moisture cross-check) -- not directly comparable in units, reported here as its own number, not scaled against those.
+
+==============================================================================
+END. No model was fit. The reserved year (2024-08-01..2025-07-31) was
+never loaded, pulled, or referenced by any date used above.
+==============================================================================
