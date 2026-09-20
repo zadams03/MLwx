@@ -1,0 +1,129 @@
+==============================================================================
+SESSION 49 -- upper-air (E1) feature build. Data-build only: no
+model fit, no MAE, no CV. The reserved year (2024-08-01..2025-07-31,
+DECISIONS D51) is never loaded, pulled, or joined.
+==============================================================================
+
+Understanding confirmed before any pull runs (session prompt Step 3):
+  925/850/700 hPa are FIXED PRESSURE SURFACES, not surface-terrain-tied.
+  They get bilinear horizontal interpolation ONLY. The 7.429 degC/km
+  surface elevation/lapse-rate correction (SPEC 7.2) is NOT applied to
+  t925/t850/t700 anywhere in this script -- applying it here would be
+  a real error, not a style choice, since these levels are not tied
+  to the airport's own surface elevation at all.
+
+Date list built from the existing 5-feature dataset, reserved year excluded:
+  train span : 2021-03-24 .. 2024-07-31  (1226 distinct dates)
+  sealed span: 2025-08-01 .. 2026-07-31  (365 distinct dates)
+
+Guard check PASSED (scripts/session48_reserved_year.py, assert_reserved_year_excluded, plus a defensive per-date scan of all 1591 dates): no reserved-year date is in the pull list.
+
+Distinct (run_date, cycle, lead) combos to fetch: 6361
+3 levels/combo -> up to 6361 idx fetches + 19083 message fetches (25444 total requests)
+  500/6361 combos  elapsed=4.6min  rate=1.82/s  eta=53.7min
+  1000/6361 combos  elapsed=8.9min  rate=1.87/s  eta=47.9min
+  1500/6361 combos  elapsed=13.4min  rate=1.86/s  eta=43.5min
+  2000/6361 combos  elapsed=17.8min  rate=1.88/s  eta=38.8min
+  2500/6361 combos  elapsed=22.1min  rate=1.89/s  eta=34.1min
+  3000/6361 combos  elapsed=26.5min  rate=1.89/s  eta=29.7min
+  3500/6361 combos  elapsed=30.9min  rate=1.89/s  eta=25.3min
+  4000/6361 combos  elapsed=35.3min  rate=1.89/s  eta=20.8min
+  4500/6361 combos  elapsed=39.9min  rate=1.88/s  eta=16.5min
+  5000/6361 combos  elapsed=44.4min  rate=1.88/s  eta=12.1min
+  5500/6361 combos  elapsed=48.9min  rate=1.87/s  eta=7.7min
+  6000/6361 combos  elapsed=53.4min  rate=1.87/s  eta=3.2min
+  6361/6361 combos  elapsed=56.4min  rate=1.88/s  eta=0.0min
+
+Pull+decode done in 56.4 min.
+
+=== Validation (a): messages requested vs. decoded, per field ===
+(counted per station-instance -- a shared combo like EGLC+LFPG counts twice)
+  t925 (TMP:925 mb): requested=7952 decoded_ok=7952 failed=0
+  t850 (TMP:850 mb): requested=7952 decoded_ok=7952 failed=0
+  t700 (TMP:700 mb): requested=7952 decoded_ok=7952 failed=0
+
+Wrote pull manifest (provenance record, no raw bytes kept): /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session49/session49_pull_manifest.csv (19083 rows, 0 FAIL)
+
+Elevation corrections used to recover t2m_raw (D48.3/F90, unchanged, NOT
+applied to t925/t850/t700): t2m_raw = temperature_grib_c - correction_c
+  EGLC: +0.2486 degC
+  LFPG: -0.1697 degC
+  DSM: -0.1106 degC
+  YSDU: +0.2461 degC
+  RNO: +2.0436 degC
+
+=== Validation (b): row counts before/after the join, per airport ===
+
+  span=v16_window -> session49_v16_window_with_upper_air.csv
+    EGLC: before=1226 after=1226
+    LFPG: before=1226 after=1226
+    DSM: before=1225 after=1225
+    YSDU: before=1225 after=1225
+    RNO: before=1225 after=1225
+
+  span=sealed_window -> session49_sealed_window_with_upper_air.csv
+    EGLC: before=365 after=365
+    LFPG: before=365 after=365
+    DSM: before=365 after=365
+    YSDU: before=365 after=365
+    RNO: before=365 after=365
+
+Wrote join-drop log: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session49_upper_air_join_drops.csv (0 rows)
+
+=== Validation (c): sanity ranges per new column, per airport (both spans combined) ===
+
+  EGLC (n=1591):
+    t2m_raw             : min=    0.78 max=   39.17 mean=   15.00 n_null=0
+    t925                : min=   -4.92 max=   29.67 mean=    7.86 n_null=0
+    t850                : min=  -10.60 max=   22.78 mean=    3.81 n_null=0
+    t700                : min=  -22.59 max=   11.16 mean=   -3.60 n_null=0
+    lapse_rate_t2_t850  : min=   -1.63 max=   18.62 mean=   11.18 n_null=0
+    colder-with-height (mean t2m_raw > t925 > t850 > t700): YES  [15.0, 7.86, 3.81, -3.6]
+
+  LFPG (n=1591):
+    t2m_raw             : min=   -0.65 max=   39.72 mean=   16.17 n_null=0
+    t925                : min=   -8.24 max=   30.25 mean=    9.33 n_null=0
+    t850                : min=  -10.23 max=   23.15 mean=    5.11 n_null=0
+    t700                : min=  -19.80 max=   11.89 mean=   -2.58 n_null=0
+    lapse_rate_t2_t850  : min=   -3.60 max=   17.52 mean=   11.06 n_null=0
+    colder-with-height (mean t2m_raw > t925 > t850 > t700): YES  [16.17, 9.33, 5.11, -2.58]
+
+  DSM (n=1590):
+    t2m_raw             : min=  -23.02 max=   42.67 mean=   15.57 n_null=0
+    t925                : min=  -27.43 max=   35.02 mean=   10.12 n_null=0
+    t850                : min=  -24.43 max=   28.05 mean=    7.20 n_null=0
+    t700                : min=  -25.66 max=   16.93 mean=    0.23 n_null=0
+    lapse_rate_t2_t850  : min=  -12.22 max=   16.48 mean=    8.37 n_null=0
+    colder-with-height (mean t2m_raw > t925 > t850 > t700): YES  [15.57, 10.12, 7.2, 0.23]
+
+  YSDU (n=1590):
+    t2m_raw             : min=    4.51 max=   43.11 mean=   22.05 n_null=0
+    t925                : min=    1.25 max=   35.80 mean=   15.66 n_null=0
+    t850                : min=   -3.83 max=   28.29 mean=    9.85 n_null=0
+    t700                : min=  -12.71 max=   13.64 mean=    1.17 n_null=0
+    lapse_rate_t2_t850  : min=    2.51 max=   15.74 mean=   12.20 n_null=0
+    colder-with-height (mean t2m_raw > t925 > t850 > t700): YES  [22.05, 15.66, 9.85, 1.17]
+
+  RNO (n=1590):
+    t2m_raw             : min=   -7.03 max=   36.22 mean=   16.18 n_null=0
+    t925                : min=   -2.28 max=   40.32 mean=   20.79 n_null=0
+    t850                : min=   -6.61 max=   35.50 mean=   16.13 n_null=0
+    t700                : min=  -17.51 max=   18.83 mean=    2.88 n_null=0
+    lapse_rate_t2_t850  : min=   -1.75 max=    1.25 mean=    0.05 n_null=0
+    colder-with-height (mean t2m_raw > t925 > t850 > t700): NO -- FLAG  [16.18, 20.79, 16.13, 2.88]
+
+=== Validation (d): spot-check against F97's own confirmed sample ===
+  F97's own decoded-value sample date was 2025-06-15 -- that date now
+  falls INSIDE the reserved 2024-25 confirmation year (D51, decided one
+  session after F97 ran) and is therefore correctly absent from this
+  session's own output. The spot-check below instead uses F97's OTHER
+  confirmed date, the v16 floor (2021-03-24), which F97 confirmed as
+  PRESENT for TMP:925/850/700 mb at EGLC's own combo but did not decode
+  a value for (F97's own decode call used the recent-date idx only).
+  This session's own EGLC 2021-03-24 row (the date F97 confirmed present): t925=3.07 t850=0.251 t700=-7.742
+  Physically plausible and colder-with-height: YES
+
+==============================================================================
+END. No model was fit. The reserved year (2024-08-01..2025-07-31) was
+never loaded, pulled, or referenced by any date used above.
+==============================================================================

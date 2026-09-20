@@ -1095,3 +1095,150 @@ session48_reserved_year.py` (new). Full real output: `notes/
 session-48-guard-check-output.txt`.
 
 ---
+
+## 2026-09-20 — Session 49 finding: E1 (upper-air/vertical-structure) feature
+set built and validated — a data build, no model fit, reserved year untouched
+
+**F98. Pulls, decodes, and joins the three E1 upper-air fields (TMP at
+925/850/700 hPa) onto the existing 5-feature GRIB dataset, at every date
+that dataset already carries OUTSIDE the reserved 2024-25 confirmation year
+(D51). Data-build-only, per the session prompt: no model was fit, no MAE or
+CV was computed, and 2024-08-01..2025-07-31 was never loaded, pulled, or
+joined.** Script: `scripts/session49_upper_air_pull.py` (new). Full real
+output: `notes/session-49-upper-air-output.txt`. Outputs: `data/processed/
+session49_v16_window_with_upper_air.csv` (6,128 rows), `data/processed/
+session49_sealed_window_with_upper_air.csv` (1,826 rows), `data/processed/
+session49_upper_air_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session49/session49_pull_manifest.csv` (19,083 rows, provenance only — see
+below on why no raw bytes were kept).
+
+**Two design decisions made before any pull ran, both stated in the
+script's own module docstring:**
+1. **No elevation/lapse-rate correction on t925/t850/t700.** SPEC 7.2's
+   7.429 degC/km correction fixes a *surface* grid-cell elevation
+   mismatch; 925/850/700 hPa are fixed pressure surfaces, not tied to
+   surface terrain, so only bilinear horizontal interpolation was applied
+   — exactly as the session prompt required, confirmed in the script's own
+   printed output before the pull started.
+2. **No new 2 m-temperature pull.** The session prompt asked for the
+   lapse-rate feature to use the RAW, uncorrected 2 m forecast temperature,
+   not the elevation-corrected `temperature_grib_c` the existing 5-feature
+   model already uses. Rather than re-pulling 2 m temperature (already
+   decoded once for the existing dataset), `t2m_raw` was recovered
+   algebraically from data already on disk — `t2m_raw = temperature_grib_c
+   - correction_c`, using each airport's own fixed D48.3/F90 constant
+   (`data/raw/diagnostics/session37/session37_elevation_correction_params.csv`)
+   — needing no new GRIB request at all.
+
+**A third decision, forced by disk space, not by the session prompt: no raw
+GRIB2 bytes were kept on disk for this pull.** Free space was ~11 GiB at
+the start of this session (session 37's own ~20 GB raw surface-field cache,
+gitignored under D47, already occupies this disk); a second full-window,
+3-level raw cache built the same way sessions 37/40 built theirs — save
+every message permanently, decode later — was estimated at 15+ GB more
+(based on the existing cache's own ~846 KB/message average), which this
+environment does not have. Instead, each message was byte-range-fetched,
+decoded immediately with eccodes, and the bytes discarded — the
+fetch-decode-discard pattern session 47's own probe already used, extended
+here to a full multi-year pull. A per-request manifest (run_date, cycle,
+lead, level, stations, status, detail — no bytes) stands in as the
+provenance record, consistent with D47's "manifest, not bytes" policy for
+large, re-fetchable sources, taken one step further since not even a local
+disposable cache was kept this time. Free disk space was ~12 GiB after the
+pull — essentially unchanged, confirming no bytes leaked past the
+decode-then-delete step.
+
+**Date range and guard check (session prompt Step 5).** The date list was
+built from the existing 5-feature dataset itself (`grib_features_v16_window.csv`,
+`grib_features_sealed_window.csv`), not assumed to be every calendar day —
+any row whose `target_date` fell inside 2024-08-01..2025-07-31 was skipped
+at the point of loading, never held in memory past that line. This produced
+a **train span of 2021-03-24..2024-07-31 (1,226 distinct dates)** and a
+**sealed span of 2025-08-01..2026-07-31 (365 distinct dates)**, 1,591 dates
+total — the same total day-count as the existing dataset's own two files
+combined, since the reserved year's ~365 days are simply absent rather than
+replaced. Before any pull request was made, both spans were checked with
+`scripts/session48_reserved_year.py`'s own `assert_reserved_year_excluded()`
+(train==test, since this is a continuous span, not a train/test fold) —
+both passed with no exception — and a further defensive per-date scan of
+all 1,591 dates confirmed zero reserved-year dates present. Real output:
+"Guard check PASSED ... no reserved-year date is in the pull list."
+
+**Pull result: complete, zero failures.** 6,361 distinct (run_date, cycle,
+lead) combos were needed (the same four-distinct-files-per-day structure
+session 37/F90 already established); 19,083 message fetches (3 levels x
+6,361 combos) all succeeded — **0 FAIL rows in the manifest**. Per-field,
+per-station-instance counts (a combo shared by EGLC+LFPG counts twice):
+t925 7,952/7,952, t850 7,952/7,952, t700 7,952/7,952. The pull took 56.4
+minutes at 48-way concurrency (~1.88 combos/s), the same order of
+throughput session 37's bulk pull achieved.
+
+**Join result: exact, zero drops, at every airport.** Row counts before and
+after the join match exactly at all five airports in both spans (v16_window:
+EGLC/LFPG 1,226, DSM/YSDU/RNO 1,225; sealed_window: all five 365) — the
+`session49_upper_air_join_drops.csv` log is empty. The v16_window counts
+reproduce the existing dataset's own per-airport shortfall from the
+idx-mismatch dates (F90) exactly (DSM/YSDU/RNO one day short of EGLC/LFPG),
+confirming the join used the existing dataset's real dates, not an assumed
+continuous calendar.
+
+**Validation: sanity ranges, and one genuine, reportable anomaly at RNO.**
+Real min/max/mean/null-count per new column, per airport (full numbers in
+the real output; summary here):
+
+```
+station  t2m_raw (mean)  t925 (mean)  t850 (mean)  t700 (mean)  colder-with-height?
+EGLC         15.00           7.86         3.81        -3.60      YES
+LFPG         16.17           9.33         5.11        -2.58      YES
+DSM          15.57          10.12         7.20         0.23      YES
+YSDU         22.05          15.66         9.85         1.17      YES
+RNO          16.18          20.79        16.13         2.88      NO -- FLAG
+```
+
+Every column is null-free at every airport (n_null=0 throughout), and every
+one of the 19,083 requested messages decoded successfully — this is not a
+decode failure. **At RNO, and only at RNO, the surface-to-925hPa ordering
+inverts**: t925 averages ~4.6 degC *warmer* than the surface (t2m_raw), and
+t850 sits almost exactly level with the surface (mean lapse_rate_t2_t850 =
+0.05 degC, range -1.75 to +1.25, against 8-12 degC average lapse at the
+other four airports). **The likely physical cause, stated here as a
+plausible explanation, not verified further this session (out of scope):**
+RNO's own airport elevation is 1,345 m (SPEC 3.4, the highest in the
+project by a wide margin), while the *standard-atmosphere* altitude of the
+925 hPa surface is roughly 760 m and of 850 hPa roughly 1,460 m — both close
+to or below Reno's own ground level. A fixed-pressure-surface GRIB field at
+a level that sits at or below a location's real terrain is extrapolated
+below-ground by the model's own analysis scheme rather than representing a
+real measured atmospheric layer, which would produce exactly this kind of
+anomalous, non-monotonic reading. **This is flagged for session 50, not
+fixed here**: an E1 lapse-rate feature built from t2m_raw/t850 may behave
+very differently at RNO than at the other four airports, for a real
+physical reason tied to Reno's own elevation, not a data-quality problem —
+worth watching specifically if RNO's own richer-features rescue (F94, F96)
+turns out to interact with this feature differently than the other
+airports do.
+
+**Spot-check (session prompt Step 7, last bullet).** F97's own
+decoded-value sample date, 2025-06-15, now falls **inside** the reserved
+2024-25 confirmation year — a direct consequence of D51 being decided one
+session after F97 ran, not a bug in either session. This session's own
+pull therefore correctly never touches that date. The spot-check instead
+used F97's other confirmed date, the v16 floor (2021-03-24), where F97
+confirmed TMP:925/850/700 mb **present** at EGLC's own combo but did not
+decode a value there (F97's own decode call used only the recent-date idx).
+This session's own EGLC 2021-03-24 row decodes to t925=3.07, t850=0.251,
+t700=-7.742 degC — physically plausible and correctly colder with height.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, or run any CV — that is session 50's job. Did not load,
+pull, reference, or join a single row of the reserved 2024-08-01..2025-07-31
+confirmation year (D51) — enforced both by the shared guard function and a
+defensive per-date scan, confirmed with 0 reserved dates found. Did not
+pull moisture, pressure, or any other E2+ family — upper-air (TMP at
+925/850/700 mb) only. Did not re-run or touch the frozen 5-feature sealed-
+test script. Did not apply the surface elevation/lapse-rate correction to
+any of the three new fields. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed. Script: `scripts/session49_upper_air_pull.py` (new).
+Full real output: `notes/session-49-upper-air-output.txt`.
+
+---

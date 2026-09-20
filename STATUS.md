@@ -3,7 +3,98 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 19 September 2026, after session 48._
+_Last updated: 20 September 2026, after session 49._
+
+---
+
+## Session 49 (build and validate the E1 upper-air/vertical-structure
+feature set — data build only, no modeling)
+
+**Pulls, decodes, and joins the three E1 upper-air fields (TMP at 925, 850,
+and 700 hPa, session 47's own confirmed labels, F97) onto the existing
+5-feature GRIB dataset, at every date that dataset already carries OUTSIDE
+the reserved 2024-25 confirmation year (D51). Data-build-only: no model
+was fit, no MAE or CV was computed, and the reserved year was never
+loaded, pulled, or joined.** Full account: DECISIONS F98. Script:
+`scripts/session49_upper_air_pull.py` (new). Full real output: `notes/
+session-49-upper-air-output.txt`. Outputs: `data/processed/
+session49_v16_window_with_upper_air.csv` (6,128 rows), `data/processed/
+session49_sealed_window_with_upper_air.csv` (1,826 rows), `data/processed/
+session49_upper_air_join_drops.csv` (0 rows), `data/raw/diagnostics/
+session49/session49_pull_manifest.csv` (19,083 rows, provenance only — no
+raw GRIB2 bytes kept, see below).
+
+**Two design points confirmed before any pull ran.** (1) 925/850/700 hPa
+are fixed pressure surfaces, not surface-terrain-tied — SPEC 7.2's 7.429
+degC/km elevation correction was correctly NOT applied to them, bilinear
+horizontal interpolation only. (2) The lapse-rate feature's raw 2 m
+temperature (`t2m_raw`) needed no new GRIB pull at all — it was recovered
+algebraically from the existing elevation-corrected `temperature_grib_c`
+and each airport's own fixed D48.3/F90 correction constant
+(`t2m_raw = temperature_grib_c − correction_c`).
+
+**A third decision, forced by disk space (~11 GiB free at session start,
+session 37's own ~20 GB raw cache already on this disk): no raw GRIB2
+bytes were kept for this pull.** Each message was byte-range-fetched,
+decoded immediately with eccodes, and discarded — the same
+fetch-decode-discard pattern session 47's own probe used, extended here to
+a full multi-year pull — with a per-request manifest (no bytes) standing
+in as the provenance record, per D47's "manifest, not bytes" policy taken
+one step further. Free space was still ~12 GiB after the pull, confirming
+no bytes leaked to disk.
+
+**Guard check (D51).** The date list was built from the existing dataset's
+own real rows (not an assumed continuous calendar), giving a train span of
+2021-03-24..2024-07-31 (1,226 dates) and a sealed span of
+2025-08-01..2026-07-31 (365 dates) — 1,591 dates total, with the reserved
+year's ~365 days simply absent. Checked with `scripts/
+session48_reserved_year.py`'s own `assert_reserved_year_excluded()` on both
+spans (passed) plus a defensive per-date scan of all 1,591 dates (0
+reserved dates found) before any pull request was made.
+
+**Pull and join: complete, zero failures, zero drops.** 6,361 distinct
+(run_date, cycle, lead) combos, 19,083 message fetches, **0 FAIL rows** in
+the manifest (56.4 minutes at 48-way concurrency). The join onto the
+existing dataset matched row counts exactly at all five airports in both
+spans (v16_window: EGLC/LFPG 1,226, DSM/YSDU/RNO 1,225; sealed_window: all
+five 365) — `session49_upper_air_join_drops.csv` is empty.
+
+**Validation: sanity ranges hold at four of five airports; a real,
+reportable anomaly at RNO.** Every new column is null-free everywhere, and
+all 19,083 messages decoded successfully (this is a data-character finding,
+not a decode failure). At EGLC, LFPG, DSM, and YSDU, mean temperature
+falls with height as expected (t2m_raw > t925 > t850 > t700). **At RNO the
+ordering inverts**: mean t925 (20.79 degC) is warmer than mean surface
+temperature (16.18 degC), and mean t850 (16.13 degC) sits almost exactly
+level with the surface (mean `lapse_rate_t2_t850` = 0.05 degC, against
+8-12 degC at the other four airports). The likely cause, stated as a
+plausible explanation and not investigated further this session (out of
+scope): RNO's own airport elevation (1,345 m, SPEC 3.4's highest by a wide
+margin) sits at or above the standard-atmosphere altitude of the 925 hPa
+(~760 m) and even 850 hPa (~1,460 m) pressure surfaces, so those
+fixed-pressure fields are likely extrapolated below-ground at Reno rather
+than measuring a real atmospheric layer. **Flagged plainly for session 50**:
+an E1 lapse-rate feature may behave very differently at RNO than elsewhere,
+for a real physical reason tied to Reno's own terrain, not a data-quality
+problem.
+
+**Spot-check.** F97's own decoded-value sample date (2025-06-15) now falls
+*inside* the reserved year (D51 postdates F97) and was correctly never
+touched by this session. The spot-check instead used F97's other confirmed
+date, the v16 floor (2021-03-24) — this session's own EGLC row there
+decodes to t925=3.07, t850=0.251, t700=-7.742 degC, physically plausible
+and correctly colder with height.
+
+**What this session did not do, on purpose.** Did not fit any model,
+compute any MAE, or run any CV — session 50's job. Did not load, pull, or
+join a single row of the reserved 2024-08-01..2025-07-31 year (D51). Did
+not pull moisture, pressure, or any other E2+ family. Did not touch the
+frozen 5-feature sealed-test script. Did not apply the surface elevation
+correction to any of the three new fields. Did not modify `SPEC.md` or
+`RESULTS.md`. Nothing was committed.
+
+**Archive step this session:** none — F98 is brand new and obviously live;
+nothing else in `DECISIONS.md` became newly settled this session.
 
 ---
 
@@ -868,6 +959,21 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
+**Session 49 (this file's own latest entry, above) built and validated the
+E1 (upper-air/vertical-structure) feature set — TMP at 925/850/700 hPa,
+plus a derived lapse-rate feature — for every date the existing 5-feature
+GRIB dataset already carries outside the reserved 2024-25 confirmation year
+(DECISIONS D51, F98). Data build only: 0 pull failures across 19,083
+messages, 0 join drops at any airport, and the reserved year was never
+loaded, pulled, or joined. One real, reportable data-character finding
+surfaced (not a decode failure, not fixed this session): at RNO, and only
+at RNO, mean temperature does not fall monotonically with height across
+925/850/700 hPa, plausibly because Reno's own 1,345 m elevation sits at or
+above the standard-atmosphere altitude of those pressure surfaces — flagged
+for session 50, which runs the actual staged E1 experiment (baseline
+refit, then the lapse-rate feature alone, then, only if needed, the full
+family) on the output this session produced.**
+
 **Stage 2 (individual airports, SPEC section 6) is complete for the five
 airports opened so far under the EXISTING 3-feature/Open-Meteo recipe —
 four pass, one fails; none of that changed this session (D48.13).
@@ -1348,21 +1454,41 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   and the three-fold `EXPERIMENT_FOLDS` list a future feature-experiment
   session should build from. Verified by construction only. Nothing was
   committed.
+- **Session 49: built and validated the E1 upper-air/vertical-structure
+  feature set — data build only, no model fit (DECISIONS F98).** Pulled
+  TMP at 925/850/700 hPa for every date the existing 5-feature dataset
+  carries outside the reserved 2024-25 year (D51), derived `t2m_raw` and
+  `lapse_rate_t2_t850` without any new 2 m-temperature pull, and joined
+  the result onto the existing dataset with 0 messages failed (of 19,083)
+  and 0 join drops at any airport. No raw GRIB2 bytes were kept on disk
+  (a disk-space-forced design choice, not the session prompt's own
+  requirement) — a per-request manifest stands in as the provenance
+  record instead. Flagged a real, unfixed anomaly: RNO's own mean
+  temperature does not fall monotonically with height across
+  925/850/700 hPa, plausibly a below-ground-extrapolation effect of
+  Reno's 1,345 m elevation relative to those pressure surfaces' own
+  standard-atmosphere altitudes. Reserved year never touched. Nothing was
+  committed.
 
 ## Next
 
-**Session 48 reserved the 2024-25 confirmation year and put a code guard in
-place (DECISIONS D51); this is the fresh, untouched test year the
-feature-selection programme needs.** No feature experiment has been run
-against it — the reservation exists precisely so none can be, until a
-single pre-chosen final feature set is confirmed on it once, at the end.
-**What is genuinely next: choosing a feature-experiment ordering from
-session 47's own availability map (F97; not done by that session on
-purpose) and then building the actual experiment(s) on `scripts/
-session48_reserved_year.py`'s `EXPERIMENT_FOLDS` (2022-23, 2023-24, and a
-truncated 2025-26 — three folds, thinner than F96's four, per D51's own
-honest-cost note) — never on the reserved 2024-25 year, which the guard now
-refuses by construction.**
+**Next planning session: session 50 — the staged E1 experiment.** Session
+49 (this file's own latest entry, above) built and validated the E1
+upper-air feature set (DECISIONS F98): `t925`, `t850`, `t700`, and
+`lapse_rate_t2_t850`, joined onto the existing 5-feature GRIB dataset for
+every date outside the reserved 2024-25 year, with 0 pull failures and 0
+join drops. **Session 50's job: refit the 5-feature baseline on the three
+`EXPERIMENT_FOLDS` (2022-23, 2023-24, truncated 2025-26 — `scripts/
+session48_reserved_year.py`), then test `lapse_rate_t2_t850` alone against
+it, then — only if that doesn't fully capture the family's own
+contribution — add `t850`/`t925`/`t700` directly, all per-airport with DSM
+as the diagnostic, per docs/session-49.md's own closing instruction.** The
+reserved 2024-25 year stays untouched throughout — the guard in `scripts/
+session48_reserved_year.py` refuses any fold that reaches it. Session 49's
+own RNO anomaly (above) is worth watching specifically once session 50
+starts comparing feature sets airport by airport, since it gives a
+concrete physical reason RNO's own lapse-rate feature might behave
+differently from the other four airports', not just an oddity.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,
