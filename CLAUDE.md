@@ -94,10 +94,14 @@ person looking first.
 
 1. Run the session's checks and paste the **real output** — actual numbers,
    not a description of them.
-2. Run a **consistency check**: re-read all three files and report anything
+2. **Overwrite STATUS.md**: this means **pruning it to a current-only
+   snapshot** — present state, the immediate next action, and live open
+   questions only — **never appending that session's write-up to an
+   accumulating log.** Its history lives in git and DECISIONS.md.
+3. Run a **consistency check**: re-read all three files and report anything
    that disagrees, any duplicated heading, and any log entry out of order.
    Report only — do not fix silently. The owner decides.
-3. **Archive step:** move any DECISIONS.md entries that became settled this
+4. **Archive step:** move any DECISIONS.md entries that became settled this
    session to DECISIONS-archive.md, per the archive criterion (settled,
    codified elsewhere or superseded, and not needed word-for-word by any live
    open question or STATUS.md's "Next" section) — mechanically, verbatim,

@@ -2573,3 +2573,61 @@ Nothing was committed. Script: `scripts/session58_e5_experiment.py` (new).
 Full real output: `notes/session-58-e5-experiment-output.txt`.
 
 ---
+
+## 2026-09-21 — Session 59 decision: the E5 (precipitation) family verdict, from the owner's review of F105
+
+**D56. Verdict: E5's adopted contribution to the eventual combine-phase sweep baseline is
+the single feature `precip_rate_mmh` (the `B+P` variant) — the mean since-forecast-start
+precipitation rate F104 built. Nothing is parked. Unlike E1 (D52) and E2 (D53), there is
+no separate raw physical variable to weigh: F104 established E5 carries effectively one
+feature (the raw cumulative total `apcp_cumulative_mm` is a monotone transform of the
+rate, the same feature to a tree), so there is nothing to hold back as a combine-phase
+candidate.**
+
+**Rationale, kept plain.** `precip_rate_mmh` adds +1.3% grand-overall skill over the
+frozen 5-feature baseline B (F105) — a real, mostly-positive result, above E3 (+0.9%) and
+below E4 (+1.9%), the second-weakest family in the sweep. It is adopted because the signal
+is genuine, physically motivated, and lands where the programme cares most. RNO shows the
+family's strongest and most fold-robust benefit by a wide margin (+3.7%, positive in every
+fold: +2.9% / +4.8% / +3.4%), consistent with the Sierra Nevada front (D42) making
+precipitation timing informative there. DSM, the diagnostic, shows a small but fold-robust
+positive signal (+0.6%, positive in all three folds) — the first family since E1/E2 to add
+anything at all at DSM, where E3 (F101) and E4 (F103) both left it flat or negative.
+
+**Honest caveats, recorded not hidden.** The strength is mid-low. EGLC's and LFPG's
+fold-averaged benefit is carried by the earlier/thinnest folds and reverses to
+flat-or-negative in the most recent fold(s) — the fold-quality caution F96/D52–D55 already
+established for the 2022-23 and 2025-26 folds, not a defect unique to precipitation. YSDU
+is flat (-0.0%) with no consistent sign across folds — the family's weakest airport. A
+known mild cross-airport inconsistency stands (F104/F105): the since-start accumulation
+window is 24h at EGLC/LFPG/DSM and 26h at YSDU/RNO, so `precip_rate_mmh` is a mean over
+spans of slightly different length at different airports — carried forward as a limitation
+the combine phase should be aware of, not a reason to withhold adoption. The family stays
+net-positive in the most recent 2025-26 fold (+0.8%), matching E4's shape rather than E3's
+reversal.
+
+**On-record observation for the combine phase (NOT a parked candidate).** Precipitation's
+benefit is uneven and concentrated: strong and durable at RNO, small but consistent at
+DSM, thin-fold-carried at EGLC/LFPG, flat at YSDU. The combine phase should expect
+precipitation to pull its weight mainly at RNO and DSM, and should watch the EGLC/LFPG
+recent-fold softness when the adopted features are swept together. Grid:
+`data/processed/session58_e5_experiment_grid.csv`.
+
+**This is provisional.** Like every family in the sweep, `precip_rate_mmh` is confirmed
+only when the single final feature set is checked on the reserved year once, at the finish
+line (D51) — not now.
+
+**E5 is the last family — the feature-selection sweep is now complete.** All five families
+have a verdict against the same frozen 5-feature baseline B. Adopted into the eventual
+combine-phase sweep baseline: `lapse_rate_t2_t850` (D52), `dewpoint_depression_t2m_floored`
+(D53), `pressure_tendency_3h_hpa` (D54), `dswrf_2h_wm2` (D55), and `precip_rate_mmh`
+(D56). Parked combine-phase candidates (separate raw variables held back for the sweep, not
+in the baseline): RNO's raw pressure-level temperatures (D52) and relative humidity (D53).
+E3, E4 and E5 parked nothing.
+
+**Measurement baseline note.** No family remains to measure against B — E5 closes the
+sweep. Adopted features enter together only at the combine phase. Cites F105.
+
+**What this decision did not do.** Did not touch `SPEC.md` or `RESULTS.md`. Did not fit any
+model or compute any new figure — every number above is copied from and cited to F105. Did
+not touch the reserved 2024-08-01..2025-07-31 confirmation year.
