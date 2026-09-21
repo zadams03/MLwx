@@ -2410,3 +2410,166 @@ throughout. Did not modify `SPEC.md` or `RESULTS.md`. Nothing was
 committed.
 
 ---
+
+## 2026-09-21 — Session 58 finding: the staged E5 (precipitation) experiment
+— a reading, not a verdict; reserved year untouched. E5 is the LAST family
+in the feature-selection programme.
+
+**F105. Fits TWO feature variants (B, B+P — not a four-variant grid, see
+below) on the three non-reserved `EXPERIMENT_FOLDS` (D51) to read whether
+the precipitation family (built and validated in session 57, F104) adds
+skill on top of the frozen 5-feature GRIB baseline. This is a LEARNING
+experiment, not a sealed-bar test — it reports a grid, not a pass/fail
+verdict (the family call is the owner's review decision in session 59,
+D56). The reserved 2024-08-01..2025-07-31 confirmation year was never read,
+at all, this session.** Script: `scripts/session58_e5_experiment.py` (new).
+Full real output: `notes/session-58-e5-experiment-output.txt`. Tables:
+`data/processed/session58_e5_experiment_grid.csv` (30 rows: 5 airports x 3
+folds x 2 variants) and `data/processed/session58_e5_experiment_summary.csv`
+(18 rows: 10 fold-averaged-per-airport, 6 airport-averaged-per-fold, 2
+grand-overall).
+
+**The two variants, both on D21.4/D48.6's unchanged LightGBM settings, no
+per-airport feature selection:**
+- **B** — the frozen 5-feature set, REFIT on these three folds (not a
+  reuse of F94/F96/F99/F100/F101/F103). Not B+L, B+D, B+T, or B+R either —
+  D52/D53/D54/D55's own "measurement baseline is unchanged" rule.
+- **B+P** — B plus `precip_rate_mmh` (one continuous feature, NO
+  transform — no log1p, no binary wet/dry flag; a decoded zero is a real,
+  kept dry-forecast value, per F104).
+
+**Why two variants, not four (session prompt section 2, F104's own Step 0
+finding).** `precip_window_hours` is a CONSTANT per airport (24h at
+EGLC/LFPG/DSM, 26h at YSDU/RNO), so `apcp_cumulative_mm` and
+`precip_rate_mmh` are monotone transforms of each other within any one
+airport's own rows — LightGBM's tree splits are invariant to a monotone
+per-feature transform, so to a tree they are the SAME feature. There is
+therefore no meaningful raw-vs-resolved contrast to test, unlike E1–E4. No
+Pv/v variant is defined — it would be identical to B+P by construction.
+
+**Sanity check 5a (reserved-year guard) — PASS.** All three
+`EXPERIMENT_FOLDS` entries cleared `assert_reserved_year_excluded()` before
+any data was loaded; a defensive per-row scan found 0 reserved-year rows in
+the loaded data.
+
+**Sanity check 5b (feature-integrity check) — PASS, checked on every row,
+not a spot check.** `precip_rate_mmh == apcp_cumulative_mm /
+precip_window_hours` holds within a 1e-3 mm/h tolerance at all 7,952 rows
+of both session57 output files, across all five airports (max abs diff
+0.0000667 at EGLC/LFPG/DSM, 0.0000615 at YSDU/RNO — pure rounding noise on
+the 3-decimal stored values, comfortably inside tolerance). `precip_
+window_hours` confirmed CONSTANT per airport throughout: 24.0 at
+EGLC/LFPG/DSM, 26.0 at YSDU/RNO — matching F104 exactly.
+
+**An unplanned but strong internal-consistency signal, the same check
+F99/F100/F101/F103 ran.** The `2025-26` fold's `B` variant (refit
+5-feature baseline, trained on one fewer year than F94 because training
+may not reach the reserved year) reproduces F94/F96/F99/F100/F101/F103's
+own raw-GFS and persistence MAE and row counts almost exactly at every
+airport: EGLC raw 1.2536 vs 1.254 (n=364 vs 364), LFPG raw 1.3822 vs 1.382
+(n=364 vs 364), DSM raw 1.7334 vs 1.733 (n=365 vs 365), YSDU raw 1.3167 vs
+1.317 (n=356 vs 356), RNO raw 1.5116 vs 1.512 (n=365 vs 365) — confirming
+the pipeline (join, features, model settings) is a correct reproduction of
+the frozen recipe.
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, n=15
+airport-folds per variant):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+P       1.267      -0.017      +1.3%
+```
+
+**Fold-averaged per airport (mean across the three folds), skill vs B:**
+
+```
+station   B+P
+EGLC     +1.1%
+LFPG     +0.9%
+DSM      +0.6%
+YSDU     -0.0%
+RNO      +3.7%
+```
+
+**E5's own max grand-overall skill against E1–E4, stated plainly, per the
+session prompt's own instruction.** E1's max (B+Lv, F99): +2.0%. E2's max
+(B+Dv, F100): +4.1%. E3's max (B+T, F101): +0.9%. E4's max (B+Rv, F103):
++1.9%. **E5's max (B+P, this session): +1.3%** — E5 sits above E3, below
+E4, well below E1 and E2. Ordered: E2 (+4.1%) > E1 (+2.0%) > E4 (+1.9%) >
+E5 (+1.3%) > E3 (+0.9%).
+
+**The specific question, read with the numbers: does precipitation add
+skill on top of B?** A real, modest, mostly-positive result — not a clean
+sweep, and not the null result a "precipitation is a weak, sparse signal"
+prior might have predicted either. Four of five airports post a positive
+fold-averaged skill; YSDU is flat (-0.0%).
+
+**DSM, the diagnostic (F96: most headroom, cloud/wind already marginal
+there) — unlike E3 and E4, precipitation adds a small but genuinely
+positive, fold-robust signal.** DSM's fold-averaged skill is +0.6%, small
+but positive in all three individual folds (2022-23 +0.6%, 2023-24 +0.3%,
+2025-26 +1.0%) — the honest reading is that precipitation is the first
+family since E1/E2 to add anything at all at DSM, where E3 (F101, -0.3% to
+-1.0%) and E4 (F103, -0.2% to +0.1%) both left it flat or negative. The
+signal is small, but it is real and consistent across every fold, not
+carried by one.
+
+**RNO — the family's strongest and most fold-robust result, by a wide
+margin.** RNO's fold-averaged skill (+3.7%) is more than double any other
+airport's, and positive in every individual fold (2022-23 +2.9%, 2023-24
++4.8%, 2025-26 +3.4%) — a real, durable signal, not a single-fold
+artifact. This is consistent with RNO's own already-established character
+(D42, the Sierra Nevada front) making precipitation timing a genuinely
+informative signal there.
+
+**EGLC and LFPG — the fold-averaged figure hides a real reversal in the
+more recent folds, flagged explicitly rather than left in the average.**
+EGLC's benefit (+3.7% in 2022-23, the thinnest fold) reverses to essentially
+flat-to-negative in both later folds (2023-24 -0.2%, 2025-26 -0.6%) — the
+fold-averaged +1.1% is carried entirely by the thinnest, least-trusted
+fold. LFPG shows the same shape one fold later: positive in the two
+earlier folds (2022-23 +2.1%, 2023-24 +1.4%) but negative in the most
+recent (2025-26 -0.7%). Both patterns match the fold-quality caution
+F96/D52–D55 already established for the 2022-23 and 2025-26 folds
+specifically, not a new concern unique to precipitation.
+
+**YSDU — flat, with no consistent sign across folds.** Fold-averaged skill
+is essentially zero (-0.0%), and the three individual folds do not agree
+in sign (2022-23 -0.7%, 2023-24 +0.5%, 2025-26 +0.2%) — the family's
+weakest, least-consistent airport-level result.
+
+**Per-fold spread, airport-averaged.** 2022-23 (thinnest, per
+F96/D52–D55's own established caution): +1.6% — the family's largest
+airport-averaged fold reading. 2023-24: +1.4%. 2025-26 (most recent, least
+trusted): +0.8% — smaller than the two earlier folds, but **positive, not
+a reversal to negative the way E3 (F101) showed across every variant in
+this same fold.** E5 matches E4's shape here (stays positive in every
+fold) rather than E3's (reverses to negative in the most recent fold).
+
+**The known cross-airport inconsistency, already on record (F104),
+reported again rather than papered over.** The since-start accumulation
+window used for `precip_rate_mmh` is 24h at EGLC/LFPG/DSM and 26h at
+YSDU/RNO — a mean over spans of different length at different airports.
+Rate-normalisation handles the magnitude, not the span-length difference
+itself. No per-airport statistical standardisation was used to hide this.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51) — session57's own output files already exclude it, and this
+session's own defensive per-row scan found 0 reserved-year rows, on top of
+the guard check on all three folds before any data was loaded. Did not
+compute any pass/fail verdict anywhere — the two-variant grid is reported;
+the family call is left to the owner's review in session 59 (D56). Did not
+add a third or fourth variant, or any Pv/v variant — E5 carries effectively
+one feature (F104), so none is defined. Did not do any per-airport feature
+selection — identical features at every airport, in both variants, RNO
+included. Did not add `lapse_rate_t2_t850` (D52), `dewpoint_depression_
+t2m_floored` (D53), `pressure_tendency_3h_hpa` (D54), or `dswrf_2h_wm2`
+(D55) to B — B stays the frozen 5-feature set only. Did not re-pull,
+re-decode, or re-derive any precipitation field — reused session 57's own
+committed output files unchanged. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed. Script: `scripts/session58_e5_experiment.py` (new).
+Full real output: `notes/session-58-e5-experiment-output.txt`.
+
+---

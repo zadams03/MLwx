@@ -3,7 +3,124 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 September 2026, after session 57._
+_Last updated: 21 September 2026, after session 58._
+
+---
+
+## Session 58 (run the staged E5 (precipitation) experiment — a reading,
+not a verdict; the LAST family experiment in the programme)
+
+**Fits TWO feature variants (B, B+P — not a four-variant grid) on the three
+non-reserved `EXPERIMENT_FOLDS` (D51) to read whether the precipitation
+family (session 57's own build, F104) adds skill on top of the frozen
+5-feature GRIB baseline. This is a LEARNING experiment: it reports a grid,
+not a pass/fail verdict — the E5 family call is the owner's review decision
+in session 59 (D56). The reserved 2024-08-01..2025-07-31 confirmation year
+was never read, at all, this session. E5 is the LAST family in the
+feature-selection programme.** Full account: DECISIONS F105. Script:
+`scripts/session58_e5_experiment.py` (new). Full real output: `notes/
+session-58-e5-experiment-output.txt`. Tables: `data/processed/
+session58_e5_experiment_grid.csv` (30 rows: 5 airports x 3 folds x 2
+variants) and `data/processed/session58_e5_experiment_summary.csv` (18
+rows: 10 fold-averaged-per-airport, 6 airport-averaged-per-fold, 2
+grand-overall).
+
+**Why two variants, not four (session prompt section 2, F104's own Step 0
+finding).** `precip_window_hours` is a CONSTANT per airport (24h at
+EGLC/LFPG/DSM, 26h at YSDU/RNO), so `apcp_cumulative_mm` and
+`precip_rate_mmh` are monotone transforms of each other within any one
+airport's own rows — LightGBM's tree splits are invariant to a monotone
+per-feature transform, so to a tree they are the SAME feature. There is
+therefore no meaningful raw-vs-resolved contrast to test, unlike E1–E4. No
+Pv/v variant was defined — it would be identical to B+P by construction.
+
+**Sanity check 5a (reserved-year guard) — PASS.** All three
+`EXPERIMENT_FOLDS` entries cleared `assert_reserved_year_excluded()` before
+any data was loaded; a defensive per-row scan found 0 reserved-year rows.
+
+**Sanity check 5b (feature-integrity check) — PASS, checked on every row,
+not a spot check.** `precip_rate_mmh == apcp_cumulative_mm /
+precip_window_hours` holds within a 1e-3 mm/h tolerance at all 7,952 rows
+of both session57 output files, across all five airports (max abs diff
+0.0000667 at EGLC/LFPG/DSM, 0.0000615 at YSDU/RNO — pure rounding noise).
+`precip_window_hours` confirmed CONSTANT per airport: 24.0 at EGLC/LFPG/DSM,
+26.0 at YSDU/RNO — matching F104 exactly.
+
+**An unplanned but strong internal-consistency signal, the same check
+F99/F100/F101/F103 ran.** The `2025-26` fold's `B` variant (refit
+5-feature baseline, trained on one fewer year than F94) reproduces
+F94/F96/F99/F100/F101/F103's own raw-GFS and persistence MAE and row
+counts almost exactly at every airport (e.g. EGLC raw 1.2536 vs 1.254,
+n=364 vs 364; RNO raw 1.5116 vs 1.512, n=365 vs 365).
+
+**Result — grand overall (mean MAE across all 5 airports x 3 folds, 15
+airport-folds):**
+
+```
+variant   mean MAE   delta vs B   skill vs B
+B         1.284       --           --
+B+P       1.267      -0.017      +1.3%
+```
+
+**E5's own max grand-overall skill against E1–E4: E1 +2.0% (B+Lv, F99), E2
++4.1% (B+Dv, F100), E3 +0.9% (B+T, F101), E4 +1.9% (B+Rv, F103), E5 +1.3%
+(B+P, this session).** Ordered: E2 > E1 > E4 > E5 > E3 — E5 sits above E3,
+below E4.
+
+**Fold-averaged per airport, skill vs B: EGLC +1.1%, LFPG +0.9%, DSM
++0.6%, YSDU -0.0%, RNO +3.7%.** A real, modest, mostly-positive result —
+four of five airports positive, YSDU flat.
+
+**DSM, the diagnostic (F96: most headroom) — unlike E3 and E4, a small but
+genuinely positive, fold-robust signal.** +0.6% fold-averaged, positive in
+all three individual folds (2022-23 +0.6%, 2023-24 +0.3%, 2025-26 +1.0%) —
+the first family since E1/E2 to add anything at DSM at all, where E3
+(-0.3% to -1.0%) and E4 (-0.2% to +0.1%) both left it flat or negative.
+
+**RNO — the family's strongest and most fold-robust result by a wide
+margin.** +3.7% fold-averaged, positive in every fold (2022-23 +2.9%,
+2023-24 +4.8%, 2025-26 +3.4%) — more than double any other airport's
+signal, consistent with RNO's own established terrain character (D42).
+
+**EGLC and LFPG — the fold average hides a real reversal in the more
+recent folds, flagged explicitly.** EGLC's benefit (+3.7% in the thinnest,
+2022-23 fold) reverses to flat-to-negative in both later folds (2023-24
+-0.2%, 2025-26 -0.6%). LFPG is positive in the two earlier folds (+2.1%,
++1.4%) but negative in the most recent (-0.7%). Both match the fold-quality
+caution F96/D52–D55 already established for these two folds specifically.
+
+**YSDU — flat, with no consistent sign across folds** (2022-23 -0.7%,
+2023-24 +0.5%, 2025-26 +0.2%) — the family's weakest, least-consistent
+airport-level result.
+
+**Per-fold spread (airport-averaged): 2022-23 +1.6%, 2023-24 +1.4%,
+2025-26 +0.8% — stays POSITIVE in the most recent fold, unlike E3 (F101),
+which reversed to negative across every variant in that same fold; E5
+matches E4's shape here, not E3's.**
+
+**The known cross-airport inconsistency, already on record (F104), stated
+again, not papered over.** The since-start accumulation window is 24h at
+EGLC/LFPG/DSM and 26h at YSDU/RNO — a mean over spans of different length
+at different airports. Rate-normalisation handles the magnitude, not the
+span-length difference itself.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year
+(D51). Did not compute any pass/fail verdict — the two-variant grid is
+reported; the family call is session 59's job (D56). Did not add a third
+or fourth variant, or any Pv/v variant. Did not add `lapse_rate_t2_t850`
+(D52), `dewpoint_depression_t2m_floored` (D53), `pressure_tendency_3h_hpa`
+(D54), or `dswrf_2h_wm2` (D55) to B — B stays the frozen 5-feature set
+only. Did not do any per-airport feature selection. Did not re-pull,
+re-decode, or re-derive any precipitation field — reused session 57's own
+committed output files unchanged. Did not modify `SPEC.md` or `RESULTS.md`.
+Nothing was committed.
+
+**Archive step this session:** none — F105 is brand new and obviously
+live; D51/D52/D53/D54/D55/F96-F104 all remain live inputs to a
+still-open feature-selection programme (the E5 family call, session 59's
+D56, has not yet been made); nothing else in `DECISIONS.md` became newly
+settled this session.
 
 ---
 
@@ -1936,7 +2053,30 @@ output in `notes/session-35-check-output.txt`). Samples saved under
 
 ## Current stage
 
-**Session 57 (this file's own latest entry, above) recorded the E4
+**Session 58 (this file's own latest entry, above) ran the staged E5
+(precipitation) experiment — a reading, not a verdict (DECISIONS F105). E5
+is the LAST family in the feature-selection programme.** Two feature
+variants (B, B+P — not a four-variant grid, per session 57's own F104
+Step 0 monotone-equivalence finding) were fit on the three non-reserved
+`EXPERIMENT_FOLDS` (D51) at all five airports; both sanity checks (the
+feature-integrity check, checked on every one of 7,952 rows; the
+reserved-year guard, on every fold) PASS; the reserved 2024-25 year was
+never read. Headline: precipitation adds a real, modest, mostly-positive
+signal — four of five airports positive fold-averaged (EGLC +1.1%, LFPG
++0.9%, DSM +0.6%, RNO +3.7%), YSDU flat (-0.0%). RNO shows the family's
+strongest and most fold-robust result by a wide margin (+3.7%, positive in
+every fold); DSM, unlike E3 and E4, shows a small but genuinely positive,
+fold-robust signal (+0.6%, positive in all three folds) — the first family
+since E1/E2 to add anything at DSM at all. EGLC's and LFPG's fold-averaged
+figures each hide a reversal to flat-or-negative in their more recent
+folds, flagged explicitly rather than left in the average. E5's own max
+grand-overall skill (+1.3%, B+P) sits above E3 (+0.9%) and below E4
+(+1.9%), and — like E4, unlike E3 — stays positive in the most recent
+(2025-26) fold rather than reversing to negative. No pass/fail verdict was
+computed; the E5 family call, and with it the whole E1–E5 sweep's
+completion, is for review next session (session 59, D56).
+
+**Session 57, the session before, recorded the E4
 (radiation) family verdict (DECISIONS D55) and built the E5 (precipitation)
 feature set — the LAST family in the programme, data build only (DECISIONS
 F104, added in a same-session follow-up once the owner asked for it).**
@@ -2720,46 +2860,59 @@ file) and in DECISIONS.md / DECISIONS-archive.md. High points only:
   restored exactly and no entry's content altered; F104 (added in a
   same-session follow-up) landed cleanly on the first attempt. No model
   fit. Reserved year never touched. Nothing was committed.
+- **Session 58: ran the staged E5 (precipitation) experiment (DECISIONS
+  F105) — a reading, not a verdict. E5 is the LAST family in the
+  feature-selection programme.** Fit two feature variants (B, B+P) on the
+  three non-reserved `EXPERIMENT_FOLDS` (D51), all five airports — not a
+  four-variant grid, per session 57's own F104 monotone-equivalence
+  finding. Both sanity checks passed (feature-integrity, checked on every
+  row of 7,952; the reserved-year guard, on every fold). Grand-overall:
+  B+P +1.3% skill vs B — above E3 (+0.9%), below E4 (+1.9%). Four of five
+  airports show a positive fold-averaged signal (EGLC +1.1%, LFPG +0.9%,
+  DSM +0.6%, RNO +3.7%); YSDU is flat (-0.0%). RNO is the family's
+  strongest, most fold-robust result; DSM, unlike E3/E4, shows a small but
+  genuinely positive signal in every fold. EGLC's and LFPG's fold averages
+  each hide a reversal to flat-or-negative in their more recent folds. The
+  family stays positive in the most recent (2025-26) fold, like E4, unlike
+  E3. No pass/fail verdict computed — the family call is for review next
+  session. Reserved year never touched. Nothing was committed.
 
 ## Next
 
-**Next planning session: session 58 — run the staged E5 (precipitation)
-experiment on the three non-reserved `EXPERIMENT_FOLDS` (D51), a clean B
-vs B+P (one precipitation feature — see this session's own Step 0
-monotone-equivalence observation, not a four-variant raw-vs-resolved grid
-the way E1-E4 were), reading per-airport with DSM as the diagnostic and the
-reserved year untouched; then, with E5's verdict recorded, the whole
-E1-E5 family sweep is complete and the combine phase / reserved-year
-finish line is next.**
+**Next planning session: session 59 — record the E5 (precipitation)
+family verdict (DECISIONS D56) from the owner's review of F105; with that,
+the whole E1–E5 family sweep has a verdict and the housekeeping session
+(then the combine phase / reserved-year finish line) is next.**
 
-**The E4 (radiation) family verdict was recorded this session (DECISIONS
-D55): `dswrf_2h_wm2` is adopted into the eventual combine-phase sweep
-baseline; the two raw de-accumulation-endpoint columns are not, and —
-as with E3 — nothing from this family is parked as a combine-phase
-candidate either, because those two columns are not a separate physical
-variable at all (they are the two accumulation-window averages the
-adopted feature is itself derived from, and are unevenly defined across
-airports).** E4 is a mid-strength family (+1.4% adopted, +1.9% max
-grand-overall skill — above E3's +0.9%, below E1's +2.0% and E2's +4.1%).
-The EGLC/LFPG raw-endpoint-on-top-of-resolved benefit is logged as an
-on-record combine-phase observation, not a formal parked candidate.
+**The E5 (precipitation) experiment was run this session (DECISIONS F105):
+a two-variant grid (B, B+P), no verdict computed.** Grand-overall: B+P
++1.3% skill vs B — above E3's +0.9%, below E4's +1.9%. Four of five
+airports show a positive fold-averaged signal (EGLC +1.1%, LFPG +0.9%, DSM
++0.6%, RNO +3.7%); YSDU is flat (-0.0%). RNO is the family's strongest,
+most fold-robust result; DSM, unlike E3/E4, shows a small but genuinely
+positive signal in every fold — the first family since E1/E2 to add
+anything at DSM at all. EGLC's and LFPG's fold-averaged figures each hide
+a reversal to flat-or-negative in their more recent folds, flagged
+explicitly. The family stays positive in the most recent (2025-26) fold,
+matching E4's shape rather than E3's reversal.
 
-**All four families run so far now have a recorded verdict, each measured
-against the same frozen 5-feature baseline B, none yet combined:** E1 —
+**All five families now have a run experiment; four have a recorded
+verdict, and E5's own verdict is session 59's job:** E1 —
 `lapse_rate_t2_t850` (D52, F99); E2 — `dewpoint_depression_t2m_floored`
 (D53, F100); E3 — `pressure_tendency_3h_hpa` (D54, F101); E4 —
-`dswrf_2h_wm2` (D55, F103). E1 and E2 each also parked one further raw-field
-candidate for the combine phase (RNO's raw pressure-level temperatures;
-relative humidity); E3 and E4 parked nothing. **E5 (precipitation) is the
-only family left to run its own staged experiment and receive a verdict**
-— its feature set is now built and validated (this session, DECISIONS
-F104, see above), so session 58 can proceed straight to the experiment.
+`dswrf_2h_wm2` (D55, F103); E5 — experiment run, no verdict yet (F105, this
+session). E1 and E2 each also parked one further raw-field candidate for
+the combine phase (RNO's raw pressure-level temperatures; relative
+humidity); E3 and E4 parked nothing. **With E5's verdict recorded next
+session, the whole E1–E5 family sweep will be complete for the first
+time**, and the housekeeping session (then the combine phase /
+reserved-year finish line) is next.
 
 The reserved 2024-25 confirmation year (D51) stays untouched until a
 single, pre-chosen final feature set is confirmed on it once, at the very
 end of the whole feature-selection programme — not before, and not by
-session 57's own build (this session), session 58's own E5 experiment, or
-any session before the finish line.
+session 58's own E5 experiment (this session), session 59's own E5
+verdict, or any session before the finish line.
 
 Session 47 built the feature-family availability map (DECISIONS F97) that
 feature-experiment planning needs. All five candidate families (radiation,
