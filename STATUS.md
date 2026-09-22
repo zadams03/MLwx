@@ -3,51 +3,61 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 22 September 2026, after session 60._
+_Last updated: 22 September 2026, after session 61._
 
 ---
 
 ## Where the project is right now
 
-**The E1–E5 feature-selection sweep is complete (all five families verdicted,
-D52–D56), and the combine-phase sweep that follows it is now designed and
-pre-registered — no model fit, no data row read.**
+**The pre-registered combine-phase sweep (D57) has been run (F106). The
+mechanical selection rule's output is a candidate feature set — B+D,L,R,T
+(the full adopted set B+LDTRP minus precipitation P; neither parked option,
+`rh` nor `plev`, adopted) — and the joint backstop passed. This is explicitly
+NOT a verdict.** The single final feature set is the session-62 owner
+review's call.
 
-Session 60 wrote `DECISIONS.md` D57: the combine sweep will fit a
-pre-registered 14-variant ladder (B; the five single-adds; the full adopted
-set B+LDTRP; its five leave-one-out variants; and the two parked-option adds
-B+LDTRP+rh / B+LDTRP+plev) on the three non-reserved `EXPERIMENT_FOLDS`
-(D51), with pre-registered thresholds (`TAU_SKILL` = 0.4%, a 5%
-complete-case row-cost guard, and a fixed backward-elimination drop order),
-a mechanical selection rule with a correlated-feature safeguard, and a joint
-backstop that halts and surfaces rather than auto-picking if the selected
-set fails its own checks. All of this is enforced in code by the new
-manifest `scripts/session60_combine_design.py`, which imports (not
-redefines) session 48's `EXPERIMENT_FOLDS` and reserved-year guard.
+Session 61 fit the 14-variant ladder on the three non-reserved
+`EXPERIMENT_FOLDS` (D51), over one complete-case row set covering all seven
+candidate features. Every guard and integrity check passed: the reserved
+2024-25 confirmation year was never touched; the complete-case row set
+turned out identical to the true B-only row set (0 rows dropped at any of
+the 15 airport-folds); every feature column matched its committed source
+file exactly (max abs diff 0.0); the refit-B 2025-26 fold reproduced
+F94/F96/F99-F105's own numbers exactly at every airport.
 
-The manifest's header-only pre-flight ran once and passed cleanly (18 of 18
-file/column checks present, 14/14 variants). Building it surfaced one
-wrinkle, recorded in D57: the E2 feature `dewpoint_depression_t2m_floored`
-(D53) is not itself a stored column — only the raw `dewpoint_depression_t2m`
-is committed, with the exact floor transform (`max(x, 0)`, per D53/F100)
-applied at feature-matrix build time, not persisted to disk. The manifest
-names the raw column plus the transform explicitly so session 61 applies
-the already-frozen formula rather than guessing or re-deriving.
+Applying the mechanical selection rule: Round 1 of leave-one-out backward
+elimination flagged three features (D, L, P) droppable together, triggering
+the correlated-feature safeguard, which dropped only the least-damage one
+(P, +0.12pp). Round 2 found nothing further droppable — core set = B+D,L,R,T.
+Neither parked option (`rh`, raw relative humidity; `plev`, the three raw
+pressure-level temperatures) cleared the bar on top of the core set — both
+actively worsened it when added. The joint backstop confirmed the final set
+beats B (+5.48% fold-averaged, non-DSM) and is not meaningfully worse than
+the full B+LDTRP set (gap +0.12pp, within the 0.4pp threshold).
 
-The measurement baseline B is unchanged. The reserved 2024-25 year (D51) and
-the sealed 2025-26 year (F94) are both still untouched. Every prior verdict
-(F16/F30/F47/F64/F82, F94, D52–D56) stands exactly as reported.
+Two interpretation decisions were required to turn D57's English rule into
+code (documented in the script and DECISIONS F106, flagged for session-62 to
+check): (1) all keep/drop/adopt/backstop votes average over the four
+non-DSM airports, per D57's "DSM is diagnostic only — never a keep/drop
+vote"; (2) `plev`'s own adoption vote uses all five airports, per its
+explicit "across all five airports" override in D57.
+
+Every prior verdict (F16/F30/F47/F64/F82, F94, D52–D57) stands exactly as
+reported. The reserved 2024-25 year and the sealed 2025-26 year both remain
+untouched by any selection decision.
 
 ---
 
 ## Next
 
-**Next planning session: session 61 — run the pre-registered combine sweep
-(D57): fit the 14-variant ladder on the three non-reserved
-`EXPERIMENT_FOLDS` over the single complete-case row set, run the row-cost
-guard and the integrity checks, apply the selection rule with the joint
-backstop, and report the grid — no verdict, no reserved-year read. The
-session-62 owner review then picks the single final feature set.**
+**Next planning session: session 62 — owner review of the combine-sweep
+grid (F106). Pick the single final feature set** — confirm the mechanical
+rule's own output (B+D,L,R,T), override it using the same grid and
+selection trace, or resolve the two interpretation decisions differently.
+**That set is then confirmed once on the reserved 2024-25 year at the
+finish line (D51).** The joint backstop did not halt, so there is no
+stop-and-surface failure to resolve — this is a normal review, not a
+recovery session.
 
 ---
 

@@ -1,0 +1,658 @@
+
+==========================================================================================
+SESSION 61 -- combine-phase feature-selection sweep (DECISIONS D57). Runs ONLY on the three non-reserved EXPERIMENT_FOLDS. The reserved 2024-08-01..2025-07-31 confirmation year (D51) is never read this session. NO VERDICT is computed -- the single final feature set is the session-62 owner review's call.
+==========================================================================================
+run at        : 2026-09-22 19:24:18 local
+python        : 3.12.2
+numpy         : 2.5.2
+lightgbm      : 4.7.0
+TAU_SKILL     : 0.004 (0.4pp)
+ROW_COST_GUARD_FRAC: 0.05
+DROP_ORDER    : ['T', 'P', 'R', 'L', 'D']
+VARIANT_LADDER: 14 variants (imported, not redefined)
+    B                = B + []
+    B+L              = B + ['L']
+    B+D              = B + ['D']
+    B+T              = B + ['T']
+    B+R              = B + ['R']
+    B+P              = B + ['P']
+    B+LDTRP          = B + ['L', 'D', 'T', 'R', 'P']
+    B+DTRP           = B + ['D', 'T', 'R', 'P']
+    B+LTRP           = B + ['L', 'T', 'R', 'P']
+    B+LDRP           = B + ['L', 'D', 'R', 'P']
+    B+LDTP           = B + ['L', 'D', 'T', 'P']
+    B+LDTR           = B + ['L', 'D', 'T', 'R']
+    B+LDTRP+rh       = B + ['L', 'D', 'T', 'R', 'P', 'rh']
+    B+LDTRP+plev     = B + ['L', 'D', 'T', 'R', 'P', 'plev']
+
+Interpretation decisions made to operationalize D57's English rule
+into code (see this script's own module docstring for the full text):
+  1. All mechanical keep/drop/adopt/backstop votes average over the
+     FOUR non-DSM airports (EGLC, LFPG, YSDU, RNO). DSM is still fit
+     and reported in the full grid/summary (all five airports).
+  2. plev's own adoption vote uses all FIVE airports (its own
+     explicit 'across all five airports' override in D57).
+
+==========================================================================================
+Reserved-year guard -- cleared on all three EXPERIMENT_FOLDS entries BEFORE any data is loaded (D57 Step 2 / session prompt Step 2)
+==========================================================================================
+    2022-23    train=2021-03-24..2022-07-31  test=2022-08-01..2023-07-31  -- PASS (guard did not raise)
+    2023-24    train=2021-03-24..2023-07-31  test=2023-08-01..2024-07-31  -- PASS (guard did not raise)
+    2025-26    train=2021-03-24..2024-07-31  test=2025-08-01..2026-07-31  -- PASS (guard did not raise)
+
+    PASS -- all 3 EXPERIMENT_FOLDS entries cleared assert_reserved_year_excluded() before any data was loaded.
+
+==========================================================================================
+Loading the five distinct committed E1-E5 source files (reusing committed columns only -- nothing rebuilt, re-decoded, or re-derived, except D53/F100's own frozen one-line floor transform, applied below)
+==========================================================================================
+    upper-air (L, plev)  : 7952 rows loaded, reserved-year hits: 0
+    moisture (D, rh)     : 7952 rows loaded, reserved-year hits: 0
+    pressure (T)         : 7952 rows loaded, reserved-year hits: 0
+    radiation (R)        : 7952 rows loaded, reserved-year hits: 0
+    precip (P)           : 7952 rows loaded, reserved-year hits: 0
+
+    PASS -- 0 reserved-year rows found across all five source files (defensive per-row scan).
+
+==========================================================================================
+Building the single complete-case row set (session prompt Step 4): one row per (station, date) present in ALL SEVEN candidate features' underlying columns (L, D, T, R, P, rh, plev)
+==========================================================================================
+    EGLC   complete-case rows: 1591
+    LFPG   complete-case rows: 1591
+    DSM    complete-case rows: 1590
+    YSDU   complete-case rows: 1590
+    RNO    complete-case rows: 1590
+
+    Base-column (temp/cloud/wind) cross-file consistency check (bonus, beyond the session prompt's own item (i)): max abs diff across all 5 source files, all complete-case rows = 0.000000000 -- PASS
+
+==========================================================================================
+Row-cost guard (session prompt Step 5): per airport per fold, complete-case row count vs a B-only mask (grib_features_v16_window/sealed_window.csv, reserved year excluded)
+==========================================================================================
+    B-only source rows filtered out as inside the reserved year: 1825
+    (expected and correct, not a stop condition: grib_features_v16_window.csv
+    is the pre-D51 raw base dataset and still carries the reserved year inside
+    its own file -- load_b_only_dates() filters those dates out before building
+    the B-only mask below, exactly as intended. Contrast the E1-E5 committed
+    build files above, which were built AFTER D51 and should carry zero
+    reserved-year rows already -- that check above is the real stop condition.)
+
+    station fold        b_only_n  complete_n   dropped   drop_frac
+    EGLC    2022-23          860         860         0      0.0000
+    EGLC    2023-24         1226        1226         0      0.0000
+    EGLC    2025-26         1591        1591         0      0.0000
+    LFPG    2022-23          860         860         0      0.0000
+    LFPG    2023-24         1226        1226         0      0.0000
+    LFPG    2025-26         1591        1591         0      0.0000
+    DSM     2022-23          859         859         0      0.0000
+    DSM     2023-24         1225        1225         0      0.0000
+    DSM     2025-26         1590        1590         0      0.0000
+    YSDU    2022-23          859         859         0      0.0000
+    YSDU    2023-24         1225        1225         0      0.0000
+    YSDU    2025-26         1590        1590         0      0.0000
+    RNO     2022-23          859         859         0      0.0000
+    RNO     2023-24         1225        1225         0      0.0000
+    RNO     2025-26         1590        1590         0      0.0000
+
+    Wrote row-cost table: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session61_row_cost_guard.csv
+
+    PASS -- no airport-fold exceeds ROW_COST_GUARD_FRAC (5%). Proceeding to fitting.
+
+==========================================================================================
+Pairwise-correlation matrix among the candidate features (session prompt Step 7-iii), computed up front, pooled across all complete-case rows, all five airports
+==========================================================================================
+
+    n = 7952 pooled rows
+                                lapse_rate_t2_t850dewpoint_depression_t2m_flooredpressure_tendency_3h_hpa  dswrf_2h_wm2precip_rate_mmhrelative_humidity_2m          t850          t925          t700
+    lapse_rate_t2_t850                   1.000        -0.073         0.283         0.181        -0.039        -0.005        -0.207        -0.065        -0.053
+    dewpoint_depression_t2m_floored        -0.073         1.000        -0.461         0.747        -0.316        -0.948         0.693         0.726         0.584
+    pressure_tendency_3h_hpa             0.283        -0.461         1.000        -0.355         0.235         0.447        -0.416        -0.403        -0.364
+    dswrf_2h_wm2                         0.181         0.747        -0.355         1.000        -0.251        -0.786         0.554         0.621         0.506
+    precip_rate_mmh                     -0.039        -0.316         0.235        -0.251         1.000         0.388        -0.097        -0.097        -0.105
+    relative_humidity_2m                -0.005        -0.948         0.447        -0.786         0.388         1.000        -0.568        -0.616        -0.480
+    t850                                -0.207         0.693        -0.416         0.554        -0.097        -0.568         1.000         0.971         0.911
+    t925                                -0.065         0.726        -0.403         0.621        -0.097        -0.616         0.971         1.000         0.880
+    t700                                -0.053         0.584        -0.364         0.506        -0.105        -0.480         0.911         0.880         1.000
+
+    Wrote correlation matrix: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session61_correlation_matrix.csv
+
+==========================================================================================
+Loading observations and joining onto the complete-case feature rows (D14 pairing rule, SPEC 4.5; SPEC 2.2 drop-and-count, nothing filled)
+==========================================================================================
+    EGLC   complete-case rows=1591   joined (usable obs)=1589   no usable obs=2 (obs-record diagnostics: outside_15min=1, no_temp_field=0)
+    LFPG   complete-case rows=1591   joined (usable obs)=1588   no usable obs=3 (obs-record diagnostics: outside_15min=2, no_temp_field=0)
+    DSM    complete-case rows=1590   joined (usable obs)=1590   no usable obs=0 (obs-record diagnostics: outside_15min=0, no_temp_field=0)
+    YSDU   complete-case rows=1590   joined (usable obs)=1569   no usable obs=21 (obs-record diagnostics: outside_15min=12, no_temp_field=0)
+    RNO    complete-case rows=1590   joined (usable obs)=1587   no usable obs=3 (obs-record diagnostics: outside_15min=0, no_temp_field=0)
+
+==========================================================================================
+Fitting the 14-variant ladder on all three folds, all five airports (D21.4/D48.6 frozen LightGBM settings, identical features at every airport, no per-airport selection)
+==========================================================================================
+    Fit 14 variants x 5 airports x 3 folds = 210 rows.
+    EGLC  2022-23   B               MAE=1.168  delta_vs_B=+0.000  skill_vs_B=0.0%
+    EGLC  2023-24   B               MAE=0.947  delta_vs_B=+0.000  skill_vs_B=0.0%
+    EGLC  2025-26   B               MAE=1.008  delta_vs_B=+0.000  skill_vs_B=0.0%
+    LFPG  2022-23   B               MAE=1.158  delta_vs_B=+0.000  skill_vs_B=0.0%
+    LFPG  2023-24   B               MAE=1.161  delta_vs_B=+0.000  skill_vs_B=0.0%
+    LFPG  2025-26   B               MAE=1.199  delta_vs_B=+0.000  skill_vs_B=0.0%
+    DSM   2022-23   B               MAE=1.726  delta_vs_B=+0.000  skill_vs_B=0.0%
+    DSM   2023-24   B               MAE=1.579  delta_vs_B=+0.000  skill_vs_B=0.0%
+    DSM   2025-26   B               MAE=1.665  delta_vs_B=+0.000  skill_vs_B=0.0%
+    YSDU  2022-23   B               MAE=1.199  delta_vs_B=+0.000  skill_vs_B=0.0%
+    YSDU  2023-24   B               MAE=1.126  delta_vs_B=+0.000  skill_vs_B=0.0%
+    YSDU  2025-26   B               MAE=1.190  delta_vs_B=+0.000  skill_vs_B=0.0%
+    RNO   2022-23   B               MAE=1.401  delta_vs_B=+0.000  skill_vs_B=0.0%
+    RNO   2023-24   B               MAE=1.297  delta_vs_B=+0.000  skill_vs_B=0.0%
+    RNO   2025-26   B               MAE=1.430  delta_vs_B=+0.000  skill_vs_B=0.0%
+    EGLC  2022-23   B+L             MAE=1.122  delta_vs_B=-0.046  skill_vs_B=3.95%
+    EGLC  2023-24   B+L             MAE=0.901  delta_vs_B=-0.046  skill_vs_B=4.85%
+    EGLC  2025-26   B+L             MAE=1.015  delta_vs_B=+0.007  skill_vs_B=-0.7%
+    LFPG  2022-23   B+L             MAE=1.161  delta_vs_B=+0.003  skill_vs_B=-0.28%
+    LFPG  2023-24   B+L             MAE=1.131  delta_vs_B=-0.029  skill_vs_B=2.52%
+    LFPG  2025-26   B+L             MAE=1.132  delta_vs_B=-0.067  skill_vs_B=5.55%
+    DSM   2022-23   B+L             MAE=1.704  delta_vs_B=-0.022  skill_vs_B=1.3%
+    DSM   2023-24   B+L             MAE=1.521  delta_vs_B=-0.057  skill_vs_B=3.63%
+    DSM   2025-26   B+L             MAE=1.634  delta_vs_B=-0.031  skill_vs_B=1.85%
+    YSDU  2022-23   B+L             MAE=1.181  delta_vs_B=-0.018  skill_vs_B=1.51%
+    YSDU  2023-24   B+L             MAE=1.108  delta_vs_B=-0.019  skill_vs_B=1.66%
+    YSDU  2025-26   B+L             MAE=1.153  delta_vs_B=-0.037  skill_vs_B=3.11%
+    RNO   2022-23   B+L             MAE=1.402  delta_vs_B=+0.001  skill_vs_B=-0.05%
+    RNO   2023-24   B+L             MAE=1.294  delta_vs_B=-0.004  skill_vs_B=0.28%
+    RNO   2025-26   B+L             MAE=1.433  delta_vs_B=+0.003  skill_vs_B=-0.22%
+    EGLC  2022-23   B+D             MAE=1.100  delta_vs_B=-0.068  skill_vs_B=5.82%
+    EGLC  2023-24   B+D             MAE=0.907  delta_vs_B=-0.040  skill_vs_B=4.22%
+    EGLC  2025-26   B+D             MAE=1.025  delta_vs_B=+0.017  skill_vs_B=-1.64%
+    LFPG  2022-23   B+D             MAE=1.132  delta_vs_B=-0.026  skill_vs_B=2.29%
+    LFPG  2023-24   B+D             MAE=1.136  delta_vs_B=-0.024  skill_vs_B=2.1%
+    LFPG  2025-26   B+D             MAE=1.154  delta_vs_B=-0.044  skill_vs_B=3.71%
+    DSM   2022-23   B+D             MAE=1.629  delta_vs_B=-0.098  skill_vs_B=5.66%
+    DSM   2023-24   B+D             MAE=1.470  delta_vs_B=-0.109  skill_vs_B=6.92%
+    DSM   2025-26   B+D             MAE=1.566  delta_vs_B=-0.099  skill_vs_B=5.93%
+    YSDU  2022-23   B+D             MAE=1.190  delta_vs_B=-0.009  skill_vs_B=0.75%
+    YSDU  2023-24   B+D             MAE=1.097  delta_vs_B=-0.029  skill_vs_B=2.61%
+    YSDU  2025-26   B+D             MAE=1.157  delta_vs_B=-0.033  skill_vs_B=2.75%
+    RNO   2022-23   B+D             MAE=1.403  delta_vs_B=+0.002  skill_vs_B=-0.16%
+    RNO   2023-24   B+D             MAE=1.206  delta_vs_B=-0.091  skill_vs_B=7.04%
+    RNO   2025-26   B+D             MAE=1.320  delta_vs_B=-0.110  skill_vs_B=7.7%
+    EGLC  2022-23   B+T             MAE=1.150  delta_vs_B=-0.018  skill_vs_B=1.52%
+    EGLC  2023-24   B+T             MAE=0.946  delta_vs_B=-0.002  skill_vs_B=0.16%
+    EGLC  2025-26   B+T             MAE=1.008  delta_vs_B=-0.000  skill_vs_B=0.02%
+    LFPG  2022-23   B+T             MAE=1.121  delta_vs_B=-0.037  skill_vs_B=3.2%
+    LFPG  2023-24   B+T             MAE=1.177  delta_vs_B=+0.017  skill_vs_B=-1.45%
+    LFPG  2025-26   B+T             MAE=1.182  delta_vs_B=-0.017  skill_vs_B=1.39%
+    DSM   2022-23   B+T             MAE=1.714  delta_vs_B=-0.013  skill_vs_B=0.73%
+    DSM   2023-24   B+T             MAE=1.564  delta_vs_B=-0.014  skill_vs_B=0.91%
+    DSM   2025-26   B+T             MAE=1.655  delta_vs_B=-0.010  skill_vs_B=0.58%
+    YSDU  2022-23   B+T             MAE=1.163  delta_vs_B=-0.036  skill_vs_B=2.99%
+    YSDU  2023-24   B+T             MAE=1.153  delta_vs_B=+0.027  skill_vs_B=-2.37%
+    YSDU  2025-26   B+T             MAE=1.192  delta_vs_B=+0.001  skill_vs_B=-0.12%
+    RNO   2022-23   B+T             MAE=1.386  delta_vs_B=-0.015  skill_vs_B=1.06%
+    RNO   2023-24   B+T             MAE=1.203  delta_vs_B=-0.094  skill_vs_B=7.23%
+    RNO   2025-26   B+T             MAE=1.474  delta_vs_B=+0.044  skill_vs_B=-3.1%
+    EGLC  2022-23   B+R             MAE=1.104  delta_vs_B=-0.064  skill_vs_B=5.46%
+    EGLC  2023-24   B+R             MAE=0.888  delta_vs_B=-0.059  skill_vs_B=6.21%
+    EGLC  2025-26   B+R             MAE=1.012  delta_vs_B=+0.004  skill_vs_B=-0.38%
+    LFPG  2022-23   B+R             MAE=1.132  delta_vs_B=-0.026  skill_vs_B=2.27%
+    LFPG  2023-24   B+R             MAE=1.131  delta_vs_B=-0.029  skill_vs_B=2.51%
+    LFPG  2025-26   B+R             MAE=1.171  delta_vs_B=-0.028  skill_vs_B=2.33%
+    DSM   2022-23   B+R             MAE=1.752  delta_vs_B=+0.025  skill_vs_B=-1.47%
+    DSM   2023-24   B+R             MAE=1.577  delta_vs_B=-0.002  skill_vs_B=0.13%
+    DSM   2025-26   B+R             MAE=1.653  delta_vs_B=-0.012  skill_vs_B=0.71%
+    YSDU  2022-23   B+R             MAE=1.216  delta_vs_B=+0.017  skill_vs_B=-1.41%
+    YSDU  2023-24   B+R             MAE=1.109  delta_vs_B=-0.017  skill_vs_B=1.52%
+    YSDU  2025-26   B+R             MAE=1.147  delta_vs_B=-0.043  skill_vs_B=3.6%
+    RNO   2022-23   B+R             MAE=1.406  delta_vs_B=+0.004  skill_vs_B=-0.32%
+    RNO   2023-24   B+R             MAE=1.250  delta_vs_B=-0.047  skill_vs_B=3.62%
+    RNO   2025-26   B+R             MAE=1.441  delta_vs_B=+0.011  skill_vs_B=-0.8%
+    EGLC  2022-23   B+P             MAE=1.125  delta_vs_B=-0.043  skill_vs_B=3.65%
+    EGLC  2023-24   B+P             MAE=0.949  delta_vs_B=+0.002  skill_vs_B=-0.22%
+    EGLC  2025-26   B+P             MAE=1.015  delta_vs_B=+0.006  skill_vs_B=-0.62%
+    LFPG  2022-23   B+P             MAE=1.134  delta_vs_B=-0.024  skill_vs_B=2.07%
+    LFPG  2023-24   B+P             MAE=1.144  delta_vs_B=-0.016  skill_vs_B=1.4%
+    LFPG  2025-26   B+P             MAE=1.208  delta_vs_B=+0.009  skill_vs_B=-0.74%
+    DSM   2022-23   B+P             MAE=1.716  delta_vs_B=-0.010  skill_vs_B=0.57%
+    DSM   2023-24   B+P             MAE=1.574  delta_vs_B=-0.005  skill_vs_B=0.29%
+    DSM   2025-26   B+P             MAE=1.648  delta_vs_B=-0.017  skill_vs_B=1.0%
+    YSDU  2022-23   B+P             MAE=1.207  delta_vs_B=+0.008  skill_vs_B=-0.65%
+    YSDU  2023-24   B+P             MAE=1.121  delta_vs_B=-0.005  skill_vs_B=0.48%
+    YSDU  2025-26   B+P             MAE=1.188  delta_vs_B=-0.002  skill_vs_B=0.16%
+    RNO   2022-23   B+P             MAE=1.360  delta_vs_B=-0.041  skill_vs_B=2.92%
+    RNO   2023-24   B+P             MAE=1.236  delta_vs_B=-0.062  skill_vs_B=4.75%
+    RNO   2025-26   B+P             MAE=1.381  delta_vs_B=-0.049  skill_vs_B=3.44%
+    EGLC  2022-23   B+LDTRP         MAE=1.094  delta_vs_B=-0.073  skill_vs_B=6.28%
+    EGLC  2023-24   B+LDTRP         MAE=0.874  delta_vs_B=-0.073  skill_vs_B=7.73%
+    EGLC  2025-26   B+LDTRP         MAE=1.007  delta_vs_B=-0.002  skill_vs_B=0.15%
+    LFPG  2022-23   B+LDTRP         MAE=1.127  delta_vs_B=-0.031  skill_vs_B=2.64%
+    LFPG  2023-24   B+LDTRP         MAE=1.106  delta_vs_B=-0.054  skill_vs_B=4.67%
+    LFPG  2025-26   B+LDTRP         MAE=1.111  delta_vs_B=-0.088  skill_vs_B=7.36%
+    DSM   2022-23   B+LDTRP         MAE=1.633  delta_vs_B=-0.093  skill_vs_B=5.41%
+    DSM   2023-24   B+LDTRP         MAE=1.496  delta_vs_B=-0.083  skill_vs_B=5.27%
+    DSM   2025-26   B+LDTRP         MAE=1.539  delta_vs_B=-0.126  skill_vs_B=7.56%
+    YSDU  2022-23   B+LDTRP         MAE=1.096  delta_vs_B=-0.103  skill_vs_B=8.62%
+    YSDU  2023-24   B+LDTRP         MAE=1.109  delta_vs_B=-0.017  skill_vs_B=1.51%
+    YSDU  2025-26   B+LDTRP         MAE=1.145  delta_vs_B=-0.045  skill_vs_B=3.76%
+    RNO   2022-23   B+LDTRP         MAE=1.341  delta_vs_B=-0.060  skill_vs_B=4.27%
+    RNO   2023-24   B+LDTRP         MAE=1.132  delta_vs_B=-0.165  skill_vs_B=12.75%
+    RNO   2025-26   B+LDTRP         MAE=1.344  delta_vs_B=-0.086  skill_vs_B=6.0%
+    EGLC  2022-23   B+DTRP          MAE=1.091  delta_vs_B=-0.077  skill_vs_B=6.57%
+    EGLC  2023-24   B+DTRP          MAE=0.876  delta_vs_B=-0.071  skill_vs_B=7.51%
+    EGLC  2025-26   B+DTRP          MAE=1.017  delta_vs_B=+0.008  skill_vs_B=-0.81%
+    LFPG  2022-23   B+DTRP          MAE=1.090  delta_vs_B=-0.068  skill_vs_B=5.87%
+    LFPG  2023-24   B+DTRP          MAE=1.113  delta_vs_B=-0.048  skill_vs_B=4.09%
+    LFPG  2025-26   B+DTRP          MAE=1.143  delta_vs_B=-0.055  skill_vs_B=4.62%
+    DSM   2022-23   B+DTRP          MAE=1.637  delta_vs_B=-0.089  skill_vs_B=5.16%
+    DSM   2023-24   B+DTRP          MAE=1.473  delta_vs_B=-0.106  skill_vs_B=6.72%
+    DSM   2025-26   B+DTRP          MAE=1.518  delta_vs_B=-0.147  skill_vs_B=8.85%
+    YSDU  2022-23   B+DTRP          MAE=1.163  delta_vs_B=-0.036  skill_vs_B=2.99%
+    YSDU  2023-24   B+DTRP          MAE=1.096  delta_vs_B=-0.030  skill_vs_B=2.71%
+    YSDU  2025-26   B+DTRP          MAE=1.131  delta_vs_B=-0.059  skill_vs_B=4.95%
+    RNO   2022-23   B+DTRP          MAE=1.332  delta_vs_B=-0.069  skill_vs_B=4.95%
+    RNO   2023-24   B+DTRP          MAE=1.135  delta_vs_B=-0.162  skill_vs_B=12.47%
+    RNO   2025-26   B+DTRP          MAE=1.360  delta_vs_B=-0.070  skill_vs_B=4.89%
+    EGLC  2022-23   B+LTRP          MAE=1.089  delta_vs_B=-0.078  skill_vs_B=6.72%
+    EGLC  2023-24   B+LTRP          MAE=0.853  delta_vs_B=-0.094  skill_vs_B=9.88%
+    EGLC  2025-26   B+LTRP          MAE=1.004  delta_vs_B=-0.005  skill_vs_B=0.47%
+    LFPG  2022-23   B+LTRP          MAE=1.115  delta_vs_B=-0.043  skill_vs_B=3.68%
+    LFPG  2023-24   B+LTRP          MAE=1.107  delta_vs_B=-0.054  skill_vs_B=4.62%
+    LFPG  2025-26   B+LTRP          MAE=1.108  delta_vs_B=-0.091  skill_vs_B=7.58%
+    DSM   2022-23   B+LTRP          MAE=1.682  delta_vs_B=-0.045  skill_vs_B=2.59%
+    DSM   2023-24   B+LTRP          MAE=1.529  delta_vs_B=-0.050  skill_vs_B=3.15%
+    DSM   2025-26   B+LTRP          MAE=1.589  delta_vs_B=-0.076  skill_vs_B=4.59%
+    YSDU  2022-23   B+LTRP          MAE=1.132  delta_vs_B=-0.067  skill_vs_B=5.62%
+    YSDU  2023-24   B+LTRP          MAE=1.111  delta_vs_B=-0.016  skill_vs_B=1.41%
+    YSDU  2025-26   B+LTRP          MAE=1.145  delta_vs_B=-0.046  skill_vs_B=3.83%
+    RNO   2022-23   B+LTRP          MAE=1.345  delta_vs_B=-0.057  skill_vs_B=4.03%
+    RNO   2023-24   B+LTRP          MAE=1.144  delta_vs_B=-0.153  skill_vs_B=11.83%
+    RNO   2025-26   B+LTRP          MAE=1.399  delta_vs_B=-0.031  skill_vs_B=2.16%
+    EGLC  2022-23   B+LDRP          MAE=1.099  delta_vs_B=-0.069  skill_vs_B=5.9%
+    EGLC  2023-24   B+LDRP          MAE=0.875  delta_vs_B=-0.072  skill_vs_B=7.56%
+    EGLC  2025-26   B+LDRP          MAE=1.013  delta_vs_B=+0.004  skill_vs_B=-0.45%
+    LFPG  2022-23   B+LDRP          MAE=1.159  delta_vs_B=+0.001  skill_vs_B=-0.05%
+    LFPG  2023-24   B+LDRP          MAE=1.089  delta_vs_B=-0.071  skill_vs_B=6.16%
+    LFPG  2025-26   B+LDRP          MAE=1.135  delta_vs_B=-0.064  skill_vs_B=5.37%
+    DSM   2022-23   B+LDRP          MAE=1.631  delta_vs_B=-0.095  skill_vs_B=5.49%
+    DSM   2023-24   B+LDRP          MAE=1.490  delta_vs_B=-0.089  skill_vs_B=5.63%
+    DSM   2025-26   B+LDRP          MAE=1.547  delta_vs_B=-0.118  skill_vs_B=7.1%
+    YSDU  2022-23   B+LDRP          MAE=1.103  delta_vs_B=-0.096  skill_vs_B=8.0%
+    YSDU  2023-24   B+LDRP          MAE=1.109  delta_vs_B=-0.017  skill_vs_B=1.52%
+    YSDU  2025-26   B+LDRP          MAE=1.146  delta_vs_B=-0.044  skill_vs_B=3.73%
+    RNO   2022-23   B+LDRP          MAE=1.361  delta_vs_B=-0.040  skill_vs_B=2.88%
+    RNO   2023-24   B+LDRP          MAE=1.172  delta_vs_B=-0.125  skill_vs_B=9.64%
+    RNO   2025-26   B+LDRP          MAE=1.329  delta_vs_B=-0.101  skill_vs_B=7.09%
+    EGLC  2022-23   B+LDTP          MAE=1.100  delta_vs_B=-0.068  skill_vs_B=5.79%
+    EGLC  2023-24   B+LDTP          MAE=0.884  delta_vs_B=-0.063  skill_vs_B=6.68%
+    EGLC  2025-26   B+LDTP          MAE=1.036  delta_vs_B=+0.028  skill_vs_B=-2.79%
+    LFPG  2022-23   B+LDTP          MAE=1.134  delta_vs_B=-0.025  skill_vs_B=2.12%
+    LFPG  2023-24   B+LDTP          MAE=1.121  delta_vs_B=-0.040  skill_vs_B=3.44%
+    LFPG  2025-26   B+LDTP          MAE=1.126  delta_vs_B=-0.073  skill_vs_B=6.11%
+    DSM   2022-23   B+LDTP          MAE=1.576  delta_vs_B=-0.150  skill_vs_B=8.71%
+    DSM   2023-24   B+LDTP          MAE=1.481  delta_vs_B=-0.098  skill_vs_B=6.21%
+    DSM   2025-26   B+LDTP          MAE=1.558  delta_vs_B=-0.107  skill_vs_B=6.43%
+    YSDU  2022-23   B+LDTP          MAE=1.092  delta_vs_B=-0.107  skill_vs_B=8.92%
+    YSDU  2023-24   B+LDTP          MAE=1.116  delta_vs_B=-0.010  skill_vs_B=0.9%
+    YSDU  2025-26   B+LDTP          MAE=1.168  delta_vs_B=-0.022  skill_vs_B=1.84%
+    RNO   2022-23   B+LDTP          MAE=1.362  delta_vs_B=-0.039  skill_vs_B=2.79%
+    RNO   2023-24   B+LDTP          MAE=1.150  delta_vs_B=-0.147  skill_vs_B=11.37%
+    RNO   2025-26   B+LDTP          MAE=1.368  delta_vs_B=-0.062  skill_vs_B=4.32%
+    EGLC  2022-23   B+LDTR          MAE=1.097  delta_vs_B=-0.071  skill_vs_B=6.05%
+    EGLC  2023-24   B+LDTR          MAE=0.872  delta_vs_B=-0.075  skill_vs_B=7.98%
+    EGLC  2025-26   B+LDTR          MAE=0.992  delta_vs_B=-0.017  skill_vs_B=1.66%
+    LFPG  2022-23   B+LDTR          MAE=1.113  delta_vs_B=-0.045  skill_vs_B=3.86%
+    LFPG  2023-24   B+LDTR          MAE=1.122  delta_vs_B=-0.038  skill_vs_B=3.31%
+    LFPG  2025-26   B+LDTR          MAE=1.105  delta_vs_B=-0.094  skill_vs_B=7.81%
+    DSM   2022-23   B+LDTR          MAE=1.650  delta_vs_B=-0.076  skill_vs_B=4.43%
+    DSM   2023-24   B+LDTR          MAE=1.488  delta_vs_B=-0.090  skill_vs_B=5.73%
+    DSM   2025-26   B+LDTR          MAE=1.547  delta_vs_B=-0.118  skill_vs_B=7.07%
+    YSDU  2022-23   B+LDTR          MAE=1.143  delta_vs_B=-0.056  skill_vs_B=4.67%
+    YSDU  2023-24   B+LDTR          MAE=1.095  delta_vs_B=-0.032  skill_vs_B=2.8%
+    YSDU  2025-26   B+LDTR          MAE=1.117  delta_vs_B=-0.073  skill_vs_B=6.12%
+    RNO   2022-23   B+LDTR          MAE=1.339  delta_vs_B=-0.063  skill_vs_B=4.47%
+    RNO   2023-24   B+LDTR          MAE=1.146  delta_vs_B=-0.151  skill_vs_B=11.67%
+    RNO   2025-26   B+LDTR          MAE=1.364  delta_vs_B=-0.065  skill_vs_B=4.57%
+    EGLC  2022-23   B+LDTRP+rh      MAE=1.092  delta_vs_B=-0.076  skill_vs_B=6.51%
+    EGLC  2023-24   B+LDTRP+rh      MAE=0.869  delta_vs_B=-0.078  skill_vs_B=8.2%
+    EGLC  2025-26   B+LDTRP+rh      MAE=1.007  delta_vs_B=-0.001  skill_vs_B=0.11%
+    LFPG  2022-23   B+LDTRP+rh      MAE=1.129  delta_vs_B=-0.029  skill_vs_B=2.52%
+    LFPG  2023-24   B+LDTRP+rh      MAE=1.106  delta_vs_B=-0.055  skill_vs_B=4.72%
+    LFPG  2025-26   B+LDTRP+rh      MAE=1.122  delta_vs_B=-0.077  skill_vs_B=6.44%
+    DSM   2022-23   B+LDTRP+rh      MAE=1.616  delta_vs_B=-0.110  skill_vs_B=6.39%
+    DSM   2023-24   B+LDTRP+rh      MAE=1.481  delta_vs_B=-0.098  skill_vs_B=6.18%
+    DSM   2025-26   B+LDTRP+rh      MAE=1.533  delta_vs_B=-0.132  skill_vs_B=7.95%
+    YSDU  2022-23   B+LDTRP+rh      MAE=1.100  delta_vs_B=-0.099  skill_vs_B=8.26%
+    YSDU  2023-24   B+LDTRP+rh      MAE=1.107  delta_vs_B=-0.019  skill_vs_B=1.7%
+    YSDU  2025-26   B+LDTRP+rh      MAE=1.143  delta_vs_B=-0.047  skill_vs_B=3.94%
+    RNO   2022-23   B+LDTRP+rh      MAE=1.336  delta_vs_B=-0.065  skill_vs_B=4.64%
+    RNO   2023-24   B+LDTRP+rh      MAE=1.121  delta_vs_B=-0.176  skill_vs_B=13.54%
+    RNO   2025-26   B+LDTRP+rh      MAE=1.355  delta_vs_B=-0.075  skill_vs_B=5.25%
+    EGLC  2022-23   B+LDTRP+plev    MAE=1.078  delta_vs_B=-0.089  skill_vs_B=7.66%
+    EGLC  2023-24   B+LDTRP+plev    MAE=0.868  delta_vs_B=-0.079  skill_vs_B=8.34%
+    EGLC  2025-26   B+LDTRP+plev    MAE=1.000  delta_vs_B=-0.009  skill_vs_B=0.85%
+    LFPG  2022-23   B+LDTRP+plev    MAE=1.119  delta_vs_B=-0.039  skill_vs_B=3.39%
+    LFPG  2023-24   B+LDTRP+plev    MAE=1.121  delta_vs_B=-0.040  skill_vs_B=3.44%
+    LFPG  2025-26   B+LDTRP+plev    MAE=1.107  delta_vs_B=-0.092  skill_vs_B=7.67%
+    DSM   2022-23   B+LDTRP+plev    MAE=1.622  delta_vs_B=-0.105  skill_vs_B=6.06%
+    DSM   2023-24   B+LDTRP+plev    MAE=1.465  delta_vs_B=-0.113  skill_vs_B=7.18%
+    DSM   2025-26   B+LDTRP+plev    MAE=1.511  delta_vs_B=-0.154  skill_vs_B=9.26%
+    YSDU  2022-23   B+LDTRP+plev    MAE=1.112  delta_vs_B=-0.087  skill_vs_B=7.29%
+    YSDU  2023-24   B+LDTRP+plev    MAE=1.122  delta_vs_B=-0.005  skill_vs_B=0.41%
+    YSDU  2025-26   B+LDTRP+plev    MAE=1.149  delta_vs_B=-0.042  skill_vs_B=3.48%
+    RNO   2022-23   B+LDTRP+plev    MAE=1.335  delta_vs_B=-0.066  skill_vs_B=4.71%
+    RNO   2023-24   B+LDTRP+plev    MAE=1.115  delta_vs_B=-0.182  skill_vs_B=14.03%
+    RNO   2025-26   B+LDTRP+plev    MAE=1.333  delta_vs_B=-0.097  skill_vs_B=6.76%
+
+    Wrote grid: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session61_combine_sweep_grid.csv (210 rows)
+
+==========================================================================================
+Fold-averaged per airport (mean across the three folds, all five airports)
+==========================================================================================
+
+    EGLC:
+        B                mean_MAE=1.041  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=3)
+        B+L              mean_MAE=1.013  delta_vs_B=-0.028  skill_vs_B=+2.7%  (n=3)
+        B+D              mean_MAE=1.011  delta_vs_B=-0.030  skill_vs_B=+2.9%  (n=3)
+        B+T              mean_MAE=1.035  delta_vs_B=-0.006  skill_vs_B=+0.6%  (n=3)
+        B+R              mean_MAE=1.001  delta_vs_B=-0.040  skill_vs_B=+3.8%  (n=3)
+        B+P              mean_MAE=1.030  delta_vs_B=-0.011  skill_vs_B=+1.1%  (n=3)
+        B+LDTRP          mean_MAE=0.992  delta_vs_B=-0.049  skill_vs_B=+4.7%  (n=3)
+        B+DTRP           mean_MAE=0.994  delta_vs_B=-0.047  skill_vs_B=+4.5%  (n=3)
+        B+LTRP           mean_MAE=0.982  delta_vs_B=-0.059  skill_vs_B=+5.7%  (n=3)
+        B+LDRP           mean_MAE=0.996  delta_vs_B=-0.045  skill_vs_B=+4.4%  (n=3)
+        B+LDTP           mean_MAE=1.007  delta_vs_B=-0.034  skill_vs_B=+3.3%  (n=3)
+        B+LDTR           mean_MAE=0.987  delta_vs_B=-0.054  skill_vs_B=+5.2%  (n=3)
+        B+LDTRP+rh       mean_MAE=0.989  delta_vs_B=-0.052  skill_vs_B=+5.0%  (n=3)
+        B+LDTRP+plev     mean_MAE=0.982  delta_vs_B=-0.059  skill_vs_B=+5.7%  (n=3)
+
+    LFPG:
+        B                mean_MAE=1.173  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=3)
+        B+L              mean_MAE=1.142  delta_vs_B=-0.031  skill_vs_B=+2.6%  (n=3)
+        B+D              mean_MAE=1.141  delta_vs_B=-0.032  skill_vs_B=+2.7%  (n=3)
+        B+T              mean_MAE=1.160  delta_vs_B=-0.012  skill_vs_B=+1.0%  (n=3)
+        B+R              mean_MAE=1.145  delta_vs_B=-0.028  skill_vs_B=+2.4%  (n=3)
+        B+P              mean_MAE=1.162  delta_vs_B=-0.010  skill_vs_B=+0.9%  (n=3)
+        B+LDTRP          mean_MAE=1.115  delta_vs_B=-0.058  skill_vs_B=+4.9%  (n=3)
+        B+DTRP           mean_MAE=1.116  delta_vs_B=-0.057  skill_vs_B=+4.9%  (n=3)
+        B+LTRP           mean_MAE=1.110  delta_vs_B=-0.062  skill_vs_B=+5.3%  (n=3)
+        B+LDRP           mean_MAE=1.127  delta_vs_B=-0.045  skill_vs_B=+3.8%  (n=3)
+        B+LDTP           mean_MAE=1.127  delta_vs_B=-0.046  skill_vs_B=+3.9%  (n=3)
+        B+LDTR           mean_MAE=1.114  delta_vs_B=-0.059  skill_vs_B=+5.0%  (n=3)
+        B+LDTRP+rh       mean_MAE=1.119  delta_vs_B=-0.054  skill_vs_B=+4.6%  (n=3)
+        B+LDTRP+plev     mean_MAE=1.115  delta_vs_B=-0.057  skill_vs_B=+4.9%  (n=3)
+
+    DSM:
+        B                mean_MAE=1.657  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=3)
+        B+L              mean_MAE=1.620  delta_vs_B=-0.037  skill_vs_B=+2.2%  (n=3)
+        B+D              mean_MAE=1.555  delta_vs_B=-0.102  skill_vs_B=+6.2%  (n=3)
+        B+T              mean_MAE=1.644  delta_vs_B=-0.012  skill_vs_B=+0.7%  (n=3)
+        B+R              mean_MAE=1.661  delta_vs_B=+0.004  skill_vs_B=-0.2%  (n=3)
+        B+P              mean_MAE=1.646  delta_vs_B=-0.010  skill_vs_B=+0.6%  (n=3)
+        B+LDTRP          mean_MAE=1.556  delta_vs_B=-0.101  skill_vs_B=+6.1%  (n=3)
+        B+DTRP           mean_MAE=1.542  delta_vs_B=-0.114  skill_vs_B=+6.9%  (n=3)
+        B+LTRP           mean_MAE=1.600  delta_vs_B=-0.057  skill_vs_B=+3.4%  (n=3)
+        B+LDRP           mean_MAE=1.556  delta_vs_B=-0.101  skill_vs_B=+6.1%  (n=3)
+        B+LDTP           mean_MAE=1.538  delta_vs_B=-0.119  skill_vs_B=+7.2%  (n=3)
+        B+LDTR           mean_MAE=1.562  delta_vs_B=-0.095  skill_vs_B=+5.7%  (n=3)
+        B+LDTRP+rh       mean_MAE=1.543  delta_vs_B=-0.113  skill_vs_B=+6.8%  (n=3)
+        B+LDTRP+plev     mean_MAE=1.533  delta_vs_B=-0.124  skill_vs_B=+7.5%  (n=3)
+
+    YSDU:
+        B                mean_MAE=1.172  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=3)
+        B+L              mean_MAE=1.147  delta_vs_B=-0.025  skill_vs_B=+2.1%  (n=3)
+        B+D              mean_MAE=1.148  delta_vs_B=-0.024  skill_vs_B=+2.0%  (n=3)
+        B+T              mean_MAE=1.169  delta_vs_B=-0.003  skill_vs_B=+0.2%  (n=3)
+        B+R              mean_MAE=1.158  delta_vs_B=-0.014  skill_vs_B=+1.2%  (n=3)
+        B+P              mean_MAE=1.172  delta_vs_B=+0.000  skill_vs_B=-0.0%  (n=3)
+        B+LDTRP          mean_MAE=1.117  delta_vs_B=-0.055  skill_vs_B=+4.7%  (n=3)
+        B+DTRP           mean_MAE=1.130  delta_vs_B=-0.042  skill_vs_B=+3.6%  (n=3)
+        B+LTRP           mean_MAE=1.129  delta_vs_B=-0.043  skill_vs_B=+3.7%  (n=3)
+        B+LDRP           mean_MAE=1.119  delta_vs_B=-0.052  skill_vs_B=+4.5%  (n=3)
+        B+LDTP           mean_MAE=1.126  delta_vs_B=-0.046  skill_vs_B=+4.0%  (n=3)
+        B+LDTR           mean_MAE=1.118  delta_vs_B=-0.053  skill_vs_B=+4.6%  (n=3)
+        B+LDTRP+rh       mean_MAE=1.117  delta_vs_B=-0.055  skill_vs_B=+4.7%  (n=3)
+        B+LDTRP+plev     mean_MAE=1.127  delta_vs_B=-0.044  skill_vs_B=+3.8%  (n=3)
+
+    RNO:
+        B                mean_MAE=1.376  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=3)
+        B+L              mean_MAE=1.376  delta_vs_B=+0.000  skill_vs_B=-0.0%  (n=3)
+        B+D              mean_MAE=1.310  delta_vs_B=-0.066  skill_vs_B=+4.8%  (n=3)
+        B+T              mean_MAE=1.355  delta_vs_B=-0.021  skill_vs_B=+1.6%  (n=3)
+        B+R              mean_MAE=1.366  delta_vs_B=-0.010  skill_vs_B=+0.8%  (n=3)
+        B+P              mean_MAE=1.325  delta_vs_B=-0.051  skill_vs_B=+3.7%  (n=3)
+        B+LDTRP          mean_MAE=1.272  delta_vs_B=-0.104  skill_vs_B=+7.5%  (n=3)
+        B+DTRP           mean_MAE=1.276  delta_vs_B=-0.100  skill_vs_B=+7.3%  (n=3)
+        B+LTRP           mean_MAE=1.296  delta_vs_B=-0.080  skill_vs_B=+5.8%  (n=3)
+        B+LDRP           mean_MAE=1.287  delta_vs_B=-0.089  skill_vs_B=+6.5%  (n=3)
+        B+LDTP           mean_MAE=1.293  delta_vs_B=-0.083  skill_vs_B=+6.0%  (n=3)
+        B+LDTR           mean_MAE=1.283  delta_vs_B=-0.093  skill_vs_B=+6.8%  (n=3)
+        B+LDTRP+rh       mean_MAE=1.271  delta_vs_B=-0.105  skill_vs_B=+7.6%  (n=3)
+        B+LDTRP+plev     mean_MAE=1.261  delta_vs_B=-0.115  skill_vs_B=+8.4%  (n=3)
+
+==========================================================================================
+Airport-averaged per fold (mean across the five airports)
+==========================================================================================
+
+    2022-23:
+        B                mean_MAE=1.330  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=5)
+        B+L              mean_MAE=1.314  delta_vs_B=-0.017  skill_vs_B=+1.2%  (n=5)
+        B+D              mean_MAE=1.291  delta_vs_B=-0.040  skill_vs_B=+3.0%  (n=5)
+        B+T              mean_MAE=1.307  delta_vs_B=-0.024  skill_vs_B=+1.8%  (n=5)
+        B+R              mean_MAE=1.322  delta_vs_B=-0.009  skill_vs_B=+0.6%  (n=5)
+        B+P              mean_MAE=1.309  delta_vs_B=-0.022  skill_vs_B=+1.6%  (n=5)
+        B+LDTRP          mean_MAE=1.258  delta_vs_B=-0.072  skill_vs_B=+5.4%  (n=5)
+        B+DTRP           mean_MAE=1.263  delta_vs_B=-0.068  skill_vs_B=+5.1%  (n=5)
+        B+LTRP           mean_MAE=1.273  delta_vs_B=-0.058  skill_vs_B=+4.4%  (n=5)
+        B+LDRP           mean_MAE=1.271  delta_vs_B=-0.060  skill_vs_B=+4.5%  (n=5)
+        B+LDTP           mean_MAE=1.253  delta_vs_B=-0.078  skill_vs_B=+5.8%  (n=5)
+        B+LDTR           mean_MAE=1.268  delta_vs_B=-0.062  skill_vs_B=+4.7%  (n=5)
+        B+LDTRP+rh       mean_MAE=1.255  delta_vs_B=-0.076  skill_vs_B=+5.7%  (n=5)
+        B+LDTRP+plev     mean_MAE=1.253  delta_vs_B=-0.077  skill_vs_B=+5.8%  (n=5)
+
+    2023-24:
+        B                mean_MAE=1.222  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=5)
+        B+L              mean_MAE=1.191  delta_vs_B=-0.031  skill_vs_B=+2.5%  (n=5)
+        B+D              mean_MAE=1.163  delta_vs_B=-0.059  skill_vs_B=+4.8%  (n=5)
+        B+T              mean_MAE=1.209  delta_vs_B=-0.013  skill_vs_B=+1.1%  (n=5)
+        B+R              mean_MAE=1.191  delta_vs_B=-0.031  skill_vs_B=+2.5%  (n=5)
+        B+P              mean_MAE=1.205  delta_vs_B=-0.017  skill_vs_B=+1.4%  (n=5)
+        B+LDTRP          mean_MAE=1.143  delta_vs_B=-0.079  skill_vs_B=+6.4%  (n=5)
+        B+DTRP           mean_MAE=1.139  delta_vs_B=-0.083  skill_vs_B=+6.8%  (n=5)
+        B+LTRP           mean_MAE=1.149  delta_vs_B=-0.073  skill_vs_B=+6.0%  (n=5)
+        B+LDRP           mean_MAE=1.147  delta_vs_B=-0.075  skill_vs_B=+6.1%  (n=5)
+        B+LDTP           mean_MAE=1.150  delta_vs_B=-0.072  skill_vs_B=+5.9%  (n=5)
+        B+LDTR           mean_MAE=1.145  delta_vs_B=-0.077  skill_vs_B=+6.3%  (n=5)
+        B+LDTRP+rh       mean_MAE=1.137  delta_vs_B=-0.085  skill_vs_B=+7.0%  (n=5)
+        B+LDTRP+plev     mean_MAE=1.138  delta_vs_B=-0.084  skill_vs_B=+6.9%  (n=5)
+
+    2025-26:
+        B                mean_MAE=1.298  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=5)
+        B+L              mean_MAE=1.274  delta_vs_B=-0.025  skill_vs_B=+1.9%  (n=5)
+        B+D              mean_MAE=1.244  delta_vs_B=-0.054  skill_vs_B=+4.2%  (n=5)
+        B+T              mean_MAE=1.302  delta_vs_B=+0.004  skill_vs_B=-0.3%  (n=5)
+        B+R              mean_MAE=1.285  delta_vs_B=-0.013  skill_vs_B=+1.0%  (n=5)
+        B+P              mean_MAE=1.288  delta_vs_B=-0.011  skill_vs_B=+0.8%  (n=5)
+        B+LDTRP          mean_MAE=1.229  delta_vs_B=-0.069  skill_vs_B=+5.3%  (n=5)
+        B+DTRP           mean_MAE=1.234  delta_vs_B=-0.065  skill_vs_B=+5.0%  (n=5)
+        B+LTRP           mean_MAE=1.249  delta_vs_B=-0.050  skill_vs_B=+3.8%  (n=5)
+        B+LDRP           mean_MAE=1.234  delta_vs_B=-0.065  skill_vs_B=+5.0%  (n=5)
+        B+LDTP           mean_MAE=1.251  delta_vs_B=-0.047  skill_vs_B=+3.6%  (n=5)
+        B+LDTR           mean_MAE=1.225  delta_vs_B=-0.073  skill_vs_B=+5.6%  (n=5)
+        B+LDTRP+rh       mean_MAE=1.232  delta_vs_B=-0.067  skill_vs_B=+5.1%  (n=5)
+        B+LDTRP+plev     mean_MAE=1.220  delta_vs_B=-0.079  skill_vs_B=+6.1%  (n=5)
+
+==========================================================================================
+Grand overall (mean across all five airports and all three folds, n=15 airport-folds)
+==========================================================================================
+    B                mean_MAE=1.284  delta_vs_B=+0.000  skill_vs_B=+0.0%  (n=15)
+    B+L              mean_MAE=1.260  delta_vs_B=-0.024  skill_vs_B=+1.9%  (n=15)
+    B+D              mean_MAE=1.233  delta_vs_B=-0.051  skill_vs_B=+4.0%  (n=15)
+    B+T              mean_MAE=1.273  delta_vs_B=-0.011  skill_vs_B=+0.9%  (n=15)
+    B+R              mean_MAE=1.266  delta_vs_B=-0.018  skill_vs_B=+1.4%  (n=15)
+    B+P              mean_MAE=1.267  delta_vs_B=-0.017  skill_vs_B=+1.3%  (n=15)
+    B+LDTRP          mean_MAE=1.210  delta_vs_B=-0.073  skill_vs_B=+5.7%  (n=15)
+    B+DTRP           mean_MAE=1.212  delta_vs_B=-0.072  skill_vs_B=+5.6%  (n=15)
+    B+LTRP           mean_MAE=1.223  delta_vs_B=-0.060  skill_vs_B=+4.7%  (n=15)
+    B+LDRP           mean_MAE=1.217  delta_vs_B=-0.066  skill_vs_B=+5.2%  (n=15)
+    B+LDTP           mean_MAE=1.218  delta_vs_B=-0.066  skill_vs_B=+5.1%  (n=15)
+    B+LDTR           mean_MAE=1.213  delta_vs_B=-0.071  skill_vs_B=+5.5%  (n=15)
+    B+LDTRP+rh       mean_MAE=1.208  delta_vs_B=-0.076  skill_vs_B=+5.9%  (n=15)
+    B+LDTRP+plev     mean_MAE=1.204  delta_vs_B=-0.080  skill_vs_B=+6.2%  (n=15)
+
+    Wrote summary: /Users/zacharyadams/Coding Projects/MLwx/data/processed/session61_combine_sweep_summary.csv (126 rows)
+
+==========================================================================================
+Integrity check (i) -- per-row feature-integrity: every feature column in the assembled table matches its committed source file, checked on every row (not a spot check)
+==========================================================================================
+
+    n_checked = 7952 rows
+    lapse_rate_t2_t850               max_abs_diff = 0.000000000
+    dewpoint_depression_t2m_floored  max_abs_diff = 0.000000000
+    pressure_tendency_3h_hpa         max_abs_diff = 0.000000000
+    dswrf_2h_wm2                     max_abs_diff = 0.000000000
+    precip_rate_mmh                  max_abs_diff = 0.000000000
+    relative_humidity_2m             max_abs_diff = 0.000000000
+    t850                             max_abs_diff = 0.000000000
+    t925                             max_abs_diff = 0.000000000
+    t700                             max_abs_diff = 0.000000000
+
+    PASS -- every candidate feature column matches its committed source file (or D53/F100's own frozen floor transform applied to the stored raw column) exactly, on every row.
+
+==========================================================================================
+Integrity check (ii) -- internal-consistency: the refit-B 2025-26 fold reproduces F94/F96/F99-F105's own raw-GFS and persistence MAE and row counts at every airport, within rounding
+==========================================================================================
+    EGLC: this session raw=1.2536 persist=2.0964 n=364   |   reference raw=1.254 persist=2.096 n=364   -- MATCH
+    LFPG: this session raw=1.3822 persist=2.3003 n=364   |   reference raw=1.382 persist=2.300 n=364   -- MATCH
+    DSM: this session raw=1.7334 persist=4.0029 n=365   |   reference raw=1.733 persist=4.003 n=365   -- MATCH
+    YSDU: this session raw=1.3167 persist=2.6686 n=356   |   reference raw=1.317 persist=2.669 n=356   -- MATCH
+    RNO: this session raw=1.5116 persist=2.4901 n=365   |   reference raw=1.512 persist=2.490 n=365   -- MATCH
+
+==========================================================================================
+Selection rule (D57 Steps 8-12), applied mechanically. All keep/drop votes average over the four non-DSM airports (EGLC, LFPG, YSDU, RNO) -- see this script's own module docstring, interpretation decision 1.
+==========================================================================================
+
+-- Round 1 -- current set B+D,L,P,R,T, fold-averaged skill vs B (non-DSM) = +5.61%, per-fold = [5.42, 6.84, 4.56] --
+        remove D     -> B+L,P,R,T            skill=+5.18%  magnitude(loss if removed)=+0.43pp  robust(worse in all 3 folds)=False  -> DROP CANDIDATE
+        remove L     -> B+D,P,R,T            skill=+5.19%  magnitude(loss if removed)=+0.41pp  robust(worse in all 3 folds)=False  -> DROP CANDIDATE
+        remove P     -> B+D,L,R,T            skill=+5.48%  magnitude(loss if removed)=+0.12pp  robust(worse in all 3 folds)=False  -> DROP CANDIDATE
+        remove R     -> B+D,L,P,T            skill=+4.42%  magnitude(loss if removed)=+1.19pp  robust(worse in all 3 folds)=True  -> KEEP
+        remove T     -> B+D,L,P,R            skill=+4.90%  magnitude(loss if removed)=+0.71pp  robust(worse in all 3 folds)=True  -> KEEP
+
+    Round 1: correlated-feature safeguard triggered -- 3 features flagged droppable together (['D', 'L', 'P']). Dropping only the least-damage one: P (magnitude=+0.12pp).
+
+-- Round 2 -- current set B+D,L,R,T, fold-averaged skill vs B (non-DSM) = +5.48%, per-fold = [4.75, 6.55, 5.15] --
+        remove D     -> B+L,R,T              skill=+4.21%  magnitude(loss if removed)=+1.27pp  robust(worse in all 3 folds)=True  -> KEEP
+        remove L     -> B+D,R,T              skill=+5.08%  magnitude(loss if removed)=+0.41pp  robust(worse in all 3 folds)=True  -> KEEP
+        remove R     -> B+D,L,T              skill=+3.96%  magnitude(loss if removed)=+1.53pp  robust(worse in all 3 folds)=True  -> KEEP
+        remove T     -> B+D,L,R              skill=+4.04%  magnitude(loss if removed)=+1.45pp  robust(worse in all 3 folds)=True  -> KEEP
+
+    Round 2: nothing flagged droppable -- core set is final.
+
+    CORE SET (survivors of leave-one-out backward elimination): B+D,L,R,T
+
+==========================================================================================
+Parked-option tests (D57 Step 11): B+core+rh (non-DSM vote) and B+core+plev (ALL FIVE airports -- plev's own explicit override)
+==========================================================================================
+    rh   : core skill(non-DSM)=+5.48%  core+rh skill(non-DSM)=+4.98%  magnitude=-0.51pp  robust(helps in all 3 folds)=False  -> DO NOT ADOPT
+    plev : core skill(ALL 5) =+5.55%  core+plev skill(ALL 5)=+5.29%  magnitude=-0.26pp  robust(helps in all 3 folds)=False  -> DO NOT ADOPT
+
+    FINAL SET (mechanical rule output, NOT a verdict): B+D,L,R,T
+
+==========================================================================================
+Joint backstop (D57 Steps 13-14): refit the exact final set and check (a) beats B, worse-by-sign in no fold; (b) not meaningfully worse than the full B+LDTRP model. Non-DSM basis, per interpretation decision 1.
+==========================================================================================
+    final set skill vs B (non-DSM, fold-averaged): +5.48%  per-fold: [4.75, 6.55, 5.15]
+    final set skill vs B (ALL 5, fold-averaged)   : +5.55%  per-fold: [4.67, 6.34, 5.64]
+    full B+LDTRP skill vs B (non-DSM, fold-averaged): +5.61%  per-fold: [5.42, 6.84, 4.56]
+
+    check (a) beats B by >= 0.4pp fold-averaged: True  AND worse-by-sign in no fold: True  => True
+    check (b) not meaningfully worse than full B+LDTRP (gap=+0.12pp <= 0.4pp): True
+
+==========================================================================================
+JOINT BACKSTOP: PASS. Mechanically-produced set: B+D,L,R,T. This is the selection rule's mechanical OUTPUT, not a verdict or a decision -- the session-62 owner review makes the call.
+==========================================================================================
+
+==========================================================================================
+Ad hoc fits beyond the 14-variant ladder, logged for transparency (needed by the selection rule's own iterative LOO / parked-option / backstop steps)
+==========================================================================================
+    75 distinct ad hoc (variant, station, fold) fits beyond the ladder:
+        B+D,L,R                  EGLC   2022-23
+        B+D,L,R                  EGLC   2023-24
+        B+D,L,R                  EGLC   2025-26
+        B+D,L,R                  LFPG   2022-23
+        B+D,L,R                  LFPG   2023-24
+        B+D,L,R                  LFPG   2025-26
+        B+D,L,R                  RNO    2022-23
+        B+D,L,R                  RNO    2023-24
+        B+D,L,R                  RNO    2025-26
+        B+D,L,R                  YSDU   2022-23
+        B+D,L,R                  YSDU   2023-24
+        B+D,L,R                  YSDU   2025-26
+        B+D,L,R,T,plev           DSM    2022-23
+        B+D,L,R,T,plev           DSM    2023-24
+        B+D,L,R,T,plev           DSM    2025-26
+        B+D,L,R,T,plev           EGLC   2022-23
+        B+D,L,R,T,plev           EGLC   2023-24
+        B+D,L,R,T,plev           EGLC   2025-26
+        B+D,L,R,T,plev           LFPG   2022-23
+        B+D,L,R,T,plev           LFPG   2023-24
+        B+D,L,R,T,plev           LFPG   2025-26
+        B+D,L,R,T,plev           RNO    2022-23
+        B+D,L,R,T,plev           RNO    2023-24
+        B+D,L,R,T,plev           RNO    2025-26
+        B+D,L,R,T,plev           YSDU   2022-23
+        B+D,L,R,T,plev           YSDU   2023-24
+        B+D,L,R,T,plev           YSDU   2025-26
+        B+D,L,R,T,rh             EGLC   2022-23
+        B+D,L,R,T,rh             EGLC   2023-24
+        B+D,L,R,T,rh             EGLC   2025-26
+        B+D,L,R,T,rh             LFPG   2022-23
+        B+D,L,R,T,rh             LFPG   2023-24
+        B+D,L,R,T,rh             LFPG   2025-26
+        B+D,L,R,T,rh             RNO    2022-23
+        B+D,L,R,T,rh             RNO    2023-24
+        B+D,L,R,T,rh             RNO    2025-26
+        B+D,L,R,T,rh             YSDU   2022-23
+        B+D,L,R,T,rh             YSDU   2023-24
+        B+D,L,R,T,rh             YSDU   2025-26
+        B+D,L,T                  EGLC   2022-23
+        B+D,L,T                  EGLC   2023-24
+        B+D,L,T                  EGLC   2025-26
+        B+D,L,T                  LFPG   2022-23
+        B+D,L,T                  LFPG   2023-24
+        B+D,L,T                  LFPG   2025-26
+        B+D,L,T                  RNO    2022-23
+        B+D,L,T                  RNO    2023-24
+        B+D,L,T                  RNO    2025-26
+        B+D,L,T                  YSDU   2022-23
+        B+D,L,T                  YSDU   2023-24
+        B+D,L,T                  YSDU   2025-26
+        B+D,R,T                  EGLC   2022-23
+        B+D,R,T                  EGLC   2023-24
+        B+D,R,T                  EGLC   2025-26
+        B+D,R,T                  LFPG   2022-23
+        B+D,R,T                  LFPG   2023-24
+        B+D,R,T                  LFPG   2025-26
+        B+D,R,T                  RNO    2022-23
+        B+D,R,T                  RNO    2023-24
+        B+D,R,T                  RNO    2025-26
+        B+D,R,T                  YSDU   2022-23
+        B+D,R,T                  YSDU   2023-24
+        B+D,R,T                  YSDU   2025-26
+        B+L,R,T                  EGLC   2022-23
+        B+L,R,T                  EGLC   2023-24
+        B+L,R,T                  EGLC   2025-26
+        B+L,R,T                  LFPG   2022-23
+        B+L,R,T                  LFPG   2023-24
+        B+L,R,T                  LFPG   2025-26
+        B+L,R,T                  RNO    2022-23
+        B+L,R,T                  RNO    2023-24
+        B+L,R,T                  RNO    2025-26
+        B+L,R,T                  YSDU   2022-23
+        B+L,R,T                  YSDU   2023-24
+        B+L,R,T                  YSDU   2025-26
+
+==========================================================================================
+END
+==========================================================================================
+This script reports the 14-variant grid, the selection trace, and the
+joint-backstop outcome. NO VERDICT was computed -- the single final
+feature set is the session-62 owner review's call, per the session
+prompt. No row of the reserved 2024-08-01..2025-07-31 confirmation
+year (D51) was read, loaded, or scored at any point in this script.
+This output is saved at notes/session-61-combine-sweep-output.txt

@@ -2780,3 +2780,187 @@ other year — the pre-flight reads headers only. Did not modify `SPEC.md` or
 `RESULTS.md`. Nothing was committed. Manifest:
 `scripts/session60_combine_design.py` (new). Pre-flight output:
 `notes/session-60-preflight-output.txt`.
+
+---
+
+## 2026-09-22 — Session 61 finding: the combine-phase sweep is run exactly as
+pre-registered (D57). The mechanical selection rule's OUTPUT is a candidate
+set, B+LDRT (drops P; neither parked option adopted) — NOT a verdict. The
+reserved 2024-25 year was never read.
+
+**F106. Runs the 14-variant ladder pre-registered in D57 on the three
+non-reserved `EXPERIMENT_FOLDS` (D51), applies the mechanical selection rule
+with its correlated-feature safeguard and joint backstop exactly as
+pre-registered, and reports the grid. Per the session prompt, this is
+explicitly NOT a verdict and NOT a decision — the mechanically-produced set
+is reported for the session-62 owner review to confirm or override. The
+reserved 2024-08-01..2025-07-31 confirmation year (D51) was never read, at
+all, this session.** Script: `scripts/session61_combine_sweep.py` (new). Full
+real output: `notes/session-61-combine-sweep-output.txt`. Tables: `data/
+processed/session61_combine_sweep_grid.csv` (210 rows: 5 airports x 3 folds x
+14 variants), `session61_combine_sweep_summary.csv` (126 rows: fold-averaged-
+per-airport, airport-averaged-per-fold, grand-overall), `session61_row_cost_
+guard.csv` (15 rows), `session61_correlation_matrix.csv` (9x9).
+
+**Two interpretation decisions, made explicit in the script's own module
+docstring and flagged here for the session-62 review to check (not a SPEC/
+prompt disagreement — a judgment call in turning D57's English rule into
+code):**
+1. "DSM is diagnostic only — never a keep/drop vote" (D57), read together
+   with "all keep/drop reads are at the airport-averaged level" immediately
+   before it: every mechanical keep/drop/adopt/backstop decision averages
+   over the FOUR non-DSM airports (EGLC, LFPG, YSDU, RNO). DSM is still fit
+   and reported in the full grid/summary (all five airports) throughout.
+2. `plev`'s own explicit override — "must clear the bar airport-averaged
+   across all five airports" — is read as overriding decision 1 specifically
+   for `plev`'s own adoption test: voted on using all five airports,
+   including DSM, unlike every other keep/drop/adopt decision.
+
+**Guards and integrity checks, all PASS.** Reserved-year guard cleared on all
+three `EXPERIMENT_FOLDS` entries before any data was loaded; a defensive
+per-row scan of the five E1-E5 committed source files found 0 reserved-year
+rows. The complete-case row set (all seven candidate features' underlying
+columns present) turned out to be **exactly identical** to a B-only mask
+built from the true base 5-feature dataset (`grib_features_v16_window/
+sealed_window.csv`, reserved year excluded) — the row-cost guard shows
+**0 rows dropped at all 15 airport-folds** (not merely under the 5%
+`ROW_COST_GUARD_FRAC`, literally zero), because the five E1-E5 build sessions
+each joined onto the identical date list with zero drops of their own
+(F98/F100/F101/F102/F104). Integrity check (i): every candidate feature
+column in the assembled table matches its committed source file (or D53/
+F100's own frozen floor transform applied to the stored raw column) exactly
+on every one of 7,952 rows — max abs diff 0.0 throughout; a bonus check
+(base columns temp/cloud/wind cross-file consistency, beyond the session
+prompt's own item) also PASS, max abs diff 0.0. Integrity check (ii): the
+refit-B 2025-26 fold reproduces F94/F96/F99-F105's own raw-GFS and
+persistence MAE and row counts at every airport exactly (all five stations
+MATCH, e.g. EGLC raw=1.2536 vs reference 1.254, YSDU n=356 vs reference 356).
+
+**Correlation matrix (pooled, all five airports, n=7,952), the two strongest
+relationships, both physically expected, neither a surprise:** `dewpoint_
+depression_t2m_floored` (D) and `relative_humidity_2m` (rh) at -0.948 (a
+lower dewpoint depression is a wetter, higher-humidity air mass, almost by
+definition); the three pressure levels `t850`/`t925`/`t700` mutually at
+0.88-0.97 (adjacent levels of the same smooth vertical temperature profile).
+D also correlates with R (`dswrf_2h_wm2`, 0.747) and with `t850` (0.693) —
+clear-sky, low-humidity conditions bring both more shortwave and a warmer
+mid-level temperature together. T (`pressure_tendency_3h_hpa`) is the most
+independent of the five adopted features, weakly-to-moderately anti-
+correlated with D (-0.461) and R (-0.355) and otherwise low. Full matrix:
+`session61_correlation_matrix.csv`.
+
+**Grid result — grand overall (mean MAE across 5 airports x 3 folds, n=15
+airport-folds), all 14 variants:**
+
+```
+variant        mean_MAE   skill_vs_B
+B               1.284        --
+B+L             1.260      +1.9%
+B+D             1.233      +4.0%
+B+T             1.273      +0.9%
+B+R             1.266      +1.4%
+B+P             1.267      +1.3%
+B+LDTRP         1.210      +5.7%
+B+DTRP          1.212      +5.6%   (drop L)
+B+LTRP          1.223      +4.7%   (drop D)
+B+LDRP          1.217      +5.2%   (drop T)
+B+LDTP          1.218      +5.1%   (drop R)
+B+LDTR          1.213      +5.5%   (drop P)
+B+LDTRP+rh      1.208      +5.9%
+B+LDTRP+plev    1.204      +6.2%
+```
+
+Every single-add grand-overall figure reproduces its own E-session's own
+grand-overall figure almost exactly, despite the row set here being the
+narrower seven-feature complete-case set rather than each family's own
+four-variant experiment: B+L +1.9% (F99's own B+Lv max was +2.0%, B+L alone
+was also +1.9% there), B+D +4.0% (F100's own B+D was +4.0% exactly), B+T
++0.9% (F101's own B+T was +0.9% exactly), B+R +1.4% (F103's own B+R was
++1.4% exactly), B+P +1.3% (F105's own B+P was +1.3% exactly) — strong
+independent confirmation the combine-phase harness reproduces each family's
+own prior reading faithfully.
+
+**Selection rule trace (D57 Steps 8-12), all votes on the non-DSM
+airport-averaged basis (interpretation decision 1 above) unless noted:**
+
+*Round 1* — full set B+D,L,P,R,T, fold-averaged skill vs B (non-DSM) =
++5.61%, per-fold [+5.42%, +6.84%, +4.56%]:
+```
+remove D -> B+LPRT   skill=+5.18%  magnitude=+0.43pp  robust=False  DROP CANDIDATE
+remove L -> B+DPRT   skill=+5.19%  magnitude=+0.41pp  robust=False  DROP CANDIDATE
+remove P -> B+DLRT   skill=+5.48%  magnitude=+0.12pp  robust=False  DROP CANDIDATE
+remove R -> B+DLPT   skill=+4.42%  magnitude=+1.19pp  robust=True   KEEP
+remove T -> B+DLPR   skill=+4.90%  magnitude=+0.71pp  robust=True   KEEP
+```
+Three features (D, L, P) flagged droppable together — the correlated-feature
+safeguard (D57 Step 10) fired. Dropped only the least-fold-averaged-damage
+one, **P** (magnitude +0.12pp, the smallest of the three) — `DROP_ORDER`'s
+tie-break was not needed, the magnitudes were already distinct.
+
+*Round 2* — reduced set B+D,L,R,T, fold-averaged skill vs B (non-DSM) =
++5.48%, per-fold [+4.75%, +6.55%, +5.15%]:
+```
+remove D -> B+LRT    skill=+4.21%  magnitude=+1.27pp  robust=True   KEEP
+remove L -> B+DRT    skill=+5.08%  magnitude=+0.41pp  robust=True   KEEP
+remove R -> B+DLT    skill=+3.96%  magnitude=+1.53pp  robust=True   KEEP
+remove T -> B+DLR    skill=+4.04%  magnitude=+1.45pp  robust=True   KEEP
+```
+Nothing flagged droppable — **CORE SET = B+D,L,R,T** (i.e. B+LDRT).
+
+**Parked-option tests (D57 Step 11) — neither adopted, both actively
+worsened the core set's own skill when added:**
+```
+rh   : core skill(non-DSM)=+5.48%  core+rh skill(non-DSM)=+4.98%  magnitude=-0.51pp  robust=False  DO NOT ADOPT
+plev : core skill(ALL 5)  =+5.55%  core+plev skill(ALL 5) =+5.29%  magnitude=-0.26pp  robust=False  DO NOT ADOPT
+```
+`plev`'s own vote used all five airports per its explicit D57 override
+(interpretation decision 2); both parked options failed on magnitude alone
+(negative, not merely sub-threshold), so the "ties go to the smaller set"
+clause (D57 Step 12) was never in play.
+
+**FINAL SET (mechanical rule output): B+D,L,R,T — i.e. the full adopted
+set minus P (precipitation), with neither parked option added.**
+
+**Joint backstop (D57 Steps 13-14) — PASS:**
+```
+final set skill vs B (non-DSM, fold-averaged): +5.48%  per-fold [+4.75%, +6.55%, +5.15%]
+final set skill vs B (ALL 5,   fold-averaged): +5.55%  per-fold [+4.67%, +6.34%, +5.64%]
+full B+LDTRP skill vs B (non-DSM, fold-averaged): +5.61%  per-fold [+5.42%, +6.84%, +4.56%]
+
+check (a) beats B by >= 0.4pp fold-averaged AND worse-by-sign in no fold: True AND True => True
+check (b) not meaningfully worse than full B+LDTRP (gap=+0.12pp <= 0.4pp): True
+```
+Both checks pass. The mechanical rule did not halt.
+
+**DSM, reported as diagnostic only, never a vote (F96/D57):** at DSM, the
+full set B+LDTRP reads +6.1% fold-averaged (its own best single addition is
+D, +6.2% alone — the moisture-dominance pattern D53/F100 already
+established there); the mechanically-produced final set B+LDTR (missing P)
+reads +5.7% at DSM — a diagnostic-only 0.4pp softer than the full set at
+this one airport, consistent with DSM never having shown a strong precip
+signal in F105 either (DSM's own B+P fold-averaged there was a modest
++0.6%). This did not affect the vote, which excludes DSM by design.
+
+**What this finding does and does not mean.** This is the mechanical
+selection rule's OUTPUT under D57's pre-registered design, applied exactly
+as written (subject to the two interpretation decisions above, which the
+session-62 review should check). It is explicitly **not a verdict** — no
+pass/fail bar was applied, and the reserved 2024-25 confirmation year was
+never touched. The session-62 owner review may confirm B+D,L,R,T as the set
+to carry to the reserved-year confirmation (D51), or may read the two
+interpretation decisions differently and re-derive a different set from the
+same grid (all 210 grid rows, the correlation matrix, and the full selection
+trace are on record for that purpose) — either way, D57's own one-look
+discipline for the reserved year is unaffected by this session either way.
+
+**What this session did not do, on purpose.** Did not read, load, or score
+a single row of the reserved 2024-08-01..2025-07-31 confirmation year (D51)
+— the five E1-E5 committed source files already exclude it (confirmed by a
+defensive per-row scan, 0 hits), and no code path in this script references
+`RESERVED_YEAR_START`/`RESERVED_YEAR_END` except to exclude them. Did not
+compute or declare a verdict — the mechanical rule's output is reported as
+exactly that, an output, not a decision (the session prompt's own framing,
+repeated throughout this script's own printed output). Did not rebuild,
+re-decode, or re-derive any feature beyond re-applying D53/F100's own
+already-frozen one-line floor transform to the stored raw column. Did not
+modify `SPEC.md` or `RESULTS.md`. Nothing was committed.
