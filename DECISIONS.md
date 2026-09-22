@@ -3156,3 +3156,177 @@ own fit/score machinery is a correct reproduction of the programme's
 recipe, not a re-implementation that only looks similar. Scripts:
 `scripts/session62_reserved_confirm.py` (new, frozen). Full real output:
 `notes/session-62-preflight-output.txt`.
+
+---
+
+## 2026-09-22/23 — Session 63 finding: the reserved-year feature build closes
+D58 item 11. Data build only — the reserved year was opened FOR DATA ONLY, no
+fit, no score, no selection. `run_confirm()` was never called.
+
+**F107. Extends the already-frozen L, D, T, R pull/decode/derive pipelines
+(sessions 49/51/53/55's own code, reused by import, unchanged) to cover the
+reserved 2024-08-01..2025-07-31 confirmation year, and applies the one
+wiring addition to `scripts/session62_reserved_confirm.py` that Step 0
+determined was needed so the frozen confirmation script can see the new
+files. Closes the blocker D58 item 11 named. No model was fit. No MAE,
+skill, or CV was computed anywhere. `run_confirm()` was never called.**
+Script: `scripts/session63_reserved_year_build.py` (new). Full real output:
+`notes/session-63-reserved-build-output.txt`. New data files: `data/
+processed/session63_reserved_window_with_upper_air.csv`,
+`..._with_moisture.csv`, `..._with_pressure.csv`, `..._with_radiation.csv`
+(365 rows x 5 airports = 1,825 rows each), plus four
+`session63_<family>_join_drops.csv` logs (all empty) and four pull
+manifests under `data/raw/diagnostics/session63/` (all 0 FAIL).
+
+**Step 0 — wiring determination, CASE (B).** Reading `scripts/
+session62_reserved_confirm.py` first, per the session prompt: its
+`load_family()` reads exactly the two files named in `session60_combine_
+design.CANDIDATE_FEATURES[code]` (`v16_file`, `sealed_file` — the sessions
+49/51/53/55 committed family files) and treats any row whose date falls
+inside the reserved year as a "hit" that `run_confirm()` then raises on.
+No third, per-family reserved-year source file was already referenced
+anywhere in the frozen script or in `CANDIDATE_FEATURES` — so CASE (A) (a
+pre-existing but empty reference) did not hold. **CASE (B) held**: a
+minimal wiring addition was needed. Applied to `scripts/
+session62_reserved_confirm.py` only, in two places: (1) a new module-level
+`RESERVED_FAMILY_FILES` dict naming the four `session63_reserved_window_
+with_*.csv` files this session produces, one per adopted family; (2) three
+new lines at the end of `load_family()` that, if the mapped file exists,
+read it and add its rows to the same per-station/date dict `load_family()`
+already returns — WITHOUT running those rows through the exclusion check
+(they are supposed to be inside the reserved year, by construction of the
+file; a defensive assertion raises if one is not). **`session60_combine_
+design.py`'s `CANDIDATE_FEATURES` dict was NOT touched** — it stays
+byte-for-byte what session 61 already used, so session 61's own
+already-reported result (F106) is untouched by this edit. This is an
+outcome-orthogonal wiring change (it only affects which rows load, before
+any model is fit) of the same class D58 item 9 already named as
+pre-look-safe (the F92/F93 guard-fix pattern) — `git diff --stat` confirms
+only `scripts/session62_reserved_confirm.py` changed, +47 lines, and
+`ast.parse` confirms it still parses correctly. **Neither `preflight()` nor
+`run_confirm()` was executed this session** — both fit or would fit a
+LightGBM model (preflight()'s own "machinery dry-run" step), which this
+session's scope guard forbids ("no model fit ... anywhere"); the wiring
+change was verified instead by a separate, read-only, model-free script
+(not committed — a scratch check, csv-only, no lightgbm import) that
+reproduced `load_family()`'s exact logic and confirmed: 0 hits in the two
+original files (unchanged), 1,825 rows added from the four new files
+(365 x 5), and — mirroring `build_complete_case`'s own intersection
+logic — exactly 365 complete-case reserved-year rows at every airport
+(previously 0, per D58 item 11) and 1,226/1,226/1,225/1,225/1,225
+complete-case training-window rows at EGLC/LFPG/DSM/YSDU/RNO, matching
+D58 item 5's own already-verified count exactly.
+
+**Step 1 — reserved-year date list, built from the base dataset's own
+rows.** `data/processed/grib_features_v16_window.csv` filtered to
+`target_date` in 2024-08-01..2025-07-31: exactly 365 dates per airport
+(2024-08-01..2025-07-31), at all five airports — EGLC, LFPG, DSM, YSDU,
+RNO. This is the base 5-feature dataset's own real dates, not an assumed
+continuous calendar (mirroring how sessions 49/51/53/55 built their own
+date lists from the same file).
+
+**Step 2 — the inverted guard.** `assert_reserved_year_excluded()` was
+never called on these dates (it would raise on every one). Instead, the
+inverse was asserted and printed for every airport: all 365 dates
+confirmed INSIDE 2024-08-01..2025-07-31, at every airport. `scripts/
+session48_reserved_year.py` and its `RESERVED_YEAR_START`/`RESERVED_YEAR_
+END` constants were only read, never edited.
+
+**Step 3 — the four frozen pipelines, run over the reserved year.**
+Elevation corrections (D48.3/F90, reused by import from `scripts/
+session49_upper_air_pull.py`, unchanged): EGLC +0.2486, LFPG -0.1697, DSM
+-0.1106, YSDU +0.2461, RNO +2.0436 °C — identical to F90/F99's own figures.
+Each family's own `build_combos`/`process_combo` (or, for radiation, the
+de-accumulation-aware variants) was imported directly from that family's
+build script and run unchanged over the reserved-year date list; only the
+JOIN step was newly written (the arithmetic copied verbatim from each
+family's own `build_joined()`, since that function hard-codes "skip any
+date inside the reserved year" and this session needs the opposite
+filter — documented in full in `scripts/session63_reserved_year_build.py`'s
+own module docstring).
+
+```
+family      combos   elapsed    messages requested/decoded_ok/failed
+L (upper_air)  1460   13.02 min  t925 1825/1825/0, t850 1825/1825/0, t700 1825/1825/0
+D (moisture)   1460   13.68 min  RH 1825/1825/0, DPT 1825/1825/0, SPFH 1825/1825/0
+T (pressure)   1460   14.82 min  PRMSL 1825/1825/0, PRES:sfc 1825/1825/0, PRMSL@lead-3 1825/1825/0
+R (radiation)  1460    7.40 min  dswrf_to_lead 1825/1825/0, dswrf_to_lead_minus2 1095/1095/0
+```
+
+**Zero pull failures across all four families (0 FAIL rows in every
+manifest, 4,380/4,380/4,380/2,190 total requests respectively).** Free
+disk space: 10.88 GiB before the first pull, 10.97 GiB after all four
+(fetch-decode-discard throughout, per D47/F98's own precedent — no raw
+GRIB2 bytes kept; a defensive scan after the run found zero leftover
+`_scratch_*.grib2` files in any of the four families' own diagnostic
+directories).
+
+**Step 4 — verify, real numbers, at every airport, every family.** Join
+drops: **0 at every airport, every family** (`session63_<family>_join_
+drops.csv` empty in all four cases). Row counts: **output row count equals
+the base dataset's own reserved-year row count (365) at every airport,
+every family** — EGLC/LFPG/DSM/YSDU/RNO all MATCH, all four families.
+Nulls in every derived/committed column: **0**, with one expected, honest
+exception — `dswrf_ave_to_lead_minus2_wm2` shows `n_null=730` (2 airports x
+365 days), which is NOT a defect: YSDU and RNO are the lead-26 airports
+whose native DSWRF window is already the target 2-hour window, so no
+second (lead-2) message is fetched for them and this raw endpoint column is
+genuinely not applicable there — the exact same convention F102/session55's
+own `build_joined()` already uses (blank, not a filled zero, per SPEC 2.2).
+Manifests: 0 FAIL rows in all four.
+
+**Spot-checks, physical plausibility.** L/EGLC 2024-08-01: t2m_raw=26.792,
+t925=17.656, t850=14.26, t700=3.829, lapse_rate_t2_t850=12.532 —
+colder-with-height (t2m_raw > t925 > t850 > t700): YES. L/RNO reserved-year
+means: t2m_raw=15.94, t925=20.52 — RNO's surface-to-925hPa inversion (F98,
+a real elevation effect at RNO's 1,345 m, not a defect) reproduces here too,
+exactly as expected. R/EGLC reserved-year mean `dswrf_2h_wm2`=414.95 W/m2,
+0 negative values. T/EGLC reserved-year mean `pressure_tendency_3h_hpa`
+=-0.302 hPa (well inside the ±15 hPa sanity range). D/EGLC: 0 rows where
+`dew_point_2m` > `t2m_raw` (the physical-sanity check F91/session51 already
+established).
+
+**Step 5 — B-completeness check on the reserved year (read-only, no model,
+no score).** `temperature_grib_c`, `cloud_cover_grib_pct`,
+`wind_speed_grib_kmh` in the base dataset's own reserved-year rows: **0
+nulls, at every airport, every column** (365 rows checked per airport).
+PASS — this would not have blocked session 64 even before this session's
+own build closed the L/D/T/R gap.
+
+**D58 item 11's gap is now closed.** Before this session, `run_confirm()`'s
+own hard guard (D58 item 11, session 62) would have stopped immediately —
+every one of L/D/T/R had zero rows anywhere inside the reserved year, in
+any committed file. After this session, the reserved year has real,
+validated L/D/T/R feature values, at every airport, matching the base
+dataset's own row count exactly, with zero drops and zero nulls. Session 64
+can now run `scripts/session62_reserved_confirm.py --confirm` once,
+unchanged, on the 2024-25 fold, per D58's own pre-registered plan.
+
+**What this session did not do, on purpose.** Did not fit any model,
+anywhere, in any script (including not running `session62_reserved_
+confirm.py`'s own `preflight()`, which fits LightGBM in its "machinery
+dry-run" step — verified instead by a separate, model-free, csv-only
+scratch check). Did not compute any MAE, skill, or CV. Did not call
+`run_confirm()` — session 64 alone spends the single authorized look
+(D51). Did not touch the sealed 2025-08-01..2026-07-31 year (F94) — no
+sealed-year row was read, pulled, or referenced by this session's own date
+list (built from the reserved year only) or by the wiring change (which
+only adds a new file path lookup, evaluated only for dates the new file
+itself carries). Did not rewrite, append to, or re-decode any existing
+committed file — the base dataset and every `v16_window`/`sealed_window`
+family file (sessions 49/51/53/55's own commits) are untouched; only new
+`session63_*` files were written. Did not build P (precipitation), `rh`, or
+`plev` — D58 dropped/parked all three; only L, D, T, R were built, matching
+D58's own final set exactly. Did not re-resolve, re-decide, or re-derive
+any pinned window, constant, or transform — the elevation-correction
+constants, the lapse-rate/dewpoint-depression/tendency/de-accumulation
+formulas, and session 55's own 2-hour-window resolution were all reused
+exactly as sessions 49/51/53/55 pinned them (the pull/decode functions by
+direct import; the join arithmetic copied verbatim, documented in the new
+script's own module docstring). Did not do any per-airport feature
+selection or variation — identical handling at all five airports
+throughout. Did not edit `scripts/session48_reserved_year.py` or its
+reserved-year constants — read only. Did not modify `SPEC.md` or
+`RESULTS.md`. Did not archive any DECISIONS entry this session — D52-D58
+and F106 remain live (still load-bearing for session 64). Nothing was
+committed.

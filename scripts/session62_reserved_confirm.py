@@ -63,6 +63,29 @@ from session48_reserved_year import (  # noqa: E402
 )
 from session60_combine_design import CANDIDATE_FEATURES  # noqa: E402
 
+# ---------------------------------------------------------------------------
+# SESSION 63 WIRING ADDITION (D58 item 11 / DECISIONS F107). Step 0 of the
+# session-63 prompt determined this is CASE (B): load_family() below reads
+# only CANDIDATE_FEATURES[code]["v16_file"]/["sealed_file"] (the sessions
+# 49/51/53/55 committed family files) and treats any reserved-year row found
+# there as a "hit" that stops the run -- there was no third, per-family
+# reserved-year source file already referenced anywhere in this script. This
+# map names the four new files session63_reserved_year_build.py produces,
+# one per adopted family (L, D, T, R). Added HERE, not to
+# session60_combine_design.py's CANDIDATE_FEATURES -- that dict is left
+# byte-for-byte as session 61 already used it, so nothing about session 61's
+# own already-reported result (F106) changes. This is an outcome-orthogonal
+# wiring change: it only affects which rows load_family() sees, before any
+# model is fit -- the same class of change as the F92/F93 pre-look guard
+# fix. It does not call run_confirm() and does not compute anything.
+# ---------------------------------------------------------------------------
+RESERVED_FAMILY_FILES = {
+    "L": PROCESSED / "session63_reserved_window_with_upper_air.csv",
+    "D": PROCESSED / "session63_reserved_window_with_moisture.csv",
+    "T": PROCESSED / "session63_reserved_window_with_pressure.csv",
+    "R": PROCESSED / "session63_reserved_window_with_radiation.csv",
+}
+
 # --- making LightGBM importable on this machine -------------------------------
 # See DECISIONS Q16/D24. Unchanged from every earlier modelling script.
 _SENTINEL = "MLWX_LIBOMP_PATH_SET"
@@ -242,6 +265,30 @@ def load_family(short_name, extra_cols):
                 if RESERVED_YEAR_START <= d <= RESERVED_YEAR_END:
                     reserved_hits += 1
                     continue
+                row = {}
+                for c in extra_cols:
+                    row[c] = float(r[c])
+                out[st][d] = row
+    # SESSION 63 WIRING ADDITION (D58 item 11 / F107, see the module-level
+    # RESERVED_FAMILY_FILES comment above): also load the reserved-year rows
+    # from the new per-family file, if it exists. These rows are NOT run
+    # through the reserved-year exclusion check above -- by construction of
+    # that file, every row in it is supposed to be inside the reserved year.
+    # Any row that is not raises immediately, rather than being silently
+    # accepted.
+    reserved_path = RESERVED_FAMILY_FILES.get(short_name)
+    if reserved_path is not None and reserved_path.exists():
+        with open(reserved_path) as f:
+            for r in csv.DictReader(f):
+                st = r["station"]
+                if st not in out:
+                    continue
+                d = date.fromisoformat(r["target_date"])
+                if not (RESERVED_YEAR_START <= d <= RESERVED_YEAR_END):
+                    raise AssertionError(
+                        f"session63 reserved-year file {reserved_path.name} "
+                        f"contains an out-of-range date {d} for station {st} "
+                        f"-- refusing to proceed.")
                 row = {}
                 for c in extra_cols:
                     row[c] = float(r[c])

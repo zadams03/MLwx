@@ -1,0 +1,204 @@
+
+==========================================================================================
+SESSION 63 -- reserved-year feature build (closes DECISIONS D58 item 11). Data build only. No model fit. No MAE/skill/CV anywhere. run_confirm() is never called.
+==========================================================================================
+run at: 2026-09-22 23:23:53 local
+
+==========================================================================================
+STEP 0 -- wiring determination (see this module's own docstring for the full reasoning)
+==========================================================================================
+    CASE (B) holds: scripts/session62_reserved_confirm.py's load_family() reads only the two files named in session60_combine_design.CANDIDATE_FEATURES (the sessions 49/51/53/55 committed family files) and treats any reserved-year row found there as a 'hit' that stops the run. No third, per-family reserved-year source file is referenced anywhere in the frozen script today. A minimal wiring addition to load_family() (reading a new, explicit RESERVED_FAMILY_FILES map, added to session62_reserved_confirm.py only -- NOT to session60_combine_design.py's CANDIDATE_FEATURES) is applied separately from this data-build script, documented in full in this session's own DECISIONS finding (F107). This script produces the four files that wiring will point at. run_confirm() is not called by this script or by that edit.
+
+==========================================================================================
+STEP 1 -- reserved-year date list, built from the base dataset's own rows (data/processed/grib_features_v16_window.csv)
+==========================================================================================
+    DSM    n_dates=365  2024-08-01 .. 2025-07-31
+    EGLC   n_dates=365  2024-08-01 .. 2025-07-31
+    LFPG   n_dates=365  2024-08-01 .. 2025-07-31
+    RNO    n_dates=365  2024-08-01 .. 2025-07-31
+    YSDU   n_dates=365  2024-08-01 .. 2025-07-31
+
+==========================================================================================
+STEP 2 -- invert the reserved-year guard: every date must be INSIDE the reserved year (the exclusion guard would raise on every one of these, so it is never called here)
+==========================================================================================
+    DSM: all 365 dates confirmed INSIDE 2024-08-01..2025-07-31 -- PASS
+    EGLC: all 365 dates confirmed INSIDE 2024-08-01..2025-07-31 -- PASS
+    LFPG: all 365 dates confirmed INSIDE 2024-08-01..2025-07-31 -- PASS
+    RNO: all 365 dates confirmed INSIDE 2024-08-01..2025-07-31 -- PASS
+    YSDU: all 365 dates confirmed INSIDE 2024-08-01..2025-07-31 -- PASS
+
+==========================================================================================
+STEP 3 -- run the four frozen pipelines over the reserved year
+==========================================================================================
+
+    Elevation corrections (D48.3/F90, unchanged, reused by import): {'EGLC': 0.2486, 'LFPG': -0.1697, 'DSM': -0.1106, 'YSDU': 0.2461, 'RNO': 2.0436}
+
+    Free disk space BEFORE any pull: 10.88 GiB
+
+-- family L (upper_air) -- pull --
+    combos=1460  elapsed=13.02 min
+    t925                       requested=1825   decoded_ok=1825   failed=0
+    t850                       requested=1825   decoded_ok=1825   failed=0
+    t700                       requested=1825   decoded_ok=1825   failed=0
+    manifest -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session63/session63_upper_air_pull_manifest.csv (4380 rows, 0 FAIL)
+
+-- family L (upper_air) -- join + derive --
+    output -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_reserved_window_with_upper_air.csv
+    DSM    before=365  after=365 
+    EGLC   before=365  after=365 
+    LFPG   before=365  after=365 
+    RNO    before=365  after=365 
+    YSDU   before=365  after=365 
+    join-drop log -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_upper_air_join_drops.csv (0 rows)
+
+-- family D (moisture) -- pull --
+    combos=1460  elapsed=13.68 min
+    relative_humidity_2m       requested=1825   decoded_ok=1825   failed=0
+    dew_point_2m               requested=1825   decoded_ok=1825   failed=0
+    specific_humidity_2m       requested=1825   decoded_ok=1825   failed=0
+    manifest -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session63/session63_moisture_pull_manifest.csv (4380 rows, 0 FAIL)
+
+-- family D (moisture) -- join + derive --
+    output -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_reserved_window_with_moisture.csv
+    DSM    before=365  after=365 
+    EGLC   before=365  after=365 
+    LFPG   before=365  after=365 
+    RNO    before=365  after=365 
+    YSDU   before=365  after=365 
+    join-drop log -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_moisture_join_drops.csv (0 rows)
+
+-- family T (pressure) -- pull --
+    combos=1460  elapsed=14.82 min
+    pressure_msl_hpa           requested=1825   decoded_ok=1825   failed=0
+    pressure_surface_hpa       requested=1825   decoded_ok=1825   failed=0
+    pressure_msl_lead_minus3_hpa requested=1825   decoded_ok=1825   failed=0
+    manifest -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session63/session63_pressure_pull_manifest.csv (4380 rows, 0 FAIL)
+
+-- family T (pressure) -- join + derive --
+    output -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_reserved_window_with_pressure.csv
+    DSM    before=365  after=365 
+    EGLC   before=365  after=365 
+    LFPG   before=365  after=365 
+    RNO    before=365  after=365 
+    YSDU   before=365  after=365 
+    join-drop log -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_pressure_join_drops.csv (0 rows)
+
+-- family R (radiation) -- pull --
+    combos=1460  elapsed=7.40 min
+    dswrf_to_lead              requested=1825   decoded_ok=1825   failed=0
+    dswrf_to_lead_minus2       requested=1095   decoded_ok=1095   failed=0
+    manifest -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session63/session63_radiation_pull_manifest.csv (2190 rows, 0 FAIL)
+
+-- family R (radiation) -- join + derive --
+    output -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_reserved_window_with_radiation.csv
+    DSM    before=365  after=365 
+    EGLC   before=365  after=365 
+    LFPG   before=365  after=365 
+    RNO    before=365  after=365 
+    YSDU   before=365  after=365 
+    join-drop log -> /Users/zacharyadams/Coding Projects/MLwx/data/processed/session63_radiation_join_drops.csv (0 rows)
+
+    Free disk space AFTER all four pulls: 10.97 GiB (before: 10.88 GiB)
+
+==========================================================================================
+STEP 4 -- verify (real numbers)
+==========================================================================================
+
+    Base dataset's own reserved-year row counts, per airport: {'EGLC': 365, 'LFPG': 365, 'DSM': 365, 'YSDU': 365, 'RNO': 365}
+
+-- family L (upper_air) --
+    join drops: 0 (expect 0)
+    manifest FAIL rows: 0 (expect 0)
+    DSM    output_rows=365   base_reserved_rows=365   MATCH
+    EGLC   output_rows=365   base_reserved_rows=365   MATCH
+    LFPG   output_rows=365   base_reserved_rows=365   MATCH
+    RNO    output_rows=365   base_reserved_rows=365   MATCH
+    YSDU   output_rows=365   base_reserved_rows=365   MATCH
+    null counts in derived columns (expect 0):
+      t2m_raw                          n_null=0
+      t925                             n_null=0
+      t850                             n_null=0
+      t700                             n_null=0
+      lapse_rate_t2_t850               n_null=0
+
+-- family D (moisture) --
+    join drops: 0 (expect 0)
+    manifest FAIL rows: 0 (expect 0)
+    DSM    output_rows=365   base_reserved_rows=365   MATCH
+    EGLC   output_rows=365   base_reserved_rows=365   MATCH
+    LFPG   output_rows=365   base_reserved_rows=365   MATCH
+    RNO    output_rows=365   base_reserved_rows=365   MATCH
+    YSDU   output_rows=365   base_reserved_rows=365   MATCH
+    null counts in derived columns (expect 0):
+      t2m_raw                          n_null=0
+      relative_humidity_2m             n_null=0
+      dew_point_2m                     n_null=0
+      specific_humidity_2m             n_null=0
+      dewpoint_depression_t2m          n_null=0
+
+-- family T (pressure) --
+    join drops: 0 (expect 0)
+    manifest FAIL rows: 0 (expect 0)
+    DSM    output_rows=365   base_reserved_rows=365   MATCH
+    EGLC   output_rows=365   base_reserved_rows=365   MATCH
+    LFPG   output_rows=365   base_reserved_rows=365   MATCH
+    RNO    output_rows=365   base_reserved_rows=365   MATCH
+    YSDU   output_rows=365   base_reserved_rows=365   MATCH
+    null counts in derived columns (expect 0):
+      pressure_msl_hpa                 n_null=0
+      pressure_surface_hpa             n_null=0
+      pressure_msl_lead_minus3_hpa     n_null=0
+      pressure_tendency_3h_hpa         n_null=0
+
+-- family R (radiation) --
+    join drops: 0 (expect 0)
+    manifest FAIL rows: 0 (expect 0)
+    DSM    output_rows=365   base_reserved_rows=365   MATCH
+    EGLC   output_rows=365   base_reserved_rows=365   MATCH
+    LFPG   output_rows=365   base_reserved_rows=365   MATCH
+    RNO    output_rows=365   base_reserved_rows=365   MATCH
+    YSDU   output_rows=365   base_reserved_rows=365   MATCH
+    null counts in derived columns (expect 0):
+      dswrf_ave_to_lead_wm2            n_null=0
+      dswrf_ave_to_lead_minus2_wm2     n_null=730
+      dswrf_2h_wm2                     n_null=0
+
+-- spot-check: physical plausibility --
+    L / EGLC 2024-08-01: t2m_raw=26.792 t925=17.656 t850=14.26 t700=3.829 lapse_rate_t2_t850=12.532
+    colder-with-height (t2m_raw > t925 > t850 > t700): YES
+    L / RNO reserved-year means: t2m_raw=15.94 t925=20.52 -- RNO's surface-to-925hPa inversion (F98, a real elevation effect, not a defect) expected to reproduce here too: t925 warmer than surface, as F98 found
+    R / EGLC reserved-year mean dswrf_2h_wm2=414.95 W/m2, negative_values=0 (expect 0)
+    T / EGLC reserved-year mean pressure_tendency_3h_hpa=-0.302 hPa (sanity range roughly -15..+15)
+    D / EGLC reserved-year dew_point_2m > t2m_raw violations: 0 (expect 0)
+
+==========================================================================================
+STEP 5 -- confirm the test-window B matrix is complete (read-only, no model, no score)
+==========================================================================================
+    DSM    temperature_grib_c         n_null=0 (n_rows=365)
+    DSM    cloud_cover_grib_pct       n_null=0 (n_rows=365)
+    DSM    wind_speed_grib_kmh        n_null=0 (n_rows=365)
+    EGLC   temperature_grib_c         n_null=0 (n_rows=365)
+    EGLC   cloud_cover_grib_pct       n_null=0 (n_rows=365)
+    EGLC   wind_speed_grib_kmh        n_null=0 (n_rows=365)
+    LFPG   temperature_grib_c         n_null=0 (n_rows=365)
+    LFPG   cloud_cover_grib_pct       n_null=0 (n_rows=365)
+    LFPG   wind_speed_grib_kmh        n_null=0 (n_rows=365)
+    RNO    temperature_grib_c         n_null=0 (n_rows=365)
+    RNO    cloud_cover_grib_pct       n_null=0 (n_rows=365)
+    RNO    wind_speed_grib_kmh        n_null=0 (n_rows=365)
+    YSDU   temperature_grib_c         n_null=0 (n_rows=365)
+    YSDU   cloud_cover_grib_pct       n_null=0 (n_rows=365)
+    YSDU   wind_speed_grib_kmh        n_null=0 (n_rows=365)
+
+    B-completeness: PASS -- 0 nulls throughout
+
+==========================================================================================
+END OF SESSION 63 DATA BUILD
+==========================================================================================
+No model was fit anywhere in this script. No MAE, skill, or CV was
+computed. run_confirm() was never called. The sealed year
+(2025-08-01..2026-07-31, F94) was never touched. No existing
+committed file was rewritten -- only new session63_reserved_window_
+with_*.csv files and new diagnostic manifests were written.
+
+This output is saved at /Users/zacharyadams/Coding Projects/MLwx/notes/session-63-reserved-build-output.txt

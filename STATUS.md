@@ -3,69 +3,59 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 22 September 2026, after session 62._
+_Last updated: 23 September 2026, after session 63._
 
 ---
 
 ## Where the project is right now
 
-**The single final feature set is locked (D58): B + D, L, R, T — the frozen
-5-feature GRIB baseline plus moisture, lapse rate, shortwave radiation, and
-pressure tendency. Precipitation is dropped; neither parked option (`rh`,
-`plev`) is adopted.** This confirms D57's mechanical rule's own output
-(F106) unchanged, after the owner's review of its full grid and selection
-trace found no reason to override it.
+**The single final feature set remains locked (D58): B + D, L, R, T — the
+frozen 5-feature GRIB baseline plus moisture, lapse rate, shortwave
+radiation, and pressure tendency.** Precipitation is dropped; neither
+parked option (`rh`, `plev`) is adopted. Nothing about the set changed this
+session.
 
-The frozen, self-guarded confirmation script (`scripts/
-session62_reserved_confirm.py`) is written and pre-flighted. Its pre-flight
-(header/date checks, guard checks, column-integrity check, and a machinery
-dry-run on the already-non-reserved 2023-24 fold) all passed — the dry-run
-exactly reproduces session 61's own `B+LDTR` grid row at every airport,
-strong evidence the fit/score machinery is correct. **The reserved
-2024-08-01..2025-07-31 year was not opened this session** — no row of it
-was read, loaded, fit on, or scored anywhere.
+**D58 item 11's blocking data gap is now closed (F107).** Session 63
+extended the already-frozen L, D, T, R pull/decode/derive pipelines
+(sessions 49/51/53/55's own code, reused by import, unchanged) to cover the
+reserved 2024-08-01..2025-07-31 confirmation year. All four families now
+have real, validated feature values for the reserved year, at every
+airport: 365 rows per airport per family, matching the base 5-feature
+dataset's own reserved-year row count exactly, zero join drops, zero
+nulls, zero pull failures. A minimal, documented wiring addition was made
+to `scripts/session62_reserved_confirm.py`'s own `load_family()` function
+(a new `RESERVED_FAMILY_FILES` map, pointing at the four new
+`session63_reserved_window_with_*.csv` files) so the frozen confirmation
+script can see this data — `session60_combine_design.py`'s
+`CANDIDATE_FEATURES` (which session 61 already used) was not touched. A
+read-only, model-free check confirmed the wiring works: the reserved year
+now yields exactly 365 complete-case rows per airport (previously 0), and
+the training-window row counts still match D58 item 5's own already-verified
+figures exactly.
 
-**A blocking data gap was found (D58 item 11) — closing it is session 63's
-own job, before session 64 can run the confirmation.** The four
-adopted-feature families (L, D, T, R) were each built (sessions 49/51/53/55)
-with the reserved year deliberately excluded, per D51's mandate at the
-time — verified directly this session: every one of their eight committed
-files has zero rows anywhere inside 2024-08-01..2025-07-31. So although the
-confirmation fold's *training* window (2021-03-24..2024-07-31) is fully
-covered, its *test* window (the reserved year itself) currently has no
-L/D/T/R feature value for any airport, for any date. `run_confirm()`
-contains a hard guard that will stop with a clear error rather than
-silently score on missing data — it will not waste the one authorized look
-— but as things stand today, running it would simply stop at that guard.
-**Session 63 closes this gap by extending the same already-frozen L/D/T/R
-pull/derive pipelines to cover the reserved year's dates — an
-outcome-orthogonal data build (raw inputs plus the already-pinned
-transforms only, no model fit, no scoring, nothing selected) — so session
-64 can then run the frozen confirmation.**
+**No model was fit this session. No MAE, skill, or CV was computed
+anywhere. `run_confirm()` was never called** — not even `preflight()`,
+since it fits a LightGBM model in its own "machinery dry-run" step, which
+this session's scope excluded. The sealed year (2025-08-01..2026-07-31,
+F94) was never touched. `scripts/session62_reserved_confirm.py` is still
+the frozen script session 64 runs with `--confirm`, once, unchanged — this
+session's own edit to it is the one authorized wiring exception (documented
+in F107), not a change to its confirmation logic, its feature set, its
+fold, or its bar.
 
-Every prior verdict (F16/F30/F47/F64/F82, F94, D52–D57, F106) stands
+Every prior verdict (F16/F30/F47/F64/F82, F94, D52–D58, F106) stands
 exactly as reported, untouched.
 
 ---
 
 ## Next
 
-**Next planning session: session 63 — the reserved-year feature build
-(closes D58 item 11).** Extend the already-frozen L, D, T, R pull/decode/
-derive pipelines (sessions 49/51/53/55's own code, unchanged) to cover
-2024-08-01..2025-07-31, so the confirmation fold's test window has real
-L/D/T/R feature values at every airport. This is an outcome-orthogonal
-data build — raw inputs plus the already-pinned transforms (D53/F100's
-floor formula and the rest, applied exactly as pinned) only, no model fit,
-no MAE, no scoring, nothing selected — so it does not itself touch D51's
-one-look discipline.
-
-**Session 64 — run the frozen confirmation script once, unchanged.** Once
-session 63 closes the gap, run `scripts/session62_reserved_confirm.py
---confirm` once, unchanged, on the 2024-25 fold. This is the single
-authorized look (D51); report the verdict against D58's pre-registered
-expectations (bar: B+D,L,R,T beats both raw GFS and persistence at all
-five airports; secondary read: beats plain B on airport-averaged MAE).
+**Next planning session: session 64 — run the frozen confirmation script
+once, unchanged.** Run `scripts/session62_reserved_confirm.py --confirm`
+once, unchanged, on the 2024-25 fold. This is the single authorized look
+(D51); report the verdict against D58's pre-registered expectations (bar:
+B+D,L,R,T beats both raw GFS and persistence at all five airports;
+secondary read: beats plain B on airport-averaged MAE).
 
 ---
 
