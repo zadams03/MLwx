@@ -1,0 +1,61 @@
+==========================================================================================
+SESSION 60 -- combine-phase manifest header-only pre-flight.
+Reads column headers ONLY (zero data rows). Loads no data. Fits nothing.
+==========================================================================================
+
+feature file_key    file                                            column                      present
+L       v16_file    session49_v16_window_with_upper_air.csv         lapse_rate_t2_t850          True
+L       sealed_file session49_sealed_window_with_upper_air.csv      lapse_rate_t2_t850          True
+D       v16_file    session51_v16_window_with_moisture.csv          dewpoint_depression_t2m     True
+D       sealed_file session51_sealed_window_with_moisture.csv       dewpoint_depression_t2m     True
+T       v16_file    session53_v16_window_with_pressure.csv          pressure_tendency_3h_hpa    True
+T       sealed_file session53_sealed_window_with_pressure.csv       pressure_tendency_3h_hpa    True
+R       v16_file    session55_v16_window_with_radiation.csv         dswrf_2h_wm2                True
+R       sealed_file session55_sealed_window_with_radiation.csv      dswrf_2h_wm2                True
+P       v16_file    session57_v16_window_with_precip.csv            precip_rate_mmh             True
+P       sealed_file session57_sealed_window_with_precip.csv         precip_rate_mmh             True
+rh      v16_file    session51_v16_window_with_moisture.csv          relative_humidity_2m        True
+rh      sealed_file session51_sealed_window_with_moisture.csv       relative_humidity_2m        True
+plev    v16_file    session49_v16_window_with_upper_air.csv         t850                        True
+plev    v16_file    session49_v16_window_with_upper_air.csv         t925                        True
+plev    v16_file    session49_v16_window_with_upper_air.csv         t700                        True
+plev    sealed_file session49_sealed_window_with_upper_air.csv      t850                        True
+plev    sealed_file session49_sealed_window_with_upper_air.csv      t925                        True
+plev    sealed_file session49_sealed_window_with_upper_air.csv      t700                        True
+
+All 18 (feature, file, column) checks PASS.
+
+CANDIDATE_FEATURES keys: ['D', 'L', 'P', 'R', 'T', 'plev', 'rh']
+VARIANT_LADDER: 14 variants (expected 14) -- PASS
+    B                = B + []
+    B+L              = B + ['L']
+    B+D              = B + ['D']
+    B+T              = B + ['T']
+    B+R              = B + ['R']
+    B+P              = B + ['P']
+    B+LDTRP          = B + ['L', 'D', 'T', 'R', 'P']
+    B+DTRP           = B + ['D', 'T', 'R', 'P']
+    B+LTRP           = B + ['L', 'T', 'R', 'P']
+    B+LDRP           = B + ['L', 'D', 'R', 'P']
+    B+LDTP           = B + ['L', 'D', 'T', 'P']
+    B+LDTR           = B + ['L', 'D', 'T', 'R']
+    B+LDTRP+rh       = B + ['L', 'D', 'T', 'R', 'P', 'rh']
+    B+LDTRP+plev     = B + ['L', 'D', 'T', 'R', 'P', 'plev']
+
+TAU_SKILL = 0.004
+ROW_COST_GUARD_FRAC = 0.05
+DROP_ORDER = ['T', 'P', 'R', 'L', 'D']
+
+RESERVED_YEAR = 2024-08-01 .. 2025-07-31 (imported from session48_reserved_year, not redefined)
+EXPERIMENT_FOLDS labels = ['2022-23', '2023-24', '2025-26'] (imported from session48_reserved_year, not redefined)
+
+-- Reserved-year guard, re-checked against EXPERIMENT_FOLDS (date arithmetic only, same check D51 itself ran) --
+    2022-23    train=2021-03-24..2022-07-31  test=2022-08-01..2023-07-31  -- PASS (guard did not raise)
+    2023-24    train=2021-03-24..2023-07-31  test=2023-08-01..2024-07-31  -- PASS (guard did not raise)
+    2025-26    train=2021-03-24..2024-07-31  test=2025-08-01..2026-07-31  -- PASS (guard did not raise)
+
+Known wrinkle (see module docstring): CANDIDATE_FEATURES['D']'s column is the stored raw 'dewpoint_depression_t2m'; the adopted feature 'dewpoint_depression_t2m_floored' (D53) requires applying the frozen one-line floor transform noted above -- it is not itself a stored column, by design (F100).
+
+==========================================================================================
+END -- pre-flight only. No data row was read. No model was fit.
+==========================================================================================

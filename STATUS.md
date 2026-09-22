@@ -3,41 +3,51 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 21 September 2026, after session 59._
+_Last updated: 22 September 2026, after session 60._
 
 ---
 
 ## Where the project is right now
 
-**The E1–E5 feature-selection sweep is complete: all five families have a
-verdict against the frozen 5-feature baseline B.**
+**The E1–E5 feature-selection sweep is complete (all five families verdicted,
+D52–D56), and the combine-phase sweep that follows it is now designed and
+pre-registered — no model fit, no data row read.**
 
-Adopted into the eventual combine-phase sweep baseline: `lapse_rate_t2_t850`
-(D52), `dewpoint_depression_t2m_floored` (D53), `pressure_tendency_3h_hpa`
-(D54), `dswrf_2h_wm2` (D55), `precip_rate_mmh` (D56).
+Session 60 wrote `DECISIONS.md` D57: the combine sweep will fit a
+pre-registered 14-variant ladder (B; the five single-adds; the full adopted
+set B+LDTRP; its five leave-one-out variants; and the two parked-option adds
+B+LDTRP+rh / B+LDTRP+plev) on the three non-reserved `EXPERIMENT_FOLDS`
+(D51), with pre-registered thresholds (`TAU_SKILL` = 0.4%, a 5%
+complete-case row-cost guard, and a fixed backward-elimination drop order),
+a mechanical selection rule with a correlated-feature safeguard, and a joint
+backstop that halts and surfaces rather than auto-picking if the selected
+set fails its own checks. All of this is enforced in code by the new
+manifest `scripts/session60_combine_design.py`, which imports (not
+redefines) session 48's `EXPERIMENT_FOLDS` and reserved-year guard.
 
-Parked combine-phase candidates: RNO's raw pressure-level temperatures
-(D52), relative humidity (D53).
+The manifest's header-only pre-flight ran once and passed cleanly (18 of 18
+file/column checks present, 14/14 variants). Building it surfaced one
+wrinkle, recorded in D57: the E2 feature `dewpoint_depression_t2m_floored`
+(D53) is not itself a stored column — only the raw `dewpoint_depression_t2m`
+is committed, with the exact floor transform (`max(x, 0)`, per D53/F100)
+applied at feature-matrix build time, not persisted to disk. The manifest
+names the raw column plus the transform explicitly so session 61 applies
+the already-frozen formula rather than guessing or re-deriving.
 
-The measurement baseline B is unchanged; the reserved 2024-25 year (D51) is
-still untouched; the sealed-year GRIB verdict (F94) and every minimal-method
-verdict (F16/F30/F47/F64/F82) stand exactly as reported.
-
-STATUS.md was pruned to a current-only snapshot this session (session 59).
-Pre-session history — every earlier session's own write-up — lives in git
-and in `DECISIONS.md` (and `DECISIONS-archive.md`) by number; nothing was
-lost, only relocated to where it already had a permanent home.
+The measurement baseline B is unchanged. The reserved 2024-25 year (D51) and
+the sealed 2025-26 year (F94) are both still untouched. Every prior verdict
+(F16/F30/F47/F64/F82, F94, D52–D56) stands exactly as reported.
 
 ---
 
 ## Next
 
-**Next planning session: session 60 — design and open the combine phase:
-sweep the five adopted features (D52–D56) together on the three
-non-reserved `EXPERIMENT_FOLDS` (D51), with the two parked candidates (D52,
-D53) as sweep options, to choose a single final feature set; that one set
-is then confirmed on the reserved 2024-25 year (D51) exactly once, at the
-finish line. The E1–E5 sweep and the STATUS housekeeping are both done.**
+**Next planning session: session 61 — run the pre-registered combine sweep
+(D57): fit the 14-variant ladder on the three non-reserved
+`EXPERIMENT_FOLDS` over the single complete-case row set, run the row-cost
+guard and the integrity checks, apply the selection rule with the joint
+backstop, and report the grid — no verdict, no reserved-year read. The
+session-62 owner review then picks the single final feature set.**
 
 ---
 
