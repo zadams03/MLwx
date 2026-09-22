@@ -2964,3 +2964,195 @@ repeated throughout this script's own printed output). Did not rebuild,
 re-decode, or re-derive any feature beyond re-applying D53/F100's own
 already-frozen one-line floor transform to the stored raw column. Did not
 modify `SPEC.md` or `RESULTS.md`. Nothing was committed.
+
+---
+
+## 2026-09-22 — Session 62 decision: the final feature set is locked, and the
+reserved-year confirmation script is frozen and pre-flighted. The reserved
+year is NOT opened this session. A reserved-year feature-data gap was
+discovered and is flagged for the owner before session 63 can run.
+
+**D58. The single final feature set is locked: B + D, L, R, T — the frozen
+5-feature GRIB baseline B (SPEC section 7) plus moisture `D`
+(`dewpoint_depression_t2m_floored`), lapse rate `L` (`lapse_rate_t2_t850`),
+shortwave radiation `R` (`dswrf_2h_wm2`), and pressure tendency `T`
+(`pressure_tendency_3h_hpa`). Precipitation `P` is dropped. Neither parked
+option (`rh`, `plev`) is adopted. This is the D57 mechanical rule's own
+output (F106), confirmed unchanged in the session-62 owner review.**
+
+**1. The final set.** B + D, L, R, T, chosen in the session-62 owner review
+of F106's grid and selection trace. This is exactly the mechanical rule's
+own output under D57 — the owner reviewed the full 210-row grid, the
+correlation matrix, and the selection trace (F106) and found no reason to
+override it. Cites D57, F106.
+
+**2. The two interpretation calls, confirmed.** (i) All keep/drop/adopt/
+backstop votes in F106 average over the four non-DSM airports (EGLC, LFPG,
+YSDU, RNO) — the only coherent reading of D57's "DSM is diagnostic only,
+never a keep/drop vote" read together with its "all keep/drop reads are at
+the airport-averaged level." (ii) `plev`'s own adoption test used all five
+airports, per its explicit D57 override ("must clear the bar
+airport-averaged across all five airports"). This was outcome-neutral:
+`plev` failed on magnitude alone (−0.26pp against the core set, F106),
+so which airport basis was used made no difference to its rejection. Both
+readings are confirmed as the record's own, closing them for good.
+
+**3. The exact feature resolution.** Session 63's frozen script
+(`scripts/session62_reserved_confirm.py`) reuses the identical
+`CANDIDATE_FEATURES` resolution (source file, column, and transform) for
+D, L, R, T that the session-60 manifest and the session-61 sweep used:
+
+| code | committed column | source files | transform |
+|---|---|---|---|
+| L | `lapse_rate_t2_t850` | `session49_v16_window_with_upper_air.csv` / `session49_sealed_window_with_upper_air.csv` | none |
+| D | `dewpoint_depression_t2m` | `session51_v16_window_with_moisture.csv` / `session51_sealed_window_with_moisture.csv` | `dewpoint_depression_t2m_floored = max(dewpoint_depression_t2m, 0)` (D53/F100's own frozen one-line floor; changes exactly 1 of 7,952 rows) |
+| T | `pressure_tendency_3h_hpa` | `session53_v16_window_with_pressure.csv` / `session53_sealed_window_with_pressure.csv` | none |
+| R | `dswrf_2h_wm2` | `session55_v16_window_with_radiation.csv` / `session55_sealed_window_with_radiation.csv` | none |
+
+No feature is rebuilt, re-decoded, or re-derived — the frozen script
+re-applies only D53/F100's own already-pinned floor formula to the stored
+raw column, exactly as D57/F106 already did. `P`, `rh`, `plev` are excluded
+from the recipe entirely — confirmed absent from the script's own
+`FAMILY_KEYS`/`FINAL_CODES` by an in-code assertion.
+
+**4. The confirmation fold (deterministic date arithmetic), pinned in
+`scripts/session62_reserved_confirm.py`'s own `CONFIRMATION_FOLD`:**
+```
+train  2021-03-24 .. 2024-07-31
+test   2024-08-01 .. 2025-07-31   (the reserved year — the one authorized look)
+```
+All five airports (EGLC, LFPG, DSM, YSDU, RNO), the frozen LightGBM settings
+(D21.4/D48.6, byte-identical to every prior modelling script in the
+programme), no per-airport feature selection.
+
+**5. Complete-case rule (D57 carried forward).** The complete-case row set
+is built over only the final-set features' underlying columns — the
+columns backing D (raw `dewpoint_depression_t2m`), L, R, T — not the full
+seven-feature set F106 used. **Pre-registered expectation: 0 rows dropped**
+against a B-only mask, on the training window (F106 found the seven-feature
+complete-case set identical to the B-only rows at every airport-fold, and
+the four-feature subset can only be a superset of those complete-case rows,
+never a smaller one). Verified true on the training window this session
+(item 9 below): 1,226/1,226/1,225/1,225/1,225 complete-case rows at
+EGLC/LFPG/DSM/YSDU/RNO respectively, matching F98/F100/F101/F102's own
+per-airport row counts for that span exactly. **The test-window (reserved
+year) row count cannot be checked this session — see the flagged gap,
+item 11, below.**
+
+**6. What is scored, per airport, when session 63 runs the confirmation:**
+raw-GFS MAE, persistence MAE, refit-B MAE, and refit-(B+D,L,R,T) MAE, on
+the reserved-year test set, plus the day-set reconciliation across all four
+rungs (F93's own pattern — persistence scored on the subset of test days
+with a usable previous-day observation, SPEC 2.1d; raw/B/B+DLRT scored on
+the full test set; any mismatch reported, not hidden).
+
+**7. Pre-registered expectations, fixed now, before the look:**
+- **The bar (the deliverable):** B+D,L,R,T beats **both** raw GFS **and**
+  persistence on MAE at **all five** airports.
+- **Secondary read:** B+D,L,R,T beats plain B on the airport-averaged MAE.
+  Per-airport variation is expected and allowed — especially at **DSM**,
+  where the added features are marginal (F96, and F106's own DSM-diagnostic
+  reading of +5.7% for this exact set against the full set's own +6.1%) —
+  no per-airport 5-beats-B claim is pre-registered.
+- The run reports the outcome against these expectations whatever it is;
+  all results are reported; there is no re-run and no tuning after the
+  look.
+
+**8. The honesty caveat for the writeup, stated plainly.** The reserved
+year was seen once, descriptively, for baseline B only, in F96's multi-year
+backtest — but the feature-selection itself (which features to add) never
+touched it: E1–E5 (F98–F105) and the combine sweep (F106) ran only on the
+three non-reserved `EXPERIMENT_FOLDS`. So session 63's run is a genuine
+first look at the *selected set* on 2024-25, not blind in the sense that no
+one has ever computed anything on that year (F96 already has, for B alone)
+but genuinely first for B+D,L,R,T specifically. Frame it as such when the
+result is written up — neither overclaiming blindness the programme does
+not have, nor understating that this is the first look at the chosen
+recipe.
+
+**9. One-look discipline.** Session 63 runs the frozen confirmation once,
+unchanged. A guard that trips on something outcome-orthogonal (row counts,
+scored-day-set reconciliation, the same shape as F92/F93) may be corrected
+and re-committed *before* the look, because no MAE is seen when it trips —
+but the features, model, fold, and bar never change once the look is
+taken. This is exactly the shape of the guard already built into
+`run_confirm()` (item 11 below): it can be fixed and rerun freely because
+it trips before any model is fit.
+
+**10. What this session did not do.** Did not open the reserved year in
+any of the four senses ruled out by the session prompt's own hard scope
+guard: no reserved-year row was read, loaded, fit on, or scored. No MAE was
+computed anywhere on 2024-08-01..2025-07-31. Did not modify `SPEC.md` or
+`RESULTS.md`. Did not archive any DECISIONS entry — D52–D57/F106 stay live,
+per the session prompt's own instruction, since they remain load-bearing
+for session 63.
+
+**11. A reserved-year FEATURE-DATA gap, discovered while building the
+confirmation script, verified directly (not assumed), and flagged here for
+the owner rather than worked around — this is the one open item before
+session 63 can run.** While assembling `scripts/session62_reserved_
+confirm.py`'s own feature-loading code, a direct read of every date column
+in all eight E1–E4 committed files (the `v16_window`/`sealed_window` pairs
+for L, D, T, R — sessions 49, 51, 53, 55) showed:
+
+```
+family  v16_window span              sealed_window span             reserved-year (2024-08-01..2025-07-31) rows
+L       2021-03-24 .. 2024-07-31     2025-08-01 .. 2026-07-31        0
+D       2021-03-24 .. 2024-07-31     2025-08-01 .. 2026-07-31        0
+T       2021-03-24 .. 2024-07-31     2025-08-01 .. 2026-07-31        0
+R       2021-03-24 .. 2024-07-31     2025-08-01 .. 2026-07-31        0
+```
+
+This is not a defect in those sessions — F98's own text already says so
+plainly ("the reserved year's ~365 days are simply absent rather than
+replaced"), because D51 (in force at the time) forbade any feature
+experiment from touching the reserved year at all, and sessions 49/51/53/55
+built their date lists directly from that rule. **But the direct
+consequence, not previously stated anywhere on record: there is no L, D,
+T, or R feature value, for any airport, for any date in
+2024-08-01..2025-07-31, in any committed file.** The confirmation fold's
+*training* window (2021-03-24..2024-07-31) is fully covered — verified
+this session, item 5/9 above — but its *test* window is the reserved year
+itself, and that window has zero rows of the four adopted features.
+
+**Consequence for session 63.** `scripts/session62_reserved_confirm.py`'s
+`run_confirm()` cannot assemble a complete-case B+D,L,R,T feature matrix
+for the reserved year as the committed files stand today — there is
+nothing to assemble. The function contains a hard, loud guard (checked
+per airport, before any model is fit) that raises a clear `RuntimeError`
+naming this gap rather than silently scoring on zero or partial rows, so
+if session 63 is run against the files as they exist right now, it stops
+immediately with an explanatory error — it does not consume the one
+authorized look on a broken or misleading result. **This gap must be
+closed before session 63 can produce a real confirmation.** Two ways to
+close it, neither decided here (out of this session's lock-only scope,
+and the owner's call): (a) a data-build step — reusing the exact,
+already-frozen pull/decode/derive code from sessions 49, 51, 53 and 55
+unchanged, only extending the date range each already-frozen pipeline
+covers to include 2024-08-01..2025-07-31 — run before session 63's
+confirmation step, most likely as session 63's own first task or as a
+short session 62b; or (b) some other resolution the owner prefers. Pulling
+new GRIB data for the reserved year's dates is not itself a "feature
+experiment" that D51 forbids (no model is fit, no MAE is read, nothing is
+selected) — it is a data-engineering prerequisite the feature-selection
+programme's own design did not anticipate needing, since every session
+before this one only ever needed the reserved year excluded, never
+included. Flagged here per CLAUDE.md's standing instruction to stop and
+report rather than silently resolve a session-prompt assumption that does
+not hold against the real, checked state of the data.
+
+**What this session did not do (continued).** Did not pull, decode, or
+derive any new GRIB data for the reserved year — closing the gap above is
+explicitly out of this lock-only session's scope. Did not run
+`run_confirm()` at any point — only `preflight()` was executed (`python
+scripts/session62_reserved_confirm.py`, no arguments), and it never calls
+`run_confirm()`. Real pre-flight output: `notes/
+session-62-preflight-output.txt`. The pre-flight's own machinery dry-run on
+the already-non-reserved 2023-24 `EXPERIMENT_FOLD` exactly reproduces
+session 61's own `B+LDTR` grid row at every airport (raw MAE, persistence
+MAE, and B+D,L,R,T MAE match to the fourth decimal at EGLC, LFPG, DSM,
+YSDU and RNO) — strong, independent confirmation that this frozen script's
+own fit/score machinery is a correct reproduction of the programme's
+recipe, not a re-implementation that only looks similar. Scripts:
+`scripts/session62_reserved_confirm.py` (new, frozen). Full real output:
+`notes/session-62-preflight-output.txt`.

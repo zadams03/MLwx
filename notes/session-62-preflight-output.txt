@@ -1,0 +1,116 @@
+
+==========================================================================================
+SESSION 62 -- reserved-year confirmation LOCK, pre-flight only (DECISIONS D58). No reserved-year row is read anywhere in this function. The confirmation fold is NOT run. No 2024-25 MAE is produced.
+==========================================================================================
+run at   : 2026-09-22 22:48:42 local
+python   : 3.12.2
+numpy    : 2.5.2
+lightgbm : 4.7.0
+
+FINAL SET (D58, confirming D57/F106's mechanical output): B + D+L+R+T  (i.e. B+D,L,R,T)
+FINAL_FEATURE_KEYS = ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+P, rh, plev are excluded -- confirmed absent from FAMILY_KEYS and FINAL_CODES above.
+
+==========================================================================================
+Header / date checks (session prompt pre-flight item 1)
+==========================================================================================
+    D    v16_file     session51_v16_window_with_moisture.csv               columns=['dewpoint_depression_t2m'] -- PASS
+    D    sealed_file  session51_sealed_window_with_moisture.csv            columns=['dewpoint_depression_t2m'] -- PASS
+    L    v16_file     session49_v16_window_with_upper_air.csv              columns=['lapse_rate_t2_t850'] -- PASS
+    L    sealed_file  session49_sealed_window_with_upper_air.csv           columns=['lapse_rate_t2_t850'] -- PASS
+    R    v16_file     session55_v16_window_with_radiation.csv              columns=['dswrf_2h_wm2'] -- PASS
+    R    sealed_file  session55_sealed_window_with_radiation.csv           columns=['dswrf_2h_wm2'] -- PASS
+    T    v16_file     session53_v16_window_with_pressure.csv               columns=['pressure_tendency_3h_hpa'] -- PASS
+    T    sealed_file  session53_sealed_window_with_pressure.csv            columns=['pressure_tendency_3h_hpa'] -- PASS
+
+    CONFIRMATION_FOLD: train=2021-03-24..2024-07-31  test=2024-08-01..2025-07-31
+    Dates match D51's own reserved-year bounds and D58's pinned train/test split exactly -- PASS.
+
+==========================================================================================
+Guard check (session prompt pre-flight item 1, mirrors D51's own guard-verification pattern): the guard must PASS the dry-run fold, RAISE on three deliberately reserved-year-touching folds, and the confirmation fold must be proven to be the kind of fold the guard WOULD reject -- which is exactly why it is never given to the guard.
+==========================================================================================
+
+-- Positive check -- DRY_RUN_FOLD clears the guard --
+    2023-24: train=2021-03-24..2023-07-31  test=2023-08-01..2024-07-31  -- PASS (guard did not raise)
+
+-- Negative check -- three deliberately reserved-year-touching folds must raise --
+    hypothetical train-crosses-reserved-year fold: raised as expected -- hypothetical train-crosses-reserved-year fold: training window 2021-03-24..2025-07-31 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+    hypothetical test-on-reserved-year fold: raised as expected -- hypothetical test-on-reserved-year fold: test window 2024-08-01..2025-07-31 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+    hypothetical train-into-reserved-year fold: raised as expected -- hypothetical train-into-reserved-year fold: training window 2021-03-24..2025-01-01 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+
+-- Proof the CONFIRMATION_FOLD is a genuine, deliberate reserved-year use -- NOT an oversight -- by showing the guard WOULD reject it too --
+    CONFIRMATION_FOLD raised as expected -- 2024-25-confirmation (D51/D58 -- THE ONE AUTHORIZED RESERVED-YEAR USE): test window 2024-08-01..2025-07-31 overlaps the reserved confirmation year 2024-08-01..2025-07-31 -- refusing (D51).
+    This is exactly why run_confirm() NEVER calls assert_reserved_year_excluded() on CONFIRMATION_FOLD: it is the one, named, D51/D58-authorized exception, proven here to be a genuine reserved-year fold rather than a guard bug or a silent bypass.
+
+==========================================================================================
+Column-integrity check (session prompt pre-flight item 2, reusing F106's own check): each of L, D, T, R matches its committed source file exactly, checked over every row of the TRAINING window (2021-03-24..2024-07-31 -- the only span currently available; see the reserved-year data-gap finding below for the test window)
+==========================================================================================
+    L rows loaded=7952  reserved-year hits=0
+    D rows loaded=7952  reserved-year hits=0
+    T rows loaded=7952  reserved-year hits=0
+    R rows loaded=7952  reserved-year hits=0
+
+    PASS -- 0 reserved-year rows found across all four family source files.
+
+    n_checked (training-window complete-case rows) = 6127
+    lapse_rate_t2_t850                     max_abs_diff = 0.000000000
+    dewpoint_depression_t2m_floored        max_abs_diff = 0.000000000
+    pressure_tendency_3h_hpa               max_abs_diff = 0.000000000
+    dswrf_2h_wm2                           max_abs_diff = 0.000000000
+
+    PASS -- every final-set feature column matches its committed source (D floor applied exactly per D53/F100) on every training-window row.
+    EGLC   complete-case rows in training window: 1226
+    LFPG   complete-case rows in training window: 1226
+    DSM    complete-case rows in training window: 1225
+    YSDU   complete-case rows in training window: 1225
+    RNO    complete-case rows in training window: 1225
+
+==========================================================================================
+RESERVED-YEAR FEATURE-DATA GAP -- flagged plainly, not worked around (discovered while building this script, verified directly against every committed file, not assumed)
+==========================================================================================
+    Checked: do the L, D, T, R committed source files contain ANY row
+    whose date falls inside the reserved 2024-08-01..2025-07-31 year?
+    L: 0 reserved-year rows found (of 7952 total)
+    D: 0 reserved-year rows found (of 7952 total)
+    T: 0 reserved-year rows found (of 7952 total)
+    R: 0 reserved-year rows found (of 7952 total)
+
+    RESULT: ZERO, at every one of the four families. This is expected
+    given how sessions 49/51/53/55 built these files (each deliberately
+    excluded the reserved year, per D51's own mandate at the time,
+    per F98/F100/F101/F102's own date-range description) -- but it
+    means the CONFIRMATION_FOLD's test window (the reserved year) has
+    NO L, D, T, or R feature value in any committed file, at any airport.
+
+    CONSEQUENCE: run_confirm() cannot assemble a complete-case feature
+    matrix for the test window as things stand -- there is nothing to
+    assemble. This is a genuine blocker for session 63 as currently
+    scoped ('run the frozen script once, unchanged, on the 2024-25
+    fold'), reported here and in DECISIONS D58 for the owner to
+    resolve BEFORE session 63 runs -- not silently patched around in
+    this script. run_confirm() below contains a hard, loud guard that
+    refuses to proceed past row assembly if this gap is still open.
+
+==========================================================================================
+Machinery dry-run on the 2023-24 EXPERIMENT_FOLD (session prompt pre-flight item 3) -- already used descriptively by every E-session and by F106 itself, so no new look is spent. Proves the fit/score plumbing end-to-end without touching the reserved year.
+==========================================================================================
+    EGLC   n_train=859    n_test=366    no_usable_obs_dropped=0    no_prev=0    raw=1.0148  persist=2.0164  B=0.9470  B+DLRT=0.8715  skill_vs_B=+7.98%
+    LFPG   n_train=858    n_test=366    no_usable_obs_dropped=0    no_prev=0    raw=1.2234  persist=2.3689  B=1.1606  B+DLRT=1.1221  skill_vs_B=+3.31%
+    DSM    n_train=859    n_test=366    no_usable_obs_dropped=0    no_prev=0    raw=2.0349  persist=3.6992  B=1.5787  B+DLRT=1.4883  skill_vs_B=+5.73%
+    YSDU   n_train=850    n_test=363    no_usable_obs_dropped=3    no_prev=3    raw=1.3283  persist=2.4417  B=1.1264  B+DLRT=1.0949  skill_vs_B=+2.80%
+    RNO    n_train=857    n_test=365    no_usable_obs_dropped=1    no_prev=1    raw=1.4541  persist=2.5962  B=1.2972  B+DLRT=1.1458  skill_vs_B=+11.67%
+
+    Airport-averaged (2023-24 dry run): B=1.2220  B+DLRT=1.1445  skill_vs_B=+6.34%
+    This reproduces the same date range already scored descriptively
+    in F99-F106 (the '2023-24' EXPERIMENT_FOLD) -- a plumbing check,
+    not a new look, and not comparable 1:1 to F106's own B+D,L,R,T
+    reading there (F106 pooled across three folds; this is 2023-24 alone).
+
+==========================================================================================
+END OF PRE-FLIGHT
+==========================================================================================
+No row of the reserved 2024-08-01..2025-07-31 confirmation year was
+read anywhere in this function. run_confirm() was not called. No
+2024-25 MAE was produced. The reserved-year feature-data gap above
+is the one open item session 63 must have resolved before it can run.
+This output is saved at notes/session-62-preflight-output.txt

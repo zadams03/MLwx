@@ -3,61 +3,69 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 22 September 2026, after session 61._
+_Last updated: 22 September 2026, after session 62._
 
 ---
 
 ## Where the project is right now
 
-**The pre-registered combine-phase sweep (D57) has been run (F106). The
-mechanical selection rule's output is a candidate feature set — B+D,L,R,T
-(the full adopted set B+LDTRP minus precipitation P; neither parked option,
-`rh` nor `plev`, adopted) — and the joint backstop passed. This is explicitly
-NOT a verdict.** The single final feature set is the session-62 owner
-review's call.
+**The single final feature set is locked (D58): B + D, L, R, T — the frozen
+5-feature GRIB baseline plus moisture, lapse rate, shortwave radiation, and
+pressure tendency. Precipitation is dropped; neither parked option (`rh`,
+`plev`) is adopted.** This confirms D57's mechanical rule's own output
+(F106) unchanged, after the owner's review of its full grid and selection
+trace found no reason to override it.
 
-Session 61 fit the 14-variant ladder on the three non-reserved
-`EXPERIMENT_FOLDS` (D51), over one complete-case row set covering all seven
-candidate features. Every guard and integrity check passed: the reserved
-2024-25 confirmation year was never touched; the complete-case row set
-turned out identical to the true B-only row set (0 rows dropped at any of
-the 15 airport-folds); every feature column matched its committed source
-file exactly (max abs diff 0.0); the refit-B 2025-26 fold reproduced
-F94/F96/F99-F105's own numbers exactly at every airport.
+The frozen, self-guarded confirmation script (`scripts/
+session62_reserved_confirm.py`) is written and pre-flighted. Its pre-flight
+(header/date checks, guard checks, column-integrity check, and a machinery
+dry-run on the already-non-reserved 2023-24 fold) all passed — the dry-run
+exactly reproduces session 61's own `B+LDTR` grid row at every airport,
+strong evidence the fit/score machinery is correct. **The reserved
+2024-08-01..2025-07-31 year was not opened this session** — no row of it
+was read, loaded, fit on, or scored anywhere.
 
-Applying the mechanical selection rule: Round 1 of leave-one-out backward
-elimination flagged three features (D, L, P) droppable together, triggering
-the correlated-feature safeguard, which dropped only the least-damage one
-(P, +0.12pp). Round 2 found nothing further droppable — core set = B+D,L,R,T.
-Neither parked option (`rh`, raw relative humidity; `plev`, the three raw
-pressure-level temperatures) cleared the bar on top of the core set — both
-actively worsened it when added. The joint backstop confirmed the final set
-beats B (+5.48% fold-averaged, non-DSM) and is not meaningfully worse than
-the full B+LDTRP set (gap +0.12pp, within the 0.4pp threshold).
+**A blocking data gap was found (D58 item 11) — closing it is session 63's
+own job, before session 64 can run the confirmation.** The four
+adopted-feature families (L, D, T, R) were each built (sessions 49/51/53/55)
+with the reserved year deliberately excluded, per D51's mandate at the
+time — verified directly this session: every one of their eight committed
+files has zero rows anywhere inside 2024-08-01..2025-07-31. So although the
+confirmation fold's *training* window (2021-03-24..2024-07-31) is fully
+covered, its *test* window (the reserved year itself) currently has no
+L/D/T/R feature value for any airport, for any date. `run_confirm()`
+contains a hard guard that will stop with a clear error rather than
+silently score on missing data — it will not waste the one authorized look
+— but as things stand today, running it would simply stop at that guard.
+**Session 63 closes this gap by extending the same already-frozen L/D/T/R
+pull/derive pipelines to cover the reserved year's dates — an
+outcome-orthogonal data build (raw inputs plus the already-pinned
+transforms only, no model fit, no scoring, nothing selected) — so session
+64 can then run the frozen confirmation.**
 
-Two interpretation decisions were required to turn D57's English rule into
-code (documented in the script and DECISIONS F106, flagged for session-62 to
-check): (1) all keep/drop/adopt/backstop votes average over the four
-non-DSM airports, per D57's "DSM is diagnostic only — never a keep/drop
-vote"; (2) `plev`'s own adoption vote uses all five airports, per its
-explicit "across all five airports" override in D57.
-
-Every prior verdict (F16/F30/F47/F64/F82, F94, D52–D57) stands exactly as
-reported. The reserved 2024-25 year and the sealed 2025-26 year both remain
-untouched by any selection decision.
+Every prior verdict (F16/F30/F47/F64/F82, F94, D52–D57, F106) stands
+exactly as reported, untouched.
 
 ---
 
 ## Next
 
-**Next planning session: session 62 — owner review of the combine-sweep
-grid (F106). Pick the single final feature set** — confirm the mechanical
-rule's own output (B+D,L,R,T), override it using the same grid and
-selection trace, or resolve the two interpretation decisions differently.
-**That set is then confirmed once on the reserved 2024-25 year at the
-finish line (D51).** The joint backstop did not halt, so there is no
-stop-and-surface failure to resolve — this is a normal review, not a
-recovery session.
+**Next planning session: session 63 — the reserved-year feature build
+(closes D58 item 11).** Extend the already-frozen L, D, T, R pull/decode/
+derive pipelines (sessions 49/51/53/55's own code, unchanged) to cover
+2024-08-01..2025-07-31, so the confirmation fold's test window has real
+L/D/T/R feature values at every airport. This is an outcome-orthogonal
+data build — raw inputs plus the already-pinned transforms (D53/F100's
+floor formula and the rest, applied exactly as pinned) only, no model fit,
+no MAE, no scoring, nothing selected — so it does not itself touch D51's
+one-look discipline.
+
+**Session 64 — run the frozen confirmation script once, unchanged.** Once
+session 63 closes the gap, run `scripts/session62_reserved_confirm.py
+--confirm` once, unchanged, on the 2024-25 fold. This is the single
+authorized look (D51); report the verdict against D58's pre-registered
+expectations (bar: B+D,L,R,T beats both raw GFS and persistence at all
+five airports; secondary read: beats plain B on airport-averaged MAE).
 
 ---
 
