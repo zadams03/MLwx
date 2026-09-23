@@ -1,6 +1,7 @@
 # .gitignore — things that must never enter the project's history.
 #
-# Raw data is NOT ignored. Raw pulls are committed on purpose (DECISIONS D15),
+# Raw data is NOT ignored, except the bulk GRIB cache (DECISIONS D47, see the
+# rule near the end of this file). Raw pulls are committed on purpose (D15),
 # because the immutable-snapshot rule (SPEC 2.3) only means something if the
 # snapshot is actually in the history.
 
@@ -33,4 +34,17 @@ ENV/
 .vscode/
 *.swp
 Thumbs.db
-data/raw/grib/
+
+# --- Claude Code local settings (audit A67-08) ---
+.claude/
+
+# --- the large GRIB cache: the one exception to "raw data is committed" ---
+# DECISIONS D47: the ~20 GB GFS GRIB cache can be fetched again, so its bytes
+# are not committed. Its provenance is committed instead, as the pull
+# manifests under data/raw/diagnostics/. No trailing slash, so a cache that is
+# a symbolic link is ignored too (audit A68a-06).
+data/raw/grib
+
+# --- scratch GRIB files a pull script leaves behind only if killed mid-pull
+# (audit A67-08). Matches _scratch_*.grib2 only, never the tracked samples.
+data/raw/diagnostics/**/_scratch_*.grib2

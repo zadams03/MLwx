@@ -11,7 +11,7 @@
 # ---------------------------------------------------------------------------
 # Directly imported by the scripts
 # ---------------------------------------------------------------------------
-# numpy      - arrays and arithmetic (session04_model.py, session05_model.py)
+# numpy      - arrays and arithmetic (the modelling scripts)
 # lightgbm   - the gradient-boosted tree model (SPEC 4.4, DECISIONS D12)
 #
 # Everything else below is a dependency pulled in by those two, or by
@@ -33,8 +33,8 @@
 # This machine has no Homebrew, so a workaround is used instead: scikit-learn's
 # macOS wheel ships its own copy of libomp.dylib, and the model scripts point
 # the dynamic loader at that copy and restart the interpreter once. That block
-# sits at the top of scripts/session04_model.py and scripts/session05_model.py,
-# clearly commented. It changes nothing about the model - it only lets the
+# sits at the top of the modelling scripts, clearly commented (setup steps are
+# also in README.md). It changes nothing about the model - it only lets the
 # library load - and repeat runs were byte-identical (DECISIONS F14, F15, Q16).
 #
 # So: scikit-learn is pinned here because it is currently the source of

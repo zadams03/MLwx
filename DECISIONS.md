@@ -976,3 +976,128 @@ Other:
 
 **D62.9 What this decision did not do.** No code, data, model or figure was
 touched. No file was deleted.
+
+---
+
+## 2026-09-23 — Session 70 decision: repo fixes (A67-01, A67-06, A67-05/07, A67-08/A68a-06) done
+
+**D63. Repo fixes only, offline. No model was fit, nothing was scored, no
+GRIB file was opened or decoded, and no observation file was read. Full
+real output: `notes/session-70-output.txt`.**
+
+**D63.1 A67-01 (must-fix, D62.4): provenance manifests for the session 37
+and 40 GRIB pulls.** New script `scripts/session70_grib_manifests.py`. It
+reads only the `.grib2.meta.txt` sidecars and the two failure CSVs in the
+gitignored cache `data/raw/grib/`. New files:
+- `data/raw/diagnostics/session37/session37_pull_manifest.csv` (25,444 rows)
+- `data/raw/diagnostics/session37/session37_pull_failures.csv` (a byte-for-byte copy)
+- `data/raw/diagnostics/session40/session40_pull_manifest.csv` (5,840 rows)
+- `data/raw/diagnostics/session40/session40_pull_failures.csv` (a byte-for-byte copy)
+
+Each manifest has one row per sidecar, sorted by sidecar file name. Every
+value is copied verbatim from the sidecar. The sidecar's `variable:` line is
+split into `variable`, `lead`, `cycle` and `run_date`, and its bytes line
+into `first_4_bytes` and `last_4_bytes`. The script checks that each split
+rebuilds the original line exactly. `lead` and `cycle` keep the sidecar's
+own form (`f026`, `00z`). The `stations` column matches the later
+`*_pull_manifest.csv` files. There is no `status` column, because the
+sidecars hold no such field. The only blank field is `note` (the session
+40 sidecars' extra "sealed test year pull" line), which is blank in all
+25,444 session 37 rows. Each sidecar was assigned to a pull by its validity
+date (run date + cycle + lead). None was ambiguous, and the sealed-year
+note line and the pull times agree with that assignment.
+
+Reconciliation. The expected counts are from DECISIONS-archive.md only:
+F90 for session 37, F92 for session 40. F93 records no pull counts.
+
+| pull | archived | sidecars vs fetched | sidecars + failed vs targeted | files | failure-log rows |
+|---|---|---|---|---|---|
+| session 37 | F90: 6,364 files, 25,456 targeted, 25,444 fetched, 12 failed | 25,444 = 25,444 | 25,444 + 12 = 25,456 | 6,361 with sidecars + 3 with none = 6,364 | 24 = 12 messages x 2 |
+| session 40 | F92: 1,460 files, 5,840 messages, 0 failed | 5,840 = 5,840 | 5,840 + 0 = 5,840 | 1,460 | 0 |
+
+The session 37 failure log has 24 rows for 12 failed messages. Its own
+contents explain this: each of the 12 messages appears exactly twice, with
+the same reason ("bad magic markers"). This matches F90 ("failed ... on
+both the original run and a clean re-run"). `session37_grib_pull.py` opens
+the log in append mode. No failed message also has a sidecar. Checks:
+- 31,284 sidecars appear exactly once each, with 0 duplicates;
+- each failure-CSV copy has the same SHA-256 as its original;
+- a re-run on the unchanged cache gave byte-identical files;
+- `git check-ignore` returns nothing for all four new files.
+
+**D63.2 A67-06: `station` column in `data/processed/session46_fold_table.csv`.**
+New script `scripts/session70_fold_table_station.py`. It added `station` as
+the first column, in place, with no refit and no re-run. With the column
+removed, the file is byte-identical to HEAD. There are 50 rows, 10 per
+airport. The station for each row comes from `session46_backtest.py`'s
+write order (AIRPORTS order EGLC, LFPG, DSM, YSDU, RNO; 4 three-feature
+folds, then 6 five-feature folds). That order was cross-checked against
+`session46_backtest_profile.csv` on the 8 shared columns (`feature_set`,
+`fold`, `train_start`, `train_end`, `test_start`, `test_end`,
+`train_rows`, `test_rows`).
+- 36 rows match exactly one station, and it agrees with the write order.
+- **14 rows were assigned by write order alone, by owner ruling this
+  session.** They form 7 pairs of byte-identical rows, so the profile names
+  two stations for each:
+  - rows 1/21, EGLC/DSM, 3-feature 2022-23;
+  - rows 2/22, EGLC/DSM, 3-feature 2023-24;
+  - rows 5/25, EGLC/DSM, 5-feature 2022-23;
+  - rows 6/26, EGLC/DSM, 5-feature 2023-24;
+  - rows 4/14, EGLC/LFPG, 3-feature 2025-26;
+  - rows 8/18, EGLC/LFPG, 5-feature 2025-26;
+  - rows 19/29, LFPG/DSM, 5-feature 2024-25-thin.
+
+  In every case the write-order station is one of the two matches. The fold
+  table holds no error metric, only dates, feature set, fold, spans, the
+  THIN flag and row counts. The profile's MAE differs between the two
+  stations of every pair at every rung, so the F96 results are not
+  duplicated.
+
+**Mismatch left in place.** `scripts/session46_backtest.py` was not edited.
+A future re-run would write the fold table without the `station` column.
+
+**D63.3 A67-05 with A67-07: README and `requirements.txt`.** New
+`README.md` covers:
+- what the project is (pointing to SPEC.md);
+- setup: Python 3.12.2, `.venv`, pip, eccodes, and the libomp note with
+  `brew install libomp`, taken from the existing `requirements.txt` note
+  (audit-67 names "the libomp note" but gives no install command of its
+  own);
+- `.venv/bin/python` only;
+- the repo layout and the six documents;
+- the D47 raw-data policy;
+- the four frozen scripts and the clean-clone rule (D62.3, D62.6).
+
+It contains no results. `requirements.txt`: only the two comments A67-07
+names were changed, to "the modelling scripts". One adds a pointer to
+README.md. No package, version or pin changed. Every changed line is a
+comment.
+
+**D63.4 A67-08 with A68a-06: `.gitignore`.**
+- `data/raw/grib/` became `data/raw/grib` (no trailing slash). In a
+  throwaway repo, a symlinked cache showed as `?? data/raw/grib` under the
+  old rule and is ignored under the new one.
+- The rule has a D47 comment, which also names it as the exception to the
+  header's "raw data is NOT ignored".
+- `.claude/` is ignored.
+- `data/raw/diagnostics/**/_scratch_*.grib2` is ignored. It catches the
+  scratch names the pull scripts use, and not the tracked diagnostic GRIB
+  samples (D62.7, A67-13), a new non-scratch file there, or the Task 1
+  files.
+
+At the owner's request, before commit, the file's header was also amended.
+It now reads "Raw data is NOT ignored, except the bulk GRIB cache (DECISIONS
+D47 ...)" instead of saying raw data is never ignored.
+
+Checks:
+- `git ls-files` shows 884 files before and after;
+- `git ls-files -ci --exclude-standard` lists 0 files;
+- `git status --porcelain --ignored` changed only by ` M .gitignore`;
+- no `.grib2` file is untracked or staged.
+
+**D63.5 What this did not do.** Nothing was deleted: not the cache, the
+sidecars or any tracked file. No frozen script was edited, and no existing
+script was edited (`session46_backtest.py` included). Nothing was scored,
+no model was fit, no GRIB file was opened or decoded, and there was no
+network access. No existing file under `data/raw/` was changed. Nothing
+was committed.

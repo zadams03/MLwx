@@ -1,0 +1,512 @@
+Session 70 -- real output of every check (docs/session-70.md). Saved 2026-09-23.
+Commands were run with .venv/bin/python. Offline; no GRIB file opened; nothing scored.
+
+==========================================================================
+TASK 1 (A67-01) -- inventory and reconcile: .venv/bin/python scripts/session70_grib_manifests.py
+==========================================================================
+cache: data/raw/grib
+sidecars found: 31284
+sidecars with no .grib2 file beside them: 0
+
+Assignment and reconciliation, per pull:
+
+  session37  (archived: F90)
+    validity dates: 2021-03-24 .. 2025-07-31  (window 2021-03-24 .. 2025-07-31)
+    distinct validity days: 1591
+    pull times: 2026-09-11T09:41:15Z .. 2026-09-11T09:52:45Z
+    sealed-year note line present: 0 of 25444
+    failure CSV: session37_pull_failures.csv, header ['run_date', 'cycle', 'lead', 'variable', 'stations', 'reason'], data rows 24
+    sidecars vs messages fetched: 25444 vs 25444  OK
+    distinct failed messages vs messages failed: 12 vs 12  OK
+    sidecars + distinct failed vs messages targeted: 25456 vs 25456  OK
+    files with a sidecar + files with no sidecar (all failed) vs files: 6364 vs 6364  OK
+    sidecars per file: {4: 6361}
+    failure-log rows: 24 = 12 distinct messages; rows per message: {2: 12}
+    failed messages that also have a sidecar: 0
+    failure reasons: {'bad magic markers (not a complete GRIB2 message)': 24}
+    failure stations: ['DSM', 'RNO', 'YSDU']; failing files: [('2022-11-29', '18', '24'), ('2022-11-29', '18', '26'), ('2022-11-30', '0', '26')]
+
+  session40  (archived: F92)
+    validity dates: 2025-08-01 .. 2026-07-31  (window 2025-08-01 .. 2026-07-31)
+    distinct validity days: 365
+    pull times: 2026-09-11T17:00:32Z .. 2026-09-11T17:03:58Z
+    sealed-year note line present: 5840 of 5840
+    failure CSV: session40_pull_failures.csv, header ['run_date', 'cycle', 'lead', 'variable', 'stations', 'reason'], data rows 0
+    sidecars vs messages fetched: 5840 vs 5840  OK
+    distinct failed messages vs messages failed: 0 vs 0  OK
+    sidecars + distinct failed vs messages targeted: 5840 vs 5840  OK
+    files with a sidecar + files with no sidecar (all failed) vs files: 1460 vs 1460  OK
+    sidecars per file: {4: 1460}
+    failure-log rows: 0 = 0 distinct messages; rows per message: {}
+    failed messages that also have a sidecar: 0
+
+All counts reconcile exactly.
+
+Check mode: nothing written. Re-run with --write to build.
+
+==========================================================================
+TASK 1 -- build: .venv/bin/python scripts/session70_grib_manifests.py --write (tail)
+==========================================================================
+All counts reconcile exactly.
+
+wrote /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session37/session37_pull_manifest.csv  (25444 rows)
+  blank fields per column: {'sidecar_path': 0, 'source': 0, 'idx_source': 0, 'byte_range_requested': 0, 'variable': 0, 'lead': 0, 'cycle': 0, 'run_date': 0, 'stations': 0, 'pulled_utc': 0, 'bytes_saved': 0, 'first_4_bytes': 0, 'last_4_bytes': 0, 'note': 25444}
+copied session37_pull_failures.csv -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session37/session37_pull_failures.csv
+
+wrote /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session40/session40_pull_manifest.csv  (5840 rows)
+  blank fields per column: {'sidecar_path': 0, 'source': 0, 'idx_source': 0, 'byte_range_requested': 0, 'variable': 0, 'lead': 0, 'cycle': 0, 'run_date': 0, 'stations': 0, 'pulled_utc': 0, 'bytes_saved': 0, 'first_4_bytes': 0, 'last_4_bytes': 0, 'note': 0}
+copied session40_pull_failures.csv -> /Users/zacharyadams/Coding Projects/MLwx/data/raw/diagnostics/session40/session40_pull_failures.csv
+
+==========================================================================
+TASK 1 -- Step 1.5 checks
+==========================================================================
+$ manifest row counts (data rows, header excluded)
+data/raw/diagnostics/session37/session37_pull_manifest.csv 25444
+data/raw/diagnostics/session40/session40_pull_manifest.csv 5840
+
+$ every sidecar appears exactly once across the two manifests
+manifest rows: 31284  distinct sidecar_path: 31284  duplicates: 0
+cache sidecars: 31284  in cache but not in a manifest: 0  in a manifest but not in cache: 0
+byte ranges marked open-ended: 0
+
+$ shasum -a 256 (originals, then copies)
+da217e8dff8bda97656dcc87729cf85b2f367ec2422cd50f88dcbf11932f6bdc  data/raw/grib/session37_pull_failures.csv
+da217e8dff8bda97656dcc87729cf85b2f367ec2422cd50f88dcbf11932f6bdc  data/raw/diagnostics/session37/session37_pull_failures.csv
+b0d8fbe350d21b5918c912c1ccf567a3425554ffe730e8f616bb5a1241d5aa42  data/raw/grib/session40_pull_failures.csv
+b0d8fbe350d21b5918c912c1ccf567a3425554ffe730e8f616bb5a1241d5aa42  data/raw/diagnostics/session40/session40_pull_failures.csv
+
+$ re-run on the unchanged cache into a scratch folder, then cmp
+re-run exit code: 0
+identical: session37_pull_manifest.csv
+identical: session37_pull_failures.csv
+identical: session40_pull_manifest.csv
+identical: session40_pull_failures.csv
+
+$ git check-ignore -v (the four new files); exit 1 means none ignored
+exit code: 1
+
+$ head -3 of each manifest
+sidecar_path,source,idx_source,byte_range_requested,variable,lead,cycle,run_date,stations,pulled_utc,bytes_saved,first_4_bytes,last_4_bytes,note
+gfs_20210323_t00z_f026_tcdc.grib2.meta.txt,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210323/00/atmos/gfs.t00z.pgrb2.0p25.f026,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210323/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx,457438571-458266305,TCDC:entire atmosphere,f026,00z,2021-03-23,YSDU,2026-09-11T09:41:16Z,827735,b'GRIB',b'7777',
+gfs_20210323_t00z_f026_tmp2m.grib2.meta.txt,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210323/00/atmos/gfs.t00z.pgrb2.0p25.f026,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210323/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx,428234371-429115520,TMP:2 m above ground,f026,00z,2021-03-23,YSDU,2026-09-11T09:41:15Z,881150,b'GRIB',b'7777',
+sidecar_path,source,idx_source,byte_range_requested,variable,lead,cycle,run_date,stations,pulled_utc,bytes_saved,first_4_bytes,last_4_bytes,note
+gfs_20250731_t00z_f026_tcdc.grib2.meta.txt,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250731/00/atmos/gfs.t00z.pgrb2.0p25.f026,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250731/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx,448857179-449683867,TCDC:entire atmosphere,f026,00z,2025-07-31,YSDU,2026-09-11T17:00:33Z,826689,b'GRIB',b'7777',"sealed test year pull (session 40, D48.8) -- SPEC 4.3"
+gfs_20250731_t00z_f026_tmp2m.grib2.meta.txt,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250731/00/atmos/gfs.t00z.pgrb2.0p25.f026,https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250731/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx,420463974-420985631,TMP:2 m above ground,f026,00z,2025-07-31,YSDU,2026-09-11T17:00:32Z,521658,b'GRIB',b'7777',"sealed test year pull (session 40, D48.8) -- SPEC 4.3"
+data/raw/diagnostics/session37:
+total 20896
+drwxr-xr-x@ 13 zacharyadams  staff      416 Sep 23 20:11 .
+drwxr-xr-x@ 14 zacharyadams  staff      448 Sep 23 20:11 ..
+-rw-r--r--@  1 zacharyadams  staff   492443 Sep 11 10:39 gfs_20250610_t00z_f026_hgt_surface_YSDU_diagnostic.grib2
+-rw-r--r--@  1 zacharyadams  staff      633 Sep 11 10:39 gfs_20250610_t00z_f026_hgt_surface_YSDU_diagnostic.grib2.meta.txt
+-rw-r--r--@  1 zacharyadams  staff   492443 Sep 11 10:39 gfs_20250610_t12z_f024_hgt_surface_EGLC_diagnostic.grib2
+-rw-r--r--@  1 zacharyadams  staff      633 Sep 11 10:39 gfs_20250610_t12z_f024_hgt_surface_EGLC_diagnostic.grib2.meta.txt
+-rw-r--r--@  1 zacharyadams  staff   492443 Sep 11 10:39 gfs_20250610_t12z_f024_hgt_surface_LFPG_diagnostic.grib2
+-rw-r--r--@  1 zacharyadams  staff      633 Sep 11 10:39 gfs_20250610_t12z_f024_hgt_surface_LFPG_diagnostic.grib2.meta.txt
+-rw-r--r--@  1 zacharyadams  staff   492443 Sep 11 10:39 gfs_20250610_t18z_f024_hgt_surface_DSM_diagnostic.grib2
+-rw-r--r--@  1 zacharyadams  staff      633 Sep 11 10:39 gfs_20250610_t18z_f024_hgt_surface_DSM_diagnostic.grib2.meta.txt
+-rw-r--r--@  1 zacharyadams  staff      263 Sep 11 10:39 session37_elevation_correction_params.csv
+-rw-r--r--@  1 zacharyadams  staff     1912 Sep 23 20:11 session37_pull_failures.csv
+-rw-r--r--@  1 zacharyadams  staff  8689302 Sep 23 20:11 session37_pull_manifest.csv
+
+data/raw/diagnostics/session40:
+total 4536
+drwxr-xr-x@  4 zacharyadams  staff      128 Sep 23 20:11 .
+drwxr-xr-x@ 14 zacharyadams  staff      448 Sep 23 20:11 ..
+-rw-r--r--@  1 zacharyadams  staff       46 Sep 23 20:11 session40_pull_failures.csv
+-rw-r--r--@  1 zacharyadams  staff  2315708 Sep 23 20:11 session40_pull_manifest.csv
+
+==========================================================================
+TASK 2 (A67-06) -- first check run (stopped: 14 rows tied)
+==========================================================================
+fold table rows: 50  profile rows: 150
+shared columns (8): ['feature_set', 'fold', 'train_start', 'train_end', 'test_start', 'test_end', 'train_rows', 'test_rows']
+  row  1  3-feature 2022-23      train_rows= 495 test_rows=364  write order=EGLC  profile match=['DSM', 'EGLC']  PROBLEM
+  row  2  3-feature 2023-24      train_rows= 859 test_rows=366  write order=EGLC  profile match=['DSM', 'EGLC']  PROBLEM
+  row  3  3-feature 2024-25      train_rows=1225 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row  4  3-feature 2025-26      train_rows=1589 test_rows=364  write order=EGLC  profile match=['EGLC', 'LFPG']  PROBLEM
+  row  5  5-feature 2022-23      train_rows= 495 test_rows=364  write order=EGLC  profile match=['DSM', 'EGLC']  PROBLEM
+  row  6  5-feature 2023-24      train_rows= 859 test_rows=366  write order=EGLC  profile match=['DSM', 'EGLC']  PROBLEM
+  row  7  5-feature 2024-25      train_rows=1225 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row  8  5-feature 2025-26      train_rows=1589 test_rows=364  write order=EGLC  profile match=['EGLC', 'LFPG']  PROBLEM
+  row  9  5-feature 2024-25-thin train_rows= 195 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row 10  5-feature 2025-26-thin train_rows= 559 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row 11  3-feature 2022-23      train_rows= 493 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 12  3-feature 2023-24      train_rows= 858 test_rows=366  write order=LFPG  profile match=['LFPG']  OK
+  row 13  3-feature 2024-25      train_rows=1224 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 14  3-feature 2025-26      train_rows=1589 test_rows=364  write order=LFPG  profile match=['EGLC', 'LFPG']  PROBLEM
+  row 15  5-feature 2022-23      train_rows= 493 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 16  5-feature 2023-24      train_rows= 858 test_rows=366  write order=LFPG  profile match=['LFPG']  OK
+  row 17  5-feature 2024-25      train_rows=1224 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 18  5-feature 2025-26      train_rows=1589 test_rows=364  write order=LFPG  profile match=['EGLC', 'LFPG']  PROBLEM
+  row 19  5-feature 2024-25-thin train_rows= 195 test_rows=365  write order=LFPG  profile match=['DSM', 'LFPG']  PROBLEM
+  row 20  5-feature 2025-26-thin train_rows= 560 test_rows=364  write order=LFPG  profile match=['LFPG']  OK
+  row 21  3-feature 2022-23      train_rows= 495 test_rows=364  write order=DSM   profile match=['DSM', 'EGLC']  PROBLEM
+  row 22  3-feature 2023-24      train_rows= 859 test_rows=366  write order=DSM   profile match=['DSM', 'EGLC']  PROBLEM
+  row 23  3-feature 2024-25      train_rows=1225 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 24  3-feature 2025-26      train_rows=1590 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 25  5-feature 2022-23      train_rows= 495 test_rows=364  write order=DSM   profile match=['DSM', 'EGLC']  PROBLEM
+  row 26  5-feature 2023-24      train_rows= 859 test_rows=366  write order=DSM   profile match=['DSM', 'EGLC']  PROBLEM
+  row 27  5-feature 2024-25      train_rows=1225 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 28  5-feature 2025-26      train_rows=1590 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 29  5-feature 2024-25-thin train_rows= 195 test_rows=365  write order=DSM   profile match=['DSM', 'LFPG']  PROBLEM
+  row 30  5-feature 2025-26-thin train_rows= 560 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 31  3-feature 2022-23      train_rows= 493 test_rows=357  write order=YSDU  profile match=['YSDU']  OK
+  row 32  3-feature 2023-24      train_rows= 850 test_rows=363  write order=YSDU  profile match=['YSDU']  OK
+  row 33  3-feature 2024-25      train_rows=1213 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 34  3-feature 2025-26      train_rows=1573 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 35  5-feature 2022-23      train_rows= 493 test_rows=357  write order=YSDU  profile match=['YSDU']  OK
+  row 36  5-feature 2023-24      train_rows= 850 test_rows=363  write order=YSDU  profile match=['YSDU']  OK
+  row 37  5-feature 2024-25      train_rows=1213 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 38  5-feature 2025-26      train_rows=1573 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 39  5-feature 2024-25-thin train_rows= 192 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 40  5-feature 2025-26-thin train_rows= 552 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 41  3-feature 2022-23      train_rows= 493 test_rows=364  write order=RNO   profile match=['RNO']  OK
+  row 42  3-feature 2023-24      train_rows= 857 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 43  3-feature 2024-25      train_rows=1222 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 44  3-feature 2025-26      train_rows=1587 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 45  5-feature 2022-23      train_rows= 493 test_rows=364  write order=RNO   profile match=['RNO']  OK
+  row 46  5-feature 2023-24      train_rows= 857 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 47  5-feature 2024-25      train_rows=1222 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 48  5-feature 2025-26      train_rows=1587 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 49  5-feature 2024-25-thin train_rows= 194 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 50  5-feature 2025-26-thin train_rows= 559 test_rows=365  write order=RNO   profile match=['RNO']  OK
+
+STOP: 14 row(s) not confirmed; file not written
+
+==========================================================================
+TASK 2 -- tied rows compared byte for byte
+==========================================================================
+$ ambiguous row pairs (1-based data rows): byte-identical in the fold table?
+rows  1 and 21: identical  3-feature,2022-23,2021-03-24,2022-07-31,495,1.36,2022-08-01,2023-07-31,495,364,YES
+rows  2 and 22: identical  3-feature,2023-24,2021-03-24,2023-07-31,860,2.35,2023-08-01,2024-07-31,859,366,no
+rows  5 and 25: identical  5-feature,2022-23,2021-03-24,2022-07-31,495,1.36,2022-08-01,2023-07-31,495,364,YES
+rows  6 and 26: identical  5-feature,2023-24,2021-03-24,2023-07-31,860,2.35,2023-08-01,2024-07-31,859,366,no
+rows  4 and 14: identical  3-feature,2025-26,2021-03-24,2025-07-31,1591,4.36,2025-08-01,2026-07-31,1589,364,no
+rows  8 and 18: identical  5-feature,2025-26,2021-03-24,2025-07-31,1591,4.36,2025-08-01,2026-07-31,1589,364,no
+rows 19 and 29: identical  5-feature,2024-25-thin,2024-01-19,2024-07-31,195,0.53,2024-08-01,2025-07-31,195,365,YES
+
+==========================================================================
+TASK 2 -- owner-requested report: columns, tied pairs, metrics
+==========================================================================
+$ fold table columns (11): ['feature_set', 'fold', 'train_start', 'train_end', 'train_days', 'train_years', 'test_start', 'test_end', 'train_rows', 'test_rows', 'thin']
+$ profile columns (16): ['station', 'feature_set', 'fold', 'train_start', 'train_end', 'test_start', 'test_end', 'train_rows', 'test_rows', 'rung', 'mae', 'rmse', 'bias', 'skill_vs_raw', 'skill_vs_persist', 'n']
+$ cross-check matched on: ['feature_set', 'fold', 'train_start', 'train_end', 'test_start', 'test_end', 'train_rows', 'test_rows']
+$ fold-table columns not in profile: ['train_days', 'train_years', 'thin']
+$ fold-table columns whose name suggests an error metric: []
+$ tied pairs:
+  rows  1/21  EGLC/DSM  3-feature 2022-23      identical columns: 11 of 11
+  rows  2/22  EGLC/DSM  3-feature 2023-24      identical columns: 11 of 11
+  rows  5/25  EGLC/DSM  5-feature 2022-23      identical columns: 11 of 11
+  rows  6/26  EGLC/DSM  5-feature 2023-24      identical columns: 11 of 11
+  rows  4/14  EGLC/LFPG  3-feature 2025-26      identical columns: 11 of 11
+  rows  8/18  EGLC/LFPG  5-feature 2025-26      identical columns: 11 of 11
+  rows 19/29  LFPG/DSM  5-feature 2024-25-thin identical columns: 11 of 11
+$ profile CSV: per-rung MAE for each tied pair (read only; shows the metrics differ by station)
+  3-feature 2022-23      raw_gfs     EGLC=1.2262  DSM=2.0939  differ
+  3-feature 2022-23      persistence EGLC=1.7934  DSM=3.9907  differ
+  3-feature 2022-23      3-feature   EGLC=1.2338  DSM=1.7499  differ
+  3-feature 2023-24      raw_gfs     EGLC=1.0148  DSM=2.0349  differ
+  3-feature 2023-24      persistence EGLC=2.0164  DSM=3.6992  differ
+  3-feature 2023-24      3-feature   EGLC=0.9527  DSM=1.5215  differ
+  5-feature 2022-23      raw_gfs     EGLC=1.2262  DSM=2.0939  differ
+  5-feature 2022-23      persistence EGLC=1.7934  DSM=3.9907  differ
+  5-feature 2022-23      5-feature   EGLC=1.1677  DSM=1.7263  differ
+  5-feature 2023-24      raw_gfs     EGLC=1.0148  DSM=2.0349  differ
+  5-feature 2023-24      persistence EGLC=2.0164  DSM=3.6992  differ
+  5-feature 2023-24      5-feature   EGLC=0.947  DSM=1.5787  differ
+  3-feature 2025-26      raw_gfs     EGLC=1.2536  LFPG=1.3822  differ
+  3-feature 2025-26      persistence EGLC=2.0964  LFPG=2.3003  differ
+  3-feature 2025-26      3-feature   EGLC=1.0367  LFPG=1.1775  differ
+  5-feature 2025-26      raw_gfs     EGLC=1.2536  LFPG=1.3822  differ
+  5-feature 2025-26      persistence EGLC=2.0964  LFPG=2.3003  differ
+  5-feature 2025-26      5-feature   EGLC=1.0  LFPG=1.1561  differ
+  5-feature 2024-25-thin raw_gfs     LFPG=1.4091  DSM=1.7043  differ
+  5-feature 2024-25-thin persistence LFPG=2.5233  DSM=4.1081  differ
+  5-feature 2024-25-thin 5-feature   LFPG=1.7219  DSM=2.0011  differ
+
+==========================================================================
+TASK 2 -- write run under the owner's tie rule: .venv/bin/python scripts/session70_fold_table_station.py --write
+==========================================================================
+fold table rows: 50  profile rows: 150
+shared columns (8): ['feature_set', 'fold', 'train_start', 'train_end', 'test_start', 'test_end', 'train_rows', 'test_rows']
+  row  1  3-feature 2022-23      train_rows= 495 test_rows=364  write order=EGLC  profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row  2  3-feature 2023-24      train_rows= 859 test_rows=366  write order=EGLC  profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row  3  3-feature 2024-25      train_rows=1225 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row  4  3-feature 2025-26      train_rows=1589 test_rows=364  write order=EGLC  profile match=['EGLC', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row  5  5-feature 2022-23      train_rows= 495 test_rows=364  write order=EGLC  profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row  6  5-feature 2023-24      train_rows= 859 test_rows=366  write order=EGLC  profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row  7  5-feature 2024-25      train_rows=1225 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row  8  5-feature 2025-26      train_rows=1589 test_rows=364  write order=EGLC  profile match=['EGLC', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row  9  5-feature 2024-25-thin train_rows= 195 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row 10  5-feature 2025-26-thin train_rows= 559 test_rows=364  write order=EGLC  profile match=['EGLC']  OK
+  row 11  3-feature 2022-23      train_rows= 493 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 12  3-feature 2023-24      train_rows= 858 test_rows=366  write order=LFPG  profile match=['LFPG']  OK
+  row 13  3-feature 2024-25      train_rows=1224 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 14  3-feature 2025-26      train_rows=1589 test_rows=364  write order=LFPG  profile match=['EGLC', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row 15  5-feature 2022-23      train_rows= 493 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 16  5-feature 2023-24      train_rows= 858 test_rows=366  write order=LFPG  profile match=['LFPG']  OK
+  row 17  5-feature 2024-25      train_rows=1224 test_rows=365  write order=LFPG  profile match=['LFPG']  OK
+  row 18  5-feature 2025-26      train_rows=1589 test_rows=364  write order=LFPG  profile match=['EGLC', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row 19  5-feature 2024-25-thin train_rows= 195 test_rows=365  write order=LFPG  profile match=['DSM', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row 20  5-feature 2025-26-thin train_rows= 560 test_rows=364  write order=LFPG  profile match=['LFPG']  OK
+  row 21  3-feature 2022-23      train_rows= 495 test_rows=364  write order=DSM   profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row 22  3-feature 2023-24      train_rows= 859 test_rows=366  write order=DSM   profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row 23  3-feature 2024-25      train_rows=1225 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 24  3-feature 2025-26      train_rows=1590 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 25  5-feature 2022-23      train_rows= 495 test_rows=364  write order=DSM   profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row 26  5-feature 2023-24      train_rows= 859 test_rows=366  write order=DSM   profile match=['DSM', 'EGLC']  OK (tie: byte-identical rows, assigned by write order)
+  row 27  5-feature 2024-25      train_rows=1225 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 28  5-feature 2025-26      train_rows=1590 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 29  5-feature 2024-25-thin train_rows= 195 test_rows=365  write order=DSM   profile match=['DSM', 'LFPG']  OK (tie: byte-identical rows, assigned by write order)
+  row 30  5-feature 2025-26-thin train_rows= 560 test_rows=365  write order=DSM   profile match=['DSM']  OK
+  row 31  3-feature 2022-23      train_rows= 493 test_rows=357  write order=YSDU  profile match=['YSDU']  OK
+  row 32  3-feature 2023-24      train_rows= 850 test_rows=363  write order=YSDU  profile match=['YSDU']  OK
+  row 33  3-feature 2024-25      train_rows=1213 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 34  3-feature 2025-26      train_rows=1573 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 35  5-feature 2022-23      train_rows= 493 test_rows=357  write order=YSDU  profile match=['YSDU']  OK
+  row 36  5-feature 2023-24      train_rows= 850 test_rows=363  write order=YSDU  profile match=['YSDU']  OK
+  row 37  5-feature 2024-25      train_rows=1213 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 38  5-feature 2025-26      train_rows=1573 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 39  5-feature 2024-25-thin train_rows= 192 test_rows=360  write order=YSDU  profile match=['YSDU']  OK
+  row 40  5-feature 2025-26-thin train_rows= 552 test_rows=356  write order=YSDU  profile match=['YSDU']  OK
+  row 41  3-feature 2022-23      train_rows= 493 test_rows=364  write order=RNO   profile match=['RNO']  OK
+  row 42  3-feature 2023-24      train_rows= 857 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 43  3-feature 2024-25      train_rows=1222 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 44  3-feature 2025-26      train_rows=1587 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 45  5-feature 2022-23      train_rows= 493 test_rows=364  write order=RNO   profile match=['RNO']  OK
+  row 46  5-feature 2023-24      train_rows= 857 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 47  5-feature 2024-25      train_rows=1222 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 48  5-feature 2025-26      train_rows=1587 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 49  5-feature 2024-25-thin train_rows= 194 test_rows=365  write order=RNO   profile match=['RNO']  OK
+  row 50  5-feature 2025-26-thin train_rows= 559 test_rows=365  write order=RNO   profile match=['RNO']  OK
+
+All 50 rows confirmed. 36 match exactly one profile station, agreeing with the write order. 14 are ties assigned by write order alone: rows [1, 2, 4, 5, 6, 8, 14, 18, 19, 21, 22, 25, 26, 29].
+Wrote data/processed/session46_fold_table.csv with station as the first column.
+
+==========================================================================
+TASK 2 -- Step 2.3 checks
+==========================================================================
+$ data row count
+50 data rows; header: ['station', 'feature_set', 'fold', 'train_start', 'train_end', 'train_days', 'train_years', 'test_start', 'test_end', 'train_rows', 'test_rows', 'thin']
+
+$ remove the station column, compare byte-for-byte with HEAD
+identical to HEAD (sha256 99d6adde1ea709ec...)
+
+$ per-station row count
+  EGLC  10
+  LFPG  10
+  DSM   10
+  YSDU  10
+  RNO   10
+
+$ git diff --stat -- data/
+ data/processed/session46_fold_table.csv | 102 ++++++++++++++++----------------
+ 1 file changed, 51 insertions(+), 51 deletions(-)
+
+$ first 3 lines
+station,feature_set,fold,train_start,train_end,train_days,train_years,test_start,test_end,train_rows,test_rows,thin
+EGLC,3-feature,2022-23,2021-03-24,2022-07-31,495,1.36,2022-08-01,2023-07-31,495,364,YES
+EGLC,3-feature,2023-24,2021-03-24,2023-07-31,860,2.35,2023-08-01,2024-07-31,859,366,no
+
+==========================================================================
+TASK 3 (A67-05, A67-07) -- Step 3.3 check
+==========================================================================
+$ git diff requirements.txt
+diff --git a/requirements.txt b/requirements.txt
+index 10c6ad8..3672055 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -11,7 +11,7 @@
+ # ---------------------------------------------------------------------------
+ # Directly imported by the scripts
+ # ---------------------------------------------------------------------------
+-# numpy      - arrays and arithmetic (session04_model.py, session05_model.py)
++# numpy      - arrays and arithmetic (the modelling scripts)
+ # lightgbm   - the gradient-boosted tree model (SPEC 4.4, DECISIONS D12)
+ #
+ # Everything else below is a dependency pulled in by those two, or by
+@@ -33,8 +33,8 @@
+ # This machine has no Homebrew, so a workaround is used instead: scikit-learn's
+ # macOS wheel ships its own copy of libomp.dylib, and the model scripts point
+ # the dynamic loader at that copy and restart the interpreter once. That block
+-# sits at the top of scripts/session04_model.py and scripts/session05_model.py,
+-# clearly commented. It changes nothing about the model - it only lets the
++# sits at the top of the modelling scripts, clearly commented (setup steps are
++# also in README.md). It changes nothing about the model - it only lets the
+ # library load - and repeat runs were byte-identical (DECISIONS F14, F15, Q16).
+ #
+ # So: scikit-learn is pinned here because it is currently the source of
+
+$ added/removed lines that are neither comments nor blank (expect none):
+(grep exit 1 : 1 means none)
+
+==========================================================================
+TASK 4 (A67-08, A68a-06) -- Step 4.1 before: git ls-files | wc -l
+==========================================================================
+     884
+
+==========================================================================
+TASK 4 -- Step 4.1 before: git status --porcelain --ignored
+==========================================================================
+ M data/processed/session46_fold_table.csv
+ M requirements.txt
+?? README.md
+?? data/raw/diagnostics/session37/session37_pull_failures.csv
+?? data/raw/diagnostics/session37/session37_pull_manifest.csv
+?? data/raw/diagnostics/session40/
+?? docs/session-70.md
+?? scripts/session70_fold_table_station.py
+?? scripts/session70_grib_manifests.py
+!! .DS_Store
+!! .claude/
+!! .venv/
+!! data/.DS_Store
+!! data/processed/.DS_Store
+!! data/raw/grib/
+!! docs/.DS_Store
+!! notes/.DS_Store
+!! scripts/.DS_Store
+!! scripts/__pycache__/
+
+==========================================================================
+TASK 4 -- git diff .gitignore
+==========================================================================
+diff --git a/.gitignore b/.gitignore
+index 6f7cdeb..37c7c18 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -33,4 +33,17 @@ ENV/
+ .vscode/
+ *.swp
+ Thumbs.db
+-data/raw/grib/
++
++# --- Claude Code local settings (audit A67-08) ---
++.claude/
++
++# --- the large GRIB cache: the one exception to "raw data is committed" ---
++# DECISIONS D47: the ~20 GB GFS GRIB cache can be fetched again, so its bytes
++# are not committed. Its provenance is committed instead, as the pull
++# manifests under data/raw/diagnostics/. No trailing slash, so a cache that is
++# a symbolic link is ignored too (audit A68a-06).
++data/raw/grib
++
++# --- scratch GRIB files a pull script leaves behind only if killed mid-pull
++# (audit A67-08). Matches _scratch_*.grib2 only, never the tracked samples.
++data/raw/diagnostics/**/_scratch_*.grib2
+
+==========================================================================
+TASK 4 -- Step 4.3 checks
+==========================================================================
+$ git ls-files | wc -l  (before, after)
+     884
+     884
+
+$ git ls-files -ci --exclude-standard  (tracked files that now match an ignore rule)
+(end of list; 0 files)
+
+$ git check-ignore -v: cache and .claude/ (should be ignored)
+.gitignore:45:data/raw/grib	data/raw/grib
+.gitignore:45:data/raw/grib	data/raw/grib/gfs_20210323_t00z_f026_tcdc.grib2
+.gitignore:38:.claude/	.claude
+.gitignore:38:.claude/	.claude/settings.local.json
+
+$ git check-ignore -v: scratch GRIB pattern (hypothetical paths; should be ignored)
+.gitignore:49:data/raw/diagnostics/**/_scratch_*.grib2	data/raw/diagnostics/session49/_scratch_2021-05-06_12_024_t925.grib2
+.gitignore:49:data/raw/diagnostics/**/_scratch_*.grib2	data/raw/diagnostics/session47/_scratch_message.grib2
+
+$ git check-ignore -v: must NOT be ignored (Task 1 files, tracked diagnostic GRIB samples, a new sample file); exit 1 = none ignored
+exit code: 1
+
+$ symlinked cache test in a throwaway repo (scratchpad), old rule vs new rule
+old rule (HEAD .gitignore): ?? data/raw/grib
+new rule: not shown (ignored)
+.gitignore:45:data/raw/grib	data/raw/grib
+
+$ git status --porcelain --ignored  (after), diffed against Step 4.1
+0a1
+>  M .gitignore
+(diff exit 1)
+
+$ does git status list any .grib2 file as untracked or staged?
+none
+
+$ git diff --cached --stat (staged changes; expect empty)
+(end)
+
+==========================================================================
+TASK 4 -- re-run after the owner-requested .gitignore header amendment (before commit)
+==========================================================================
+$ git diff .gitignore
+diff --git a/.gitignore b/.gitignore
+index 6f7cdeb..9dfe5e3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,6 +1,7 @@
+ # .gitignore — things that must never enter the project's history.
+ #
+-# Raw data is NOT ignored. Raw pulls are committed on purpose (DECISIONS D15),
++# Raw data is NOT ignored, except the bulk GRIB cache (DECISIONS D47, see the
++# rule near the end of this file). Raw pulls are committed on purpose (D15),
+ # because the immutable-snapshot rule (SPEC 2.3) only means something if the
+ # snapshot is actually in the history.
+ 
+@@ -33,4 +34,17 @@ ENV/
+ .vscode/
+ *.swp
+ Thumbs.db
+-data/raw/grib/
++
++# --- Claude Code local settings (audit A67-08) ---
++.claude/
++
++# --- the large GRIB cache: the one exception to "raw data is committed" ---
++# DECISIONS D47: the ~20 GB GFS GRIB cache can be fetched again, so its bytes
++# are not committed. Its provenance is committed instead, as the pull
++# manifests under data/raw/diagnostics/. No trailing slash, so a cache that is
++# a symbolic link is ignored too (audit A68a-06).
++data/raw/grib
++
++# --- scratch GRIB files a pull script leaves behind only if killed mid-pull
++# (audit A67-08). Matches _scratch_*.grib2 only, never the tracked samples.
++data/raw/diagnostics/**/_scratch_*.grib2
+
+$ git ls-files | wc -l  (Step 4.1 baseline, now)
+     884
+     884
+
+$ git ls-files -ci --exclude-standard
+(end of list; 0 files)
+
+$ git check-ignore -v: cache and .claude/ (should be ignored)
+.gitignore:46:data/raw/grib	data/raw/grib
+.gitignore:46:data/raw/grib	data/raw/grib/gfs_20210323_t00z_f026_tcdc.grib2
+.gitignore:39:.claude/	.claude
+.gitignore:39:.claude/	.claude/settings.local.json
+
+$ git check-ignore -v: scratch GRIB pattern (should be ignored)
+.gitignore:50:data/raw/diagnostics/**/_scratch_*.grib2	data/raw/diagnostics/session49/_scratch_2021-05-06_12_024_t925.grib2
+.gitignore:50:data/raw/diagnostics/**/_scratch_*.grib2	data/raw/diagnostics/session47/_scratch_message.grib2
+
+$ git check-ignore -v: must NOT be ignored; exit 1 = none ignored
+exit code: 1
+
+$ symlinked cache test in a throwaway repo (scratchpad), old rule vs new rule
+old rule (HEAD .gitignore): ?? data/raw/grib
+new rule: not shown (ignored)
+.gitignore:46:data/raw/grib	data/raw/grib
+
+$ git status --porcelain --ignored, diffed against the Step 4.1 baseline
+0a1,3
+>  M .gitignore
+>  M DECISIONS.md
+>  M STATUS.md
+7a11
+> ?? notes/session-70-output.txt
+(diff exit 1)
+
+$ any .grib2 file untracked or staged?
+none
+
+$ git diff --cached --stat (expect empty)
+(end)
