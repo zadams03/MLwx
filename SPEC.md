@@ -714,3 +714,136 @@ the same series as raw GFS (Open-Meteo) — the two sources agree closely but
 are not identical (7.3) — so the margins above are not directly comparable,
 airport for airport, to section 5.0's minimal-method margins; a fuller
 discussion of that comparison belongs in RESULTS.md, not here.
+
+---
+
+## 8. The selected-features GRIB method (a third, proven method)
+
+Sections 1–6 describe the project's original, minimal method. Section 7
+describes the richer 5-feature GRIB method. This section describes a
+third, later method, built by a staged feature-selection programme on top
+of section 7's own 5-feature baseline, locked once, and confirmed once on
+a separate held-out year. **All three methods are real, proven results.
+None of the three erases any other** (same spirit as DECISIONS D48.13).
+
+**8.1 What it is.** Section 7's 5-feature GRIB baseline (`B`) plus four
+selected features: moisture (`D`), lapse rate (`L`), shortwave radiation
+(`R`) and pressure tendency (`T`) — written `B+D,L,R,T`. Precipitation
+(`P`), relative humidity (`rh`) and the raw pressure-level temperatures
+(`plev`) were tested and excluded (DECISIONS D58 item 1). The exact
+columns, source files and transform for each added feature (DECISIONS D58
+item 3):
+
+| code | feature | committed column | source files | transform |
+|---|---|---|---|---|
+| L | lapse rate | `lapse_rate_t2_t850` | `session49_v16_window_with_upper_air.csv` / `session49_sealed_window_with_upper_air.csv` | none |
+| D | moisture (dew-point depression) | `dewpoint_depression_t2m` | `session51_v16_window_with_moisture.csv` / `session51_sealed_window_with_moisture.csv` | `dewpoint_depression_t2m_floored = max(dewpoint_depression_t2m, 0)` |
+| T | pressure tendency | `pressure_tendency_3h_hpa` | `session53_v16_window_with_pressure.csv` / `session53_sealed_window_with_pressure.csv` | none |
+| R | shortwave radiation | `dswrf_2h_wm2` | `session55_v16_window_with_radiation.csv` / `session55_sealed_window_with_radiation.csv` | none |
+
+D's transform changes exactly 1 of 7,952 rows — the v16 and sealed windows
+combined, not the training window alone (DECISIONS D58 item 3). Reserved-
+year test values for L, D, T and R come from `session63_reserved_window_
+with_{upper_air,moisture,pressure,radiation}.csv` — the same four frozen
+pipelines, with only the date range extended to cover the reserved year
+(DECISIONS F107).
+
+**8.2 What is unchanged from section 7.** Everything not listed here is
+unchanged from section 7: the same `B` baseline (the 5-feature GRIB
+recipe — forecast temperature, `season_sin`, `season_cos`, `cloud_cover`,
+`wind_speed_10m`), the same GFS 0.25° GRIB2 source
+(`noaa-gfs-bdp-pds`, 7.2), the same lead-time convention (7.2, DECISIONS
+D48.2/F89), the same elevation/lapse-rate correction on surface
+temperature (7.2, DECISIONS D48.3/F90), the same airports, target hour per
+airport (4.1), pairing rule (4.5), and frozen bar (5.3). Each added
+feature's own source and lead, as its own DECISIONS finding states it:
+- **L (lapse rate).** DECISIONS F98: pulled from the same GRIB archive
+  "onto the existing 5-feature GRIB dataset, at every date that dataset
+  already carries" — the same source and dates as `B`. No elevation/
+  lapse-rate correction is applied to the three pressure-level
+  temperatures themselves (`t925`, `t850`, `t700`) — they are fixed
+  pressure surfaces, not tied to surface terrain — only bilinear
+  horizontal interpolation, the same as `B`'s own fields (F98).
+- **D (moisture).** DECISIONS F100 states the moisture family was "built
+  and validated in session 51" onto the same frozen 5-feature GRIB
+  baseline `B` is refit against; F100 itself does not restate the source
+  archive or lead-time formula beyond that.
+- **T (pressure tendency).** DECISIONS F101 states the pressure family
+  was "built and validated in session 53, from F97's own availability
+  map"; F101 itself does not restate the source archive or lead-time
+  formula beyond that.
+- **R (shortwave radiation).** DECISIONS F102: `DSWRF:surface` (downward
+  shortwave at the surface) is resolved to a physically consistent
+  2-hour window ending at each airport's own target hour — the native
+  24–26h window used directly at the lead-26 airports (YSDU, RNO), and a
+  de-accumulation from the 18–24h and 18–22h windows at the lead-24
+  airports (EGLC, LFPG, DSM) — from the same GRIB source as `B`.
+
+**8.3 Training window, fold, settings, complete-case rule.** The
+confirmation fold (DECISIONS D58 item 4): train 2021-03-24 to 2024-07-31,
+test 2024-08-01 to 2025-07-31 — the reserved year set aside for this
+programme (DECISIONS D51). All five airports, the same frozen LightGBM
+settings as every other method in this project (DECISIONS D21.4/D48.6),
+identical features at every airport, no per-airport feature selection
+(DECISIONS D58 item 4). The complete-case row set is built over only the
+final four features' own underlying columns; DECISIONS D58 items 5 and 9
+pre-registered and verified that this drops zero rows against a `B`-only
+mask on the training window, at every airport. DECISIONS F107 separately
+confirmed 365 of 365 complete-case reserved-year feature rows at every
+airport, once the reserved-year build closed the gap D58 item 11 flagged.
+
+**8.4 How it was chosen.** A staged feature-selection programme, run only
+on three non-reserved training/test folds that never touch the reserved
+year (DECISIONS D51's own `EXPERIMENT_FOLDS`): five candidate feature
+families were tested one at a time against the frozen `B` baseline, each
+contributing one adopted feature (DECISIONS F98–F105, D52–D56). Two raw
+physical variables were separately parked as candidates without being
+adopted — the raw pressure-level temperatures (`plev`, on Reno's own
+fold-robust signal) and relative humidity (`rh`) — DECISIONS D52, D53.
+These seven candidates were then swept together on a pre-registered
+ladder of variants and a mechanical leave-one-out selection rule with a
+correlated-feature safeguard and a joint backstop check (DECISIONS D57,
+F106); the sweep's own mechanical rule dropped precipitation from the
+final set, confirmed in DECISIONS D58. The owner reviewed and confirmed
+that set unchanged (DECISIONS D58). The confirmed set was then run once,
+and only once, against the reserved year (DECISIONS D58, F109) — the
+single authorised look.
+
+**8.5 Result.** The single authorised look at the reserved year
+(2024-08-01 to 2025-07-31), per airport (DECISIONS F109):
+
+| airport | raw GFS (GRIB) MAE | persistence MAE | B MAE | B+D,L,R,T MAE | vs raw GFS | vs persistence | vs B |
+|---|---|---|---|---|---|---|---|
+| EGLC | 1.2362 | 2.2259 | 1.0861 | 1.0008 | +19.04% | +55.04% | +7.85% |
+| LFPG | 1.4091 | 2.5233 | 1.3285 | 1.2369 | +12.22% | +50.98% | +6.89% |
+| DSM  | 1.7043 | 4.1081 | 1.4402 | 1.4123 | +17.13% | +65.62% | +1.94% |
+| YSDU | 1.4897 | 2.5775 | 1.3030 | 1.2643 | +15.13% | +50.95% | +2.97% |
+| RNO  | 1.6135 | 2.7563 | 1.4272 | 1.2742 | +21.03% | +53.77% | +10.72% |
+
+**B+D,L,R,T passes the frozen bar (5.3) at all five airports** — it beats
+both raw GFS and persistence on MAE everywhere, with no exception. The
+secondary read also holds: airport-averaged MAE 1.2377 against plain `B`'s
+1.3170, a +6.02% skill margin (DECISIONS F109). No ranking among airports
+is claimed.
+
+**8.6 Caveats (DECISIONS D59.3).** Any use or write-up of this result must
+carry these caveats:
+- (a) This is one year only — the same single-look discipline every method
+  in this project uses (5.3), not a multi-year robustness claim.
+- (b) This is the first look at the *selected* feature set on 2024-25, but
+  `B` alone was already scored on that same year descriptively, in a
+  different, earlier study (DECISIONS F96, D58 item 8) — the
+  feature-selection choices themselves never touched 2024-25.
+- (c) This section's own margins (reserved year, 2024-25) and section 7's
+  own margins (sealed year, 2025-26) come from **different years** and
+  must not be set side by side as like-for-like.
+- (d) DSM's margin over `B` is small (+1.94%).
+- (e) RNO's margin over `B` (+10.72%) was not pre-registered and is
+  descriptive only.
+
+**8.7 Status.** This is the project's **default recipe** for any future
+airport work or pooling work (stage 3), applied unchanged and identically
+at every airport (DECISIONS D59.3). Every new airport still needs its own
+lock and single test (6). This status does not change the minimal method's
+(5.0) or the richer 5-feature method's (7.5) own standing results — all
+three stand.

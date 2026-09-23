@@ -3,95 +3,104 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 23 September 2026, after session 64._
+_Last updated: 23 September 2026, after session 65._
 
 ---
 
 ## Where the project is right now
 
-**The single authorized reserved-year confirmation of the locked final
-feature set (D58: B + D, L, R, T) has been run, once, and PASSES the
-frozen bar at all five airports (F109).** Session 64's Step 1 gate
-(re-running `preflight()`) matched session 61's own grid and session 62's
-own preflight output to the fourth decimal at all five airports before
-`--confirm` was run. `--confirm` then ran cleanly, once — no guard trip,
-no crash.
+**The project now has three independently-tested, proven methods for
+correcting GFS's local bias at an airport, and the feature-selection
+programme that produced the third one is closed.**
 
-**Reserved-year result (2024-08-01..2025-07-31), per airport (raw GFS
-MAE / persistence MAE / B MAE / B+D,L,R,T MAE):**
+1. **The minimal method** (SPEC sections 1–6) — three features, Open-Meteo
+   source. Passes at four of five airports; fails at Reno. Results:
+   EGLC/LFPG/DSM/YSDU F16/F30/F47/F64 (PASS), RNO F82 (FAIL).
+2. **The richer 5-feature GRIB method** (SPEC section 7, "act two" in
+   RESULTS.md) — five features, GFS GRIB source. Passes at all five
+   airports, including Reno. Result: F94.
+3. **The selected-features GRIB method** (SPEC section 8, new this
+   session, "act three" in RESULTS.md) — the 5-feature baseline (`B`) plus
+   four selected features (moisture, lapse rate, shortwave radiation,
+   pressure tendency — `B+D,L,R,T`), chosen by a staged feature-selection
+   programme (DECISIONS D51–D59) and confirmed once on a separate reserved
+   year (2024-08-01..2025-07-31). Passes at all five airports, including
+   Reno. Result: F109. Secondary read: beats plain `B` on airport-averaged
+   MAE (1.2377 vs 1.3170, +6.02%). This is now the project's **default
+   recipe** for future airport or pooling work (DECISIONS D59.3).
 
-```
-station  raw     persist  B       B+DLRT   vs_raw    vs_persist  vs_B
-EGLC     1.2362  2.2259   1.0861  1.0008   +19.04%   +55.04%     +7.85%
-LFPG     1.4091  2.5233   1.3285  1.2369   +12.22%   +50.98%     +6.89%
-DSM      1.7043  4.1081   1.4402  1.4123   +17.13%   +65.62%     +1.94%
-YSDU     1.4897  2.5775   1.3030  1.2643   +15.13%   +50.95%     +2.97%
-RNO      1.6135  2.7563   1.4272  1.2742   +21.03%   +53.77%     +10.72%
-```
+**None of the three methods erases any other** (DECISIONS D48.13, D59.3);
+all three results stand as reported, each with its own required caveats
+(SPEC 7.5, SPEC 8.6/DECISIONS D59.3).
 
-**Bar verdict: PASS at all five airports, beating both raw GFS and
-persistence, no exception.** Secondary read: B+D,L,R,T beats plain B on
-airport-averaged MAE (1.2377 vs 1.3170, +6.02%). D58 item 7 pre-registered
-only that per-airport variation was expected, especially at DSM — not a
-ranking: DSM's small margin (+1.94%) is consistent with that expectation;
-RNO's own margin (+10.72%) was not pre-registered and is descriptive only.
-Full detail, per-rung row counts, the day-set-mismatch note (EGLC/YSDU,
-verdict-irrelevant, same F93 pattern), and the D58 item 8 honesty caveat
-are in DECISIONS F109.
+**The feature-selection programme is closed (DECISIONS D59.2).** No
+further feature family, variant, or combination will be tested under it.
+The reserved year is spent for this programme and will not be reused for
+any verdict; the in-code reserved-year guard stays in place, untouched, as
+a permanent tripwire.
 
-**This was THE single authorized look at the reserved year for this
-feature set (D51). It is now spent and will not be repeated.** The look
-does not re-open, re-score, or change any prior verdict — the minimal
-method's own airport results (F16/F30/F47/F64/F82), the 5-feature GRIB
-sealed test (F94), and the multi-year backtest (F96) all stand exactly as
-reported. This confirmation is a separate, additional result for a richer,
-selected feature set on a separate held-out year.
+**No untouched held-out year now remains at any of the five airports.**
+The 2025-26 year is spent (F94, the richer method's sealed test) and the
+2024-25 year is spent (F109, the selected-features confirmation). A
+further independent test now needs either a new airport (never scored on
+either year) or a live, forward-looking year not yet elapsed — 2026-27
+(2026-08-01..2027-07-31) — which session 65's own Step 0 check confirmed
+has not yet had any row scored anywhere under `data/processed/`
+(DECISIONS D59.5).
 
-**No code, script, `SPEC.md`, or `RESULTS.md` was modified this session.**
-`scripts/session62_reserved_confirm.py` remains frozen, unchanged since
-F107's documented pre-look wiring — `git diff HEAD` against it was empty
-both before and after this session. Nothing was committed.
-
----
-
-## Next
-
-**Next planning session: owner review of F109 and the verdict.** The
-confirmation result (bar PASS at all five airports, secondary read
-confirmed, DSM's small margin consistent with D58 item 7's own
-pre-registered expectation) is ready for the owner's review. Open
-decisions for that session: whether/how to fold B+D,L,R,T into `SPEC.md`
-as a third proven method alongside the minimal method (sections 1–6) and
-the 5-feature GRIB method (section 7); whether/how to update `RESULTS.md`
-to cover it; and the archive pass for D52–D58/F106–F108, which per this
-session's own scope stayed live and untouched pending that review.
+**Documentation only this session.** `SPEC.md` §8 and `RESULTS.md` §6 now
+carry the selected-features method (DECISIONS D59, F110); F97–F109/D52–D58
+are archived to `DECISIONS-archive.md` (D51, F96 stay live). Nothing was
+committed.
 
 ---
 
 ## Open questions (live)
 
-- **Q30 (its richer-features branch is resolved; the question itself stays
-  open because its other two branches remain the owner's choice).** The
-  owner picked its first branch — more airports, "ramp up difficulty" — and
-  Reno's own five steps are finished, ending in a failure under the
-  existing recipe. The richer-features branch of that intent has now
-  reached its answer (the 5-feature GRIB recipe passes at all five
-  airports, F94), and its documentation follow-up (SPEC/RESULTS fold-in,
-  archive pass) is done. **Q30's other two branches — a further airport,
-  and a second test year (the remaining half of the F30/F48 caveat) — and
-  stage 3 (pooling) remain fully open and are the owner's choice**,
-  unaffected by how the richer-features branch resolved, and unaffected by
-  the feature-selection programme's own now-complete confirmation (F109).
+- **Q30 (open; its options changed this session, per D59.5, now that no
+  untouched held-out year remains).** The owner previously picked its
+  first branch — more airports, "ramp up difficulty" — and both the
+  richer-features branch (F94) and the selected-features branch (F109)
+  of that programme are now complete and documented. **Q30's three
+  branches — a further airport, a second test year (now only possible as
+  a forward-looking 2026-27 test or a weaker reuse rule), or pooling
+  (SPEC stage 3) — remain fully open and are the owner's choice**
+  (DECISIONS D59.5). See "Next," below, for the planning-chat
+  recommendation on record.
 - **Q32 (effectively answered by events, left on record rather than
-  formally closed).** Session 27 asked whether Reno's rehearsal loss should
-  change anything about locking/testing Reno; the session-28 and session-29
-  prompts both instructed proceeding regardless, and that is what happened
-  — Reno was locked unmodified (D44) and tested unmodified (F82), and it
-  failed. The owner has still not been asked, in so many words, whether a
-  failed sealed test (as opposed to just a negative rehearsal) changes their
-  intentions for future terrain-hard airports generally — though the
-  richer-features branch is the owner's first practical answer for Reno
-  specifically.
+  formally closed; unchanged this session).** Session 27 asked whether
+  Reno's rehearsal loss should change anything about locking/testing
+  Reno; the session-28 and session-29 prompts both instructed proceeding
+  regardless, and that is what happened — Reno was locked unmodified
+  (D44) and tested unmodified (F82), and it failed. The owner has still
+  not been asked, in so many words, whether a failed sealed test (as
+  opposed to just a negative rehearsal) changes their intentions for
+  future terrain-hard airports generally — though both the richer-
+  features result (F94) and the selected-features result (F109) are now
+  the owner's practical answers for Reno specifically.
 
 No other open question remains live; everything else has been closed by a
 decision or a finding — see DECISIONS.md for the closure record.
+
+---
+
+## Next
+
+Q30's three branches, per DECISIONS D59.5:
+- **A further airport**, run under the frozen `B+D,L,R,T` recipe — the
+  cheapest genuinely out-of-sample test available now, per D32 a harder
+  type (coastal, tropical, or mountainous).
+- **A second test year** — now only possible as (i) a live, forward-
+  looking pre-registered test on 2026-27, scored once after the year
+  ends, or (ii) a written rule for reusing an already-seen year (weaker
+  evidence).
+- **Pooling** (SPEC stage 3) — the largest build; previously judged
+  premature with only five locations.
+
+**Planning-chat recommendation on record (DECISIONS D59.5, not a
+decision — the owner has not chosen):** open a further airport under the
+frozen `B+D,L,R,T` recipe now, and in parallel pre-register 2026-27 as a
+forward-looking test year (a small documentation step); defer pooling.
+
+**Next planning session: the owner chooses a Q30 branch (DECISIONS D59.5;
+recommendation on record above).**

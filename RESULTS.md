@@ -6,18 +6,22 @@ number below is cited to the DECISIONS finding it comes from, so it can be
 checked against the original record. Where `SPEC.md` and this file ever
 disagree, `SPEC.md` is right (CLAUDE.md, SPEC section 2).
 
-Written after session 30, revised after session 44. As of session 44, the
-project has **two** independently-tested, proven methods for correcting
-GFS's local bias at an airport: a minimal three-feature method (sections
-2–4 below, the project's original result) and a richer five-feature method
-using a different forecast source (section 5, "act two"). The minimal
-method passes at four of five airports and fails at the fifth, Reno; the
-richer method passes at all five, including Reno. Both results are real
-and neither erases the other (DECISIONS D48.13) — read together, they tell
-a two-chapter story about what the minimal method's ceiling was and what
-addressed it. Language is kept plain; jargon is defined the first time it
-is used, so this can also serve as the basis for a plainer-language
-write-up later without redoing the work.
+Written after session 30, revised after session 44, revised after session
+65. As of session 65, the project has **three** independently-tested,
+proven methods for correcting GFS's local bias at an airport: a minimal
+three-feature method (sections 2–4 below, the project's original result),
+a richer five-feature method using a different forecast source (section 5,
+"act two"), and a selected-features method built on top of the richer
+method by a staged feature-selection programme (section 6, "act three").
+The minimal method passes at four of five airports and fails at the fifth,
+Reno; both the richer method and the selected-features method pass at all
+five, including Reno. All three results are real and none erases any other
+(DECISIONS D48.13, D59.3) — read together, they tell a three-chapter story
+about what the minimal method's ceiling was, what first addressed it, and
+what a disciplined search for more features added on top. Language is kept
+plain; jargon is defined the first time it is used, so this can also serve
+as the basis for a plainer-language write-up later without redoing the
+work.
 
 ---
 
@@ -453,48 +457,183 @@ source, is the fair basis for judging what the two extra features bought.
 
 ---
 
-## 6. Limitations and open directions
+## 6. Act three: the selected-features method
+
+Sections 2–5 describe the project's first two proven methods, and their
+results stand exactly as reported above. This section describes a third,
+later method: five candidate physical-variable feature families tested one
+at a time on top of section 5's own 5-feature GRIB baseline, all five of
+them contributing an adopted feature, swept together by a mechanical
+selection rule, locked once, and confirmed once on a separate, reserved
+held-out
+year — passing the frozen bar at all five airports, including Reno
+(DECISIONS D51–D59; folded into `SPEC.md` as section 8 by session 65,
+DECISIONS D59.3). **All three results are real and proven. None erases
+any other** (DECISIONS D48.13, D59.3).
+
+### 6.1 Why the programme was run
+
+Section 5's own five-feature GRIB method (act two) passes at every
+airport, but it was built from only two extra pieces of physical
+information (cloud cover, wind speed) chosen ahead of time, not from a
+systematic search of what else the GRIB archive can offer. A cheap
+availability probe found 27 candidate variables, across five further
+physical-variable families, genuinely present in the archive at the
+project's own forecast lead, back to the v16 floor — radiation,
+upper-air/vertical structure, moisture, pressure/synoptic and
+precipitation (DECISIONS F97). This programme tests, one family at a time
+and then together, whether any
+of them add real skill on top of the already-proven baseline, and combines
+the winners into one final, locked recipe.
+
+### 6.2 The protocol: reserve, then select, then one look
+
+Before any feature experiment ran, a full year — 2024-08-01 to
+2025-07-31 — was reserved and locked out of every feature experiment in
+code, so the eventual final set's own confirmation would be genuinely
+out-of-sample (DECISIONS D51). Every family was then tested only on three
+other, non-reserved training/test folds: each candidate family's own
+derived feature and its raw physical fields were fit against the frozen
+baseline and read for skill, robustness across folds, and a diagnostic
+read at DSM (DECISIONS F98–F105); the owner reviewed each family's own
+grid and decided, one family at a time, what to adopt (DECISIONS
+D52–D56). All five families' own derived feature was adopted — moisture
+(dew-point depression), lapse rate, shortwave radiation, pressure
+tendency and precipitation (DECISIONS D52–D56). Two raw physical
+variables were separately parked as candidates without being adopted
+(Reno's own raw pressure-level temperatures, and relative humidity —
+DECISIONS D52, D53). These seven candidates — the five adopted features
+together with the two parked raw-variable options — were then swept
+together on a pre-registered ladder of variants, using a mechanical
+leave-one-out selection rule with a correlated-feature safeguard and a
+joint sanity check (DECISIONS D57), which produced one candidate set: the
+baseline plus moisture, lapse rate, radiation and pressure tendency — the
+sweep's own mechanical rule dropped precipitation from the final set, and
+neither parked option was adopted (DECISIONS F106, confirmed in DECISIONS
+D58). The owner reviewed the full grid and selection trace and confirmed
+that set unchanged (DECISIONS D58). The confirmed set was then run once, and only
+once, against the reserved year (DECISIONS D58, F109) — the single
+authorised look for this entire programme.
+
+### 6.3 Result
+
+**The confirmed set, B+D,L,R,T, passes the frozen bar at all five
+airports** — it beats both raw GFS and persistence on MAE everywhere, with
+no exception, on the reserved year (2024-08-01 to 2025-07-31, DECISIONS
+F109):
+
+| airport | raw GFS (GRIB) MAE | persistence MAE | B (5-feature) MAE | selected-features MAE | vs raw GFS | vs persistence | vs B |
+|---|---|---|---|---|---|---|---|
+| EGLC | 1.2362 | 2.2259 | 1.0861 | 1.0008 | **+19.04%** | +55.04% | +7.85% |
+| LFPG | 1.4091 | 2.5233 | 1.3285 | 1.2369 | **+12.22%** | +50.98% | +6.89% |
+| DSM  | 1.7043 | 4.1081 | 1.4402 | 1.4123 | **+17.13%** | +65.62% | +1.94% |
+| YSDU | 1.4897 | 2.5775 | 1.3030 | 1.2643 | **+15.13%** | +50.95% | +2.97% |
+| RNO  | 1.6135 | 2.7563 | 1.4272 | 1.2742 | **+21.03%** | +53.77% | +10.72% |
+
+The secondary read also holds: airport-averaged MAE 1.2377 against plain
+`B`'s own 1.3170, a **+6.02%** skill margin (DECISIONS F109). No ranking
+among airports is claimed; DSM's own margin over `B` (+1.94%) was the
+expected weaker case going in (DECISIONS D58 item 7's own pre-registered
+expectation, drawing on F96 and F106's own DSM diagnostic), and RNO's own
+margin over `B` (+10.72%) was not pre-registered.
+
+### 6.4 Caveats — required reading before quoting this result
+
+(DECISIONS D59.3, stated plainly, not softened):
+
+- **(a) One year only.** Like every sealed or confirmed result in this
+  project, this is a single held-out year, judged once (SPEC 5.3).
+- **(b) First look at the selected set, not a first look at the
+  baseline.** This is the first time the *selected* feature set
+  (B+D,L,R,T) was scored on 2024-25 — but plain `B` alone was already
+  scored on that same year descriptively, in an earlier, separate
+  multi-year study (DECISIONS F96, D58 item 8). The feature-selection
+  choices themselves (which families to add) never touched 2024-25.
+- **(c) Different years — do not compare margins side by side.** This
+  section's own margins are measured on the reserved year, 2024-25;
+  section 5's own margins are measured on the sealed year, 2025-26. The
+  two are not a like-for-like comparison.
+- **(d) DSM's margin over `B` is small** (+1.94%).
+- **(e) RNO's margin over `B`** (+10.72%) **was not pre-registered** and is
+  descriptive only.
+
+This method is now the project's **default recipe** for any future airport
+work or pooling work (DECISIONS D59.3) — every new airport still needs its
+own lock and single test (SPEC 6).
+
+---
+
+## 7. Limitations and open directions
 
 These are stated as the current honest edges of the work, not as failures.
-They now apply to a project with two proven methods, not one.
+They now apply to a project with three proven methods, not one.
 
-- **The richer-features question at Reno is now answered, not parked.**
-  The minimal method's finding 4 named a real ceiling: three features
-  (forecast temperature, season) were not enough to beat raw GFS at an
-  airport whose bias is close to a constant under large scatter. Section 5
-  tested whether cloud cover, wind speed, and a longer GRIB-sourced
-  training window could do better, and they do — the 5-feature model
-  passes at Reno, with the honest caveat (section 5.4) that part of its
-  headline margin reflects a slightly weaker raw-GFS baseline under GRIB,
-  and the pass remains real even correcting for that. What is not yet
-  known: whether a *further* richer feature set (a genuine terrain
-  descriptor, upper-air information) would help Reno or any other airport
-  more — that remains untested, not because it looks unpromising but
-  because it has not been tried.
-- **One shared test year, for both methods.** Every sealed-test result so
-  far — under either recipe, at any airport — is drawn from the same
-  twelve months (2025-08-01 to 2026-07-31). A second, independent test
-  year — at any airport, under either method — would be the strongest
-  single piece of further evidence about how much of the passing margins
-  is model and how much is one year's weather (finding 5, section 4).
+- **The richer-features question at Reno is now answered, not parked, and
+  upper-air information has since been tried.** The minimal method's
+  finding 4 named a real ceiling: three features (forecast temperature,
+  season) were not enough to beat raw GFS at an airport whose bias is
+  close to a constant under large scatter. Section 5 tested whether cloud
+  cover, wind speed, and a longer GRIB-sourced training window could do
+  better, and they do — the 5-feature model passes at Reno, with the
+  honest caveat (section 5.4) that part of its headline margin reflects a
+  slightly weaker raw-GFS baseline under GRIB, and the pass remains real
+  even correcting for that. What was still open at that point: whether a
+  further richer feature set — a genuine terrain descriptor, upper-air
+  information — would help Reno or any other airport more. **Upper-air
+  information has since been tried and partly adopted**: the
+  feature-selection programme (section 6) tested five candidate families,
+  including upper-air/vertical temperature structure alongside moisture,
+  pressure and radiation (DECISIONS F98); the single derived feature
+  `lapse_rate_t2_t850` was adopted into the project's now-default recipe,
+  while the three raw pressure-level temperatures were tested and not
+  adopted (DECISIONS D52, D57, D58). A genuine terrain descriptor beyond
+  the fixed lapse-rate elevation correction (section 5.1) remains
+  untested.
+- **Each method rests on one year — and, together, no untouched year now
+  remains.** The minimal and richer methods' sealed tests (sections 3 and
+  5) both ran on 2025-08-01 to 2026-07-31, the sealed test year fixed by
+  the project's own split dates (SPEC 4.3, finding 5, section 4). The
+  selected-features method (section 6) was instead confirmed on a
+  separate year, 2024-08-01 to 2025-07-31 — not part of SPEC 4.3's own
+  split, but carved out of the training window and reserved specifically
+  for this programme so its own single look would be genuinely
+  out-of-sample (DECISIONS D51). **No untouched held-out year now remains
+  at any of the five airports** (DECISIONS D59.5): the sealed test year
+  has been used for the richer method's own sealed test (F94), and the
+  reserved year has been used for the selected-features method's own
+  confirmation (F109). A further independent test year is therefore not a
+  matter of re-splitting existing data — it needs either a new airport
+  (never scored on either year) or a live, forward-looking year not yet
+  elapsed (2026-27, DECISIONS D59.5).
 - **Cross-method margin comparisons need care.** The minimal method's
   vs-raw-GFS margins (section 3) and the richer method's vs-raw-GFS margins
   (section 5) are computed against two different raw-GFS series
   (Open-Meteo vs. GRIB) that agree closely but are not identical (section
   5.2). Reno is the one airport where this actually matters in practice
   (section 5.4's decomposition); at the other four airports the two raw
-  baselines are close enough that the caveat is a formality.
+  baselines are close enough that the caveat is a formality. The
+  selected-features method's own margins (section 6) add a second reason
+  for care: they are measured on a different year from sections 3 and 5's
+  own margins (section 6.4(c)).
 - **Parked directions, not started:** blending in other forecast models
   (ECMWF, ICON, Google's WeatherNext AI model — SPEC stage 4); widening the
   target from one fixed hour to a full daily temperature curve (SPEC stage
-  5); the eventual live daily product (SPEC stage 6); a further airport, or
-  a genuinely second test year (SPEC's open Q30 branches). None of these
-  has begun.
+  5); the eventual live daily product (SPEC stage 6). SPEC's open Q30
+  question now has three branches (DECISIONS D59.5): a further airport
+  (run under the now-default selected-features recipe, section 6); a
+  second test year (only possible now as a live, forward-looking test on
+  2026-27, pre-registered before any of its data is scored, or a written
+  rule for reusing an already-seen year); or pooling (SPEC stage 3,
+  previously judged premature with only five locations). None of the
+  three has begun; the planning-chat recommendation on record (DECISIONS
+  D59.5) is a further airport now, with 2026-27 pre-registered in
+  parallel, deferring pooling — not yet a decision.
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
-and were checked against it when this file was written (session 30) and
-revised (session 44, DECISIONS F95). SPEC.md remains the source of truth
-for how the project works; this file is a read-only summary of results
-already on record there.*
+and were checked against it when this file was written (session 30),
+revised (session 44, DECISIONS F95), and revised again (session 65,
+DECISIONS F110). SPEC.md remains the source of truth for how the project
+works; this file is a read-only summary of results already on record
+there.*
