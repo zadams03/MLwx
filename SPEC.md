@@ -32,8 +32,9 @@ The airports so far:
 - **Dubbo, Australia (ICAO code YSDU)** — stage 2, **passed**.
 - **Reno, Nevada (IEM station code RNO, ICAO code KRNO)** — stage 2,
   **failed the minimal method** (DECISIONS F82); **passes the richer
-  5-feature GRIB method** (DECISIONS F94) — see section 7. The project's
-  first mountain/terrain-affected airport.
+  5-feature GRIB method** (DECISIONS F94) — see section 7; **also passes
+  the selected-features method** (DECISIONS F109) — see section 8. The
+  project's first mountain/terrain-affected airport.
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -208,7 +209,11 @@ The airport, and where it is (position from IEM, section 3.1):
 | LFPG | Paris Charles de Gaulle (CDG) | 2 — passed | 12:00 | `FR__ASOS` | 49.0153 | 2.5344 | 109 m |
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
 | YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
-| RNO | Reno, Nevada | 2 — failed | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
+| RNO | Reno, Nevada | 2 — failed (minimal method)\* | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
+
+\* Reno failed the minimal method (DECISIONS F82). It passes the richer
+method (section 7, DECISIONS F94) and the selected method (section 8,
+DECISIONS F109).
 
 The forecast grid point it maps to (from Open-Meteo, section 3.2), and when the
 station reports:
@@ -376,6 +381,14 @@ table-shaped data). This runs on a normal laptop CPU; no GPU is needed.
 If no report falls within 15 minutes of the hour, that hour is dropped and
 counted (rule 2.2). See DECISIONS D14.
 
+**What the historical code actually does (DECISIONS D62).** The scripts
+behind every recorded result keep the **last** qualifying report in the
+file, not explicitly the nearest. The two rules differ only when two or
+more usable reports fall within the 15-minute window on the same day. That
+happened on 1 day in the whole record (YSDU), with equal temperatures, so
+no recorded figure is affected (audit-67 A67-12, audit-68b item 9). New
+code must select the nearest report explicitly (8.7).
+
 The rule names no minute and no hour, because both are per-airport facts and
 live in the airport table (3.4). **The hour being paired is each airport's own
 target hour (4.1), not one hour shared by all of them.** What the rule means in
@@ -460,8 +473,21 @@ between forecast and what actually happened, in degrees Celsius. Lower is
 better.
 
 **5.2 Baselines to beat.** The corrected forecast is compared against:
-- **Raw GFS** — the uncorrected forecast. Beating this is the core claim of
-  the project.
+- **Raw GFS** — the GFS forecast *before this project's model corrects
+  it*. Beating this is the core claim of the project. What "raw" means
+  depends on the method (DECISIONS D62):
+  - **Minimal method (sections 1–6):** the GFS value as Open-Meteo serves
+    it, with no adjustment by this project.
+  - **GRIB methods (sections 7 and 8):** the GRIB 2 m temperature after
+    this project's fixed per-airport elevation adjustment (DECISIONS
+    D48.3). This was pre-registered as the baseline in DECISIONS D48.10.
+    The five adjustments, in °C (`correction_c` in
+    `data/raw/diagnostics/session37/session37_elevation_correction_params.csv`):
+    EGLC +0.2486, LFPG −0.1697, DSM −0.1106, YSDU +0.2461, RNO +2.0436.
+
+  The margins of the GRIB methods against a fully unadjusted GRIB baseline
+  were never measured. They cannot be measured now, because both held-out
+  years are spent (DECISIONS D59.5).
 - **Persistence** — the lazy guess "tomorrow will be the same as today".
   Beating this proves the model beats the simplest possible predictor.
 - **Climatology** (optional third check) — the seasonal average for that date,
@@ -567,9 +593,11 @@ to fill in a later stage early, treat it as a warning sign and stop.
     target hour is not 12:00 UTC (D42, 4.1). **A separate, richer 5-feature
     GRIB method (section 7) was built and tested later, and passes at Reno
     too (DECISIONS F94)** — this does not change or erase the record above;
-    both results stand (D48.13).
+    both results stand (D48.13). **The selected-features method (section
+    8) also passes at Reno (DECISIONS F109).**
   - **Further airports may follow before stage 3**, on the same five steps:
-    verify on contact, pull and map, join and rehearse, lock, test once.
+    verify on contact, pull and map, join and rehearse, lock, test once,
+    using the project's default recipe (8.7).
 - **Stage 3 — pool airports.** Combine airports into one model with
   location-describing features, so locations learn from each other. **The
   solar-standard-noon target hour this stage was going to introduce is already
@@ -630,7 +658,8 @@ pairing rule (4.5), and the same frozen bar (5.3).
   archived past forecast at a fixed forecast-hour lead — never the freshest
   run for a given valid time — so it satisfies the no-look-ahead rule the
   same way Open-Meteo's Previous Runs API does (2.1b, DECISIONS F89). Each
-  value is bilinear-interpolated from the surrounding grid points to the
+  value is bilinear-interpolated (estimated from the four surrounding grid
+  points, weighted by distance) to the
   airport's already-established grid point (3.4). The lead-time
   convention: for a target hour `HH:00 UTC`, use the run made at cycle
   `floor(HH/6)*6` UTC on the day before, forecast hour `24 + (HH mod 6)`
@@ -643,10 +672,16 @@ pairing rule (4.5), and the same frozen bar (5.3).
   established (whose elevation sits within 1 m of Reno's own) — the two
   methods interpolate onto different grids, so the two elevation-mismatch
   figures describe two different things and are not in conflict. A fixed
-  lapse-rate correction (7.429 °C/km, fit once and never refit) is applied
+  lapse-rate correction (the lapse rate is how fast temperature drops with
+  height; 7.429 °C/km, fit once and never refit) is applied
   to temperature only, as a constant per airport (DECISIONS D48.3, F90).
   Cloud cover and wind speed are used exactly as GRIB reports them,
   uncorrected (DECISIONS F91).
+- **Raw-GFS baseline.** The "raw GFS (GRIB)" baseline is the GRIB 2 m
+  temperature *after* this fixed elevation adjustment, not before it
+  (DECISIONS D48.10, D62). See 5.2 for what "raw GFS" means in each method,
+  the five adjustment sizes, and the fact that margins against a fully
+  unadjusted GRIB baseline were never measured.
 - **Training window.** 2021-03-24 to 2025-07-31, restricted to GFS's v16
   model version (v16 went operational 2021-03-22; using an earlier model
   version inside the same training window would mix two different physical
@@ -680,7 +715,9 @@ test year was then opened once. A row-count guard tripped on its first run
 and was traced to a guard-specification error, not a data problem, and
 corrected before any model was fit or any sealed-year result was seen
 (DECISIONS F92, F93). The frozen script was then run once, unchanged
-(DECISIONS D48.13).
+(DECISIONS D48.13) (one later verification re-run, in session 68a,
+reproduced every figure exactly and changed no verdict — DECISIONS D61.4,
+D62).
 
 **Result: the 5-feature model passes the frozen bar (5.3) at all five
 airports** (DECISIONS F94):
@@ -692,6 +729,14 @@ airports** (DECISIONS F94):
 | DSM  | 1.636 | +5.6%  | +59.1% | +3.4% |
 | YSDU | 1.179 | +10.5% | +55.8% | +8.2% |
 | RNO  | 1.346 | +11.0% | +45.9% | +7.5% |
+
+"Raw GFS (GRIB)" here is the elevation-adjusted GRIB temperature (5.2).
+
+Persistence is scored only on test days that have a previous-day
+observation, while raw GFS and the models use every test day. DECISIONS
+F94 Task 2 re-scored every rung on that common day set and found the
+verdicts identical at all five airports. The minimal method, by contrast,
+scores every rung on one common day set (DECISIONS D21.8).
 
 The clearest, source-independent evidence that the two extra features
 genuinely help is the last column: the 5-feature and 3-feature models are
@@ -706,12 +751,13 @@ existing sealed-test verdict under the minimal method (section 5.0) — EGLC
 (F16), LFPG (F30), DSM (F47), YSDU (F64) and RNO (F82) all stand exactly as
 reported. **Reno in particular failed the minimal method (F82) and passes
 this richer method (F94) — both are true, and neither erases the other**
-(DECISIONS D48.13). At EGLC, LFPG, DSM and YSDU the project now has two
-independently-tested, independently-passing methods — every airport that
-passed the minimal method also passes the richer one; only Reno has just
-one passing method. Raw GFS (GRIB) is not
+(DECISIONS D48.13). At EGLC, LFPG, DSM and YSDU all three methods pass
+(F16/F30/F47/F64, F94, F109). Reno fails the minimal method (F82) and
+passes the richer and selected methods (F94, F109). Raw GFS (GRIB) is not
 the same series as raw GFS (Open-Meteo) — the two sources agree closely but
-are not identical (7.3) — so the margins above are not directly comparable,
+are not identical (7.3), and they also differ in how elevation is handled:
+Open-Meteo's own processing on one side, this project's fixed adjustment on
+the other (5.2) — so the margins above are not directly comparable,
 airport for airport, to section 5.0's minimal-method margins; a fuller
 discussion of that comparison belongs in RESULTS.md, not here.
 
@@ -755,7 +801,8 @@ recipe — forecast temperature, `season_sin`, `season_cos`, `cloud_cover`,
 (`noaa-gfs-bdp-pds`, 7.2), the same lead-time convention (7.2, DECISIONS
 D48.2/F89), the same elevation/lapse-rate correction on surface
 temperature (7.2, DECISIONS D48.3/F90), the same airports, target hour per
-airport (4.1), pairing rule (4.5), and frozen bar (5.3). Each added
+airport (4.1), pairing rule (4.5), frozen bar (5.3), and the same
+raw-GFS baseline (5.2, 7.2). Each added
 feature's own source and lead, as its own DECISIONS finding states it:
 - **L (lapse rate).** DECISIONS F98: pulled from the same GRIB archive
   "onto the existing 5-feature GRIB dataset, at every date that dataset
@@ -785,7 +832,8 @@ test 2024-08-01 to 2025-07-31 — the reserved year set aside for this
 programme (DECISIONS D51). All five airports, the same frozen LightGBM
 settings as every other method in this project (DECISIONS D21.4/D48.6),
 identical features at every airport, no per-airport feature selection
-(DECISIONS D58 item 4). The complete-case row set is built over only the
+(DECISIONS D58 item 4). The complete-case row set (a row is used only if
+every relevant column has a value) is built over only the
 final four features' own underlying columns; DECISIONS D58 items 5 and 9
 pre-registered and verified that this drops zero rows against a `B`-only
 mask on the training window, at every airport. DECISIONS F107 separately
@@ -806,8 +854,10 @@ correlated-feature safeguard and a joint backstop check (DECISIONS D57,
 F106); the sweep's own mechanical rule dropped precipitation from the
 final set, confirmed in DECISIONS D58. The owner reviewed and confirmed
 that set unchanged (DECISIONS D58). The confirmed set was then run once,
-and only once, against the reserved year (DECISIONS D58, F109) — the
-single authorised look.
+and only once (one later verification re-run, in session 68a, reproduced
+every figure exactly and changed no verdict — DECISIONS D61.4, D62),
+against the reserved year (DECISIONS D58, F109) — the single authorised
+look.
 
 **8.5 Result.** The single authorised look at the reserved year
 (2024-08-01 to 2025-07-31), per airport (DECISIONS F109):
@@ -819,6 +869,15 @@ single authorised look.
 | DSM  | 1.7043 | 4.1081 | 1.4402 | 1.4123 | +17.13% | +65.62% | +1.94% |
 | YSDU | 1.4897 | 2.5775 | 1.3030 | 1.2643 | +15.13% | +50.95% | +2.97% |
 | RNO  | 1.6135 | 2.7563 | 1.4272 | 1.2742 | +21.03% | +53.77% | +10.72% |
+
+"Raw GFS (GRIB)" here is the elevation-adjusted GRIB temperature (5.2).
+
+Persistence is scored only on test days that have a previous-day
+observation, while raw GFS and the models use every test day. This day
+basis was pre-registered (DECISIONS D58 item 6) and is reported in
+DECISIONS F109: EGLC is missing 1 day and YSDU 5 (audit-68b item 3). The
+minimal method, by contrast, scores every rung on one common day set
+(DECISIONS D21.8).
 
 **B+D,L,R,T passes the frozen bar (5.3) at all five airports** — it beats
 both raw GFS and persistence on MAE everywhere, with no exception. The
@@ -847,3 +906,19 @@ at every airport (DECISIONS D59.3). Every new airport still needs its own
 lock and single test (6). This status does not change the minimal method's
 (5.0) or the richer 5-feature method's (7.5) own standing results — all
 three stand.
+
+**Build requirements for new-airport code (DECISIONS D62).** Any new code
+written for a new airport must:
+1. **Pair observations to the nearest report explicitly** (4.5; audit-67
+   A67-12).
+2. **Reject non-finite values** (`nan`, `inf`) at load, and drop and count
+   them as missing (rule 2.2; audit-68b A68b-04).
+3. **Check each GRIB message's full validity date and hour**, not the date
+   alone (audit-68b A68b-05).
+4. **Make a test-year gap guard compare the row count with the expected
+   full count**, not with zero (audit-68b A68b-01).
+5. **Not write to already-committed record files on a re-run** (audit-67
+   A67-02, A67-03).
+
+These apply to **new** code only. The historical and frozen scripts stand
+as they are (DECISIONS D62.3).

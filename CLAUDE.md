@@ -58,20 +58,23 @@ owner decides later.
 - **SPEC beats code.** If code and SPEC disagree, SPEC is right. Either fix
   the code to match SPEC, or change SPEC on purpose and note the change in
   DECISIONS. Never let them drift apart quietly.
-- **Pasted beats remembered.** The three files change every session. Any copy
-  in an old chat is stale. A planning chat works only from files pasted *in
-  that same chat*. If a pasted file contradicts memory, the pasted file wins.
+- **Uploaded beats remembered.** The three files change every session. Any
+  copy in an old chat is stale. A planning chat works only from the current
+  files uploaded to claude.ai Project knowledge. If an uploaded file
+  contradicts memory or an old chat copy, the uploaded file wins.
 - **Never edit a spec file from memory or assumption.** Edit a spec file only
   where the session prompt or the owner explicitly says to, and only with
   content from this session's real work.
 - **If the session prompt and a spec file disagree, stop and flag it.** Do
   not guess which to follow.
 
-## The paste-before-work habit
+## Reading the current files before work
 
-Before a planning chat plans or reviews anything, it asks the owner to paste
-the current **STATUS.md** at minimum (plus SPEC or DECISIONS when they matter
-for the task) — *before* starting the work, not after.
+A planning chat reads the current committed **SPEC.md**, **STATUS.md**,
+**DECISIONS.md** and **CLAUDE.md** from claude.ai Project knowledge, guided by
+the planning-side `PROJECT-INSTRUCTIONS.md`. The owner re-uploads every
+changed file after each commit, so the planning chat never works from a
+stale copy.
 
 ## Handling inputs and data
 

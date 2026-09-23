@@ -258,382 +258,6 @@ completed result. Full text preserved there and in git.]
 
 ---
 
-## 2026-09-12 -- Session 42 finding: D48's one authorised look, taken. The
-5-feature GRIB recipe PASSES the frozen bar at all five airports, exactly
-matching the D48.12 pre-registration.
-
-**F94. This is the single authorised look at the sealed test year for the
-5-feature GRIB recipe (D48.13). It stands exactly as reported below -- no
-re-tuning, no re-run, no retroactive adjustment.** `scripts/
-session39_sealed_test.py` was confirmed unchanged since the F93 commit
-(`git diff HEAD` empty against it) and run exactly as-is, once, with no
-argument, against session 40's already-pulled `grib_features_sealed_
-window.csv` and the existing sealed-year IEM chunks -- no new data pulled.
-It completed cleanly: every self-guard (training-row reconciliation,
-D48.7; the corrected sealed-row ceiling, D48.8/F93; the in-window date
-assertions) passed at every airport, no guard tripped, no unforeseen
-error. Full real output: `notes/session40-sealed-test-output.txt` (the
-file name is the frozen script's own, unchanged since session 39 -- this
-is session 42's real run, replacing session 40's earlier partial output up
-to its guard-trip). Summary table: `data/processed/
-session40_sealed_test_summary.csv`.
-
-**Task 1 result -- sealed-year MAE, four rungs, all five airports:**
-
-```
-airport  Raw GFS (GRIB)  Persistence  3-feature  5-feature  n (test_rows)
-EGLC          1.254          2.096       1.037       1.000        364
-LFPG          1.382          2.300       1.177       1.156        364
-DSM           1.733          4.003       1.694       1.636        365
-YSDU          1.317          2.669       1.283       1.179        356
-RNO           1.512          2.490       1.455       1.346        365
-```
-
-**D48.11 bar verdict -- 5-feature vs raw GFS (GRIB) and persistence, per
-airport:**
-
-```
-airport  5f vs raw GFS         5f vs persistence      VERDICT
-EGLC     1.000 vs 1.254 (+20.2%)  1.000 vs 2.096 (+52.3%)   PASS
-LFPG     1.156 vs 1.382 (+16.4%)  1.156 vs 2.300 (+49.7%)   PASS
-DSM      1.636 vs 1.733 (+5.6%)   1.636 vs 4.003 (+59.1%)   PASS
-YSDU     1.179 vs 1.317 (+10.5%)  1.179 vs 2.669 (+55.8%)   PASS
-RNO      1.346 vs 1.512 (+11.0%)  1.346 vs 2.490 (+45.9%)   PASS
-```
-
-**5 of 5 airports PASS the frozen bar (SPEC 5.3, D22, D48.11).** This is
-the project's first result where every opened airport passes under one
-recipe -- including LFPG (which never passed under the existing 3-feature/
-Open-Meteo recipe's own rehearsal read at the same window, F86/F87's
-5-of-5 read on the diagnostic notwithstanding) and RNO (whose EXISTING
-sealed test, F82, failed).
-
-**5-vs-3-feature comparison (reported alongside the bar, not part of it,
-D48.10/D48.11) -- 5-feature beats 3-feature at all five airports:**
-
-```
-airport  3-feature  5-feature  5-vs-3 skill
-EGLC       1.037      1.000       +3.5%
-LFPG       1.177      1.156       +1.8%
-DSM        1.694      1.636       +3.4%
-YSDU       1.283      1.179       +8.2%
-RNO        1.455      1.346       +7.5%
-```
-
-**Task 2 -- scoring-consistency check, confirmed with one genuine, minor,
-verdict-irrelevant finding.** The frozen script's own `passes_persist =
-f5_mae < persist_mae` compares `f5_mae` (computed over all of
-`test_rows`) against `persist_mae` (computed over the narrower
-`common_persist` subset -- days with a usable previous-day observation,
-SPEC 2.1d). Where the sealed year has zero days missing a previous-day
-observation (DSM, RNO: `no_prev=0`) the two sets are identical and no
-question arises. Where it does not (EGLC 1 day, LFPG 1 day, YSDU 9 days)
-this is a real day-set mismatch against the shared-day-set convention
-F93 documented every prior airport's own sealed test as using for every
-rung (raw, persistence, ML-corrected) together. **A read-only diagnostic**
-(`scripts/session42_scoring_check.py`, importing `session39_sealed_test.py`
-unmodified as a library -- same pattern as session 41's `session41_verify.py`
--- reusing its own fitted models and predictions, fitting nothing new)
-recomputed raw/3-feature/5-feature MAE restricted to exactly the
-`common_persist` day set, and compared the two bases directly. Full output:
-`notes/session-42-scoring-check-output.txt`.
-
-```
-station  n(full)  n(common)  no_prev  5f MAE(full)  5f MAE(common)  persist MAE  frozen verdict  common-basis verdict
-EGLC        364        363        1       1.000          1.001         2.096          PASS              PASS
-LFPG        364        363        1       1.156          1.157         2.300          PASS              PASS
-DSM         365        365        0       1.636          1.636         4.003          PASS              PASS
-YSDU        356        347        9       1.179          1.165         2.669          PASS              PASS
-RNO         365        365        0       1.346          1.346         2.490          PASS              PASS
-```
-
-**All five airports give the identical PASS verdict under both day
-bases**, against both raw GFS and persistence (the raw-GFS comparison was
-never at risk -- raw, 3-feature and 5-feature are all computed on the same
-`test_rows` set already, D48.10). The largest MAE shift from restricting
-to the common-persist day set is YSDU's, 1.179 -> 1.165 (a 0.014 degC
-change on 9 of 356 days), nowhere close to closing a 55.8%-skill margin
-against persistence. **Verdict: the mismatch is real and is a genuine,
-reportable deviation from the shared-day-set convention F93 named, but it
-is verdict-irrelevant at every airport this run** -- reported straight,
-per the session prompt's own instruction, rather than silently accepted or
-used to withhold the result. It is flagged here for whoever eventually
-folds this recipe into SPEC/RESULTS (a later, separate consolidation
-session, D48.11), so the frozen script's own day-basis choice is on record
-rather than rediscovered.
-
-**Task 3 -- comparison against the D48.12 pre-registration: full,
-exact match, no divergence.** D48.12 (recorded before any sealed data was
-seen, from F91) predicted: 5-feature beats both raw GFS and persistence at
-all five airports; 5-feature beats 3-feature at all five airports; LFPG
-passes; RNO passes (a reversal of its own existing sealed-test failure
-under the different, existing 3-feature/Open-Meteo recipe, F82, not an
-erasure of it, D48.13). **Every one of those four predictions came true,
-at every airport, with no exception and no close call** -- the narrowest
-raw-GFS margin (DSM, +5.6%) and the narrowest persistence margin (RNO,
-+45.9%) are both comfortably positive, and the narrowest 5-vs-3 margin
-(LFPG, +1.8%) is still a genuine, if modest, win. **This is the first
-pre-registered expectation in the project's history to be confirmed
-without exception at every airport it named** (contrast D44.12's Reno
-prediction, which named the existing recipe's failure mode in advance and
-was also confirmed -- but as a failure, not a clean sweep of passes).
-
-**What this does and does not mean for the project's existing results,
-stated per D48.13.** This is a new, separate test of a different recipe
-(GRIB source, richer features) on the same sealed test year. It does
-**not** re-open, re-test, or overwrite any airport's existing sealed-test
-verdict under the existing 3-feature/Open-Meteo recipe -- EGLC F16, LFPG
-F30, DSM F47, YSDU F64 and RNO F82 all stand exactly as reported. At EGLC,
-DSM and YSDU the project now has two independently-tested, independently-
-passing recipes. At LFPG and RNO, the richer GRIB recipe passes where the
-existing recipe's own sealed test did not (RNO, F82) or where the honest
-reading of the existing recipe's cross-airport comparison never singled it
-out as a clean win (LFPG's F30 pass stands on its own terms; the richer
-recipe's win here is a separate, additional result, not a correction to
-F30). Whether/how to fold the 5-feature GRIB recipe into `SPEC.md`/
-`RESULTS.md` as the project's primary method is a later, separate
-consolidation session's decision, not made here.
-
-**What this session did not do, on purpose.** Did not modify
-`scripts/session39_sealed_test.py` in any way (confirmed by `git diff HEAD`
-before and after running it -- empty). Did not re-run, re-tune, or adjust
-anything after seeing the results -- the numbers above are the single
-authorised look and stand as reported (D48.13). Did not pull any new raw
-or processed data -- reused session 40's `grib_features_sealed_window.csv`
-and the existing sealed-year IEM chunks, all read-only. Did not touch any
-date outside 2025-08-01..2026-07-31 for the sealed side, or before
-2021-03-24 for the training side -- enforced by the frozen script's own
-assertions, which raised on none of them. Did not modify `SPEC.md` or
-`RESULTS.md` -- folding the method in is a separate consolidation session.
-Did not re-open, re-score, or adjust any existing airport's sealed-test
-verdict (EGLC F16, LFPG F30, DSM F47, YSDU F64, RNO F82 all untouched).
-Nothing was committed. Scripts: `scripts/session39_sealed_test.py` (run
-unmodified), `scripts/session42_scoring_check.py` (new, read-only
-diagnostic). Full real output: `notes/session40-sealed-test-output.txt`,
-`notes/session-42-scoring-check-output.txt`. Summary table: `data/
-processed/session40_sealed_test_summary.csv`.
-
----
-
-## 2026-09-12 — Session 43 decision: the proven 5-feature GRIB method is
-folded into SPEC.md as a new section 7, documentation only
-
-**D49. `SPEC.md` now describes two methods: the original minimal method
-(sections 1–6, unchanged) and the richer 5-feature GRIB method (new section
-7), proven by F94. This is a documentation-only consolidation — no code,
-model, data, or figure was touched, and no DECISIONS finding or verdict was
-changed.** Every number folded into section 7 is copied from, and cited to,
-its DECISIONS source (D48, F85–F94) — nothing was recomputed.
-
-**What changed in `SPEC.md`, in full (see the session's own diff for exact
-wording):**
-- **New `## 7. The richer-features GRIB method`**, placed after section 6
-  (not inserted mid-document as a "4A") specifically so sections 5 and 6 —
-  cited by number throughout this file and `STATUS.md` — never need
-  renumbering. It covers: motivation (Reno's near-constant-bias shape,
-  F79/F82); what differs from the minimal method (features, GRIB source and
-  lead convention, the elevation/lapse-rate correction, the v16-only
-  training window, the unchanged model settings — D48.2–D48.7); validation
-  done before the sealed test (F89–F91); the lock and sealed test (D48,
-  F92–F94); the sealed-year results table (F94, 5-feature MAE and its skill
-  vs raw GFS/persistence/3-feature at all five airports); and a closing
-  paragraph stating plainly what this does and does not mean (D48.13) —
-  including that raw GFS (GRIB) and raw GFS (Open-Meteo) are not the same
-  series, so section 7's margins are not directly comparable, airport for
-  airport, to section 5.0's.
-- **§1 airports list** — Reno's bullet reworded from "failed" to "failed the
-  minimal method (F82); passes the richer 5-feature GRIB method (F94) — see
-  section 7."
-- **§2.1b (leakage rule)** — one sentence added noting the GRIB archive is a
-  genuine archived past forecast at a fixed lead (F89), so it satisfies the
-  rule's intent by a different route than Open-Meteo's Previous Runs API;
-  the rule itself, and what the minimal method uses, is unchanged.
-- **§3.2 (forecast source)** — one sentence added pointing out this section
-  describes the minimal method's source only, with section 7 having its
-  own.
-- **§5.0 (results)** — one paragraph added after the existing Reno
-  discussion, pointing to section 7's own results table; the existing
-  results table and its wording are untouched.
-- **§6 (Reno / stage-2 bullet)** — one sentence added noting the richer
-  method later passed at Reno (F94, section 7); the existing failure
-  record (F82) is untouched.
-
-**The results-table placement choice, decided this session.** The
-richer-method's sealed-year results table (F94's own numbers) was placed
-directly inside the new section 7, not deferred to `RESULTS.md`. Reasoning:
-the numbers are already fully cited to a single DECISIONS finding (F94), so
-placing them in section 7 keeps that section self-contained and gives
-`STATUS.md`/future sessions one place to point at for the method's own
-proven result. `RESULTS.md`'s own job (session 44) is the narrative and
-caveat treatment — in particular, the raw-GFS-margin non-comparability
-between the GRIB and Open-Meteo baselines — not a restatement of the raw
-numbers.
-
-**What this session deliberately did not do.** Did not touch `RESULTS.md`
-(session 44's job). Did not run the archive pass (session 44's job, once
-both `SPEC.md` and `RESULTS.md` carry the headlines). Did not change any
-DECISIONS finding, verdict, or the frozen bar. Did not restructure or
-reword any part of sections 1–6 beyond the five pointed edits listed above.
-Did not recompute any figure — every number in section 7 is copied from
-D48/F85–F94. Nothing was committed.
-
-**Two corrections made to section 7 in a same-day follow-up, both
-documentation only, no code or data, nothing committed:**
-1. **§7.5's independently-passing-methods sentence was incomplete.** It
-   originally read "At EGLC, DSM and YSDU the project now has two
-   independently-tested, independently-passing methods," omitting LFPG.
-   LFPG passes the minimal method (F30) and the richer method (F94), the
-   same as EGLC, DSM and YSDU — the omission was a drafting slip, not a new
-   finding. Corrected to name all four, with an explicit closing clause:
-   every airport that passed the minimal method also passes the richer
-   one; only Reno has just one passing method.
-2. **§7.2's elevation-correction bullet could be read as contradicting
-   SPEC 3.4's own grid-elevation table.** SPEC 3.4 records Reno's
-   Open-Meteo grid point as 1 m from the airport's own elevation (the
-   established `gfs_global` point this whole project already uses); §7.2
-   separately states a 275 m gap at Reno for the richer method's own GRIB
-   grid. Both figures are correct — they describe two different grids
-   (Open-Meteo's own downscaled point vs. the raw 0.25° GFS GRIB cell,
-   DECISIONS F89's Task 5 finding), not two conflicting measurements of the
-   same one. Added one clarifying clause to §7.2 naming this explicitly, so
-   a reader comparing the two sections does not read them as inconsistent.
-
-Neither correction changes any number, verdict, or finding — both are
-clarifications of exactly what section 7 already meant.
-
----
-
-## 2026-09-12 — Session 44 finding: RESULTS.md rewritten to cover both
-methods, documentation only
-
-**F95. `RESULTS.md` is rewritten so it tells the whole story: the minimal
-method (sections 2–4, unchanged in substance — four passes, Reno fails) and
-the proven richer 5-feature GRIB method (new section 5, "act two" — five
-passes, Reno passes). This is a documentation-only consolidation, mirroring
-session 43's own SPEC fold-in (D49) one level down. No code, model, data,
-or figure was touched, and no DECISIONS finding or verdict was changed.
-Every number in the rewrite was checked against its DECISIONS/SPEC source
-before being written down.**
-
-**What changed in `RESULTS.md`, in full.** The intro (section 1) was
-re-dated to session 44 and now states the project has two proven methods.
-Sections 2–4 (the minimal method's own method description, results table,
-and six findings) are left substantially intact — three forward pointers
-were added (the intro to section 2, a note under the section-3 results
-table, and a closing sentence on finding 4) so a reader lands on section 5
-at the point where the minimal method's own Reno ceiling is described,
-without any finding's own wording being rewritten. A new
-**section 5, "Act two: the richer-features GRIB method"**, covers: what
-differs from the minimal method (D48.2–D48.7); pre-sealed-test validation
-(F89–F91); the lock and sealed test (D48, F92–F94) with the F94 results
-table in full (5-feature MAE, raw-GFS-GRIB MAE, persistence MAE, 3-feature
-MAE, and all three skill margins, at all five airports); **the honest Reno
-decomposition** (section 5.4) — leading with the 5-vs-3 margin (+7.5%), not
-the vs-raw-GFS margin (+11.0%), naming plainly that the GRIB raw-GFS
-baseline at Reno (1.512) is measurably weaker than the Open-Meteo baseline
-the minimal method faced (1.414, F82), and showing the pass is robust to
-that difference (a recomputed ~+4.8% margin against an Open-Meteo-quality
-baseline) rather than an artifact of it; **the LFPG window story** (section
-5.5) — LFPG failed the richer features on the 1.5-year window (F86 −7.7%
-3-feature / F87 −2.1% 5-feature) but passes on the full 4.4-year window and
-the sealed test (F91, F94), naming the short window, not the features, as
-the binding constraint that was fixed; and a closing synthesis (section
-5.6) on honest magnitude (5-vs-3 ranges +1.8% to +8.2%) and the
-non-comparability of the two methods' raw-GFS baselines (SPEC 7.5). Section
-6 (formerly section 5, "Limitations and open directions") was updated: the
-"richer features at Reno" parked item is marked done, with what it showed
-and its honest caveat; the single-shared-test-year limitation is restated
-to cover both methods; a new bullet on cross-method margin comparability
-was added; the parked-directions list had the now-completed richer-features
-item removed. The closing footer was re-dated and now cites this entry
-(F95).
-
-**What this session deliberately did not do.** Did not touch `SPEC.md`.
-Did not alter any minimal-method verdict, figure, or finding — every number
-in sections 2–4 matches the pre-session file exactly. Did not recompute
-anything — every number in the new section 5 is copied from and cited to
-D48/F85–F94, and the two derived percentages stated explicitly as
-recomputed-for-context (the ~+4.8% Reno figure, `1 − 1.346/1.414`) are
-computed only from numbers already on record, shown with their arithmetic
-so they can be checked. Did not run the archive pass (session 45's job,
-per this session's own prompt). Nothing was committed.
-
----
-
-## 2026-09-12 — Session 45 decision: the GRIB-build sub-project's evidence
-base is archived; a RESULTS.md wording fix
-
-**D50. Documentation only. Two tasks: a small phrasing fix in `RESULTS.md`
-section 5.5, and the archive pass that closes out the GRIB-build
-sub-project (docs/session-36.md through docs/session-44.md). No code,
-model, data, or figure was touched.**
-
-**Task 1 — RESULTS.md §5.5 fix.** The sentence "3-feature −7.7%, 5-feature
-−2.1%, on the scout and the follow-up CV respectively (DECISIONS F86, F87)"
-mis-paired the two figures with their sources: both −7.7% (3-feature) and
-−2.1% (5-feature) are the follow-up CV's own LFPG numbers (F87); the scout
-(F86) gives LFPG a different pair (3-feature −25.7%, 5-feature −13.5%).
-Rather than retype four figures inline, the sentence was reworded to the
-neutral form that avoids the mis-pairing entirely: "both models stayed
-negative across the scout and the follow-up CV (DECISIONS F86, F87)." No
-figure anywhere else in `RESULTS.md` was touched.
-
-**Task 2 — the archive pass.** Applied the D46 criterion (an entry is a
-MOVE candidate once its conclusion is settled and no live open question or
-`STATUS.md`'s own "Next" section needs its specific wording, only its
-headline) to every build-era entry, session 31 onward.
-
-*MOVE (headlines already carried in `SPEC.md` §7 / `RESULTS.md` §5):*
-**F85, F86, F87, F89, F90, F91, F92, F93, D48.** F88 was already archived
-in session 38.
-
-*KEEP-LIVE:*
-- **D46** — not build-era; the archiving-workflow decision itself, out of
-  this session's scope.
-- **The F88 pointer note** — already archived in session 38; left in place,
-  untouched.
-- **D47** — a standing rule (governs future large-pull provenance, like
-  D15), not a settled finding, even though it sat inside the same
-  session-37 entry as F90. Split out and kept live.
-- **F94 — borderline, flagged rather than moved.** It meets the same MOVE
-  criterion (settled, headline carried in `SPEC.md` §7 / `RESULTS.md` §5),
-  but per the session prompt it is flagged for the owner instead of moved
-  silently: it is the headline five-of-five-airports result and very
-  fresh. It stays live in `DECISIONS.md` pending the owner's own call on
-  whether to archive it now or let it age first, the same way F16/F30/F82
-  aged before their own airport's record was folded into SPEC/RESULTS and
-  eventually archived.
-- **D49, F95** — the consolidation records themselves (SPEC/RESULTS
-  fold-in), explicitly kept live: recent, and `STATUS.md` still references
-  them directly.
-- **Q30, Q32, the parked items (P1–P3), and D17/F7** — pre-build-era or
-  otherwise already settled to stay live by earlier decisions (D46 itself,
-  for D17/F7); out of this session's scope, untouched.
-
-**The move itself.** A single-pass line partition of `DECISIONS.md` (three
-contiguous move ranges in the pre-move file: lines 145–774, 887–1286 and
-1291–2058 of that file) extracted 1,797 lines verbatim, unedited, and
-appended them to `DECISIONS-archive.md` under a new dated section,
-`## Moved by session 45 (2026-09-12)`, with a short note and a pointer to
-`SPEC.md` §7 / `RESULTS.md` §5 for the headlines. `DECISIONS.md` was then
-replaced with the remaining (kept) lines, in the same order, plus this
-entry. Lines 1070–1286 of the pre-move file (F90's own text) moved while
-lines 1287–1290 (D47, embedded in the same session-37 section) did not —
-the only place a single original section had to be split rather than moved
-or kept whole. No entry was retyped, edited, reworded, or renumbered; every
-`(Dxx)`/`(Fxx)` citation resolves exactly as it did before the move, now
-into `DECISIONS-archive.md` for the moved set.
-
-**What did not happen this session.** No entry's content was edited,
-reworded, or summarised — only relocated, verbatim, by mechanical
-line-range extraction (`sed`). No entry was renumbered. `SPEC.md` was not
-touched. `RESULTS.md` was touched only for the §5.5 clause above — no
-figure, table, or any other section changed. No code, script, model, data
-file, or figure was touched. Nothing was committed — the owner reviews and
-commits this and every prior change by hand.
-
----
-
 ## 2026-09-18 — Session 46 finding: multi-year rolling-origin generalisation
 backtest of the existing frozen recipes (24h lead, GRIB source). A
 descriptive profile, not a new verdict.
@@ -1158,103 +782,197 @@ or verdict changed by any of the seven; `D59` itself was not touched.
 
 ---
 
-## 2026-09-23 — Session 66 decision: a three-part audit runs before any Q30
-branch is chosen
+## 2026-09-23 — Session 69 decision: audit triage (D60, D61) recorded
 
-**D60. Documentation only. No code, data, model, or figure is touched by
-this decision itself — it records the owner's own instruction, given before
-session 66's audit work began.**
+**D62. Documentation only. This entry records the owner's triage of every
+finding in the four audit reports (`notes/audit-session-66.md`,
+`notes/audit-session-67.md`, `notes/audit-session-68a.md`,
+`notes/audit-session-68b.md`), made in the planning chat, and the session
+plan that follows from it. No code, data, model or figure is touched by
+this entry.**
 
-**D60.1 Audit before Q30.** Before any Q30 branch is chosen, the owner has
-ordered a full audit, run in this order:
-- session 66: documents;
-- session 67: repo and code, including a fresh-environment check;
-- session 68: correctness, meaning a leakage and logic review of the core
-  pipeline and a reproduction of recorded results;
-- then triage in the planning chat, then fix sessions.
+**D62.1 The audit's outcome.**
+- No leakage and no wrong number was found (audit-68b section 1).
+- 163 of 163 recorded figures reproduce exactly (audit-68a section 1).
+- 315 of 315 sampled B values were rebuilt exactly from the raw GRIB
+  (audit-68a section 4.2).
+- No verdict, claim or figure on record changes (D60.2, D61.4).
 
-Q30 stays open and unchanged (D59.5).
+**D62.2 The triage rubric (owner decision).**
+- **Must-fix:** SPEC, or a binding rule, is untrue as written today.
+- **Should-fix:** a gap in the record, or a latent risk for code that will
+  be reused.
+- **Leave-alone:** no effect, or a frozen script whose look is spent. These
+  are recorded here and nothing else is done.
 
-**D60.2 Verification recompute on the spent years is permitted, once, in
-session 68.**
-- **What it covers.** Re-running the committed code on 2025-26 (F94) and
-  2024-25 (F109) is allowed **only to check reproducibility**.
-- **Pre-registered expectation.** Every recomputed figure must match its
-  recorded value to the fourth decimal place.
-- **What it is not.** It is not a verdict and not a new look. No variant,
-  tuning, selection or new metric is permitted. Every recorded verdict
-  (F16/F30/F47/F64/F82, F94, F109) stands, whatever the recompute shows.
-- **If a figure does not match.** The mismatch is reported as a must-fix
-  finding for triage. It is not investigated or corrected within session 68.
-- **Wording conflicts.** Session 68 must first check SPEC section 2, and any
-  other rule text, for wording that forbids this. If it finds any, it stops
-  and flags it rather than running.
+**All must-fix and should-fix items are done before any Q30 branch is
+chosen.** Q30 stays open and unchanged (D59.5, D60.1).
 
-**D60.3 This session's own read-only scope.** Session 66 reports and fixes
-nothing, even obvious typos. Exactly three files may be written: a new
-`notes/audit-session-66.md` (the findings report), one appended DECISIONS
-entry (this one, D60), and the overwritten `STATUS.md`. No file under
-`scripts/`, `data/` or `docs/` is modified. No data file is opened. No model
-is fit. Nothing is scored. `DECISIONS-archive.md` is not read in full —
-only through scripted and git checks, or by opening a single archived entry
-by number where a check needs its exact wording.
+**D62.3 Owner rulings.**
+- (a) **Frozen scripts are never edited.** Their issues are recorded in
+  D62.6 only. The frozen scripts are `session39_sealed_test.py`,
+  `session48_reserved_year.py`, `session60_combine_design.py` and
+  `session62_reserved_confirm.py`.
+- (b) **A67-12: SPEC 4.5's rule still says "nearest".** A paragraph under
+  it now records that the historical code kept the last qualifying report
+  (1 tie day, with equal temperatures, so no effect). The historical
+  scripts are not edited. New code must select the nearest report
+  explicitly (SPEC 8.7 build requirements).
+- (c) **A68a-01: a network session will rebuild L, D, T and R** for the
+  same 45 station-days (session 71).
+- (d) **A68b-02 is must-fix.**
+- (e) **A67-09 moves from cosmetic to should-fix.** The fix is D62.7's
+  one-line description of each file. **No file is deleted.**
 
----
+**D62.4 Must-fix (3).**
+- **A68b-02.** The GRIB methods' raw-GFS rung is the elevation-adjusted
+  GRIB temperature (D48.10). SPEC 5.2 calls raw GFS "the uncorrected
+  forecast". So a reader of SPEC alone would take the F94 and F109 margins
+  to be against a forecast with no adjustment at all. Fixed in this
+  session: SPEC and RESULTS. The SPEC 5.2 edit sits in the FROZEN section
+  5 and only clarifies what "raw GFS" means per method; the bar (5.3) and
+  every verdict are unchanged.
+- **A67-12.** SPEC 4.5 says "nearest"; the code keeps the last qualifying
+  report. The whole record has 1 tie day (YSDU), with equal temperatures,
+  so there is no effect. Still, SPEC did not say what the historical code
+  does. Fixed in this session: SPEC 4.5's rule still says "nearest", and a
+  paragraph under it now records the historical code's last-report
+  behaviour; SPEC 8.7 requires new code to select the nearest report
+  explicitly.
+- **A67-01.** The provenance for the session 37 and 40 GRIB pulls (URLs,
+  byte ranges, pull times and the failure logs) exists only inside the
+  gitignored cache, which does not meet D47. If the cache is deleted, that
+  record is lost. Fixed in session 70.
 
-## 2026-09-23 — Session 68a decision: session 68 split in two, and the
-owner's gate rulings for the one verification recompute
+**D62.5 Should-fix.**
 
-**D61. Recorded before any run in session 68a. It records the owner's own
-instructions; no code, data, model or figure is touched by this entry.**
+This session (documentation):
+- **A68b-03: the persistence day basis.** The GRIB methods score
+  persistence only on test days with a previous-day observation, while
+  raw GFS and the models use every test day. SPEC and RESULTS never say
+  so.
+- **A66-08: CLAUDE.md's paste wording** (owner-reclassified in audit-66
+  section 5). Planning chats now read the files from claude.ai Project
+  knowledge, not from pasted copies, so the wording is out of date.
+- **The "run once" wording in SPEC 7.4 and 8.4 needs a pointer to
+  D61.4.** Both say the frozen script ran once; session 68a then re-ran
+  each once more, for verification only. This point came from 68a's
+  end-of-session check.
+- **SPEC 3.4's RNO stage, "2 — failed", is true of the minimal method
+  only.** Reno passes the richer (F94) and selected (F109) methods.
+- **A66-06.** SPEC 6's "Further airports may follow" bullet does not say
+  which recipe a new airport uses, although SPEC 8.7 makes B+D,L,R,T the
+  default.
+- **A66-07.** Three terms in SPEC ("bilinear-interpolated", "lapse rate",
+  "complete-case") have no plain-language gloss at first use, which
+  CLAUDE.md's style rule asks for.
+- **The new SPEC 8.7 build requirements**, which carry the lessons of
+  A68b-01, A68b-04, A68b-05, A67-12, A67-02 and A67-03. Each is a latent
+  risk that had no effect on the record but would matter if the code were
+  reused for a new airport.
+- **A67-09.** Five tracked files are named in no document and used by no
+  other script, so a reader cannot tell what they are.
+- **The archive move, which covers A66-01 and A66-02.** F94, D49, F95 and
+  D50 now meet the D46 archive criterion: settled, and their headlines are
+  carried in SPEC and RESULTS.
+- **Reno's result in SPEC 1 and SPEC 6, and RESULTS section 1's account of
+  the methods, named only the first two methods; so did SPEC 7.5's
+  sentence on which methods pass where.** SPEC 1 and 6 now add that the
+  selected-features method (section 8) also passes at Reno (F109).
+  RESULTS section 1 now covers all three methods (SPEC 7, 8; F94, F109).
+  SPEC 7.5 now says all three methods pass at EGLC, LFPG, DSM and YSDU
+  (F16/F30/F47/F64, F94, F109), and Reno fails the minimal method (F82)
+  and passes the richer and selected methods (F94, F109). No new figures.
+  These were found at session 69's consistency check and fixed in this
+  session.
 
-**D61.1 Session 68 (D60.1) is split in two.**
-- 68a: reproduction of the recorded results, plus a sample rebuild of
-  features from the raw GRIB;
-- 68b: the logic and leakage review of the core pipeline (the session-67
-  map, `notes/audit-session-67.md` section 3).
+Session 70 (repo, offline):
+- **A67-01** (must-fix, D62.4): build committed provenance manifests for
+  the session 37 and 40 pulls.
+- **A67-06:** `data/processed/session46_fold_table.csv` has no station
+  column, so a row can be matched to its airport only by file order.
+- **A67-05 with A67-07:** there is no README; the only setup notes are
+  comments in `requirements.txt`, and some of those are out of date.
+- **A67-08 with A68a-06:** `.gitignore` gaps (no comment on the GRIB cache
+  rule, `.claude/` and scratch GRIB files not ignored, and a trailing
+  slash that misses a symlinked cache).
 
-D60.2's single permitted recompute takes place in 68a only. 68b does not
-recompute any spent-year figure.
+Session 71 (network):
+- **A68a-01:** L, D, T and R cannot be checked against the raw GRIB
+  offline, because their build scripts fetch, decode and delete the bytes
+  in one step.
 
-**D61.2 The sample rebuild.** It reads the local gitignored GRIB cache
-(`data/raw/grib/`, D47) read-only, and writes only inside a clean clone
-under `/tmp`. It builds data only: it fits nothing and scores nothing.
+**D62.6 Leave-alone (recorded only).**
 
-**D61.3 68b's scope.** The 68b review covers the headline pipeline only:
-the scripts behind F16/F30/F47/F64/F82, F94 and F109, and their data
-builds. It does not cover the E1–E5 or combine experiment scripts. The
-reason: the one reserved-year look (F109) confirmed the chosen set, so a
-bug in an experiment script would have changed which features were chosen,
-not whether the confirmed set passes.
+Frozen, looks spent, no edit:
+- **A67-02 and A67-03.** These scripts write fixed, committed output
+  paths. Any future re-run must happen in a clean clone.
+- **A67-04.** The preflight's "no reserved-year row is read" text has been
+  stale since F107. The rows are loaded but not used (68b item 22).
+- **A67-14.** It cannot happen on the F109 path (0 of 9,777 complete-case
+  rows).
+- **A68a-04.** An absolute path is printed in the F94 output.
+- **A68a-05.** The F109 confirm output was captured outside the script, in
+  session 64.
+- **A68b-01.** The frozen part: the F109 gap guard checks for zero rows
+  only. No effect, since there were 365 of 365 rows.
+- **A68b-04.** The frozen parts: `float()` accepts `nan`. There are 0 such
+  values today.
+- **The frozen F94 docstring** (`session39_sealed_test.py:9`) says all
+  rungs use "the same common days". The code does not do that (A68b-03).
 
-**D61.4 Owner ruling at the 68a gate: D60.2 overrides the "no re-run"
-wording, for this one run only.** Session 68a's Step 0 gate found four
-texts whose plain wording forbids re-running a spent year:
-- D48.13 (archived): "No re-tuning, no feature/window/lapse-rate change,
-  no re-run, no retroactive adjustment, whatever the result."
-- F94: "no re-tuning, no re-run, no retroactive adjustment."
-- D51: "evaluated on 2024-25 exactly once, and that result stands as
-  reported."
-- SPEC 8.4: "run once, and only once, against the reserved year" (a
-  description of what happened, but worded the same way).
+Other:
+- **A66-03.** Resolved itself: session 66's own STATUS.md rewrite replaced
+  the stale "Next" line.
+- **Audit-66's "15 dated headers".** This was a prose miscount; its own raw
+  output shows 14 (audit-67 section 6.3).
+- **A66-04 and A66-05.** P1 is superseded by Q30. P2 and P3 have met their
+  trigger and are eligible to revisit. No action. The parked block is not
+  edited.
+- **A67-10 and A67-11.** Lint findings (unused imports and variables,
+  f-strings with no placeholders) and functions copied between scripts.
+  None affects a result; the copying is how each frozen script stays
+  self-contained.
+- **A68a-02.** The constants are frozen by D48.3. Terrain interpolation
+  matched 5 of 5.
+- **A68a-03.** For the minimal method, D60.2's "fourth decimal" is read as
+  the recorded precision, which is 3 decimals.
+- **A68b-05, A68b-06 and A68b-07.** A68b-05: the L and D fetches check the
+  validity date but not the hour; every manifest row's hour was right.
+  A68b-06: the five minimal-method scripts' stop checks differ, and some
+  only print; 68a reproduced every count. A68b-07: the EGLC Open-Meteo pull
+  used a rounded position, but Open-Meteo returned the SPEC 3.4 grid point
+  anyway. None has any effect on a value.
 
-The owner rules that D60.2 overrides these four texts as an exception. The
-exception covers **one verification run, in session 68a only**. It is not
-a new look and not a verdict. **No verdict, claim or figure on record
-changes, whatever the run shows.** A mismatch is reported as a must-fix
-finding for triage, never used to revise a result. The four texts
-themselves are not edited; they stand as written for every other purpose.
+**D62.7 Rulings and records.**
+- **A67-13.** Small diagnostic GRIB samples under `data/raw/diagnostics/`
+  stay tracked. D47 covers the bulk pull only.
+- **A67-15.** The two tracked DSM files for 2026-08-05..2026-08-15 must be
+  named in any 2026-27 pre-registration, if Q30 branch (i) is chosen.
+- **A67-09.** What each of the five files is, from its own contents. All
+  five stay in the repo.
+  - `scripts/session01_checks.py`: session 01's read-only verify-on-contact
+    script; it reports the shape of the first EGLC forecast and
+    observation samples and counts their gaps, and writes nothing.
+  - `scripts/session03_checks.py`: session 03b's read-only gap-map script;
+    it counts rows and maps the missing hours in the full EGLC forecast and
+    observation history, without joining or modelling anything.
+  - `scripts/session03_pull.py`: session 03b's download script; it pulls
+    the full temperature-only history for both sources in yearly chunks
+    into `data/raw/`, with a `.meta.txt` beside each chunk.
+  - `notes/session-01-check-output.txt`: the saved printed output of
+    session 01's verify-on-contact checks at EGLC (forecast archive start,
+    observation coverage, and the :20 second report).
+  - `notes/session-53-pressure-output.txt`: the saved printed output of
+    session 53's pressure-feature (E3) build and validation run, printed by
+    `scripts/session53_pressure_pull.py`.
 
-**D61.5 Owner ruling: D60.2's coverage is extended to the minimal method.**
-D60.2 named only 2025-26 (F94) and 2024-25 (F109). By owner decision, the
-same one verification run also covers the five minimal-method test scripts
-(`session07_test.py`, `session13_test.py`, `session18_test.py`,
-`session24_test.py`, `session29_test.py` — F16, F30, F47, F64, F82), on the
-same terms as D61.4. Their locks (D21.10, D31.10, D35.10, D39.10, D44.10)
-forbid only "a quiet re-run" in response to a disappointing result; this
-run is announced here in advance and cannot change any verdict.
+**D62.8 Session plan.**
+- **69:** this session.
+- **70:** repo fixes, offline.
+- **71:** the L, D, T and R rebuild, with network. Data only. The pull date
+  is recorded (SPEC 2.3).
+- **Then Q30.**
 
-**D61.6 This session's archive step.** Session 68a may write only three
-files (the report, this entry, and STATUS.md). By owner ruling, the
-CLAUDE.md end-of-session archive move is skipped this session; any archive
-candidates are listed in `notes/audit-session-68a.md` for triage instead.
+**D62.9 What this decision did not do.** No code, data, model or figure was
+touched. No file was deleted.

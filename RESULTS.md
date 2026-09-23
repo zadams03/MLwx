@@ -47,10 +47,11 @@ two honest baselines (raw GFS, and "tomorrow will be the same as today")
 under a rehearse-then-single-sealed-test discipline, with a frozen,
 qualitative pass/fail bar fixed before any test year is opened. The minimal
 method (sections 2–4) passes that bar at four of five airports; the richer
-method (section 5) passes at all five. The one airport the minimal method
-fails, Reno, is itself one of this project's findings, not a flaw in it —
-and the richer method's own passing result there is a second finding, not a
-correction of the first.
+method (section 5; SPEC 7, DECISIONS F94) and the selected-features method
+(section 6; SPEC 8, DECISIONS F109) each pass at all five. The one airport
+the minimal method fails, Reno, is itself one of this project's findings,
+not a flaw in it — and the two later methods' passing results there are
+further findings, not corrections of the first.
 
 ---
 
@@ -353,6 +354,15 @@ then run once, unchanged (DECISIONS D48.13).
 | YSDU | 1.179 | 1.317 | 2.669 | 1.283 | **+10.5%** | +55.8% | +8.2% | 356 | **PASS** |
 | RNO  | 1.346 | 1.512 | 2.490 | 1.455 | **+11.0%** | +45.9% | +7.5% | 365 | **PASS** |
 
+"Raw GFS (GRIB)" here is the elevation-adjusted GRIB temperature (SPEC 5.2,
+DECISIONS D48.10).
+
+Persistence is scored only on test days that have a previous-day
+observation, while raw GFS and the models use every test day. DECISIONS F94
+Task 2 re-scored every rung on that common day set and found the verdicts
+identical at all five airports. The minimal method, by contrast, scores
+every rung on one common day set (DECISIONS D21.8).
+
 The clearest, source-independent evidence that the two extra features
 genuinely help is the last comparison column: the 5-feature and 3-feature
 models are trained and tested on the identical elevation-corrected GRIB
@@ -450,7 +460,11 @@ to capture (YSDU, Reno), slight where three features already suffice
 minimal method's own findings established, not a claim that more features
 always help by a lot. **Raw GFS (GRIB) is not the same series as raw GFS
 (Open-Meteo)** — the two sources agree closely but are not identical
-(section 5.2) — so this section's vs-raw-GFS margins are not directly
+(section 5.2), and they also differ in how elevation is handled: the
+minimal method's baseline carries no project-applied adjustment (it is
+Open-Meteo's served value), while this method's baseline carries the
+project's fixed lapse-rate adjustment (SPEC 5.2, DECISIONS D48.10) — so
+this section's vs-raw-GFS margins are not directly
 comparable, airport for airport, to section 3's minimal-method margins; the
 5-vs-3 column, computed entirely within this method on one identical
 source, is the fair basis for judging what the two extra features bought.
@@ -529,6 +543,16 @@ F109):
 | DSM  | 1.7043 | 4.1081 | 1.4402 | 1.4123 | **+17.13%** | +65.62% | +1.94% |
 | YSDU | 1.4897 | 2.5775 | 1.3030 | 1.2643 | **+15.13%** | +50.95% | +2.97% |
 | RNO  | 1.6135 | 2.7563 | 1.4272 | 1.2742 | **+21.03%** | +53.77% | +10.72% |
+
+"Raw GFS (GRIB)" here is the elevation-adjusted GRIB temperature (SPEC 5.2,
+DECISIONS D48.10).
+
+Persistence is scored only on test days that have a previous-day
+observation, while raw GFS and the models use every test day. This day
+basis was pre-registered (DECISIONS D58 item 6) and is reported in
+DECISIONS F109: EGLC is missing 1 day and YSDU 5 (audit-68b item 3). The
+minimal method, by contrast, scores every rung on one common day set
+(DECISIONS D21.8).
 
 The secondary read also holds: airport-averaged MAE 1.2377 against plain
 `B`'s own 1.3170, a **+6.02%** skill margin (DECISIONS F109). No ranking
@@ -609,7 +633,11 @@ They now apply to a project with three proven methods, not one.
   vs-raw-GFS margins (section 3) and the richer method's vs-raw-GFS margins
   (section 5) are computed against two different raw-GFS series
   (Open-Meteo vs. GRIB) that agree closely but are not identical (section
-  5.2). Reno is the one airport where this actually matters in practice
+  5.2). They also differ in elevation handling as well as in source: the
+  minimal method's baseline carries no project-applied adjustment (it is
+  Open-Meteo's served value), while the GRIB methods' baseline carries the
+  project's fixed lapse-rate adjustment (SPEC 5.2, DECISIONS D48.10).
+  Reno is the one airport where this actually matters in practice
   (section 5.4's decomposition); at the other four airports the two raw
   baselines are close enough that the caveat is a formality. The
   selected-features method's own margins (section 6) add a second reason
