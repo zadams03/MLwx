@@ -1,0 +1,11 @@
+==========================================================================================
+SESSION 63 -- THE SINGLE AUTHORIZED RESERVED-YEAR CONFIRMATION (D51/D58). Running once, unchanged.
+==========================================================================================
+EGLC: n_train=1225 n_test=364 no_obs_dropped=1 no_prev=1 raw=1.2362 persist=2.2259 B=1.0861 B+DLRT=1.0008 vs_raw=PASS vs_persist=PASS
+LFPG: n_train=1224 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.4091 persist=2.5233 B=1.3285 B+DLRT=1.2369 vs_raw=PASS vs_persist=PASS
+DSM: n_train=1225 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.7043 persist=4.1081 B=1.4402 B+DLRT=1.4123 vs_raw=PASS vs_persist=PASS
+YSDU: n_train=1213 n_test=360 no_obs_dropped=5 no_prev=5 raw=1.4897 persist=2.5775 B=1.3030 B+DLRT=1.2643 vs_raw=PASS vs_persist=PASS
+RNO: n_train=1222 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.6135 persist=2.7563 B=1.4272 B+DLRT=1.2742 vs_raw=PASS vs_persist=PASS
+
+BAR VERDICT (D58 pre-registered expectation 7): ALL FIVE AIRPORTS PASS
+SECONDARY READ: B+D,L,R,T airport-averaged MAE 1.2377 vs B 1.3170  (beats B)

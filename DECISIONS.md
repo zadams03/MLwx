@@ -3455,3 +3455,221 @@ temp directory, never to a real path. Did not widen any tolerance or adjust
 the R-family formula to make its diff read as zero. Did not edit F107. Did
 not modify `SPEC.md`, `RESULTS.md`, or `STATUS.md`. Did not archive any
 DECISIONS entry. Nothing was committed.
+
+---
+
+## 2026-09-23 — Session 64 finding: THE single authorized reserved-year
+confirmation of the locked final feature set B+D,L,R,T (D51/D58). PASSES the
+frozen bar at all five airports. The look is spent and will not be repeated.
+
+**F109. Runs `scripts/session62_reserved_confirm.py --confirm`, once,
+unchanged since the documented pre-look wiring (F107), on the reserved
+2024-08-01..2025-07-31 confirmation year (D51). This is THE single
+authorized look at the reserved year for the locked final feature set
+(D58). It is spent and will not be repeated.** Full real output: `notes/
+session-64-preflight-output.txt` (Step 1, the gate), `notes/
+session-64-confirm-output.txt` (Step 2, the look).
+
+**Step 0 — pre-look integrity checks, all PASS.** `git status --porcelain`
+showed only the untracked session prompt itself (`docs/session-64.md`); no
+`scripts/` or `data/processed/` changes. `git diff HEAD -- scripts/
+session62_reserved_confirm.py` was empty. `git log -1 --format=%H -- scripts/
+session62_reserved_confirm.py` = `a0dc42c3bebbcfd42f4323bdbdf362d1448be7e2`
+(the session-63/F107 commit, its last edit — matches the "unchanged since
+the documented pre-look wiring" framing exactly, not a fresh session-64
+edit). SHA-256 of the script:
+`9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4`. All four
+`RESERVED_FAMILY_FILES` (`session63_reserved_window_with_{upper_air,
+moisture,pressure,radiation}.csv`) confirmed present by path check.
+
+**Step 1 — preflight() re-run: PASS, exact match to session 61 and session
+62, at all five airports.** Ran with no arguments via the project's own
+`.venv` interpreter (the frozen script's own libomp-restart shim, unchanged
+since D24, fired correctly once the correct interpreter was used — a local
+environment detail, not a script issue). The printed "RESERVED-YEAR
+FEATURE-DATA GAP" block still reads as open in this output — this is
+expected, not a regression: that block's own `hits_l/d/t/r` counters are
+computed only from `load_family()`'s first loop (over the two original
+session 49/51/53/55 committed files), which correctly still contain zero
+reserved-year rows; the actual gap closure lives in `load_family()`'s
+second loop (loading `RESERVED_FAMILY_FILES` when present, added by F107),
+which this preflight path never exercises since it only builds the
+training-window complete-case set. Confirmed working correctly in Step 2
+below.
+
+The 2023-24 machinery dry-run, compared side by side against session 61's
+own `B+LDTR` grid row and session 62's own preflight output:
+
+```
+station  source        raw      persist   B        B+DLRT   skill_vs_B  n_train  n_test  no_prev
+EGLC     session61    1.0148   2.0164    0.9470   0.8715    +7.98%      859      366     0
+EGLC     session62    1.0148   2.0164    0.9470   0.8715    +7.98%      859      366     0
+EGLC     session64    1.0148   2.0164    0.9470   0.8715    +7.98%      859      366     0
+LFPG     session61    1.2234   2.3689    1.1606   1.1221    +3.31%      858      366     0
+LFPG     session62    1.2234   2.3689    1.1606   1.1221    +3.31%      858      366     0
+LFPG     session64    1.2234   2.3689    1.1606   1.1221    +3.31%      858      366     0
+DSM      session61    2.0349   3.6992    1.5787   1.4883    +5.73%      859      366     0
+DSM      session62    2.0349   3.6992    1.5787   1.4883    +5.73%      859      366     0
+DSM      session64    2.0349   3.6992    1.5787   1.4883    +5.73%      859      366     0
+YSDU     session61    1.3283   2.4417    1.1264   1.0949    +2.80%      850      363     3
+YSDU     session62    1.3283   2.4417    1.1264   1.0949    +2.80%      850      363     3
+YSDU     session64    1.3283   2.4417    1.1264   1.0949    +2.80%      850      363     3
+RNO      session61    1.4541   2.5962    1.2972   1.1458    +11.67%     857      365     1
+RNO      session62    1.4541   2.5962    1.2972   1.1458    +11.67%     857      365     1
+RNO      session64    1.4541   2.5962    1.2972   1.1458    +11.67%     857      365     1
+```
+
+**Every figure matches to the fourth decimal place, at all five airports,
+against both sources — no divergence anywhere.** `n_checked` (training-
+window complete-case rows) = 6,127 with `max_abs_diff = 0.000000000` on all
+four final-set feature columns (identical to session 62's own check).
+`no_prev` values above show the dry-run fold used only training-window
+dates (2021-03-24..2024-07-31); a direct read of `merged_train_all` in the
+dry-run loop confirms no date outside that span, and therefore no
+reserved-year date, ever entered it. **Step 1's pass criterion is met.
+Proceeding to Step 2.**
+
+**A side effect of running `preflight()`, reported rather than hidden.**
+The frozen script's own `OUT_PREFLIGHT` constant hardcodes `notes/
+session-62-preflight-output.txt` regardless of which session calls it
+(unchanged since session 62 wrote it; not something this session could
+edit without touching the frozen script). Re-running `preflight()`
+therefore overwrote that file. Before the overwrite was reverted (below),
+`git diff` on it showed exactly two kinds of change, nothing else: the
+`run at` timestamp, and every `rows loaded`/`of N total` count rising from
+7,952 to 9,777 (+1,825 = 5 airports x 365 reserved days) — direct,
+independent confirmation that `load_family()`'s F107 wiring addition
+(loading `RESERVED_FAMILY_FILES` when present) is active even on this
+training-window-only code path, not just in `run_confirm()`. The "Machinery
+dry-run" section — the figures compared against session 61 above — was
+byte-for-byte unchanged in that diff, confirming the comparison above was
+made against session 62's true original numbers, not an artifact of the
+overwrite. **The owner restored `notes/session-62-preflight-output.txt` to its
+committed original from git**, so that file stands exactly as session 62
+left it; this session's own preflight re-run output lives at `notes/
+session-64-preflight-output.txt` instead, untouched by the restoration.
+
+**Step 2 — the look. Ran once, `--confirm`, no crash, no guard trip.**
+Real output, verbatim:
+
+```
+EGLC: n_train=1225 n_test=364 no_obs_dropped=1 no_prev=1 raw=1.2362 persist=2.2259 B=1.0861 B+DLRT=1.0008 vs_raw=PASS vs_persist=PASS
+LFPG: n_train=1224 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.4091 persist=2.5233 B=1.3285 B+DLRT=1.2369 vs_raw=PASS vs_persist=PASS
+DSM: n_train=1225 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.7043 persist=4.1081 B=1.4402 B+DLRT=1.4123 vs_raw=PASS vs_persist=PASS
+YSDU: n_train=1213 n_test=360 no_obs_dropped=5 no_prev=5 raw=1.4897 persist=2.5775 B=1.3030 B+DLRT=1.2643 vs_raw=PASS vs_persist=PASS
+RNO: n_train=1222 n_test=365 no_obs_dropped=0 no_prev=0 raw=1.6135 persist=2.7563 B=1.4272 B+DLRT=1.2742 vs_raw=PASS vs_persist=PASS
+
+BAR VERDICT (D58 pre-registered expectation 7): ALL FIVE AIRPORTS PASS
+SECONDARY READ: B+D,L,R,T airport-averaged MAE 1.2377 vs B 1.3170  (beats B)
+```
+
+**Per-airport table, reserved year 2024-08-01..2025-07-31 (recomputed
+margins, all from the numbers above, arithmetic shown so it can be
+checked):**
+
+```
+station  raw_MAE  persist_MAE  B_MAE   final_MAE  n_test  persist_n  vs_raw    vs_persist  vs_B
+EGLC     1.2362   2.2259       1.0861  1.0008     364     363        +19.04%   +55.04%     +7.85%
+LFPG     1.4091   2.5233       1.3285  1.2369     365     365        +12.22%   +50.98%     +6.89%
+DSM      1.7043   4.1081       1.4402  1.4123     365     365        +17.13%   +65.62%     +1.94%
+YSDU     1.4897   2.5775       1.3030  1.2643     360     355        +15.13%   +50.95%     +2.97%
+RNO      1.6135   2.7563       1.4272  1.2742     365     365        +21.03%   +53.77%     +10.72%
+```
+
+**Scored row count per airport, per rung, out of the 365 complete-case
+feature rows F107 built for every airport:**
+
+```
+station  n_raw  n_B   n_final  n_persist  no_obs_dropped  no_prev
+EGLC     364    364   364      363        1               1
+LFPG     365    365   365      365        0               0
+DSM      365    365   365      365        0               0
+YSDU     360    360   360      355        5               5
+RNO      365    365   365      365        0               0
+```
+
+raw, B, and B+D,L,R,T (`n_raw`/`n_B`/`n_final`) are all scored on the
+identical set of rows — the 365 complete-case feature rows minus
+`no_obs_dropped`, the SPEC 4.5/D14 pairing drop (a day dropped because no
+routine report fell within 15 minutes of the target hour). Persistence is
+scored on a further subset, `n_persist = n_final - no_prev` (SPEC 2.1d: a
+day dropped from persistence alone because its previous calendar day has
+no usable observation); `no_prev` is counted only among the already-paired
+`n_final` rows and is not necessarily the same calendar day as an
+`no_obs_dropped` day. **Two airports score below 365, both explained
+exactly by these two drops and nothing else:** EGLC loses 1 row to
+`no_obs_dropped` (364/365) and a further 1 row for persistence only
+(363/364); YSDU loses 5 rows to `no_obs_dropped` (360/365) and a further 5
+rows for persistence only (355/360). LFPG, DSM and RNO have zero drops at
+every rung. **The persistence margins reported above (vs_persist) are
+therefore computed on the persistence subset (`n_persist`), not on
+`n_final`** — the same day-set convention F93 already documented for the
+sealed test, reported plainly here rather than hidden: EGLC's and YSDU's
+persistence margins (+55.04%, +50.95%) are nowhere close to being affected
+by scoring on 1 or 5 fewer days. This is a routine observation-pairing
+loss, not a feature-completeness gap — F107 already confirmed 365/365/365
+complete-case feature rows at every airport before any observation was
+joined (e.g. F94's own sealed-year test showed the same pattern: EGLC/LFPG
+364, YSDU 356).
+
+**2. THE BAR (D58 item 7): PASS. B+D,L,R,T beats both raw GFS and
+persistence at all five airports, with no exception and no close call.**
+The narrowest raw-GFS margin (LFPG, +12.22%) and the narrowest persistence
+margin (YSDU, +50.95%) are both comfortably positive. This exactly matches
+D58's own pre-registered expectation 7, with no divergence.
+
+**3. Secondary read (D58 item 7): B+D,L,R,T beats plain B on
+airport-averaged MAE — CONFIRMED.** Airport-averaged final-set MAE 1.2377
+vs airport-averaged B MAE 1.3170, a +6.02% skill margin. Per-airport B vs
+B+D,L,R,T (description only, no per-airport claim was pre-registered — DSM
+variation was explicitly expected, D58 item 7):
+
+```
+station  B_MAE   final_MAE  skill_vs_B
+EGLC     1.0861  1.0008     +7.85%
+LFPG     1.3285  1.2369     +6.89%
+DSM      1.4402  1.4123     +1.94%
+YSDU     1.3030  1.2643     +2.97%
+RNO      1.4272  1.2742     +10.72%
+```
+
+**D58 item 7 pre-registered only that per-airport variation was expected,
+especially at DSM — no ranking among airports was pre-registered, and none
+is claimed here.** DSM's small margin (+1.94%) is consistent with that
+expectation(F96's own cloud/wind reading there, and F106's own
+DSM-diagnostic +5.7%-vs-+6.1% reading for this same feature set). **RNO's
+own margin (+10.72%) was not pre-registered and is descriptive only.**
+
+**4. Reported as measured, no re-framing.** The bar verdict is a clean
+PASS at all five airports; there is no worse number to soften or better
+number to lead with instead — the result above is the whole of it.
+
+**Honesty caveat (D58 item 8), stated exactly as required.** The reserved
+year was seen once before, descriptively, for baseline B alone, in F96's
+multi-year rolling-origin backtest — that is on record and is not
+overclaimed as unseen. But the feature-selection programme itself (which
+features to add — E1–E5, F98–F105, and the combine sweep, F106) never
+touched the reserved year at any point; every one of those readings ran
+only on the three non-reserved `EXPERIMENT_FOLDS` (D51). **This session is
+therefore the first look, ever, at the selected set B+D,L,R,T specifically,
+on the reserved year** — genuinely first for the recipe being confirmed,
+even though F96 already computed something for B alone on the same
+calendar dates. Neither overclaiming blindness the programme does not have,
+nor understating that this is the first look at the chosen recipe.
+
+**This was THE single authorized look at the reserved year for this
+feature set (D51). It is spent and will not be repeated, for any reason —
+not a re-run, not a re-tune, not an alternative variant.** No guard tripped
+before or after a result was produced; Step 2 completed cleanly on its one
+and only invocation.
+
+**What this session did not do, on purpose.** Did not edit
+`scripts/session62_reserved_confirm.py` in any way (`git diff HEAD` empty
+before and after running it). Did not run `--confirm` more than once. Did
+not touch the sealed 2025-08-01..2026-07-31 year (F94) — no code path in
+the frozen script's `run_confirm()` references it, and no sealed-year file
+was opened. Did not tune, select, or vary anything on the reserved year —
+only what `run_confirm()` itself computes is reported. Did not modify
+`SPEC.md` or `RESULTS.md`. Did not archive any DECISIONS entry — D52–D58
+and F106–F108 stay live per the session prompt's own instruction, pending
+the owner's review of this finding. Nothing was committed.
