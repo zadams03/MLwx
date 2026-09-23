@@ -1,0 +1,110 @@
+
+==========================================================================================
+SESSION 63 VERIFICATION ADDENDUM -- join/derive arithmetic equivalence check (see F108, not a new session; addendum to F107). No model fit, no reserved-year scoring, no change to any prior finding.
+==========================================================================================
+run at: 2026-09-23 01:00:31 local
+
+==========================================================================================
+TASK 1/2 -- per family, feed session 63's own join_* function the raw decoded input columns already stored in that family's committed v16_window file, and compare its derived output to the committed derived column. Every row is used (no new pull needed, so Task 2's fallback -- a 5-non-reserved-training-date re-run -- is not triggered).
+==========================================================================================
+
+-- family L (upper-air) -- source: session49_v16_window_with_upper_air.csv --
+    input rows (every row of the committed file, no sampling): 6127
+    join drops while re-running: 0 (expect 0)
+    rows compared: 6127
+      max_abs_diff t2m_raw              = 0.000000000
+      max_abs_diff t925                 = 0.000000000
+      max_abs_diff t850                 = 0.000000000
+      max_abs_diff t700                 = 0.000000000
+      max_abs_diff lapse_rate_t2_t850   = 0.000000000
+    max_abs_diff lapse_rate_t2_t850, per airport (this is the family's own derived column the task asks about):
+      EGLC   max_abs_diff = 0.000000000
+      LFPG   max_abs_diff = 0.000000000
+      DSM    max_abs_diff = 0.000000000
+      YSDU   max_abs_diff = 0.000000000
+      RNO    max_abs_diff = 0.000000000
+
+-- family D (moisture) -- source: session51_v16_window_with_moisture.csv --
+    input rows (every row of the committed file, no sampling): 6127
+    join drops while re-running: 0 (expect 0)
+    rows compared: 6127
+      max_abs_diff t2m_raw                  = 0.000000000
+      max_abs_diff relative_humidity_2m     = 0.000000000
+      max_abs_diff dew_point_2m             = 0.000000000
+      max_abs_diff specific_humidity_2m     = 0.000000000
+      max_abs_diff dewpoint_depression_t2m  = 0.000000000
+    max_abs_diff dewpoint_depression_t2m, per airport:
+      EGLC   max_abs_diff = 0.000000000
+      LFPG   max_abs_diff = 0.000000000
+      DSM    max_abs_diff = 0.000000000
+      YSDU   max_abs_diff = 0.000000000
+      RNO    max_abs_diff = 0.000000000
+
+-- family T (pressure) -- source: session53_v16_window_with_pressure.csv --
+    input rows (every row of the committed file, no sampling): 6127
+    NOTE: join_T's own dec[...] fields are in Pa (raw GRIB units); the
+    committed file stores hPa (already /100, already rounded to 3dp).
+    Reconstructed as Pa = hpa_stored * 100.0 -- an exact, invertible
+    round-trip at 3-decimal-place precision, not a re-decode.
+    join drops while re-running: 0 (expect 0)
+    rows compared: 6127
+      max_abs_diff pressure_msl_hpa             = 0.000000000
+      max_abs_diff pressure_surface_hpa         = 0.000000000
+      max_abs_diff pressure_msl_lead_minus3_hpa = 0.000000000
+      max_abs_diff pressure_tendency_3h_hpa     = 0.000000000
+    max_abs_diff pressure_tendency_3h_hpa, per airport:
+      EGLC   max_abs_diff = 0.000000000
+      LFPG   max_abs_diff = 0.000000000
+      DSM    max_abs_diff = 0.000000000
+      YSDU   max_abs_diff = 0.000000000
+      RNO    max_abs_diff = 0.000000000
+
+-- family R (radiation) -- source: session55_v16_window_with_radiation.csv --
+    input rows (every row of the committed file, no sampling): 6127
+    join drops while re-running: 0 (expect 0)
+    rows compared: 6127
+      max_abs_diff dswrf_ave_to_lead_wm2      = 0.000000000
+      max_abs_diff dswrf_2h_wm2               = 0.002000000
+      max_abs_diff dswrf_ave_to_lead_minus2_wm2 = 0.000000000
+    max_abs_diff dswrf_2h_wm2, per airport:
+      EGLC   max_abs_diff = 0.002000000
+      LFPG   max_abs_diff = 0.002000000
+      DSM    max_abs_diff = 0.002000000
+      YSDU   max_abs_diff = 0.000000000
+      RNO    max_abs_diff = 0.000000000
+
+==========================================================================================
+SUMMARY TABLE -- max abs diff per family per airport (own derived column)
+==========================================================================================
+family  EGLC        LFPG        DSM         YSDU        RNO         overall     
+L       0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+D       0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+T       0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+R       0.002000000 0.002000000 0.002000000 0.000000000 0.000000000 0.002000000 
+
+    NONZERO DIFF FOUND -- see above, STOP (per session prompt: report, do not fix)
+
+==========================================================================================
+TASK 3 -- reserved-year moisture file: dewpoint_depression_t2m == round(t2m_raw - dew_point_2m, 3) on every row
+==========================================================================================
+    file: session63_reserved_window_with_moisture.csv  rows: 1825
+    rows checked: 1825   violations (diff != 0): 0
+      EGLC   max_abs_diff = 0.000000000
+      LFPG   max_abs_diff = 0.000000000
+      DSM    max_abs_diff = 0.000000000
+      YSDU   max_abs_diff = 0.000000000
+      RNO    max_abs_diff = 0.000000000
+
+    PASS -- every max abs diff is exactly 0
+
+==========================================================================================
+END
+==========================================================================================
+No model was fit. No reserved-year row was scored, fit on, or selected
+on. This script only recomputes already-frozen, already-pinned
+arithmetic and compares it to already-committed values. Nothing
+committed by session 49/51/53/55/63 was modified -- all join_*
+re-runs above wrote to a temporary scratch directory, never to
+data/processed/session63_reserved_window_with_*.csv.
+
+This output is saved at /Users/zacharyadams/Coding Projects/MLwx/notes/session63-join-equivalence-check-output.txt

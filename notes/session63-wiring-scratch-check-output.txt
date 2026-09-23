@@ -1,0 +1,82 @@
+
+==========================================================================================
+SESSION 63 VERIFICATION ADDENDUM -- wiring scratch check (F107/F108). Reproduces scripts/session62_reserved_confirm.py's own load_family() and build_complete_case() logic without importing that module (avoids lightgbm entirely). No model is fit anywhere in this script.
+==========================================================================================
+run at: 2026-09-23 01:01:42 local
+lightgbm imported by this script: NO (checked: 'lightgbm' not in sys.modules after all imports above -- True)
+
+==========================================================================================
+Per-family load_family() reproduction
+==========================================================================================
+
+-- family D --
+    original files (v16_file + sealed_file): 7952 rows read, 0 reserved-year hits (expect 0, unchanged)
+    reserved-year file (session63_reserved_window_with_moisture.csv): 1825 rows added (expect 1825 = 365 dates x 5 airports)
+      EGLC   reserved-year rows now loaded: 365 (expect 365)
+      LFPG   reserved-year rows now loaded: 365 (expect 365)
+      DSM    reserved-year rows now loaded: 365 (expect 365)
+      YSDU   reserved-year rows now loaded: 365 (expect 365)
+      RNO    reserved-year rows now loaded: 365 (expect 365)
+
+-- family L --
+    original files (v16_file + sealed_file): 7952 rows read, 0 reserved-year hits (expect 0, unchanged)
+    reserved-year file (session63_reserved_window_with_upper_air.csv): 1825 rows added (expect 1825 = 365 dates x 5 airports)
+      EGLC   reserved-year rows now loaded: 365 (expect 365)
+      LFPG   reserved-year rows now loaded: 365 (expect 365)
+      DSM    reserved-year rows now loaded: 365 (expect 365)
+      YSDU   reserved-year rows now loaded: 365 (expect 365)
+      RNO    reserved-year rows now loaded: 365 (expect 365)
+
+-- family R --
+    original files (v16_file + sealed_file): 7952 rows read, 0 reserved-year hits (expect 0, unchanged)
+    reserved-year file (session63_reserved_window_with_radiation.csv): 1825 rows added (expect 1825 = 365 dates x 5 airports)
+      EGLC   reserved-year rows now loaded: 365 (expect 365)
+      LFPG   reserved-year rows now loaded: 365 (expect 365)
+      DSM    reserved-year rows now loaded: 365 (expect 365)
+      YSDU   reserved-year rows now loaded: 365 (expect 365)
+      RNO    reserved-year rows now loaded: 365 (expect 365)
+
+-- family T --
+    original files (v16_file + sealed_file): 7952 rows read, 0 reserved-year hits (expect 0, unchanged)
+    reserved-year file (session63_reserved_window_with_pressure.csv): 1825 rows added (expect 1825 = 365 dates x 5 airports)
+      EGLC   reserved-year rows now loaded: 365 (expect 365)
+      LFPG   reserved-year rows now loaded: 365 (expect 365)
+      DSM    reserved-year rows now loaded: 365 (expect 365)
+      YSDU   reserved-year rows now loaded: 365 (expect 365)
+      RNO    reserved-year rows now loaded: 365 (expect 365)
+
+==========================================================================================
+Base (B) load -- unfiltered, already carries the reserved year (pre-D51 file)
+==========================================================================================
+    EGLC   base reserved-year rows: 365 (expect 365)
+    LFPG   base reserved-year rows: 365 (expect 365)
+    DSM    base reserved-year rows: 365 (expect 365)
+    YSDU   base reserved-year rows: 365 (expect 365)
+    RNO    base reserved-year rows: 365 (expect 365)
+
+==========================================================================================
+Complete-case row counts -- RESERVED-YEAR test window (2024-08-01..2025-07-31)
+==========================================================================================
+    EGLC   complete-case reserved-year rows: 365 (D58 item 11's own blocker: this was 0 before session 63's build; expect 365 now)
+    LFPG   complete-case reserved-year rows: 365 (D58 item 11's own blocker: this was 0 before session 63's build; expect 365 now)
+    DSM    complete-case reserved-year rows: 365 (D58 item 11's own blocker: this was 0 before session 63's build; expect 365 now)
+    YSDU   complete-case reserved-year rows: 365 (D58 item 11's own blocker: this was 0 before session 63's build; expect 365 now)
+    RNO    complete-case reserved-year rows: 365 (D58 item 11's own blocker: this was 0 before session 63's build; expect 365 now)
+
+==========================================================================================
+Complete-case row counts -- TRAINING window (2021-03-24..2024-07-31), cross-check against D58 item 5's own already-verified count
+==========================================================================================
+    EGLC   complete-case training-window rows: 1226 (D58 item 5 expects 1226) -- MATCH
+    LFPG   complete-case training-window rows: 1226 (D58 item 5 expects 1226) -- MATCH
+    DSM    complete-case training-window rows: 1225 (D58 item 5 expects 1225) -- MATCH
+    YSDU   complete-case training-window rows: 1225 (D58 item 5 expects 1225) -- MATCH
+    RNO    complete-case training-window rows: 1225 (D58 item 5 expects 1225) -- MATCH
+
+==========================================================================================
+END
+==========================================================================================
+Training-window row counts vs D58 item 5: ALL MATCH
+No model was fit. No MAE, skill, or CV was computed. lightgbm was never
+imported. This script only counts rows and dates.
+
+This output is saved at /Users/zacharyadams/Coding Projects/MLwx/notes/session63-wiring-scratch-check-output.txt

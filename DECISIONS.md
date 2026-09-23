@@ -3330,3 +3330,128 @@ reserved-year constants — read only. Did not modify `SPEC.md` or
 `RESULTS.md`. Did not archive any DECISIONS entry this session — D52-D58
 and F106 remain live (still load-bearing for session 64). Nothing was
 committed.
+
+---
+
+## 2026-09-23 — Verification addendum to session 63 (not a new session): proves
+the session-63 join/derive arithmetic copy is exact for L, D, T; finds one
+known, already-documented, verdict-irrelevant rounding artifact for R.
+No model fit. No reserved-year scoring. F107 is not edited.
+
+**F108. Addendum to F107, per the session prompt's own framing. Two scripts,
+both read-only, both model-free, both run and their real output saved to
+`notes/`. Neither touches, fits, scores, or selects on the reserved year in
+any modelling sense; Task 3 reads the reserved-year moisture file's own
+already-committed columns to check one arithmetic identity, nothing more.**
+Scripts: `scripts/session63_join_equivalence_check.py` (Tasks 1–3, new),
+`scripts/session63_wiring_scratch_check.py` (Task 4's second script, new —
+saves the model-free wiring check F107 described running but did not commit
+as a script). Full real output: `notes/session63-join-equivalence-check-
+output.txt`, `notes/session63-wiring-scratch-check-output.txt`.
+
+**Method (Tasks 1/2).** For each family (L, D, T, R), `scripts/
+session63_join_equivalence_check.py` imports session 63's own `join_L`/
+`join_D`/`join_T`/`join_R` functions directly from `scripts/
+session63_reserved_year_build.py` (not re-typed) and calls each one, feeding
+it the raw decoded input columns already stored in that family's committed
+v16_window file (sessions 49/51/53/55) — every row of each file was used
+(6,127 rows per family; no sample was needed and no new pull was required,
+so Task 2's fallback was never triggered). To avoid touching any committed
+file, the join functions' own module-level output path
+(`session63_reserved_year_build.PROCESSED`) was temporarily redirected to a
+scratch temp directory for the duration of each call, then restored — the
+real `data/processed/session63_reserved_window_with_*.csv` files (session
+63's own committed output) were never opened for writing by this check.
+Each family's own recomputed derived column was then compared row-by-row,
+matched by (station, target_date), against that same v16_window file's
+already-committed derived column.
+
+**Result — L, D, T: EXACT, max abs diff 0.000000000 at every airport, every
+intermediate and derived column, all 6,127 rows each.** `lapse_rate_t2_t850`
+(L), `dewpoint_depression_t2m` (D) and `pressure_tendency_3h_hpa` (T) all
+reproduce to the full precision Python's own `round()` carries, at EGLC,
+LFPG, DSM, YSDU and RNO alike — including the intermediate columns
+(`t2m_raw`, `t925`/`t850`/`t700`, `relative_humidity_2m`/`dew_point_2m`/
+`specific_humidity_2m`, `pressure_msl_hpa`/`pressure_surface_hpa`/
+`pressure_msl_lead_minus3_hpa`). This is the clean confirmation the session
+prompt asked for: the arithmetic session 63 copied from these three
+families' own `build_joined()` (sessions 49/51/53) is bit-for-bit identical
+to what actually ran.
+
+**Result — R: NOT exact. Max abs diff 0.002000000 at EGLC, LFPG and DSM;
+0.000000000 at YSDU and RNO. This is a real, nonzero, correctly-reported
+result — per the session prompt, this is reported and not fixed.** The
+cause is understood and already on record, not new information: `join_R`'s
+own derive step (`energy_2h = to_lead * dur_full - to_lead_m2 * dur_partial`)
+is defined on the *pre-rounding* decoded values, but the only inputs
+available without a new GRIB pull are the committed file's own
+`dswrf_ave_to_lead_wm2`/`dswrf_ave_to_lead_minus2_wm2` columns — themselves
+already rounded to 3 decimal places for transparency (F102). Feeding those
+already-rounded values back through the identical formula reproduces a
+double-rounding artifact, present only at the three lead-24, de-accumulating
+airports (EGLC, LFPG, DSM) where a second message and a subtraction are
+involved; YSDU and RNO (lead-26, single-message, no de-accumulation) are
+exact because no second rounding step exists for them. **This is not a new
+finding: DECISIONS F103 (session 56) ran the identical check — "`dswrf_2h_wm2
+== (dswrf_ave_to_lead_wm2*6 - dswrf_ave_to_lead_minus2_wm2*4) / 2` ... Max
+abs diff: EGLC 0.002000, LFPG 0.002000, DSM 0.002000 (all pure rounding
+noise, well inside tolerance), YSDU 0.000000, RNO 0.000000 (exact)" — against
+F103's own stated 0.01 W/m2 tolerance.** This check's own numbers match
+F103's, at the same three airports, to the same six decimal places. Read
+plainly: this is independent confirmation the R family's copied arithmetic
+is faithful (an incorrect copy would have no particular reason to reproduce
+F103's own exact figures), not evidence of a defect — the residual is a
+property of comparing against an already-rounded intermediate column, not of
+session 63's copied formula. Per the session prompt, no tolerance was
+widened, no formula was changed, and no attempt was made to make this read
+as zero — it is reported exactly as measured.
+
+**Result — Task 3 (reserved-year moisture arithmetic): PASS, exact, on
+every row.** `dewpoint_depression_t2m == round(t2m_raw - dew_point_2m, 3)`
+holds with max abs diff 0.000000000 at all five airports, checked on all
+1,825 rows of `data/processed/session63_reserved_window_with_moisture.csv`
+(0 violations). This directly re-checks the one arithmetic identity the
+reserved-year moisture file itself depends on, on the reserved year's own
+real, committed data.
+
+**Result — Task 4's second script.** `scripts/
+session63_wiring_scratch_check.py` reproduces `scripts/
+session62_reserved_confirm.py`'s own `load_family()` and
+`build_complete_case()` logic without importing that module (which would
+pull in lightgbm and trigger its dylib-path restart) — `CANDIDATE_FEATURES`
+is imported from `session60_combine_design.py` (no heavy imports there), and
+`RESERVED_FAMILY_FILES` is copied as a plain constant rather than imported.
+Confirmed by direct real re-run of this script, matching F107's own
+already-reported figures exactly: 0 reserved-year hits in the two original
+(v16/sealed) files per family (unchanged); 1,825 rows added per family from
+the four `session63_reserved_window_with_*.csv` files (365 x 5); exactly 365
+complete-case reserved-year rows at every airport (previously 0, per D58
+item 11); and 1,226/1,226/1,225/1,225/1,225 complete-case training-window
+rows at EGLC/LFPG/DSM/YSDU/RNO — an exact match to D58 item 5's own
+already-verified count. `lightgbm` is confirmed absent from `sys.modules`
+throughout the run (printed and checked in the script's own output).
+
+**What this addendum does and does not mean.** It proves the L, D, T
+join/derive copy is exact and finds the R family's copy carries a
+0.002 W/m2 double-rounding residual at three airports — already documented
+by F103, verdict-irrelevant there and here (three orders of magnitude below
+any skill margin the programme has ever measured, e.g. E4's own +1.4-1.9%,
+F103). It does **not** touch, re-open, or change F107, D58, or any prior
+verdict — F107 is not edited, per the session prompt. It does not run
+`preflight()` or `run_confirm()` — neither is called anywhere in either
+script. Session 64 remains the single authorized reserved-year confirmation
+look (D51/D58), unaffected by this addendum either way.
+
+**What this session did not do.** Did not fit any model (`lightgbm` is
+never imported by either script — confirmed directly in the wiring script's
+own output). Did not compute any MAE, skill, or CV. Did not read a reserved-
+year row for any modelling purpose — Task 3's check is a pure arithmetic
+identity on already-committed columns, no fit, no score. Did not edit
+`scripts/session63_reserved_year_build.py`, `scripts/
+session62_reserved_confirm.py`, or any of the sessions 49/51/53/55 scripts —
+read/imported only. Did not modify, overwrite, or re-derive any committed
+`data/processed/*.csv` file — the join-function re-runs wrote to a scratch
+temp directory, never to a real path. Did not widen any tolerance or adjust
+the R-family formula to make its diff read as zero. Did not edit F107. Did
+not modify `SPEC.md`, `RESULTS.md`, or `STATUS.md`. Did not archive any
+DECISIONS entry. Nothing was committed.
