@@ -1198,3 +1198,63 @@ entry (this one, D60), and the overwritten `STATUS.md`. No file under
 is fit. Nothing is scored. `DECISIONS-archive.md` is not read in full —
 only through scripted and git checks, or by opening a single archived entry
 by number where a check needs its exact wording.
+
+---
+
+## 2026-09-23 — Session 68a decision: session 68 split in two, and the
+owner's gate rulings for the one verification recompute
+
+**D61. Recorded before any run in session 68a. It records the owner's own
+instructions; no code, data, model or figure is touched by this entry.**
+
+**D61.1 Session 68 (D60.1) is split in two.**
+- 68a: reproduction of the recorded results, plus a sample rebuild of
+  features from the raw GRIB;
+- 68b: the logic and leakage review of the core pipeline (the session-67
+  map, `notes/audit-session-67.md` section 3).
+
+D60.2's single permitted recompute takes place in 68a only. 68b does not
+recompute any spent-year figure.
+
+**D61.2 The sample rebuild.** It reads the local gitignored GRIB cache
+(`data/raw/grib/`, D47) read-only, and writes only inside a clean clone
+under `/tmp`. It builds data only: it fits nothing and scores nothing.
+
+**D61.3 68b's scope.** The 68b review covers the headline pipeline only:
+the scripts behind F16/F30/F47/F64/F82, F94 and F109, and their data
+builds. It does not cover the E1–E5 or combine experiment scripts. The
+reason: the one reserved-year look (F109) confirmed the chosen set, so a
+bug in an experiment script would have changed which features were chosen,
+not whether the confirmed set passes.
+
+**D61.4 Owner ruling at the 68a gate: D60.2 overrides the "no re-run"
+wording, for this one run only.** Session 68a's Step 0 gate found four
+texts whose plain wording forbids re-running a spent year:
+- D48.13 (archived): "No re-tuning, no feature/window/lapse-rate change,
+  no re-run, no retroactive adjustment, whatever the result."
+- F94: "no re-tuning, no re-run, no retroactive adjustment."
+- D51: "evaluated on 2024-25 exactly once, and that result stands as
+  reported."
+- SPEC 8.4: "run once, and only once, against the reserved year" (a
+  description of what happened, but worded the same way).
+
+The owner rules that D60.2 overrides these four texts as an exception. The
+exception covers **one verification run, in session 68a only**. It is not
+a new look and not a verdict. **No verdict, claim or figure on record
+changes, whatever the run shows.** A mismatch is reported as a must-fix
+finding for triage, never used to revise a result. The four texts
+themselves are not edited; they stand as written for every other purpose.
+
+**D61.5 Owner ruling: D60.2's coverage is extended to the minimal method.**
+D60.2 named only 2025-26 (F94) and 2024-25 (F109). By owner decision, the
+same one verification run also covers the five minimal-method test scripts
+(`session07_test.py`, `session13_test.py`, `session18_test.py`,
+`session24_test.py`, `session29_test.py` — F16, F30, F47, F64, F82), on the
+same terms as D61.4. Their locks (D21.10, D31.10, D35.10, D39.10, D44.10)
+forbid only "a quiet re-run" in response to a disappointing result; this
+run is announced here in advance and cannot change any verdict.
+
+**D61.6 This session's archive step.** Session 68a may write only three
+files (the report, this entry, and STATUS.md). By owner ruling, the
+CLAUDE.md end-of-session archive move is skipped this session; any archive
+candidates are listed in `notes/audit-session-68a.md` for triage instead.
