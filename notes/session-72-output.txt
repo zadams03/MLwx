@@ -1,0 +1,459 @@
+SESSION 72 OUTPUT — clean-room rebuild of F109 at RNO, part 1 of 2 (data). DECISIONS D64, F112.
+Run date 2026-09-23. No model fit. No MAE, skill, error or verdict figure computed.
+
+================ STEP 0: D64 appended to DECISIONS.md verbatim (next free D number; D64 and F112 free in both files) ================
+
+STEP 1 — THE RECIPE FOR RNO, FROM THE DOCS ONLY
+(Sources: CLAUDE.md, SPEC.md, DECISIONS.md, DECISIONS-archive.md, and raw
+files under data/raw/ with their sidecars. Nothing under scripts/,
+data/processed/ or notes/ was opened.)
+
+A. Observations and target
+ A1. Source: IEM ASOS download, station code RNO, routine reports only
+     (report_type=3). SPEC 3.1, 3.4. Committed raw chunks:
+     data/raw/iem_asos_RNO_{2021-03-24_2021-12-31, 2022, 2023, 2024,
+     2025, 2026-01-01_2026-07-31}_routine.csv; each sidecar gives the
+     exact URL and pull time (2026-08-19 UTC).
+ A2. Truth field: tmpc (air temperature, degC). Sidecar notes; F76.
+     "M" means missing. No unit conversion.
+ A3. Target hour: 20:00 UTC (SPEC 3.4, 4.1, D42). RNO reports at :55
+     (SPEC 3.4, F66, F76), so the expected pairing is the 19:55 report,
+     offset -5 min (D44.7, F78).
+ A4. Pairing rule: the NEAREST routine report to 20:00 UTC; if none is
+     within 15 minutes, the day is dropped and counted (SPEC 4.5, D14).
+     New code must pick the nearest explicitly (SPEC 4.5 last paragraph,
+     SPEC 8.7 item 1). Non-finite values rejected at load (SPEC 8.7 item 2).
+ A5. What is predicted: residual = observed - forecast, where forecast is
+     the elevation-adjusted GRIB 2 m temperature (SPEC 4.2, D48.1).
+
+B. Baseline features B (SPEC 7.2, 8.2, D48.2-D48.5, F89, F90)
+ B1. Source: GFS 0.25 deg GRIB2, AWS noaa-gfs-bdp-pds, byte-range fetched
+     per message (D48.5). For B, the existing gitignored cache
+     data/raw/grib/ (session 37 pull for 2021-03-24..2025-07-31) is used
+     (D64.6), with the committed manifests data/raw/diagnostics/session37/.
+ B2. Cycle and lead: run on day D-1, cycle floor(20/6)*6 = 18z, forecast
+     hour 24 + (20 mod 6) = f026 (SPEC 7.2, D48.2, F89).
+ B3. Fields: TMP:2 m above ground; TCDC:entire atmosphere; UGRD and
+     VGRD:10 m above ground (F90, D48.4).
+ B4. Point: bilinear interpolation (four surrounding 0.25 deg points) to
+     RNO's established grid point 39.537918, -119.765625 (SPEC 3.4, 7.2,
+     D48.2, D48.5), longitudes handled in 0-360 form (F89's bug note).
+ B5. Temperature: K -> degC, then the fixed elevation adjustment,
+     corrected = raw + (orog - grid_elev)/1000 * 7.429 (D48.3). RNO's
+     constant: +2.0436 degC (SPEC 5.2; correction_c in
+     data/raw/diagnostics/session37/session37_elevation_correction_params.csv).
+     This is `temperature_grib_c` and is also the raw-GFS rung (SPEC 5.2,
+     D48.10).
+ B6. Cloud cover: TCDC as GRIB reports it, percent, uncorrected (D48.5).
+ B7. Wind: sqrt(U^2 + V^2) at 10 m, m/s * 3.6 -> km/h (D48.4, F90).
+ B8. Season: season_sin = sin(2*pi*yf), season_cos = cos(2*pi*yf),
+     yf = (day_of_year - 1)/365, or /366 in a leap year (D21.3, D48.4).
+
+C. The four added features (SPEC 8.1, 8.2, D58 item 3, F98, F100-F102,
+   F107, F111.2). All from the same GRIB source, same run (D-1 18z),
+   bilinear to the same grid point, NO elevation correction on any of them
+   (F98, F111.2). Intermediates stored at 3 decimals, SPFH at 6 (F111.4).
+ L. TMP at 925, 850, 700 mb, f026, K -> degC (t925, t850, t700).
+    t2m_raw = round(temperature_grib_c - correction_c, 3) (F98 decision 2,
+    F111.2). lapse_rate_t2_t850 = round(t2m_raw - t850, 3) (F111.2).
+    No transform (SPEC 8.1).
+ D. RH, DPT, SPFH at 2 m, f026; DPT K -> degC (F111.2).
+    dewpoint_depression_t2m = round(t2m_raw - dew_point_2m, 3) (F100,
+    F108, F111.2). Transform at model time:
+    dewpoint_depression_t2m_floored = max(dewpoint_depression_t2m, 0)
+    (SPEC 8.1, D53, D58 item 3).
+ T. PRMSL and PRES:surface at f026, and PRMSL at f023 (lead - 3) from the
+    same run; Pa -> hPa, rounded to 3 decimals; pressure_tendency_3h_hpa =
+    round(pressure_msl_hpa - pressure_msl_lead_minus3_hpa, 3) (F101,
+    F111.2). No transform.
+ R. DSWRF:surface. At RNO (lead 26) the f026 "24-26 hour ave fcst" message
+    already is the 2-hour window ending at 20:00 UTC and is used directly
+    (SPEC 8.2, F102). dswrf_2h_wm2 = that average, W m-2. No second
+    message; dswrf_ave_to_lead_minus2_wm2 is blank by recipe at RNO (F107).
+    NCEP codes DSWRF as parameter 0/4/192 in these files (F111.4).
+
+D. Windows and complete-case rule (SPEC 8.3, D58 items 4, 5, 6; D64.2)
+ D1. Train 2021-03-24 .. 2024-07-31; test 2024-08-01 .. 2025-07-31.
+ D2. Complete-case set: a row is used only if every relevant column has a
+     value; built over B's columns plus the columns behind D (raw
+     dewpoint_depression_t2m), L, R, T (SPEC 8.3, D58 item 5). A row also
+     needs its paired observation to be trained or scored (F109's
+     no_obs_dropped).
+ D3. The model rungs (raw GFS, B, B+D,L,R,T) are scored on the same rows
+     (F109 table).
+
+E. Persistence (SPEC 8.5, D58 item 6, D21.8, D48.9)
+ E1. Persistence forecast for day D = the previous calendar day's paired
+     20:00 UTC observation (same pairing rule). Past only (SPEC 2.1d). It
+     may reach across the train/test boundary (D48.9).
+ E2. Day basis: scored only on test days that have a previous-day
+     observation (SPEC 8.5, F109's n_persist = n_final - no_prev).
+
+GAPS AND AMBIGUITIES (docs silent or unclear) — choice made, alternatives
+ G1. Nearest-report tie. SPEC 4.5 names no tie-break when two reports are
+     equally near (e.g. 19:50 and 20:10). Choice: take the earlier report,
+     and count ties. Alternative: the later report, or drop the day. F78
+     found zero days with >1 report in the window at RNO, so probably moot.
+ G2. Report with no temperature. SPEC 4.5 says "nearest routine report";
+     D62 speaks of "usable reports". Choice: choose the nearest report that
+     has a finite tmpc. Alternative: take the nearest report whatever its
+     value, and drop the day if its tmpc is missing. The build counts
+     days where the two readings differ.
+ G3. Window edge. "Within 15 minutes" — choice: |offset| <= 15 min,
+     inclusive. Alternative: strictly less than 15. Only a report at
+     exactly :45 or :15 could be affected.
+ G4. B's stored precision is not stated anywhere in the docs
+     (temperature_grib_c, cloud_cover_grib_pct, wind_speed_grib_kmh).
+     Choice: keep full float precision in the table, and add 3-decimal
+     columns beside them. t2m_raw is computed from the 3-decimal
+     temperature_grib_c (the recipe "round(temperature_grib_c -
+     correction_c, 3)" implies a stored value). Alternative: compute
+     t2m_raw from the full-precision value; that column is also kept
+     (t2m_raw_from_full), so session 73 can compare both.
+ G5. The RNO constant. D48.3's formula gives 275.08/1000*7.429 =
+     2.04356932; SPEC 5.2 and the params CSV give 2.0436. Choice: 2.0436
+     (the CSV value, which F107/F111 say the pipeline reads).
+     Alternative: the unrounded 2.04356932.
+ G6. "Bilinear". SPEC 7.2's plain gloss says "weighted by distance", which
+     could be read as inverse-distance weighting. Choice: standard
+     bilinear on the regular lat/lon grid (weights from the fractional
+     position in each axis), as D48.5/F89 describe. Alternative:
+     inverse-distance weights.
+ G7. Rounding of derived L and D values. The docs write round(t2m_raw -
+     t850, 3) and round(t2m_raw - dew_point_2m, 3) but do not say whether
+     t850 and dew_point_2m are rounded first. Choice: use the stored
+     3-decimal intermediates (F100 and F108 found the stored identity
+     holds exactly on every row using the stored intermediates, which is
+     what derivation from rounded values produces). Alternative: use
+     unrounded intermediates, then round.
+ G8. Rounding of wind speed, cloud cover and season terms: not stated.
+     Choice: full precision (plus 3-decimal columns for B's GRIB values).
+ G9. Unit conversions: K -> degC is taken as minus 273.15 (not stated
+     numerically in the docs). Pa -> hPa as divide by 100 (F111.2).
+ G10. TCDC has two "entire atmosphere" messages in some files (F97 notes
+     both instantaneous and averaged variants exist for cloud-layer
+     fields). B uses the cached message chosen in session 37; the build
+     decodes and reports its step type, so the choice is visible, not
+     assumed.
+ G11. Day list. The committed pipelines built L/D/T/R only on dates the
+     B dataset carries (F98, F107). Choice: build every calendar day in
+     both windows and leave a missing input missing; so the one B gap
+     (2022-11-30, F90) shows as a blank row, not an absent one.
+ G12. Complete-case scope in the TRAIN window, and whether observations
+     are part of "every relevant column". Choice: report both counts —
+     feature complete-case (D58 item 5's own count) and feature + target
+     complete-case (F109's n_train/n_test).
+ G13. Messages with a mismatched .idx (F90's 2022-11-29 18z f026 case):
+     the recipe drops and counts them (SPEC 2.2). Choice: the same.
+
+================ STEP 2: PLAN (scripts/session72_ldtr_pull.py --plan) ================
+target days: 2021-03-24 .. 2025-07-31 = 1591
+messages per day: 10  ->  total messages: 15,910
+.idx files per day: 2  ->  total .idx files: 3,182
+average message size at RNO (session 71 manifest, 9 samples each):
+  f026 TMP    925 mb             26 hour fcst              868,608 bytes
+  f026 TMP    850 mb             26 hour fcst              852,745 bytes
+  f026 TMP    700 mb             26 hour fcst              774,645 bytes
+  f026 RH     2 m above ground   26 hour fcst              790,378 bytes
+  f026 DPT    2 m above ground   26 hour fcst              579,195 bytes
+  f026 SPFH   2 m above ground   26 hour fcst            1,211,567 bytes
+  f026 PRMSL  mean sea level     26 hour fcst              953,477 bytes
+  f026 PRES   surface            26 hour fcst              839,141 bytes
+  f026 DSWRF  surface            24-26 hour ave fcst       808,398 bytes
+  f023 PRMSL  mean sea level     23 hour fcst              954,999 bytes
+estimated message bytes: 13,735,346,953  (~13.74 GB)
+expected by the session prompt: ~15,000 messages, ~13 GB
+difference: messages +6.1%, bytes +5.7%
+
+================ STEP 2: PULL (--pull --workers 32) ================
+pull start (UTC): 2026-09-23T21:02:24Z
+  100/1591 days  fetched=1154 cached=0 failures=0 elapsed=257s
+  200/1591 days  fetched=2159 cached=0 failures=0 elapsed=468s
+  300/1591 days  fetched=3128 cached=0 failures=0 elapsed=674s
+  400/1591 days  fetched=4137 cached=0 failures=0 elapsed=879s
+  500/1591 days  fetched=5135 cached=0 failures=0 elapsed=1086s
+  600/1591 days  fetched=6137 cached=0 failures=1 elapsed=1768s
+  700/1591 days  fetched=7120 cached=0 failures=10 elapsed=1977s
+  800/1591 days  fetched=8142 cached=0 failures=10 elapsed=2187s
+  900/1591 days  fetched=9112 cached=0 failures=10 elapsed=2387s
+  1000/1591 days  fetched=10150 cached=0 failures=10 elapsed=2590s
+  1100/1591 days  fetched=11106 cached=0 failures=10 elapsed=3624s
+  1200/1591 days  fetched=12124 cached=10 failures=10 elapsed=3827s
+  1300/1591 days  fetched=13087 cached=10 failures=10 elapsed=4002s
+  1400/1591 days  fetched=14111 cached=10 failures=10 elapsed=4195s
+  1500/1591 days  fetched=15109 cached=10 failures=10 elapsed=4376s
+  1591/1591 days  fetched=15890 cached=10 failures=10 elapsed=4518s
+pull end (UTC): 2026-09-23T22:17:42Z
+counters: {'fetched': 15890, 'msg_retries': 283, 'idx_retries': 27, 'skipped_cached': 10}
+failures logged: 10 -> data/raw/diagnostics/session72/session72_pull_failures.csv
+
+---- smoke test before the full pull: run 2024-07-30 (target 2024-07-31), 10 of 10 messages fetched, 0 failures (reused by the full pull as 'cached')
+
+---- failure log: data/raw/diagnostics/session72/session72_pull_failures.csv
+run_date,cycle,fhour,variable,level,target_date,reason
+2022-11-29,18,23,PRMSL,mean sea level,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,DPT,2 m above ground,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,DSWRF,surface,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,PRES,surface,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,PRMSL,mean sea level,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,RH,2 m above ground,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,SPFH,2 m above ground,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,TMP,700 mb,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,TMP,850 mb,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+2022-11-29,18,26,TMP,925 mb,2022-11-30,"RuntimeError(""failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a complete GRIB2 message)')"")"
+
+================ STEP 2: MANIFEST (--manifest) ================
+manifest rows (messages): 15,900  bytes: 13,753,987,417  .idx files: 3,182
+pull times (UTC): 2026-09-23T21:02:12Z .. 2026-09-23T22:17:42Z
+  f023 PRMSL  mean sea level     1,590
+  f026 DPT    2 m above ground   1,590
+  f026 DSWRF  surface            1,590
+  f026 PRES   surface            1,590
+  f026 PRMSL  mean sea level     1,590
+  f026 RH     2 m above ground   1,590
+  f026 SPFH   2 m above ground   1,590
+  f026 TMP    700 mb             1,590
+  f026 TMP    850 mb             1,590
+  f026 TMP    925 mb             1,590
+
+git check-ignore (cache, expect ignored):
+.gitignore:46:data/raw/grib	data/raw/grib/session72/gfs_20240730_t18z_f026_DSWRF_surface.grib2
+.gitignore:46:data/raw/grib	data/raw/grib/session72/gfs_20240730_t18z_f026.idx
+.gitignore:46:data/raw/grib	data/raw/grib/session72/gfs_20240730_t18z_f026.idx.meta.txt
+exit 0
+git check-ignore (manifest + failure log, expect NOT ignored):
+exit 1
+
+================ STEP 3: BUILD (scripts/session72_build.py) ================
+RNO correction_c (params CSV): 2.0436  (D48.3 formula would give 2.04356932)
+grid weights: {'i0': 960, 'fx': 0.9375, 'lat_lo': 39.5, 'fy': 0.1516719999999907, 'j_lo': 202}  points(j,i,w): [(202, 960, 0.05302050000000058), (202, 961, 0.7953075000000087), (201, 960, 0.009479499999999419), (201, 961, 0.14219249999999128)]
+observation files: 5  rows: 41,756  no temperature: 1  duplicate timestamps: 0
+report minutes: {48: 1, 52: 2, 53: 1, 55: 41752}
+wrote 1591 / 1591 / 1591 rows to data/rebuild/session72
+missing-input reasons (row count):
+      1  B tcdc: file or sidecar absent
+      1  B tmp2m: file or sidecar absent
+      1  B u10: file or sidecar absent
+      1  B v10: file or sidecar absent
+      1  dpt2m: not in pull manifest (failed or not pulled)
+      1  dswrf: not in pull manifest (failed or not pulled)
+      1  pres_sfc: not in pull manifest (failed or not pulled)
+      1  prmsl: not in pull manifest (failed or not pulled)
+      1  prmsl_m3: not in pull manifest (failed or not pulled)
+      1  rh2m: not in pull manifest (failed or not pulled)
+      1  spfh2m: not in pull manifest (failed or not pulled)
+      1  t700: not in pull manifest (failed or not pulled)
+      1  t850: not in pull manifest (failed or not pulled)
+      1  t925: not in pull manifest (failed or not pulled)
+
+=== COUNTS PER TABLE AND WINDOW ===
+
+[observations] window=train rows=1226
+  missing report_time_utc                      3
+  missing offset_min                           3
+  missing obs_c                                3
+  missing n_reports_in_window                  0
+  missing n_usable_in_window                   0
+  missing tie                                  0
+  missing nearest_any_differs                  0
+  missing pair_status                          0
+  missing forecast_c                           1
+  missing residual_c                           4
+
+[observations] window=test rows=365
+  missing report_time_utc                      0
+  missing offset_min                           0
+  missing obs_c                                0
+  missing n_reports_in_window                  0
+  missing n_usable_in_window                   0
+  missing tie                                  0
+  missing nearest_any_differs                  0
+  missing pair_status                          0
+  missing forecast_c                           0
+  missing residual_c                           0
+
+[features] window=train rows=1226
+  missing t2m_grib_uncorrected_c_full          1
+  missing temperature_grib_c_full              1
+  missing temperature_grib_c                   1
+  missing cloud_cover_grib_pct_full            1
+  missing cloud_cover_grib_pct                 1
+  missing u10_ms_full                          1
+  missing v10_ms_full                          1
+  missing wind_speed_grib_kmh_full             1
+  missing wind_speed_grib_kmh                  1
+  missing season_sin                           0
+  missing season_cos                           0
+  missing t2m_raw                              1
+  missing t2m_raw_from_full                    1
+  missing t925                                 1
+  missing t850                                 1
+  missing t700                                 1
+  missing lapse_rate_t2_t850                   1
+  missing relative_humidity_2m                 1
+  missing dew_point_2m                         1
+  missing specific_humidity_2m                 1
+  missing dewpoint_depression_t2m              1
+  missing dewpoint_depression_t2m_floored      1
+  missing pressure_msl_hpa                     1
+  missing pressure_surface_hpa                 1
+  missing pressure_msl_lead_minus3_hpa         1
+  missing pressure_tendency_3h_hpa             1
+  missing dswrf_ave_to_lead_wm2                1
+  missing dswrf_2h_wm2                         1
+  missing raw_gfs_rung_c                       1
+  (dswrf_ave_to_lead_minus2_wm2 blank by recipe: 1226)
+
+[features] window=test rows=365
+  missing t2m_grib_uncorrected_c_full          0
+  missing temperature_grib_c_full              0
+  missing temperature_grib_c                   0
+  missing cloud_cover_grib_pct_full            0
+  missing cloud_cover_grib_pct                 0
+  missing u10_ms_full                          0
+  missing v10_ms_full                          0
+  missing wind_speed_grib_kmh_full             0
+  missing wind_speed_grib_kmh                  0
+  missing season_sin                           0
+  missing season_cos                           0
+  missing t2m_raw                              0
+  missing t2m_raw_from_full                    0
+  missing t925                                 0
+  missing t850                                 0
+  missing t700                                 0
+  missing lapse_rate_t2_t850                   0
+  missing relative_humidity_2m                 0
+  missing dew_point_2m                         0
+  missing specific_humidity_2m                 0
+  missing dewpoint_depression_t2m              0
+  missing dewpoint_depression_t2m_floored      0
+  missing pressure_msl_hpa                     0
+  missing pressure_surface_hpa                 0
+  missing pressure_msl_lead_minus3_hpa         0
+  missing pressure_tendency_3h_hpa             0
+  missing dswrf_ave_to_lead_wm2                0
+  missing dswrf_2h_wm2                         0
+  missing raw_gfs_rung_c                       0
+  (dswrf_ave_to_lead_minus2_wm2 blank by recipe: 365)
+
+[persistence] window=train rows=1226
+  missing prev_report_time_utc                 4
+  missing persistence_c                        4
+
+[persistence] window=test rows=365
+  missing prev_report_time_utc                 0
+  missing persistence_c                        0
+
+=== COMPLETE-CASE ROW COUNTS ===
+window=train: days=1226  B complete=1225  B+D,L,R,T complete=1225  dropped vs B-only mask=0  + observation=1222  + persistence=1219
+    no observation among feature-complete rows: 3  -> dates: ['2021-05-02', '2021-05-03', '2024-03-21']
+    no previous-day observation among those: 3
+    feature-incomplete dates: ['2022-11-30']
+window=test: days=365  B complete=365  B+D,L,R,T complete=365  dropped vs B-only mask=0  + observation=365  + persistence=365
+    no observation among feature-complete rows: 0  -> dates: []
+    no previous-day observation among those: 0
+    feature-incomplete dates: []
+
+=== PAIRING DETAIL ===
+window=train: paired=1223  unpaired=3  offsets={-5: 1223, None: 3}
+    unpaired dates: ['2021-05-02', '2021-05-03', '2024-03-21']
+    days with >1 report in the 15-min window: 0  ties: 0  days where nearest-any-report reading differs (G2): 0
+window=test: paired=365  unpaired=0  offsets={-5: 365}
+    unpaired dates: []
+    days with >1 report in the 15-min window: 0  ties: 0  days where nearest-any-report reading differs (G2): 0
+
+whole-hour coverage 2021-03-24 00:00 .. 2025-07-31 23:00: expected=38,184 usable=38,085 missing=99
+
+================ STEP 3: RANGE CHECKS (no score) ================
+sanity ranges on the rebuilt feature table (both windows unless stated; no score):
+  temperature_grib_c           n=1590 min=-4.984 mean=17.976 max=38.267
+  t2m_raw                      n=1590 min=-7.028 mean=15.932 max=36.223
+  t925                         n=1590 min=-2.282 mean=20.529 max=40.317
+  t850                         n=1590 min=-6.611 mean=15.872 max=35.501
+  t700                         n=1590 min=-17.506 mean=2.608 max=18.828
+  lapse_rate_t2_t850           n=1590 min=-1.872 mean=0.060 max=1.246
+  dew_point_2m                 n=1590 min=-20.768 mean=-4.008 max=10.087
+  dewpoint_depression_t2m      n=1590 min=0.009 mean=19.940 max=43.853
+  pressure_tendency_3h_hpa     n=1590 min=-6.923 mean=-2.373 max=5.141
+  dswrf_2h_wm2                 n=1590 min=25.624 mean=723.176 max=1031.101
+  cloud_cover_grib_pct         n=1590 min=0.000 mean=40.049 max=100.000
+  wind_speed_grib_kmh          n=1590 min=0.283 mean=11.995 max=55.188
+  floor changes (dewpoint_depression_t2m < 0): 0
+  rows where t2m_raw (from 3-dp) != t2m_raw_from_full (gap G4): 655
+  train-window means: t2m_raw=15.93 t925=20.53 lapse=0.05 (F98 v16-window RNO means: t2m_raw 16.18, t925 20.79, lapse 0.05)
+  test-window means: t2m_raw=15.94 t925=20.52 (F107 reserved-year RNO means: t2m_raw 15.94, t925 20.52)
+
+DOC-COUNT COMPARISON (counts stated in the docs only; no committed data
+file was opened to compare)
+
+count                                           docs                          rebuild                        source         result
+obs days unpaired, train 2021-03-24..2024-07-31 3: 2021-05-02, 05-03,         3: same three dates            F77, F78       AGREE
+                                                2024-03-21
+obs days unpaired, test 2024-08-01..2025-07-31  0                             0                              F77, F109      AGREE
+pairing offset of every paired day              -5 min, no variation          -5 min on 1,223 + 365 days     F78, D44.7     AGREE
+days with >1 report inside the 15-min window    0                             0 (train and test)             F78            AGREE
+report with no temperature                      1 (2021-11-26 08:55 UTC)      1 (2021-11-26 08:55 UTC)       F76            AGREE
+whole-hour coverage 2021-03-24..2025-07-31      38,184 expected, 38,085       38,184 / 38,085 / 99           F76            AGREE
+                                                usable, 99 missing
+report-minute spread                            :48x1 :52x2 :53x2 :55x46,831  :48x1 :52x2 :53x1 :55x41,752   F76            NOT COMPARABLE
+                                                (to 2026-07-31)               (files to 2025-12-31 only)
+B GRIB gap at RNO                               1 day, 2022-11-30 (bad idx,   1 day, 2022-11-30 (cache has   F90            AGREE
+                                                run 2022-11-29 18z f026)      no file for that run)
+full v16 window joined rows (train+test here)   1,587                         1,222 + 365 = 1,587            D48.7, F91     AGREE
+train feature rows (L/D/T/R files)              1,225 (of 1,226 dates)        1,225                          F98, F102,D58  AGREE
+train complete-case, dropped vs B-only mask     1,225, 0 dropped              1,225, 0 dropped               D58 items 5,9  AGREE
+test complete-case feature rows                 365                           365                            F107, SPEC 8.3 AGREE
+n_train (features + observation)                1,222                         1,222                          F109           AGREE
+n_test                                          365                           365                            F109           AGREE
+no_obs_dropped (test)                           0                             0                              F109           AGREE
+no_prev / persistence day count (test)          0 / 365                       0 / 365                        F109, SPEC 8.5 AGREE
+rows changed by D's floor at RNO                0 (the only one is DSM        0                              F100, D58      AGREE
+                                                2024-01-26)
+reserved-year means, RNO (values, not counts)   t2m_raw 15.94, t925 20.52     15.94, 20.52                   F107           AGREE
+v16-window means, RNO                           t2m_raw 16.18, t925 20.79,    train only: 15.93, 20.53,      F98            NOT COMPARABLE
+                                                lapse 0.05                    lapse 0.05                     (F98's span includes the sealed year)
+
+Agreements: 17. Differences: 0. Not comparable (different spans): 2.
+
+The pull's own failure: the same run F90 found broken (2022-11-29 18z) fails
+here for all 10 L/D/T/R messages, the f023 PRMSL message included, with the
+same cause ("bad magic markers"). Dropped and counted (SPEC 2.2).
+
+================ READ LOG ================
+READ LOG (every file opened, in order; directory listings noted)
+1. CLAUDE.md (auto-loaded at session start)
+2. docs/session-72.md
+3. SPEC.md (full)
+4. STATUS.md (full)
+5. DECISIONS.md (full)
+6. DECISIONS.md, DECISIONS-archive.md (grep for highest D/F numbers)
+7. DECISIONS-archive.md (ranges: D14, D15, D21, F66, F76-F78, D44.7, F89, F90, F91 start + Task 2, D48, F97, F98, D52, F100 start, D53, F101 start, F102, D58, F107, F108, F109; greps for column names / rounding)
+8. [listing only] data/raw/, data/raw/diagnostics/, data/raw/grib/ (top of listing)
+9. data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv + .meta.txt (head, line count)
+10. data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv + .meta.txt (head, line count)
+11. [listing only] data/raw/ (RNO files), data/raw/diagnostics/, data/raw/grib/ (count), data/raw/diagnostics/session37, session40, session71
+12. data/raw/diagnostics/session37/session37_elevation_correction_params.csv
+13. data/raw/grib/gfs_20240731_t18z_f026_tmp2m.grib2.meta.txt; data/raw/grib/gfs_20240731_t18z_f026_tcdc.grib2.meta.txt
+14. data/raw/diagnostics/session37/session37_pull_manifest.csv (head, grep counts); data/raw/diagnostics/session40/session40_pull_manifest.csv (head); data/raw/diagnostics/session37/session37_pull_failures.csv (head)
+15. data/raw/diagnostics/session71/session71_pull_manifest.csv (head; RNO message sizes, used for the size estimate); [listing only] data/raw/grib/session71/ (head)
+16. .venv (import check only: eccodes, requests, numpy; lightgbm import failed on libomp and is not needed this session)
+17. Decoded GRIB headers: data/raw/grib/gfs_20240731_t18z_f026_{tcdc,tmp2m,ugrd10m}.grib2; data/raw/grib/session72/gfs_20240730_t18z_f026_DSWRF_surface.grib2, ..._f023_PRMSL_msl.grib2
+18. .gitignore (only through git check-ignore)
+19. Written by this session and then read: scripts/session72_ldtr_pull.py, scripts/session72_build.py
+20. Read by scripts/session72_ldtr_pull.py: data/raw/grib/session72/* (idx, messages, sidecars); session71 manifest (--plan only)
+21. Read by scripts/session72_build.py: the five RNO routine chunk files 2021..2025 (the 2026 file and the candidate file were NOT opened); session37 params CSV; data/raw/grib/gfs_<run>_t18z_f026_{tmp2m,tcdc,ugrd10m,vgrd10m}.grib2 + .meta.txt for runs 2021-03-23..2025-07-30; data/raw/grib/session72/* and data/raw/diagnostics/session72/session72_pull_manifest.csv
+22. data/rebuild/session72/rno_features.csv (this session's own output; range checks)
+23. grep of the five RNO routine chunk files for 'M' temperatures and off-minute reports
+24. (end of session) DECISIONS.md, STATUS.md, SPEC.md, CLAUDE.md, DECISIONS-archive.md re-read for the consistency check
+
+NOT opened at any point: anything under scripts/ other than the two new session72 files; anything under data/processed/; anything under notes/ (written to, not read); no git command was used to view those paths.
+Order note: docs/session-72.md was read before SPEC/STATUS/DECISIONS, not after as CLAUDE.md asks. It had no effect on the work; it is reported for completeness.
+
+================ END OF SESSION ================
+Consistency check (report only): no duplicate headings in SPEC.md, STATUS.md, DECISIONS.md or CLAUDE.md. DECISIONS.md live entries are in order (... D63, F111, D64, F112). Items reported to the owner, none fixed:
+ - RNO's constant appears in three forms: +2.044 (D48.3 table), +2.0436 (SPEC 5.2, params CSV), 2.04356932 (D48.3 formula). Gap G5.
+ - SPEC 7.2's plain gloss for "bilinear" ("weighted by distance") can be read as inverse-distance weighting. Gap G6.
+ - No doc states B's stored precision (gap G4); it changes t2m_raw by 0.001 on 655 of 1,590 rows.
+ - Pre-existing, unchanged: D17/F7 sit before later-dated entries (kept live on purpose, D46); D47 has no dated header of its own.
+Archive step (D46): nothing moved. No entry became settled this session; D64 and F112 are live for session 73, and F112 cites F111's recipe.
+git status --porcelain: M DECISIONS.md, M STATUS.md; untracked: data/raw/diagnostics/session72/, data/rebuild/, docs/session-72.md, notes/session-72-output.txt, scripts/session72_build.py, scripts/session72_ldtr_pull.py. .grib2 untracked or staged: 0. Deleted: 0. Staged: 0.

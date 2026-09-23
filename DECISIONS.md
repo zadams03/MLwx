@@ -1256,3 +1256,171 @@ not changed. The new files are:
 - the gitignored cache.
 
 Nothing was committed.
+
+---
+
+## 2026-09-23 — Session 72 decision: pre-registration of the clean-room F109 rebuild at RNO
+
+**D64. Pre-registration: clean-room end-to-end rebuild of F109 at RNO
+(sessions 72–73). Owner decision, planning chat.**
+
+**D64.1 Purpose and status.** A verification only. It re-implements the
+F109 pipeline at RNO from the documentation and compares every stage with
+the record. **It cannot change any verdict, claim or figure on record**
+(same standing as D61.4's verification re-runs). The reserved year
+(2024-08-01 to 2025-07-31) stays spent; its observations are read and it
+is scored only to reproduce F109, never to select, tune or decide
+anything.
+
+**D64.2 The target.** SPEC 8: RNO, `B+D,L,R,T`, train 2021-03-24 to
+2024-07-31, test 2024-08-01 to 2025-07-31, the frozen LightGBM settings
+(D21.4/D48.6), the complete-case rule (8.3), and the three rungs raw GFS
+(elevation-adjusted GRIB, 5.2), persistence (on its pre-registered day
+basis, 8.5) and the model. Recorded values: F109 (RNO raw GFS 1.6135,
+persistence 2.7563, B 1.4272, B+D,L,R,T 1.2742) and the committed files
+they come from.
+
+**D64.3 Clean-room rule.** The rebuild code is written from CLAUDE.md,
+SPEC.md, DECISIONS.md, DECISIONS-archive.md and raw data only (the files
+under `data/raw/`, their sidecars, and the GRIB cache). Until session 73's
+comparison step it must not read, import or copy anything under
+`scripts/`, `data/processed/` or `notes/`, and must not use git to view
+them. Every file opened is logged. Where the docs are silent or ambiguous,
+the session records the gap as a finding, states the choice it made and the
+alternatives, and continues; it stops only if no reasonable reading exists.
+A documentation gap is itself a result of this check.
+
+**D64.4 Match rule.** Exact at the recorded precision, stage by stage:
+observations and targets, pairing and day set, each feature column, the
+complete-case row set and counts, raw GFS and persistence values, model
+predictions (where recorded), and each MAE (at F109's 4 decimals). No
+tolerance. If every input matches but the fitted model's output does not,
+that is reported as a separate category (fit determinism), not as a data
+error.
+
+**D64.5 On a mismatch.** Report it in full. Nothing is fixed, re-run to
+pass, or tuned in sessions 72–73. The owner triages any mismatch in a later
+session.
+
+**D64.6 Raw inputs.** Observations: the committed raw files. B: the
+existing GRIB cache (bytes already verified, D62.1, F111). L, D, T, R: a
+full re-pull for RNO's training and test windows, since their bytes were
+never kept (A68a-01); kept in the gitignored cache with a committed
+manifest (D47, SPEC 2.3).
+
+---
+
+## 2026-09-23 — Session 72 finding: clean-room rebuild of F109 at RNO, part 1 (data)
+
+**F112. Network and offline build, under D64. No model was fit and nothing
+was scored. RNO's observation, feature and persistence tables were rebuilt
+from the docs and raw data alone. Every row count the docs state agrees
+with the rebuild (17 agreements, 0 differences, 2 not comparable). Full real
+output, including the read log: `notes/session-72-output.txt`.**
+
+**F112.1 The recipe, with sources** (written out in full in the output
+file, Step 1):
+- Observations: IEM routine reports (`report_type=3`), field `tmpc`, the
+  five committed RNO chunk files for 2021–2025 (SPEC 3.1, 3.4). Target
+  20:00 UTC. The nearest usable report within 15 minutes, chosen
+  explicitly (SPEC 4.5, 8.7 item 1, D14). Residual = observed −
+  `temperature_grib_c` (SPEC 4.2, D48.1).
+- B: GRIB run of day D−1, 18z, f026 (SPEC 7.2, D48.2). TMP 2 m, TCDC
+  entire atmosphere, UGRD/VGRD 10 m from the session 37 cache (D64.6).
+  Bilinear to the SPEC 3.4 grid point 39.537918, −119.765625. Temperature
+  K → °C plus RNO's constant +2.0436 (D48.3, SPEC 5.2); this is also the
+  raw-GFS rung. Wind = √(U²+V²) × 3.6. Season terms per D21.3/D48.4.
+- L: TMP 925/850/700 mb; `t2m_raw = round(temperature_grib_c −
+  correction_c, 3)`; `lapse_rate_t2_t850 = round(t2m_raw − t850, 3)` (F98,
+  F111.2).
+- D: RH, DPT, SPFH at 2 m; `dewpoint_depression_t2m = round(t2m_raw −
+  dew_point_2m, 3)`, floored at 0 at model time (SPEC 8.1, F100, D53).
+- T: PRMSL and PRES:surface at f026 and PRMSL at f023; Pa → hPa, 3
+  decimals; tendency = difference of the rounded PRMSL values (F101,
+  F111.2).
+- R: the f026 DSWRF 24–26 h average, used directly at RNO (SPEC 8.2,
+  F102).
+- Windows: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31;
+  complete-case over B's columns plus the columns behind D, L, R and T
+  (SPEC 8.3, D58 items 4–5). Persistence: the previous calendar day's
+  paired observation, scored only on test days that have one (SPEC 8.5,
+  D58 item 6).
+
+**F112.2 Documentation gaps, and the choice made.** The docs were enough
+to build everything; no step had to stop. Thirteen gaps were recorded
+(G1–G13 in the output file). The ones that matter:
+- **G4, B's stored precision is not stated anywhere.** The recipe says
+  `t2m_raw = round(temperature_grib_c − correction_c, 3)`, which implies a
+  stored `temperature_grib_c`, but no doc gives its decimals. Choice: round
+  `temperature_grib_c` to 3 decimals first. **This choice changes
+  `t2m_raw` by 0.001 on 655 of 1,590 rows** against using the
+  full-precision value, and so changes L and D on those rows. Both
+  versions are kept (`t2m_raw`, `t2m_raw_from_full`) for session 73.
+- **G5, RNO's constant.** D48.3's formula gives 2.04356932; SPEC 5.2 and
+  the params CSV give 2.0436. Choice: 2.0436.
+- **G7, rounding order for L and D.** The docs do not say whether `t850`
+  and `dew_point_2m` are rounded before the subtraction. Choice: rounded
+  first (F100 and F108's stored-column identity checks imply this).
+- **G6, "bilinear".** SPEC 7.2's plain gloss ("weighted by distance")
+  could be read as inverse-distance weighting. Choice: standard bilinear
+  on the regular grid (D48.5, F89).
+- G1 (tie-break), G2 (nearest report vs nearest usable report) and G3
+  (15-minute edge) turned out moot at RNO: 0 days had more than one
+  report in the window, and 0 days differ between the two G2 readings.
+- G10, which TCDC message: the cached B message decodes as instantaneous,
+  step 26, so the choice is visible in the data, not assumed.
+- G8/G9: precision of wind, cloud and season terms not stated (kept at
+  full precision, plus 3-decimal columns for B's GRIB values); K → °C
+  taken as −273.15.
+
+**F112.3 The pull.** New script `scripts/session72_ldtr_pull.py`.
+- Planned: 1,591 target days × 10 messages = **15,910 messages** and 3,182
+  `.idx` files; estimate 13.74 GB (prompt expected ~15,000 and ~13 GB:
+  +6.1% and +5.7%).
+- Saved: **15,900 messages, 13,753,987,417 bytes**, and 3,182 `.idx`
+  files, each with a `.meta.txt` sidecar (URL, byte range, pull time,
+  size, SHA-256), in the gitignored `data/raw/grib/session72/`. Pulled
+  **2026-09-23 21:02:12Z to 22:17:42Z UTC**. 283 message and 27 `.idx`
+  first attempts failed and then succeeded on their one retry.
+- **10 failures, all one run: 2022-11-29 18z (target 2022-11-30)**, every
+  L/D/T/R message including f023 PRMSL, each "bad magic markers" twice.
+  This is the same run F90 found broken for B. Dropped and counted.
+- Committed: `data/raw/diagnostics/session72/session72_pull_manifest.csv`
+  (15,900 rows) and `session72_pull_failures.csv` (10 rows).
+  `git check-ignore`: the cache is ignored; the manifest and failure log
+  are not (exit code 1).
+
+**F112.4 The build.** New script `scripts/session72_build.py`, offline,
+importing no other project script. It checks every new message's
+SHA-256 against the manifest, the size and markers of every cached B
+message, and each message's parameter code, level, step and full run and
+validity date and hour. Outputs in `data/rebuild/session72/`:
+`rno_observations.csv`, `rno_features.csv`, `rno_persistence.csv`, 1,591
+rows each (1,226 train, 365 test).
+- Train: B complete 1,225 (missing 2022-11-30 only); B+D,L,R,T complete
+  1,225, **0 dropped against the B-only mask**; with an observation
+  **1,222** (no report near 20:00 on 2021-05-02, 2021-05-03, 2024-03-21).
+- Test: 365 complete, 365 with an observation, **365 with a previous-day
+  observation**.
+- Every paired day is at −5 minutes. D's floor changes 0 rows at RNO.
+
+**F112.5 Doc-count comparison.** All 17 comparable figures agree: F77's
+three unpaired days and their dates, F76's whole-hour coverage (38,184 /
+38,085 / 99) and its single no-temperature report (2021-11-26 08:55),
+F78's −5-minute offset with no multi-report day, F90's one B gap, D48.7's
+1,587 joined rows, D58's 1,225 train rows with 0 dropped, F107's 365, and
+F109's n_train 1,222, n_test 365, no_obs_dropped 0 and no_prev 0.
+F107's reserved-year RNO means (t2m_raw 15.94, t925 20.52) are also
+reproduced. Two figures (F76's minute spread, F98's window means) cover
+different spans and are not comparable.
+
+**F112.6 What this did not do.** No model was fit. No MAE, skill, error or
+verdict figure was computed or printed. Nothing under `scripts/` (other
+than the two new files), `data/processed/` or `notes/` was opened, and git
+was not used to view them. No existing file was edited except DECISIONS.md
+and STATUS.md. No file was deleted. No existing file under `data/raw/` was
+changed. SPEC.md, RESULTS.md, README.md and CLAUDE.md were not edited. No
+value was filled. The new files are the two scripts, the three rebuild
+tables, the two files under `data/raw/diagnostics/session72/`,
+`notes/session-72-output.txt` and the gitignored cache. Nothing was
+committed.
