@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 23 September 2026, after session 66._
+_Last updated: 23 September 2026, after session 67._
 
 ---
 
@@ -15,37 +15,38 @@ RESULTS.md), and the feature-selection programme that produced the third
 one is closed (DECISIONS D59.2).** Before any Q30 branch is chosen, the
 owner has ordered a three-part audit (DECISIONS D60.1):
 
-1. **Session 66 (this session) — document audit. DONE.** Read-only review
-   of CLAUDE.md, SPEC.md, RESULTS.md, STATUS.md, the live DECISIONS.md and
-   `docs/*.md`, plus scripted citation/numbering/ordering/cross-reference
-   checks and git-history checks. Report: `notes/audit-session-66.md`.
-   **Result: no must-fix findings** — no contradiction, broken citation,
-   numbering gap, or duplicate-defined entry anywhere. 4 should-fix items:
-   two archive-hygiene findings (F94, D49, F95 and D50 now meet the D46
-   archive criterion), the superseded STATUS "Next" line (self-resolved),
-   and stale CLAUDE.md planning-chat wording (A66-08, resolved by the owner
-   at review: planning chats use Project knowledge, not pasting). 4
-   cosmetic items (stale parked items P1–P3, a missing section 6 to 8.7
-   cross-reference, a few unglossed jargon terms). 0 uncertain. See the
-   report, section 5.
-2. **Session 67 — repo and code audit, not yet started.** Per D60.1: a
-   fresh-environment check plus a repo/code hygiene review. Session 67's own
-   drafting should include a check of `scripts/` size to decide whether
-   subagents are warranted for that session only (see "Next," below).
-3. **Session 68 — correctness audit, not yet started.** Per D60.1: a
-   leakage/logic review of the core pipeline and a reproduction of recorded
-   results. Per D60.2, a one-time verification recompute of the two spent
-   years (2025-26/F94, 2024-25/F109) is permitted in that session only, to
-   check reproducibility to the fourth decimal place — not a new look, not a
-   verdict, and every existing verdict stands regardless of what the
-   recompute shows. Session 68 must first check SPEC section 2 (and any
-   other rule text) for wording that would forbid this, and stop and flag
-   rather than run if it finds any.
+1. **Session 66 — document audit. DONE.** Report:
+   `notes/audit-session-66.md`. No must-fix findings.
+2. **Session 67 — repo and code audit. DONE.** Report:
+   `notes/audit-session-67.md`. **No must-fix findings.** 6 should-fix, 6
+   cosmetic, 3 uncertain. A clean clone set up from `requirements.txt`
+   installs every pin exactly, all 67 scripts compile, and the
+   `session62_reserved_confirm.py` preflight reproduces F109's 2023-24
+   dry-run table to the fourth decimal place at all five airports. The main
+   should-fix items: the core GRIB pull's provenance (sidecars and failure
+   log) sits only in the gitignored cache, against D47's wording (A67-01);
+   two frozen scripts write fixed output files that a re-run would
+   overwrite (A67-02, A67-03); the session-62 preflight prints claims that
+   are stale since F107 (A67-04); there is no setup README (A67-05). The
+   report's section 3 holds the core pipeline map for session 68. All
+   session-66 and session-67 findings wait for triage after session 68.
+3. **Session 68 — correctness audit. NEXT, not yet drafted.** Per D60.1: a
+   leakage and logic review of the core pipeline, plus a reproduction of
+   recorded results. Per D60.2, a one-time verification recompute of the two
+   spent years (2025-26/F94, 2024-25/F109) is allowed in that session only,
+   to check reproducibility to the fourth decimal place. It is not a new
+   look and not a verdict, and every existing verdict stands whatever it
+   shows. Session 68 must first check SPEC section 2 (and any other rule
+   text) for wording that forbids this, and stop and flag if it finds any.
+   Session 67's A67-02/A67-03 mean that recompute would overwrite committed
+   output files if run in the working repo, so running it in a clean clone
+   under `/tmp` is the simple safe option.
 
-Only after all three audits and the owner's own triage/fix sessions does the
-owner choose a Q30 branch (DECISIONS D60.1). Nothing under `scripts/`,
-`data/` or `docs/` was touched this session; no data file was opened; no
-model was fit; nothing was scored.
+Only after all three audits and the owner's own triage and fix sessions does
+the owner choose a Q30 branch (DECISIONS D60.1). This session changed only
+two files: the new `notes/audit-session-67.md` and this STATUS.md. Nothing
+under `scripts/`, `data/` or `docs/` was touched, no model was fitted in the
+repo, and no 2024-25 or 2025-26 figure was produced.
 
 ---
 
@@ -59,11 +60,11 @@ model was fit; nothing was scored.
   already-seen-year reuse rule); or pooling (SPEC stage 3). See DECISIONS
   D59.5 for the full statement of the three branches and the planning-chat
   recommendation on record (not a decision).
-- **Q32 (unchanged this session).** Whether a failed sealed test (Reno,
-  minimal method, F82) — as opposed to just a negative rehearsal — changes
-  the owner's intentions for future terrain-hard airports generally. Both
-  the richer-features result (F94) and the selected-features result (F109)
-  are the owner's practical answers for Reno specifically, but the general
+- **Q32 (unchanged).** Whether a failed sealed test (Reno, minimal method,
+  F82) — as opposed to just a negative rehearsal — changes the owner's
+  intentions for future terrain-hard airports generally. Both the
+  richer-features result (F94) and the selected-features result (F109) are
+  the owner's practical answers for Reno specifically, but the general
   question was never asked in so many words.
 
 No other open question remains live; everything else has been closed by a
@@ -73,10 +74,7 @@ decision or a finding — see DECISIONS.md for the closure record.
 
 ## Next
 
-Next planning session: draft session 67 (repo and code audit, including a
-fresh-environment check). The session-66 report was reviewed by the owner
-before commit; its findings wait for triage after session 68. Session 67's
-drafting should include a check of the size and count of files under
-`scripts/` to decide whether subagents are warranted for that session only.
-Q30 stays open and deferred until the full audit programme and any
-resulting fix sessions are complete.
+Next planning session: owner review of the session-67 report
+(`notes/audit-session-67.md`), then drafting session 68 (correctness audit)
+using that report's core pipeline map (section 3), including a decision on
+whether session 68's size warrants subagents.
