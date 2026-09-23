@@ -1155,3 +1155,46 @@ section's closing line changed to name the owner's still-open Q30 choice
 owner's review of this session's documentation itself already happened in
 the planning chat that produced these corrections. No DECISIONS finding
 or verdict changed by any of the seven; `D59` itself was not touched.
+
+---
+
+## 2026-09-23 — Session 66 decision: a three-part audit runs before any Q30
+branch is chosen
+
+**D60. Documentation only. No code, data, model, or figure is touched by
+this decision itself — it records the owner's own instruction, given before
+session 66's audit work began.**
+
+**D60.1 Audit before Q30.** Before any Q30 branch is chosen, the owner has
+ordered a full audit, run in this order:
+- session 66: documents;
+- session 67: repo and code, including a fresh-environment check;
+- session 68: correctness, meaning a leakage and logic review of the core
+  pipeline and a reproduction of recorded results;
+- then triage in the planning chat, then fix sessions.
+
+Q30 stays open and unchanged (D59.5).
+
+**D60.2 Verification recompute on the spent years is permitted, once, in
+session 68.**
+- **What it covers.** Re-running the committed code on 2025-26 (F94) and
+  2024-25 (F109) is allowed **only to check reproducibility**.
+- **Pre-registered expectation.** Every recomputed figure must match its
+  recorded value to the fourth decimal place.
+- **What it is not.** It is not a verdict and not a new look. No variant,
+  tuning, selection or new metric is permitted. Every recorded verdict
+  (F16/F30/F47/F64/F82, F94, F109) stands, whatever the recompute shows.
+- **If a figure does not match.** The mismatch is reported as a must-fix
+  finding for triage. It is not investigated or corrected within session 68.
+- **Wording conflicts.** Session 68 must first check SPEC section 2, and any
+  other rule text, for wording that forbids this. If it finds any, it stops
+  and flags it rather than running.
+
+**D60.3 This session's own read-only scope.** Session 66 reports and fixes
+nothing, even obvious typos. Exactly three files may be written: a new
+`notes/audit-session-66.md` (the findings report), one appended DECISIONS
+entry (this one, D60), and the overwritten `STATUS.md`. No file under
+`scripts/`, `data/` or `docs/` is modified. No data file is opened. No model
+is fit. Nothing is scored. `DECISIONS-archive.md` is not read in full —
+only through scripted and git checks, or by opening a single archived entry
+by number where a check needs its exact wording.

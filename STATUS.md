@@ -3,81 +3,68 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 23 September 2026, after session 65._
+_Last updated: 23 September 2026, after session 66._
 
 ---
 
 ## Where the project is right now
 
-**The project now has three independently-tested, proven methods for
-correcting GFS's local bias at an airport, and the feature-selection
-programme that produced the third one is closed.**
+**The project has three independently-tested, proven methods for
+correcting GFS's local bias at an airport (SPEC sections 5.0/7.5/8.7,
+RESULTS.md), and the feature-selection programme that produced the third
+one is closed (DECISIONS D59.2).** Before any Q30 branch is chosen, the
+owner has ordered a three-part audit (DECISIONS D60.1):
 
-1. **The minimal method** (SPEC sections 1–6) — three features, Open-Meteo
-   source. Passes at four of five airports; fails at Reno. Results:
-   EGLC/LFPG/DSM/YSDU F16/F30/F47/F64 (PASS), RNO F82 (FAIL).
-2. **The richer 5-feature GRIB method** (SPEC section 7, "act two" in
-   RESULTS.md) — five features, GFS GRIB source. Passes at all five
-   airports, including Reno. Result: F94.
-3. **The selected-features GRIB method** (SPEC section 8, new this
-   session, "act three" in RESULTS.md) — the 5-feature baseline (`B`) plus
-   four selected features (moisture, lapse rate, shortwave radiation,
-   pressure tendency — `B+D,L,R,T`), chosen by a staged feature-selection
-   programme (DECISIONS D51–D59) and confirmed once on a separate reserved
-   year (2024-08-01..2025-07-31). Passes at all five airports, including
-   Reno. Result: F109. Secondary read: beats plain `B` on airport-averaged
-   MAE (1.2377 vs 1.3170, +6.02%). This is now the project's **default
-   recipe** for future airport or pooling work (DECISIONS D59.3).
+1. **Session 66 (this session) — document audit. DONE.** Read-only review
+   of CLAUDE.md, SPEC.md, RESULTS.md, STATUS.md, the live DECISIONS.md and
+   `docs/*.md`, plus scripted citation/numbering/ordering/cross-reference
+   checks and git-history checks. Report: `notes/audit-session-66.md`.
+   **Result: no must-fix findings** — no contradiction, broken citation,
+   numbering gap, or duplicate-defined entry anywhere. 4 should-fix items:
+   two archive-hygiene findings (F94, D49, F95 and D50 now meet the D46
+   archive criterion), the superseded STATUS "Next" line (self-resolved),
+   and stale CLAUDE.md planning-chat wording (A66-08, resolved by the owner
+   at review: planning chats use Project knowledge, not pasting). 4
+   cosmetic items (stale parked items P1–P3, a missing section 6 to 8.7
+   cross-reference, a few unglossed jargon terms). 0 uncertain. See the
+   report, section 5.
+2. **Session 67 — repo and code audit, not yet started.** Per D60.1: a
+   fresh-environment check plus a repo/code hygiene review. Session 67's own
+   drafting should include a check of `scripts/` size to decide whether
+   subagents are warranted for that session only (see "Next," below).
+3. **Session 68 — correctness audit, not yet started.** Per D60.1: a
+   leakage/logic review of the core pipeline and a reproduction of recorded
+   results. Per D60.2, a one-time verification recompute of the two spent
+   years (2025-26/F94, 2024-25/F109) is permitted in that session only, to
+   check reproducibility to the fourth decimal place — not a new look, not a
+   verdict, and every existing verdict stands regardless of what the
+   recompute shows. Session 68 must first check SPEC section 2 (and any
+   other rule text) for wording that would forbid this, and stop and flag
+   rather than run if it finds any.
 
-**None of the three methods erases any other** (DECISIONS D48.13, D59.3);
-all three results stand as reported, each with its own required caveats
-(SPEC 7.5, SPEC 8.6/DECISIONS D59.3).
-
-**The feature-selection programme is closed (DECISIONS D59.2).** No
-further feature family, variant, or combination will be tested under it.
-The reserved year is spent for this programme and will not be reused for
-any verdict; the in-code reserved-year guard stays in place, untouched, as
-a permanent tripwire.
-
-**No untouched held-out year now remains at any of the five airports.**
-The 2025-26 year is spent (F94, the richer method's sealed test) and the
-2024-25 year is spent (F109, the selected-features confirmation). A
-further independent test now needs either a new airport (never scored on
-either year) or a live, forward-looking year not yet elapsed — 2026-27
-(2026-08-01..2027-07-31) — which session 65's own Step 0 check confirmed
-has not yet had any row scored anywhere under `data/processed/`
-(DECISIONS D59.5).
-
-**Documentation only this session.** `SPEC.md` §8 and `RESULTS.md` §6 now
-carry the selected-features method (DECISIONS D59, F110); F97–F109/D52–D58
-are archived to `DECISIONS-archive.md` (D51, F96 stay live). Nothing was
-committed.
+Only after all three audits and the owner's own triage/fix sessions does the
+owner choose a Q30 branch (DECISIONS D60.1). Nothing under `scripts/`,
+`data/` or `docs/` was touched this session; no data file was opened; no
+model was fit; nothing was scored.
 
 ---
 
 ## Open questions (live)
 
-- **Q30 (open; its options changed this session, per D59.5, now that no
-  untouched held-out year remains).** The owner previously picked its
-  first branch — more airports, "ramp up difficulty" — and both the
-  richer-features branch (F94) and the selected-features branch (F109)
-  of that programme are now complete and documented. **Q30's three
-  branches — a further airport, a second test year (now only possible as
-  a forward-looking 2026-27 test or a weaker reuse rule), or pooling
-  (SPEC stage 3) — remain fully open and are the owner's choice**
-  (DECISIONS D59.5). See "Next," below, for the planning-chat
-  recommendation on record.
-- **Q32 (effectively answered by events, left on record rather than
-  formally closed; unchanged this session).** Session 27 asked whether
-  Reno's rehearsal loss should change anything about locking/testing
-  Reno; the session-28 and session-29 prompts both instructed proceeding
-  regardless, and that is what happened — Reno was locked unmodified
-  (D44) and tested unmodified (F82), and it failed. The owner has still
-  not been asked, in so many words, whether a failed sealed test (as
-  opposed to just a negative rehearsal) changes their intentions for
-  future terrain-hard airports generally — though both the richer-
-  features result (F94) and the selected-features result (F109) are now
-  the owner's practical answers for Reno specifically.
+- **Q30 (open; deferred, per D60.1, until after the three-part audit and any
+  resulting fix sessions).** Three branches remain fully open and are the
+  owner's choice once the audit programme completes: a further airport (run
+  under the frozen `B+D,L,R,T` recipe, SPEC 8.7); a second test year (now
+  only possible as a live forward-looking 2026-27 test or a weaker
+  already-seen-year reuse rule); or pooling (SPEC stage 3). See DECISIONS
+  D59.5 for the full statement of the three branches and the planning-chat
+  recommendation on record (not a decision).
+- **Q32 (unchanged this session).** Whether a failed sealed test (Reno,
+  minimal method, F82) — as opposed to just a negative rehearsal — changes
+  the owner's intentions for future terrain-hard airports generally. Both
+  the richer-features result (F94) and the selected-features result (F109)
+  are the owner's practical answers for Reno specifically, but the general
+  question was never asked in so many words.
 
 No other open question remains live; everything else has been closed by a
 decision or a finding — see DECISIONS.md for the closure record.
@@ -86,21 +73,10 @@ decision or a finding — see DECISIONS.md for the closure record.
 
 ## Next
 
-Q30's three branches, per DECISIONS D59.5:
-- **A further airport**, run under the frozen `B+D,L,R,T` recipe — the
-  cheapest genuinely out-of-sample test available now, per D32 a harder
-  type (coastal, tropical, or mountainous).
-- **A second test year** — now only possible as (i) a live, forward-
-  looking pre-registered test on 2026-27, scored once after the year
-  ends, or (ii) a written rule for reusing an already-seen year (weaker
-  evidence).
-- **Pooling** (SPEC stage 3) — the largest build; previously judged
-  premature with only five locations.
-
-**Planning-chat recommendation on record (DECISIONS D59.5, not a
-decision — the owner has not chosen):** open a further airport under the
-frozen `B+D,L,R,T` recipe now, and in parallel pre-register 2026-27 as a
-forward-looking test year (a small documentation step); defer pooling.
-
-**Next planning session: the owner chooses a Q30 branch (DECISIONS D59.5;
-recommendation on record above).**
+Next planning session: draft session 67 (repo and code audit, including a
+fresh-environment check). The session-66 report was reviewed by the owner
+before commit; its findings wait for triage after session 68. Session 67's
+drafting should include a check of the size and count of files under
+`scripts/` to decide whether subagents are warranted for that session only.
+Q30 stays open and deferred until the full audit programme and any
+resulting fix sessions are complete.
