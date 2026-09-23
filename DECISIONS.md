@@ -1101,3 +1101,158 @@ script was edited (`session46_backtest.py` included). Nothing was scored,
 no model was fit, no GRIB file was opened or decoded, and there was no
 network access. No existing file under `data/raw/` was changed. Nothing
 was committed.
+
+---
+
+## 2026-09-23 — Session 71 finding: L, D, T and R rebuilt from the raw GRIB for audit 68a's 45 station-days (A68a-01)
+
+**F111. Network, data only. No model was fit and nothing was scored. The
+four selected features were rebuilt from newly pulled GRIB bytes by new,
+independent code: 180 of 180 values match the committed files exactly at the
+recorded precision. Full real output: `notes/session-71-output.txt`.**
+(Numbering: the session prompt expected F110, but F110 is session 65's entry.
+F111 is the next free number in DECISIONS.md and DECISIONS-archive.md.)
+
+**F111.1 The sample.** Audit 68a's own pre-registered rule (audit-68a
+section 2.2): the first, middle and last day of each window, at all five
+airports. That gives 9 dates x 5 airports = 45 station-days:
+- training: 2021-03-24, 2022-11-26, 2024-07-31;
+- reserved: 2024-08-01, 2025-01-30, 2025-07-31;
+- sealed: 2025-08-01, 2026-01-30, 2026-07-31.
+
+`scripts/session71_sample.py` rebuilds the list from the rule and checks it
+line by line against the 45 station-days audit 68a printed in its section
+4.2. They are identical. Audit 68a recorded no substitutions (its section
+4.1). Each station-day sits in exactly one committed file per family:
+- training rows are in the session 49/51/53/55 `v16_window` files;
+- reserved rows are in the session 63 `reserved_window` files;
+- sealed rows are in the session 49/51/53/55 `sealed_window` files.
+
+**F111.2 The recipe.** It was read from the build scripts and written out
+in plain words, with line numbers, in the output file (Step 1). In short:
+- GFS 0.25° GRIB2 from `noaa-gfs-bdp-pds`. The run is the day before; the
+  cycle is floor(HH/6)*6 and the lead is 24 + HH mod 6.
+- Each byte range comes from the `.idx` file.
+- Each value is interpolated (bilinear) to the SPEC 3.4 grid point. No
+  elevation correction is applied to any L, D, T or R field.
+- **L:** TMP at 925/850/700 mb, converted K → °C.
+  `lapse_rate_t2_t850 = round(t2m_raw − t850, 3)`.
+- **D:** RH, DPT and SPFH at 2 m, with DPT converted K → °C.
+  `dewpoint_depression_t2m = round(t2m_raw − dew point, 3)`, unfloored.
+- **T:** PRMSL and surface PRES at the lead, and PRMSL at lead−3 from the
+  same run, each Pa → hPa rounded to 3 decimals. The tendency is the
+  difference of the two rounded PRMSL values.
+- **R:** DSWRF surface average. At YSDU and RNO the f026 message is already
+  the 24–26 h window and is used directly. At EGLC, LFPG and DSM it is
+  (f024 18–24 h average × 6 − f022 18–22 h average × 4) / 2.
+- **One recipe fact worth knowing: L and D pull no 2 m temperature.**
+  `t2m_raw = round(temperature_grib_c − correction_c, 3)` comes from the
+  committed B file and the session 37 constants (session49 lines 17–26 and
+  295, session51 line 306). The rebuild follows that recipe. So L and D
+  depend on B's committed `temperature_grib_c`, which audit 68a rebuilt from
+  the raw GRIB for these same 45 station-days (315 of 315, D62.1).
+
+No part of the recipe was ambiguous.
+
+**F111.3 The pull.** New script `scripts/session71_ldtr_pull.py`.
+- Requested: 378 GRIB messages (L 108, D 108, T 108, R 54) from 90 `.idx`
+  files. All 378 and all 90 were saved, with **0 failures**. A failed fetch
+  got one retry. Retries that then succeeded were not counted.
+- 328,413,963 bytes. Pulled 2026-09-23 19:57:09Z to 19:58:32Z UTC.
+- Estimate before the pull: about 327.7 MB, from the sizes in the old
+  manifests.
+- Cache: `data/raw/grib/session71/` holds 936 files: each message and each
+  `.idx`, with a `.meta.txt` sidecar. A sidecar records the URL, byte range,
+  pull time, size and SHA-256. The cache is gitignored (D47).
+- Committed: `data/raw/diagnostics/session71/session71_pull_manifest.csv`
+  (378 rows, sorted, the sidecar fields) and `session71_pull_failures.csv`
+  (0 rows).
+- `git check-ignore`: all 10 sampled cache files are ignored. The manifest
+  and failure log are not ignored (exit code 1).
+
+**F111.4 The rebuild (the verdict).** New script
+`scripts/session71_ldtr_rebuild.py`. It is offline and imports nothing from
+the build scripts. Each message's SHA-256 is checked against the manifest
+before it is used. It differs from the originals on purpose:
+- it finds the four surrounding grid points by grid arithmetic, not by
+  eccodes' nearest-point search;
+- it checks each message's parameter code, level, step range, and full run
+  and validity date and hour;
+- it rejects any missing or non-finite grid value.
+
+Pass rule: round to the decimals stored in that column of that file, then
+require an exact match, with no tolerance. Every compared column stores 3
+decimals, except `specific_humidity_2m`, which stores 6.
+
+| feature | EGLC | LFPG | DSM | YSDU | RNO | total |
+|---|---|---|---|---|---|---|
+| L `lapse_rate_t2_t850` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
+| D `dewpoint_depression_t2m` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
+| T `pressure_tendency_3h_hpa` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
+| R `dswrf_2h_wm2` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
+
+**Total: 180 of 180.** By window: training 60/60, reserved 60/60, sealed
+60/60. Every intermediate column also matches: 585 of 585. Each of the 13
+intermediate columns is 45 of 45. They are:
+- L: `t2m_raw`, `t925`, `t850`, `t700`;
+- D: `t2m_raw`, `relative_humidity_2m`, `dew_point_2m`,
+  `specific_humidity_2m`;
+- T: `pressure_msl_hpa`, `pressure_surface_hpa`,
+  `pressure_msl_lead_minus3_hpa`;
+- R: `dswrf_ave_to_lead_wm2`, and `dswrf_ave_to_lead_minus2_wm2` (27 values
+  plus 18 recipe blanks at YSDU and RNO).
+
+The bookkeeping columns (`target_hour`, `run_date`, `cycle`, `lead`) match
+720 of 720. **Mismatches: 0. Missing values: 0.**
+
+**The first run of the rebuild script failed on R, because of a bug in the
+new script itself.** The guard expected DSWRF to have the WMO parameter code
+0/4/7. These NCEP files code it as 0/4/192. That is NCEP's local-table
+number for the same field: shortName `sdswrf`, "Surface downward short-wave
+radiation flux", W m⁻², centre `kwbc`. Each `.idx` lists exactly one
+`DSWRF:surface` line. So the first run rejected all 54 DSWRF messages before
+decoding them. It reported R 0 of 45, and L, D and T 45 of 45 each (135 of
+180). Only that one expected code was changed. No sample, rule or tolerance
+was changed. The second run is the verdict above. Both runs are in the
+output file in full.
+
+**F111.5 Step 5 (diagnostic only).** The original scripts' pure functions
+were imported and run on the same cached bytes. Importing them runs only
+`mkdir` on folders that already exist.
+- The original `.idx` lookup (`find_message_range`, `all_dswrf_lines`) gives
+  the pulled byte range for 378 of 378 messages.
+- The original `bilinear_from_gid` equals the Step 3 rebuild bit for bit for
+  477 of 477 station-day messages.
+- Rounded as the recipe rounds, it equals the committed single-field column
+  477 of 477.
+
+Three original functions were not used:
+- `process_combo`, because it fetches over the network;
+- `decode_message` in s53/s55, because it writes and deletes a scratch file;
+- `build_joined`, because it writes a processed CSV.
+
+So the derived-feature arithmetic was not run through the originals. `git
+status --porcelain --ignored` was identical before and after Step 5. The
+bytes and the logic agree: nothing is left for this diagnostic to separate.
+
+**F111.6 What this means.** A68a-01 is answered for the sample. L, D, T and
+R in all three windows' committed files equal what the GRIB archive holds
+today, rebuilt independently, at 45 station-days per feature. Audit 68a rebuilt B's three GRIB values (temperature, cloud cover and wind
+speed) at the same 45 station-days (315 of 315, counting its bookkeeping
+columns). So every GRIB-derived input of B+D,L,R,T has now been rebuilt from
+raw GRIB on the same sample. B's other two inputs, the season features, are
+date arithmetic, which audit 68a section 4.4 checked. No verdict, claim or
+figure on record changes.
+
+**F111.7 What this did not do.** No model was fit. No MAE, skill or verdict
+figure was computed or printed. No file was deleted. No existing file under
+`data/raw/` was changed. No existing script was edited, frozen or not.
+SPEC.md, RESULTS.md, README.md and CLAUDE.md were not edited. The sample was
+not changed. The new files are:
+- `scripts/session71_sample.py`, `session71_ldtr_pull.py`,
+  `session71_ldtr_rebuild.py` and `session71_original_functions_check.py`;
+- the two files under `data/raw/diagnostics/session71/`;
+- `notes/session-71-output.txt`;
+- the gitignored cache.
+
+Nothing was committed.

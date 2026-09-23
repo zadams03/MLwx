@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 23 September 2026, after session 70._
+_Last updated: 23 September 2026, after session 71._
 
 ---
 
@@ -13,32 +13,23 @@ _Last updated: 23 September 2026, after session 70._
 correcting GFS's local bias at an airport (SPEC sections 5.0/7.5/8.7,
 RESULTS.md). The feature-selection programme is closed (DECISIONS D59.2).**
 
-**The three-part audit is complete and triaged (DECISIONS D62).** It found
-no leakage and no wrong number. 163 of 163 recorded figures reproduce, and
-no verdict, claim or figure on record changes (D62.1). All must-fix and
-should-fix items are done before any Q30 branch is chosen.
+**The three-part audit is complete, triaged (DECISIONS D62), and every
+must-fix and should-fix item is done.** It found no leakage and no wrong
+number. No verdict, claim or figure on record changes (D62.1).
+- Session 69: documentation fixes (D62.5).
+- Session 70: repo fixes (D63).
+- Session 71: L, D, T and R rebuilt from newly pulled raw GRIB by new,
+  independent code for audit 68a's 45 station-days (A68a-01). **180 of 180
+  match the committed files exactly; 0 mismatches, 0 missing** (DECISIONS
+  F111). The pull manifest is under `data/raw/diagnostics/session71/`.
 
-**Done so far:** session 69's documentation fixes (D62.5) and session 70's
-repo fixes (D63):
-- A67-01 (must-fix): the session 37 and 40 GRIB pulls now have committed
-  pull manifests and failure logs under `data/raw/diagnostics/session37/`
-  and `session40/`. Every count reconciles with F90 and F92.
-- A67-06: `data/processed/session46_fold_table.csv` has a `station`
-  column. `session46_backtest.py` was not edited, so a re-run would drop
-  the column again (D63.2).
-- A67-05 with A67-07: new `README.md`; two stale comments fixed in
-  `requirements.txt`.
-- A67-08 with A68a-06: `.gitignore` fixed.
-
-**Still to do before Q30** (D62.8):
-- **Session 71** (network, data only): rebuild L, D, T and R for the same
-  45 station-days (A68a-01).
+The session plan in D62.8 is now finished: "Then Q30."
 
 ---
 
 ## Open questions (live)
 
-- **Q30 (open, unchanged; deferred until session 71 is done, D62.2).**
+- **Q30 (open, unchanged; now unblocked, D62.2, D62.8).**
   Three branches remain open and are the owner's choice: a further airport
   (run under the frozen `B+D,L,R,T` recipe, SPEC 8.7); a second test year
   (now only possible as a live forward-looking 2026-27 test or a weaker
@@ -61,4 +52,4 @@ decision or a finding (see DECISIONS.md).
 
 ## Next
 
-Next planning session: draft session 71 (network, data only: rebuild L, D, T and R for the same 45 station-days, A68a-01) per D62.8.
+Next planning session: the owner chooses a Q30 branch (D62.8).
