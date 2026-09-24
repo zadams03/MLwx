@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 24 September 2026, after session 73._
+_Last updated: 24 September 2026, after session 74._
 
 ---
 
@@ -15,29 +15,15 @@ RESULTS.md). The feature-selection programme is closed (DECISIONS D59.2).
 The three-part audit is complete and triaged (D62); every must-fix and
 should-fix item is done.**
 
-**The clean-room rebuild of F109 at RNO (DECISIONS D64) has run both parts
-and is waiting for the owner's triage.** It is a verification only and
-cannot change any verdict, claim or figure (D64.1).
-- Session 72 (F112) rebuilt the data tables from the docs alone.
-- Session 73 (F113) fitted, scored, sealed and compared every stage.
-  - Under Variant P, every data stage matches the record exactly:
-    observations, report times, targets, day set, all feature columns and
-    their inputs, the complete-case sets, raw GFS and persistence.
-  - Raw GFS, persistence and B match F109 to full precision.
-  - The rebuild's own fits repeat exactly.
-- **Open mismatches (D64.5, for the owner to triage):**
-  - **B+D,L,R,T MAE, Variant P: 1.2703 against the record's 1.2742.**
-    Every input matches, so D64.4 puts this in the fit-determinism
-    category. Two recipe details differ from the record script:
-    - column order: the rebuild uses L, D, T, R; the record uses D, L, R, T
-      (G15);
-    - target rounding: the rebuild trains on a 3 dp residual; the record
-      trains on the unrounded one (G20).
-
-    Neither was tested.
-  - **Variant G4-alt: L and D differ on the 655 rows (data), and its
-    B+D,L,R,T MAE is 1.2596.** The record matches Variant P.
-- No breach of session 72's clean room was found (F113.5).
+**The clean-room rebuild of F109 at RNO is complete, and D64 is closed
+(F114.6).** It was a verification only and changed no verdict, claim or
+figure. F109 stands.
+- Every data stage matches the record. Raw GFS, persistence and B match
+  F109 to full precision.
+- The one mismatch (B+D,L,R,T 1.2703 against 1.2742) is explained, class A
+  (F114). The record's column order (B, then D, L, R, T) reproduces
+  1.2742 exactly. Target rounding has no effect.
+- The details the rebuild had to guess are now recorded in SPEC 8.8.
 
 ---
 
@@ -51,13 +37,18 @@ cannot change any verdict, claim or figure (D64.1).
   D59.5 for the three branches and the planning-chat recommendation on
   record (not a decision). If branch (i) is chosen, its pre-registration
   must name the two tracked DSM files for 2026-08-05..2026-08-15 (D62.7,
-  A67-15). The owner chose to finish the D64 rebuild before Q30.
+  A67-15). The D64 rebuild the owner chose to finish first is now done.
 - **Q32 (unchanged).** Whether a failed sealed test (Reno, minimal method,
   F82), as opposed to just a negative rehearsal, changes the owner's
   intentions for future terrain-hard airports generally. The
   richer-features result (F94) and the selected-features result (F109) are
   the owner's practical answers for Reno specifically, but the general
   question was never asked in so many words.
+- **Q33 (new, logged only, F114).** Changing only the column order moved
+  RNO's B+D,L,R,T reserved-year MAE by 0.0038 °C. How large is fit-to-fit
+  variation, compared with the verdict margins on record, especially the
+  small ones (for example DSM over B, +1.94%)? Any measurement needs its
+  own pre-registration and cannot re-score spent years for a verdict.
 
 No other open question is live; everything else has been closed by a
 decision or a finding (see DECISIONS.md).
@@ -66,5 +57,5 @@ decision or a finding (see DECISIONS.md).
 
 ## Next
 
-Next planning session: review F113, and the owner triages the mismatches
-under D64.5.
+Next planning session: review F114, then the owner chooses a Q30 branch,
+and considers Q33.

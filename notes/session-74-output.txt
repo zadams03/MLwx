@@ -1,0 +1,345 @@
+SESSION 74 OUTPUT -- triage of the F113 mismatch (D64.5, D65)
+Offline. Changes no verdict, claim or figure (D64.1, D65.1).
+Record script: scripts/session62_reserved_confirm.py (named in
+notes/session-73-output.txt, Step 5). Rebuild script: scripts/session73_fit_score.py.
+
+==========================================================================================
+STEP 1 -- pre-registration
+==========================================================================================
+D65 appended verbatim to DECISIONS.md under the heading
+"## 2026-09-24 — Session 74 decision: pre-registration of the F113 mismatch triage",
+and printed back, before anything else was done.
+
+==========================================================================================
+STEP 2 -- read-only settings comparison (D65.2)
+==========================================================================================
+Record = scripts/session62_reserved_confirm.py (run_confirm, lines 646-734).
+Rebuild = scripts/session73_fit_score.py (run_fit, lines 245-397).
+
+| # | item | record | rebuild (session 73) | match | could affect fit/score |
+|---|---|---|---|---|---|
+| 1 | objective | regression_l1 (l.132) | regression_l1 (l.64) | yes | - |
+| 2 | n_estimators | 300 | 300 | yes | - |
+| 3 | learning_rate | 0.05 | 0.05 | yes | - |
+| 4 | num_leaves | 15 | 15 | yes | - |
+| 5 | min_child_samples | 40 | 40 | yes | - |
+| 6 | subsample (bagging_fraction) | 1.0 | 1.0 | yes | - |
+| 7 | subsample_freq (bagging_freq) | not passed -> default 0 | not passed -> default 0 (metadata: bagging_freq 0) | yes | - |
+| 8 | colsample_bytree (feature_fraction) | 1.0 | 1.0 | yes | - |
+| 9 | feature_fraction_bynode | not passed -> default 1 | not passed -> default 1 (metadata) | yes | - |
+| 10 | reg_alpha / reg_lambda | 0.0 / 0.0 | 0.0 / 0.0 | yes | - |
+| 11 | random_state (seed) | 42 | 42 (metadata: seed 42; derived seeds bagging 400, feature_fraction 30056, data_random_seed 175, objective 16083) | yes | - |
+| 12 | n_jobs (num_threads) | 1 | 1 | yes | - |
+| 13 | deterministic | True | True | yes | - |
+| 14 | force_row_wise | True | True | yes | - |
+| 15 | verbose | -1 | -1 | yes | no (logging only) |
+| 16 | all other params (max_bin 255, min_data_in_bin 3, boost_from_average 1, bin_construct_sample_cnt 200000, max_depth -1, min_sum_hessian 0.001, ...) | not passed -> lightgbm 4.7.0 defaults | not passed -> lightgbm 4.7.0 defaults, resolved block in rno_fit_metadata.json | yes (same class, same explicit args, same version; the record never saved its own resolved block) | - |
+| 17 | dict equality | LGB_PARAMS | PARAMS | LGB_PARAMS == PARAMS -> True (checked by import) | - |
+| 18 | API (G14) | lgb.LGBMRegressor(**LGB_PARAMS).fit(x_tr, y_tr) (l.386-387) | LGBMRegressor(**PARAMS).fit(X, y) (l.220-221) | yes | - |
+| 19 | fit() extras | none (no eval_set, weights, feature_name, categorical_feature) | none | yes | - |
+| 20 | column list and order (G15) | temp, season_sin, season_cos, cloud_cover, wind_speed_10m, D floored, L, R, T (FINAL_CODES l.118, FINAL_FEATURE_KEYS l.127) | temperature_grib_c, season_sin, season_cos, cloud_cover_grib_pct, wind_speed_grib_kmh, L, D floored, T, R (l.73-81) | NO | yes -- G15, pre-registered |
+| 21 | column values | built from data/processed files (l.223-240, 299-318, 347-364) | session 72 tables | yes: X_train and X_test bit-equal on all 9 columns after the column permutation (1,222 and 365 rows) | - |
+| 22 | target (G20) | o - fc, unrounded float (l.376) | residual_c, stored at 3 dp | NO: bit-equal on 155 of 1,222 rows, max abs diff 5.77e-15; round(record,3) equals rebuild on 1,222 of 1,222 | yes -- G20, pre-registered |
+| 23 | training row order (G19) | sorted(common) then sorted keys in join_obs (l.355, 370): ascending date | table order: ascending date | yes (dates identical, same order) | - |
+| 24 | training row set | complete case over B + L, D raw, T, R, with an obs (l.347-377) | complete case over B + L, D unfloored, T, R + residual_c | yes: 1,222 identical dates | - |
+| 25 | test row set and order | 365, ascending | 365, ascending | yes: identical dates, same order | - |
+| 26 | container / dtype | np.array(..., dtype=float) -> float64 ndarray, no column names (l.240, 385) | np.array(..., dtype=np.float64) ndarray, no column names (l.217-219) | yes | - |
+| 27 | test fc and obs | fc = float(temperature_grib_c); obs = float(tmpc) | forecast_c; obs_c | yes, 365 of 365 each bit-equal | - |
+| 28 | corrected forecast (G21) | fc + float(pred[i]) (l.390) | forecast_c + float(p) (l.318) | yes | - |
+| 29 | MAE (G21) | mean(abs((fc+pred) - obs)), np.mean over float64 array in date order (l.243-244, 390-391) | mean(abs(obs - (fc+pred))), np.mean over float64 array in date order, via repr round-trip (exact) | yes (a-b and b-a have the same magnitude in IEEE arithmetic) | - |
+| 30 | MAE 4 dp (G24) | f"{f_mae:.4f}" (l.715); unrounded in session63_reserved_confirm_grid.csv via csv str() | '%.4f' | yes (same rounding) | - |
+| 31 | libomp shim | env MLWX_LIBOMP_PATH_SET, os.execv | env S73_OMP_SHIM, os.execve | differs | no (only lets lightgbm load) |
+| 32 | output / logging | stdout print, grid CSV | CSVs, JSON, file log | differs | no |
+| 33 | Python | 3.12.2 (notes/session-64-preflight-output.txt l.6; session 63's confirm output prints no versions; same session-64 run) | 3.12.2 | yes | - |
+| 34 | numpy | 2.5.2 (same source, l.7) | 2.5.2 | yes | - |
+| 35 | lightgbm | 4.7.0 (same source, l.8) | 4.7.0 | yes | - |
+| 36 | pins | requirements.txt: numpy==2.5.2, lightgbm==4.7.0, Python 3.12.2 | same file | yes | - |
+
+Stop rule: only G15 (row 20) and G20 (row 22) differ among items that could
+affect the fit or its score. Rows 31-32 differ but cannot affect the fit.
+STOP RULE NOT TRIGGERED. The session continues to Step 3.
+
+Supporting read-only check (no fit, writes nothing). It imports the record
+script's own functions and session 73's own functions and builds both RNO
+matrices. Source: scratchpad s74_input_check.py (reproduced at the end of
+this file). Real output:
+  record FINAL_FEATURE_KEYS: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+  record BASE_KEYS        : ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m']
+  record X dtype/type: float64 ndarray y dtype: float64
+  record LGB_PARAMS == s73 PARAMS: True
+  s73 feature order: ['temperature_grib_c', 'season_sin', 'season_cos', 'cloud_cover_grib_pct', 'wind_speed_grib_kmh', 'lapse_rate_t2_t850', 'dewpoint_depression_t2m_floored', 'pressure_tendency_3h_hpa', 'dswrf_2h_wm2']
+  n_train record/s73: 1222 1222  n_test: 365 365
+  train dates identical and in same order: True
+  test dates identical and in same order : True
+  train dates ascending (record, s73): True True
+  column permutation record->s73: [0, 1, 2, 3, 4, 6, 5, 8, 7]
+  X_train bit-equal after permutation: True  (per column equal counts: [1222, 1222, 1222, 1222, 1222, 1222, 1222, 1222, 1222])
+  X_test bit-equal after permutation: True  (per column equal counts: [365, 365, 365, 365, 365, 365, 365, 365, 365])
+  X_train unpermuted equal (order matters): False
+  B X_train equal: True
+  target: bit-equal rows 155 of 1222; max abs diff 5.773159728050814e-15; round(record,3)==s73 on 1222
+  test obs equal: True  test fc equal: True
+  unrounded target from s72 (obs_c - forecast_c) bit-equal to record resid: 1222 of 1222
+
+git status --short --ignored scripts after the check: only the pre-existing
+scripts/.DS_Store and scripts/__pycache__/ (the folder was last modified
+2026-09-23 22:04, so no file was added; this run set PYTHONDONTWRITEBYTECODE=1).
+
+==========================================================================================
+STEP 3 -- record re-run, R0 (D65.3)
+==========================================================================================
+3.1 Every file the record script writes, and every output path:
+  - preflight() (no arguments): notes/session-62-preflight-output.txt
+    (OUT_PREFLIGHT, l.186; opened by Tee, l.192, l.410).
+  - run_confirm() (--confirm): data/processed/session63_reserved_confirm_grid.csv
+    (GRID_CSV_CONFIRM, l.187; written l.722-725).
+  - Nothing else. Its imports (session48_reserved_year, session60_combine_design)
+    write nothing at import. The libomp shim (l.91-99) re-executes the
+    interpreter and writes no file.
+
+3.2 Can it run for RNO only without changing its logic? NO.
+  - main() (l.739-748) accepts only no arguments or "--confirm". There is no
+    station argument.
+  - The airport list is a literal in the script: AIRPORTS (l.107-113), with all
+    five stations. run_confirm() loops over all five (l.683, l.700). Limiting it
+    to RNO means editing AIRPORTS or the loop. That is a change to a line that
+    is not an output path, which Step 3.3 does not allow.
+  - Also: run_confirm() throws away the per-day errors (l.708-709,
+    "b_mae, _ = ..." and "f_mae, _ = ..."). So Step 3.7's per-day RNO test
+    predictions could not be saved without a logic change either.
+
+R0 SKIPPED, not forced (D65.3). No copy was made. The directory
+data/rebuild/session74/record_rerun/ was not created. The original script was
+not run. Steps 3.3-3.7 (copy, diff, hashes, run, save) were therefore not done.
+The comparison against the record in Step 4 uses the record's own stored
+unrounded RNO value instead: data/processed/session63_reserved_confirm_grid.csv,
+RNO final_mae = 1.2741517803385958 (4 dp 1.2742, notes/session-64-confirm-output.txt l.8).
+
+==========================================================================================
+STEP 4 -- the three diagnostic fits (D65.4)
+==========================================================================================
+Script: scripts/session74_diagnose.py (new). It imports session 73's own
+load_tables, model_columns, complete_case and PARAMS, uses Variant P, and
+changes only the added-feature order (C1, C3) and/or the target (C2, C3).
+Fits run: C1, C2, C3 (one process), then C3 once more in a separate process.
+No other fit.
+
+$ .venv/bin/python scripts/session74_diagnose.py --run
+  session 74 run 1, python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+  loaded rows: {'features': 1591, 'observations': 1591, 'persistence': 1591, 'train': 1226, 'test': 365} non-finite dropped: 0
+  C1 fitted: n_train=1222 n_test=365 order=['D', 'L', 'R', 'T'] target=rounded
+  C2 fitted: n_train=1222 n_test=365 order=['L', 'D', 'T', 'R'] target=unrounded
+  C3 fitted: n_train=1222 n_test=365 order=['D', 'L', 'R', 'T'] target=unrounded
+  wrote data/rebuild/session74/rno_cell_predictions.csv and data/rebuild/session74/rno_cell_metadata.json
+
+$ .venv/bin/python scripts/session74_diagnose.py --repeat
+  session 74 run 2 (C3 repeat), python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+  loaded rows: {'features': 1591, 'observations': 1591, 'persistence': 1591, 'train': 1226, 'test': 365} non-finite dropped: 0
+  C3 fitted: n_train=1222 n_test=365 order=['D', 'L', 'R', 'T'] target=unrounded
+  wrote data/rebuild/session74/run2/rno_cell_predictions.csv and data/rebuild/session74/run2/rno_cell_metadata.json
+
+$ .venv/bin/python scripts/session74_diagnose.py --report
+  Step 4 results (RNO, B+D,L,R,T, test 2024-08-01..2025-07-31)
+    cell       n_train n_test  MAE unrounded          4 dp
+    C1            1222    365  1.2741517803385958     1.2742
+    C2            1222    365  1.270310972624561      1.2703
+    C3            1222    365  1.2741517803385958     1.2742
+    C3 repeat     1222    365  1.2741517803385958     1.2742
+  
+  C3 vs its repeat: predicted residual equal 365 of 365, max abs diff 0.0; corrected forecast equal 365 of 365, max abs diff 0.0
+  C3 vs R0: not comparable -- R0 was skipped (Step 3).
+  
+  Each cell against the record (1.2742; unrounded 1.2741517803385958):
+    C1         4dp equal: True   unrounded equal: True   diff (cell - record) 0.0
+    C2         4dp equal: False  unrounded equal: False  diff (cell - record) -0.003840807714034833
+    C3         4dp equal: True   unrounded equal: True   diff (cell - record) 0.0
+    C3 repeat  4dp equal: True   unrounded equal: True   diff (cell - record) 0.0
+  
+  Cell-to-cell prediction comparisons (report only):
+    C1 vs C3: predicted residual equal 365 of 365, max abs diff 0.0
+    C2 vs C1: predicted residual equal 0 of 365, max abs diff 0.12455587155742975
+    C2 vs C3: predicted residual equal 0 of 365, max abs diff 0.12455587155742975
+  
+  Outcome class (D65.6): A (explained): C3 matches the record at 4 dp and unrounded; R0 did not run
+  Attribution: C1 (G15 only) 1.2742, C2 (G20 only) 1.2703, C3 (both) 1.2742; session 73 (neither) 1.2703.
+  D65.7 Q33 trigger: C1 4 dp 1.2742 vs 1.2703 -> FIRES
+
+Report-only check, no fit: C2 against session 73's own Variant P predictions
+(data/rebuild/session73/rno_test_predictions.csv, model BDLRT_P):
+  C2 vs session 73 BDLRT_P predicted residual: equal 365 of 365, max abs diff 0.0
+
+Reading:
+  - C1 (column order only) = C3 (both) = the record, to full precision
+    (1.2741517803385958), with identical predictions on 365 of 365 days.
+  - C2 (target only) = session 73's 1.2703, with predictions identical to
+    session 73's on 365 of 365 days. The 3-dp rounding of the target
+    (differences up to 5.8e-15) has no effect on the fit.
+  - So all of F113's 0.0038 mismatch comes from column order (G15). G20 has
+    no effect. Every value matches D65.5's expectation, except R0, which was
+    skipped.
+  - Outcome class A (explained). R0 did not run, so the "C3 = R0 on 365 of
+    365 days" part of class A could not be checked. D65.6 applies that part
+    only "where R0 ran".
+  - D65.7: C1 (1.2742) differs from 1.2703, so Q33 is logged.
+
+==========================================================================================
+STEP 5 -- record the gaps in SPEC
+==========================================================================================
+SPEC.md: new subsection "8.8 Implementation details (from the record,
+DECISIONS D65)", placed directly after section 8's "Build requirements for
+new-airport code" block. No other part of SPEC.md was edited.
+Rows added, each read from the record scripts and committed files:
+G1, G2, G3, G4, G5, G6, G7, G14, G15, G17, G19, G20, G24 (13 rows).
+The closing line was added under the table, as the prompt set it.
+
+What the record shows, where it differs from the rebuild's choice:
+  - G1: the record keeps the LAST qualifying report in the file
+    (session62_reserved_confirm.py l.343), not an explicit nearest one.
+    Already recorded in SPEC 4.5 (D62). Moot at RNO (F112).
+  - G7: the record does NOT round t850 / dew_point_2m before subtracting
+    (session49 l.301, session51 l.312, session63_reserved_year_build l.278,
+    l.313: round(t2m_raw - dec[...], 3) with dec unrounded). Session 72
+    chose "rounded first". Since t2m_raw already has 3 dp, both give the same
+    3-dp value except at an exact tie; at RNO every row matched (F113 stage 3).
+  - G15: record order D, L, R, T (l.118). Rebuild: L, D, T, R.
+  - G20: record unrounded (l.376). Rebuild: 3 dp. No effect (Step 4).
+  - Rows where the record matches the rebuild's choice: G2, G3, G4, G5, G6,
+    G14, G17, G19, G24.
+  - "Not shown by the record" was not needed on any row. For G17, the record
+    shows the pinned version and the parameters passed, but did not save its
+    resolved defaults. The row says so and points to the rebuild's saved
+    list from the same version.
+
+G11-G13 (notes/session-72-output.txt l.138-148), considered and NOT added:
+  - G11 (day list: blank row vs absent row for a day with no B data) changes
+    which rows exist, not any stored value. The complete-case rule drops the
+    day either way.
+  - G12 (which complete-case count to report) is about reporting only.
+  - G13 (a message whose .idx does not match is dropped and counted) is what
+    the record does. The recipe gives no reasonable reading that would store
+    a different value.
+  None of the three could change a stored value at any airport.
+
+==========================================================================================
+STEP 6 -- findings
+==========================================================================================
+DECISIONS.md: F114 appended (settings table summary, R0 skipped, C1-C3 and
+the repeat, class A with attribution, hash check not run because nothing it
+guards was run, SPEC rows, "what this did not do"). D64 closed in F114.6.
+Q33 logged inside F114 (D65.7 fired: C1 1.2742 differs from 1.2703),
+with [x] = 0.0038 degC (1.2703 to 1.2742; unrounded difference 0.00384).
+
+==========================================================================================
+END OF SESSION
+==========================================================================================
+2. STATUS.md overwritten as a current-only snapshot. D64 closed. Next line:
+   "Next planning session: review F114, then the owner chooses a Q30 branch,
+   and considers Q33."
+
+4. Archive step: D64, F112, F113 moved to DECISIONS-archive.md under
+   "## Moved by session 74 (2026-09-24)". Mechanical: sed line ranges
+   1262-1566 of the pre-move DECISIONS.md (the three entries), with the
+   separators through line 1569 removed from the live file.
+   wc -l after:
+         1445 DECISIONS.md
+        14492 DECISIONS-archive.md
+        15937 total
+   pre-move: DECISIONS.md 1753 lines, DECISIONS-archive.md 14178 lines; moved block 305 lines.
+   check: live file + moved block reassembles the pre-move file byte for byte: IDENTICAL
+   check: archived block equals the moved lines byte for byte: IDENTICAL
+   check: the archive's first 14,178 lines unchanged: IDENTICAL
+   Kept live: D65, F114 (and Q33 inside F114). No live open question
+   (Q30, Q32, Q33) or STATUS "Next" needs D64/F112/F113 word for word.
+
+5. Protected files:
+   $ git status --short
+      M DECISIONS-archive.md
+      M DECISIONS.md
+      M SPEC.md
+      M STATUS.md
+     ?? data/rebuild/session74/
+     ?? docs/session-74.md
+     ?? notes/session-74-output.txt
+     ?? scripts/session74_diagnose.py
+   $ git status --short -- RESULTS.md README.md CLAUDE.md data/raw data/processed data/rebuild/session72 data/rebuild/session73
+     (no output: 0 lines)
+   $ git diff --name-only -- scripts   -> 0 files (no existing script edited)
+   SPEC.md diff: one hunk, @@ -924,0 +925,29 @@, 0 lines removed (8.8 only).
+
+==========================================================================================
+APPENDIX -- source of the Step 2 read-only check (scratchpad s74_input_check.py)
+==========================================================================================
+  """Session 74 Step 2 helper (read-only, no fit): build the record script's
+  RNO train/test matrices with its own functions, and session 73's with its
+  own functions, and compare them bit for bit. Writes nothing."""
+  import sys
+  sys.dont_write_bytecode = True
+  ROOT = "/Users/zacharyadams/Coding Projects/MLwx"
+  sys.path.insert(0, ROOT + "/scripts")
+  
+  import session62_reserved_confirm as rec   # frozen; imported, never run
+  import session73_fit_score as s73
+  import numpy as np
+  
+  # ---- record side (run_confirm's own steps, RNO only, no fit) ----
+  l_all, hl = rec.load_family("L", ["lapse_rate_t2_t850"])
+  d_all, hd = rec.load_family("D", ["dewpoint_depression_t2m"])
+  t_all, ht = rec.load_family("T", ["pressure_tendency_3h_hpa"])
+  r_all, hr = rec.load_family("R", ["dswrf_2h_wm2"])
+  assert hl == hd == ht == hr == 0
+  base_all = rec.load_base_unfiltered()
+  merged = rec.build_complete_case(base_all, l_all, d_all, t_all, r_all)
+  cf = rec.CONFIRMATION_FOLD
+  obs_all, _, _ = rec.load_obs_all("RNO", rec.AIRPORTS["RNO"])
+  tr_raw = {d: r for d, r in merged["RNO"].items() if cf["train_start"] <= d <= cf["train_end"]}
+  te_raw = {d: r for d, r in merged["RNO"].items() if cf["test_start"] <= d <= cf["test_end"]}
+  rtr, _ = rec.join_obs("RNO", tr_raw, obs_all)
+  rte, _ = rec.join_obs("RNO", te_raw, obs_all)
+  print("record FINAL_FEATURE_KEYS:", rec.FINAL_FEATURE_KEYS)
+  print("record BASE_KEYS        :", rec.BASE_KEYS)
+  RX_tr = rec.features_matrix(rtr, rec.FINAL_FEATURE_KEYS)
+  RX_te = rec.features_matrix(rte, rec.FINAL_FEATURE_KEYS)
+  Ry = np.array([r["resid"] for r in rtr], dtype=float)
+  RB_tr = rec.features_matrix(rtr, rec.BASE_KEYS)
+  print("record X dtype/type:", RX_tr.dtype, type(RX_tr).__name__, "y dtype:", Ry.dtype)
+  print("record LGB_PARAMS == s73 PARAMS:", rec.LGB_PARAMS == s73.PARAMS)
+  
+  # ---- session 73 side (its own functions, Variant P) ----
+  rows, counts, nonfinite = s73.load_tables()
+  feats, mask = s73.model_columns("BDLRT_P")
+  train, _ = s73.complete_case(rows, "train", mask)
+  test, _ = s73.complete_case(rows, "test", mask)
+  SX_tr = np.array([[r[c] for c in feats] for r in train], dtype=np.float64)
+  SX_te = np.array([[r[c] for c in feats] for r in test], dtype=np.float64)
+  Sy = np.array([r["residual_c"] for r in train], dtype=np.float64)
+  print("s73 feature order:", feats)
+  
+  # ---- compare ----
+  print("n_train record/s73:", len(rtr), len(train), " n_test:", len(rte), len(test))
+  print("train dates identical and in same order:",
+        [r["date"].isoformat() for r in rtr] == [r["target_date"] for r in train])
+  print("test dates identical and in same order :",
+        [r["date"].isoformat() for r in rte] == [r["target_date"] for r in test])
+  print("train dates ascending (record, s73):",
+        all(rtr[i]["date"] < rtr[i+1]["date"] for i in range(len(rtr)-1)),
+        all(train[i]["target_date"] < train[i+1]["target_date"] for i in range(len(train)-1)))
+  perm = [rec.FINAL_FEATURE_KEYS.index(k) for k in
+          ["temp", "season_sin", "season_cos", "cloud_cover", "wind_speed_10m",
+           "lapse_rate_t2_t850", "dewpoint_depression_t2m_floored",
+           "pressure_tendency_3h_hpa", "dswrf_2h_wm2"]]
+  print("column permutation record->s73:", perm)
+  for name, R, S in [("X_train", RX_tr[:, perm], SX_tr), ("X_test", RX_te[:, perm], SX_te)]:
+      eq = (R == S)
+      print("%s bit-equal after permutation: %s  (per column equal counts: %s)"
+            % (name, bool(eq.all()), eq.sum(axis=0).tolist()))
+  print("X_train unpermuted equal (order matters):", bool((RX_tr == SX_tr).all()))
+  print("B X_train equal:", bool((RB_tr == SX_tr[:, :5]).all()))
+  ydiff = np.abs(Ry - Sy)
+  print("target: bit-equal rows %d of %d; max abs diff %r; round(record,3)==s73 on %d"
+        % (int((Ry == Sy).sum()), len(Ry), float(ydiff.max()),
+           int(sum(round(a, 3) == b for a, b in zip(Ry, Sy)))))
+  print("test obs equal:", all(a["obs"] == b["obs_c"] for a, b in zip(rte, test)),
+        " test fc equal:", all(a["fc"] == b["forecast_c"] for a, b in zip(rte, test)))
+  Su = np.array([r["obs_c"] - r["forecast_c"] for r in train], dtype=np.float64)
+  print("unrounded target from s72 (obs_c - forecast_c) bit-equal to record resid: %d of %d"
+        % (int((Su == Ry).sum()), len(Ry)))
