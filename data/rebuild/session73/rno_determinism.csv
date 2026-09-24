@@ -1,0 +1,7 @@
+model,column,n,n_identical,max_abs_diff
+B,predicted_residual_c,365,365,0.0
+B,corrected_forecast_c,365,365,0.0
+BDLRT_P,predicted_residual_c,365,365,0.0
+BDLRT_P,corrected_forecast_c,365,365,0.0
+BDLRT_G4alt,predicted_residual_c,365,365,0.0
+BDLRT_G4alt,corrected_forecast_c,365,365,0.0

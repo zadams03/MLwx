@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 23 September 2026, after session 72._
+_Last updated: 24 September 2026, after session 73._
 
 ---
 
@@ -15,23 +15,29 @@ RESULTS.md). The feature-selection programme is closed (DECISIONS D59.2).
 The three-part audit is complete and triaged (D62); every must-fix and
 should-fix item is done.**
 
-**A clean-room end-to-end rebuild of F109 at RNO is half done (DECISIONS
-D64, pre-registered).** It is a verification only and cannot change any
-verdict, claim or figure (D64.1).
-- Session 72 (data, F112): L, D, T and R re-pulled from raw GRIB for all
-  of RNO's train and test days (15,900 of 15,910 messages; the 10 failures
-  are the run F90 already found broken). RNO's observation, feature and
-  persistence tables were built from the docs alone into
-  `data/rebuild/session72/`. Every row count the docs state agrees (17 of
-  17 comparable figures).
-- Session 73 (next): fit, score, and compare every stage with the record,
-  under D64.3–D64.5. The clean-room rule holds until its comparison step.
+**The clean-room rebuild of F109 at RNO (DECISIONS D64) has run both parts
+and is waiting for the owner's triage.** It is a verification only and
+cannot change any verdict, claim or figure (D64.1).
+- Session 72 (F112) rebuilt the data tables from the docs alone.
+- Session 73 (F113) fitted, scored, sealed and compared every stage.
+  - Under Variant P, every data stage matches the record exactly:
+    observations, report times, targets, day set, all feature columns and
+    their inputs, the complete-case sets, raw GFS and persistence.
+  - Raw GFS, persistence and B match F109 to full precision.
+  - The rebuild's own fits repeat exactly.
+- **Open mismatches (D64.5, for the owner to triage):**
+  - **B+D,L,R,T MAE, Variant P: 1.2703 against the record's 1.2742.**
+    Every input matches, so D64.4 puts this in the fit-determinism
+    category. Two recipe details differ from the record script:
+    - column order: the rebuild uses L, D, T, R; the record uses D, L, R, T
+      (G15);
+    - target rounding: the rebuild trains on a 3 dp residual; the record
+      trains on the unrounded one (G20).
 
-**For session 73 to know:** one documentation gap changes values. B's
-stored precision is not stated anywhere (F112.2, G4). The rebuild rounds
-`temperature_grib_c` to 3 decimals before deriving `t2m_raw`. That
-differs by 0.001 from using the full value on 655 of 1,590 rows, and so
-moves L and D on those rows. Both columns are kept.
+    Neither was tested.
+  - **Variant G4-alt: L and D differ on the 655 rows (data), and its
+    B+D,L,R,T MAE is 1.2596.** The record matches Variant P.
+- No breach of session 72's clean room was found (F113.5).
 
 ---
 
@@ -45,7 +51,7 @@ moves L and D on those rows. Both columns are kept.
   D59.5 for the three branches and the planning-chat recommendation on
   record (not a decision). If branch (i) is chosen, its pre-registration
   must name the two tracked DSM files for 2026-08-05..2026-08-15 (D62.7,
-  A67-15). The owner chose to run the D64 rebuild before Q30.
+  A67-15). The owner chose to finish the D64 rebuild before Q30.
 - **Q32 (unchanged).** Whether a failed sealed test (Reno, minimal method,
   F82), as opposed to just a negative rehearsal, changes the owner's
   intentions for future terrain-hard airports generally. The
@@ -60,5 +66,5 @@ decision or a finding (see DECISIONS.md).
 
 ## Next
 
-Next planning session: draft session 73 (fit, score and stage-by-stage
-comparison, D64).
+Next planning session: review F113, and the owner triages the mismatches
+under D64.5.

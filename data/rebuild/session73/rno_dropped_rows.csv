@@ -1,0 +1,13 @@
+model,window,target_date,reason
+B,train,2021-05-02,no target: no usable routine report within 15 min
+B,train,2021-05-03,no target: no usable routine report within 15 min
+B,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,lapse_rate_t2_t850,dewpoint_depression_t2m,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+B,train,2024-03-21,no target: no usable routine report within 15 min
+BDLRT_P,train,2021-05-02,no target: no usable routine report within 15 min
+BDLRT_P,train,2021-05-03,no target: no usable routine report within 15 min
+BDLRT_P,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,lapse_rate_t2_t850,dewpoint_depression_t2m,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+BDLRT_P,train,2024-03-21,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2021-05-02,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2021-05-03,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,L_g4,D_g4,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+BDLRT_G4alt,train,2024-03-21,no target: no usable routine report within 15 min

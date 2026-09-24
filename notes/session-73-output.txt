@@ -1,0 +1,577 @@
+SESSION 73 OUTPUT — clean-room rebuild of F109 at RNO, part 2: fit, score, compare (D64)
+Run date: 2026-09-23. Offline; no data pulled. Verification only: changes no verdict, claim or figure (D64.1).
+
+================================================================================
+FILE LOG
+================================================================================
+Clean room (Steps 1-4). Every file opened, with step number:
+  step 0  CLAUDE.md (loaded at session start)
+  step 0  docs/session-73.md (the session prompt)
+  step 1  SPEC.md (full read)
+  step 1  STATUS.md (full read)
+  step 1  DECISIONS.md (full read)
+  step 1  DECISIONS-archive.md (grep searches, then lines 885-902, 1040-1160,
+          1192-1208, 10365-10560, 11430-11480, 11575-11620, 12990-13180,
+          13356-13700: D21, Q16/D24, D48, F100, D53, D58, F108, F109)
+  step 1  data/rebuild/session72/rno_features.csv, rno_observations.csv,
+          rno_persistence.csv (profiling, read-only)
+  step 2  environment only: `pip list` of .venv; listing of
+          .venv/lib/python3.12/site-packages/sklearn/.dylibs/ (libomp, D24);
+          existence checks `ls data/rebuild/session73` and the name glob
+          `scripts/session73*` (to confirm my own output paths were free;
+          no file under scripts/ was opened)
+  step 2  scripts/session73_fit_score.py (written by this session)
+  step 2  data/rebuild/session72/*.csv (read by the script, run 1 and run 2)
+  step 2  wrote data/rebuild/session73/rno_test_predictions.csv, rno_test_rungs.csv,
+          rno_mae_table.csv, rno_fit_metadata.json, rno_dropped_rows.csv
+  step 3  wrote data/rebuild/session73/run2/rno_test_predictions.csv,
+          run2/rno_fit_metadata.json; read both prediction files;
+          wrote data/rebuild/session73/rno_determinism.csv
+  step 4  read rno_mae_table.csv; hashed every file in data/rebuild/session73/;
+          wrote data/rebuild/session73/SEAL_SHA256.txt
+  Nothing under scripts/ (other than the new session73 file), data/processed/
+  or notes/ was opened in Steps 1-4, and git was not used to view them.
+
+Comparison (Step 5):
+  step 5  directory listings: data/processed/, notes/ (names only),
+          data/raw/ (RNO names only)
+  step 5  scripts/session62_reserved_confirm.py (grep; lines 50-409, 646-752)
+  step 5  header and first RNO rows of: data/processed/grib_features_v16_window.csv,
+          session38_joined.csv, session49_v16_window_with_upper_air.csv,
+          session51_v16_window_with_moisture.csv, session53_v16_window_with_pressure.csv,
+          session55_v16_window_with_radiation.csv,
+          session63_reserved_window_with_{upper_air,moisture,pressure,radiation}.csv,
+          session63_reserved_confirm_grid.csv; head of
+          data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv
+  step 5  scripts/session73_compare.py (written by this session); every file it
+          opened is listed at the end of its output below.
+
+================================================================================
+STEP 1 — RECIPE AND GAPS (written before Step 5; draft fixed before any record file was opened)
+================================================================================
+STEP 1 — THE FIT RECIPE, FROM THE DOCS ONLY (clean room)
+
+1. LightGBM settings. DECISIONS-archive D21.4 (session 06 lock), repeated in
+   D48.6 (session 39 lock) and applied unchanged by D58 item 4 / SPEC 8.3:
+     objective=regression_l1  n_estimators=300  learning_rate=0.05
+     num_leaves=15            min_child_samples=40  subsample=1.0
+     colsample_bytree=1.0     reg_alpha=0.0     reg_lambda=0.0
+     random_state=42          n_jobs=1          deterministic=True
+     force_row_wise=True      verbose=-1
+   Pinned versions (D21.4, D48.6): python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.
+   In use this session (.venv): python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+   (scikit-learn 1.9.0 present only as the source of libomp.dylib, D24/Q16).
+   OpenMP loader: the D24/Q16 route (point the loader at scikit-learn's
+   bundled libomp and restart once), written from that description.
+
+2. Target and prediction.
+   - Residual = observed temperature minus GRIB forecast temperature at the
+     target hour (SPEC 4.2; D48.1). At RNO the forecast is the
+     elevation-adjusted GRIB 2 m temperature (SPEC 5.2, 7.2; D48.3).
+   - Corrected forecast = GRIB forecast + predicted residual (SPEC 4.2;
+     D48.1; D21.2).
+   - MAE is the mean absolute gap between the corrected forecast and the
+     observation, in degC (SPEC 5.1; D21.9). Raw GFS: |obs - raw GFS|
+     (SPEC 5.2). Persistence: |obs - previous calendar day's paired
+     observation| (D21.8, D48.9, SPEC 2.1d).
+
+3. Feature columns and order.
+   - B (SPEC 8.2; D48.4): forecast_temp_c, season_sin, season_cos,
+     cloud_cover, wind_speed_10m. Session 72 columns: temperature_grib_c,
+     season_sin, season_cos, cloud_cover_grib_pct, wind_speed_grib_kmh.
+   - B+D,L,R,T (SPEC 8.1; D58 items 1 and 3): B plus lapse_rate_t2_t850 (L),
+     dewpoint_depression_t2m_floored (D), pressure_tendency_3h_hpa (T),
+     dswrf_2h_wm2 (R). Order used: B's five, then L, D, T, R (gap G15).
+
+4. D's floor. dewpoint_depression_t2m_floored = max(dewpoint_depression_t2m,
+   0), applied in the feature matrix only; the unfloored column is kept
+   (SPEC 8.1; D58 item 3; F100 Task 1 item 3; D53).
+
+5. Complete-case rule. A row is used only if every relevant column has a
+   value, built over B's columns and the columns backing D (unfloored), L,
+   R and T (SPEC 8.3; D58 item 5). Rows with no paired observation are
+   dropped and counted (SPEC 2.2, 4.5). Train 2021-03-24..2024-07-31, test
+   2024-08-01..2025-07-31 (SPEC 8.3; D58 item 4).
+   Persistence is scored only on test days with a previous-day observation;
+   raw GFS and the models on every test day (SPEC 8.5; D58 item 6).
+
+6. MAE definition and rounding. Mean absolute error in degC (SPEC 5.1).
+   F109 reports each MAE at 4 decimals (DECISIONS-archive F109 Step 2;
+   D64.4 "each MAE (at F109's 4 decimals)").
+
+GAPS (continuing from session 72's G1-G13)
+
+G14. Which LightGBM API. The D21.4 parameter names (n_estimators,
+     subsample, colsample_bytree, reg_alpha, reg_lambda, random_state,
+     n_jobs) are the scikit-learn API's names. Choice: lightgbm.LGBMRegressor
+     .fit(X, y). Alternative: lightgbm.train() with a params dict and
+     num_boost_round=300 (the aliases map to the same core parameters).
+G15. Column order. D48.4 gives B's order. The docs list the added features
+     in two orders: the name "B+D,L,R,T" (D, L, R, T) and the tables in
+     SPEC 8.1 / D58 item 3 (L, D, T, R, also the build order E1-E4).
+     Choice: B's five in D48.4 order, then L, D, T, R (the only place the
+     columns are written out as a list). Alternatives: D, L, R, T;
+     alphabetical. Column order can change which split wins an exact gain
+     tie, so it can move predictions.
+G16. Precision of B's model inputs. G4 (session 72) chose 3 decimals for
+     temperature_grib_c. The docs are silent for cloud cover and wind
+     speed. Choice: the 3-decimal stored columns for all three GRIB values
+     (the same reading as G4); season terms at full precision (G8).
+     Alternative: the *_full columns.
+G17. Unstated LightGBM parameters. Everything D21.4 does not list is left at
+     the lightgbm 4.7.0 default: boosting_type=gbdt, max_depth=-1,
+     min_split_gain=0, min_child_weight=1e-3, subsample_freq=0,
+     subsample_for_bin=200000, max_bin=255, no early stopping, no
+     validation set, no categorical features. The fully resolved parameter
+     block of every fitted booster is saved in rno_fit_metadata.json.
+G18. Seed and threading. Not a gap: D21.4 states random_state=42, n_jobs=1,
+     deterministic=True, force_row_wise=True. Noted: LightGBM derives its
+     other seeds from random_state.
+G19. Row order of the training matrix. Docs silent. Choice: ascending
+     date. Alternative: any other order (can change floating-point sums in
+     histogram building at the last bit).
+G20. Target precision. SPEC 4.2 defines the residual but not its stored
+     decimals. Choice: residual_c as session 72 stored it,
+     round(obs_c - forecast_c, 3) (checked: equal on all 1,587 rows).
+     Alternative: the unrounded difference (differs by at most 5.8e-15 here).
+G21. Corrected forecast precision and MAE basis. Docs silent on rounding
+     the corrected forecast. Choice: forecast_c + predicted residual at
+     full float64 precision; MAE = numpy mean of |obs_c - corrected|.
+     Alternatives: |residual_c - prediction|; rounding the corrected value.
+G22. B's row set. F109 reports one n_train per airport; D58 item 5 defines
+     the mask for the final set. Whether B is fitted on the B-only mask or
+     the shared mask is not stated. Choice: the shared mask for all three
+     models. Moot at RNO: both masks give 1,222 train / 365 test rows.
+G23. "Underlying columns" in SPEC 8.3. Stored derived columns (D58 item 5's
+     wording) or their inputs (t2m_raw, t850, dew_point_2m, PRMSL x2,
+     DSWRF)? Choice: the derived columns. Moot at RNO: the one incomplete
+     row (2022-11-30) lacks all of them.
+G24. MAE rounding function. F109 prints 4 decimals; the rounding rule is not
+     stated. Choice: Python '%.4f' (nearest, on the binary value).
+     Alternative: decimal half-up. Differs only on an exact 5 in the fifth
+     decimal.
+G25. Rounding function for Variant G4-alt's L and D. Docs give round(.., 3)
+     only. Choice: Python round() on floats. Alternative: decimal half-up.
+
+================================================================================
+STEP 2 — FIT AND SCORE (python scripts/session73_fit_score.py --run 1)
+================================================================================
+session 73 fit/score, run 1, python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+loaded rows: {'features': 1591, 'observations': 1591, 'persistence': 1591, 'train': 1226, 'test': 365}
+non-finite values dropped at load: 0 {}
+stored-column checks: {'L_stored_eq_round(t2m_raw-t850,3)': 1590, 'D_stored_eq_round(t2m_raw-dew_point_2m,3)': 1590, 'Dfloored_stored_eq_max(D,0)': 1590, 'rows_checked': 1590, 'D_floor_changes_P': 0, 'D_floor_changes_G4alt': 0, 'L_P_ne_G4alt': 655, 'D_P_ne_G4alt': 655, 't2m_raw_ne_t2m_raw_from_full': 655}
+B            n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+BDLRT_P      n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+BDLRT_G4alt  n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+MAE table written (not printed here; printed only at Step 4).
+files opened by this run:
+  read  data/rebuild/session72/rno_features.csv
+  read  data/rebuild/session72/rno_observations.csv
+  read  data/rebuild/session72/rno_persistence.csv
+  write data/rebuild/session73/rno_test_predictions.csv
+  write data/rebuild/session73/rno_test_rungs.csv
+  write data/rebuild/session73/rno_mae_table.csv
+  write data/rebuild/session73/rno_fit_metadata.json
+  write data/rebuild/session73/rno_dropped_rows.csv
+
+Dropped rows (data/rebuild/session73/rno_dropped_rows.csv):
+model,window,target_date,reason
+B,train,2021-05-02,no target: no usable routine report within 15 min
+B,train,2021-05-03,no target: no usable routine report within 15 min
+B,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,lapse_rate_t2_t850,dewpoint_depression_t2m,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+B,train,2024-03-21,no target: no usable routine report within 15 min
+BDLRT_P,train,2021-05-02,no target: no usable routine report within 15 min
+BDLRT_P,train,2021-05-03,no target: no usable routine report within 15 min
+BDLRT_P,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,lapse_rate_t2_t850,dewpoint_depression_t2m,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+BDLRT_P,train,2024-03-21,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2021-05-02,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2021-05-03,no target: no usable routine report within 15 min
+BDLRT_G4alt,train,2022-11-30,"feature missing: temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,L_g4,D_g4,pressure_tendency_3h_hpa,dswrf_2h_wm2 (B tmp2m: file or sidecar absent; ...) | no target: paired"
+BDLRT_G4alt,train,2024-03-21,no target: no usable routine report within 15 min
+Note: 2022-11-30's 'no target: paired' means the observation paired but the
+residual is blank because the B forecast is missing (F90's broken run).
+
+================================================================================
+STEP 3 — FIT DETERMINISM (run 2 in its own process, then --compare-runs)
+================================================================================
+session 73 fit/score, run 2, python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+loaded rows: {'features': 1591, 'observations': 1591, 'persistence': 1591, 'train': 1226, 'test': 365}
+non-finite values dropped at load: 0 {}
+stored-column checks: {'L_stored_eq_round(t2m_raw-t850,3)': 1590, 'D_stored_eq_round(t2m_raw-dew_point_2m,3)': 1590, 'Dfloored_stored_eq_max(D,0)': 1590, 'rows_checked': 1590, 'D_floor_changes_P': 0, 'D_floor_changes_G4alt': 0, 'L_P_ne_G4alt': 655, 'D_P_ne_G4alt': 655, 't2m_raw_ne_t2m_raw_from_full': 655}
+B            n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+BDLRT_P      n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+BDLRT_G4alt  n_train=1222 n_test=365 (B-only mask: 1222/365) trees=300
+files opened by this run:
+  read  data/rebuild/session72/rno_features.csv
+  read  data/rebuild/session72/rno_observations.csv
+  read  data/rebuild/session72/rno_persistence.csv
+  write data/rebuild/session73/run2/rno_test_predictions.csv
+  write data/rebuild/session73/run2/rno_fit_metadata.json
+
+Step 3 determinism: run 1 vs run 2, exact float equality
+  B            predicted_residual_c   identical 365 of 365, max abs diff 0.0
+  B            corrected_forecast_c   identical 365 of 365, max abs diff 0.0
+  BDLRT_P      predicted_residual_c   identical 365 of 365, max abs diff 0.0
+  BDLRT_P      corrected_forecast_c   identical 365 of 365, max abs diff 0.0
+  BDLRT_G4alt  predicted_residual_c   identical 365 of 365, max abs diff 0.0
+  BDLRT_G4alt  corrected_forecast_c   identical 365 of 365, max abs diff 0.0
+
+================================================================================
+STEP 4 — SEAL (python scripts/session73_fit_score.py --seal)
+================================================================================
+Step 4 sealed MAE table (test window 2024-08-01..2025-07-31)
+  rung            n  unrounded              4 dp
+  raw_gfs       365  1.6134575342465751     1.6135
+  persistence   365  2.7562739726027394     2.7563
+  B             365  1.4271639701054912     1.4272
+  BDLRT_P       365  1.270310972624561      1.2703
+  BDLRT_G4alt   365  1.2596427543475537     1.2596
+SHA-256 of every file in data/rebuild/session73/:
+  e0327c2e17609386496f7ed76418bff4c23a4705c3fb6606cf1aafab35888b80  data/rebuild/session73/rno_determinism.csv
+  1158a6cbce095d9325bd030929096a405b37fec376be30623aafcfcaf1f5b9f1  data/rebuild/session73/rno_dropped_rows.csv
+  0fb379c06fe8a4618cda8beebb685be3ae3faaec82a69a15d82f6ef0ded7b507  data/rebuild/session73/rno_fit_metadata.json
+  2ecfe31e7e4efb1777a9c489d7508dcec948db33a3dc5aa72d45e462d18f2006  data/rebuild/session73/rno_mae_table.csv
+  b77d8e00c60c0a35fa5553a90f8c48c3f18714f7db3c637442321ba724c129ed  data/rebuild/session73/rno_test_predictions.csv
+  d125fa351941304550567feae727a8d099d5f61674035c5abc41717d92768a30  data/rebuild/session73/rno_test_rungs.csv
+  41fb938cc159dc2be9080bd84c018072ff296799ba1d370f2168d8c85d7a7933  data/rebuild/session73/run2/rno_fit_metadata.json
+  b77d8e00c60c0a35fa5553a90f8c48c3f18714f7db3c637442321ba724c129ed  data/rebuild/session73/run2/rno_test_predictions.csv
+seal list written to data/rebuild/session73/SEAL_SHA256.txt
+
+================================================================================
+STEP 5 — COMPARISON WITH THE RECORD (python scripts/session73_compare.py)
+================================================================================
+SESSION 73 STEP 5 -- comparison with the record (D64.4)
+Seal re-check (8 files):
+  unchanged data/rebuild/session73/rno_determinism.csv
+  unchanged data/rebuild/session73/rno_dropped_rows.csv
+  unchanged data/rebuild/session73/rno_fit_metadata.json
+  unchanged data/rebuild/session73/rno_mae_table.csv
+  unchanged data/rebuild/session73/rno_test_predictions.csv
+  unchanged data/rebuild/session73/rno_test_rungs.csv
+  unchanged data/rebuild/session73/run2/rno_fit_metadata.json
+  unchanged data/rebuild/session73/run2/rno_test_predictions.csv
+  files changed: 0; files not in the seal list: []
+
+STAGE 1 -- observations and targets
+  [1] obs_c vs record rule on raw IEM (load_obs_all) n=1588 matched=1588 mismatched=0 max_abs_diff=0.0 precision=2
+  [1] obs_c vs session38_joined.obs_temp_c         n=1588 matched=1587 mismatched=1 max_abs_diff=0.0 precision=2
+      mismatch 2022-11-30  rebuild=6.11  record=None  (present in one side only)
+  [1] report_time_utc vs record rule               n=1588 matched=1588 mismatched=0 max_abs_diff=None precision=minute  -- record rule keeps the last qualifying report
+  [1] residual_c vs session38_joined.resid         n=1587 matched=1587 mismatched=0 max_abs_diff=0.0 precision=3
+  [1] residual_c vs record in-memory obs - fc (unrounded) n=1587 matched=1587 mismatched=0 max_abs_diff=0.0 precision=3 (coarser: rebuild stores fewer decimals)  -- record stores no rounded residual; rebuild stores 3 dp, so compared at 3 dp (coarser)
+
+STAGE 2 -- pairing and the day set
+  [2] paired days vs record rule on raw IEM        n=1588 matched=1588 mismatched=0 max_abs_diff=None precision=set
+  [2] paired days vs session38_joined days         n=1588 matched=1588 mismatched=0 max_abs_diff=None precision=set  -- session38_joined needs a forecast too; 2022-11-30 (no B forecast) is added back to the record side when the raw rule pairs it
+  [2] calendar day set (features table) vs record B file n=1590 matched=1590 mismatched=0 max_abs_diff=None precision=set
+
+STAGE 3 -- feature columns, Variant P
+  [3P] B temperature_grib_c                         n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] B cloud_cover_grib_pct                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] B wind_speed_grib_kmh                        n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] B season_sin (record code, recomputed)       n=1591 matched=1591 mismatched=0 max_abs_diff=0.0 precision=None  -- not stored in any record file; exact float equality
+  [3P] B season_cos (record code, recomputed)       n=1591 matched=1591 mismatched=0 max_abs_diff=0.0 precision=None  -- not stored in any record file; exact float equality
+  [3P] L lapse_rate_t2_t850                         n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] D dewpoint_depression_t2m                    n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] T pressure_tendency_3h_hpa                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] R dswrf_2h_wm2                               n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input t2m_raw (L file)                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input t2m_raw (D file)                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input t850                                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input dew_point_2m                           n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input pressure_msl_hpa                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input pressure_surface_hpa                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input pressure_msl_lead_minus3_hpa           n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] input dswrf_ave_to_lead_wm2                  n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3P] D floored (model input; record floors in memory) n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+
+STAGE 3 -- feature columns, Variant G4alt
+  [3G4alt] B temperature_grib_c                         n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] B cloud_cover_grib_pct                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] B wind_speed_grib_kmh                        n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] B season_sin (record code, recomputed)       n=1591 matched=1591 mismatched=0 max_abs_diff=0.0 precision=None  -- not stored in any record file; exact float equality
+  [3G4alt] B season_cos (record code, recomputed)       n=1591 matched=1591 mismatched=0 max_abs_diff=0.0 precision=None  -- not stored in any record file; exact float equality
+  [3G4alt] L lapse_rate_t2_t850                         n=1590 matched=935 mismatched=655 max_abs_diff=0.001000000000000112 precision=3
+      mismatch 2021-03-24  rebuild=-0.245  record=-0.246  (differs at 3 decimals)
+      mismatch 2021-03-25  rebuild=-0.399  record=-0.4  (differs at 3 decimals)
+      mismatch 2021-03-30  rebuild=0.46  record=0.459  (differs at 3 decimals)
+      mismatch 2021-04-03  rebuild=0.261  record=0.26  (differs at 3 decimals)
+      mismatch 2021-04-04  rebuild=0.177  record=0.176  (differs at 3 decimals)
+      mismatch 2021-04-05  rebuild=0.177  record=0.176  (differs at 3 decimals)
+      mismatch 2021-04-06  rebuild=0.056  record=0.055  (differs at 3 decimals)
+      mismatch 2021-04-10  rebuild=-0.036  record=-0.037  (differs at 3 decimals)
+      mismatch 2021-04-12  rebuild=0.171  record=0.17  (differs at 3 decimals)
+      mismatch 2021-04-13  rebuild=-0.213  record=-0.214  (differs at 3 decimals)
+      mismatch 2021-04-14  rebuild=0.076  record=0.075  (differs at 3 decimals)
+      mismatch 2021-04-15  rebuild=0.149  record=0.148  (differs at 3 decimals)
+      mismatch 2021-04-18  rebuild=0.648  record=0.647  (differs at 3 decimals)
+      mismatch 2021-04-19  rebuild=0.511  record=0.51  (differs at 3 decimals)
+      mismatch 2021-04-20  rebuild=0.202  record=0.201  (differs at 3 decimals)
+      mismatch 2021-04-23  rebuild=0.142  record=0.141  (differs at 3 decimals)
+      mismatch 2021-04-24  rebuild=0.119  record=0.118  (differs at 3 decimals)
+      mismatch 2021-04-25  rebuild=-0.268  record=-0.269  (differs at 3 decimals)
+      mismatch 2021-04-27  rebuild=0.447  record=0.446  (differs at 3 decimals)
+      mismatch 2021-05-01  rebuild=0.526  record=0.525  (differs at 3 decimals)
+  [3G4alt] D dewpoint_depression_t2m                    n=1590 matched=935 mismatched=655 max_abs_diff=0.0010000000000047748 precision=3
+      mismatch 2021-03-24  rebuild=21.97  record=21.969  (differs at 3 decimals)
+      mismatch 2021-03-25  rebuild=10.253  record=10.252  (differs at 3 decimals)
+      mismatch 2021-03-30  rebuild=22.449  record=22.448  (differs at 3 decimals)
+      mismatch 2021-04-03  rebuild=27.295  record=27.294  (differs at 3 decimals)
+      mismatch 2021-04-04  rebuild=27.201  record=27.2  (differs at 3 decimals)
+      mismatch 2021-04-05  rebuild=18.465  record=18.464  (differs at 3 decimals)
+      mismatch 2021-04-06  rebuild=19.388  record=19.387  (differs at 3 decimals)
+      mismatch 2021-04-10  rebuild=24.717  record=24.716  (differs at 3 decimals)
+      mismatch 2021-04-12  rebuild=22.039  record=22.038  (differs at 3 decimals)
+      mismatch 2021-04-13  rebuild=7.949  record=7.948  (differs at 3 decimals)
+      mismatch 2021-04-14  rebuild=9.687  record=9.686  (differs at 3 decimals)
+      mismatch 2021-04-15  rebuild=19.678  record=19.677  (differs at 3 decimals)
+      mismatch 2021-04-18  rebuild=27.989  record=27.988  (differs at 3 decimals)
+      mismatch 2021-04-19  rebuild=24.764  record=24.763  (differs at 3 decimals)
+      mismatch 2021-04-20  rebuild=24.441  record=24.44  (differs at 3 decimals)
+      mismatch 2021-04-23  rebuild=24.785  record=24.784  (differs at 3 decimals)
+      mismatch 2021-04-24  rebuild=16.44  record=16.439  (differs at 3 decimals)
+      mismatch 2021-04-25  rebuild=13.504  record=13.503  (differs at 3 decimals)
+      mismatch 2021-04-27  rebuild=17.693  record=17.692  (differs at 3 decimals)
+      mismatch 2021-05-01  rebuild=31.147  record=31.146  (differs at 3 decimals)
+  [3G4alt] T pressure_tendency_3h_hpa                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] R dswrf_2h_wm2                               n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input t2m_raw (L file)                       n=1590 matched=935 mismatched=655 max_abs_diff=0.0010000000000047748 precision=3
+      mismatch 2021-03-24  rebuild=6.711  record=6.71  (differs at 3 decimals)
+      mismatch 2021-03-25  rebuild=5.637  record=5.636  (differs at 3 decimals)
+      mismatch 2021-03-30  rebuild=8.232  record=8.231  (differs at 3 decimals)
+      mismatch 2021-04-03  rebuild=18.403  record=18.402  (differs at 3 decimals)
+      mismatch 2021-04-04  rebuild=18.661  record=18.66  (differs at 3 decimals)
+      mismatch 2021-04-05  rebuild=14.269  record=14.268  (differs at 3 decimals)
+      mismatch 2021-04-06  rebuild=13.696  record=13.695  (differs at 3 decimals)
+      mismatch 2021-04-10  rebuild=16.663  record=16.662  (differs at 3 decimals)
+      mismatch 2021-04-12  rebuild=12.525  record=12.524  (differs at 3 decimals)
+      mismatch 2021-04-13  rebuild=6.953  record=6.952  (differs at 3 decimals)
+      mismatch 2021-04-14  rebuild=6.258  record=6.257  (differs at 3 decimals)
+      mismatch 2021-04-15  rebuild=10.844  record=10.843  (differs at 3 decimals)
+      mismatch 2021-04-18  rebuild=15.712  record=15.711  (differs at 3 decimals)
+      mismatch 2021-04-19  rebuild=19.429  record=19.428  (differs at 3 decimals)
+      mismatch 2021-04-20  rebuild=17.282  record=17.281  (differs at 3 decimals)
+      mismatch 2021-04-23  rebuild=18.424  record=18.423  (differs at 3 decimals)
+      mismatch 2021-04-24  rebuild=10.718  record=10.717  (differs at 3 decimals)
+      mismatch 2021-04-25  rebuild=8.053  record=8.052  (differs at 3 decimals)
+      mismatch 2021-04-27  rebuild=10.414  record=10.413  (differs at 3 decimals)
+      mismatch 2021-05-01  rebuild=21.526  record=21.525  (differs at 3 decimals)
+  [3G4alt] input t2m_raw (D file)                       n=1590 matched=935 mismatched=655 max_abs_diff=0.0010000000000047748 precision=3
+      mismatch 2021-03-24  rebuild=6.711  record=6.71  (differs at 3 decimals)
+      mismatch 2021-03-25  rebuild=5.637  record=5.636  (differs at 3 decimals)
+      mismatch 2021-03-30  rebuild=8.232  record=8.231  (differs at 3 decimals)
+      mismatch 2021-04-03  rebuild=18.403  record=18.402  (differs at 3 decimals)
+      mismatch 2021-04-04  rebuild=18.661  record=18.66  (differs at 3 decimals)
+      mismatch 2021-04-05  rebuild=14.269  record=14.268  (differs at 3 decimals)
+      mismatch 2021-04-06  rebuild=13.696  record=13.695  (differs at 3 decimals)
+      mismatch 2021-04-10  rebuild=16.663  record=16.662  (differs at 3 decimals)
+      mismatch 2021-04-12  rebuild=12.525  record=12.524  (differs at 3 decimals)
+      mismatch 2021-04-13  rebuild=6.953  record=6.952  (differs at 3 decimals)
+      mismatch 2021-04-14  rebuild=6.258  record=6.257  (differs at 3 decimals)
+      mismatch 2021-04-15  rebuild=10.844  record=10.843  (differs at 3 decimals)
+      mismatch 2021-04-18  rebuild=15.712  record=15.711  (differs at 3 decimals)
+      mismatch 2021-04-19  rebuild=19.429  record=19.428  (differs at 3 decimals)
+      mismatch 2021-04-20  rebuild=17.282  record=17.281  (differs at 3 decimals)
+      mismatch 2021-04-23  rebuild=18.424  record=18.423  (differs at 3 decimals)
+      mismatch 2021-04-24  rebuild=10.718  record=10.717  (differs at 3 decimals)
+      mismatch 2021-04-25  rebuild=8.053  record=8.052  (differs at 3 decimals)
+      mismatch 2021-04-27  rebuild=10.414  record=10.413  (differs at 3 decimals)
+      mismatch 2021-05-01  rebuild=21.526  record=21.525  (differs at 3 decimals)
+  [3G4alt] input t850                                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input dew_point_2m                           n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input pressure_msl_hpa                       n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input pressure_surface_hpa                   n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input pressure_msl_lead_minus3_hpa           n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] input dswrf_ave_to_lead_wm2                  n=1590 matched=1590 mismatched=0 max_abs_diff=0.0 precision=3
+  [3G4alt] D floored (model input; record floors in memory) n=1590 matched=935 mismatched=655 max_abs_diff=0.0010000000000047748 precision=3
+      mismatch 2021-03-24  rebuild=21.97  record=21.969  (differs at 3 decimals)
+      mismatch 2021-03-25  rebuild=10.253  record=10.252  (differs at 3 decimals)
+      mismatch 2021-03-30  rebuild=22.449  record=22.448  (differs at 3 decimals)
+      mismatch 2021-04-03  rebuild=27.295  record=27.294  (differs at 3 decimals)
+      mismatch 2021-04-04  rebuild=27.201  record=27.2  (differs at 3 decimals)
+      mismatch 2021-04-05  rebuild=18.465  record=18.464  (differs at 3 decimals)
+      mismatch 2021-04-06  rebuild=19.388  record=19.387  (differs at 3 decimals)
+      mismatch 2021-04-10  rebuild=24.717  record=24.716  (differs at 3 decimals)
+      mismatch 2021-04-12  rebuild=22.039  record=22.038  (differs at 3 decimals)
+      mismatch 2021-04-13  rebuild=7.949  record=7.948  (differs at 3 decimals)
+      mismatch 2021-04-14  rebuild=9.687  record=9.686  (differs at 3 decimals)
+      mismatch 2021-04-15  rebuild=19.678  record=19.677  (differs at 3 decimals)
+      mismatch 2021-04-18  rebuild=27.989  record=27.988  (differs at 3 decimals)
+      mismatch 2021-04-19  rebuild=24.764  record=24.763  (differs at 3 decimals)
+      mismatch 2021-04-20  rebuild=24.441  record=24.44  (differs at 3 decimals)
+      mismatch 2021-04-23  rebuild=24.785  record=24.784  (differs at 3 decimals)
+      mismatch 2021-04-24  rebuild=16.44  record=16.439  (differs at 3 decimals)
+      mismatch 2021-04-25  rebuild=13.504  record=13.503  (differs at 3 decimals)
+      mismatch 2021-04-27  rebuild=17.693  record=17.692  (differs at 3 decimals)
+      mismatch 2021-05-01  rebuild=31.147  record=31.146  (differs at 3 decimals)
+
+STAGE 4 -- complete-case row set and counts
+  [4] feature complete-case set, train             n=1225 matched=1225 mismatched=0 max_abs_diff=None precision=set
+  [4] complete-case with observation, train        n=1222 matched=1222 mismatched=0 max_abs_diff=None precision=set
+  [4] feature complete-case set, test              n=365 matched=365 mismatched=0 max_abs_diff=None precision=set
+  [4] complete-case with observation, test         n=365 matched=365 mismatched=0 max_abs_diff=None precision=set
+  [4] counts vs F109 (session-64-confirm-output.txt) n=4 matched=4 mismatched=0 max_abs_diff=None precision=integer  -- rebuild {'n_train': 1222, 'n_test': 365, 'no_obs_dropped': 0, 'no_prev': 0}; record {'n_train': 1222, 'n_test': 365, 'no_obs_dropped': 0, 'no_prev': 0}
+  fitted-model counts (rebuild metadata): {'B': (1222, 365), 'BDLRT_P': (1222, 365), 'BDLRT_G4alt': (1222, 365)}
+
+STAGE 5 -- raw GFS and persistence values (test window)
+  [5] raw GFS (record fc = temperature_grib_c)     n=365 matched=365 mismatched=0 max_abs_diff=0.0 precision=3
+  [5] persistence (record raw_persist rule)        n=365 matched=365 mismatched=0 max_abs_diff=0.0 precision=2
+
+STAGE 6 -- model predictions
+  [6] per-day model predictions                    n=0 matched=0 mismatched=0 max_abs_diff=None precision=n/a  -- NOT COMPARABLE: no record file stores per-day predictions (run_confirm() writes only per-airport MAEs to session63_reserved_confirm_grid.csv)
+
+STAGE 7 -- MAE
+  [7P] raw_gfs      rebuild 1.6134575342465751 (1.6135) | F109 1.6135 match | grid 1.6134575342465751 match | abs diff 0.0
+  [7P] persistence  rebuild 2.7562739726027394 (2.7563) | F109 2.7563 match | grid 2.7562739726027394 match | abs diff 0.0
+  [7P] B            rebuild 1.4271639701054912 (1.4272) | F109 1.4272 match | grid 1.4271639701054912 match | abs diff 0.0
+  [7P] BDLRT_P      rebuild 1.270310972624561 (1.2703) | F109 1.2742 MISMATCH | grid 1.2741517803385958 MISMATCH | abs diff 0.003840807714034833
+  [7G4alt] raw_gfs      rebuild 1.6134575342465751 (1.6135) | F109 1.6135 match | grid 1.6134575342465751 match | abs diff 0.0
+  [7G4alt] persistence  rebuild 2.7562739726027394 (2.7563) | F109 2.7563 match | grid 2.7562739726027394 match | abs diff 0.0
+  [7G4alt] B            rebuild 1.4271639701054912 (1.4272) | F109 1.4272 match | grid 1.4271639701054912 match | abs diff 0.0
+  [7G4alt] BDLRT_G4alt  rebuild 1.2596427543475537 (1.2596) | F109 1.2742 MISMATCH | grid 1.2741517803385958 MISMATCH | abs diff 0.01450902599104209
+
+RECORD FACTS (from session62_reserved_confirm.py; reported only)
+  line 118: FINAL_CODES = ["D", "L", "R", "T"]
+  line 126: BASE_KEYS = ["temp", "season_sin", "season_cos", "cloud_cover", "wind_speed_10m"]
+  line 127: FINAL_FEATURE_KEYS = BASE_KEYS + sum((FAMILY_KEYS[c] for c in FINAL_CODES), [])
+  line 376: rows.append({**base, "obs": o, "resid": o - base["fc"]})
+  line 390: e_model = [(r["fc"] + float(pred[i])) - r["obs"] for i, r in enumerate(test_rows)]
+  line 386: m = lgb.LGBMRegressor(**LGB_PARAMS)
+  line 360: "dewpoint_depression_t2m_floored": max(d_["dewpoint_depression_t2m"], 0.0),
+  rebuild B+D,L,R,T column order: ['temperature_grib_c', 'season_sin', 'season_cos', 'cloud_cover_grib_pct', 'wind_speed_grib_kmh', 'lapse_rate_t2_t850', 'dewpoint_depression_t2m_floored', 'pressure_tendency_3h_hpa', 'dswrf_2h_wm2']
+  record  B+D,L,R,T column order: temp, season_sin, season_cos, cloud_cover, wind_speed_10m, dewpoint_depression_t2m_floored, lapse_rate_t2_t850, dswrf_2h_wm2, pressure_tendency_3h_hpa
+
+DIAGNOSTIC G4 (report only)
+  rows where t2m_raw != t2m_raw_from_full: 655
+  Variant P     L lapse_rate_t2_t850                 mismatched    0; inside the 655: 0; outside: 0
+  Variant P     D dewpoint_depression_t2m            mismatched    0; inside the 655: 0; outside: 0
+  Variant P     input t2m_raw (L file)               mismatched    0; inside the 655: 0; outside: 0
+  Variant P     input t2m_raw (D file)               mismatched    0; inside the 655: 0; outside: 0
+  Variant P     D floored (model input; record floors in memory) mismatched    0; inside the 655: 0; outside: 0
+  Variant G4alt L lapse_rate_t2_t850                 mismatched  655; inside the 655: 655; outside: 0
+  Variant G4alt D dewpoint_depression_t2m            mismatched  655; inside the 655: 655; outside: 0
+  Variant G4alt input t2m_raw (L file)               mismatched  655; inside the 655: 655; outside: 0
+  Variant G4alt input t2m_raw (D file)               mismatched  655; inside the 655: 655; outside: 0
+  Variant G4alt D floored (model input; record floors in memory) mismatched  655; inside the 655: 655; outside: 0
+
+DIAGNOSTIC G5 (report only): 2.0436 vs 2.04356932
+  rows checked 1590; record temperature_grib_c equals round(u+2.0436,3) on 1590, round(u+2.04356932,3) on 1539, both on 1539
+  rows where the two constants give different 3-dp values: 51
+    2021-05-31  2.0436->28.343  2.04356932->28.342  record 28.343
+    2021-08-20  2.0436->26.656  2.04356932->26.655  record 26.656
+    2021-08-30  2.0436->33.834  2.04356932->33.833  record 33.834
+    2021-10-03  2.0436->25.734  2.04356932->25.733  record 25.734
+    2021-11-03  2.0436->18.184  2.04356932->18.183  record 18.184
+    2022-02-09  2.0436->11.050  2.04356932->11.049  record 11.050
+    2022-06-25  2.0436->30.815  2.04356932->30.814  record 30.815
+    2022-07-02  2.0436->28.550  2.04356932->28.549  record 28.550
+    2022-08-28  2.0436->29.761  2.04356932->29.760  record 29.761
+    2022-10-29  2.0436->15.407  2.04356932->15.406  record 15.407
+    2022-11-14  2.0436->4.719  2.04356932->4.718  record 4.719
+    2022-11-26  2.0436->9.203  2.04356932->9.202  record 9.203
+    2022-12-12  2.0436->0.291  2.04356932->0.290  record 0.291
+    2022-12-13  2.0436->1.548  2.04356932->1.547  record 1.548
+    2022-12-19  2.0436->3.650  2.04356932->3.649  record 3.650
+    2023-01-03  2.0436->1.180  2.04356932->1.179  record 1.180
+    2023-02-10  2.0436->10.525  2.04356932->10.524  record 10.525
+    2023-03-15  2.0436->5.763  2.04356932->5.762  record 5.763
+    2023-03-17  2.0436->8.614  2.04356932->8.613  record 8.614
+    2023-06-03  2.0436->24.416  2.04356932->24.415  record 24.416
+  mismatches in B temperature, target (3 dp) or raw GFS: 0
+
+DIAGNOSTIC: session 72's clean room (read log in notes/session-72-output.txt)
+  lines naming scripts/, data/processed/ or notes/: 9
+    line 8: files under data/raw/ with their sidecars. Nothing under scripts/,
+    line 9: data/processed/ or notes/ was opened.)
+    line 149: ================ STEP 2: PLAN (scripts/session72_ldtr_pull.py --plan) ================
+    line 227: ================ STEP 3: BUILD (scripts/session72_build.py) ================
+    line 442: 19. Written by this session and then read: scripts/session72_ldtr_pull.py, scripts/session72_build.py
+    line 443: 20. Read by scripts/session72_ldtr_pull.py: data/raw/grib/session72/* (idx, messages, sidecars); session71 manifest (--plan only)
+    line 444: 21. Read by scripts/session72_build.py: the five RNO routine chunk files 2021..2025 (the 2026 file and the candidate file were NOT opened); session37 params CSV
+    line 449: NOT opened at any point: anything under scripts/ other than the two new session72 files; anything under data/processed/; anything under notes/ (written to, not 
+    line 459: git status --porcelain: M DECISIONS.md, M STATUS.md; untracked: data/raw/diagnostics/session72/, data/rebuild/, docs/session-72.md, notes/session-72-output.txt,
+  lines naming a params CSV: 3
+    line 44: data/raw/diagnostics/session37/session37_elevation_correction_params.csv).
+    line 435: 12. data/raw/diagnostics/session37/session37_elevation_correction_params.csv
+    line 444: 21. Read by scripts/session72_build.py: the five RNO routine chunk files 2021..2025 (the 2026 file and the candidate file were NOT opened); session37 params CSV
+
+FILES OPENED BY THIS SCRIPT
+  read  data/rebuild/session73/SEAL_SHA256.txt
+  read  data/rebuild/session72/rno_features.csv
+  read  data/rebuild/session72/rno_observations.csv
+  read  data/rebuild/session72/rno_persistence.csv
+  read  data/rebuild/session73/rno_test_rungs.csv
+  read  data/rebuild/session73/rno_mae_table.csv
+  read  data/rebuild/session73/rno_test_predictions.csv
+  read  data/processed/grib_features_v16_window.csv
+  read  data/processed/session38_joined.csv
+  read  data/processed/session49_v16_window_with_upper_air.csv
+  read  data/processed/session63_reserved_window_with_upper_air.csv
+  read  data/processed/session51_v16_window_with_moisture.csv
+  read  data/processed/session63_reserved_window_with_moisture.csv
+  read  data/processed/session53_v16_window_with_pressure.csv
+  read  data/processed/session63_reserved_window_with_pressure.csv
+  read  data/processed/session55_v16_window_with_radiation.csv
+  read  data/processed/session63_reserved_window_with_radiation.csv
+  read  data/processed/session63_reserved_confirm_grid.csv
+  read  scripts/session62_reserved_confirm.py
+  read  notes/session-64-confirm-output.txt
+  read  data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv
+  read  data/raw/iem_asos_RNO_2022-01-01_2022-12-31_routine.csv
+  read  data/raw/iem_asos_RNO_2023-01-01_2023-12-31_routine.csv
+  read  data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv
+  read  data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv
+  read  data/raw/iem_asos_RNO_2026-01-01_2026-07-31_routine.csv
+  write data/rebuild/session73/comparison/mismatch_1_obs_c_vs_session38_joined_obs_temp_c.csv
+  write data/rebuild/session73/comparison/mismatch_3G4alt_L_lapse_rate_t2_t850.csv
+  write data/rebuild/session73/comparison/mismatch_3G4alt_D_dewpoint_depression_t2m.csv
+  write data/rebuild/session73/comparison/mismatch_3G4alt_input_t2m_raw_L_file.csv
+  write data/rebuild/session73/comparison/mismatch_3G4alt_input_t2m_raw_D_file.csv
+  write data/rebuild/session73/comparison/mismatch_3G4alt_D_floored_model_input_record_floors_in_memory.csv
+  read  data/rebuild/session73/rno_fit_metadata.json
+  write data/rebuild/session73/comparison/mismatch_7P_MAE_BDLRT_P.csv
+  write data/rebuild/session73/comparison/mismatch_7G4alt_MAE_BDLRT_G4alt.csv
+  write data/rebuild/session73/comparison/stage7_mae.csv
+  read  notes/session-72-output.txt
+  write data/rebuild/session73/comparison/stage_summary.csv
+
+================================================================================
+STEP 5 — CATEGORIES OF EACH MISMATCH (report only; nothing fixed or re-run, D64.5)
+================================================================================
+Record files used (F109 at RNO):
+  scripts/session62_reserved_confirm.py (the frozen script F109 ran)
+  notes/session-64-confirm-output.txt (F109's printed counts)
+  data/processed/session63_reserved_confirm_grid.csv (F109's unrounded MAEs)
+  data/processed/grib_features_v16_window.csv (B, both windows)
+  data/processed/session49/51/53/55_v16_window_with_*.csv (L, D, T, R, train)
+  data/processed/session63_reserved_window_with_*.csv (L, D, T, R, test)
+  data/raw/iem_asos_RNO_*_routine.csv (the record's observation input; the
+    record script pairs in memory, so its rule was re-applied here)
+  data/processed/session38_joined.csv (the committed per-day obs/residual join)
+
+1. Stage 1, obs_c vs session38_joined, 1 row (2022-11-30): NOT COMPARABLE.
+   session38_joined has no row for that day because it has no B forecast
+   (F90's broken run). The record rule on the raw IEM file pairs the same
+   value (stage 1, first line: 1,588 of 1,588). The day is in no fit.
+2. Stage 3, Variant G4-alt: L, D, D floored, and t2m_raw in both files,
+   655 rows each: DATA. The input t2m_raw differs by 0.001 on exactly the
+   655 rows where t2m_raw and t2m_raw_from_full differ (655 of 655 inside,
+   0 outside). The record matches Variant P on every row (0 mismatches).
+3. Stage 7, Variant P, B+D,L,R,T MAE (rebuild 1.2703 unrounded
+   1.270310972624561; record 1.2742 / 1.2741517803385958; abs diff
+   0.003840807714034833): FIT DETERMINISM under D64.4's rule. Every input
+   value to this fit matches the record: observations, targets (at 3 dp),
+   day set, all nine feature columns, the complete-case sets (1,222 / 365),
+   and B's output (B's MAE matches at full precision). The rebuild's own
+   fit repeats exactly (Step 3). Two recipe details differ from the record
+   code, found only at Step 5:
+     - column order (G15): rebuild ... L, D, T, R; record ... D, L, R, T
+       (FINAL_CODES, line 118);
+     - target rounding (G20): rebuild trains on residual_c at 3 dp; record
+       trains on the unrounded obs - fc (line 376). B shares this
+       difference and still matches bit for bit.
+   Neither was tested: there is no re-run (D64.5).
+4. Stage 7, Variant G4-alt, B+D,L,R,T MAE (rebuild 1.2596, abs diff
+   0.01450902599104209): DATA (L and D inputs differ on 655 rows, item 2),
+   plus the same two recipe details as item 3.
+5. Stage 6, per-day predictions: NOT COMPARABLE. No record file stores them.

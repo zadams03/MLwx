@@ -1,0 +1,61 @@
+stage,item,n,matched,mismatched,max_abs_diff,precision,coarser,note
+1,obs_c vs record rule on raw IEM (load_obs_all),1588,1588,0,0.0,2,False,
+1,obs_c vs session38_joined.obs_temp_c,1588,1587,1,0.0,2,False,
+1,report_time_utc vs record rule,1588,1588,0,,minute,False,record rule keeps the last qualifying report
+1,residual_c vs session38_joined.resid,1587,1587,0,0.0,3,False,
+1,residual_c vs record in-memory obs - fc (unrounded),1587,1587,0,0.0,3,True,"record stores no rounded residual; rebuild stores 3 dp, so compared at 3 dp (coarser)"
+2,paired days vs record rule on raw IEM,1588,1588,0,,set,False,
+2,paired days vs session38_joined days,1588,1588,0,,set,False,session38_joined needs a forecast too; 2022-11-30 (no B forecast) is added back to the record side when the raw rule pairs it
+2,calendar day set (features table) vs record B file,1590,1590,0,,set,False,
+3P,B temperature_grib_c,1590,1590,0,0.0,3,False,
+3P,B cloud_cover_grib_pct,1590,1590,0,0.0,3,False,
+3P,B wind_speed_grib_kmh,1590,1590,0,0.0,3,False,
+3P,"B season_sin (record code, recomputed)",1591,1591,0,0.0,,False,not stored in any record file; exact float equality
+3P,"B season_cos (record code, recomputed)",1591,1591,0,0.0,,False,not stored in any record file; exact float equality
+3P,L lapse_rate_t2_t850,1590,1590,0,0.0,3,False,
+3P,D dewpoint_depression_t2m,1590,1590,0,0.0,3,False,
+3P,T pressure_tendency_3h_hpa,1590,1590,0,0.0,3,False,
+3P,R dswrf_2h_wm2,1590,1590,0,0.0,3,False,
+3P,input t2m_raw (L file),1590,1590,0,0.0,3,False,
+3P,input t2m_raw (D file),1590,1590,0,0.0,3,False,
+3P,input t850,1590,1590,0,0.0,3,False,
+3P,input dew_point_2m,1590,1590,0,0.0,3,False,
+3P,input pressure_msl_hpa,1590,1590,0,0.0,3,False,
+3P,input pressure_surface_hpa,1590,1590,0,0.0,3,False,
+3P,input pressure_msl_lead_minus3_hpa,1590,1590,0,0.0,3,False,
+3P,input dswrf_ave_to_lead_wm2,1590,1590,0,0.0,3,False,
+3P,D floored (model input; record floors in memory),1590,1590,0,0.0,3,False,
+3G4alt,B temperature_grib_c,1590,1590,0,0.0,3,False,
+3G4alt,B cloud_cover_grib_pct,1590,1590,0,0.0,3,False,
+3G4alt,B wind_speed_grib_kmh,1590,1590,0,0.0,3,False,
+3G4alt,"B season_sin (record code, recomputed)",1591,1591,0,0.0,,False,not stored in any record file; exact float equality
+3G4alt,"B season_cos (record code, recomputed)",1591,1591,0,0.0,,False,not stored in any record file; exact float equality
+3G4alt,L lapse_rate_t2_t850,1590,935,655,0.001000000000000112,3,False,
+3G4alt,D dewpoint_depression_t2m,1590,935,655,0.0010000000000047748,3,False,
+3G4alt,T pressure_tendency_3h_hpa,1590,1590,0,0.0,3,False,
+3G4alt,R dswrf_2h_wm2,1590,1590,0,0.0,3,False,
+3G4alt,input t2m_raw (L file),1590,935,655,0.0010000000000047748,3,False,
+3G4alt,input t2m_raw (D file),1590,935,655,0.0010000000000047748,3,False,
+3G4alt,input t850,1590,1590,0,0.0,3,False,
+3G4alt,input dew_point_2m,1590,1590,0,0.0,3,False,
+3G4alt,input pressure_msl_hpa,1590,1590,0,0.0,3,False,
+3G4alt,input pressure_surface_hpa,1590,1590,0,0.0,3,False,
+3G4alt,input pressure_msl_lead_minus3_hpa,1590,1590,0,0.0,3,False,
+3G4alt,input dswrf_ave_to_lead_wm2,1590,1590,0,0.0,3,False,
+3G4alt,D floored (model input; record floors in memory),1590,935,655,0.0010000000000047748,3,False,
+4,"feature complete-case set, train",1225,1225,0,,set,False,
+4,"complete-case with observation, train",1222,1222,0,,set,False,
+4,"feature complete-case set, test",365,365,0,,set,False,
+4,"complete-case with observation, test",365,365,0,,set,False,
+4,counts vs F109 (session-64-confirm-output.txt),4,4,0,,integer,False,"rebuild {'n_train': 1222, 'n_test': 365, 'no_obs_dropped': 0, 'no_prev': 0}; record {'n_train': 1222, 'n_test': 365, 'no_obs_dropped': 0, 'no_prev': 0}"
+5,raw GFS (record fc = temperature_grib_c),365,365,0,0.0,3,False,
+5,persistence (record raw_persist rule),365,365,0,0.0,2,False,
+6,per-day model predictions,0,0,0,,n/a,False,NOT COMPARABLE: no record file stores per-day predictions (run_confirm() writes only per-airport MAEs to session63_reserved_confirm_grid.csv)
+7P,MAE raw_gfs,1,1,0,0.0,4,False,full-precision grid: match
+7P,MAE persistence,1,1,0,0.0,4,False,full-precision grid: match
+7P,MAE B,1,1,0,0.0,4,False,full-precision grid: match
+7P,MAE BDLRT_P,1,0,1,0.003840807714034833,4,False,full-precision grid: MISMATCH
+7G4alt,MAE raw_gfs,1,1,0,0.0,4,False,full-precision grid: match
+7G4alt,MAE persistence,1,1,0,0.0,4,False,full-precision grid: match
+7G4alt,MAE B,1,1,0,0.0,4,False,full-precision grid: match
+7G4alt,MAE BDLRT_G4alt,1,0,1,0.01450902599104209,4,False,full-precision grid: MISMATCH
