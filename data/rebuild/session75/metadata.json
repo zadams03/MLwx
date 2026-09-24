@@ -1,0 +1,109 @@
+{
+ "session": 75,
+ "purpose": "Q33, descriptive only (D66.3); changes no verdict, claim or figure",
+ "versions": {
+  "python": "3.12.2",
+  "numpy": "2.5.2",
+  "lightgbm": "4.7.0"
+ },
+ "lgb_params": {
+  "objective": "regression_l1",
+  "n_estimators": 300,
+  "learning_rate": 0.05,
+  "num_leaves": 15,
+  "min_child_samples": 40,
+  "subsample": 1.0,
+  "colsample_bytree": 1.0,
+  "reg_alpha": 0.0,
+  "reg_lambda": 0.0,
+  "random_state": 42,
+  "n_jobs": 1,
+  "deterministic": true,
+  "force_row_wise": true,
+  "verbose": -1
+ },
+ "cutoff": "2024-08-01",
+ "folds": {
+  "2022-23": [
+   "2021-03-24",
+   "2022-07-31",
+   "2022-08-01",
+   "2023-07-31"
+  ],
+  "2023-24": [
+   "2021-03-24",
+   "2023-07-31",
+   "2023-08-01",
+   "2024-07-31"
+  ]
+ },
+ "load_counts": {
+  "B": {
+   "read": 7952,
+   "removed_on_or_after_cutoff": 1825,
+   "non_finite_dropped": 0,
+   "kept": 6127
+  },
+  "L": {
+   "read": 6127,
+   "removed_on_or_after_cutoff": 0,
+   "non_finite_dropped": 0,
+   "kept": 6127
+  },
+  "D": {
+   "read": 6127,
+   "removed_on_or_after_cutoff": 0,
+   "non_finite_dropped": 0,
+   "kept": 6127
+  },
+  "T": {
+   "read": 6127,
+   "removed_on_or_after_cutoff": 0,
+   "non_finite_dropped": 0,
+   "kept": 6127
+  },
+  "R": {
+   "read": 6127,
+   "removed_on_or_after_cutoff": 0,
+   "non_finite_dropped": 0,
+   "kept": 6127
+  }
+ },
+ "obs_counts": {
+  "EGLC": {
+   "obs_days_removed_on_or_after_cutoff": 728,
+   "obs_non_finite_dropped": 0,
+   "complete_case_rows": 1226,
+   "no_usable_obs_dropped": 1,
+   "joined_rows": 1225
+  },
+  "LFPG": {
+   "obs_days_removed_on_or_after_cutoff": 729,
+   "obs_non_finite_dropped": 0,
+   "complete_case_rows": 1226,
+   "no_usable_obs_dropped": 2,
+   "joined_rows": 1224
+  },
+  "DSM": {
+   "obs_days_removed_on_or_after_cutoff": 730,
+   "obs_non_finite_dropped": 0,
+   "complete_case_rows": 1225,
+   "no_usable_obs_dropped": 0,
+   "joined_rows": 1225
+  },
+  "YSDU": {
+   "obs_days_removed_on_or_after_cutoff": 716,
+   "obs_non_finite_dropped": 0,
+   "complete_case_rows": 1225,
+   "no_usable_obs_dropped": 12,
+   "joined_rows": 1213
+  },
+  "RNO": {
+   "obs_days_removed_on_or_after_cutoff": 730,
+   "obs_non_finite_dropped": 0,
+   "complete_case_rows": 1225,
+   "no_usable_obs_dropped": 3,
+   "joined_rows": 1222
+  }
+ }
+}

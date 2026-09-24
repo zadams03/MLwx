@@ -1,0 +1,11 @@
+station,fold,wins,pairs,win_share,margin_c,margin_pct,reading
+EGLC,2022-23,12240,12240,1.0,0.07064618852287619,6.0500590009262405,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+EGLC,2023-24,12240,12240,1.0,0.07552862167379903,7.975425934319885,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+LFPG,2022-23,12240,12240,1.0,0.04473929531634946,3.8630671863896615,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+LFPG,2023-24,12240,12240,1.0,0.038472302700101046,3.3148798468120475,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+DSM,2022-23,12240,12240,1.0,0.07639220136172886,4.425291551116136,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+DSM,2023-24,12240,12240,1.0,0.09046179265482035,5.729989377441026,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+YSDU,2022-23,12240,12240,1.0,0.056014866118969664,4.671277319798165,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+YSDU,2023-24,12240,12240,1.0,0.03153450591725626,2.799604589968914,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+RNO,2022-23,12240,12240,1.0,0.06268540445026805,4.4737756696670985,"B+D,L,R,T beats B by more than the column-order spread, on this fold"
+RNO,2023-24,12240,12240,1.0,0.15135343229165188,11.667832494691195,"B+D,L,R,T beats B by more than the column-order spread, on this fold"

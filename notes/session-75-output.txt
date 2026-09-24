@@ -1,0 +1,217 @@
+
+==============================================================================
+session 75 --anchors  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+fold 2022-23: 2021-03-24..2022-07-31 train, 2022-08-01..2023-07-31 test; guard: no raise
+fold 2023-24: 2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test; guard: no raise
+
+rows read, per committed file (all five airports):
+  B  read=7952 removed_on_or_after_2024-08-01=1825 non_finite_dropped=0 kept=6127
+  L  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  D  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  T  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  R  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+observations and joined rows, per airport:
+  EGLC obs days removed (on or after 2024-08-01)=728 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=1 joined=1225
+  LFPG obs days removed (on or after 2024-08-01)=729 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=2 joined=1224
+  DSM  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=0 joined=1225
+  YSDU obs days removed (on or after 2024-08-01)=716 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=12 joined=1213
+  RNO  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=3 joined=1222
+EGLC 2022-23 B+D,L,R,T record    n_train=495 n_test=364 MAE=1.0970480192866763 (1.0970)
+EGLC 2022-23 B         canonical n_train=495 n_test=364 MAE=1.1676942078095525 (1.1677)
+EGLC 2023-24 B+D,L,R,T record    n_train=859 n_test=366 MAE=0.8714881558099459 (0.8715)
+EGLC 2023-24 B         canonical n_train=859 n_test=366 MAE=0.9470167774837449 (0.9470)
+LFPG 2022-23 B+D,L,R,T record    n_train=493 n_test=365 MAE=1.1133895478467908 (1.1134)
+LFPG 2022-23 B         canonical n_train=493 n_test=365 MAE=1.1581288431631402 (1.1581)
+LFPG 2023-24 B+D,L,R,T record    n_train=858 n_test=366 MAE=1.1221218810408342 (1.1221)
+LFPG 2023-24 B         canonical n_train=858 n_test=366 MAE=1.1605941837409353 (1.1606)
+DSM  2022-23 B+D,L,R,T record    n_train=495 n_test=364 MAE=1.6498714917606239 (1.6499)
+DSM  2022-23 B         canonical n_train=495 n_test=364 MAE=1.7262636931223527 (1.7263)
+DSM  2023-24 B+D,L,R,T record    n_train=859 n_test=366 MAE=1.4882809710048912 (1.4883)
+DSM  2023-24 B         canonical n_train=859 n_test=366 MAE=1.5787427636597116 (1.5787)
+YSDU 2022-23 B+D,L,R,T record    n_train=493 n_test=357 MAE=1.1431189528380674 (1.1431)
+YSDU 2022-23 B         canonical n_train=493 n_test=357 MAE=1.199133818957037 (1.1991)
+YSDU 2023-24 B+D,L,R,T record    n_train=850 n_test=363 MAE=1.0948569148657197 (1.0949)
+YSDU 2023-24 B         canonical n_train=850 n_test=363 MAE=1.126391420782976 (1.1264)
+RNO  2022-23 B+D,L,R,T record    n_train=493 n_test=364 MAE=1.3384891085072084 (1.3385)
+RNO  2022-23 B         canonical n_train=493 n_test=364 MAE=1.4011745129574764 (1.4012)
+RNO  2023-24 B+D,L,R,T record    n_train=857 n_test=365 MAE=1.14583207633231 (1.1458)
+RNO  2023-24 B         canonical n_train=857 n_test=365 MAE=1.2971855086239619 (1.2972)
+wrote data/rebuild/session75/anchor_predictions.csv and data/rebuild/session75/anchor_mae.csv
+
+anchor MAE against session 61's committed grid (same model, fold, airport, column order):
+  stn  fold    model      n_train      s61   n_test      s61   MAE 4dp   s61 4dp  match
+  EGLC 2022-23 B+D,L,R,T      495      495      364      364    1.0970    1.0970  yes
+  EGLC 2022-23 B              495      495      364      364    1.1677    1.1677  yes
+  EGLC 2023-24 B+D,L,R,T      859      859      366      366    0.8715    0.8715  yes
+  EGLC 2023-24 B              859      859      366      366    0.9470    0.9470  yes
+  LFPG 2022-23 B+D,L,R,T      493      493      365      365    1.1134    1.1134  yes
+  LFPG 2022-23 B              493      493      365      365    1.1581    1.1581  yes
+  LFPG 2023-24 B+D,L,R,T      858      858      366      366    1.1221    1.1221  yes
+  LFPG 2023-24 B              858      858      366      366    1.1606    1.1606  yes
+  DSM  2022-23 B+D,L,R,T      495      495      364      364    1.6499    1.6499  yes
+  DSM  2022-23 B              495      495      364      364    1.7263    1.7263  yes
+  DSM  2023-24 B+D,L,R,T      859      859      366      366    1.4883    1.4883  yes
+  DSM  2023-24 B              859      859      366      366    1.5787    1.5787  yes
+  YSDU 2022-23 B+D,L,R,T      493      493      357      357    1.1431    1.1431  yes
+  YSDU 2022-23 B              493      493      357      357    1.1991    1.1991  yes
+  YSDU 2023-24 B+D,L,R,T      850      850      363      363    1.0949    1.0949  yes
+  YSDU 2023-24 B              850      850      363      363    1.1264    1.1264  yes
+  RNO  2022-23 B+D,L,R,T      493      493      364      364    1.3385    1.3385  yes
+  RNO  2022-23 B              493      493      364      364    1.4012    1.4012  yes
+  RNO  2023-24 B+D,L,R,T      857      857      365      365    1.1458    1.1458  yes
+  RNO  2023-24 B              857      857      365      365    1.2972    1.2972  yes
+
+==============================================================================
+session 75 --repeat  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+fold 2022-23: 2021-03-24..2022-07-31 train, 2022-08-01..2023-07-31 test; guard: no raise
+fold 2023-24: 2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test; guard: no raise
+
+rows read, per committed file (all five airports):
+  B  read=7952 removed_on_or_after_2024-08-01=1825 non_finite_dropped=0 kept=6127
+  L  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  D  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  T  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  R  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+observations and joined rows, per airport:
+  EGLC obs days removed (on or after 2024-08-01)=728 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=1 joined=1225
+  LFPG obs days removed (on or after 2024-08-01)=729 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=2 joined=1224
+  DSM  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=0 joined=1225
+  YSDU obs days removed (on or after 2024-08-01)=716 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=12 joined=1213
+  RNO  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=3 joined=1222
+EGLC 2022-23 B+D,L,R,T record    n_train=495 n_test=364 MAE=1.0970480192866763 (1.0970)
+EGLC 2023-24 B+D,L,R,T record    n_train=859 n_test=366 MAE=0.8714881558099459 (0.8715)
+LFPG 2022-23 B+D,L,R,T record    n_train=493 n_test=365 MAE=1.1133895478467908 (1.1134)
+LFPG 2023-24 B+D,L,R,T record    n_train=858 n_test=366 MAE=1.1221218810408342 (1.1221)
+DSM  2022-23 B+D,L,R,T record    n_train=495 n_test=364 MAE=1.6498714917606239 (1.6499)
+DSM  2023-24 B+D,L,R,T record    n_train=859 n_test=366 MAE=1.4882809710048912 (1.4883)
+YSDU 2022-23 B+D,L,R,T record    n_train=493 n_test=357 MAE=1.1431189528380674 (1.1431)
+YSDU 2023-24 B+D,L,R,T record    n_train=850 n_test=363 MAE=1.0948569148657197 (1.0949)
+RNO  2022-23 B+D,L,R,T record    n_train=493 n_test=364 MAE=1.3384891085072084 (1.3385)
+RNO  2023-24 B+D,L,R,T record    n_train=857 n_test=365 MAE=1.14583207633231 (1.1458)
+wrote data/rebuild/session75/run2/anchor_predictions.csv 
+
+determinism: record-order B+D,L,R,T, run 1 against run 2 (separate process):
+  EGLC 2022-23  364 of 364 predictions equal, max abs diff 0.0
+  EGLC 2023-24  366 of 366 predictions equal, max abs diff 0.0
+  LFPG 2022-23  365 of 365 predictions equal, max abs diff 0.0
+  LFPG 2023-24  366 of 366 predictions equal, max abs diff 0.0
+  DSM  2022-23  364 of 364 predictions equal, max abs diff 0.0
+  DSM  2023-24  366 of 366 predictions equal, max abs diff 0.0
+  YSDU 2022-23  357 of 357 predictions equal, max abs diff 0.0
+  YSDU 2023-24  363 of 363 predictions equal, max abs diff 0.0
+  RNO  2022-23  364 of 364 predictions equal, max abs diff 0.0
+  RNO  2023-24  365 of 365 predictions equal, max abs diff 0.0
+
+==============================================================================
+session 75 --spread  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+
+anchor MAE against session 61's committed grid (same model, fold, airport, column order):
+  stn  fold    model      n_train      s61   n_test      s61   MAE 4dp   s61 4dp  match
+  EGLC 2022-23 B+D,L,R,T      495      495      364      364    1.0970    1.0970  yes
+  EGLC 2022-23 B              495      495      364      364    1.1677    1.1677  yes
+  EGLC 2023-24 B+D,L,R,T      859      859      366      366    0.8715    0.8715  yes
+  EGLC 2023-24 B              859      859      366      366    0.9470    0.9470  yes
+  LFPG 2022-23 B+D,L,R,T      493      493      365      365    1.1134    1.1134  yes
+  LFPG 2022-23 B              493      493      365      365    1.1581    1.1581  yes
+  LFPG 2023-24 B+D,L,R,T      858      858      366      366    1.1221    1.1221  yes
+  LFPG 2023-24 B              858      858      366      366    1.1606    1.1606  yes
+  DSM  2022-23 B+D,L,R,T      495      495      364      364    1.6499    1.6499  yes
+  DSM  2022-23 B              495      495      364      364    1.7263    1.7263  yes
+  DSM  2023-24 B+D,L,R,T      859      859      366      366    1.4883    1.4883  yes
+  DSM  2023-24 B              859      859      366      366    1.5787    1.5787  yes
+  YSDU 2022-23 B+D,L,R,T      493      493      357      357    1.1431    1.1431  yes
+  YSDU 2022-23 B              493      493      357      357    1.1991    1.1991  yes
+  YSDU 2023-24 B+D,L,R,T      850      850      363      363    1.0949    1.0949  yes
+  YSDU 2023-24 B              850      850      363      363    1.1264    1.1264  yes
+  RNO  2022-23 B+D,L,R,T      493      493      364      364    1.3385    1.3385  yes
+  RNO  2022-23 B              493      493      364      364    1.4012    1.4012  yes
+  RNO  2023-24 B+D,L,R,T      857      857      365      365    1.1458    1.1458  yes
+  RNO  2023-24 B              857      857      365      365    1.2972    1.2972  yes
+fold 2022-23: 2021-03-24..2022-07-31 train, 2022-08-01..2023-07-31 test; guard: no raise
+fold 2023-24: 2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test; guard: no raise
+
+rows read, per committed file (all five airports):
+  B  read=7952 removed_on_or_after_2024-08-01=1825 non_finite_dropped=0 kept=6127
+  L  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  D  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  T  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+  R  read=6127 removed_on_or_after_2024-08-01=0 non_finite_dropped=0 kept=6127
+observations and joined rows, per airport:
+  EGLC obs days removed (on or after 2024-08-01)=728 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=1 joined=1225
+  LFPG obs days removed (on or after 2024-08-01)=729 obs non-finite dropped=0 complete-case rows=1226 no usable obs dropped=2 joined=1224
+  DSM  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=0 joined=1225
+  YSDU obs days removed (on or after 2024-08-01)=716 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=12 joined=1213
+  RNO  obs days removed (on or after 2024-08-01)=730 obs non-finite dropped=0 complete-case rows=1225 no usable obs dropped=3 joined=1222
+
+orderings: B+D,L,R,T 102 (2 anchors + 100 drawn, 0 redrawn), B 120
+  EGLC 2022-23 done (222 fits so far)
+  EGLC 2023-24 done (444 fits so far)
+  LFPG 2022-23 done (666 fits so far)
+  LFPG 2023-24 done (888 fits so far)
+  DSM  2022-23 done (1110 fits so far)
+  DSM  2023-24 done (1332 fits so far)
+  YSDU 2022-23 done (1554 fits so far)
+  YSDU 2023-24 done (1776 fits so far)
+  RNO  2022-23 done (1998 fits so far)
+  RNO  2023-24 done (2220 fits so far)
+fits run: 2220. wrote data/rebuild/session75/spread_mae.csv and data/rebuild/session75/orderings.csv
+
+==============================================================================
+session 75 --report  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+
+the spread's anchor fits equal the 2a anchor fits exactly (all 20)
+
+per airport, per fold. MAE in deg C. '%' columns are relative to that model's record-order MAE (B: canonical order).
+
+B (120 orderings)
+  stn  fold         rec      min      max    range       sd     min%     max%   range%      sd%
+  EGLC 2022-23   1.1677   1.1569   1.1773   0.0205   0.0035   -0.93%   +0.83%    1.75%    0.30%
+  EGLC 2023-24   0.9470   0.9421   0.9561   0.0140   0.0032   -0.52%   +0.96%    1.48%    0.34%
+  LFPG 2022-23   1.1581   1.1439   1.1581   0.0143   0.0024   -1.23%   +0.00%    1.23%    0.21%
+  LFPG 2023-24   1.1606   1.1498   1.1704   0.0206   0.0043   -0.93%   +0.84%    1.77%    0.37%
+  DSM  2022-23   1.7263   1.7199   1.7495   0.0296   0.0062   -0.37%   +1.35%    1.71%    0.36%
+  DSM  2023-24   1.5787   1.5654   1.5885   0.0232   0.0044   -0.85%   +0.62%    1.47%    0.28%
+  YSDU 2022-23   1.1991   1.1842   1.2067   0.0225   0.0046   -1.24%   +0.63%    1.88%    0.38%
+  YSDU 2023-24   1.1264   1.1189   1.1381   0.0192   0.0037   -0.67%   +1.04%    1.71%    0.33%
+  RNO  2022-23   1.4012   1.3848   1.4123   0.0275   0.0061   -1.17%   +0.79%    1.96%    0.44%
+  RNO  2023-24   1.2972   1.2843   1.3090   0.0247   0.0051   -0.99%   +0.91%    1.90%    0.39%
+
+B+D,L,R,T (102 orderings)
+  stn  fold         rec      min      max    range       sd     min%     max%   range%      sd%
+  EGLC 2022-23   1.0970   1.0856   1.1095   0.0240   0.0053   -1.05%   +1.14%    2.18%    0.48%
+  EGLC 2023-24   0.8715   0.8671   0.8863   0.0192   0.0037   -0.51%   +1.70%    2.20%    0.43%
+  LFPG 2022-23   1.1134   1.1087   1.1362   0.0275   0.0058   -0.42%   +2.05%    2.47%    0.52%
+  LFPG 2023-24   1.1221   1.1071   1.1297   0.0226   0.0037   -1.34%   +0.67%    2.01%    0.33%
+  DSM  2022-23   1.6499   1.6278   1.6664   0.0386   0.0069   -1.34%   +1.00%    2.34%    0.42%
+  DSM  2023-24   1.4883   1.4725   1.5047   0.0322   0.0067   -1.06%   +1.10%    2.16%    0.45%
+  YSDU 2022-23   1.1431   1.1334   1.1601   0.0267   0.0059   -0.85%   +1.48%    2.33%    0.52%
+  YSDU 2023-24   1.0949   1.0846   1.1144   0.0298   0.0052   -0.93%   +1.79%    2.72%    0.47%
+  RNO  2022-23   1.3385   1.3264   1.3484   0.0219   0.0048   -0.90%   +0.74%    1.64%    0.36%
+  RNO  2023-24   1.1458   1.1338   1.1610   0.0272   0.0050   -1.05%   +1.32%    2.37%    0.44%
+
+win share and reading (D66.3 rule). Margin = canonical B MAE minus record-order B+D,L,R,T MAE.
+  stn  fold          wins     share    margin  margin%  reading
+  EGLC 2022-23 12240/12240   100.00%    0.0706   +6.05%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  EGLC 2023-24 12240/12240   100.00%    0.0755   +7.98%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  LFPG 2022-23 12240/12240   100.00%    0.0447   +3.86%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  LFPG 2023-24 12240/12240   100.00%    0.0385   +3.31%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  DSM  2022-23 12240/12240   100.00%    0.0764   +4.43%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  DSM  2023-24 12240/12240   100.00%    0.0905   +5.73%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  YSDU 2022-23 12240/12240   100.00%    0.0560   +4.67%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  YSDU 2023-24 12240/12240   100.00%    0.0315   +2.80%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  RNO  2022-23 12240/12240   100.00%    0.0627   +4.47%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+  RNO  2023-24 12240/12240   100.00%    0.1514  +11.67%  B+D,L,R,T beats B by more than the column-order spread, on this fold
+
+scale comparison (rough, different year). F109 is 2024-25 (training 1,226 days); these folds are 2022-23 (495 days) and 2023-24 (860 days). A guide to scale only.
+  stn   F109 margin  F114 shift BDLRT range 22-23 BDLRT range 23-24
+  EGLC       0.0853      0.0038           0.0240           0.0192
+  LFPG       0.0916      0.0038           0.0275           0.0226
+  DSM        0.0279      0.0038           0.0386           0.0322
+  YSDU       0.0387      0.0038           0.0267           0.0298
+  RNO        0.1530      0.0038           0.0219           0.0272
+
+wrote data/rebuild/session75/summary.csv and data/rebuild/session75/win_share.csv
