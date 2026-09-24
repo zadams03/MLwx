@@ -1,0 +1,76 @@
+{
+ "session": 74,
+ "run": "run 1",
+ "purpose": "D65.4 diagnostic fits; changes no verdict, claim or figure (D64.1, D65.1)",
+ "versions": {
+  "python": "3.12.2",
+  "numpy": "2.5.2",
+  "lightgbm": "4.7.0"
+ },
+ "params": {
+  "objective": "regression_l1",
+  "n_estimators": 300,
+  "learning_rate": 0.05,
+  "num_leaves": 15,
+  "min_child_samples": 40,
+  "subsample": 1.0,
+  "colsample_bytree": 1.0,
+  "reg_alpha": 0.0,
+  "reg_lambda": 0.0,
+  "random_state": 42,
+  "n_jobs": 1,
+  "deterministic": true,
+  "force_row_wise": true,
+  "verbose": -1
+ },
+ "cells": {
+  "C1": {
+   "feature_order": [
+    "temperature_grib_c",
+    "season_sin",
+    "season_cos",
+    "cloud_cover_grib_pct",
+    "wind_speed_grib_kmh",
+    "dewpoint_depression_t2m_floored",
+    "lapse_rate_t2_t850",
+    "dswrf_2h_wm2",
+    "pressure_tendency_3h_hpa"
+   ],
+   "target": "rounded",
+   "n_train": 1222,
+   "n_test": 365
+  },
+  "C2": {
+   "feature_order": [
+    "temperature_grib_c",
+    "season_sin",
+    "season_cos",
+    "cloud_cover_grib_pct",
+    "wind_speed_grib_kmh",
+    "lapse_rate_t2_t850",
+    "dewpoint_depression_t2m_floored",
+    "pressure_tendency_3h_hpa",
+    "dswrf_2h_wm2"
+   ],
+   "target": "unrounded",
+   "n_train": 1222,
+   "n_test": 365
+  },
+  "C3": {
+   "feature_order": [
+    "temperature_grib_c",
+    "season_sin",
+    "season_cos",
+    "cloud_cover_grib_pct",
+    "wind_speed_grib_kmh",
+    "dewpoint_depression_t2m_floored",
+    "lapse_rate_t2_t850",
+    "dswrf_2h_wm2",
+    "pressure_tendency_3h_hpa"
+   ],
+   "target": "unrounded",
+   "n_train": 1222,
+   "n_test": 365
+  }
+ }
+}

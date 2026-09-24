@@ -922,3 +922,32 @@ written for a new airport must:
 
 These apply to **new** code only. The historical and frozen scripts stand
 as they are (DECISIONS D62.3).
+
+**8.8 Implementation details (from the record, DECISIONS D65).** The
+clean-room rebuild of F109 at RNO (DECISIONS D64, F112, F113, F114) found
+details that the other documents did not state. Each row below says what
+the record code does. "Record" means the scripts and committed files behind
+F109: `session62_reserved_confirm.py` (the frozen F109 script, which also
+pairs the observations), `session37_decode.py` / `session40_decode.py` (B),
+`session49_upper_air_pull.py` (L), `session51_moisture_pull.py` (D) and
+`session63_reserved_year_build.py` (L and D for the reserved year), all
+under `scripts/`.
+
+| item | what the record does | source |
+|---|---|---|
+| G1 report tie-break | If more than one qualifying report falls in the window on a day, the **last one in the file** is kept (each overwrites the one before). This is not an explicit nearest-report choice (4.5). | `session62_reserved_confirm.py` l.321–344 (l.343); DECISIONS D62 |
+| G2 nearest usable report | A report whose `tmpc` is `M`, blank, `T` or `None` is skipped **before** the choice, so the day keeps any other qualifying report that has a temperature. Each report is first assigned to its nearest whole hour (a report at `:30` goes to the next hour). | `session62_reserved_confirm.py` l.330–342 |
+| G3 the 15-minute edge | A report is dropped only if it is **more than** 15 minutes from the hour, so a report exactly 15 minutes out is kept (inclusive). | `session62_reserved_confirm.py` l.336 |
+| G4 stored precision of `temperature_grib_c` | Stored at **3 decimals**, rounded **after** the elevation constant is added. `cloud_cover_grib_pct` and `wind_speed_grib_kmh` are also stored at 3 decimals. `t2m_raw` is built from the stored 3-decimal value: `t2m_raw = round(temperature_grib_c − correction_c, 3)`. | `session37_decode.py` l.154, l.164–166; `session40_decode.py` l.140, l.150–152; `session49_upper_air_pull.py` l.295; `session51_moisture_pull.py` l.306; `session63_reserved_year_build.py` l.272, l.304 |
+| G5 the elevation constant as used | RNO uses **2.0436** (°C), read from the params CSV, where it is stored rounded to 4 decimals. It is not the unrounded formula value (2.04356932). Applied as `(K − 273.15) + correction_c`. | `session37_elevation_fix.py` l.250–252; `data/raw/diagnostics/session37/session37_elevation_correction_params.csv`; `session37_decode.py` l.71–77, l.154; DECISIONS F113.5 |
+| G6 bilinear interpolation | The 4 grid points nearest the SPEC 3.4 grid point come from eccodes' `codes_grib_find_nearest`. The value is standard bilinear: weights come from the fractional position along latitude and along longitude (not inverse distance). A negative longitude is shifted by +360 first. If the 4 points do not form a 2 × 2 box and have zero span, the nearest point's value is used. | `session37_decode.py` l.80–118; `session40_decode.py` l.66–104; `bilinear_from_gid` in `session49_upper_air_pull.py` l.148 and `session51_moisture_pull.py` l.155 |
+| G7 rounding order for L and D | `t850` and `dew_point_2m` are **not** rounded before the subtraction. The record computes `round(t2m_raw − t850, 3)` and `round(t2m_raw − dew_point_2m, 3)` with the full-precision decoded value (K → °C, −273.15). The stored `t850` and `dew_point_2m` columns are rounded to 3 decimals separately. `t2m_raw` already has 3 decimals, so rounding first gives the same stored value except at an exact rounding tie. At RNO it gave the same value on every row (DECISIONS F113). | `session49_upper_air_pull.py` l.299, l.301, l.384; `session51_moisture_pull.py` l.310, l.312, l.510; `session63_reserved_year_build.py` l.278, l.313 |
+| G14 API | LightGBM's scikit-learn API: `lgb.LGBMRegressor(**LGB_PARAMS).fit(x, y)`, with no other fit arguments. | `session62_reserved_confirm.py` l.386–387 |
+| G15 full column list, in order | `temp` (= `temperature_grib_c`), `season_sin`, `season_cos`, `cloud_cover`, `wind_speed_10m`, then **D, L, R, T**: `dewpoint_depression_t2m_floored`, `lapse_rate_t2_t850`, `dswrf_2h_wm2`, `pressure_tendency_3h_hpa`. Passed as a float64 NumPy array, with no column names. **Column order changes the fit**: at RNO, L, D, T, R order gives 1.2703, and the record's order gives 1.2742 (DECISIONS F114). | `session62_reserved_confirm.py` l.118, l.120–127, l.239–240 |
+| G17 unstated parameters | Only the D21.4/D48.6 settings are passed. Every other parameter is left at the **lightgbm 4.7.0** default (pinned in `requirements.txt`; the F109 run's environment printed Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0). The record did not save the resolved parameter list. The rebuild's, from the same version, is in `data/rebuild/session73/rno_fit_metadata.json`. | `session62_reserved_confirm.py` l.131–146; `requirements.txt`; `notes/session-64-preflight-output.txt` l.6–8 |
+| G19 training row order | Ascending date. | `session62_reserved_confirm.py` l.355, l.370 |
+| G20 target precision | The unrounded residual `obs − fc`, where `obs` is `float(tmpc)` and `fc` is the stored 3-decimal `temperature_grib_c`. At RNO, rounding this target to 3 decimals left every prediction unchanged (DECISIONS F114). | `session62_reserved_confirm.py` l.376 |
+| G24 MAE rounding rule | MAE is the NumPy mean of the absolute errors at full precision. It is printed at 4 decimals with Python's `:.4f` format and stored unrounded in `data/processed/session63_reserved_confirm_grid.csv`. | `session62_reserved_confirm.py` l.243–244, l.715, l.722–725 |
+
+These details are recorded for reproducibility. They change no result on
+record (DECISIONS D64.1, D65.1).
