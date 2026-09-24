@@ -14490,3 +14490,196 @@ Nothing was committed. **F113 changes no verdict, claim or figure on record
 
 ---
 
+## Moved by session 75 (2026-09-24)
+
+The archive criterion (D46, live in `DECISIONS.md`), applied per the session 75 prompt: **D65 and F114**. D65 (the pre-registration of the F113 mismatch triage) was carried out in session 74 and is settled by F114. F114 is settled: its details are codified in `SPEC.md` 8.8, D64 is closed, and the Q33 it logged is answered and closed in F115 (live), which restates the figure it needs (0.0038 °C). Neither `STATUS.md` nor any live open question (Q30, Q32) cites their wording. D66 and F115 stay live. The blocks below are exactly what was cut, unedited.
+
+---
+
+## 2026-09-24 — Session 74 decision: pre-registration of the F113 mismatch triage
+
+**D65. Pre-registration: triage of F113's B+D,L,R,T mismatch at RNO
+(session 74). Owner decision, planning chat.**
+
+**D65.1 Status.** A verification only, with D64.1's standing. It cannot
+change any verdict, claim or figure. The reserved year is scored only to
+reproduce F109. Nothing is selected on these results.
+
+**D65.2 The settings comparison.** A read-only, exhaustive comparison of
+every setting that affects the RNO B+D,L,R,T fit or its score, between
+the record script and `scripts/session73_fit_score.py`. If any
+difference other than G15 and G20 could affect the fit or its score, the
+session stops before any fit and before any SPEC edit.
+
+**D65.3 The record re-run (R0).** A copy of the record script, changed
+only in its output paths, RNO only, run once into
+`data/rebuild/session74/record_rerun/`. It is skipped, not forced, if it
+cannot be limited to RNO or redirected without changing its logic.
+
+**D65.4 The diagnostic fits.** Exactly three fits, each using session
+73's Variant P data and code with only the named detail changed:
+- C1: G15 flipped (record column order), G20 as in session 73.
+- C2: G20 flipped (record target), G15 as in session 73.
+- C3: both flipped.
+
+One repeat of C3 in a separate process, for determinism. No other fit.
+
+**D65.5 Expected results.** R0 = 1.2742. C1 = 1.2742. C2 = 1.2703
+(G20 expected to have no effect, since the residual already has at most
+3 decimals). C3 = 1.2742, with test predictions equal to R0's on 365 of
+365 days.
+
+**D65.6 Outcome classes.**
+- **A, explained:** C3 matches the record (MAE 1.2742 at 4 dp, and its
+  unrounded MAE equals the record's unrounded value), and where R0 ran,
+  C3's predictions equal R0's on 365 of 365 days. The mismatch is
+  re-labelled "recipe detail", attributed by C1 and C2.
+- **B, unexplained fit:** R0 reproduces 1.2742 but C3 does not.
+- **C, record not reproducible:** R0 does not reproduce 1.2742.
+
+In B and C the result is recorded and there is **no further hunting**.
+Either way D64 closes after this session.
+
+**D65.7 Q33 trigger.** If C1's MAE differs from 1.2703, log Q33 (fit
+noise against verdict margins), for the owner. It is logged only, not
+measured.
+
+---
+
+## 2026-09-24 — Session 74 finding: F113's B+D,L,R,T mismatch at RNO is column order (G15); details recorded in SPEC 8.8; D64 closed
+
+**F114. Offline, under D65. The record's column order (G15) accounts for
+all of F113's B+D,L,R,T mismatch at RNO. The target's rounding (G20) has
+no effect. Outcome class A (explained). F114 changes no verdict, claim or
+figure on record (D64.1, D65.1). F109 stands. Full real output:
+`notes/session-74-output.txt`.**
+
+**F114.1 The settings comparison (D65.2).** The record script is
+`scripts/session62_reserved_confirm.py`. The rebuild is
+`scripts/session73_fit_score.py`. 36 items were compared (full table in
+the output file, Step 2). Only two differ in a way that could affect the
+fit: G15 and G20.
+- G15: the record's column order is B, then D, L, R, T (line 118). The
+  rebuild's is B, then L, D, T, R.
+- G20: the record trains on the unrounded `obs − fc` (line 376). The
+  rebuild trains on the 3-decimal residual. They are bit-equal on 155 of
+  1,222 rows, with a maximum difference of 5.8e-15.
+
+Everything else matches:
+- all 14 LightGBM settings passed, as one identical dictionary;
+- the lightgbm 4.7.0 defaults, under the same pins and versions (Python
+  3.12.2, numpy 2.5.2);
+- the API (`LGBMRegressor().fit(x, y)`, no other arguments);
+- a float64 NumPy array with no column names;
+- the row set and ascending date order (1,222 / 365);
+- how the corrected forecast and the MAE are computed.
+
+A read-only check with no fit built both RNO matrices with each script's
+own functions. X_train and X_test are bit-equal on all 9 columns once the
+columns are put in the same order. The only differences found that cannot
+affect the fit are the libomp shim's variable name and the output files.
+**The stop rule did not fire.**
+
+**F114.2 R0 (D65.3): skipped, not forced.** The record script has no
+station argument. Its airport list (`AIRPORTS`, lines 107–113) is written
+into the script, and `run_confirm()` loops over all five airports. Limiting
+it to RNO would mean changing a line that is not an output path. It also
+throws away the per-day errors (lines 708–709), so the per-day predictions
+could not be saved without a logic change either. No copy was made, and
+neither the copy nor the original was run. **The guardrail hash check
+(Step 3.4–3.6) was not run, because nothing was run that it guards.** Step
+4 compares against the record's own stored unrounded RNO value instead:
+1.2741517803385958 (`data/processed/session63_reserved_confirm_grid.csv`).
+
+**F114.3 The diagnostic fits (D65.4).** New script
+`scripts/session74_diagnose.py`. It imports session 73's own functions,
+uses Variant P, and changes only the named detail. Outputs are in
+`data/rebuild/session74/`. It ran four fits: C1, C2, C3, and one repeat
+of C3 in its own process. No other fit.
+
+| cell | change | n_train | n_test | MAE, unrounded | 4 dp |
+|---|---|---|---|---|---|
+| C1 | G15 flipped | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
+| C2 | G20 flipped | 1,222 | 365 | 1.270310972624561 | 1.2703 |
+| C3 | both | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
+| C3 repeat | both | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
+
+- C3 against its repeat: 365 of 365 predictions equal, maximum absolute
+  difference 0.0.
+- C3 against R0: not comparable, because R0 was skipped.
+- C1 and C3 equal the record exactly, both at 4 dp and unrounded. Their
+  predictions are identical on 365 of 365 days.
+- C2's predictions equal session 73's Variant P predictions on 365 of 365
+  days (maximum difference 0.0). This was a report-only check, with no fit.
+- Every result is the one D65.5 expected. R0 was expected too, but was
+  skipped.
+
+**F114.4 Outcome class and attribution.** **Class A, explained** (D65.6):
+C3 matches the record at 4 dp and unrounded. The "C3 equals R0" part of
+class A applies only where R0 ran, and it did not run. The F113 mismatch
+is re-labelled **"recipe detail"**:
+- **G15, column order, accounts for all of it** (C1 = record).
+- **G20, target rounding, has no effect** (C2 = session 73, with identical
+  predictions).
+
+LightGBM's result depends on the order of the input columns even when the
+data are identical. That is why the record's order is now written down
+(SPEC 8.8).
+
+**F114.5 SPEC rows added (Step 5).** New SPEC 8.8, placed after the SPEC
+8.7 build requirements. One table, with each row read from the record
+scripts and committed files: G1, G2, G3, G4, G5, G6, G7, G14, G15, G17,
+G19, G20 and G24. Two rows record choices where the record differs from
+the rebuild:
+- **G1:** the record keeps the last qualifying report, which SPEC 4.5
+  already said (D62).
+- **G7:** the record does **not** round `t850` or `dew_point_2m` before
+  the subtraction, while session 72 did round them first. Because
+  `t2m_raw` already has 3 decimals, the two give the same stored value
+  except at an exact tie. They matched on every RNO row (F113).
+
+No row needed "not shown by the record". G11–G13 were considered and not
+added, because none could change a stored value at any airport. The
+reasons are in the output file.
+
+**F114.6 D64 closed.** The clean-room rebuild of F109 at RNO (D64,
+sessions 72–74) is complete:
+- Every data stage matches the record.
+- Raw GFS, persistence and B match F109 to full precision.
+- The one mismatch, B+D,L,R,T, is explained (class A). It is a
+  column-order detail that the documents did not state.
+
+The details the rebuild had to guess now live in SPEC 8.8. D64, F112 and
+F113 are archived this session (end-of-session archive step).
+
+**Q33. Changing only the column order moved RNO's B+D,L,R,T reserved-year
+MAE by 0.0038 °C (1.2703 to 1.2742; unrounded difference 0.00384). How
+large is fit-to-fit variation, compared with the verdict margins on
+record, especially the small ones (for example DSM over B, +1.94%, SPEC
+8.6 (d))? Logged only. Any measurement needs its own pre-registration and
+cannot re-score spent years for a verdict.** (Logged because D65.7's
+trigger fired: C1's MAE, 1.2742, differs from 1.2703.)
+
+**F114.7 What this did not do.**
+- It did not change any verdict, claim or figure. F109 stands.
+- It did not run the record script, or any copy of it.
+- It ran no fit beyond C1, C2, C3 and the one C3 repeat. Nothing was tuned,
+  selected or re-run to pass.
+- It pulled no data, filled no value and deleted no file.
+- It edited no existing script. The frozen record script was only
+  imported, read-only, for the Step 2 check.
+- It did not edit RESULTS.md, README.md or CLAUDE.md.
+- It changed nothing under `data/raw/`, `data/processed/`,
+  `data/rebuild/session72/` or `data/rebuild/session73/`.
+- SPEC.md changed only by the new 8.8.
+
+The new files are:
+- `scripts/session74_diagnose.py`;
+- `data/rebuild/session74/` (the cell predictions and metadata, and
+  `run2/`);
+- `notes/session-74-output.txt`.
+
+Nothing was committed.
+
+---
+

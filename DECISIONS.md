@@ -1259,187 +1259,263 @@ Nothing was committed.
 
 ---
 
-## 2026-09-24 — Session 74 decision: pre-registration of the F113 mismatch triage
+## 2026-09-24 — Session 75 decision: planning-chat decisions and the Q33 pre-registration
 
-**D65. Pre-registration: triage of F113's B+D,L,R,T mismatch at RNO
-(session 74). Owner decision, planning chat.**
+**D66. Owner decisions, planning chat (after session 74).** Written before
+any model was fit this session.
 
-**D65.1 Status.** A verification only, with D64.1's standing. It cannot
-change any verdict, claim or figure. The reserved year is scored only to
-reproduce F109. Nothing is selected on these results.
+**D66.1 Q30 sequencing (Q30 stays open).** The owner chose this order:
+1. Q33, measured descriptively (session 75).
+2. A further airport under the frozen B+D,L,R,T recipe (Q30 branch (i),
+   D59.5). The airport and its test design are still to be chosen.
+3. A dedicated roadmap planning session, because SPEC 6's stage list is
+   out of date.
 
-**D65.2 The settings comparison.** A read-only, exhaustive comparison of
-every setting that affects the RNO B+D,L,R,T fit or its score, between
-the record script and `scripts/session73_fit_score.py`. If any
-difference other than G15 and G20 could affect the fit or its score, the
-session stops before any fit and before any SPEC edit.
+Pooling is deferred. The 2026-27 forward test (Q30 branch (ii)(i)) is
+deferred until the GFS v17 date is known (D66.2).
 
-**D65.3 The record re-run (R0).** A copy of the record script, changed
-only in its output paths, RNO only, run once into
-`data/rebuild/session74/record_rerun/`. It is skipped, not forced, if it
-cannot be limited to RNO or redirected without changing its logic.
+**D66.2 GFS v17 status (planning-chat research, not checked by session
+75).** NWS Public Information Statements 26-29 and 26-30 (April 2026)
+propose GFS v17 (a ~9 km, coupled model) for October 2026, marked
+tentative. They say a Service Change Notice will be issued 30 days before
+go-live, and that folder structure and file names will change. As of
+2026-09-24 the NWS notice list shows no such notice.
 
-**D65.4 The diagnostic fits.** Exactly three fits, each using session
-73's Variant P data and code with only the named detail changed:
-- C1: G15 flipped (record column order), G20 as in session 73.
-- C2: G20 flipped (record target), G15 as in session 73.
-- C3: both flipped.
+Why it matters: the recipe is trained on GFS v16 only (D48.7). If v17 goes
+live during 2026-27, most of that year would be v17 forecasts. A 2026-27
+test would then ask a different question (does a v16-trained correction
+survive a model upgrade?) rather than repeat F109 on a new year. The
+new-airport branch is unaffected: all its data (2021–2026) is v16. Future
+GRIB pulls of v17 data may need path and `.idx` changes. To be re-checked
+at each planning session.
 
-One repeat of C3 in a separate process, for determinism. No other fit.
+**D66.3 Q33 pre-registration.**
 
-**D65.5 Expected results.** R0 = 1.2742. C1 = 1.2742. C2 = 1.2703
-(G20 expected to have no effect, since the residual already has at most
-3 decimals). C3 = 1.2742, with test predictions equal to R0's on 365 of
-365 days.
+*Standing.* A description, not a verdict. It cannot change any verdict,
+claim or figure on record. F109 stands. Nothing is selected, tuned or
+adopted on these results. No row dated 2024-08-01 or later is used
+anywhere: not the reserved year (2024-25, spent, F109), not the sealed
+year (2025-26, spent, F94), and nothing from 2026-27.
 
-**D65.6 Outcome classes.**
-- **A, explained:** C3 matches the record (MAE 1.2742 at 4 dp, and its
-  unrounded MAE equals the record's unrounded value), and where R0 ran,
-  C3's predictions equal R0's on 365 of 365 days. The mismatch is
-  re-labelled "recipe detail", attributed by C1 and C2.
-- **B, unexplained fit:** R0 reproduces 1.2742 but C3 does not.
-- **C, record not reproducible:** R0 does not reproduce 1.2742.
+*Data.* The `2022-23` and `2023-24` folds of D51's `EXPERIMENT_FOLDS`, all
+five airports:
+- `2022-23`: train 2021-03-24..2022-07-31 (495 days), test
+  2022-08-01..2023-07-31;
+- `2023-24`: train 2021-03-24..2023-07-31 (860 days), test
+  2023-08-01..2024-07-31.
 
-In B and C the result is recorded and there is **no further hunting**.
-Either way D64 closes after this session.
+The same committed feature files, transforms, complete-case rule, target,
+settings and API as the record (SPEC 8.1, 8.3, 8.8: G14, G17, G19, G20).
+Any row dated 2024-08-01 or later is removed at load, before any matrix is
+built, and the count removed is reported.
 
-**D65.7 Q33 trigger.** If C1's MAE differs from 1.2703, log Q33 (fit
-noise against verdict margins), for the owner. It is logged only, not
-measured.
+*Models.* `B` (5 columns) and `B+D,L,R,T` (9 columns).
+
+*What varies: column order only.*
+- B+D,L,R,T: 100 orderings drawn with `numpy.random.default_rng(75)`,
+  duplicates redrawn, **plus** two anchors: the record order (SPEC 8.8
+  G15) and session 73's order (B, then L, D, T, R). 102 in total.
+- B: all 120 orderings of its 5 columns.
+- Seeds: Step 0.2 of session 75 found no random setting in `LGB_PARAMS`
+  (`subsample=1.0`, `colsample_bytree=1.0`, no bagging frequency set,
+  `deterministic=True`). So the 10-seed check is **not run**.
+
+*What is reported,* per airport and per fold:
+- min, max, range and standard deviation of MAE for B and for B+D,L,R,T,
+  in °C and as % of the record-order MAE;
+- the **win share**: over every (B+D,L,R,T ordering, B ordering) pair, the
+  fraction where B+D,L,R,T has the lower MAE;
+- the record-order margin over B (record-order B+D,L,R,T against
+  canonical-order B), for reference.
+
+*Reading rule, fixed now.* Win share 100% → "B+D,L,R,T beats B by more
+than the column-order spread, on this fold". 0% → "B beats B+D,L,R,T by
+more than the spread". Anything else → "within the column-order spread".
+Stated per airport, per fold. No other reading is added after the results
+are seen.
+
+*Scale comparison (rough, different year).* A table setting F109's own
+margins over B (SPEC 8.5: EGLC 0.0853, LFPG 0.0916, DSM 0.0279, YSDU
+0.0387, RNO 0.1530 °C) and F114's 0.0038 °C shift beside each airport's
+B+D,L,R,T MAE range on each fold. Labelled: F109 is 2024-25, these folds
+are 2022-23 and 2023-24, and the training windows are shorter (495 and 860
+days against F109's 1,226), so this is a guide to scale only.
+
+*Implementation details, fixed before any fit (session 75).*
+- The orderings are drawn once and the same list is used at every airport
+  and on both folds.
+- Each draw is `rng.permutation(9)` applied to the record-order column
+  list. A draw that repeats an earlier draw or either anchor is redrawn,
+  so all 102 orderings are distinct.
+- "Lower MAE" in the win share is strict: a tie counts as not a win.
+- The standard deviation is the population form (`numpy.std`, ddof 0).
+
+*What it cannot do.* Change any verdict, claim or figure; select or adopt
+anything; touch any row dated 2024-08-01 or later.
 
 ---
 
-## 2026-09-24 — Session 74 finding: F113's B+D,L,R,T mismatch at RNO is column order (G15); details recorded in SPEC 8.8; D64 closed
+## 2026-09-24 — Session 75 finding: column order alone, on the 2022-23 and 2023-24 folds (Q33, descriptive)
 
-**F114. Offline, under D65. The record's column order (G15) accounts for
-all of F113's B+D,L,R,T mismatch at RNO. The target's rounding (G20) has
-no effect. Outcome class A (explained). F114 changes no verdict, claim or
-figure on record (D64.1, D65.1). F109 stands. Full real output:
-`notes/session-74-output.txt`.**
+**F115. Offline, under D66.3. Descriptive only. On both non-reserved folds,
+at all five airports, every one of the 102 B+D,L,R,T column orderings has a
+lower MAE than every one of the 120 B orderings (win share 100% in all 10
+airport-folds). Column order alone moves a fit's MAE by 0.014 to 0.039 °C
+(range across orderings). F115 changes no verdict, claim or figure. F109
+stands. Full real output: `notes/session-75-output.txt`.**
 
-**F114.1 The settings comparison (D65.2).** The record script is
-`scripts/session62_reserved_confirm.py`. The rebuild is
-`scripts/session73_fit_score.py`. 36 items were compared (full table in
-the output file, Step 2). Only two differ in a way that could affect the
-fit: G15 and G20.
-- G15: the record's column order is B, then D, L, R, T (line 118). The
-  rebuild's is B, then L, D, T, R.
-- G20: the record trains on the unrounded `obs − fc` (line 376). The
-  rebuild trains on the 3-decimal residual. They are bit-equal on 155 of
-  1,222 rows, with a maximum difference of 5.8e-15.
+**F115.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-75.md`.
+- `LGB_PARAMS` (`session62_reserved_confirm.py` l.131–146):
+  `objective="regression_l1"`, `n_estimators=300`, `learning_rate=0.05`,
+  `num_leaves=15`, `min_child_samples=40`, `subsample=1.0`,
+  `colsample_bytree=1.0`, `reg_alpha=0.0`, `reg_lambda=0.0`,
+  `random_state=42`, `n_jobs=1`, `deterministic=True`,
+  `force_row_wise=True`, `verbose=-1`. No setting makes a fit random:
+  `subsample` and `colsample_bytree` are 1.0 and no bagging frequency is
+  set (the lightgbm default is 0, no bagging). So Task 2c was not run.
+- Both folds match D51's `EXPERIMENT_FOLDS` (495 and 860 training days)
+  and neither raises in `assert_reserved_year_excluded()`.
 
-Everything else matches:
-- all 14 LightGBM settings passed, as one identical dictionary;
-- the lightgbm 4.7.0 defaults, under the same pins and versions (Python
-  3.12.2, numpy 2.5.2);
-- the API (`LGBMRegressor().fit(x, y)`, no other arguments);
-- a float64 NumPy array with no column names;
-- the row set and ascending date order (1,222 / 365);
-- how the corrected forecast and the MAE are computed.
+**F115.2 Data.** New script `scripts/session75_order_spread.py`. It imports
+the record script's helpers read-only (settings, feature matrix, MAE, the
+observation loader, the complete-case rule and the join). It reads only
+the committed v16-window files and the IEM observation files.
+- Rows removed at load because they are dated 2024-08-01 or later:
+  1,825 from `grib_features_v16_window.csv` (the reserved year, all five
+  airports); 0 from each of the L, D, T and R v16-window files; and
+  observation days EGLC 728, LFPG 729, DSM 730, YSDU 716, RNO 730.
+- Non-finite values dropped: 0 everywhere.
+- No reserved-year, sealed-year or later file was opened.
 
-A read-only check with no fit built both RNO matrices with each script's
-own functions. X_train and X_test are bit-equal on all 9 columns once the
-columns are put in the same order. The only differences found that cannot
-affect the fit are the libomp shim's variable name and the output files.
-**The stop rule did not fire.**
+**F115.3 Anchor and determinism checks (2a).**
 
-**F114.2 R0 (D65.3): skipped, not forced.** The record script has no
-station argument. Its airport list (`AIRPORTS`, lines 107–113) is written
-into the script, and `run_confirm()` loops over all five airports. Limiting
-it to RNO would mean changing a line that is not an output path. It also
-throws away the per-day errors (lines 708–709), so the per-day predictions
-could not be saved without a logic change either. No copy was made, and
-neither the copy nor the original was run. **The guardrail hash check
-(Step 3.4–3.6) was not run, because nothing was run that it guards.** Step
-4 compares against the record's own stored unrounded RNO value instead:
-1.2741517803385958 (`data/processed/session63_reserved_confirm_grid.csv`).
+| airport | fold | n_train | n_test | B (canonical) MAE | 4 dp | B+D,L,R,T (record order) MAE | 4 dp |
+|---|---|---|---|---|---|---|---|
+| EGLC | 2022-23 | 495 | 364 | 1.1676942078095525 | 1.1677 | 1.0970480192866763 | 1.0970 |
+| EGLC | 2023-24 | 859 | 366 | 0.9470167774837449 | 0.9470 | 0.8714881558099459 | 0.8715 |
+| LFPG | 2022-23 | 493 | 365 | 1.1581288431631402 | 1.1581 | 1.1133895478467908 | 1.1134 |
+| LFPG | 2023-24 | 858 | 366 | 1.1605941837409353 | 1.1606 | 1.1221218810408342 | 1.1221 |
+| DSM | 2022-23 | 495 | 364 | 1.7262636931223527 | 1.7263 | 1.6498714917606239 | 1.6499 |
+| DSM | 2023-24 | 859 | 366 | 1.5787427636597116 | 1.5787 | 1.4882809710048912 | 1.4883 |
+| YSDU | 2022-23 | 493 | 357 | 1.199133818957037 | 1.1991 | 1.1431189528380674 | 1.1431 |
+| YSDU | 2023-24 | 850 | 363 | 1.126391420782976 | 1.1264 | 1.0948569148657197 | 1.0949 |
+| RNO | 2022-23 | 493 | 364 | 1.4011745129574764 | 1.4012 | 1.3384891085072084 | 1.3385 |
+| RNO | 2023-24 | 857 | 365 | 1.2971855086239619 | 1.2972 | 1.14583207633231 | 1.1458 |
 
-**F114.3 The diagnostic fits (D65.4).** New script
-`scripts/session74_diagnose.py`. It imports session 73's own functions,
-uses Variant P, and changes only the named detail. Outputs are in
-`data/rebuild/session74/`. It ran four fits: C1, C2, C3, and one repeat
-of C3 in its own process. No other fit.
+- **A recorded value at the same column order exists, and all 20 match at
+  4 dp, with the same n_train and n_test.** The source is
+  `data/processed/session61_combine_sweep_grid.csv` (F106), rows `B` and
+  `B+LDTR`. Session 61's fit orders the added columns by `sorted(codes)`,
+  which is D, L, R, T, the record order (`session61_combine_sweep.py`
+  l.545), and B in `BASE_KEYS` order. The 2023-24 values also match the
+  session 61/62/64 table in F109's Step 1 (DECISIONS-archive.md). So the
+  stop rule did not fire.
+- Record-order B+D,L,R,T repeated in a separate process: predictions
+  equal on every test day at all 10 airport-folds (3,640 of 3,640),
+  maximum absolute difference 0.0.
+- The spread run's own anchor fits equal the 2a fits exactly (20 of 20).
 
-| cell | change | n_train | n_test | MAE, unrounded | 4 dp |
-|---|---|---|---|---|---|
-| C1 | G15 flipped | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
-| C2 | G20 flipped | 1,222 | 365 | 1.270310972624561 | 1.2703 |
-| C3 | both | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
-| C3 repeat | both | 1,222 | 365 | 1.2741517803385958 | 1.2742 |
+**F115.4 The spread (2b).** 102 B+D,L,R,T orderings (2 anchors and 100
+drawn; no draw needed redrawing) and 120 B orderings, on 2 folds at 5
+airports: 2,220 fits, no other fit. MAE in °C. The % columns are relative
+to that model's record-order MAE (for B, the canonical order). min% and
+max% are signed differences from it.
 
-- C3 against its repeat: 365 of 365 predictions equal, maximum absolute
-  difference 0.0.
-- C3 against R0: not comparable, because R0 was skipped.
-- C1 and C3 equal the record exactly, both at 4 dp and unrounded. Their
-  predictions are identical on 365 of 365 days.
-- C2's predictions equal session 73's Variant P predictions on 365 of 365
-  days (maximum difference 0.0). This was a report-only check, with no fit.
-- Every result is the one D65.5 expected. R0 was expected too, but was
-  skipped.
+*B (120 orderings)*
 
-**F114.4 Outcome class and attribution.** **Class A, explained** (D65.6):
-C3 matches the record at 4 dp and unrounded. The "C3 equals R0" part of
-class A applies only where R0 ran, and it did not run. The F113 mismatch
-is re-labelled **"recipe detail"**:
-- **G15, column order, accounts for all of it** (C1 = record).
-- **G20, target rounding, has no effect** (C2 = session 73, with identical
-  predictions).
+| airport | fold | record | min | max | range | sd | min% | max% | range% | sd% |
+|---|---|---|---|---|---|---|---|---|---|---|
+| EGLC | 2022-23 | 1.1677 | 1.1569 | 1.1773 | 0.0205 | 0.0035 | −0.93% | +0.83% | 1.75% | 0.30% |
+| EGLC | 2023-24 | 0.9470 | 0.9421 | 0.9561 | 0.0140 | 0.0032 | −0.52% | +0.96% | 1.48% | 0.34% |
+| LFPG | 2022-23 | 1.1581 | 1.1439 | 1.1581 | 0.0143 | 0.0024 | −1.23% | +0.00% | 1.23% | 0.21% |
+| LFPG | 2023-24 | 1.1606 | 1.1498 | 1.1704 | 0.0206 | 0.0043 | −0.93% | +0.84% | 1.77% | 0.37% |
+| DSM | 2022-23 | 1.7263 | 1.7199 | 1.7495 | 0.0296 | 0.0062 | −0.37% | +1.35% | 1.71% | 0.36% |
+| DSM | 2023-24 | 1.5787 | 1.5654 | 1.5885 | 0.0232 | 0.0044 | −0.85% | +0.62% | 1.47% | 0.28% |
+| YSDU | 2022-23 | 1.1991 | 1.1842 | 1.2067 | 0.0225 | 0.0046 | −1.24% | +0.63% | 1.88% | 0.38% |
+| YSDU | 2023-24 | 1.1264 | 1.1189 | 1.1381 | 0.0192 | 0.0037 | −0.67% | +1.04% | 1.71% | 0.33% |
+| RNO | 2022-23 | 1.4012 | 1.3848 | 1.4123 | 0.0275 | 0.0061 | −1.17% | +0.79% | 1.96% | 0.44% |
+| RNO | 2023-24 | 1.2972 | 1.2843 | 1.3090 | 0.0247 | 0.0051 | −0.99% | +0.91% | 1.90% | 0.39% |
 
-LightGBM's result depends on the order of the input columns even when the
-data are identical. That is why the record's order is now written down
-(SPEC 8.8).
+*B+D,L,R,T (102 orderings)*
 
-**F114.5 SPEC rows added (Step 5).** New SPEC 8.8, placed after the SPEC
-8.7 build requirements. One table, with each row read from the record
-scripts and committed files: G1, G2, G3, G4, G5, G6, G7, G14, G15, G17,
-G19, G20 and G24. Two rows record choices where the record differs from
-the rebuild:
-- **G1:** the record keeps the last qualifying report, which SPEC 4.5
-  already said (D62).
-- **G7:** the record does **not** round `t850` or `dew_point_2m` before
-  the subtraction, while session 72 did round them first. Because
-  `t2m_raw` already has 3 decimals, the two give the same stored value
-  except at an exact tie. They matched on every RNO row (F113).
+| airport | fold | record | min | max | range | sd | min% | max% | range% | sd% |
+|---|---|---|---|---|---|---|---|---|---|---|
+| EGLC | 2022-23 | 1.0970 | 1.0856 | 1.1095 | 0.0240 | 0.0053 | −1.05% | +1.14% | 2.18% | 0.48% |
+| EGLC | 2023-24 | 0.8715 | 0.8671 | 0.8863 | 0.0192 | 0.0037 | −0.51% | +1.70% | 2.20% | 0.43% |
+| LFPG | 2022-23 | 1.1134 | 1.1087 | 1.1362 | 0.0275 | 0.0058 | −0.42% | +2.05% | 2.47% | 0.52% |
+| LFPG | 2023-24 | 1.1221 | 1.1071 | 1.1297 | 0.0226 | 0.0037 | −1.34% | +0.67% | 2.01% | 0.33% |
+| DSM | 2022-23 | 1.6499 | 1.6278 | 1.6664 | 0.0386 | 0.0069 | −1.34% | +1.00% | 2.34% | 0.42% |
+| DSM | 2023-24 | 1.4883 | 1.4725 | 1.5047 | 0.0322 | 0.0067 | −1.06% | +1.10% | 2.16% | 0.45% |
+| YSDU | 2022-23 | 1.1431 | 1.1334 | 1.1601 | 0.0267 | 0.0059 | −0.85% | +1.48% | 2.33% | 0.52% |
+| YSDU | 2023-24 | 1.0949 | 1.0846 | 1.1144 | 0.0298 | 0.0052 | −0.93% | +1.79% | 2.72% | 0.47% |
+| RNO | 2022-23 | 1.3385 | 1.3264 | 1.3484 | 0.0219 | 0.0048 | −0.90% | +0.74% | 1.64% | 0.36% |
+| RNO | 2023-24 | 1.1458 | 1.1338 | 1.1610 | 0.0272 | 0.0050 | −1.05% | +1.32% | 2.37% | 0.44% |
 
-No row needed "not shown by the record". G11–G13 were considered and not
-added, because none could change a stored value at any airport. The
-reasons are in the output file.
+*Win share and reading (D66.3 rule).* Margin = canonical-order B MAE minus
+record-order B+D,L,R,T MAE. Pairs = 102 × 120 = 12,240.
 
-**F114.6 D64 closed.** The clean-room rebuild of F109 at RNO (D64,
-sessions 72–74) is complete:
-- Every data stage matches the record.
-- Raw GFS, persistence and B match F109 to full precision.
-- The one mismatch, B+D,L,R,T, is explained (class A). It is a
-  column-order detail that the documents did not state.
+| airport | fold | wins | win share | margin °C | margin % | reading |
+|---|---|---|---|---|---|---|
+| EGLC | 2022-23 | 12,240 | 100% | 0.0706 | +6.05% | beats B by more than the column-order spread |
+| EGLC | 2023-24 | 12,240 | 100% | 0.0755 | +7.98% | beats B by more than the column-order spread |
+| LFPG | 2022-23 | 12,240 | 100% | 0.0447 | +3.86% | beats B by more than the column-order spread |
+| LFPG | 2023-24 | 12,240 | 100% | 0.0385 | +3.31% | beats B by more than the column-order spread |
+| DSM | 2022-23 | 12,240 | 100% | 0.0764 | +4.43% | beats B by more than the column-order spread |
+| DSM | 2023-24 | 12,240 | 100% | 0.0905 | +5.73% | beats B by more than the column-order spread |
+| YSDU | 2022-23 | 12,240 | 100% | 0.0560 | +4.67% | beats B by more than the column-order spread |
+| YSDU | 2023-24 | 12,240 | 100% | 0.0315 | +2.80% | beats B by more than the column-order spread |
+| RNO | 2022-23 | 12,240 | 100% | 0.0627 | +4.47% | beats B by more than the column-order spread |
+| RNO | 2023-24 | 12,240 | 100% | 0.1514 | +11.67% | beats B by more than the column-order spread |
 
-The details the rebuild had to guess now live in SPEC 8.8. D64, F112 and
-F113 are archived this session (end-of-session archive step).
+("beats B" means "B+D,L,R,T beats B ... on this fold", the rule's full
+wording.)
 
-**Q33. Changing only the column order moved RNO's B+D,L,R,T reserved-year
-MAE by 0.0038 °C (1.2703 to 1.2742; unrounded difference 0.00384). How
-large is fit-to-fit variation, compared with the verdict margins on
-record, especially the small ones (for example DSM over B, +1.94%, SPEC
-8.6 (d))? Logged only. Any measurement needs its own pre-registration and
-cannot re-score spent years for a verdict.** (Logged because D65.7's
-trigger fired: C1's MAE, 1.2742, differs from 1.2703.)
+**F115.5 Scale comparison (rough, different year).** F109 is 2024-25,
+trained on 1,226 days. These folds are 2022-23 (495 days) and 2023-24
+(860 days). A guide to scale only. All in °C.
 
-**F114.7 What this did not do.**
-- It did not change any verdict, claim or figure. F109 stands.
-- It did not run the record script, or any copy of it.
-- It ran no fit beyond C1, C2, C3 and the one C3 repeat. Nothing was tuned,
-  selected or re-run to pass.
-- It pulled no data, filled no value and deleted no file.
-- It edited no existing script. The frozen record script was only
-  imported, read-only, for the Step 2 check.
-- It did not edit RESULTS.md, README.md or CLAUDE.md.
-- It changed nothing under `data/raw/`, `data/processed/`,
-  `data/rebuild/session72/` or `data/rebuild/session73/`.
-- SPEC.md changed only by the new 8.8.
+| airport | F109 margin over B | F114 shift | B+D,L,R,T range, 2022-23 | B+D,L,R,T range, 2023-24 |
+|---|---|---|---|---|
+| EGLC | 0.0853 | 0.0038 | 0.0240 | 0.0192 |
+| LFPG | 0.0916 | 0.0038 | 0.0275 | 0.0226 |
+| DSM | 0.0279 | 0.0038 | 0.0386 | 0.0322 |
+| YSDU | 0.0387 | 0.0038 | 0.0267 | 0.0298 |
+| RNO | 0.1530 | 0.0038 | 0.0219 | 0.0272 |
+
+What the table shows, as numbers only: F114's 0.0038 is smaller than every
+range here (the smallest is 0.0192). DSM's F109 margin (0.0279) is smaller
+than DSM's range on both folds. The other four airports' F109 margins are
+larger than their ranges on both folds.
+
+**F115.6 Answer to Q33 (descriptive).** Column order alone moves a
+B+D,L,R,T fit's MAE by 0.019 to 0.039 °C (range, 1.6% to 2.7% of the
+record-order MAE), and a B fit's by 0.014 to 0.030 °C. F114's 0.0038 °C
+(on a different year) is smaller than every one of these ranges. By the pre-set reading rule, on both
+folds and at all five airports, B+D,L,R,T beats B by more than the
+column-order spread: every B+D,L,R,T ordering beats every B ordering. This
+covers the 2022-23 and 2023-24 folds only. It does not re-score or re-read
+F109, and it says nothing about 2024-25 itself. **Q33 is answered
+descriptively and closed here.**
+
+**F115.7 What this did not do.**
+- It changed no verdict, claim or figure. F109 stands.
+- Nothing was selected, tuned or adopted.
+- No row dated 2024-08-01 or later was used (F115.2).
+- No existing script was edited. The record script and sessions 48 and 60
+  were only imported, read-only.
+- No data was pulled. No value was filled. No file was deleted.
+- Nothing under `data/raw/`, `data/processed/` or earlier
+  `data/rebuild/` folders was changed.
+- SPEC.md, RESULTS.md, README.md and CLAUDE.md were not edited.
+- The seed check (2c) was not run: no random setting.
 
 The new files are:
-- `scripts/session74_diagnose.py`;
-- `data/rebuild/session74/` (the cell predictions and metadata, and
-  `run2/`);
-- `notes/session-74-output.txt`.
+- `scripts/session75_order_spread.py`;
+- `data/rebuild/session75/` (`anchor_mae.csv`, `anchor_predictions.csv`,
+  `metadata.json`, `orderings.csv`, `spread_mae.csv`, `summary.csv`,
+  `win_share.csv`, and `run2/anchor_predictions.csv`);
+- `notes/session-75-output.txt`.
 
-Nothing was committed.
+F115 stays live: the new-airport pre-registration will cite it. Nothing
+was committed.
