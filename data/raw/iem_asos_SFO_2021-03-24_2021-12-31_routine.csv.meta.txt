@@ -1,0 +1,31 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_SFO_2021-03-24_2021-12-31_routine.csv
+purpose     : session 76, Step 4.2 - full history truth chunk for
+              San Francisco International (SFO / KSFO)
+pulled at   : 2026-09-25 09:41:59 UTC
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python requests
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2021&month1=3&day1=24&year2=2022&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = SFO   (San Francisco International, California, USA)
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2021-03-24 to 2021-12-31 inclusive. IEM treats its end date
+                as exclusive, so the request asks for 2022-01-01.
+  tz          = UTC
+  report_type = 3   (routine METAR only - the scheduled hourly report)
+
+notes:
+- SFO's routine report is stamped at :56 (session 76 Step 2.3; IEM's
+  METAR_RESET_MINUTE = 56). At the 20:00 UTC target (D67.1) the 19:56
+  report is the paired observation - a 4-minute offset.
+- No network parameter is sent, the same shape as every earlier
+  airport's full pull. SFO's network is CA_ASOS (Step 2.1).
+- Rows from 2024-08-01 on are KSFO's held-out range (D67.6): pulled and
+  kept, but before the lock only their counts and timestamps are read.
+- Rows marked M are left exactly as they arrived. Nothing was filled
+  in (SPEC 2.2).
+- HTTP status 200.

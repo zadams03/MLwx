@@ -979,286 +979,6 @@ touched. No file was deleted.
 
 ---
 
-## 2026-09-23 — Session 70 decision: repo fixes (A67-01, A67-06, A67-05/07, A67-08/A68a-06) done
-
-**D63. Repo fixes only, offline. No model was fit, nothing was scored, no
-GRIB file was opened or decoded, and no observation file was read. Full
-real output: `notes/session-70-output.txt`.**
-
-**D63.1 A67-01 (must-fix, D62.4): provenance manifests for the session 37
-and 40 GRIB pulls.** New script `scripts/session70_grib_manifests.py`. It
-reads only the `.grib2.meta.txt` sidecars and the two failure CSVs in the
-gitignored cache `data/raw/grib/`. New files:
-- `data/raw/diagnostics/session37/session37_pull_manifest.csv` (25,444 rows)
-- `data/raw/diagnostics/session37/session37_pull_failures.csv` (a byte-for-byte copy)
-- `data/raw/diagnostics/session40/session40_pull_manifest.csv` (5,840 rows)
-- `data/raw/diagnostics/session40/session40_pull_failures.csv` (a byte-for-byte copy)
-
-Each manifest has one row per sidecar, sorted by sidecar file name. Every
-value is copied verbatim from the sidecar. The sidecar's `variable:` line is
-split into `variable`, `lead`, `cycle` and `run_date`, and its bytes line
-into `first_4_bytes` and `last_4_bytes`. The script checks that each split
-rebuilds the original line exactly. `lead` and `cycle` keep the sidecar's
-own form (`f026`, `00z`). The `stations` column matches the later
-`*_pull_manifest.csv` files. There is no `status` column, because the
-sidecars hold no such field. The only blank field is `note` (the session
-40 sidecars' extra "sealed test year pull" line), which is blank in all
-25,444 session 37 rows. Each sidecar was assigned to a pull by its validity
-date (run date + cycle + lead). None was ambiguous, and the sealed-year
-note line and the pull times agree with that assignment.
-
-Reconciliation. The expected counts are from DECISIONS-archive.md only:
-F90 for session 37, F92 for session 40. F93 records no pull counts.
-
-| pull | archived | sidecars vs fetched | sidecars + failed vs targeted | files | failure-log rows |
-|---|---|---|---|---|---|
-| session 37 | F90: 6,364 files, 25,456 targeted, 25,444 fetched, 12 failed | 25,444 = 25,444 | 25,444 + 12 = 25,456 | 6,361 with sidecars + 3 with none = 6,364 | 24 = 12 messages x 2 |
-| session 40 | F92: 1,460 files, 5,840 messages, 0 failed | 5,840 = 5,840 | 5,840 + 0 = 5,840 | 1,460 | 0 |
-
-The session 37 failure log has 24 rows for 12 failed messages. Its own
-contents explain this: each of the 12 messages appears exactly twice, with
-the same reason ("bad magic markers"). This matches F90 ("failed ... on
-both the original run and a clean re-run"). `session37_grib_pull.py` opens
-the log in append mode. No failed message also has a sidecar. Checks:
-- 31,284 sidecars appear exactly once each, with 0 duplicates;
-- each failure-CSV copy has the same SHA-256 as its original;
-- a re-run on the unchanged cache gave byte-identical files;
-- `git check-ignore` returns nothing for all four new files.
-
-**D63.2 A67-06: `station` column in `data/processed/session46_fold_table.csv`.**
-New script `scripts/session70_fold_table_station.py`. It added `station` as
-the first column, in place, with no refit and no re-run. With the column
-removed, the file is byte-identical to HEAD. There are 50 rows, 10 per
-airport. The station for each row comes from `session46_backtest.py`'s
-write order (AIRPORTS order EGLC, LFPG, DSM, YSDU, RNO; 4 three-feature
-folds, then 6 five-feature folds). That order was cross-checked against
-`session46_backtest_profile.csv` on the 8 shared columns (`feature_set`,
-`fold`, `train_start`, `train_end`, `test_start`, `test_end`,
-`train_rows`, `test_rows`).
-- 36 rows match exactly one station, and it agrees with the write order.
-- **14 rows were assigned by write order alone, by owner ruling this
-  session.** They form 7 pairs of byte-identical rows, so the profile names
-  two stations for each:
-  - rows 1/21, EGLC/DSM, 3-feature 2022-23;
-  - rows 2/22, EGLC/DSM, 3-feature 2023-24;
-  - rows 5/25, EGLC/DSM, 5-feature 2022-23;
-  - rows 6/26, EGLC/DSM, 5-feature 2023-24;
-  - rows 4/14, EGLC/LFPG, 3-feature 2025-26;
-  - rows 8/18, EGLC/LFPG, 5-feature 2025-26;
-  - rows 19/29, LFPG/DSM, 5-feature 2024-25-thin.
-
-  In every case the write-order station is one of the two matches. The fold
-  table holds no error metric, only dates, feature set, fold, spans, the
-  THIN flag and row counts. The profile's MAE differs between the two
-  stations of every pair at every rung, so the F96 results are not
-  duplicated.
-
-**Mismatch left in place.** `scripts/session46_backtest.py` was not edited.
-A future re-run would write the fold table without the `station` column.
-
-**D63.3 A67-05 with A67-07: README and `requirements.txt`.** New
-`README.md` covers:
-- what the project is (pointing to SPEC.md);
-- setup: Python 3.12.2, `.venv`, pip, eccodes, and the libomp note with
-  `brew install libomp`, taken from the existing `requirements.txt` note
-  (audit-67 names "the libomp note" but gives no install command of its
-  own);
-- `.venv/bin/python` only;
-- the repo layout and the six documents;
-- the D47 raw-data policy;
-- the four frozen scripts and the clean-clone rule (D62.3, D62.6).
-
-It contains no results. `requirements.txt`: only the two comments A67-07
-names were changed, to "the modelling scripts". One adds a pointer to
-README.md. No package, version or pin changed. Every changed line is a
-comment.
-
-**D63.4 A67-08 with A68a-06: `.gitignore`.**
-- `data/raw/grib/` became `data/raw/grib` (no trailing slash). In a
-  throwaway repo, a symlinked cache showed as `?? data/raw/grib` under the
-  old rule and is ignored under the new one.
-- The rule has a D47 comment, which also names it as the exception to the
-  header's "raw data is NOT ignored".
-- `.claude/` is ignored.
-- `data/raw/diagnostics/**/_scratch_*.grib2` is ignored. It catches the
-  scratch names the pull scripts use, and not the tracked diagnostic GRIB
-  samples (D62.7, A67-13), a new non-scratch file there, or the Task 1
-  files.
-
-At the owner's request, before commit, the file's header was also amended.
-It now reads "Raw data is NOT ignored, except the bulk GRIB cache (DECISIONS
-D47 ...)" instead of saying raw data is never ignored.
-
-Checks:
-- `git ls-files` shows 884 files before and after;
-- `git ls-files -ci --exclude-standard` lists 0 files;
-- `git status --porcelain --ignored` changed only by ` M .gitignore`;
-- no `.grib2` file is untracked or staged.
-
-**D63.5 What this did not do.** Nothing was deleted: not the cache, the
-sidecars or any tracked file. No frozen script was edited, and no existing
-script was edited (`session46_backtest.py` included). Nothing was scored,
-no model was fit, no GRIB file was opened or decoded, and there was no
-network access. No existing file under `data/raw/` was changed. Nothing
-was committed.
-
----
-
-## 2026-09-23 — Session 71 finding: L, D, T and R rebuilt from the raw GRIB for audit 68a's 45 station-days (A68a-01)
-
-**F111. Network, data only. No model was fit and nothing was scored. The
-four selected features were rebuilt from newly pulled GRIB bytes by new,
-independent code: 180 of 180 values match the committed files exactly at the
-recorded precision. Full real output: `notes/session-71-output.txt`.**
-(Numbering: the session prompt expected F110, but F110 is session 65's entry.
-F111 is the next free number in DECISIONS.md and DECISIONS-archive.md.)
-
-**F111.1 The sample.** Audit 68a's own pre-registered rule (audit-68a
-section 2.2): the first, middle and last day of each window, at all five
-airports. That gives 9 dates x 5 airports = 45 station-days:
-- training: 2021-03-24, 2022-11-26, 2024-07-31;
-- reserved: 2024-08-01, 2025-01-30, 2025-07-31;
-- sealed: 2025-08-01, 2026-01-30, 2026-07-31.
-
-`scripts/session71_sample.py` rebuilds the list from the rule and checks it
-line by line against the 45 station-days audit 68a printed in its section
-4.2. They are identical. Audit 68a recorded no substitutions (its section
-4.1). Each station-day sits in exactly one committed file per family:
-- training rows are in the session 49/51/53/55 `v16_window` files;
-- reserved rows are in the session 63 `reserved_window` files;
-- sealed rows are in the session 49/51/53/55 `sealed_window` files.
-
-**F111.2 The recipe.** It was read from the build scripts and written out
-in plain words, with line numbers, in the output file (Step 1). In short:
-- GFS 0.25° GRIB2 from `noaa-gfs-bdp-pds`. The run is the day before; the
-  cycle is floor(HH/6)*6 and the lead is 24 + HH mod 6.
-- Each byte range comes from the `.idx` file.
-- Each value is interpolated (bilinear) to the SPEC 3.4 grid point. No
-  elevation correction is applied to any L, D, T or R field.
-- **L:** TMP at 925/850/700 mb, converted K → °C.
-  `lapse_rate_t2_t850 = round(t2m_raw − t850, 3)`.
-- **D:** RH, DPT and SPFH at 2 m, with DPT converted K → °C.
-  `dewpoint_depression_t2m = round(t2m_raw − dew point, 3)`, unfloored.
-- **T:** PRMSL and surface PRES at the lead, and PRMSL at lead−3 from the
-  same run, each Pa → hPa rounded to 3 decimals. The tendency is the
-  difference of the two rounded PRMSL values.
-- **R:** DSWRF surface average. At YSDU and RNO the f026 message is already
-  the 24–26 h window and is used directly. At EGLC, LFPG and DSM it is
-  (f024 18–24 h average × 6 − f022 18–22 h average × 4) / 2.
-- **One recipe fact worth knowing: L and D pull no 2 m temperature.**
-  `t2m_raw = round(temperature_grib_c − correction_c, 3)` comes from the
-  committed B file and the session 37 constants (session49 lines 17–26 and
-  295, session51 line 306). The rebuild follows that recipe. So L and D
-  depend on B's committed `temperature_grib_c`, which audit 68a rebuilt from
-  the raw GRIB for these same 45 station-days (315 of 315, D62.1).
-
-No part of the recipe was ambiguous.
-
-**F111.3 The pull.** New script `scripts/session71_ldtr_pull.py`.
-- Requested: 378 GRIB messages (L 108, D 108, T 108, R 54) from 90 `.idx`
-  files. All 378 and all 90 were saved, with **0 failures**. A failed fetch
-  got one retry. Retries that then succeeded were not counted.
-- 328,413,963 bytes. Pulled 2026-09-23 19:57:09Z to 19:58:32Z UTC.
-- Estimate before the pull: about 327.7 MB, from the sizes in the old
-  manifests.
-- Cache: `data/raw/grib/session71/` holds 936 files: each message and each
-  `.idx`, with a `.meta.txt` sidecar. A sidecar records the URL, byte range,
-  pull time, size and SHA-256. The cache is gitignored (D47).
-- Committed: `data/raw/diagnostics/session71/session71_pull_manifest.csv`
-  (378 rows, sorted, the sidecar fields) and `session71_pull_failures.csv`
-  (0 rows).
-- `git check-ignore`: all 10 sampled cache files are ignored. The manifest
-  and failure log are not ignored (exit code 1).
-
-**F111.4 The rebuild (the verdict).** New script
-`scripts/session71_ldtr_rebuild.py`. It is offline and imports nothing from
-the build scripts. Each message's SHA-256 is checked against the manifest
-before it is used. It differs from the originals on purpose:
-- it finds the four surrounding grid points by grid arithmetic, not by
-  eccodes' nearest-point search;
-- it checks each message's parameter code, level, step range, and full run
-  and validity date and hour;
-- it rejects any missing or non-finite grid value.
-
-Pass rule: round to the decimals stored in that column of that file, then
-require an exact match, with no tolerance. Every compared column stores 3
-decimals, except `specific_humidity_2m`, which stores 6.
-
-| feature | EGLC | LFPG | DSM | YSDU | RNO | total |
-|---|---|---|---|---|---|---|
-| L `lapse_rate_t2_t850` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
-| D `dewpoint_depression_t2m` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
-| T `pressure_tendency_3h_hpa` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
-| R `dswrf_2h_wm2` | 9/9 | 9/9 | 9/9 | 9/9 | 9/9 | 45 of 45 |
-
-**Total: 180 of 180.** By window: training 60/60, reserved 60/60, sealed
-60/60. Every intermediate column also matches: 585 of 585. Each of the 13
-intermediate columns is 45 of 45. They are:
-- L: `t2m_raw`, `t925`, `t850`, `t700`;
-- D: `t2m_raw`, `relative_humidity_2m`, `dew_point_2m`,
-  `specific_humidity_2m`;
-- T: `pressure_msl_hpa`, `pressure_surface_hpa`,
-  `pressure_msl_lead_minus3_hpa`;
-- R: `dswrf_ave_to_lead_wm2`, and `dswrf_ave_to_lead_minus2_wm2` (27 values
-  plus 18 recipe blanks at YSDU and RNO).
-
-The bookkeeping columns (`target_hour`, `run_date`, `cycle`, `lead`) match
-720 of 720. **Mismatches: 0. Missing values: 0.**
-
-**The first run of the rebuild script failed on R, because of a bug in the
-new script itself.** The guard expected DSWRF to have the WMO parameter code
-0/4/7. These NCEP files code it as 0/4/192. That is NCEP's local-table
-number for the same field: shortName `sdswrf`, "Surface downward short-wave
-radiation flux", W m⁻², centre `kwbc`. Each `.idx` lists exactly one
-`DSWRF:surface` line. So the first run rejected all 54 DSWRF messages before
-decoding them. It reported R 0 of 45, and L, D and T 45 of 45 each (135 of
-180). Only that one expected code was changed. No sample, rule or tolerance
-was changed. The second run is the verdict above. Both runs are in the
-output file in full.
-
-**F111.5 Step 5 (diagnostic only).** The original scripts' pure functions
-were imported and run on the same cached bytes. Importing them runs only
-`mkdir` on folders that already exist.
-- The original `.idx` lookup (`find_message_range`, `all_dswrf_lines`) gives
-  the pulled byte range for 378 of 378 messages.
-- The original `bilinear_from_gid` equals the Step 3 rebuild bit for bit for
-  477 of 477 station-day messages.
-- Rounded as the recipe rounds, it equals the committed single-field column
-  477 of 477.
-
-Three original functions were not used:
-- `process_combo`, because it fetches over the network;
-- `decode_message` in s53/s55, because it writes and deletes a scratch file;
-- `build_joined`, because it writes a processed CSV.
-
-So the derived-feature arithmetic was not run through the originals. `git
-status --porcelain --ignored` was identical before and after Step 5. The
-bytes and the logic agree: nothing is left for this diagnostic to separate.
-
-**F111.6 What this means.** A68a-01 is answered for the sample. L, D, T and
-R in all three windows' committed files equal what the GRIB archive holds
-today, rebuilt independently, at 45 station-days per feature. Audit 68a rebuilt B's three GRIB values (temperature, cloud cover and wind
-speed) at the same 45 station-days (315 of 315, counting its bookkeeping
-columns). So every GRIB-derived input of B+D,L,R,T has now been rebuilt from
-raw GRIB on the same sample. B's other two inputs, the season features, are
-date arithmetic, which audit 68a section 4.4 checked. No verdict, claim or
-figure on record changes.
-
-**F111.7 What this did not do.** No model was fit. No MAE, skill or verdict
-figure was computed or printed. No file was deleted. No existing file under
-`data/raw/` was changed. No existing script was edited, frozen or not.
-SPEC.md, RESULTS.md, README.md and CLAUDE.md were not edited. The sample was
-not changed. The new files are:
-- `scripts/session71_sample.py`, `session71_ldtr_pull.py`,
-  `session71_ldtr_rebuild.py` and `session71_original_functions_check.py`;
-- the two files under `data/raw/diagnostics/session71/`;
-- `notes/session-71-output.txt`;
-- the gitignored cache.
-
-Nothing was committed.
-
----
-
 ## 2026-09-24 — Session 75 decision: planning-chat decisions and the Q33 pre-registration
 
 **D66. Owner decisions, planning chat (after session 74).** Written before
@@ -1519,3 +1239,241 @@ The new files are:
 
 F115 stays live: the new-airport pre-registration will cite it. Nothing
 was committed.
+
+---
+
+## 2026-09-25 — Session 76 decision: the new airport (KSFO) and its test design
+
+**D67. Owner decisions, planning chat (after session 75): the new airport
+and its test design.** Written before any KSFO data was pulled.
+
+- **D67.1 Airport.** San Francisco International (KSFO), Q30 branch (i)
+  (D59.5, D66.1), under the frozen `B+D,L,R,T` recipe (SPEC 8), applied
+  unchanged. It is a coastal airport, a harder type per D32. Its standard
+  offset is UTC−8, so its target hour is 20:00 UTC (local standard noon,
+  D33), the same hour and lead (26) as RNO.
+- **D67.2 Offset rule (hard filter for new airports under SPEC 8).** R has a
+  frozen construction only for lead 24 (target hour a multiple of 6) and
+  lead 26 (target hour mod 6 = 2) (SPEC 8.2). A new airport keeps the
+  recipe unchanged only if its local-standard-noon hour gives one of those
+  two leads, i.e. standard offset 0, −2, +4, ±6, −8, +10 or +12.
+- **D67.3 Test design: two pre-registered looks.**
+  - Look A: train 2021-03-24..2024-07-31 (1,226 days), test
+    2024-08-01..2025-07-31. An exact replica of F109's fold.
+  - Look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31.
+  - Each year is judged **separately** against the frozen bar (SPEC 5.3):
+    beat raw GFS (GRIB, elevation-adjusted with KSFO's own constant) and
+    persistence on MAE.
+  - "KSFO passes" is claimed only if both looks pass. If one passes and one
+    fails, it is recorded as a split. Nothing is re-run or adjusted.
+  - Both looks are frozen in one script before either year is opened, and
+    run once, together, in session 78.
+  - Pre-registered expectation (to be restated in the lock): pass in both
+    years.
+- **D67.4 Rehearsal (session 77).** On the `2022-23` and `2023-24` folds of
+  D51's `EXPERIMENT_FOLDS` only (the truncated `2025-26` fold is excluded:
+  it tests a KSFO held-out year). Purpose: a pipeline check and the
+  column-order spread (D67.5). It is **not a gate**: a poor rehearsal does
+  not stop the lock (D44 precedent). The only stop is a bug, and any fix is
+  to the pipeline, never to the recipe.
+- **D67.5 The vs-B band (column-order wobble, F115).** In rehearsal, KSFO's
+  column-order spread is measured with F115's method and F115's own
+  orderings (`data/rebuild/session75/orderings.csv`: the 102 `B+D,L,R,T`
+  orderings; all 120 `B` orderings). **Band = the largest MAE range (max −
+  min across orderings) among the four sets {B, B+D,L,R,T} × {2022-23,
+  2023-24}.** It is frozen in the lock. For each look, the record-order
+  `B+D,L,R,T` margin over canonical-order `B`: above +band → "beats B by
+  more than the column-order spread"; below −band → "B beats B+D,L,R,T by
+  more than the spread"; otherwise → "within the column-order spread". This
+  is a secondary read, not part of the bar. F115's largest range (0.0386 °C)
+  is quoted beside it as context only.
+- **D67.6 Held-out handling at KSFO.** 2024-08-01..2026-07-31 is held out.
+  Before the lock, only counts and timestamps from it are read.
+  Verify-on-contact samples are drawn from outside it. No row dated
+  2026-08-01 or later is used.
+- **D67.7 Session plan.** 76 verify, pull and build; 77 rehearsal, spread
+  and lock; 78 the two looks.
+- **D67.8 GFS v17 (planning-chat research, 2026-09-25, not checked by this
+  session).** The NWS notice list shows no GFS v17 Service Change Notice;
+  the latest SCN is SCN26-87 (22 Sep 2026). An SCN comes 30 days before
+  go-live, so the earliest possible go-live is late October 2026. KSFO is
+  unaffected: all its data (2021-03-24..2026-07-31) is v16. Re-check at
+  each planning session (D66.2).
+
+---
+
+## 2026-09-25 — Session 76 finding: KSFO verified on contact, pulled and built; the reproduction gate FAILS
+
+**F116. Network, then offline. No model was fit. No MAE, and no forecast-
+minus-observation statistic, was computed for any period. KSFO passed every
+verify-on-contact check, and all its data was pulled and built. But the
+GRIB-vs-Open-Meteo reproduction gate (F89/F90's criterion) FAILS at KSFO:
+mean |diff| 3.395 °C, mean diff −3.326 °C, against a bar of < 1.0 for both.
+Per the session prompt (Step 5.4), the session stopped after reporting.
+The constant and the pipeline were not changed, and Step 5.5 (feature
+sanity) was not run. F116 changes no verdict, claim or figure. F109 stands.
+Full real output: `notes/session-76-output.txt`.**
+
+**F116.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-76.md`.
+- The largest date in any `data/processed/*.csv` is 2026-07-31. No row
+  reaches 2026-08-01.
+- Confirmations from the scripts (file and line in the output file):
+  - (a) the elevation constant (`session37_elevation_fix.py`) is the
+    bilinear GRIB model terrain (`HGT:surface`, shortName `orog`) at the
+    Open-Meteo grid point, minus that grid point's Open-Meteo elevation,
+    times the lapse rate, stored at 4 dp. The record's lapse rate is the
+    unrounded RNO fit, 7.429007865 °C/km, stored as 7.429. At KSFO both
+    give the same stored constant;
+  - (b) T at lead 26 uses f026 and f023 of the same 18z run, as at RNO;
+  - (c) R at lead 26 uses the native 24–26 h DSWRF average, no
+    de-accumulation, as at RNO;
+  - (d) L and D depend on the airport only through its target hour, grid
+    point and constant.
+  The stop rule did not fire.
+
+**F116.2 Verify on contact (Step 2).** All samples are from outside
+2024-08-01..2026-07-31.
+- **Station.** IEM `CA_ASOS` listing: sid `SFO`, "SAN FRANCISCO INTL",
+  latitude 37.619, longitude −122.3749, elevation 5.0 m, timezone
+  America/Los_Angeles, `METAR_RESET_MINUTE` 56. `SFO` is not an ICAO code
+  (the ICAO code is KSFO).
+- **Target hour.** America/Los_Angeles's standard offset is UTC−8 (read
+  from a January date), so local standard noon is 20:00 UTC, as D67.1
+  says. Cycle 18z, lead 26.
+- **Report minute and units** (2023-06-01..2023-06-21, 504 hours). The
+  routine report is at `:56` (504 of 505 rows; one off-hour routine
+  report at `:36`). 59 special reports are spread over many minutes; the
+  most common minute, `:19`, has 4. So there is no second scheduled
+  report ("nothing scheduled", as at DSM). tmpc is °C: largest
+  |tmpc − (tmpf − 32) × 5/9| is 0.0044 °C over 97 rows. The tz=UTC
+  request is UTC: the local-time series lines up at +7 h (PDT) with 100%
+  equal values. Pairing offset to 20:00 UTC: 4 minutes (the 19:56 report).
+- **Open-Meteo.** Grid point 37.54637, −122.34375, elevation 1.0 m; 8.53 km
+  from the station (the farthest in the project); height mismatch −4 m.
+  First non-null hour 2021-03-24 00:00 UTC, all null before it.
+- **Elevation constant.** HGT:surface from run 2024-06-09 18z f026 (valid
+  2024-06-10 20:00). The four surrounding GRIB points have terrain 38.30,
+  55.74, 81.98 and 118.46 m. Bilinear terrain at the grid point is
+  94.4704 m; gap 93.4704 m. Constant = 7.429 / 1000 × 93.4704 =
+  0.6943915763 °C, stored as **+0.6944 °C**
+  (`data/raw/diagnostics/session76/session76_elevation_correction_params.csv`).
+- **Land mask.** A `LAND:surface` line is in the f026 .idx, but only the
+  HGT message was fetched, so nothing is reported (no new pull, Step 2.6).
+- **An incident.** The first Step 2 run got HTTP 429 (too many requests)
+  from IEM on its second observation request, and saved the 429 text as
+  data. That run's partial raw files were deleted. The script was changed
+  to check the status before saving and to pause and retry on 429, then
+  re-run from the start.
+
+**F116.3 The pull (Step 4).**
+- **GRIB**, fetch-decode-discard (the F98 precedent; ~22 GB would not fit
+  next to the existing cache). 14 messages per day over 1,956 days: 27,384
+  requested, **27,370 OK, 14 failed**, 23,526,628,688 bytes, pulled
+  2026-09-25 09:41:21Z .. 11:06:31Z. Each message's parameter, level, step,
+  run, and full validity date and hour were checked (SPEC 8.7 item 3).
+  All 14 failures are target day 2022-11-30 (run 2022-11-29 18z): "bad
+  magic markers", the same upstream index/file mismatch F90 found for RNO
+  on the same day. Per field: 1,955 of 1,956; before 2024-08-01, 1,225 of
+  1,226; each held-out year, 365 of 365. Non-finite values: 0.
+- **Pipeline check.** KSFO's pulled 2021-03-24 TMP 2 m message has the same
+  SHA-256 as session 37's cached RNO file. Decoded at RNO's grid point by
+  the new code, it gives 8.754 °C, equal to RNO's record value.
+- **Observations**: six IEM routine chunks, 2021-03-24..2026-07-31, 46,916
+  rows, station SFO only, last row 2026-07-31 23:56.
+- **Open-Meteo** `temperature_2m_previous_day1`, 2021-03-24..2024-07-31: 29,424
+  hours, 492 null, one unbroken block 2023-12-30 00:00..2024-01-19 11:00 —
+  the shared gap (SPEC 3.2). Cloud cover and wind, 2024-01-19..2024-07-31,
+  were also pulled for Step 5.5, which was not run.
+
+**F116.4 The build (Step 5.1–5.3).**
+- `data/processed/session76_ksfo_features.csv`: 1,955 rows (2022-11-30
+  dropped, logged in `session76_ksfo_feature_drops.csv`), the nine model
+  columns in record order (SPEC 8.8 G15), then their underlying columns,
+  with the rounding of G4, G5 and G7. All 1,955 rows are complete-case.
+  The D floor changed 0 rows. Identity checks on `t2m_raw` and the
+  tendency: 0 failures.
+- `data/processed/session76_ksfo_observations.csv`: nearest usable routine
+  report within 15 minutes of 20:00 UTC, inclusive (SPEC 8.7 item 1).
+  1,953 of 1,956 days paired (offset −4 min on 1,952, −3 min on 1). 0 tie
+  days. Dropped: 2022-03-17 (no usable temperature), 2024-07-13 and
+  2024-12-20 (no routine report in the window).
+- Counts (days / features / complete / paired / both): before 2024-08-01
+  1,226 / 1,225 / 1,225 / 1,224 / 1,223; 2024-25 365 / 365 / 365 / 364 /
+  364; 2025-26 365 / 365 / 365 / 365 / 365. Folds: 2022-23 train 495 / 495
+  / 495 / 494 / 494, test 365 / 364 / 364 / 365 / 364; 2023-24 train 860 /
+  859 / 859 / 859 / 858, test 366 / 366 / 366 / 365 / 365.
+
+**F116.5 The reproduction gate (Step 5.4), before 2024-08-01 only.** On
+1,205 identical rows (20 GRIB days fall in Open-Meteo's gap), diff = GRIB
+minus Open-Meteo:
+- before the constant (`t2m_raw`): mean |diff| 4.026, mean diff −4.020,
+  max |diff| 12.632 °C;
+- after the constant (`temp`, the gate): **mean |diff| 3.395, mean diff
+  −3.326, max |diff| 11.938 °C → FAIL**.
+
+By month (description only), the mean diff is −0.21 to −0.77 °C in
+November–February, −2.2 and −2.5 °C in March and October, and −3.8 to
+−6.1 °C from April to September (July −6.06). By year it is −2.7 to
+−3.9 °C. So the gap is not a constant offset. The constant is tied to
+terrain height, so it cannot remove a gap that changes with the season.
+**A likely cause, not tested:** a coastal land/sea effect. The four 0.25°
+GRIB points around KSFO's grid point lie across the Pacific coast and the
+Bay, and Open-Meteo's own grid point (on a finer grid) is a shoreline land
+point. A cool marine value mixed into the interpolation would give a
+summer-heavy cold gap like this one. This was not checked (no land-mask
+field was pulled). The pipeline itself is not implicated (F116.3).
+
+**F116.6 Held-out handling actually followed.** No row dated 2026-08-01 or
+later was pulled or built. KSFO's 2024-08-01..2026-07-31 rows were pulled
+and built, but only their counts, dates and timestamps were printed (row
+and day counts, pull times, dropped-day dates). No held-out temperature,
+cloud, wind or other value was printed, summarised or compared. The
+reproduction gate and all value summaries use pre-2024-08-01 rows only.
+
+**F116.7 New files.**
+- Scripts: `scripts/session76_verify.py`, `session76_grib_pull.py`,
+  `session76_obs_om_pull.py`, `session76_build.py`.
+- `data/raw/`: `iem_station_metadata_CA_ASOS.geojson`; the four 2023 SFO
+  verify samples; six SFO routine chunks; five SFO Open-Meteo temperature
+  files; `features/..._SFO_2024-01-19_2024-07-31_cloudwind.json`; each
+  with a `.meta.txt`.
+- `data/raw/diagnostics/session76/`: the HGT diagnostic GRIB sample and its
+  sidecar, `session76_elevation_correction_params.csv`,
+  `session76_pull_manifest.csv` (27,384 rows), `session76_pull_failures.csv`
+  (14 rows), `session76_decoded_point_values.csv` (27,370 rows).
+- `data/processed/`: `session76_ksfo_features.csv`,
+  `session76_ksfo_observations.csv`, `session76_ksfo_feature_drops.csv`.
+- `notes/session-76-output.txt`.
+
+**F116.8 What this did not do.**
+- It fit no model and computed no MAE or forecast-minus-observation
+  statistic, for any period.
+- It did not change the constant, the lapse rate or the pipeline after the
+  gate failed, and did not run Step 5.5.
+- It kept no raw GRIB bytes (D47 is met by the manifest).
+- It edited no existing script, frozen or not, and did not touch the
+  reserved-year guard. It wrote to no existing data file.
+- It did not edit SPEC section 5, RESULTS.md, README.md or CLAUDE.md.
+- It changed no verdict, claim or figure. F109 stands.
+- Nothing was committed.
+
+---
+
+## 2026-09-25 — Open question raised by session 76 (not acted on)
+
+**Q34. KSFO's reproduction gate failed (F116.5). What happens to KSFO?**
+D67 opened KSFO under the frozen B+D,L,R,T recipe "applied unchanged", but
+the recipe's GRIB temperature at KSFO does not reproduce Open-Meteo's (mean
+diff −3.3 °C, strongly seasonal). This is the first time the gate has
+failed with the frozen constant already applied; at RNO in F89 it failed
+before a constant existed, and F90's constant fixed it. The session did not
+choose. Options the owner might weigh, none started:
+- stop KSFO and choose another airport under D67.2's offset rule;
+- go ahead with the recipe unchanged, recording the gate failure as a
+  caveat. The bar compares against the same elevation-adjusted GRIB value,
+  so the tests stay internally consistent; but the gate exists to confirm
+  the GRIB input is sound;
+- first investigate (for example, the land mask of the four GRIB points),
+  descriptively and before 2024-08-01 only, and decide after.
+Any change to the recipe itself would be a new method, not SPEC 8.
