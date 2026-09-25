@@ -1,0 +1,17 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : openmeteo_previousruns_gfs_global_SFO_2023-01-01_2023-12-31.json
+purpose     : session 76, Step 4.3 - KSFO's GRIB-vs-Open-Meteo reproduction gate (F89/F90)
+pulled at   : 2026-09-25 09:42:56 UTC
+source      : Open-Meteo Previous Runs API (NOT the Historical Forecast API)
+tool        : python requests
+
+exact URL requested:
+https://previous-runs-api.open-meteo.com/v1/forecast?latitude=37.619&longitude=-122.3749&start_date=2023-01-01&end_date=2023-12-31&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=UTC
+
+notes:
+- *_previous_day1 only (SPEC 3.2, 2.1b); model gfs_global (D16).
+- The coordinates are IEM's own record for SFO (Step 2.1).
+- Before 2024-08-01 only: nothing from KSFO's held-out range (D67.6).
+- Nulls are left exactly as the API returned them (SPEC 2.2).
+- HTTP status 200.

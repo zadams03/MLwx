@@ -1,0 +1,2 @@
+station,target_date,reason,missing_fields
+SFO,2022-11-30,no field decoded,tmp2m;tcdc;ugrd10m;vgrd10m;t925;t850;t700;rh2m;dpt2m;spfh2m;prmsl;pres_sfc;dswrf;prmsl_m3

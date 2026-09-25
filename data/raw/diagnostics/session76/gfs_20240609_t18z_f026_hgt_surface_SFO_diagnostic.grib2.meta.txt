@@ -1,0 +1,14 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx
+byte range requested: 418290293-418782735
+variable: HGT:surface (model terrain elevation), forecast hour f026, cycle 18z, run date 20240609
+purpose: session 76 Step 2.5 - one static-terrain sample for KSFO, to compute its
+  elevation constant the way session37_elevation_fix.py does. Run date chosen
+  before 2024-08-01 (KSFO's held-out range starts there).
+pulled (UTC): 2026-09-25 09:37:36 UTC
+HTTP status: 206
+bytes saved: 492443
+sha256: 827d655fc2956390d7e5b037f2543a9879253ffcf5b267bbcc949d97bd14ffbf
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

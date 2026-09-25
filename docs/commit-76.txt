@@ -1,0 +1,32 @@
+Session 76: KSFO verify, pull and build; reproduction gate failed (F116, Q34)
+
+Records the owner's decisions for the new airport as D67, written before any
+KSFO data was pulled: San Francisco International (KSFO) under the frozen
+B+D,L,R,T recipe; the offset rule for new airports (R is frozen only for
+leads 24 and 26); two pre-registered looks (2024-25 and 2025-26), each judged
+separately, with "KSFO passes" only if both pass; rehearsal on the 2022-23
+and 2023-24 folds as a non-gate; the vs-B column-order band rule; held-out
+handling; the 76/77/78 plan; and the GFS v17 check (no SCN as of
+2026-09-25).
+
+Verified KSFO on contact from samples outside the held-out range: IEM code
+SFO (CA_ASOS), routine minute :56, target 20:00 UTC at lead 26 (RNO's cycle
+and lead), Open-Meteo grid point 37.54637, -122.34375 (elevation 1.0 m,
+8.53 km from the station), archive floor 2021-03-24. KSFO elevation constant
+0.6944 degC under the frozen 7.429 degC/km.
+
+Pulled 2021-03-24..2026-07-31: 27,370 of 27,384 GRIB messages (the one lost
+day, 2022-11-30, is the bad file the record already drops), IEM routine
+reports, and Open-Meteo up to 2024-07-31. Built the KSFO feature table and
+paired observations; held-out years read as counts only.
+
+The F89/F90 reproduction gate failed: elevation-adjusted GRIB runs 3.3 degC
+colder than Open-Meteo on average, strongly seasonal (about -0.2 degC in
+December, -6.1 in July). Per the session prompt, nothing was changed and
+Step 5.5 was not run. Q34 asks what happens to KSFO.
+
+Archived D63 and F111 verbatim (D46). SPEC 1, 3.2, 3.3, 3.4, 6 and 7.2
+edited (KSFO row and notes, count-free 3.2 wording, 7.2 bilinear note).
+STATUS overwritten. No model fit, no MAE, no forecast-minus-observation
+statistic. F109 and every verdict unchanged; nothing dated 2026-08-01 or
+later touched.

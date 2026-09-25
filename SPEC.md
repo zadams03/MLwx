@@ -35,6 +35,9 @@ The airports so far:
   5-feature GRIB method** (DECISIONS F94) — see section 7; **also passes
   the selected-features method** (DECISIONS F109) — see section 8. The
   project's first mountain/terrain-affected airport.
+- **San Francisco International (IEM station code SFO, ICAO code KSFO)** —
+  stage 2 — verified on contact (session 76); not yet tested. The
+  project's first coastal airport (DECISIONS D67, F116).
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -139,23 +142,25 @@ CDG** — 2021-03-24 00:00 UTC exactly, with the same all-null answer before it
 (DECISIONS F20) — **and again at DSM**, on another continent, down to the same
 hour and with the same all-null answer before it (DECISIONS F33). So the March
 2021 floor is a property of the archive itself, not of one place, and the
-section 4.3 split dates work at all four airports pulled so far without
+section 4.3 split dates work at every airport pulled so far without
 adjustment. Reno's own full pull (session 26) begins exactly at 2021-03-24
 00:00 UTC too, with no null values inside the requested period, consistent
 with the same floor (DECISIONS F75); the all-null probe *before* that date
 was not separately repeated for Reno, since the full pull itself only asks
-for dates on or after the floor.
+for dates on or after the floor. KSFO's verify-on-contact probe (session 76)
+found the same first hour, 2021-03-24 00:00 UTC, with the same all-null
+answer before it (DECISIONS F116).
 
 **The archive is not continuous.** From the start date to 2026-07-31 there is
 exactly one sizeable gap: **492 hours with no forecast value, from 2023-12-30
 00:00 to 2024-01-19 11:00 UTC**. It falls entirely inside the training window
 (no airport's test window has a forecast gap). Those hours are dropped and
 counted, never filled (rule 2.2). It has now been verified **hour by hour, at
-every airport pulled so far — EGLC, CDG, DSM, Dubbo and Reno — same start
-hour, same end hour, same length, across Europe, North America and
+every airport pulled so far — EGLC, CDG, DSM, Dubbo, Reno and KSFO — same
+start hour, same end hour, same length, across Europe, North America and
 Australia** (DECISIONS
 F8, and F11 for the correction to F1's earlier claim of continuity; F22,
-closing Q21; F38; F57; F75). It is a property of the Open-Meteo archive
+closing Q21; F38; F57; F75; F116). It is a property of the Open-Meteo archive
 itself, not of any one place. See each airport's own DECISIONS finding for
 the hour-by-hour specifics.
 
@@ -197,6 +202,11 @@ From Dubbo (session 19) onward, verification samples are drawn from outside
 the test year on purpose, closing the wording gap for good (DECISIONS F49,
 Q29).
 
+**KSFO was verified on contact in session 76**, from samples outside its
+held-out range 2024-08-01..2026-07-31: station position, target hour,
+reporting minute and second report, units, UTC stamps, grid point, archive
+floor, and its GRIB elevation constant (DECISIONS F116).
+
 **3.4 The airport table.** This is the only place per-airport facts are
 written. Everything else in this file is shared. Adding an airport means adding
 a row here, filled in from real pulls — never from memory or a map.
@@ -210,6 +220,7 @@ The airport, and where it is (position from IEM, section 3.1):
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
 | YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
 | RNO | Reno, Nevada | 2 — failed (minimal method)\* | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
+| SFO | San Francisco International (KSFO) | 2 — verified, not yet tested | 20:00 | `CA_ASOS` | 37.619 | -122.3749 | 5 m |
 
 \* Reno failed the minimal method (DECISIONS F82). It passes the richer
 method (section 7, DECISIONS F94) and the selected method (section 8,
@@ -225,6 +236,7 @@ station reports:
 | DSM | 41.52945 | -93.63281 | 285 m | 1.76 km | -9 m | `:54` | nothing scheduled | 6 minutes |
 | YSDU | -32.274643 | 148.59375 | 279 m | 6.69 km | +4 m | `:00` | `:30` | 0 minutes |
 | RNO | 39.537918 | -119.765625 | 1344 m | 6.02 km | -1 m | `:55` | not yet checked | 5 minutes |
+| SFO | 37.54637 | -122.34375 | 1 m | 8.53 km | -4 m | `:56` | nothing scheduled | 4 minutes |
 
 Notes on the table:
 
@@ -278,6 +290,16 @@ Notes on the table:
   project's pipeline uses the "special" stream as the truth observation at
   any airport (D30), so the cell stays an honest "not yet checked" rather
   than a guess.
+- **KSFO (session 76, DECISIONS F116).** IEM's code is **`SFO`, not an
+  ICAO code** (the ICAO code is KSFO), the same situation as DSM and RNO.
+  Its position came from IEM's `CA_ASOS` listing. Its grid point is the
+  farthest from its airport so far, 8.53 km. Its "special" reports are
+  spread across many minutes, so its "also files at" cell reads *nothing
+  scheduled*, as at DSM. **KSFO's GRIB elevation constant is +0.6944 °C**:
+  the GRIB model terrain at its grid point is 94.47 m against the grid
+  elevation of 1 m, a gap of 93.47 m, times the frozen 7.429 °C/km (7.2).
+  It is not yet in 5.2's list; the lock session adds it. KSFO's
+  reproduction gate failed in session 76 (F116, Q34).
 - **All five network codes are now verified by a real pull.** LFPG's
   `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
   session 10 (DECISIONS F24, which closes Q22), DSM's `IA_ASOS` in session 14
@@ -595,6 +617,15 @@ to fill in a later stage early, treat it as a warning sign and stop.
     too (DECISIONS F94)** — this does not change or erase the record above;
     both results stand (D48.13). **The selected-features method (section
     8) also passes at Reno (DECISIONS F109).**
+  - **San Francisco International (SFO/KSFO) — verified, not yet tested.**
+    Opened by D67 under the default recipe (8.7), with two pre-registered
+    looks, 2024-25 and 2025-26, each judged separately (D67.3). Verified on
+    contact, pulled and built in session 76 (F116). **Its GRIB-vs-Open-
+    Meteo reproduction gate (F89/F90) failed** (F116): the elevation-
+    adjusted GRIB temperature runs 3.3 °C colder than Open-Meteo on
+    average, most in summer. Rehearsal and lock wait for the owner's
+    decision (Q34). It is the project's first coastal airport. Its target
+    hour, 20:00 UTC, and its lead are Reno's.
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once,
     using the project's default recipe (8.7).
@@ -660,8 +691,10 @@ pairing rule (4.5), and the same frozen bar (5.3).
   same way Open-Meteo's Previous Runs API does (2.1b, DECISIONS F89). Each
   value is bilinear-interpolated (estimated from the four surrounding grid
   points, weighted by distance) to the
-  airport's already-established grid point (3.4). The lead-time
-  convention: for a target hour `HH:00 UTC`, use the run made at cycle
+  airport's already-established grid point (3.4). This is standard
+  bilinear interpolation (weights from the fractional position along
+  latitude and along longitude), not inverse-distance weighting (8.8 G6).
+  The lead-time convention: for a target hour `HH:00 UTC`, use the run made at cycle
   `floor(HH/6)*6` UTC on the day before, forecast hour `24 + (HH mod 6)`
   (DECISIONS D48.2, F89).
 - **Elevation correction.** GFS's own model terrain, at the resolution of a

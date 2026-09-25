@@ -1,0 +1,459 @@
+SESSION 76 - real output of every step (docs/session-76.md)
+
+=== Step 0.1 git status --porcelain (run at session start, before any edit) ===
+?? docs/session-76.md
+
+=== Step 0.2 max date per data/processed/*.csv (read-only scan) ===
+grib_features_sealed_window.csv: max=2026-07-31 cols=['run_date', 'target_date']
+grib_features_sealed_window_drops.csv: max=None cols=[]
+grib_features_v16_window.csv: max=2025-07-31 cols=['run_date', 'target_date']
+grib_features_v16_window_drops.csv: max=2022-12-01 cols=['target_date']
+grib_vs_openmeteo_cloudwind_validation.csv: max=2025-07-31 cols=['target_date']
+session38_cv_summary.csv: max=None cols=[]
+session38_joined.csv: max=2025-07-31 cols=['target_date']
+session40_sealed_test_summary.csv: max=None cols=[]
+session46_backtest_profile.csv: max=2026-07-31 cols=['test_end', 'test_start', 'train_end', 'train_start']
+session46_fold_table.csv: max=2026-07-31 cols=['test_end', 'test_start', 'train_end', 'train_start']
+session49_sealed_window_with_upper_air.csv: max=2026-07-31 cols=['run_date', 'target_date']
+session49_upper_air_join_drops.csv: max=None cols=[]
+session49_v16_window_with_upper_air.csv: max=2024-07-31 cols=['run_date', 'target_date']
+session50_e1_experiment_grid.csv: max=None cols=[]
+session50_e1_experiment_summary.csv: max=None cols=[]
+session51_moisture_join_drops.csv: max=None cols=[]
+session51_sealed_window_with_moisture.csv: max=2026-07-31 cols=['run_date', 'target_date']
+session51_v16_window_with_moisture.csv: max=2024-07-31 cols=['run_date', 'target_date']
+session52_e2_experiment_grid.csv: max=None cols=[]
+session52_e2_experiment_summary.csv: max=None cols=[]
+session53_pressure_join_drops.csv: max=None cols=[]
+session53_sealed_window_with_pressure.csv: max=2026-07-31 cols=['run_date', 'target_date']
+session53_v16_window_with_pressure.csv: max=2024-07-31 cols=['run_date', 'target_date']
+session54_e3_experiment_grid.csv: max=None cols=[]
+session54_e3_experiment_summary.csv: max=None cols=[]
+session55_radiation_join_drops.csv: max=None cols=[]
+session55_sealed_window_with_radiation.csv: max=2026-07-31 cols=['run_date', 'target_date']
+session55_v16_window_with_radiation.csv: max=2024-07-31 cols=['run_date', 'target_date']
+session56_e4_experiment_grid.csv: max=None cols=[]
+session56_e4_experiment_summary.csv: max=None cols=[]
+session57_precip_join_drops.csv: max=None cols=[]
+session57_sealed_window_with_precip.csv: max=2026-07-31 cols=['run_date', 'target_date']
+session57_v16_window_with_precip.csv: max=2024-07-31 cols=['run_date', 'target_date']
+session58_e5_experiment_grid.csv: max=None cols=[]
+session58_e5_experiment_summary.csv: max=None cols=[]
+session61_combine_sweep_grid.csv: max=None cols=[]
+session61_combine_sweep_summary.csv: max=None cols=[]
+session61_correlation_matrix.csv: max=None cols=[]
+session61_row_cost_guard.csv: max=None cols=[]
+session63_moisture_join_drops.csv: max=None cols=[]
+session63_pressure_join_drops.csv: max=None cols=[]
+session63_radiation_join_drops.csv: max=None cols=[]
+session63_reserved_confirm_grid.csv: max=None cols=[]
+session63_reserved_window_with_moisture.csv: max=2025-07-31 cols=['run_date', 'target_date']
+session63_reserved_window_with_pressure.csv: max=2025-07-31 cols=['run_date', 'target_date']
+session63_reserved_window_with_radiation.csv: max=2025-07-31 cols=['run_date', 'target_date']
+session63_reserved_window_with_upper_air.csv: max=2025-07-31 cols=['run_date', 'target_date']
+session63_upper_air_join_drops.csv: max=None cols=[]
+OVERALL MAX: 2026-07-31 | reaches 2026-08-01: False
+
+=== Step 0.3 archived entries read (DECISIONS-archive.md) ===
+F66 (l.7222), F67 (l.7301), F68 (l.7324), F89 (l.9789), F90 (l.9972),
+D48 items 2, 3, 7, 8, 10 (l.10402-10555), F98 (l.11117), F100 (l.11430),
+F101 (l.11626), F102 (l.11840), F107 (l.13181), F108 (l.13356).
+Gate criterion (F89/F90): session36_validate.py l.209 and
+session37_elevation_fix.py l.182: PASS if mean|diff| < 1.0 and
+|mean diff| < 1.0 (degC), on identical rows.
+
+=== Step 0.4 confirmations, from the scripts ===
+(a) Elevation constant, session37_elevation_fix.py:
+  - model terrain: the HGT:surface message (idx match var=HGT, level=surface,
+    l.93-99) of one run (SAMPLE_RUN_DATE 20250610, l.66) at the airport's own
+    cycle/lead (l.194), byte-range fetched (l.103-104);
+  - decoded shortName must be 'orog' (l.137, l.204);
+  - bilinear to the airport's Open-Meteo grid point (SPEC 3.4 grid lat/lon,
+    l.53-59) via codes_grib_find_nearest npoints=4 (l.133), weights from the
+    fractional lat/lon position, negative lon +360 (l.139-162);
+  - gap_m = orog_interp_m - om_grid_elev_m, where om_grid_elev_m is SPEC 3.4's
+    Open-Meteo grid elevation (l.205), NOT the station elevation;
+  - lapse rate: the RNO fit 1000*(-rno_mean_bias)/gap_RNO (l.222-223), which
+    recomputed offline is 7.429007865 degC/km; stored rounded to 4 dp as 7.429
+    (l.251-252); difference 7.87e-06 degC/km;
+  - correction_c = lapse/1000*gap (l.250), stored round(.,4) (l.252) in
+    data/raw/diagnostics/session37/session37_elevation_correction_params.csv;
+    read back as float and added as (K-273.15)+correction_c
+    (session37_decode.py l.71-77, l.154), rounded to 3 dp (l.164).
+  For KSFO: substitute KSFO's Open-Meteo grid point and grid elevation, and use
+  the frozen 7.429 (the session prompt's instruction). The unrounded
+  alternative differs by < 1e-5 degC for any gap under 1,000 m, so it cannot
+  change the stored 4-dp constant except at an exact rounding edge (checked
+  in Step 2.5).
+(b) T, session53_pressure_pull.py: PRMSL and PRES:surface at the standard
+  lead (idx step '<lead> hour fcst', l.137-150, l.365-400), plus PRMSL at
+  lead-3 from the SAME run (lead_m3 = lead - 3, l.359, l.409-446); each Pa ->
+  hPa rounded to 3 dp, tendency = round(msl - msl_m3, 3) (l.473-480). At
+  20:00 UTC: 18z run of day D-1, f026 (valid 20:00 D) and f023 (valid 17:00
+  D), exactly as at RNO. Unchanged.
+(c) R, session55_radiation_pull.py: window_start(26) = 6*((26-1)//6) = 24
+  (l.137-141); needs_deaccum = (26 - 24) != 2 = False (l.438, l.535), so the
+  native 24-26 h 'ave fcst' DSWRF:surface value is used directly, no second
+  message (l.556-558), stored round 3 (l.560-562). Same as RNO. Unchanged.
+(d) L, session49_upper_air_pull.py: TMP 925/850/700 mb at f026 (l.89-93),
+  bilinear to the grid point (l.148-171, l.253), K -> degC (l.384),
+  t2m_raw = round(temperature_grib_c - correction_c, 3) (l.295),
+  lapse_rate_t2_t850 = round(t2m_raw - t850, 3) (l.301).
+  D, session51_moisture_pull.py: RH, DPT, SPFH at 2 m, f026 (l.96-100), DPT
+  K -> degC (l.509-510), t2m_raw as L (l.306), dewpoint_depression_t2m =
+  round(t2m_raw - dew_point_2m, 3) (l.312); floor max(.,0) in the model matrix
+  (SPEC 8.1).
+  The only airport-dependent inputs are the AIRPORTS entry (target hour, grid
+  lat, grid lon; session49 l.79-85, session51 same shape) and correction_c.
+Stop rule: not triggered. Each of (a)-(d) needs only KSFO's position, grid
+point, target hour and constant.
+Note: KSFO's cycle/lead (18z, f026; f023 for T) is RNO's, so KSFO reads the
+same GFS files as RNO, interpolated to a different point.
+
+=== Step 1: D67 appended to DECISIONS.md before any network call (2026-09-25) ===
+
+=== Step 2 (scripts/session76_verify.py). First run stopped at 2.3 with IEM HTTP 429
+(too many requests); its partial raw files (the CA_ASOS listing, the routine sample,
+and a routine-and-special file holding only the 429 text) were deleted, the script was
+changed to check the HTTP status before saving and to pause/retry on 429, and it was
+re-run from the start. Full output of the re-run: ===
+==============================================================================
+SESSION 76 - Step 2: verify KSFO on contact (network, small samples)
+run at 2026-09-25 09:36:55 UTC
+==============================================================================
+
+--- 2.1 IEM CA_ASOS station listing ---
+features in listing: 161
+entries matching 'SAN FRANCISCO' or sid SFO/KSFO:
+  sid='SFO' sname='SAN FRANCISCO INTL' network='CA_ASOS' elevation=5.0 tzname='America/Los_Angeles' archive_begin=1932-01-01 coords=[-122.3749, 37.619]
+
+chosen entry (all properties, as returned):
+  archive_begin: 1932-01-01
+  archive_end: None
+  attributes: {'HASTAF': '1', 'HAS_PHOUR': '1', 'HAS1MIN': '1', 'METAR_RESET_MINUTE': '56', 'GHCNH_ID': 'USW00023234'}
+  climate_site: CA7769
+  country: US
+  county: San Mateo
+  elevation: 5.0
+  ncdc81: USW00023234
+  ncei91: USW00023234
+  network: CA_ASOS
+  online: True
+  sid: SFO
+  sname: SAN FRANCISCO INTL
+  state: CA
+  synop: 23234
+  time_domain: (1932-Now)
+  tzname: America/Los_Angeles
+  ugc_county: CAC081
+  ugc_zone: CAZ508
+  wfo: MTR
+
+station code IEM uses : SFO
+latitude              : 37.619
+longitude             : -122.3749
+elevation             : 5.0 m
+is the code an ICAO code? no ('SFO' has 3 letters; the ICAO code is KSFO)
+
+--- 2.2 target hour from the timezone database ---
+timezone from IEM metadata : America/Los_Angeles
+mid-winter : 12:00 UTC = 04:00 PST (UTC-8)
+mid-summer : 12:00 UTC = 05:00 PDT (UTC-7)
+standard-time offset (read from a January date) : UTC-8
+so local standard noon = 20:00 UTC; D67.1 expects 20:00 UTC -> MATCHES
+cycle floor(20/6)*6 = 18z, lead 24 + 20 mod 6 = 26 (D67.2: lead 26 has a frozen R construction)
+
+--- 2.3 observation sample (2023, outside the held-out range) ---
+routine sample 2023-06-01..2023-06-21 (21 days, 504 hours): 505 rows
+routine report minute counts: {56: 504, 36: 1}
+routine minute: :56 (504 of 505 rows, 99.8%)
+routine rows with no usable tmpc: 0
+routine+special rows: 564; rows not in the routine file: 59
+special-report minute counts (top 15): {19: 4, 31: 3, 38: 3, 40: 3, 10: 3, 33: 3, 11: 3, 24: 2, 22: 2, 26: 2, 25: 2, 18: 2, 4: 2, 50: 2, 28: 2}
+most common special minute: :19 with 4 rows over 504 hours (0.8% of hours)
+reports assigned to 20:00 UTC, by offset in minutes: {4.0: 21}
+units: tmpc against (tmpf-32)*5/9, first 6 rows
+  2023-06-01 00:56  tmpc  15.00  tmpf  59.00  diff +0.0000
+  2023-06-01 01:56  tmpc  15.00  tmpf  59.00  diff +0.0000
+  2023-06-01 02:36  tmpc  13.89  tmpf  57.00  diff +0.0011
+  2023-06-01 02:56  tmpc  13.89  tmpf  57.00  diff +0.0011
+  2023-06-01 03:56  tmpc  13.33  tmpf  56.00  diff -0.0033
+  2023-06-01 04:56  tmpc  13.33  tmpf  56.00  diff -0.0033
+rows: 97; largest |tmpc - (tmpf-32)*5/9| = 0.0044 degC
+timezone: slide the local-time series against the UTC series
+  shift (hours)   rows compared   tmpf equal
+    +0               96             0 (0.0%)
+    +6               90            26 (28.9%)
+    +7               89            89 (100.0%)
+    +8               88            25 (28.4%)
+    +9               87            13 (14.9%)
+best shift: +7 h (100.0% equal). Early June is PDT, UTC-7, so a +7 h shift at 100% means the tz=UTC request really is UTC.
+
+--- 2.4 Open-Meteo gfs_global grid point and archive floor ---
+returned: latitude 37.54637, longitude -122.34375, elevation 1.0 m, utc_offset_seconds 0, timezone GMT
+rows 192, with a value 96, null 96
+first non-null hour: 2021-03-24T00:00
+distance station -> grid point: 8.53 km
+height mismatch (grid - station): -4.0 m
+archive floor 2021-03-24 00:00 UTC, all null before: YES
+
+--- 2.5 GRIB model terrain (HGT:surface) and KSFO's elevation constant ---
+message: shortName=orog validity=20240610 2000 bytes=492443
+four surrounding GRIB grid points (lat, lon 0-360, model terrain m, distance km):
+     37.500   237.500     81.98   14.71
+     37.500   237.750    118.46    9.74
+     37.750   237.500     38.30   26.49
+     37.750   237.750     55.74   24.10
+orog_interp_m (bilinear to the Open-Meteo grid point 37.54637, -122.34375): 94.4704
+om_grid_elev_m (Open-Meteo grid elevation, Step 2.4): 1.0
+gap_m = orog_interp_m - om_grid_elev_m = 93.4704
+correction_c = 7.429 / 1000 * gap = 0.6943915763413948  (unrounded)
+correction_c stored (round 4, session37_elevation_fix.py l.252) = 0.6944
+RNO row of the record params file, for reference: {'station': 'RNO', 'orog_interp_m': '1619.08', 'om_grid_elev_m': '1344.0', 'gap_m': '275.08', 'lapse_c_per_km': '7.429', 'correction_c': '2.0436'}
+SPEC 8.8 G5: RNO's unrounded formula value is 2.04356932; the unrounded RNO-fit lapse rate is therefore 2043.56932 / RNO gap.
+wrote data/raw/diagnostics/session76/session76_elevation_correction_params.csv (same columns and rounding as the session 37 file)
+
+--- 2.6 land/sea (descriptive, optional) ---
+LAND lines listed in the f026 .idx: ['728:538881617:d=2024060918:LAND:surface:26 hour fcst:']
+Only the HGT:surface message was fetched in 2.5, so no land-mask field is in a
+file already fetched. No new pull was made for this (Step 2.6). Not reported.
+
+--- Step 2 stop checks ---
+stops triggered: none
+
+Step 2.5 supplement: the unrounded RNO-fit lapse rate (7.429007865 degC/km, Step 0.4a)
+params file row: {'station': 'SFO', 'orog_interp_m': '94.47', 'om_grid_elev_m': '1.0', 'gap_m': '93.47', 'lapse_c_per_km': '7.429', 'correction_c': '0.6944'}
+unrounded-fit constant = 0.6943920396251729 -> round 4 = 0.6944 ; frozen 7.429 gives 0.6944 -> same stored value
+
+=== Step 3: SPEC edits made (1, 3.2, 3.3, 3.4, 6, 7.2); see git diff SPEC.md ===
+
+=== Step 4.2 / 4.3 (scripts/session76_obs_om_pull.py), full output ===
+=== Step 4.2 IEM routine reports, SFO (run at 2026-09-25 09:41:59 UTC) ===
+  iem_asos_SFO_2021-03-24_2021-12-31_routine.csv: 6790 rows, stations ['SFO'], first 2021-03-24 00:56, last 2021-12-31 23:56
+  iem_asos_SFO_2022-01-01_2022-12-31_routine.csv: 8754 rows, stations ['SFO'], first 2022-01-01 00:56, last 2022-12-31 23:56
+  iem_asos_SFO_2023-01-01_2023-12-31_routine.csv: 8759 rows, stations ['SFO'], first 2023-01-01 00:56, last 2023-12-31 23:56
+  iem_asos_SFO_2024-01-01_2024-12-31_routine.csv: 8781 rows, stations ['SFO'], first 2024-01-01 00:56, last 2024-12-31 23:56
+  iem_asos_SFO_2025-01-01_2025-12-31_routine.csv: 8750 rows, stations ['SFO'], first 2025-01-01 00:56, last 2025-12-31 23:56
+  iem_asos_SFO_2026-01-01_2026-07-31_routine.csv: 5082 rows, stations ['SFO'], first 2026-01-01 00:56, last 2026-07-31 23:56
+total routine rows: 46916
+
+=== Step 4.3 Open-Meteo temperature_2m_previous_day1, 2021-03-24..2024-07-31 ===
+  openmeteo_previousruns_gfs_global_SFO_2021-03-24_2021-12-31.json: grid 37.54637, -122.34375, elev 1.0; 6792 hours 2021-03-24T00:00 .. 2021-12-31T23:00; nulls {'temperature_2m_previous_day1': 0}
+  openmeteo_previousruns_gfs_global_SFO_2022-01-01_2022-12-31.json: grid 37.54637, -122.34375, elev 1.0; 8760 hours 2022-01-01T00:00 .. 2022-12-31T23:00; nulls {'temperature_2m_previous_day1': 0}
+  openmeteo_previousruns_gfs_global_SFO_2023-01-01_2023-12-31.json: grid 37.54637, -122.34375, elev 1.0; 8760 hours 2023-01-01T00:00 .. 2023-12-31T23:00; nulls {'temperature_2m_previous_day1': 48}
+  openmeteo_previousruns_gfs_global_SFO_2024-01-01_2024-07-31.json: grid 37.54637, -122.34375, elev 1.0; 5112 hours 2024-01-01T00:00 .. 2024-07-31T23:00; nulls {'temperature_2m_previous_day1': 444}
+
+=== Step 5.5 input: Open-Meteo cloud cover and wind, 2024-01-19..2024-07-31 ===
+  openmeteo_previousruns_gfs_global_SFO_2024-01-19_2024-07-31_cloudwind.json: grid 37.54637, -122.34375, elev 1.0; 4680 hours 2024-01-19T00:00 .. 2024-07-31T23:00; nulls {'cloud_cover_previous_day1': 12, 'wind_speed_10m_previous_day1': 12}
+
+=== Step 4.1 GRIB pull (scripts/session76_grib_pull.py --pull --workers 32), full output ===
+pull start (UTC): 2026-09-25T09:41:19Z
+target days 2021-03-24 .. 2026-07-31 = 1956; fields per day 14; messages 27,384; already done 0 days; to do 1956
+  100/1956 days  elapsed=308s
+  200/1956 days  elapsed=550s
+  300/1956 days  elapsed=823s
+  400/1956 days  elapsed=1083s
+  500/1956 days  elapsed=1344s
+  600/1956 days  elapsed=1618s
+  700/1956 days  elapsed=1893s
+  800/1956 days  elapsed=2145s
+  900/1956 days  elapsed=2401s
+  1000/1956 days  elapsed=2664s
+  1100/1956 days  elapsed=2922s
+  1200/1956 days  elapsed=3181s
+  1300/1956 days  elapsed=3441s
+  1400/1956 days  elapsed=3704s
+  1500/1956 days  elapsed=3963s
+  1600/1956 days  elapsed=4221s
+  1700/1956 days  elapsed=4486s
+  1800/1956 days  elapsed=4749s
+  1900/1956 days  elapsed=5004s
+  1956/1956 days  elapsed=5113s
+pull end (UTC): 2026-09-25T11:06:32Z
+
+manifest rows 27,384 (expected 27,384); OK 27,370; FAIL 14; value rows 27,370
+bytes fetched (OK messages): 23,526,628,688
+pull times (UTC): 2026-09-25T09:41:21Z .. 2026-09-25T11:06:31Z
+
+OK messages per field, per window, against the expected full count:
+field         before 2024-08-01     held-out 2024-25     held-out 2025-26        total
+tmp2m           1225 of  1226          365 of   365          365 of   365     1955 of 1956
+tcdc            1225 of  1226          365 of   365          365 of   365     1955 of 1956
+ugrd10m         1225 of  1226          365 of   365          365 of   365     1955 of 1956
+vgrd10m         1225 of  1226          365 of   365          365 of   365     1955 of 1956
+t925            1225 of  1226          365 of   365          365 of   365     1955 of 1956
+t850            1225 of  1226          365 of   365          365 of   365     1955 of 1956
+t700            1225 of  1226          365 of   365          365 of   365     1955 of 1956
+rh2m            1225 of  1226          365 of   365          365 of   365     1955 of 1956
+dpt2m           1225 of  1226          365 of   365          365 of   365     1955 of 1956
+spfh2m          1225 of  1226          365 of   365          365 of   365     1955 of 1956
+prmsl           1225 of  1226          365 of   365          365 of   365     1955 of 1956
+pres_sfc        1225 of  1226          365 of   365          365 of   365     1955 of 1956
+dswrf           1225 of  1226          365 of   365          365 of   365     1955 of 1956
+prmsl_m3        1225 of  1226          365 of   365          365 of   365     1955 of 1956
+
+failures (target_date, field, reason):
+  2022-11-30 dpt2m     RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 dswrf     RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 pres_sfc  RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 prmsl     RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 prmsl_m3  RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 rh2m      RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 spfh2m    RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 t700      RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 t850      RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 t925      RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 tcdc      RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 tmp2m     RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 ugrd10m   RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+  2022-11-30 vgrd10m   RuntimeError("failed twice: first=RuntimeError('bad magic markers (not a complete GRIB2 message)'); second=RuntimeError('bad magic markers (not a comp
+
+=== Step 5 build and checks (scripts/session76_build.py), full output; exit code 2 ===
+==============================================================================
+SESSION 76 - Step 5: build and checks (offline). Counts only for held-out rows.
+==============================================================================
+KSFO elevation constant read back from session76_elevation_correction_params.csv: 0.6944 degC
+
+--- 5.1 feature table: data/processed/session76_ksfo_features.csv ---
+columns (32): ['station', 'target_date', 'target_hour', 'run_date', 'cycle', 'lead', 'temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa', 'temperature_grib_c', 'cloud_cover_grib_pct', 'wind_speed_grib_kmh', 't2m_raw', 't925', 't850', 't700', 'relative_humidity_2m', 'dew_point_2m', 'specific_humidity_2m', 'dewpoint_depression_t2m', 'pressure_msl_hpa', 'pressure_surface_hpa', 'pressure_msl_lead_minus3_hpa', 'dswrf_ave_to_lead_wm2', 'dswrf_ave_to_lead_minus2_wm2', 'complete_case']
+non-finite GRIB values rejected at load, per field: {'tmp2m': 0, 'tcdc': 0, 'ugrd10m': 0, 'vgrd10m': 0, 't925': 0, 't850': 0, 't700': 0, 'rh2m': 0, 'dpt2m': 0, 'spfh2m': 0, 'prmsl': 0, 'pres_sfc': 0, 'dswrf': 0, 'prmsl_m3': 0}
+rows written: 1955 of 1956 calendar days; drop-log rows: 1 (data/processed/session76_ksfo_feature_drops.csv)
+  drop: 2022-11-30  no field decoded  missing=tmp2m;tcdc;ugrd10m;vgrd10m;t925;t850;t700;rh2m;dpt2m;spfh2m;prmsl;pres_sfc;dswrf;prmsl_m3
+D floor transform: rows with dewpoint_depression_t2m < 0 (changed by the floor): 0
+identity checks: t2m_raw == round(temperature_grib_c - c, 3) fails on 0 rows; tendency == round(msl - msl_m3, 3) fails on 0 rows
+
+--- 5.2 paired observations: data/processed/session76_ksfo_observations.csv ---
+routine rows read: 46916; rows with no usable tmpc: 3 (of which non-finite: 0); duplicate timestamps skipped: 0
+days: 1956; paired 1953; dropped 3
+paired offsets (minutes, signed, report minus 20:00): {-4: 1952, -3: 1}
+tie days (two usable reports equally near): 0; with differing temperatures: 0
+dropped days by reason: {'no usable temperature within 15 min': 1, 'no routine report within 15 min': 2}
+  dropped: 2022-03-17  no usable temperature within 15 min  (reports in window 1)
+  dropped: 2024-07-13  no routine report within 15 min  (reports in window 0)
+  dropped: 2024-12-20  no routine report within 15 min  (reports in window 0)
+days with more than one usable report in the window: 0
+
+--- 5.3 counts (counts only) ---
+period                         days  feature       B  complete  paired    both
+2021 (2021-03-24..2021-12-31)    283      283     283       283     283     283
+2022 (2022-01-01..2022-12-31)    365      364     364       364     364     363
+2023 (2023-01-01..2023-12-31)    365      365     365       365     365     365
+2024 (2024-01-01..2024-12-31)    366      366     366       366     364     364
+2025 (2025-01-01..2025-12-31)    365      365     365       365     365     365
+2026 (2026-01-01..2026-07-31)    212      212     212       212     212     212
+before 2024-08-01              1226     1225    1225      1225    1224    1223
+held-out 2024-25                365      365     365       365     364     364
+held-out 2025-26                365      365     365       365     365     365
+whole window                   1956     1955    1955      1955    1953    1952
+fold 2022-23 train              495      495     495       495     494     494
+fold 2022-23 test               365      364     364       364     365     364
+fold 2023-24 train              860      859     859       859     859     858
+fold 2023-24 test               366      366     366       366     365     365
+
+--- 5.4 reproduction gate: GRIB (elevation-adjusted) vs Open-Meteo, before 2024-08-01 ---
+Open-Meteo hours: 29424; null 492, first null 2023-12-30T00:00, last null 2024-01-19T11:00
+null hours contiguous: True (span 492 hours)
+identical rows (both present): 1205; GRIB rows with no Open-Meteo value: 20
+diff = GRIB minus Open-Meteo, degC; gate (F89/F90): mean|diff| < 1.0 and |mean diff| < 1.0
+before the elevation constant (t2m_raw)   : n=1205 mean|diff|=4.026 mean diff=-4.020 max|diff|=12.632 -> FAIL
+after the elevation constant (temp), GATE: n=1205 mean|diff|=3.395 mean diff=-3.326 max|diff|=11.938 -> FAIL
+mean diff (GRIB minus Open-Meteo) by calendar month and by year, description only:
+  month 01   n=  75 mean diff=-0.434 mean|diff|=0.687
+  month 02   n=  85 mean diff=-0.767 mean|diff|=0.843
+  month 03   n= 101 mean diff=-2.160 mean|diff|=2.180
+  month 04   n= 120 mean diff=-3.805 mean|diff|=3.806
+  month 05   n= 124 mean diff=-4.683 mean|diff|=4.692
+  month 06   n= 120 mean diff=-5.239 mean|diff|=5.239
+  month 07   n= 124 mean diff=-6.055 mean|diff|=6.055
+  month 08   n=  93 mean diff=-5.461 mean|diff|=5.461
+  month 09   n=  90 mean diff=-4.983 mean|diff|=4.983
+  month 10   n=  93 mean diff=-2.488 mean|diff|=2.545
+  month 11   n=  89 mean diff=-0.770 mean|diff|=0.969
+  month 12   n=  91 mean diff=-0.207 mean|diff|=0.554
+  year 2021  n= 283 mean diff=-3.942 mean|diff|=3.973
+  year 2022  n= 364 mean diff=-3.230 mean|diff|=3.324
+  year 2023  n= 363 mean diff=-2.696 mean|diff|=2.804
+  year 2024  n= 195 mean diff=-3.782 mean|diff|=3.790
+
+REPRODUCTION GATE FAILED. Stopping after reporting (Step 5.4): the constant and
+the pipeline are not changed, and Step 5.5 is not run.
+
+=== After Step 5.4: SPEC 6 bullet and SPEC 3.4 KSFO note corrected for the gate failure (see git diff SPEC.md) ===
+
+=== Step 6: F116 and Q34 appended to DECISIONS.md ===
+1307:**F116. Network, then offline. No model was fit. No MAE, and no forecast-
+1317:**F116.1 Step 0.**
+1335:**F116.2 Verify on contact (Step 2).** All samples are from outside
+1369:**F116.3 The pull (Step 4).**
+1389:**F116.4 The build (Step 5.1–5.3).**
+1407:**F116.5 The reproduction gate (Step 5.4), before 2024-08-01 only.** On
+1427:**F116.6 Held-out handling actually followed.** No row dated 2026-08-01 or
+1434:**F116.7 New files.**
+1449:**F116.8 What this did not do.**
+1465:**Q34. KSFO's reproduction gate failed (F116.5). What happens to KSFO?**
+
+=== End step 2: archive (done before F116 was written; mechanical awk cut of DECISIONS.md lines 982-1261) ===
+moved: D63 (session 70) and F111 (session 71), 280 lines, appended verbatim under '## Moved by session 76 (2026-09-25)'
+check: tail of DECISIONS-archive.md diffed against the cut lines -> identical
+DECISIONS.md: 1,521 lines at session start; 1,581 after D67; 1,301 after the move;     1479 now (after F116, Q34)
+DECISIONS-archive.md: 14,685 before;    14972 after (280 moved + 7-line header)
+14687:## Moved by session 76 (2026-09-25)
+no other entry settled this session; D67, F116, Q34 and F115 stay live
+
+=== End step 3: STATUS.md overwritten (current-only snapshot);       81 lines ===
+
+=== End step 4: consistency check (scripted part; full output) ===
+--- duplicated headings (per file) ---
+CLAUDE.md: 10 headings, duplicated: none
+SPEC.md: 9 headings, duplicated: none
+STATUS.md: 5 headings, duplicated: none
+DECISIONS.md: 16 headings, duplicated: none
+--- DECISIONS.md dated section headers, in order ---
+['2026-08-16', '2026-08-18', '2026-08-19', '2026-08-20', '2026-09-11', '2026-09-18', '2026-09-19', '2026-09-23', '2026-09-23', '2026-09-23', '2026-09-24', '2026-09-24', '2026-09-25', '2026-09-25', '2026-09-25']
+dates non-decreasing: True
+--- DECISIONS.md entry numbers in order of appearance ---
+['P1', 'P2', 'P3', 'D17', 'F7', 'Q30', 'Q32', 'D46', 'D47', 'F96', 'D51', 'D59', 'D59', 'D59', 'D59', 'D59', 'D59', 'F110', 'D62', 'D62', 'D62', 'D62', 'D62', 'D62', 'D62', 'D62', 'D62', 'D62', 'D66', 'D66', 'D66', 'D66', 'F115', 'F115', 'F115', 'F115', 'F115', 'F115', 'F115', 'F115', 'D67', 'F116', 'F116', 'F116', 'F116', 'F116', 'F116', 'F116', 'F116', 'F116', 'Q34']
+D increasing: False
+F increasing: False
+Q increasing: True
+--- entry numbers defined in both files (should be none) ---
+none
+--- citations in SPEC/STATUS/DECISIONS that resolve in neither file ---
+SPEC.md unresolved: []
+STATUS.md unresolved: []
+DECISIONS.md unresolved: []
+--- KSFO/SFO mentions per file ---
+CLAUDE.md 0
+SPEC.md 15
+STATUS.md 12
+DECISIONS.md 28
+(D/F 'increasing: False' is a regex artifact: sub-items **D59.1 etc. match '**D59.'. De-duplicated order: D17 D46 D47 D51 D59 D62 D66 D67; F7 F96 F110 F115 F116 -> increasing.)
+
+SPEC lines with airport-count wording, for the manual read:
+267:  is the closest of the five, 1.76 km, and the first with a height mismatch
+303:- **All five network codes are now verified by a real pull.** LFPG's
+731:Open-Meteo temperature series and matched it closely at every airport once
+
+Consistency check, manual read (report only; nothing fixed):
+1. SPEC 3.4 note (l.303) "All five network codes are now verified" does not
+   count KSFO's CA_ASOS, verified this session. Carried in STATUS.
+2. SPEC 3.4 note (l.267) "DSM's is the closest of the five" - the count is
+   now six; the claim (DSM closest) still holds.
+3. SPEC 7.3 (l.731) says the GRIB temperature "matched it closely at every
+   airport once the elevation correction was applied". Scoped to section 7's
+   five airports, so still true, but a reader may now set it against KSFO's
+   failed gate (F116). Tension, not a conflict.
+4. SPEC 3.3's KSFO paragraph lists "its GRIB elevation constant" among the
+   verified facts. The constant was computed as the recipe says, but the
+   gate that checks it failed (F116.5). SPEC 3.4 and 6 say so; SPEC 1 and
+   3.3 do not.
+5. STATUS "Next" does not use the session prompt's exact wording ("review
+   session 76; then draft session 77 ..."), because the gate failure makes
+   session 77 depend on Q34. Session 77's D67 content is kept as the
+   if-KSFO-goes-ahead branch.
+6. D67.1 says the recipe is "applied unchanged" at KSFO; Q34 asks whether
+   that still holds after the gate failure. Open, recorded, not decided.
+No duplicated heading. No DECISIONS entry out of order. No citation fails
+to resolve.
+
+=== End step 5: suggested commit message written in the session report; nothing committed ===
