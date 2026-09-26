@@ -1,0 +1,21 @@
+fold,rung,day_basis,n_days,mae
+2022-23,raw_gfs,D58 item 6,364,1.4422609890109892
+2022-23,persistence,D58 item 6,364,1.530934065934066
+2022-23,mean_bias,D58 item 6,364,1.3832510232682298
+2022-23,B,D58 item 6,364,1.2862693634534128
+2022-23,"B+D,L,R,T",D58 item 6,364,1.2544180127512181
+2023-24,raw_gfs,D58 item 6,365,1.3061369863013699
+2023-24,persistence,D58 item 6,364,1.715659340659341
+2023-24,mean_bias,D58 item 6,365,1.250037292844142
+2023-24,B,D58 item 6,365,1.2922832710768244
+2023-24,"B+D,L,R,T",D58 item 6,365,1.174587228071113
+2022-23,raw_gfs,common days (descriptive),364,1.4422609890109892
+2022-23,persistence,common days (descriptive),364,1.530934065934066
+2022-23,mean_bias,common days (descriptive),364,1.3832510232682298
+2022-23,B,common days (descriptive),364,1.2862693634534128
+2022-23,"B+D,L,R,T",common days (descriptive),364,1.2544180127512181
+2023-24,raw_gfs,common days (descriptive),364,1.3031071428571428
+2023-24,persistence,common days (descriptive),364,1.715659340659341
+2023-24,mean_bias,common days (descriptive),364,1.2459385614385614
+2023-24,B,common days (descriptive),364,1.289495099212209
+2023-24,"B+D,L,R,T",common days (descriptive),364,1.1708632082157995

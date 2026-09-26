@@ -1460,59 +1460,6 @@ reproduction gate and all value summaries use pre-2024-08-01 rows only.
 
 ---
 
-## 2026-09-25 — Open question raised by session 76 (not acted on)
-
-**Q34. KSFO's reproduction gate failed (F116.5). What happens to KSFO?**
-D67 opened KSFO under the frozen B+D,L,R,T recipe "applied unchanged", but
-the recipe's GRIB temperature at KSFO does not reproduce Open-Meteo's (mean
-diff −3.3 °C, strongly seasonal). This is the first time the gate has
-failed with the frozen constant already applied; at RNO in F89 it failed
-before a constant existed, and F90's constant fixed it. The session did not
-choose. Options the owner might weigh, none started:
-- stop KSFO and choose another airport under D67.2's offset rule;
-- go ahead with the recipe unchanged, recording the gate failure as a
-  caveat. The bar compares against the same elevation-adjusted GRIB value,
-  so the tests stay internally consistent; but the gate exists to confirm
-  the GRIB input is sound;
-- first investigate (for example, the land mask of the four GRIB points),
-  descriptively and before 2024-08-01 only, and decide after.
-Any change to the recipe itself would be a new method, not SPEC 8.
-
----
-
-## 2026-09-26 — Session 76b decision: diagnose KSFO's gate failure before deciding Q34
-
-**D68. Owner decision, planning chat (after session 76): diagnose KSFO's
-gate failure before deciding Q34.**
-
-- **D68.1** Session 76b runs three diagnostics (A, B, C below) before Q34 is
-  decided. Q34 stays open until the owner decides it in planning.
-- **D68.2 Pre-registered reading (written before any diagnostic ran).**
-  - **If A fails:** a pipeline bug is indicated. KSFO is paused. The next
-    step is a fix, to the pipeline only and never to the recipe, followed by a
-    rebuild and a fresh run of the gate.
-  - **If A passes and B or C explains the gap:** planning will recommend
-    recording the gate as "failed, explained by a difference between the
-    sources" (no override), and continuing KSFO under the unchanged recipe.
-    "Explains the gap" means either of:
-    - the summer spread across the four grid points is of the same order as
-      the GRIB-versus-Open-Meteo gap; or
-    - Open-Meteo's `gfs_global` temperature comes from a different GFS
-      product than our 0.25° files.
-  - **If A passes but nothing explains the gap:** the owner chooses between
-    dropping KSFO and diagnosing further.
-- **D68.3 Session plan.** The plan becomes: 76b diagnostic; then, if KSFO
-  proceeds, 77 rehearsal and lock, and 78 the two looks (D67.7, shifted by
-  this diagnostic).
-- **D68.4 Planning-chat research (2026-09-26, not checked by this session).**
-  Open-Meteo lists its GFS model as "NCEP GFS Global 0.11°/0.25°". Its GFS
-  documentation says that the high-resolution GFS013 product lacks some
-  variables, so the standard GFS025 model is used for those. KSFO's returned
-  grid point (37.54637, −122.34375) does not lie on the 0.25° grid. Check C
-  tests this.
-
----
-
 ## 2026-09-26 — Session 76b finding: KSFO gate diagnostic (Q34), descriptive
 
 **F117. Offline (except B.2's one GRIB message and C's two documentation
@@ -1692,3 +1639,348 @@ history. Nothing here measured the 0.11° product directly.
   read-only. Nothing under `data/processed/` was written.
 - It changed no verdict, claim or figure. F109 stands.
 - Nothing was committed.
+
+---
+
+## 2026-09-26 — Session 77 decision: Q34 decided, KSFO proceeds
+
+**D69. Owner decision, planning chat (after session 76b): Q34 is decided and
+closed. KSFO proceeds under the unchanged `B+D,L,R,T` recipe.** Written
+before any model was fit at KSFO.
+
+- **D69.1** KSFO continues under SPEC 8, applied unchanged. Nothing about the
+  recipe, the constant (+0.6944 °C) or the pipeline changes.
+- **D69.2** The gate result (F116.5) is recorded as **"failed, explained by a
+  difference between the sources (F117)"**. There is no override. F116.5
+  stands as a FAIL.
+- **D69.3 Reasons.** (a) Check A verified the pipeline exactly (F117.2).
+  (b) The sea-mixed 0.25° blend is genuine GFS output (F117.3). (c) KSFO is
+  the coastal test D32 asked for. (d) The bar's raw-GFS baseline is the same
+  GRIB value the model corrects, so the tests stay internally consistent.
+- **D69.4** Q34 is closed.
+- **D69.5 Session plan.** 77 rehearsal, band and lock; 78 the two looks,
+  run once (D67.7, D68.3).
+- **D69.6 GFS v17 (planning-chat research, 2026-09-26, not checked by this
+  session).** The NWS notice list shows no GFS v17 Service Change Notice.
+  The latest SCN is still SCN26-87 (22 Sep 2026). The earliest possible
+  go-live is late October 2026. KSFO is unaffected: all its data is v16.
+
+---
+
+## 2026-09-26 — Session 77 finding: KSFO rehearsal, column-order band and look counts
+
+**F118. Offline. A rehearsal, not a gate (D67.4). On both rehearsal folds,
+record-order `B+D,L,R,T` beats raw GFS (GRIB) and persistence. Every
+pre-registered pipeline check passed, so no bug was found. The band is
+0.0377 °C (from `B+D,L,R,T` on 2022-23). The frozen look script was
+written and dry-run, and its self-test reproduced Step 2a exactly.
+`--run-looks` was not run. No value from KSFO's held-out years was read.
+F118 changes no verdict, claim or figure. F109 stands. Full real output:
+`notes/session-77-output.txt`.**
+
+**F118.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-77.md`.
+- SHA-256:
+  - `data/processed/session76_ksfo_features.csv`:
+    `f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9`
+  - `data/processed/session76_ksfo_observations.csv`:
+    `b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c`
+  - `data/rebuild/session75/orderings.csv`:
+    `136ffb0dfe1350154919c1814ee595159773ab7d966eef4c19e47fccb4aa0da5`
+  - `scripts/session62_reserved_confirm.py`:
+    `9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4`
+- The features file's nine model columns (header positions 7–15) are
+  SPEC 8.8 G15, in order. 1,955 rows; the largest date is 2026-07-31.
+- D67, F115, F116, F117, Q34 and D51 were read in DECISIONS.md, and D58
+  (item 6) in DECISIONS-archive.md.
+- **How the orderings are stored.** `orderings.csv` has three columns:
+  `model`, `ordering`, `columns`. `columns` holds the column **names**,
+  joined by `|`. The 102 `B+D,L,R,T` orderings are `record`, `session73`
+  and `draw001`–`draw100` (each draw is `numpy.random.default_rng(75)`'s
+  `permutation(9)` applied to the record order, repeats redrawn). The 120
+  `B` orderings are `itertools.permutations` of `BASE_KEYS`, named
+  `canonical` and `permNNN`. The names are KSFO's own column names, so
+  each ordering maps by name. Checked in code: every ordering is a
+  permutation of the G15 (or B) names, all are distinct, and the anchors
+  come first. The stop rule did not fire.
+
+**F118.2 Step 1.** D69 was appended before any fit.
+
+**F118.3 Data and the KSFO rehearsal guard.** New script
+`scripts/session77_ksfo_rehearsal.py`. It imports `LGB_PARAMS`,
+`BASE_KEYS`, `FINAL_FEATURE_KEYS`, `features_matrix`, `year_fraction` and
+`mae` read-only from the record script, and `EXPERIMENT_FOLDS` and
+`assert_reserved_year_excluded()` read-only from session 48. Rows dated
+2024-08-01 or later are dropped as they are read, before any value in them
+is parsed.
+
+| count | value |
+|---|---|
+| feature rows read | 1,955 |
+| feature rows removed (dated 2024-08-01 or later) | **730** (expected 730) |
+| feature rows not complete-case | 0 |
+| feature rows with a non-finite value | 0 |
+| feature rows kept | 1,225 |
+| observation rows read | 1,956 |
+| observation rows removed (dated 2024-08-01 or later) | 730, of which **729 paired** (expected 729) |
+| observation rows not paired, before 2024-08-01 | 2 |
+| observations non-finite | 0 |
+| observations kept | 1,224 |
+| joined rows (complete and paired) | 1,223 |
+
+The guard (no kept feature, observation or joined row dated 2024-08-01 or
+later) passed. Both folds passed `assert_reserved_year_excluded()` (no
+raise).
+
+**F118.4 Pipeline checks (pre-registered). All passed.**
+- **Rows.** `2022-23`: train 494, test 364. `2023-24`: train 858, test
+  365. All four equal F116.4.
+- **Columns.** The G15 list written in the script equals the record's
+  `FINAL_FEATURE_KEYS` and the file's header. Every matrix is float64, has
+  the requested columns, and holds no non-finite value.
+- **Determinism.** Record-order `B+D,L,R,T` repeated in a separate process
+  (`--repeat`): 364 of 364 and 365 of 365 predictions equal, maximum
+  absolute difference 0.0.
+- Two further checks, not pre-registered: `temp` equals
+  `temperature_grib_c` on all 1,225 kept feature rows, and the stored
+  `season_sin` and `season_cos` equal the record's recomputation from the
+  date on all 1,225 (0 differ).
+
+**F118.5 Step 2a: the rungs (rehearsal, not a gate).** MAE in °C (G24).
+Day basis as D58 item 6. The mean-bias reference adds the fold's training
+mean of (obs − raw GFS): 0.3738 °C on 2022-23, 0.3330 °C on 2023-24.
+
+| fold | n test | persistence days | raw GFS (GRIB) | persistence | mean-bias ref | B | B+D,L,R,T |
+|---|---|---|---|---|---|---|---|
+| 2022-23 | 364 | 364 | 1.4423 | 1.5309 | 1.3833 | 1.2863 | 1.2544 |
+| 2023-24 | 365 | 364 | 1.3061 | 1.7157 | 1.2500 | 1.2923 | 1.1746 |
+
+Full precision (2023-24, the self-test values): raw 1.3061369863013699,
+persistence 1.715659340659341, mean-bias 1.250037292844142, B
+1.2922832710768244, B+D,L,R,T 1.174587228071113.
+
+*Common day set (descriptive).* On 2022-23 every test day has a
+previous-day observation, so the common-day values equal the table above.
+On 2023-24 (364 days): raw 1.3031, persistence 1.7157, mean-bias 1.2459,
+B 1.2895, B+D,L,R,T 1.1709.
+
+*Rehearsal, not a gate:* on both folds, `B+D,L,R,T` beats raw GFS (GRIB)
+and beats persistence.
+
+**F118.6 Step 2b: bias, descriptive only.** All 1,223 complete, paired rows
+before 2024-08-01. "raw" = raw GFS (GRIB), elevation-adjusted; OM =
+Open-Meteo `temperature_2m_previous_day1` at 20:00 UTC (20 days fall in its
+492-hour gap). Means in °C. Nothing was selected or tuned on this.
+
+| month | n | mean obs | mean(obs − raw) | mean \|obs − raw\| | mean(obs − OM) | n OM |
+|---|---|---|---|---|---|---|
+| 01 | 93 | 12.95 | −0.36 | 1.49 | −0.93 | 75 |
+| 02 | 85 | 13.04 | −0.42 | 1.46 | −1.18 | 85 |
+| 03 | 100 | 14.47 | +0.64 | 1.30 | −1.51 | 100 |
+| 04 | 120 | 16.62 | +1.30 | 1.69 | −2.50 | 120 |
+| 05 | 124 | 18.41 | +1.41 | 1.80 | −3.27 | 124 |
+| 06 | 120 | 20.44 | +1.06 | 1.97 | −4.18 | 120 |
+| 07 | 123 | 20.58 | −0.47 | 1.28 | −6.53 | 123 |
+| 08 | 93 | 21.89 | +0.09 | 1.27 | −5.38 | 93 |
+| 09 | 90 | 21.68 | +0.77 | 1.51 | −4.21 | 90 |
+| 10 | 93 | 19.56 | +0.16 | 1.55 | −2.32 | 93 |
+| 11 | 89 | 16.01 | −0.04 | 1.32 | −0.81 | 89 |
+| 12 | 93 | 12.68 | −0.42 | 1.31 | −0.65 | 91 |
+| all | 1,223 | 17.52 | +0.36 | 1.51 | −2.96 | 1,203 |
+
+| year | n | mean obs | mean(obs − raw) | mean \|obs − raw\| | mean(obs − OM) | n OM |
+|---|---|---|---|---|---|---|
+| 2021 | 283 | 18.47 | +0.35 | 1.58 | −3.59 | 283 |
+| 2022 | 363 | 17.36 | +0.23 | 1.73 | −3.00 | 363 |
+| 2023 | 365 | 17.34 | +0.57 | 1.38 | −2.13 | 363 |
+| 2024 | 212 | 16.84 | +0.26 | 1.29 | −3.51 | 194 |
+| all | 1,223 | 17.52 | +0.36 | 1.51 | −2.96 | 1,203 |
+
+What the tables show, as numbers only: mean(obs − raw GFS (GRIB)) is
++0.36 °C over all rows (monthly means −0.47 to +1.41), so raw GFS (GRIB)
+runs slightly cold on average. mean(obs − Open-Meteo) is −2.96 °C (monthly
+means −0.65 to −6.53, largest in July), so Open-Meteo runs warm.
+
+**F118.7 Step 2c: the column-order spread and the band (F115's method and
+orderings).** 102 `B+D,L,R,T` and 120 `B` orderings on both folds: 444
+fits. The spread's anchor fits equal the 2a fits exactly (4 of 4). MAE in
+°C; % relative to that model's record-order MAE (B: canonical).
+
+| model | fold | record | min | max | range | sd | min% | max% | range% | sd% |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B | 2022-23 | 1.2863 | 1.2747 | 1.2946 | 0.0199 | 0.0043 | −0.90% | +0.65% | 1.55% | 0.33% |
+| B | 2023-24 | 1.2923 | 1.2791 | 1.3063 | 0.0272 | 0.0064 | −1.02% | +1.08% | 2.11% | 0.50% |
+| B+D,L,R,T | 2022-23 | 1.2544 | 1.2448 | 1.2825 | 0.0377 | 0.0070 | −0.77% | +2.24% | 3.01% | 0.56% |
+| B+D,L,R,T | 2023-24 | 1.1746 | 1.1494 | 1.1777 | 0.0283 | 0.0051 | −2.14% | +0.27% | 2.41% | 0.43% |
+
+| fold | wins | pairs | win share | margin °C | margin % |
+|---|---|---|---|---|---|
+| 2022-23 | 12,160 | 12,240 | 99.35% | 0.0319 | +2.48% |
+| 2023-24 | 12,240 | 12,240 | 100.00% | 0.1177 | +9.11% |
+
+Margin = canonical-order B MAE minus record-order `B+D,L,R,T` MAE. Win
+share uses a strict "lower".
+
+**The band (D67.5)** = the largest range among the four sets =
+**0.037704595173481126 °C (0.0377 at 4 dp)**, from `B+D,L,R,T` on 2022-23.
+The other three ranges: B 2022-23 0.019904642840879117, B 2023-24
+0.02722477823831082, `B+D,L,R,T` 2023-24 0.028288478234403946. Context
+only: F115's largest range is 0.0386 °C (DSM 2022-23).
+
+Read against the band (descriptive; the band comes from these same fits):
+2022-23's margin, 0.0319 °C, is within the column-order spread; 2023-24's,
+0.1177 °C, is above it.
+
+**F118.8 Step 3: counts for the looks (dates and row presence only).**
+`--counts` read only each row's date, station, complete-case flag and
+pairing status. The largest date in either file is 2026-07-31.
+
+| look | train | test | train rows | test rows | persistence test days |
+|---|---|---|---|---|---|
+| A | 2021-03-24..2024-07-31 | 2024-08-01..2025-07-31 | 1,223 (expected 1,223) | 364 (expected 364) | 363 |
+| B | 2021-03-24..2025-07-31 | 2025-08-01..2026-07-31 | 1,587 (expected 1,587) | 365 (expected 365) | 365 |
+
+A persistence test day is a test row whose previous day also has a paired
+observation. No count differed from its expected value.
+
+**F118.9 Step 4: the frozen look script.** `scripts/session77_ksfo_looks.py`,
+SHA-256 `e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1`.
+It does not import the rehearsal script; it has its own loader and scorer.
+- `--dry-run` was run once. The SHA-256 check passed (before the record
+  script was imported). Station `SFO` and hour 20 in every row. Columns
+  equal G15. Non-finite values: 0 and 0. The KSFO held-out guard passed
+  (largest date 2026-07-31; counts as F118.8). No value in a row dated
+  2024-08-01 or later was parsed.
+- **Self-test** on the `2023-24` fold (858 / 365 / 364 rows): all five
+  MAEs equal Step 2a's exactly (raw 1.3061369863013699, persistence
+  1.715659340659341, mean-bias 1.250037292844142, B 1.2922832710768244,
+  B+D,L,R,T 1.174587228071113). The self-test also runs the bar and band
+  code and builds the output rows (17 grid, 365 prediction) without writing
+  them. Nothing was written.
+- `--run-looks` was **not** run. Neither
+  `data/processed/session78_ksfo_looks_grid.csv` nor
+  `data/processed/session78_ksfo_looks_predictions.csv` exists.
+- **One point for the owner.** The look script does not import, call, edit
+  or disable the session-48 guard. But the record script, which Step 4
+  item 1 requires it to import, itself imports
+  `scripts/session48_reserved_year.py`, so that module is loaded. Nothing
+  in the look script refers to it, and the docstring says so.
+
+**F118.10 New files.**
+- Scripts: `scripts/session77_ksfo_rehearsal.py` (SHA-256
+  `0bc8d354148a6f25cbe84679bbc0b31711e8f3c2dc052318d89afb5d10b675b0`),
+  `scripts/session77_ksfo_looks.py`.
+- `data/rebuild/session77/`: `rungs.csv`, `predictions.csv`, `bias.csv`,
+  `spread_mae.csv`, `spread_summary.csv`, `win_share.csv`, `band.json`,
+  `metadata.json`, `look_counts.csv`, `run2/predictions.csv`.
+- `notes/session-77-output.txt`.
+
+**F118.11 What this did not do.**
+- It changed no verdict, claim or figure. F109, F94 and F116.5's gate
+  result (FAIL) stand.
+- It fit no model on, and read no value from, KSFO's held-out years
+  (2024-08-01..2026-07-31). Only their dates and counts were used.
+- It touched no row dated 2026-08-01 or later (none exists).
+- It did not run `--run-looks`.
+- It selected, tuned or adopted nothing. The rehearsal changed nothing in
+  the recipe.
+- It edited no existing script and did not touch or bypass the session-48
+  guard.
+- It wrote nothing under `data/raw/` or `data/processed/`.
+- It made no network call.
+- Nothing was committed.
+
+---
+
+## 2026-09-26 — Session 77 decision: KSFO lock
+
+**D70. KSFO lock: frozen before either held-out year is opened.** Written in
+session 77, after the rehearsal (F118) and before any KSFO held-out value
+was read.
+
+- **D70.1 Recipe.** SPEC 8, unchanged (D69.1):
+  - the nine G15 columns, in order: `temp`, `season_sin`, `season_cos`,
+    `cloud_cover`, `wind_speed_10m`, `dewpoint_depression_t2m_floored`,
+    `lapse_rate_t2_t850`, `dswrf_2h_wm2`, `pressure_tendency_3h_hpa`;
+  - `LGB_PARAMS`, imported read-only from
+    `scripts/session62_reserved_confirm.py`;
+  - G14, G17, G19, G20 and G24 (SPEC 8.8);
+  - no per-airport choice.
+- **D70.2 Source and constant.**
+  - `data/processed/session76_ksfo_features.csv`, SHA-256
+    `f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9`.
+  - `data/processed/session76_ksfo_observations.csv`, SHA-256
+    `b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c`.
+  - `scripts/session62_reserved_confirm.py`, SHA-256
+    `9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4`.
+  - Elevation constant **+0.6944 °C**, from
+    `data/raw/diagnostics/session76/session76_elevation_correction_params.csv`
+    (F116.2), already applied in `temperature_grib_c`.
+- **D70.3 Looks.** Windows as D67.3:
+  - Look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31.
+  - Look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31.
+    Look B's training includes 2024-25, by design.
+  - Expected counts (F118.8): look A train 1,223, test 364, persistence
+    test days 363; look B train 1,587, test 365, persistence test days 365.
+- **D70.4 Bar.** SPEC 5.3: `B+D,L,R,T` beats raw GFS (GRIB,
+  elevation-adjusted) **and** persistence on MAE, judged separately for
+  each look.
+  - The day basis is as D58 item 6: persistence on test days with a
+    previous-day observation, every other rung on every test day.
+  - "KSFO passes" only if both looks pass. One pass and one fail is
+    recorded as a split. Nothing is re-run or adjusted.
+  - The common-day re-score and the mean-bias reference are informative
+    only.
+- **D70.5 Band.** **0.037704595173481126 °C (0.0377 at 4 dp)**, from
+  `B+D,L,R,T` on 2022-23 (F118.7). Reading rule (D67.5), per look: margin =
+  canonical-order `B` MAE minus record-order `B+D,L,R,T` MAE. Above +band →
+  "beats B by more than the column-order spread"; below −band → "B beats
+  B+D,L,R,T by more than the spread"; otherwise → "within the column-order
+  spread". It is a secondary read, not part of the bar.
+- **D70.6 Frozen script.** `scripts/session77_ksfo_looks.py`, SHA-256
+  `e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1`.
+  Session 78 checks the hash, then runs `--run-looks` once, unchanged. It
+  writes `data/processed/session78_ksfo_looks_grid.csv` and
+  `data/processed/session78_ksfo_looks_predictions.csv`, and refuses to
+  start if either exists.
+- **D70.7 KSFO held-out guard.** Before any fit, the script stops unless:
+  the three SHA-256 values match; every row is station `SFO`; the nine
+  columns equal G15; for each look, training max date < test min date;
+  look A's training ends 2024-07-31 and look B's 2025-07-31; the windows are
+  exactly D67.3's; no row is dated 2026-08-01 or later; and the training,
+  test and persistence counts equal D70.3's. The session-48 guard is not
+  called, edited or disabled. (The record script imports that module for
+  its own use; F118.9.)
+- **D70.8 Pre-registered expectation.** "Pass in both years" (D67.3),
+  restated. **No expectation is registered about raw GFS at KSFO, about
+  which half of the bar binds, or about the size of any margin.**
+  Rehearsal's measured bias (F118.6) is context only. On rehearsal rows
+  (before 2024-08-01), raw GFS (GRIB) runs slightly cold against
+  observations (mean obs − raw +0.36 °C) and Open-Meteo runs warm (mean
+  obs − Open-Meteo −2.96 °C, −6.53 °C in July) (F118.6). This is context
+  only. It does not change the expectation above.
+- **D70.9 Framing (must be carried by any write-up).** KSFO's result is for
+  the recipe at a sea-mixed grid point: 37.5% of the 0.25° blend's weight
+  is on sea points (F117.3). **It is not directly comparable with the five
+  earlier airports, whose reproduction gates passed.** The gate is recorded
+  as failed, explained by a difference between the sources (D69).
+- **D70.10 SPEC edits made this session** (session 77 prompt, Step 7):
+  1. SPEC 1, KSFO bullet: now "rehearsed and locked (session 77, DECISIONS
+     D70); not yet tested", with the gate result.
+  2. SPEC 3.2: new paragraph "Which GFS product" (F117.4).
+  3. SPEC 3.3, KSFO paragraph: the gate result appended (F116, F117, D69).
+  4. SPEC 3.4: SFO's stage cell is now "2 — locked, not yet tested"; the
+     KSFO note now says its constant is in 5.2's list, gives the sea/land
+     weights, and the gate result; "closest of the five" → "of the six";
+     "All five network codes" → "All six", with SFO's `CA_ASOS` (F116)
+     added; "(DECISIONS F49) RNO's" → "(DECISIONS F49), RNO's" (a comma
+     added at review, 2026-09-26).
+  5. SPEC 5.2: KSFO's +0.6944 °C added to the adjustments list. Nothing
+     else in section 5 changed.
+  6. SPEC 6, KSFO bullet: "locked, not yet tested"; the Q34 sentence
+     replaced by the owner's decision (D69), rehearsal and lock (F118,
+     D70), and the looks in session 78.
+  7. SPEC 7.2: ", weighted by distance" deleted; "the five adjustment
+     sizes" → "the adjustment sizes".
+  8. SPEC 7.3: "at every airport" → "at each of this section's five
+     airports"; a closing note on the 0.11° product and KSFO's gate added.
