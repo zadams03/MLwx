@@ -1,0 +1,15 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx
+idx sha256: fd4d6babc8c8dd45c69705af8355d9feffc6704d37f076150bacf88def310b61
+idx line: 728:538881617:d=2024060918:LAND:surface:26 hour fcst:
+byte range requested: 538881617-538913652
+variable: LAND:surface (land cover, 1 = land, 0 = sea), forecast hour f026, cycle 18z, run date 20240609
+purpose: session 76b Check B.2 - land/sea value at the four 0.25 degree points around
+  KSFO's Open-Meteo grid point. Same run as session 76's HGT diagnostic.
+pulled (UTC): 2026-09-26 20:09:42 UTC
+HTTP status: 206
+bytes saved: 32036
+sha256: 373e6b3e0d9a6c15ae539e6d5df19e3188e9ca36fc3702c7a06a8fb33be92866
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'

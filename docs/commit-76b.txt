@@ -1,0 +1,31 @@
+Session 76b: KSFO gate diagnostic; RNO pipeline check passes (D68, F117)
+
+Records the owner's decision to diagnose KSFO's reproduction-gate failure
+before deciding Q34 (D68), with a reading of each possible outcome written
+before any check ran. Session 76 kept no raw GRIB, so by owner amendment
+(2026-09-26) the checks used cached copies from sessions 37/40/72 whose
+SHA-256 matched session 76's manifest: 17,150 of 17,150 messages before
+2024-08-01, identical bytes. The first run's Step 0.2 listed cache file
+names and counts that include held-out-year run dates (other airports'
+files); no value was decoded. Recorded in F117.
+
+Check A (pipeline): RNO re-decoded with session 76's own code from the same
+messages matches the record exactly, in every B, L, D, T and R field, on all
+1,225 shared days (zero differing rows; 2022-11-30 missing in both). PASS.
+
+Check B (grid points): KSFO's bilinear blend puts 37.5% weight on two sea
+points (SW, NW; LAND=0). In July the four points span 6.90 degC (sea about
+16, land about 21 to 23); in December 0.68. The blend reproduces session 76's
+temperature_grib_c exactly on all 1,225 days.
+
+Check C (Open-Meteo): its documentation marks temperature_2m under
+gfs_global as the 0.11 degree product (GFS013), not GFS025, and KSFO's
+returned longitude sits on a 0.1171875 degree spacing. No 0.25-only GFS
+option is documented in the Previous Runs API, so C.2 was skipped.
+
+F117 records that the evidence meets D68.2's second branch, as evidence and
+not as a decision; the warmest land point still sits 3.6 to 4.0 degC below
+Open-Meteo from April to September. The F116.5 gate result stands and Q34
+stays open. STATUS overwritten. No model fit, no observation read, no
+forecast-minus-observation statistic. F109 and every verdict unchanged;
+nothing dated 2026-08-01 or later touched.

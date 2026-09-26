@@ -1,0 +1,479 @@
+Session 76b — real output
+=========================
+
+Two runs.
+- First run (2026-09-26): Step 0.1 and 0.2 ran; the Step 0.2 stop rule fired
+  (session 76 kept no raw GRIB). Its Step 0 output is kept below unchanged.
+- Second run (2026-09-26), after the owner's amendment at the top of
+  docs/session-76b.md: continued from Step 0.3, using SHA-verified cached
+  copies. Step 0.1 was not repeated.
+
+Every command output below is copied from the session's own tool output.
+
+
+=====================================================================
+FIRST RUN — Step 0.1 and 0.2
+=====================================================================
+
+Step 0.1 — git status --porcelain
+---------------------------------
+
+    ?? docs/session-76b.md
+
+As expected.
+
+
+Step 0.2 — session 76's raw GRIB messages
+-----------------------------------------
+
+RESULT: session 76's raw GRIB messages are NOT on disk. They were never kept.
+
+Evidence:
+
+- scripts/session76_grib_pull.py, docstring l.18-21:
+
+    Raw bytes are NOT kept (fetch-decode-discard, the F98 precedent; the full set
+    is ~22 GB and does not fit next to the existing cache). D47 is met by the
+    committed manifest: URL, byte range, .idx URL and SHA-256, pull time, size
+    and SHA-256 of every message, so every value can be re-fetched and checked.
+
+- DECISIONS F116.3 ("fetch-decode-discard") and F116.8 ("It kept no raw GRIB
+  bytes (D47 is met by the manifest)").
+
+- ls data/raw/diagnostics/session76/:
+
+    gfs_20240609_t18z_f026_hgt_surface_SFO_diagnostic.grib2
+    gfs_20240609_t18z_f026_hgt_surface_SFO_diagnostic.grib2.meta.txt
+    session76_decoded_point_values.csv
+    session76_elevation_correction_params.csv
+    session76_pull_failures.csv
+    session76_pull_manifest.csv
+
+  The only session 76 GRIB file on disk is the single HGT diagnostic sample.
+  session76_decoded_point_values.csv holds one value per message at KSFO's
+  grid point only (not the four surrounding points). Its first rows:
+
+    station,target_date,field,value,units,validity
+    SFO,2021-03-24,dpt2m,271.046032703125,K,20210324 2000
+    SFO,2021-03-24,dswrf,823.5750875000001,W m**-2,20210324 2000
+
+- No leftover scratch (_scratch_*) or *.partial.csv files were found.
+
+The session prompt assumed these messages were on disk. That contradicts
+F116.3/F116.8. Per CLAUDE.md (prompt vs spec file disagree: stop and flag)
+and the prompt's own Step 0.2 stop rule, the session stopped here. No
+re-pull was made.
+
+Read-only facts gathered for the owner (no network, no value decoded except
+two header reads):
+
+(a) Older caches exist from earlier sessions.
+
+    du -sh data/raw/grib        -> 38G
+    du -sh data/raw/grib/session71 -> 320M (936 entries)
+    du -sh data/raw/grib/session72 -> 13G  (38164 entries)
+
+    data/raw/grib/ (sessions 37/40), .grib2 files per cycle/lead/field:
+      1955 t00z_f026 tcdc / tmp2m / ugrd10m / vgrd10m
+      1956 t12z_f024 tcdc / tmp2m / ugrd10m / vgrd10m
+      1955 t18z_f024 tcdc / tmp2m / ugrd10m / vgrd10m
+      1955 t18z_f026 tcdc / tmp2m / ugrd10m / vgrd10m
+      t18z_f026_tmp2m run dates: first 20210323, last 20260730
+      t18z_f026_tmp2m run dates 20210323..20240730: 1225 files
+
+    data/raw/grib/session72/, .grib2 files per cycle/lead/field:
+      1590 t18z_f023 PRMSL_msl
+      1590 t18z_f026 DPT_2m, DSWRF_surface, PRES_surface, PRMSL_msl,
+           RH_2m, SPFH_2m, TMP_700mb, TMP_850mb, TMP_925mb
+      run dates: first 20210323, last 20250730; 1590 distinct run dates
+
+(b) The cached messages are full global 0.25 degree fields. Header read with
+    eccodes (shortName, numberOfPoints, Ni, Nj, increment, dataDate,
+    dataTime, stepRange):
+
+    data/raw/grib/gfs_20210323_t18z_f026_tmp2m.grib2 2t 1038240 1440 721 0.25 20210323 1800 26
+    data/raw/grib/gfs_20240729_t18z_f026_tmp2m.grib2 2t 1038240 1440 721 0.25 20240729 1800 26
+
+(c) SHA-256 check of the caches against session 76's manifest, filtered to
+    target_date < 2024-08-01 BEFORE any comparison.
+
+    Manifest rows kept: 17164; status OK 17150, FAIL 14.
+    14 fields x 1226 target days each.
+
+    field     result
+    tmp2m     sha match 1225; s76 FAIL, cache absent 1
+    tcdc      sha match 1225; s76 FAIL, cache absent 1
+    ugrd10m   sha match 1225; s76 FAIL, cache absent 1
+    vgrd10m   sha match 1225; s76 FAIL, cache absent 1
+    dpt2m     sha match 1225; s76 FAIL, cache absent 1
+    dswrf     sha match 1225; s76 FAIL, cache absent 1
+    pres_sfc  sha match 1225; s76 FAIL, cache absent 1
+    prmsl     sha match 1225; s76 FAIL, cache absent 1
+    prmsl_m3  sha match 1225; s76 FAIL, cache absent 1
+    rh2m      sha match 1225; s76 FAIL, cache absent 1
+    spfh2m    sha match 1225; s76 FAIL, cache absent 1
+    t700      sha match 1225; s76 FAIL, cache absent 1
+    t850      sha match 1225; s76 FAIL, cache absent 1
+    t925      sha match 1225; s76 FAIL, cache absent 1
+
+    So all 17,150 messages that session 76 decoded before 2024-08-01 have a
+    byte-identical copy on disk. 0 differ, 0 missing. The one failed day
+    (target 2022-11-30) is absent from the caches too.
+
+Held-out disclosure: the file listings and counts in (a) covered the whole
+cache, including run dates inside KSFO's held-out years
+(2024-08-01..2026-07-31). They are file names and file counts from earlier
+sessions' work at the other five airports. No value from any held-out date
+was decoded, printed or compared. The prompt says "not even counts" may be
+read from the held-out years, so this is reported. The SHA check in (c) was
+filtered to target dates before 2024-08-01.
+
+Decision left to the owner: whether the SHA-verified cached copies may stand
+in for "session 76's raw messages". The prompt does not make this choice, so
+the session did not make it.
+
+
+
+=====================================================================
+SECOND RUN (after the amendment)
+=====================================================================
+
+Step 0.3 — read F116, Q34, D67, F89, F90
+----------------------------------------
+
+Read in full: F116, Q34 and D67 (DECISIONS.md l.1245-1479 before this
+session's edits); F89 (DECISIONS-archive.md l.9786-9966) and F90
+(l.9969-10184). Points used later: F89 is the gate's origin (mean|diff| and
+|mean diff| < 1.0 against Open-Meteo); F90 fixed RNO's gate with the
+7.429 degC/km constant; neither checked a land/sea mix.
+
+
+Step 1 — D68 appended to DECISIONS.md, dated 2026-09-26, before any check
+------------------------------------------------------------------------
+
+DECISIONS.md: 1479 lines before, 1512 after (header
+"## 2026-09-26 — Session 76b decision: diagnose KSFO's gate failure before
+deciding Q34"). Text as given in the session prompt, with the dates
+2026-09-26.
+
+
+Check A — pipeline check on RNO (no network)
+--------------------------------------------
+
+$ .venv/bin/python scripts/session76b_check_a.py
+
+==============================================================================
+SESSION 76b - Check A: RNO re-decoded with session 76's code, vs the record
+==============================================================================
+RNO grid point (39.537918, -119.765625); constant 2.0436 (read from session37_elevation_correction_params.csv)
+cached messages used (SHA-256 re-verified at load): 17150
+skipped: 14
+  skipped: ('2022-11-30', 'dpt2m', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'dswrf', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'pres_sfc', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'prmsl', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'prmsl_m3', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'rh2m', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'spfh2m', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 't700', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 't850', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 't925', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'tcdc', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'tmp2m', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'ugrd10m', 'session 76 manifest FAIL', 'cache absent')
+  skipped: ('2022-11-30', 'vgrd10m', 'session 76 manifest FAIL', 'cache absent')
+decoded: 17150; decode failures: 0
+built rows: 1225 of 1226 days; drop-log rows: 1; non-finite: {'tmp2m': 0, 'tcdc': 0, 'ugrd10m': 0, 'vgrd10m': 0, 't925': 0, 't850': 0, 't700': 0, 'rh2m': 0, 'dpt2m': 0, 'spfh2m': 0, 'prmsl': 0, 'pres_sfc': 0, 'dswrf': 0, 'prmsl_m3': 0}
+  build drop: ['RNO', '2022-11-30', 'no field decoded', 'tmp2m;tcdc;ugrd10m;vgrd10m;t925;t850;t700;rh2m;dpt2m;spfh2m;prmsl;pres_sfc;dswrf;prmsl_m3']
+
+per field: rows compared / rows differing at stored precision / max |diff| / missing days match
+file field                          compared differ  max|diff|  missing days
+B   temperature_grib_c                 1225      0   0.000000  match: 2022-11-30
+B   cloud_cover_grib_pct               1225      0   0.000000  match: 2022-11-30
+B   wind_speed_grib_kmh                1225      0   0.000000  match: 2022-11-30
+L   temperature_grib_c                 1225      0   0.000000  match: 2022-11-30
+L   cloud_cover_grib_pct               1225      0   0.000000  match: 2022-11-30
+L   wind_speed_grib_kmh                1225      0   0.000000  match: 2022-11-30
+L   t2m_raw                            1225      0   0.000000  match: 2022-11-30
+L   t925                               1225      0   0.000000  match: 2022-11-30
+L   t850                               1225      0   0.000000  match: 2022-11-30
+L   t700                               1225      0   0.000000  match: 2022-11-30
+L   lapse_rate_t2_t850                 1225      0   0.000000  match: 2022-11-30
+D   temperature_grib_c                 1225      0   0.000000  match: 2022-11-30
+D   cloud_cover_grib_pct               1225      0   0.000000  match: 2022-11-30
+D   wind_speed_grib_kmh                1225      0   0.000000  match: 2022-11-30
+D   t2m_raw                            1225      0   0.000000  match: 2022-11-30
+D   relative_humidity_2m               1225      0   0.000000  match: 2022-11-30
+D   dew_point_2m                       1225      0   0.000000  match: 2022-11-30
+D   specific_humidity_2m               1225      0   0.000000  match: 2022-11-30
+D   dewpoint_depression_t2m            1225      0   0.000000  match: 2022-11-30
+T   temperature_grib_c                 1225      0   0.000000  match: 2022-11-30
+T   cloud_cover_grib_pct               1225      0   0.000000  match: 2022-11-30
+T   wind_speed_grib_kmh                1225      0   0.000000  match: 2022-11-30
+T   pressure_msl_hpa                   1225      0   0.000000  match: 2022-11-30
+T   pressure_surface_hpa               1225      0   0.000000  match: 2022-11-30
+T   pressure_msl_lead_minus3_hpa       1225      0   0.000000  match: 2022-11-30
+T   pressure_tendency_3h_hpa           1225      0   0.000000  match: 2022-11-30
+R   temperature_grib_c                 1225      0   0.000000  match: 2022-11-30
+R   cloud_cover_grib_pct               1225      0   0.000000  match: 2022-11-30
+R   wind_speed_grib_kmh                1225      0   0.000000  match: 2022-11-30
+R   dswrf_ave_to_lead_wm2              1225      0   0.000000  match: 2022-11-30
+R   dswrf_ave_to_lead_minus2_wm2          0      0   0.000000  match: 1226 days
+R   dswrf_2h_wm2                       1225      0   0.000000  match: 2022-11-30
+
+Check A: PASS (pass = zero differing rows in every field and matching missing days)
+outputs: data/rebuild/session76b/check_a_rno_decoded_values.csv, data/rebuild/session76b/check_a_rno_compare.csv
+
+
+Check B.2 — LAND:surface (one small network call)
+------------------------------------------------
+
+$ .venv/bin/python scripts/session76b_land_pull.py
+
+LAND lines in idx: ['728:538881617:d=2024060918:LAND:surface:26 hour fcst:']
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026
+idx source: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240609/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx
+idx sha256: fd4d6babc8c8dd45c69705af8355d9feffc6704d37f076150bacf88def310b61
+idx line: 728:538881617:d=2024060918:LAND:surface:26 hour fcst:
+byte range requested: 538881617-538913652
+variable: LAND:surface (land cover, 1 = land, 0 = sea), forecast hour f026, cycle 18z, run date 20240609
+purpose: session 76b Check B.2 - land/sea value at the four 0.25 degree points around
+  KSFO's Open-Meteo grid point. Same run as session 76's HGT diagnostic.
+pulled (UTC): 2026-09-26 20:09:42 UTC
+HTTP status: 206
+bytes saved: 32036
+sha256: 373e6b3e0d9a6c15ae539e6d5df19e3188e9ca36fc3702c7a06a8fb33be92866
+first 4 bytes: b'GRIB'  last 4 bytes: b'7777'
+
+
+Check B.1 and B.3 (no network)
+------------------------------
+
+$ .venv/bin/python scripts/session76b_check_b.py
+
+==============================================================================
+SESSION 76b - Check B: the four 0.25 degree points around KSFO
+==============================================================================
+KSFO Open-Meteo grid point 37.54637, -122.34375; constant 0.6944
+
+--- B.1 weights (session 76's bilinear_from_gid) and B.2 land / terrain ---
+point        lat  lon (0-360)         lon    weight  dist km  LAND    HGT m
+SW       37.5000     237.5000   -122.5000    0.3054   14.713     0    81.98
+SE       37.5000     237.7500   -122.2500    0.5091    9.744     1   118.46
+NW       37.7500     237.5000   -122.5000    0.0696   26.495     0    38.30
+NE       37.7500     237.7500   -122.2500    0.1159   24.101     1    55.74
+weights sum: 1.000000000000
+nearest point: SE (37.5, -122.2500), 9.744 km, weight 0.5091
+weight on land points (LAND=1): 0.6250; on sea points (LAND=0): 0.3750
+terrain blend from these weights: 94.4704 m (session 76 F116.2: 94.4704 m)
+
+--- B.3 TMP 2 m at each point, before 2024-08-01 ---
+cached tmp2m messages used (SHA-256 re-verified at load): 1225; skipped: 1
+  skipped: ('2022-11-30', 'tmp2m', 'session 76 manifest FAIL', 'cache absent')
+blend == session 76 decoded tmp2m value (exact, K): 1225 of 1225; mismatches 0 []
+round(blend - 273.15 + c, 3) == session 76 temperature_grib_c: 1225 of 1225; mismatches 0 []
+identical rows (GRIB and Open-Meteo both present, F116.5's set): 1205
+cross-check vs F116.5 on this set: mean|temp - OM| = 3.395, mean(temp - OM) = -3.326
+
+By calendar month. All in degC. n = identical rows. Point means are raw TMP 2 m (no constant).
+'blend' = bilinear blend, no constant; 'temp' = blend + constant (session 76's temperature_grib_c).
+'spread' = max minus min of the four point means; 'day spread' = mean over days of the daily max minus min.
+            n     SW     SE     NW     NE  blend   temp     OM spread   dspr  OM-SW  OM-SE  OM-NW  OM-NE  OM-bl OM-tmp
+01         75  12.86  12.77  12.27  12.99  12.79  13.48  13.91   0.72   1.50  +1.06  +1.15  +1.64  +0.92  +1.13  +0.43
+02         85  12.73  12.75  12.20  13.21  12.76  13.46  14.22   1.01   1.69  +1.49  +1.47  +2.02  +1.01  +1.46  +0.77
+03        101  12.31  13.55  12.56  13.88  13.14  13.83  16.00   1.57   2.19  +3.69  +2.44  +3.43  +2.12  +2.85  +2.16
+04        120  12.87  15.53  13.44  15.92  14.62  15.31  19.12   3.05   3.54  +6.24  +3.59  +5.67  +3.19  +4.50  +3.80
+05        124  13.63  17.86  14.29  17.70  16.30  16.99  21.68   4.22   4.81  +8.04  +3.82  +7.38  +3.98  +5.38  +4.68
+06        120  15.17  20.93  15.74  19.85  18.68  19.38  24.62   5.77   6.02  +9.45  +3.69  +8.87  +4.77  +5.93  +5.24
+07        124  16.23  23.14  16.56  21.30  20.36  21.05  27.11   6.90   7.05 +10.87  +3.97 +10.54  +5.80  +6.75  +6.05
+08         93  17.56  23.39  17.79  22.41  21.11  21.80  27.26   5.83   6.22  +9.70  +3.87  +9.47  +4.85  +6.16  +5.46
+09         90  17.47  21.96  17.36  21.46  20.21  20.90  25.89   4.60   5.40  +8.42  +3.93  +8.53  +4.43  +5.68  +4.98
+10         93  17.42  19.42  17.07  19.89  18.70  19.40  21.88   2.81   3.53  +4.46  +2.46  +4.81  +2.00  +3.18  +2.49
+11         89  15.24  15.38  14.55  16.06  15.36  16.05  16.82   1.51   1.89  +1.58  +1.44  +2.27  +0.77  +1.46  +0.77
+12         91  12.42  12.40  11.91  12.59  12.39  13.09  13.29   0.68   1.32  +0.87  +0.90  +1.38  +0.70  +0.90  +0.21
+
+By year. All in degC. n = identical rows. Point means are raw TMP 2 m (no constant).
+'blend' = bilinear blend, no constant; 'temp' = blend + constant (session 76's temperature_grib_c).
+'spread' = max minus min of the four point means; 'day spread' = mean over days of the daily max minus min.
+            n     SW     SE     NW     NE  blend   temp     OM spread   dspr  OM-SW  OM-SE  OM-NW  OM-NE  OM-bl OM-tmp
+2021      283  15.18  18.86  15.16  18.36  17.42  18.12  22.06   3.70   4.54  +6.88  +3.20  +6.90  +3.70  +4.64  +3.94
+2022      364  14.75  17.50  14.51  17.34  16.43  17.13  20.36   2.99   3.86  +5.61  +2.86  +5.85  +3.02  +3.92  +3.23
+2023      363  14.47  17.04  14.64  17.07  16.09  16.79  19.48   2.60   3.56  +5.01  +2.44  +4.85  +2.41  +3.39  +2.70
+2024      195  14.11  17.59  14.64  17.26  16.28  16.98  20.76   3.48   4.08  +6.65  +3.17  +6.12  +3.50  +4.48  +3.78
+
+By whole period. All in degC. n = identical rows. Point means are raw TMP 2 m (no constant).
+'blend' = bilinear blend, no constant; 'temp' = blend + constant (session 76's temperature_grib_c).
+'spread' = max minus min of the four point means; 'day spread' = mean over days of the daily max minus min.
+            n     SW     SE     NW     NE  blend   temp     OM spread   dspr  OM-SW  OM-SE  OM-NW  OM-NE  OM-bl OM-tmp
+all      1205  14.66  17.70  14.72  17.48  16.54  17.23  20.56   3.03   3.96  +5.89  +2.86  +5.84  +3.08  +4.02  +3.33
+
+outputs: data/rebuild/session76b/check_b_ksfo_point_temps.csv, data/rebuild/session76b/check_b_ksfo_monthly.csv
+
+
+Check C - Open-Meteo documentation (small network calls)
+--------------------------------------------------------
+
+Fetched (curl -sS -A "MLwx/session76b"):
+    gfs-api 200 464268
+    previous-runs-api 200 585605
+Saved as data/raw/diagnostics/session76b/openmeteo_docs_gfs-api_20260926.html
+(pulled 2026-09-26 20:11:08 UTC, sha256 dda0f8fb4f73b0239cfbaf20a08bf42ff1edfd36f57203da58b7051d994ed0a7)
+and openmeteo_docs_previous-runs-api_20260926.html
+(pulled 2026-09-26 20:11:09 UTC, sha256 a2079be632a4bda7dbf030e02e0e1fe49a8af92b5e1be4e71de09741baa73024),
+each with a .meta.txt. One further request to the Previous Runs page was made
+to list its script files; it was not saved.
+
+C.1 extracts (text copied from the parsed pages):
+
+gfs-api, model selector:
+    Weather models GFS Seamless GFS Global 0.11°/0.25° AIGFS 0.25° HGEFS 0.25°
+    Ensemble Mean HRRR Conus HRRR Conus 15 min NBM Conus NAM Conus
+
+gfs-api, model table (first four columns, cell by cell):
+    ['Weather Model', 'Region', 'Spatial Resolution', 'Temporal Resolution']
+    ['GFS', '🌍 Global', '0.11° (~13 km)', 'Hourly, 3-hourly after 120 hours']
+    ['GFS Pressure Variables', '🌍 Global', '0.25° (~25 km)', 'Hourly, 3-hourly after 120 hours']
+    ['HRRR Conus', 'CONUS', '3 km', 'Hourly']
+    ['HRRR Conus 15 minutely', 'CONUS', '3 km', '15 Minutely']
+    ['NBM Conus', 'CONUS', '2.5 km', 'Hourly, 3-Hourly after 36 hours, 6-Hourly after 8 days']
+    ['NAM Conus', 'CONUS', '3 km', 'Hourly']
+    ['AIGFS 0.25°', '🌍 Global', '0.25° (~25 km)', '6-hourly']
+    ['HGEFS 0.25° Ensemble Mean', '🌍 Global', '0.25° (~25 km)', '6-hourly']
+
+gfs-api, text:
+    Variable Per Model Availability Various weather variables and levels may be
+    available for each NOAA NCEP model. Certain variables for the high-resolution
+    GFS013 model are unavailable, so the standard GFS025 model is used instead.
+
+gfs-api, variable-per-model table (selected rows, cell by cell):
+    ['Variable', 'GFS016', 'GFS025', 'HRRR', 'NBM', 'AIGFS, HGEFS']
+    ['cloud_cover', 'x', '', 'x', 'x', 'x']
+    ['pressure_msl', '', 'x', 'x', '', 'x']
+    ['relative_humidity_2m', 'x', '', 'x', 'x', '']
+    ['shortwave_radiation', 'x', '', 'x', 'x', '']
+    ['surface_temperature', 'x', '', 'x', '', '']
+    ['temperature_2m', 'x', '', 'x', 'x', 'x']
+    ['wind 10m', 'x', '', '', 'x', '']
+    ['temperature', '', 'x', 'x', '', 'x']      (pressure-level section)
+    ['cloud_cover', '', 'x', '', '', '']        (pressure-level section)
+    ['soil_temperature', 'x', '', '', '', '']
+  -> temperature_2m is marked under the high-resolution column ("GFS016" in
+     the heading, "GFS013" in the text), not under GFS025.
+
+previous-runs-api, model selector (labels):
+    NCEP GFS Seamless; NCEP GFS Global 0.11°/0.25°; NCEP HRRR U.S. Conus;
+    NCEP NBM U.S. Conus; NCEP NAM U.S. Conus; NCEP AIGFS 0.25°;
+    NCEP HGEFS 0.25° Ensemble Mean
+previous-runs-api, text:
+    Models: The Previous Runs API supports the same models as the Weather
+    Forecast API . See the Forecast API documentation for the full model and
+    variable list.
+gfs-api, text on AIGFS/HGEFS:
+    The AIGFS and HGEFS machine-learning models predict only temperature,
+    pressure, wind, precipitation and pressure-level fields including specific
+    humidity.
+
+C.1 findings:
+- temperature_2m under gfs_global: documented as from the high-resolution
+  0.11 deg product (GFS013), not GFS025.
+- Previous Runs API: no documented 0.25 deg-only GFS option. AIGFS 0.25 is a
+  machine-learning model and HGEFS 0.25 an ensemble mean.
+- The pages describe the service as of the pull date, not which product the
+  2021-2024 archive used.
+- Arithmetic only: -122.34375 / (360/3072) = -1044 exactly, so KSFO's
+  returned longitude is on a 0.1171875 deg spacing, not the 0.25 deg grid.
+
+C.2: SKIPPED. No documented 0.25 deg-only GFS option. No model name guessed.
+
+
+Step 2 — F117 appended to DECISIONS.md
+--------------------------------------
+
+DECISIONS.md: 1512 lines before, 1694 after (header
+"## 2026-09-26 — Session 76b finding: KSFO gate diagnostic (Q34),
+descriptive"). F117.1-F117.7: Step 0 and the cache substitution with hash
+evidence and the held-out disclosure; Check A table (PASS); Check B weights,
+land values, monthly and yearly tables; Check C findings (C.2 skipped);
+the D68.2 branch the evidence points to (evidence, not a decision); new
+files; what this did not do.
+
+Evidence reading recorded in F117.5 (not a decision): A passes. Both D68.2
+"explains the gap" tests are met as written (July four-point spread 6.90
+against a 6.05 degC gap; docs mark temperature_2m as 0.11 deg, not GFS025),
+so the evidence points to D68.2's second branch. Limits: the warmest
+(land) point stays 3.6-4.0 degC below Open-Meteo from April to September;
+the docs describe the service today, not the archive's history.
+
+
+End-of-session step 2 — archive
+-------------------------------
+
+No entry was settled this session. D67, D68, F115, F116, F117 and Q34 stay
+live by instruction; Q34 is still open. Nothing was moved.
+    DECISIONS.md          before 1694, after 1694
+    DECISIONS-archive.md  before 14972, after 14972
+
+
+End-of-session step 3 — STATUS.md overwritten (98 lines)
+---------------------------------------------------------
+
+Current-only snapshot: session 76b's three results; Q34/Q30/Q32 live;
+carried items: GFS v17 re-check, session 76 consistency items 1-4 (spelled
+out), and the KSFO lock note (raw biased vs Open-Meteo, persistence is the
+binding part of the bar, bias vs observations first measured in
+rehearsal); "Next planning session" line as the prompt gives it.
+
+
+End-of-session step 4 — consistency check (report only; nothing fixed)
+----------------------------------------------------------------------
+
+Scripted part:
+    duplicated headings: none in CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md
+    DECISIONS dated headers out of order: none (last five):
+      1245:## 2026-09-25 — Session 76 decision: the new airport (KSFO) and its test design
+      1305:## 2026-09-25 — Session 76 finding: KSFO verified on contact, pulled and built; the reproduction gate FAILS
+      1463:## 2026-09-25 — Open question raised by session 76 (not acted on)
+      1483:## 2026-09-26 — Session 76b decision: diagnose KSFO's gate failure before deciding Q34
+      1516:## 2026-09-26 — Session 76b finding: KSFO gate diagnostic (Q34), descriptive
+    STATUS.md citations: 14 unresolved: []
+    SPEC.md citations: 115 unresolved: []
+
+Manual read:
+1. Session 76's items 1-4 still stand (SPEC was not edited): SPEC 3.4
+   "All five network codes" omits CA_ASOS; "closest of the five" is now six;
+   SPEC 7.3 "matched ... at every airport" vs KSFO's failed gate; SPEC 3.3
+   lists KSFO's constant as verified while its gate failed. Carried in
+   STATUS.
+2. New tension: SPEC 3.2 names Open-Meteo's `gfs_global` without saying
+   which GFS resolution it serves, and SPEC 7.3 treats Open-Meteo as the
+   check for the 0.25 deg GRIB pipeline. F117.4 records that Open-Meteo's
+   documentation marks temperature_2m as the 0.11 deg product. At the five
+   earlier airports the gate passed anyway. Tension, not a conflict.
+3. SPEC 7.2 (l.692-696) glosses bilinear interpolation as "weighted by
+   distance", then says it is "not inverse-distance weighting". Older
+   wording, noticed while reading for Check B; not changed.
+4. D68's header and D68.4 are dated 2026-09-26 per the amendment; D68 still
+   says "(after session 76)" as the prompt gives it. Consistent.
+5. STATUS says GFS v17 was checked "as of 2026-09-25" (D67.8); no newer
+   check was made this session.
+No duplicated heading. No entry out of order. No citation fails to resolve.
+
+
+End-of-session step 5
+---------------------
+
+No commit message file written. Nothing committed.
+
+$ git status --porcelain
+ M DECISIONS.md
+ M STATUS.md
+?? data/raw/diagnostics/session76b/
+?? data/rebuild/session76b/
+?? docs/session-76b.md
+?? notes/session-76b-output.txt
+?? scripts/session76b_cache.py
+?? scripts/session76b_check_a.py
+?? scripts/session76b_check_b.py
+?? scripts/session76b_land_pull.py

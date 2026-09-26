@@ -1,0 +1,12 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+source: https://open-meteo.com/en/docs/previous-runs-api
+query: curl -sS -A "MLwx/session76b" https://open-meteo.com/en/docs/previous-runs-api
+pulled (UTC): 2026-09-26 20:11:09 UTC (file modification time of the downloaded copy)
+HTTP status: 200
+bytes saved: 585605
+sha256: a2079be632a4bda7dbf030e02e0e1fe49a8af92b5e1be4e71de09741baa73024
+purpose: session 76b Check C.1 - what Open-Meteo documents about which GFS product
+  (GFS013/0.11 deg or GFS025/0.25 deg) supplies temperature_2m under gfs_global, and
+  whether the Previous Runs API offers a 0.25 deg-only GFS model option.
+note: the page is live and changes over time; this copy is a fixed snapshot.
