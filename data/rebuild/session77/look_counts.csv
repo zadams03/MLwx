@@ -1,0 +1,3 @@
+look,train_start,train_end,test_start,test_end,train_rows,test_rows,persistence_test_days
+A,2021-03-24,2024-07-31,2024-08-01,2025-07-31,1223,364,363
+B,2021-03-24,2025-07-31,2025-08-01,2026-07-31,1587,365,365

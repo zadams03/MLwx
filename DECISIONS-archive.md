@@ -14970,3 +14970,63 @@ Nothing was committed.
 
 ---
 
+
+## Moved by session 77 (2026-09-26)
+
+The archive criterion (D46, live in `DECISIONS.md`), applied per the session 77 prompt: **Q34 and D68**. Both are settled by D69: Q34 is decided and closed (D69.4), and D68's diagnostic ran (F117) and its pre-registered reading was applied by the owner (D69). Neither `STATUS.md` nor any live open question (Q30, Q32) cites their wording. D67, D69, D70, F115, F116, F117 and F118 stay live. The blocks below are exactly what was cut, unedited.
+
+---
+
+## 2026-09-25 — Open question raised by session 76 (not acted on)
+
+**Q34. KSFO's reproduction gate failed (F116.5). What happens to KSFO?**
+D67 opened KSFO under the frozen B+D,L,R,T recipe "applied unchanged", but
+the recipe's GRIB temperature at KSFO does not reproduce Open-Meteo's (mean
+diff −3.3 °C, strongly seasonal). This is the first time the gate has
+failed with the frozen constant already applied; at RNO in F89 it failed
+before a constant existed, and F90's constant fixed it. The session did not
+choose. Options the owner might weigh, none started:
+- stop KSFO and choose another airport under D67.2's offset rule;
+- go ahead with the recipe unchanged, recording the gate failure as a
+  caveat. The bar compares against the same elevation-adjusted GRIB value,
+  so the tests stay internally consistent; but the gate exists to confirm
+  the GRIB input is sound;
+- first investigate (for example, the land mask of the four GRIB points),
+  descriptively and before 2024-08-01 only, and decide after.
+Any change to the recipe itself would be a new method, not SPEC 8.
+
+---
+
+## 2026-09-26 — Session 76b decision: diagnose KSFO's gate failure before deciding Q34
+
+**D68. Owner decision, planning chat (after session 76): diagnose KSFO's
+gate failure before deciding Q34.**
+
+- **D68.1** Session 76b runs three diagnostics (A, B, C below) before Q34 is
+  decided. Q34 stays open until the owner decides it in planning.
+- **D68.2 Pre-registered reading (written before any diagnostic ran).**
+  - **If A fails:** a pipeline bug is indicated. KSFO is paused. The next
+    step is a fix, to the pipeline only and never to the recipe, followed by a
+    rebuild and a fresh run of the gate.
+  - **If A passes and B or C explains the gap:** planning will recommend
+    recording the gate as "failed, explained by a difference between the
+    sources" (no override), and continuing KSFO under the unchanged recipe.
+    "Explains the gap" means either of:
+    - the summer spread across the four grid points is of the same order as
+      the GRIB-versus-Open-Meteo gap; or
+    - Open-Meteo's `gfs_global` temperature comes from a different GFS
+      product than our 0.25° files.
+  - **If A passes but nothing explains the gap:** the owner chooses between
+    dropping KSFO and diagnosing further.
+- **D68.3 Session plan.** The plan becomes: 76b diagnostic; then, if KSFO
+  proceeds, 77 rehearsal and lock, and 78 the two looks (D67.7, shifted by
+  this diagnostic).
+- **D68.4 Planning-chat research (2026-09-26, not checked by this session).**
+  Open-Meteo lists its GFS model as "NCEP GFS Global 0.11°/0.25°". Its GFS
+  documentation says that the high-resolution GFS013 product lacks some
+  variables, so the standard GFS025 model is used for those. KSFO's returned
+  grid point (37.54637, −122.34375) does not lie on the 0.25° grid. Check C
+  tests this.
+
+---
+

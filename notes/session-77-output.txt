@@ -1,0 +1,288 @@
+session 77 output (KSFO rehearsal, band and lock). Real output, appended in run order.
+
+==============================================================================
+Step 0 — integrity checks (no network)
+==============================================================================
+$ git status --porcelain   (run before any session-77 edit)
+?? docs/session-77.md
+
+$ shasum -a 256 ...
+f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+136ffb0dfe1350154919c1814ee595159773ab7d966eef4c19e47fccb4aa0da5  data/rebuild/session75/orderings.csv
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+
+features header:
+station,target_date,target_hour,run_date,cycle,lead,temp,season_sin,season_cos,cloud_cover,wind_speed_10m,dewpoint_depression_t2m_floored,lapse_rate_t2_t850,dswrf_2h_wm2,pressure_tendency_3h_hpa,temperature_grib_c,cloud_cover_grib_pct,wind_speed_grib_kmh,t2m_raw,t925,t850,t700,relative_humidity_2m,dew_point_2m,specific_humidity_2m,dewpoint_depression_t2m,pressure_msl_hpa,pressure_surface_hpa,pressure_msl_lead_minus3_hpa,dswrf_ave_to_lead_wm2,dswrf_ave_to_lead_minus2_wm2,complete_case
+model columns (header positions 7-15) == SPEC 8.8 G15: True
+rows 1955 smallest date 2021-03-24 largest date 2026-07-31
+
+orderings.csv: header 'model,ordering,columns'; columns are column NAMES joined by '|'.
+ 102 "B+D
+ 120 B
+   1 model
+model,ordering,columns
+"B+D,L,R,T",record,temp|season_sin|season_cos|cloud_cover|wind_speed_10m|dewpoint_depression_t2m_floored|lapse_rate_t2_t850|dswrf_2h_wm2|pressure_tendency_3h_hpa
+"B+D,L,R,T",session73,temp|season_sin|season_cos|cloud_cover|wind_speed_10m|lapse_rate_t2_t850|dewpoint_depression_t2m_floored|pressure_tendency_3h_hpa|dswrf_2h_wm2
+B,canonical,temp|season_sin|season_cos|cloud_cover|wind_speed_10m
+B,perm001,temp|season_sin|season_cos|wind_speed_10m|cloud_cover
+
+==============================================================================
+session 77 rehearsal --rehearse  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+G15 written in this script == record FINAL_FEATURE_KEYS: True
+KSFO features file model columns (header positions 7-15) == G15: True
+fold 2022-23: train 2021-03-24..2022-07-31, test 2022-08-01..2023-07-31; assert_reserved_year_excluded: no raise
+fold 2023-24: train 2021-03-24..2023-07-31, test 2023-08-01..2024-07-31; assert_reserved_year_excluded: no raise
+
+load (rows dated 2024-08-01 or later dropped as read):
+  feature_rows_read                      1955
+  feature_rows_removed_held_out          730
+  feature_rows_not_complete_case         0
+  feature_non_finite_dropped             0
+  feature_rows_kept                      1225
+  obs_rows_read                          1956
+  obs_rows_removed_held_out              730
+  obs_paired_rows_removed_held_out       729
+  obs_rows_not_paired                    2
+  obs_non_finite_dropped                 0
+  obs_rows_kept                          1224
+  season_recomputed_differs              0
+  temp_ne_temperature_grib_c             0
+  joined_rows                            1223
+KSFO rehearsal guard: no kept feature, observation or joined row is dated 2024-08-01 or later: passed
+removed counts equal the expected 730 feature rows and 729 paired observation rows: True
+
+2a rungs (rehearsal, not a gate). MAE in deg C (G24).
+fold 2022-23 rows: train 494 (expected 494), test 364 (expected 364)
+
+fold 2022-23: train 494, test 364, persistence days 364, training mean bias (obs - raw GFS) 0.3737813765182188
+  rung            n                    MAE     4 dp   common days (descriptive)
+  raw_gfs       364     1.4422609890109892   1.4423   n=364 1.4423
+  persistence    364      1.530934065934066   1.5309   n=364 1.5309
+  mean_bias     364     1.3832510232682298   1.3833   n=364 1.3833
+  B             364     1.2862693634534128   1.2863   n=364 1.2863
+  B+D,L,R,T     364     1.2544180127512181   1.2544   n=364 1.2544
+  rehearsal, not a gate: B+D,L,R,T beats raw GFS: True; beats persistence: True
+fold 2023-24 rows: train 858 (expected 858), test 365 (expected 365)
+
+fold 2023-24: train 858, test 365, persistence days 364, training mean bias (obs - raw GFS) 0.3329755244755246
+  rung            n                    MAE     4 dp   common days (descriptive)
+  raw_gfs       365     1.3061369863013699   1.3061   n=364 1.3031
+  persistence    364      1.715659340659341   1.7157   n=364 1.7157
+  mean_bias     365      1.250037292844142   1.2500   n=364 1.2459
+  B             365     1.2922832710768244   1.2923   n=364 1.2895
+  B+D,L,R,T     365      1.174587228071113   1.1746   n=364 1.1709
+  rehearsal, not a gate: B+D,L,R,T beats raw GFS: True; beats persistence: True
+
+2b bias by month (descriptive only; obs - raw GFS (GRIB) and obs - Open-Meteo, deg C):
+  month     n  mean obs mean(o-raw)  mean|o-raw|  mean(o-OM)   n_OM
+  1        93     12.95       -0.36         1.49       -0.93     75
+  2        85     13.04       -0.42         1.46       -1.18     85
+  3       100     14.47       +0.64         1.30       -1.51    100
+  4       120     16.62       +1.30         1.69       -2.50    120
+  5       124     18.41       +1.41         1.80       -3.27    124
+  6       120     20.44       +1.06         1.97       -4.18    120
+  7       123     20.58       -0.47         1.28       -6.53    123
+  8        93     21.89       +0.09         1.27       -5.38     93
+  9        90     21.68       +0.77         1.51       -4.21     90
+  10       93     19.56       +0.16         1.55       -2.32     93
+  11       89     16.01       -0.04         1.32       -0.81     89
+  12       93     12.68       -0.42         1.31       -0.65     91
+  all    1223     17.52       +0.36         1.51       -2.96   1203
+
+2b bias by year (descriptive only; obs - raw GFS (GRIB) and obs - Open-Meteo, deg C):
+  year      n  mean obs mean(o-raw)  mean|o-raw|  mean(o-OM)   n_OM
+  2021    283     18.47       +0.35         1.58       -3.59    283
+  2022    363     17.36       +0.23         1.73       -3.00    363
+  2023    365     17.34       +0.57         1.38       -2.13    363
+  2024    212     16.84       +0.26         1.29       -3.51    194
+  all    1223     17.52       +0.36         1.51       -2.96   1203
+orderings: B+D,L,R,T 102, B 120; every ordering is a permutation of the G15 (or B) column names, all distinct, anchors first: True
+fold 2022-23 rows: train 494 (expected 494), test 364 (expected 364)
+fold 2023-24 rows: train 858 (expected 858), test 365 (expected 365)
+the spread's anchor fits equal the 2a fits exactly (4 of 4)
+
+2c column-order spread. MAE in deg C. '%' columns are relative to that model's record-order MAE (B: canonical order).
+
+B (120 orderings)
+  fold         rec      min      max    range       sd     min%     max%   range%      sd%
+  2022-23   1.2863   1.2747   1.2946   0.0199   0.0043   -0.90%   +0.65%    1.55%    0.33%
+  2023-24   1.2923   1.2791   1.3063   0.0272   0.0064   -1.02%   +1.08%    2.11%    0.50%
+
+B+D,L,R,T (102 orderings)
+  fold         rec      min      max    range       sd     min%     max%   range%      sd%
+  2022-23   1.2544   1.2448   1.2825   0.0377   0.0070   -0.77%   +2.24%    3.01%    0.56%
+  2023-24   1.1746   1.1494   1.1777   0.0283   0.0051   -2.14%   +0.27%    2.41%    0.43%
+
+win share (strict 'lower') and record-order margin = canonical B MAE minus record-order B+D,L,R,T MAE:
+  fold             wins     share     margin  margin%
+  2022-23  12160/ 12240    99.35%     0.0319   +2.48%
+  2023-24  12240/ 12240   100.00%     0.1177   +9.11%
+
+BAND = the largest range among {B, B+D,L,R,T} x {2022-23, 2023-24} (D67.5):
+  B         2022-23  range 0.019904642840879117
+  B+D,L,R,T 2022-23  range 0.037704595173481126
+  B         2023-24  range 0.02722477823831082
+  B+D,L,R,T 2023-24  range 0.028288478234403946
+  band = 0.037704595173481126 deg C (0.0377 at 4 dp), from B+D,L,R,T, 2022-23
+  context only: F115's largest range, 0.0386 deg C (DSM 2022-23, B+D,L,R,T)
+
+fits run: 448. wrote data/rebuild/session77/ (rungs.csv, predictions.csv, bias.csv, spread_mae.csv, spread_summary.csv, win_share.csv, band.json, metadata.json)
+
+==============================================================================
+session 77 rehearsal --repeat  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+
+load (rows dated 2024-08-01 or later dropped as read):
+  feature_rows_read                      1955
+  feature_rows_removed_held_out          730
+  feature_rows_not_complete_case         0
+  feature_non_finite_dropped             0
+  feature_rows_kept                      1225
+  obs_rows_read                          1956
+  obs_rows_removed_held_out              730
+  obs_paired_rows_removed_held_out       729
+  obs_rows_not_paired                    2
+  obs_non_finite_dropped                 0
+  obs_rows_kept                          1224
+  season_recomputed_differs              0
+  temp_ne_temperature_grib_c             0
+  joined_rows                            1223
+KSFO rehearsal guard: no kept feature, observation or joined row is dated 2024-08-01 or later: passed
+removed counts equal the expected 730 feature rows and 729 paired observation rows: True
+fold 2022-23 rows: train 494 (expected 494), test 364 (expected 364)
+fold 2023-24 rows: train 858 (expected 858), test 365 (expected 365)
+
+determinism: record-order B+D,L,R,T, run 1 against run 2 (separate process):
+  2022-23  364 of 364 predictions equal, max abs diff 0.0
+  2023-24  365 of 365 predictions equal, max abs diff 0.0
+
+==============================================================================
+session 77 rehearsal --counts  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+
+Step 3: look counts from dates and row presence only (no value read). Largest date in either file: 2026-07-31
+  look A: train 2021-03-24..2024-07-31 1223 (expected 1223); test 2024-08-01..2025-07-31 364 (expected 364); persistence test days 363
+  look B: train 2021-03-24..2025-07-31 1587 (expected 1587); test 2025-08-01..2026-07-31 365 (expected 365); persistence test days 365
+wrote data/rebuild/session77/look_counts.csv
+
+==============================================================================
+Step 4 — $ .venv/bin/python scripts/session77_ksfo_looks.py --dry-run
+==============================================================================
+==============================================================================
+session77_ksfo_looks.py --dry-run  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+SHA-256 check (before the record script was imported): passed
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+model columns in the features file and the record script equal G15: True
+station(s) in both files: ['SFO']; target hour(s): ['20']
+non-finite values dropped: features 0, observations 0
+
+KSFO held-out guard:
+  largest date in either file: 2026-07-31 (must be <= 2026-07-31)
+  look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31; rows train 1223, test 364, persistence days 363 (expected 1223, 364, 363)
+  look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31; rows train 1587, test 365, persistence days 365 (expected 1587, 365, 365)
+  passed
+
+no value in a row dated 2024-08-01 or later was parsed
+
+self-test on the 2023-24 rehearsal fold (2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test): rows 858, 365, persistence days 364 (expected 858, 365, 364)
+
+self-test, 2023-24 fold (rehearsal data, not a look, not a gate): train 858, test 365, persistence days 364, training mean bias (obs - raw GFS) 0.3329755244755246
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      365     1.3061369863013699   1.3061   n=364 1.3031
+  persistence   364      1.715659340659341   1.7157   n=364 1.7157
+  mean_bias    365      1.250037292844142   1.2500   n=364 1.2459
+  B            365     1.2922832710768244   1.2923   n=364 1.2895
+  B+D,L,R,T    365      1.174587228071113   1.1746   n=364 1.1709
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.11769604300571146 (0.1177) against band 0.0377 -> beats B by more than the column-order spread
+  self-test raw_gfs    1.3061369863013699 vs Step 2a 1.3061369863013699: equal
+  self-test persistence 1.715659340659341 vs Step 2a 1.715659340659341: equal
+  self-test mean_bias  1.250037292844142 vs Step 2a 1.250037292844142: equal
+  self-test B          1.2922832710768244 vs Step 2a 1.2922832710768244: equal
+  self-test B+D,L,R,T  1.174587228071113 vs Step 2a 1.174587228071113: equal
+  output rows built for the self-test (not written): grid 17, predictions 365
+
+DRY RUN PASSED. Nothing was written. --run-looks was not run.
+
+$ shasum -a 256 scripts/session77_ksfo_looks.py scripts/session77_ksfo_rehearsal.py
+e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1  scripts/session77_ksfo_looks.py
+0bc8d354148a6f25cbe84679bbc0b31711e8f3c2dc052318d89afb5d10b675b0  scripts/session77_ksfo_rehearsal.py
+
+$ ls data/rebuild/session77 data/rebuild/session77/run2; data/processed/session78_* exists?
+data/rebuild/session77:
+band.json
+bias.csv
+look_counts.csv
+metadata.json
+predictions.csv
+run2
+rungs.csv
+spread_mae.csv
+spread_summary.csv
+win_share.csv
+
+data/rebuild/session77/run2:
+predictions.csv
+
+==============================================================================
+Steps 1, 5, 6: D69, F118 and D70 appended to DECISIONS.md (text is in the file).
+Step 7: SPEC edits. $ git diff --stat SPEC.md
+ SPEC.md | 67 ++++++++++++++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 46 insertions(+), 21 deletions(-)
+
+Every Step 7 quoted text was found exactly once before editing (16 of 16 counts = 1).
+
+==============================================================================
+Archive (Q34, D68 -> DECISIONS-archive.md, verbatim)
+==============================================================================
+before: DECISIONS.md 2032 lines, DECISIONS-archive.md 14972 lines
+moved: DECISIONS.md lines 1463-1512 (50 lines); cut lines 1463-1515 (with the trailing separator)
+moved block equals HEAD's DECISIONS.md lines 1463-1512 byte for byte (diff empty)
+after:  1979 and 15032 lines
+
+==============================================================================
+Consistency check (mechanical part)
+==============================================================================
+duplicate headings: none in CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md
+DECISIONS.md dated headings in ascending order: True
+unresolved Dxx/Fxx/Qxx citations (against DECISIONS.md + archive): none in any of the four files
+
+$ git status --porcelain
+ M DECISIONS-archive.md
+ M DECISIONS.md
+ M SPEC.md
+ M STATUS.md
+?? data/rebuild/session77/
+?? docs/session-77.md
+?? notes/session-77-output.txt
+?? scripts/session77_ksfo_looks.py
+?? scripts/session77_ksfo_rehearsal.py
+
+==============================================================================
+Corrections at review (owner-approved, 2026-09-26)
+==============================================================================
+1. DECISIONS.md F118.7: after the band paragraph, added the descriptive read
+   against the band (2022-23 margin 0.0319 within the spread; 2023-24 margin
+   0.1177 above it).
+2. DECISIONS.md D70.8: the sentence on raw GFS vs Open-Meteo (F116.5) replaced
+   by F118.6's rehearsal-row bias figures, labelled context only.
+3. SPEC.md 3.4: "(DECISIONS F49) RNO's" -> "(DECISIONS F49), RNO's"; the
+   change added to D70.10 item 4.
+4. STATUS.md: rehearsal bullet gains the band read; new carried item for the
+   SPEC/CLAUDE.md wording left for the owner (B1-B5, C1-C3, E1).
+--run-looks was not run. No other file was changed.
+
+$ git diff --stat
+ DECISIONS-archive.md |  60 ++++++++
+ DECISIONS.md         | 398 ++++++++++++++++++++++++++++++++++++++++++++-------
+ SPEC.md              |  67 ++++++---
+ STATUS.md            | 104 ++++++--------
+ 4 files changed, 495 insertions(+), 134 deletions(-)
+
+$ shasum -a 256 scripts/session77_ksfo_looks.py   (D70.6: e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1)
+e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1  scripts/session77_ksfo_looks.py

@@ -36,8 +36,10 @@ The airports so far:
   the selected-features method** (DECISIONS F109) — see section 8. The
   project's first mountain/terrain-affected airport.
 - **San Francisco International (IEM station code SFO, ICAO code KSFO)** —
-  stage 2 — verified on contact (session 76); not yet tested. The
-  project's first coastal airport (DECISIONS D67, F116).
+  stage 2 — rehearsed and locked (session 77, DECISIONS D70); not yet
+  tested. The project's first coastal airport. Its GRIB-vs-Open-Meteo
+  reproduction gate failed, explained by a difference between the sources
+  (DECISIONS F116, F117, D69).
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -132,6 +134,12 @@ Open-Meteo builds the series by taking hours 24–29 of each run and stitching
 them together, so the true lead sweeps between about **24 and 30 hours**
 across the day and then resets (see DECISIONS F5).
 
+**Which GFS product.** Open-Meteo's documentation (pulled 2026-09-26)
+marks `temperature_2m` under this model as coming from GFS's
+high-resolution 0.11° product, not the 0.25° product that sections 7 and 8
+use (DECISIONS F117.4). The page describes the service on that date. It
+does not say which product built the 2021–2024 archive.
+
 Every value is nonetheless a genuine forecast made **at least 24 hours before
 its valid time**, so the no-look-ahead rule (2.1b) still holds.
 
@@ -205,7 +213,10 @@ Q29).
 **KSFO was verified on contact in session 76**, from samples outside its
 held-out range 2024-08-01..2026-07-31: station position, target hour,
 reporting minute and second report, units, UTC stamps, grid point, archive
-floor, and its GRIB elevation constant (DECISIONS F116).
+floor, and its GRIB elevation constant (DECISIONS F116). The reproduction
+gate that checks its GRIB temperature and constant against Open-Meteo
+failed (DECISIONS F116). The owner recorded it as failed, explained by a
+difference between the sources, with no override (DECISIONS F117, D69).
 
 **3.4 The airport table.** This is the only place per-airport facts are
 written. Everything else in this file is shared. Adding an airport means adding
@@ -220,7 +231,7 @@ The airport, and where it is (position from IEM, section 3.1):
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
 | YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
 | RNO | Reno, Nevada | 2 — failed (minimal method)\* | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
-| SFO | San Francisco International (KSFO) | 2 — verified, not yet tested | 20:00 | `CA_ASOS` | 37.619 | -122.3749 | 5 m |
+| SFO | San Francisco International (KSFO) | 2 — locked, not yet tested | 20:00 | `CA_ASOS` | 37.619 | -122.3749 | 5 m |
 
 \* Reno failed the minimal method (DECISIONS F82). It passes the richer
 method (section 7, DECISIONS F94) and the selected method (section 8,
@@ -264,7 +275,7 @@ Notes on the table:
 - **The grid point is whatever Open-Meteo returns** for that airport's
   position. A few kilometres of offset is not a fault — it is exactly the kind
   of steady local error this project exists to learn (DECISIONS Q5, F17). DSM's
-  is the closest of the five, 1.76 km, and the first with a height mismatch
+  is the closest of the six, 1.76 km, and the first with a height mismatch
   worth naming at -9 m; 9 m is well inside the noise of a smoothed grid-cell
   elevation (DECISIONS F31). **Reno is by far the highest-elevation airport in
   the project (1,345 m), yet its grid-elevation mismatch is the smallest of
@@ -298,13 +309,16 @@ Notes on the table:
   scheduled*, as at DSM. **KSFO's GRIB elevation constant is +0.6944 °C**:
   the GRIB model terrain at its grid point is 94.47 m against the grid
   elevation of 1 m, a gap of 93.47 m, times the frozen 7.429 °C/km (7.2).
-  It is not yet in 5.2's list; the lock session adds it. KSFO's
-  reproduction gate failed in session 76 (F116, Q34).
-- **All five network codes are now verified by a real pull.** LFPG's
+  It is in 5.2's list (DECISIONS D70). Its four surrounding 0.25° GRIB
+  points are two sea points (weight 0.375) and two land points (0.625)
+  (DECISIONS F117). Its reproduction gate failed, explained by a
+  difference between the sources (DECISIONS F116, F117, D69).
+- **All six network codes are now verified by a real pull.** LFPG's
   `FR__ASOS` was checked in session 08 (DECISIONS F17), EGLC's `GB__ASOS` in
   session 10 (DECISIONS F24, which closes Q22), DSM's `IA_ASOS` in session 14
-  (DECISIONS F31), YSDU's `AU__ASOS` in session 19 (DECISIONS F49) and RNO's
-  `NV_ASOS` in session 25 (DECISIONS F66). In each case IEM's own station
+  (DECISIONS F31), YSDU's `AU__ASOS` in session 19 (DECISIONS F49), RNO's
+  `NV_ASOS` in session 25 (DECISIONS F66) and SFO's `CA_ASOS` in session 76
+  (DECISIONS F116). In each case IEM's own station
   listing carries the station in that network, at the position and elevation
   this table holds. Nothing in the project uses a network code — every
   request addresses its station by the code in the first column — so this
@@ -503,9 +517,12 @@ better.
   - **GRIB methods (sections 7 and 8):** the GRIB 2 m temperature after
     this project's fixed per-airport elevation adjustment (DECISIONS
     D48.3). This was pre-registered as the baseline in DECISIONS D48.10.
-    The five adjustments, in °C (`correction_c` in
-    `data/raw/diagnostics/session37/session37_elevation_correction_params.csv`):
-    EGLC +0.2486, LFPG −0.1697, DSM −0.1106, YSDU +0.2461, RNO +2.0436.
+    The adjustments, in °C: EGLC +0.2486, LFPG −0.1697, DSM −0.1106, YSDU
+    +0.2461, RNO +2.0436 (`correction_c` in
+    `data/raw/diagnostics/session37/session37_elevation_correction_params.csv`),
+    and KSFO +0.6944
+    (`data/raw/diagnostics/session76/session76_elevation_correction_params.csv`;
+    DECISIONS F116, D70).
 
   The margins of the GRIB methods against a fully unadjusted GRIB baseline
   were never measured. They cannot be measured now, because both held-out
@@ -617,14 +634,17 @@ to fill in a later stage early, treat it as a warning sign and stop.
     too (DECISIONS F94)** — this does not change or erase the record above;
     both results stand (D48.13). **The selected-features method (section
     8) also passes at Reno (DECISIONS F109).**
-  - **San Francisco International (SFO/KSFO) — verified, not yet tested.**
+  - **San Francisco International (SFO/KSFO) — locked, not yet tested.**
     Opened by D67 under the default recipe (8.7), with two pre-registered
     looks, 2024-25 and 2025-26, each judged separately (D67.3). Verified on
     contact, pulled and built in session 76 (F116). **Its GRIB-vs-Open-
     Meteo reproduction gate (F89/F90) failed** (F116): the elevation-
     adjusted GRIB temperature runs 3.3 °C colder than Open-Meteo on
-    average, most in summer. Rehearsal and lock wait for the owner's
-    decision (Q34). It is the project's first coastal airport. Its target
+    average, most in summer. The owner recorded the gate as failed,
+    explained by a difference between the sources, and kept the recipe
+    unchanged (DECISIONS D69). Rehearsed and locked in session 77
+    (DECISIONS F118, D70). Its two looks run once, in session 78. It is
+    the project's first coastal airport. Its target
     hour, 20:00 UTC, and its lead are Reno's.
   - **Further airports may follow before stage 3**, on the same five steps:
     verify on contact, pull and map, join and rehearse, lock, test once,
@@ -690,7 +710,7 @@ pairing rule (4.5), and the same frozen bar (5.3).
   run for a given valid time — so it satisfies the no-look-ahead rule the
   same way Open-Meteo's Previous Runs API does (2.1b, DECISIONS F89). Each
   value is bilinear-interpolated (estimated from the four surrounding grid
-  points, weighted by distance) to the
+  points) to the
   airport's already-established grid point (3.4). This is standard
   bilinear interpolation (weights from the fractional position along
   latitude and along longitude), not inverse-distance weighting (8.8 G6).
@@ -713,7 +733,7 @@ pairing rule (4.5), and the same frozen bar (5.3).
 - **Raw-GFS baseline.** The "raw GFS (GRIB)" baseline is the GRIB 2 m
   temperature *after* this fixed elevation adjustment, not before it
   (DECISIONS D48.10, D62). See 5.2 for what "raw GFS" means in each method,
-  the five adjustment sizes, and the fact that margins against a fully
+  the adjustment sizes, and the fact that margins against a fully
   unadjusted GRIB baseline were never measured.
 - **Training window.** 2021-03-24 to 2025-07-31, restricted to GFS's v16
   model version (v16 went operational 2021-03-22; using an earlier model
@@ -728,8 +748,9 @@ pairing rule (4.5), and the same frozen bar (5.3).
 
 **7.3 Validation done before the sealed test.** Before any sealed-year data
 was touched: the GRIB-based pipeline was checked against the trusted
-Open-Meteo temperature series and matched it closely at every airport once
-the elevation correction was applied (within 0.062 °C on identical rows —
+Open-Meteo temperature series and matched it closely at each of this
+section's five airports once the elevation correction was applied (within
+0.062 °C on identical rows —
 DECISIONS F89, F90); cloud cover and wind speed were checked against
 Open-Meteo's own values over the period both exist and matched well, with a
 real but explainable disagreement in cloud cover during genuinely
@@ -737,7 +758,11 @@ fast-changing partly-cloudy conditions (DECISIONS F90, F91); and a blocked
 cross-validation across the whole training window showed the 5-feature
 model beating the 3-feature model, and both beating raw GFS, at every one
 of the five airports — including the two previously weak cases, LFPG and
-Reno (DECISIONS F86, F87, F91).
+Reno (DECISIONS F86, F87, F91). The Open-Meteo series used as this check is
+documented as coming from GFS's 0.11° product, not the 0.25° product used
+here (DECISIONS F117.4). The check passed at all five airports anyway. At
+KSFO, added later under section 8, it failed, explained by a difference
+between the sources (DECISIONS F116, F117, D69).
 
 **7.4 Lock and sealed test.** The complete recipe — features, source,
 pipeline, elevation constants, model settings, training window, and
