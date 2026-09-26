@@ -1477,3 +1477,218 @@ choose. Options the owner might weigh, none started:
 - first investigate (for example, the land mask of the four GRIB points),
   descriptively and before 2024-08-01 only, and decide after.
 Any change to the recipe itself would be a new method, not SPEC 8.
+
+---
+
+## 2026-09-26 — Session 76b decision: diagnose KSFO's gate failure before deciding Q34
+
+**D68. Owner decision, planning chat (after session 76): diagnose KSFO's
+gate failure before deciding Q34.**
+
+- **D68.1** Session 76b runs three diagnostics (A, B, C below) before Q34 is
+  decided. Q34 stays open until the owner decides it in planning.
+- **D68.2 Pre-registered reading (written before any diagnostic ran).**
+  - **If A fails:** a pipeline bug is indicated. KSFO is paused. The next
+    step is a fix, to the pipeline only and never to the recipe, followed by a
+    rebuild and a fresh run of the gate.
+  - **If A passes and B or C explains the gap:** planning will recommend
+    recording the gate as "failed, explained by a difference between the
+    sources" (no override), and continuing KSFO under the unchanged recipe.
+    "Explains the gap" means either of:
+    - the summer spread across the four grid points is of the same order as
+      the GRIB-versus-Open-Meteo gap; or
+    - Open-Meteo's `gfs_global` temperature comes from a different GFS
+      product than our 0.25° files.
+  - **If A passes but nothing explains the gap:** the owner chooses between
+    dropping KSFO and diagnosing further.
+- **D68.3 Session plan.** The plan becomes: 76b diagnostic; then, if KSFO
+  proceeds, 77 rehearsal and lock, and 78 the two looks (D67.7, shifted by
+  this diagnostic).
+- **D68.4 Planning-chat research (2026-09-26, not checked by this session).**
+  Open-Meteo lists its GFS model as "NCEP GFS Global 0.11°/0.25°". Its GFS
+  documentation says that the high-resolution GFS013 product lacks some
+  variables, so the standard GFS025 model is used for those. KSFO's returned
+  grid point (37.54637, −122.34375) does not lie on the 0.25° grid. Check C
+  tests this.
+
+---
+
+## 2026-09-26 — Session 76b finding: KSFO gate diagnostic (Q34), descriptive
+
+**F117. Offline (except B.2's one GRIB message and C's two documentation
+pages). No model was fit. No MAE, bias, residual or forecast-minus-
+observation statistic was computed, and no observation was read. Check A
+PASSES: session 76's own code, pointed at RNO, rebuilds RNO's record
+exactly. Check B: KSFO's four 0.25° points are two sea points (west, weight
+0.375) and two land points (east, weight 0.625); in summer they differ by
+about as much as the GRIB-vs-Open-Meteo gap. Check C: Open-Meteo's GFS
+documentation marks `temperature_2m` as coming from its high-resolution
+0.11° GFS product, not GFS025. F117 changes no verdict, claim or figure.
+F116.5's gate result (FAIL) stands, and Q34 stays open. Full real output:
+`notes/session-76b-output.txt`.**
+
+**F117.1 Step 0, and the cache substitution (amendment, 2026-09-26).**
+- Step 0.1: `git status --porcelain` showed only `?? docs/session-76b.md`.
+- Step 0.2, first run: session 76 kept no raw GRIB (fetch-decode-discard,
+  F116.3, F116.8), so the stop rule fired and the session stopped.
+- The owner then approved using cached copies instead: `data/raw/grib/`
+  (sessions 37/40: TMP 2 m, TCDC, UGRD, VGRD at 18z f026) and
+  `data/raw/grib/session72/` (the ten L, D, T and R messages at 18z f026
+  and f023). A copy is used only if its target date is before 2024-08-01
+  and its SHA-256 equals session 76's manifest row. Evidence: all 17,150 of
+  session 76's OK messages before 2024-08-01 (14 fields × 1,225 days) have a
+  byte-identical cached copy; 0 differ, 0 missing. 2022-11-30 failed in
+  session 76 and is absent from the cache. The cached TMP 2 m messages are
+  full global 0.25° fields (1440 × 721 = 1,038,240 points). Every hash was
+  re-checked at load in this session's scripts; none failed.
+- **Disclosure.** On the first run, Step 0.2 listed file names and counted
+  files in the caches, including run dates inside KSFO's held-out years
+  (2024-08-01..2026-07-31). Those were other airports' files from sessions
+  37/40/72; no value was decoded. After the amendment, every file
+  selection was filtered by date first (from session 76's manifest rows),
+  and no directory was listed.
+- Step 0.3: F116, Q34, D67 (DECISIONS.md) and F89, F90
+  (DECISIONS-archive.md) were read.
+
+**F117.2 Check A: the pipeline, at RNO. PASS.** Session 76's own
+`decode()` (`session76_grib_pull.py`) and `build_features()`
+(`session76_build.py`), imported read-only, with only the station
+parameters changed: grid point 39.537918, −119.765625; station RNO; last
+day 2024-07-31; constant 2.0436 from
+`session37_elevation_correction_params.csv`. 17,150 messages decoded, 0
+decode failures; 1,225 rows built (2022-11-30 dropped).
+
+| file | field | compared | differ | max abs diff |
+|---|---|---|---|---|
+| B (`grib_features_v16_window.csv`) | temperature_grib_c, cloud_cover_grib_pct, wind_speed_grib_kmh | 1,225 each | 0 | 0 |
+| L (`session49_…upper_air.csv`) | the 3 B columns, t2m_raw, t925, t850, t700, lapse_rate_t2_t850 | 1,225 each | 0 | 0 |
+| D (`session51_…moisture.csv`) | the 3 B columns, t2m_raw, relative_humidity_2m, dew_point_2m, specific_humidity_2m, dewpoint_depression_t2m | 1,225 each | 0 | 0 |
+| T (`session53_…pressure.csv`) | the 3 B columns, pressure_msl_hpa, pressure_surface_hpa, pressure_msl_lead_minus3_hpa, pressure_tendency_3h_hpa | 1,225 each | 0 | 0 |
+| R (`session55_…radiation.csv`) | the 3 B columns, dswrf_ave_to_lead_wm2, dswrf_2h_wm2 | 1,225 each | 0 | 0 |
+| R | dswrf_ave_to_lead_minus2_wm2 | 0 (blank in both, not applicable at lead 26) | 0 | – |
+
+32 field comparisons, 0 differing rows. The missing days match in every
+field: 2022-11-30 in both (and every day for the minus-2 DSWRF column, in
+both). The comparison is exact equality of the stored values.
+
+**F117.3 Check B: the four 0.25° points around KSFO.**
+
+*B.1 weights and B.2 land and terrain.* Weights as session 76's
+`bilinear_from_gid` computes them at 37.54637, −122.34375. LAND from
+`LAND:surface`, run 2024-06-09 18z f026 (1 = land, 0 = sea); terrain from
+session 76's HGT diagnostic (same run).
+
+| point | lat | lon | weight | distance km | LAND | terrain m |
+|---|---|---|---|---|---|---|
+| SW | 37.50 | −122.50 | 0.3054 | 14.713 | 0 (sea) | 81.98 |
+| SE | 37.50 | −122.25 | 0.5091 | 9.744 | 1 (land) | 118.46 |
+| NW | 37.75 | −122.50 | 0.0696 | 26.495 | 0 (sea) | 38.30 |
+| NE | 37.75 | −122.25 | 0.1159 | 24.101 | 1 (land) | 55.74 |
+
+The weights sum to 1. The nearest point is SE (9.744 km, weight 0.5091).
+Weight on land points 0.6250, on sea points 0.3750. Blending the terrain
+with these weights gives 94.4704 m, equal to F116.2.
+
+*B.3 TMP 2 m at each point, before 2024-08-01.* 1,225 cached messages. The
+blend equals session 76's decoded value exactly on 1,225 of 1,225 days, and
+round(blend − 273.15 + 0.6944, 3) equals session 76's `temperature_grib_c`
+on 1,225 of 1,225. On F116.5's 1,205 identical rows, the cross-check gives
+mean |temp − OM| 3.395 and mean (temp − OM) −3.326, as F116.5. Means in °C;
+points and "blend" are raw (no constant); "temp" = blend + 0.6944; OM =
+Open-Meteo; "spread" = max − min of the four point means.
+
+| month | n | SW | SE | NW | NE | blend | temp | OM | spread | OM−SW | OM−SE | OM−NW | OM−NE | OM−blend | OM−temp |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01 | 75 | 12.86 | 12.77 | 12.27 | 12.99 | 12.79 | 13.48 | 13.91 | 0.72 | +1.06 | +1.15 | +1.64 | +0.92 | +1.13 | +0.43 |
+| 02 | 85 | 12.73 | 12.75 | 12.20 | 13.21 | 12.76 | 13.46 | 14.22 | 1.01 | +1.49 | +1.47 | +2.02 | +1.01 | +1.46 | +0.77 |
+| 03 | 101 | 12.31 | 13.55 | 12.56 | 13.88 | 13.14 | 13.83 | 16.00 | 1.57 | +3.69 | +2.44 | +3.43 | +2.12 | +2.85 | +2.16 |
+| 04 | 120 | 12.87 | 15.53 | 13.44 | 15.92 | 14.62 | 15.31 | 19.12 | 3.05 | +6.24 | +3.59 | +5.67 | +3.19 | +4.50 | +3.80 |
+| 05 | 124 | 13.63 | 17.86 | 14.29 | 17.70 | 16.30 | 16.99 | 21.68 | 4.22 | +8.04 | +3.82 | +7.38 | +3.98 | +5.38 | +4.68 |
+| 06 | 120 | 15.17 | 20.93 | 15.74 | 19.85 | 18.68 | 19.38 | 24.62 | 5.77 | +9.45 | +3.69 | +8.87 | +4.77 | +5.93 | +5.24 |
+| 07 | 124 | 16.23 | 23.14 | 16.56 | 21.30 | 20.36 | 21.05 | 27.11 | 6.90 | +10.87 | +3.97 | +10.54 | +5.80 | +6.75 | +6.05 |
+| 08 | 93 | 17.56 | 23.39 | 17.79 | 22.41 | 21.11 | 21.80 | 27.26 | 5.83 | +9.70 | +3.87 | +9.47 | +4.85 | +6.16 | +5.46 |
+| 09 | 90 | 17.47 | 21.96 | 17.36 | 21.46 | 20.21 | 20.90 | 25.89 | 4.60 | +8.42 | +3.93 | +8.53 | +4.43 | +5.68 | +4.98 |
+| 10 | 93 | 17.42 | 19.42 | 17.07 | 19.89 | 18.70 | 19.40 | 21.88 | 2.81 | +4.46 | +2.46 | +4.81 | +2.00 | +3.18 | +2.49 |
+| 11 | 89 | 15.24 | 15.38 | 14.55 | 16.06 | 15.36 | 16.05 | 16.82 | 1.51 | +1.58 | +1.44 | +2.27 | +0.77 | +1.46 | +0.77 |
+| 12 | 91 | 12.42 | 12.40 | 11.91 | 12.59 | 12.39 | 13.09 | 13.29 | 0.68 | +0.87 | +0.90 | +1.38 | +0.70 | +0.90 | +0.21 |
+
+| year | n | SW | SE | NW | NE | blend | temp | OM | spread | OM−SW | OM−SE | OM−NW | OM−NE | OM−blend | OM−temp |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2021 | 283 | 15.18 | 18.86 | 15.16 | 18.36 | 17.42 | 18.12 | 22.06 | 3.70 | +6.88 | +3.20 | +6.90 | +3.70 | +4.64 | +3.94 |
+| 2022 | 364 | 14.75 | 17.50 | 14.51 | 17.34 | 16.43 | 17.13 | 20.36 | 2.99 | +5.61 | +2.86 | +5.85 | +3.02 | +3.92 | +3.23 |
+| 2023 | 363 | 14.47 | 17.04 | 14.64 | 17.07 | 16.09 | 16.79 | 19.48 | 2.60 | +5.01 | +2.44 | +4.85 | +2.41 | +3.39 | +2.70 |
+| 2024 | 195 | 14.11 | 17.59 | 14.64 | 17.26 | 16.28 | 16.98 | 20.76 | 3.48 | +6.65 | +3.17 | +6.12 | +3.50 | +4.48 | +3.78 |
+| all | 1,205 | 14.66 | 17.70 | 14.72 | 17.48 | 16.54 | 17.23 | 20.56 | 3.03 | +5.89 | +2.86 | +5.84 | +3.08 | +4.02 | +3.33 |
+
+What the tables show, as numbers only: the two sea points (SW, NW) run
+colder than the two land points (SE, NE) from March to October, most in
+summer (July: spread 6.90 °C, against an OM − temp gap of 6.05 °C; June
+5.77 against 5.24; August 5.83 against 5.46). In winter all four points
+agree within about 1 °C. Even the warmest point (SE, land) sits below
+Open-Meteo by 3.6 to 4.0 °C from April to September.
+
+**F117.4 Check C: which GFS product Open-Meteo uses (pages pulled
+2026-09-26).**
+- The GFS API documentation (`open-meteo.com/en/docs/gfs-api`) lists "GFS
+  Global 0.11°/0.25°". Its model table gives "GFS" at 0.11° (~13 km) and
+  "GFS Pressure Variables" at 0.25° (~25 km). Its text says: "Certain
+  variables for the high-resolution GFS013 model are unavailable, so the
+  standard GFS025 model is used instead." Its variable-per-model table
+  (columns headed "GFS016", "GFS025", "HRRR", "NBM", "AIGFS, HGEFS") marks
+  `temperature_2m` under "GFS016", not "GFS025". The page's heading says
+  "GFS016", its text says "GFS013"; both name the high-resolution product.
+  The same table marks `pressure_msl` and pressure-level `temperature`
+  under GFS025 only.
+- The Previous Runs API documentation lists these GFS-family options: "NCEP
+  GFS Seamless", "NCEP GFS Global 0.11°/0.25°", "NCEP AIGFS 0.25°" and
+  "NCEP HGEFS 0.25° Ensemble Mean". AIGFS is described as a machine-learning
+  model and HGEFS as an ensemble mean; neither is the 0.25° GFS product our
+  files come from. **No documented 0.25°-only GFS option exists, so C.2 was
+  skipped.** No model name was guessed.
+- What the pages do not say: which product the 2021–2024 archive was built
+  from. They describe the service as of the pull date.
+- Arithmetic only, not from the documentation: KSFO's returned longitude,
+  −122.34375, is not on the 0.25° grid; it is an exact multiple of
+  360/3072 = 0.1171875°.
+
+**F117.5 Which D68.2 branch the evidence points to (evidence for the
+owner, not a decision).** A passes. Both of D68.2's "explains the gap"
+tests are met as written: the summer four-point spread is of the same order
+as the gap (July 6.90 against 6.05 °C), and the documentation says
+`temperature_2m` under `gfs_global` comes from a different GFS product
+(0.11°) from our 0.25° files. So the evidence points to D68.2's second
+branch ("A passes and B or C explains the gap"). Two limits the owner may
+weigh: even the warmest, land-only point stays 3.6–4.0 °C below Open-Meteo
+from April to September, so sea points alone do not account for the whole
+gap; and the documentation describes the service today, not the archive's
+history. Nothing here measured the 0.11° product directly.
+
+**F117.6 New files.**
+- Scripts: `scripts/session76b_cache.py`, `session76b_check_a.py`,
+  `session76b_land_pull.py`, `session76b_check_b.py`.
+- `data/raw/diagnostics/session76b/`:
+  `gfs_20240609_t18z_f026_land_surface_SFO_diagnostic.grib2` (32,036 bytes)
+  and its `.meta.txt`; `openmeteo_docs_gfs-api_20260926.html` and
+  `openmeteo_docs_previous-runs-api_20260926.html`, each with a
+  `.meta.txt`.
+- `data/rebuild/session76b/`: `check_a_rno_decoded_values.csv`,
+  `check_a_rno_compare.csv`, `check_b_ksfo_point_temps.csv`,
+  `check_b_ksfo_monthly.csv`.
+- `notes/session-76b-output.txt`.
+
+**F117.7 What this did not do.**
+- It fit no model, read no observation, and computed no MAE, bias, residual
+  or forecast-minus-observation statistic.
+- It did not re-run, re-score or re-label the gate. F116.5 stands (FAIL).
+  Q34 stays open.
+- It read nothing dated 2024-08-01 or later after the amendment (every
+  selection was filtered by date first). No row dated 2026-08-01 or later
+  was touched.
+- It pulled nothing in bulk. The network calls were: one .idx and one
+  byte-range request for `LAND:surface`; two documentation pages, and one
+  repeat request for the Previous Runs page (to list its script files; not
+  saved).
+- It edited no existing script. `session76_` scripts were imported
+  read-only. Nothing under `data/processed/` was written.
+- It changed no verdict, claim or figure. F109 stands.
+- Nothing was committed.
