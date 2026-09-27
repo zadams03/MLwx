@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session — it is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 26 September 2026, after session 77._
+_Last updated: 27 September 2026, after session 78._
 
 ---
 
@@ -14,34 +14,33 @@ correcting GFS's local bias at an airport (SPEC sections 5.0/7.5/8.7,
 RESULTS.md). The feature-selection programme is closed (D59.2). F109
 stands.**
 
-**A sixth airport, San Francisco International (KSFO), is rehearsed and
-locked** under the unchanged B+D,L,R,T recipe (D67, D69, D70). Its two
-held-out years (2024-08-01..2026-07-31) are still closed: no model has
-been fit on them and none of their values has been read.
+**A sixth airport, San Francisco International (KSFO), has had its two
+pre-registered looks run, once, under the unchanged B+D,L,R,T recipe
+(F119).** Both looks are spent and will not be repeated. The owner's
+verdict on F119 is still to come.
 
-- **Q34 is closed (D69).** KSFO's reproduction gate is recorded as
-  "failed, explained by a difference between the sources (F117)". There is
-  no override; F116.5 stands as a FAIL.
-- **Rehearsal (F118), not a gate.** On the 2022-23 and 2023-24 folds,
-  B+D,L,R,T beats raw GFS (GRIB) and persistence. Every pipeline check
-  passed. The 2022-23 margin over B (0.0319) is within the band; 2023-24's
-  (0.1177) is above it.
-- **The band (D70.5):** 0.037704595173481126 °C (0.0377), from B+D,L,R,T
-  on 2022-23. A secondary read, not part of the bar.
-- **The frozen look script (D70.6):** `scripts/session77_ksfo_looks.py`,
-  SHA-256 `e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1`.
-  Its `--dry-run` passed, and its self-test reproduced the rehearsal
-  exactly. `--run-looks` has not been run.
-- **Framing (D70.9).** KSFO's result will be for the recipe at a sea-mixed
-  grid point (37.5% sea weight). It is not directly comparable with the
-  five earlier airports.
+- **Overall reading: PASS (both looks pass), as pre-registered ("pass in
+  both years", D70.8).** B+D,L,R,T MAE against raw GFS (GRIB) and
+  persistence:
+  - look A (2024-25): 1.2576 vs 1.4263 (+11.83%) vs 1.5113 (+16.79%);
+  - look B (2025-26): 1.3830 vs 1.7321 (+20.16%) vs 1.7172 (+19.46%).
+- **Band read (secondary, D70.5):** both looks "beats B by more than the
+  column-order spread" (margins 0.0958 and 0.0824 °C, band 0.0377).
+- **Framing (D70.9), carried by any write-up.** KSFO's result is for the
+  recipe at a sea-mixed grid point (37.5% sea weight, F117.3). It is not
+  directly comparable with the five earlier airports, whose reproduction
+  gates passed. KSFO's gate is recorded as failed, explained by a
+  difference between the sources (D69). Look B's training includes
+  2024-25, by design (D70.3).
+- SPEC and RESULTS do not yet carry the KSFO result: SPEC still describes
+  KSFO as "locked, not yet tested". That is for session 79.
 
 ---
 
 ## Open questions (live)
 
 - **Q30 (open).** The owner's order (D66.1): Q33 (done, F115); a further
-  airport under the frozen recipe (KSFO, D67; locked, D70); then a
+  airport under the frozen recipe (KSFO, D67; looks run, F119); then a
   dedicated roadmap planning session. Pooling is deferred. The 2026-27
   forward test is deferred until the GFS v17 date is known (D66.2, D67.8,
   D69.6). If a 2026-27 test is ever pre-registered, it must name the two
@@ -76,7 +75,7 @@ No other open question is live.
 
 ## Next
 
-**Next planning session:** Review session 77. If it is committed, session
-78 checks the look script's hash and runs
-`scripts/session77_ksfo_looks.py --run-looks` once, unchanged. After the
-KSFO verdict, hold the roadmap planning session (D66.1).
+**Next planning session:** Review session 78 and decide the owner's verdict
+on F119. Then plan session 79: record the verdict and fold KSFO into SPEC
+and RESULTS (with the carried SPEC wording items B1–B5, C1–C3 and CLAUDE.md
+E1). After that, hold the roadmap planning session (D66.1).

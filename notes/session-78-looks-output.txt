@@ -1,0 +1,40 @@
+==============================================================================
+session77_ksfo_looks.py --run-looks  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+SHA-256 check (before the record script was imported): passed
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+model columns in the features file and the record script equal G15: True
+station(s) in both files: ['SFO']; target hour(s): ['20']
+non-finite values dropped: features 0, observations 0
+
+KSFO held-out guard:
+  largest date in either file: 2026-07-31 (must be <= 2026-07-31)
+  look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31; rows train 1223, test 364, persistence days 363 (expected 1223, 364, 363)
+  look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31; rows train 1587, test 365, persistence days 365 (expected 1587, 365, 365)
+  passed
+
+look A (2021-03-24..2024-07-31 train, 2024-08-01..2025-07-31 test): train 1223, test 364, persistence days 363, training mean bias (obs - raw GFS) 0.36381439084219136
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      364     1.4262582417582421   1.4263   n=363 1.4278
+  persistence   363     1.5112947658402205   1.5113   n=363 1.5113
+  mean_bias    364     1.5000424150665357   1.5000   n=363 1.5028
+  B            364     1.3534005468759274   1.3534   n=363 1.3509
+  B+D,L,R,T    364     1.2575770731513778   1.2576   n=363 1.2562
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.09582347372454958 (0.0958) against band 0.0377 -> beats B by more than the column-order spread
+
+look B (2021-03-24..2025-07-31 train, 2025-08-01..2026-07-31 test): train 1587, test 365, persistence days 365, training mean bias (obs - raw GFS) 0.1846862003780719
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      365     1.7321205479452053   1.7321   n=365 1.7321
+  persistence   365      1.717232876712329   1.7172   n=365 1.7172
+  mean_bias    365     1.7746714296812283   1.7747   n=365 1.7747
+  B            365     1.4653639395559965   1.4654   n=365 1.4654
+  B+D,L,R,T    365     1.3830033790440732   1.3830   n=365 1.3830
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.08236056051192331 (0.0824) against band 0.0377 -> beats B by more than the column-order spread
+
+overall (D67.3): PASS (2 of 2 looks pass)
+wrote data/processed/session78_ksfo_looks_grid.csv (35 rows)
+wrote data/processed/session78_ksfo_looks_predictions.csv (729 rows)

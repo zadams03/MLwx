@@ -1,0 +1,161 @@
+Session 78 — KSFO: the two pre-registered looks. Real output of every step.
+Date: 2026-09-27. The dry-run and looks outputs are also kept in
+notes/session-78-dryrun-output.txt and notes/session-78-looks-output.txt.
+
+==============================================================================
+STEP 0 — integrity checks (run before any script; output copied verbatim)
+==============================================================================
+== git status --porcelain
+?? docs/session-78.md
+== git diff HEAD -- look script (empty expected)
+[end diff]
+== git log -1 look script
+b30064f4d50d1d2fe87e6bc239ac9825479fdc73
+== SHA-256
+e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1  scripts/session77_ksfo_looks.py
+f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+== output files absent?
+absent: data/processed/session78_ksfo_looks_grid.csv
+absent: data/processed/session78_ksfo_looks_predictions.csv
+Python: /Users/zacharyadams/Coding Projects/MLwx/.venv/bin/python, Python 3.12.2
+
+All four SHA-256 values equal the locked values (D70.6, D70.2).
+D67, D69, D70 and F118 were read in DECISIONS.md.
+
+==============================================================================
+STEP 1 — the dry-run gate
+  python scripts/session77_ksfo_looks.py --dry-run 2>&1 | tee notes/session-78-dryrun-output.txt
+==============================================================================
+==============================================================================
+session77_ksfo_looks.py --dry-run  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+SHA-256 check (before the record script was imported): passed
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+model columns in the features file and the record script equal G15: True
+station(s) in both files: ['SFO']; target hour(s): ['20']
+non-finite values dropped: features 0, observations 0
+
+KSFO held-out guard:
+  largest date in either file: 2026-07-31 (must be <= 2026-07-31)
+  look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31; rows train 1223, test 364, persistence days 363 (expected 1223, 364, 363)
+  look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31; rows train 1587, test 365, persistence days 365 (expected 1587, 365, 365)
+  passed
+
+no value in a row dated 2024-08-01 or later was parsed
+
+self-test on the 2023-24 rehearsal fold (2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test): rows 858, 365, persistence days 364 (expected 858, 365, 364)
+
+self-test, 2023-24 fold (rehearsal data, not a look, not a gate): train 858, test 365, persistence days 364, training mean bias (obs - raw GFS) 0.3329755244755246
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      365     1.3061369863013699   1.3061   n=364 1.3031
+  persistence   364      1.715659340659341   1.7157   n=364 1.7157
+  mean_bias    365      1.250037292844142   1.2500   n=364 1.2459
+  B            365     1.2922832710768244   1.2923   n=364 1.2895
+  B+D,L,R,T    365      1.174587228071113   1.1746   n=364 1.1709
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.11769604300571146 (0.1177) against band 0.0377 -> beats B by more than the column-order spread
+  self-test raw_gfs    1.3061369863013699 vs Step 2a 1.3061369863013699: equal
+  self-test persistence 1.715659340659341 vs Step 2a 1.715659340659341: equal
+  self-test mean_bias  1.250037292844142 vs Step 2a 1.250037292844142: equal
+  self-test B          1.2922832710768244 vs Step 2a 1.2922832710768244: equal
+  self-test B+D,L,R,T  1.174587228071113 vs Step 2a 1.174587228071113: equal
+  output rows built for the self-test (not written): grid 17, predictions 365
+
+DRY RUN PASSED. Nothing was written. --run-looks was not run.
+EXIT STATUS: 0
+
+Self-test vs F118.5 (session prompt values), side by side:
+  rung          F118.5 (prompt)       dry-run self-test      equal?
+  raw           1.3061369863013699    1.3061369863013699     yes
+  persistence   1.715659340659341     1.715659340659341      yes
+  mean-bias     1.250037292844142     1.250037292844142      yes
+  B             1.2922832710768244    1.2922832710768244     yes
+  B+D,L,R,T     1.174587228071113     1.174587228071113      yes
+Dry-run gate: PASSED.
+
+==============================================================================
+STEP 2 — the looks (run once)
+  python scripts/session77_ksfo_looks.py --run-looks 2>&1 | tee notes/session-78-looks-output.txt
+==============================================================================
+==============================================================================
+session77_ksfo_looks.py --run-looks  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+SHA-256 check (before the record script was imported): passed
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+model columns in the features file and the record script equal G15: True
+station(s) in both files: ['SFO']; target hour(s): ['20']
+non-finite values dropped: features 0, observations 0
+
+KSFO held-out guard:
+  largest date in either file: 2026-07-31 (must be <= 2026-07-31)
+  look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31; rows train 1223, test 364, persistence days 363 (expected 1223, 364, 363)
+  look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31; rows train 1587, test 365, persistence days 365 (expected 1587, 365, 365)
+  passed
+
+look A (2021-03-24..2024-07-31 train, 2024-08-01..2025-07-31 test): train 1223, test 364, persistence days 363, training mean bias (obs - raw GFS) 0.36381439084219136
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      364     1.4262582417582421   1.4263   n=363 1.4278
+  persistence   363     1.5112947658402205   1.5113   n=363 1.5113
+  mean_bias    364     1.5000424150665357   1.5000   n=363 1.5028
+  B            364     1.3534005468759274   1.3534   n=363 1.3509
+  B+D,L,R,T    364     1.2575770731513778   1.2576   n=363 1.2562
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.09582347372454958 (0.0958) against band 0.0377 -> beats B by more than the column-order spread
+
+look B (2021-03-24..2025-07-31 train, 2025-08-01..2026-07-31 test): train 1587, test 365, persistence days 365, training mean bias (obs - raw GFS) 0.1846862003780719
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      365     1.7321205479452053   1.7321   n=365 1.7321
+  persistence   365      1.717232876712329   1.7172   n=365 1.7172
+  mean_bias    365     1.7746714296812283   1.7747   n=365 1.7747
+  B            365     1.4653639395559965   1.4654   n=365 1.4654
+  B+D,L,R,T    365     1.3830033790440732   1.3830   n=365 1.3830
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.08236056051192331 (0.0824) against band 0.0377 -> beats B by more than the column-order spread
+
+overall (D67.3): PASS (2 of 2 looks pass)
+wrote data/processed/session78_ksfo_looks_grid.csv (35 rows)
+wrote data/processed/session78_ksfo_looks_predictions.csv (729 rows)
+EXIT STATUS: 0
+
+==============================================================================
+STEP 3 — read-only checks on what was written (no model fit)
+==============================================================================
+== Step 3.1: SHA-256 and row counts (data rows, header excluded)
+48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c  data/processed/session78_ksfo_looks_grid.csv
+b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e  data/processed/session78_ksfo_looks_predictions.csv
+data/processed/session78_ksfo_looks_grid.csv: 35 data rows; header: look,row_type,name,day_basis,n,value
+data/processed/session78_ksfo_looks_predictions.csv: 729 data rows; header: look,target_date,obs_c,raw_gfs_c,persistence_c,mean_bias_c,B_c,BDLRT_c
+
+== Step 3.2: independent re-score (separate process; imports no project code)
+look A: 364 prediction rows, 2024-08-01..2025-07-31, dates ascending and unique: True; persistence days 363
+  raw_gfs    n=364 re-score 1.4262582417582421  printed 1.4262582417582421  grid 1.4262582417582421  -> equal
+  persistence n=363 re-score 1.5112947658402205  printed 1.5112947658402205  grid 1.5112947658402205  -> equal
+  mean_bias  n=364 re-score 1.5000424150665357  printed 1.5000424150665357  grid 1.5000424150665357  -> equal
+  B          n=364 re-score 1.3534005468759274  printed 1.3534005468759274  grid 1.3534005468759274  -> equal
+  B+D,L,R,T  n=364 re-score 1.2575770731513778  printed 1.2575770731513778  grid 1.2575770731513778  -> equal
+look B: 365 prediction rows, 2025-08-01..2026-07-31, dates ascending and unique: True; persistence days 365
+  raw_gfs    n=365 re-score 1.7321205479452053  printed 1.7321205479452053  grid 1.7321205479452053  -> equal
+  persistence n=365 re-score 1.717232876712329  printed 1.717232876712329  grid 1.717232876712329  -> equal
+  mean_bias  n=365 re-score 1.7746714296812283  printed 1.7746714296812283  grid 1.7746714296812283  -> equal
+  B          n=365 re-score 1.4653639395559965  printed 1.4653639395559965  grid 1.4653639395559965  -> equal
+  B+D,L,R,T  n=365 re-score 1.3830033790440732  printed 1.3830033790440732  grid 1.3830033790440732  -> equal
+all 10 rung MAEs equal to full precision: True
+
+==============================================================================
+STEP 4 — arithmetic on the printed MAEs (no data read)
+  % = margin / baseline MAE x 100
+==============================================================================
+look A: raw  minus B+D,L,R,T = 0.16868116860686433 (0.1687 degC), 11.83% of raw
+look A: pers minus B+D,L,R,T = 0.2537176926888427 (0.2537 degC), 16.79% of pers
+look A: B    minus B+D,L,R,T = 0.09582347372454958 (0.0958 degC), 7.08% of B
+look A: band margin 0.09582347372454958; margin - band = 0.0581 degC; margin / band = 2.54
+look B: raw  minus B+D,L,R,T = 0.3491171689011321 (0.3491 degC), 20.16% of raw
+look B: pers minus B+D,L,R,T = 0.3342294976682558 (0.3342 degC), 19.46% of pers
+look B: B    minus B+D,L,R,T = 0.08236056051192331 (0.0824 degC), 5.62% of B
+look B: band margin 0.08236056051192331; margin - band = 0.0447 degC; margin / band = 2.18
