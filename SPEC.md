@@ -51,9 +51,12 @@ facts — its code, its position, the forecast grid point it maps to, when it
 reports, and its target hour — live in the airport table in section 3.4.
 Everything else in this file is shared by all of them.
 
-The long-term aim is a live daily tool that shows a corrected temperature
-forecast for the day ahead. That is the destination, not the starting point.
-See section 6 for the staged build order.
+The end goal is a private, live daily tool that shows corrected
+day-ahead temperature forecasts for ten or more airports: an hourly
+temperature curve and the daily maximum, at 24-hour and 48-hour leads;
+a choice of which weather model is corrected, plus a blend; and
+probabilistic ranges (DECISIONS D72.1). That is the destination, not
+the starting point. See section 6 for the roadmap.
 
 ---
 
@@ -109,6 +112,27 @@ snapshot.
 section 5 is fixed *before* the model is run, and is not changed afterwards
 to fit the result. A result that fails the bar is an honest finding, not a
 failure.
+
+**2.5 Claims and build choices (DECISIONS D72.2).** Two kinds of
+decision are treated differently.
+
+- A **claim** is a stated result, for example "beats raw GFS by X%".
+  A claim needs a test on held-out data that nothing else has used,
+  with the method, the data and the pass rule fixed in writing first,
+  and one look.
+- A **build choice** is how the product is made: which inputs, which
+  settings, how models are blended. A build choice is made by
+  cross-validation (training on some past years and testing on later
+  ones, in time order, 2.1a) on data that is not held out for any
+  claim. It spends no held-out data and is never quoted as a result.
+- Held out for claims, and so never used for build choices: a
+  pre-registered test's data until that test is run; 2026-27 or later
+  data until its pre-registered test is scored; and a new airport's
+  held-out years until its looks are run.
+- Once any part of a forward year has been scored, no new test may be
+  pre-registered on that year.
+- Build choices are made identically at every airport. Choosing
+  features or settings per airport is still not allowed.
 
 ---
 
@@ -601,23 +625,31 @@ the win is not carried by one lucky stretch of weather. So no later stage waits
 on this work, and no session has to do it. If the owner asks for it, it is a
 session of its own. See DECISIONS D29.
 
+**They are now scheduled as part of roadmap stage A** (section 6,
+DECISIONS D72.3): confidence intervals for the results on record, and
+a comparison against operational post-processed forecasts. They change
+no earlier verdict. Stage A's own gate (DECISIONS D72.7) decides the
+project's direction, not any airport's pass or fail.
+
 The stronger robustness check is running the same recipe at a second airport,
 which is what stage 2 is.
 
 ---
 
-## 6. Build order (each stage opens only when the previous one passes)
+## 6. Build order and roadmap (DECISIONS D72)
 
 Stages 1 and 2 are fully specified above — the sections are written per
-airport, so one set of rules covers every airport in either of them. **Stages 3
-to 6 are intentionally left as short descriptions only.** Do **not** write out their detailed design
-until the project reaches them and the owner opens the stage. If a session tries
-to fill in a later stage early, treat it as a warning sign and stop.
+airport, so one set of rules covers every airport in either of them. **The
+roadmap stages after stage 2 are intentionally left as short descriptions
+only** (DECISIONS D72). Do **not** write out their detailed design until the
+owner opens each one. If a session tries to fill in a later stage early, treat
+it as a warning sign and stop.
 
 - **Stage 1 — one model, one airport, one fixed hour. DONE — PASSED.** EGLC.
   The correction beat both raw GFS and persistence on the sealed test year
   (5.0, DECISIONS F16).
-- **Stage 2 — individual airports, two or more. IN PROGRESS.** Re-run the same
+- **Stage 2 — individual airports, two or more. ONGOING (the new-airports
+  track, DECISIONS D72.3).** Re-run the same
   recipe at further locations, one airport at a time, each judged on its own
   held-out data, in the look or looks its lock fixes (5.0), to prove stage
   1 was not a fluke and to find out how far
@@ -674,31 +706,60 @@ to fill in a later stage early, treat it as a warning sign and stop.
     (GRIB): 1.2576 vs 1.4263 °C, +11.83% (8.5, 8.6(f)). It is
     the project's first coastal airport. Its target
     hour, 20:00 UTC, and its lead are Reno's.
-  - **Further airports may follow before stage 3**, on the same five steps:
-    verify on contact, pull and map, join and rehearse, lock, test. The
-    lock fixes in writing how many looks there are, their windows and how
-    their verdicts combine, before any held-out value is read, and each
-    look is run once (5.0, DECISIONS D71.6). Each uses the project's
-    default recipe (8.7).
-- **Stage 3 — pool airports.** Combine airports into one model with
-  location-describing features, so locations learn from each other. **The
-  solar-standard-noon target hour this stage was going to introduce is already
-  in use, from DSM onwards** (4.1, DECISIONS D27, D33), so stage 3 inherits it
-  rather than switching to it.
-- **Stage 4 — add models and blend.** Bring in other forecasts (ECMWF, ICON,
-  and the Google WeatherNext AI model) and combine them. See the WeatherNext
-  notes in DECISIONS.
-- **Stage 5 — widen the target.** Move from one fixed hour to a full hourly
-  temperature curve across the day ahead (the daily maximum then falls out as
-  the peak of the curve). Add the 48-hour lead time alongside 24-hour.
-- **Stage 6 — live product.** Point the proven model at today's fresh
-  forecast, run it daily, and display a corrected temperature forecast for
-  the day ahead, updated continuously.
+  - **Further airports may follow at any point in the roadmap**, on the
+    same five steps: verify on contact, pull and map, join and rehearse,
+    lock, test. The lock fixes in writing how many looks there are, their
+    windows and how their verdicts combine, before any held-out value is
+    read, and each look is run once (5.0, DECISIONS D71.6). Each uses the
+    project's default recipe (8.7). From stage G, adding an airport should
+    take one script plus a checklist, and the script downloads its history
+    (DECISIONS D72.2).
 
-*(Stages 3–6 have no sections of their own yet, and will not until the owner
-opens them. Stage 2 needs no section of its own, however many airports it comes
-to hold: the sections above are written per airport, so opening one means
-adding a row to the airport table, not adding a design.)*
+**The roadmap after stage 2 (DECISIONS D72).** The end goal is set out
+in section 1. Stages run in this order. Stages A and B run side by
+side, because both are time-critical.
+
+- **Stage A — benchmark and source probe.** Confidence intervals for
+  the results on record (5.4). A comparison against operational
+  post-processed forecasts (NWS MOS and the National Blend of Models,
+  NBM) at DSM, RNO and SFO; its outcome rule is fixed in writing before
+  it is looked at (DECISIONS D72.7). A read-only probe of each other
+  source (ECMWF, ICON, WeatherNext, NBM, GEFS): archive depth, live
+  feed, and which fields it offers.
+- **Stage B — forward test and data collection.** Pre-register the
+  2026-27 forward test of section 8's recipe on GFS, split at the GFS
+  v17 go-live date (DECISIONS D72.5). For any source with no
+  downloadable archive, start saving its daily forecasts, all hours and
+  both leads; where to save is decided then (DECISIONS D72.8).
+- **Stage C — widen the target, on GFS only.** An hourly temperature
+  curve, the daily maximum, and the 48-hour lead. Written with the
+  weather model as a setting.
+- **Stage D — correct each other weather model on its own,** on the
+  full curve, screening each at a few hours first.
+- **Stage E — blend and stack.** Combine the corrected models, with NBM
+  as an input where it exists. This chooses which inputs go forward.
+- **Stage F — upgrade policy.** What happens when any weather model
+  changes version, starting with GFS v17.
+- **Stage G — live product, version 1.** A daily pipeline, a
+  prediction log that is never edited, a simple display, and
+  one-script airport onboarding.
+- **Stage H — probabilistic forecasts.** Ranges with stated odds,
+  judged against their own bar, fixed before running.
+- **Pooling (conditional).** Combining airports into one model with
+  location-describing features. Opened only if the number of airports
+  makes it worthwhile. It inherits the solar-standard-noon target hour
+  already in use (4.1, DECISIONS D27, D33).
+
+The former stages 3 to 6 are replaced (DECISIONS D72.10): former stage
+3 (pooling) is the conditional step; former stage 4 (add models and
+blend) is stages D and E; former stage 5 (widen the target, and the
+48-hour lead) is stage C; former stage 6 (live product) is stage G.
+
+*(The roadmap stages have no sections of their own yet, and will not
+until the owner opens them. Stage 2 needs no section of its own,
+however many airports it comes to hold: the sections above are written
+per airport, so opening one means adding a row to the airport table,
+not adding a design.)*
 
 ---
 
@@ -1037,8 +1098,8 @@ this result must carry these caveats:
   D70.3).
 
 **8.7 Status.** This is the project's **default recipe** for any future
-airport work or pooling work (stage 3), applied unchanged and identically
-at every airport (DECISIONS D59.3). Every new airport still needs its own
+airport work or pooling work (the conditional pooling step, 6), applied
+unchanged and identically at every airport (DECISIONS D59.3). Every new airport still needs its own
 lock and its own test, with its looks fixed in writing in that lock before
 any of its held-out values are read (5.0, 6; DECISIONS D71.6). KSFO, the
 first airport run under this recipe after F109, had two pre-registered

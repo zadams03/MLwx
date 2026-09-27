@@ -7,7 +7,7 @@ checked against the original record. Where `SPEC.md` and this file ever
 disagree, `SPEC.md` is right (CLAUDE.md, SPEC section 2).
 
 Written after session 30, revised after session 44, revised after session
-65, revised after session 79. As of session 65, the project has **three** independently-tested,
+65, revised after session 79, revised after session 80. As of session 65, the project has **three** independently-tested,
 proven methods for correcting GFS's local bias at an airport: a minimal
 three-feature method (sections 2–4 below, the project's original result),
 a richer five-feature method using a different forecast source (section 5,
@@ -705,7 +705,7 @@ They now apply to a project with three proven methods, not one.
   while the three raw pressure-level temperatures were tested and not
   adopted (DECISIONS D52, D57, D58). A genuine terrain descriptor beyond
   the fixed lapse-rate elevation correction (section 5.1) remains
-  untested.
+  untested. A terrain descriptor is now parked (DECISIONS D72.9).
 - **At the five earlier airports each method rests on one year; KSFO had
   two looks — and, together, no untouched year now remains at any of the
   six airports.** The minimal and richer methods' sealed tests (sections 3 and
@@ -740,23 +740,21 @@ They now apply to a project with three proven methods, not one.
   selected-features method's own margins (section 6) add a second reason
   for care: they are measured on a different year from sections 3 and 5's
   own margins (section 6.4(c)).
-- **Parked directions, and the current position.** Not started: blending
-  in other forecast models (ECMWF, ICON, Google's WeatherNext AI model —
-  SPEC stage 4); widening the target from one fixed hour to a full daily
-  temperature curve (SPEC stage 5); the eventual live daily product (SPEC
-  stage 6). The open Q30 question now follows the owner's order (DECISIONS
-  D66.1): first Q33, measured descriptively (DECISIONS F115); then a
-  further airport under the frozen selected-features recipe, which is now
-  done (KSFO, section 6.5; DECISIONS D71.7); then a dedicated roadmap
-  planning session, which is the next step. Pooling (SPEC stage 3) and the
-  2026-27 forward test stay deferred, the forward test until the GFS v17
-  date is known (DECISIONS D66.2).
+- **The roadmap.** The owner has set a roadmap to a private, live daily
+  tool (DECISIONS D72; SPEC 6). Next are a comparison against
+  operational post-processed forecasts and a probe of other weather
+  models' data (stage A), and a pre-registered forward test of the
+  selected-features recipe on 2026-27, split at the GFS v17 go-live
+  date (stage B). Widening the target to a full daily curve and the
+  48-hour lead, correcting and blending other weather models, and the
+  live product itself are later stages (C–G). Probabilistic forecasts
+  follow (H). Pooling is conditional.
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*
