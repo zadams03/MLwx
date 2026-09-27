@@ -1984,3 +1984,157 @@ was read.
      sizes" → "the adjustment sizes".
   8. SPEC 7.3: "at every airport" → "at each of this section's five
      airports"; a closing note on the 0.11° product and KSFO's gate added.
+
+---
+
+## 2026-09-27 — Session 78 finding: KSFO's two pre-registered looks
+
+**F119. Offline. The frozen look script (D70.6) was run once, unchanged,
+with `--run-looks`. Both looks PASS the frozen bar (SPEC 5.3): record-order
+`B+D,L,R,T` beats raw GFS (GRIB) and persistence on MAE in 2024-25 (look A)
+and in 2025-26 (look B). The overall reading (D67.3, D70.4) is PASS. It
+matches the pre-registered expectation, "pass in both years" (D70.8). These
+were the two pre-registered looks. They were run once and will not be
+repeated. The result is for the recipe at a sea-mixed grid point and is not
+directly comparable with the five earlier airports (D70.9). The owner's
+verdict is still to come. Full real output: `notes/session-78-output.txt`
+(also `notes/session-78-dryrun-output.txt` and
+`notes/session-78-looks-output.txt`).**
+
+**F119.1 Step 0 (before any script ran).**
+- `git status --porcelain` showed only `?? docs/session-78.md`.
+- `git diff HEAD -- scripts/session77_ksfo_looks.py` was empty. The
+  script's last commit is `b30064f4d50d1d2fe87e6bc239ac9825479fdc73`.
+- SHA-256, all equal to the locked values:
+  - `scripts/session77_ksfo_looks.py`:
+    `e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1`
+    (D70.6)
+  - `data/processed/session76_ksfo_features.csv`:
+    `f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9`
+    (D70.2)
+  - `data/processed/session76_ksfo_observations.csv`:
+    `b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c`
+    (D70.2)
+  - `scripts/session62_reserved_confirm.py`:
+    `9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4`
+    (D70.2)
+- Neither `data/processed/session78_ksfo_looks_grid.csv` nor
+  `data/processed/session78_ksfo_looks_predictions.csv` existed.
+- D67, D69, D70 and F118 were read.
+
+**F119.2 Step 1: the dry-run gate. PASSED.** `--dry-run` was run once
+(Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0; exit status 0). The script's
+own checks all passed: the three SHA-256 values; station `SFO` and hour 20
+in every row; the nine columns equal G15; non-finite values 0 and 0; the
+KSFO held-out guard (largest date 2026-07-31; look A 1,223 / 364 / 363,
+look B 1,587 / 365 / 365, as D70.3); no value in a row dated 2024-08-01 or
+later was parsed. The self-test on the `2023-24` fold (858 / 365 / 364
+rows) reproduced F118.5 exactly:
+
+| rung | F118.5 | dry-run self-test | equal |
+|---|---|---|---|
+| raw GFS (GRIB) | 1.3061369863013699 | 1.3061369863013699 | yes |
+| persistence | 1.715659340659341 | 1.715659340659341 | yes |
+| mean-bias ref | 1.250037292844142 | 1.250037292844142 | yes |
+| B | 1.2922832710768244 | 1.2922832710768244 | yes |
+| B+D,L,R,T | 1.174587228071113 | 1.174587228071113 | yes |
+
+**F119.3 Step 2: the looks.** `--run-looks` was run once (exit status 0).
+Its checks passed as in F119.2, now with every value parsed: non-finite
+values 0 and 0. It wrote both output files. Training mean bias (obs − raw
+GFS), used by the mean-bias reference: look A 0.36381439084219136 °C, look
+B 0.1846862003780719 °C.
+
+*Per-look table.* MAE in °C (G24). Day basis as D58 item 6 (D70.4):
+persistence on test days with a previous-day observation, every other rung
+on every test day. Raw GFS (GRIB) is the elevation-adjusted GRIB
+temperature (+0.6944 °C, SPEC 5.2).
+
+| look | n test | persistence days | raw GFS (GRIB) | persistence | mean-bias ref | B (canonical) | B+D,L,R,T (record order) |
+|---|---|---|---|---|---|---|---|
+| A (2024-25) | 364 | 363 | 1.4262582417582421 | 1.5112947658402205 | 1.5000424150665357 | 1.3534005468759274 | 1.2575770731513778 |
+| A, 4 dp | | | 1.4263 | 1.5113 | 1.5000 | 1.3534 | 1.2576 |
+| B (2025-26) | 365 | 365 | 1.7321205479452053 | 1.717232876712329 | 1.7746714296812283 | 1.4653639395559965 | 1.3830033790440732 |
+| B, 4 dp | | | 1.7321 | 1.7172 | 1.7747 | 1.4654 | 1.3830 |
+
+*The bar (D70.4), per look.* Margin = baseline MAE minus `B+D,L,R,T` MAE;
+% = margin / baseline MAE.
+
+| look | vs raw GFS (GRIB) | vs persistence | bar |
+|---|---|---|---|
+| A | 0.1687 °C (+11.83%) | 0.2537 °C (+16.79%) | **PASS** |
+| B | 0.3491 °C (+20.16%) | 0.3342 °C (+19.46%) | **PASS** |
+
+*The overall reading (D67.3, D70.4):* **PASS** — both looks pass. The
+pre-registered expectation was "pass in both years" (D70.8). **It
+matched.**
+
+*Secondary read (D70.5), per look, not part of the bar.* Margin =
+canonical-order `B` MAE minus record-order `B+D,L,R,T` MAE, against the
+band 0.037704595173481126 °C.
+- Look A: 0.09582347372454958 °C (0.0958; +7.08% of B) → "beats B by more
+  than the column-order spread".
+- Look B: 0.08236056051192331 °C (0.0824; +5.62% of B) → "beats B by more
+  than the column-order spread".
+
+*Common-day re-score (descriptive only), as the script prints it.* Every
+rung on the persistence test days.
+- Look A (363 days): raw 1.4278, persistence 1.5113, mean-bias 1.5028,
+  B 1.3509, B+D,L,R,T 1.2562.
+- Look B (365 days, every test day has a previous-day observation, so the
+  values equal the table above): raw 1.7321, persistence 1.7172,
+  mean-bias 1.7747, B 1.4654, B+D,L,R,T 1.3830.
+
+As numbers only: the mean-bias reference is worse than raw GFS (GRIB) in
+both looks (A 1.5000 vs 1.4263; B 1.7747 vs 1.7321). In look B, raw GFS
+(GRIB) is worse than persistence (1.7321 vs 1.7172).
+
+**F119.4 Step 3: read-only checks on the written files. No model fit.**
+- `data/processed/session78_ksfo_looks_grid.csv`: SHA-256
+  `48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c`,
+  35 data rows (17 per look, as the script's layout, plus 1 overall row).
+- `data/processed/session78_ksfo_looks_predictions.csv`: SHA-256
+  `b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e`,
+  729 data rows (look A 364, 2024-08-01..2025-07-31; look B 365,
+  2025-08-01..2026-07-31; dates ascending and unique in each).
+- **Independent re-score.** A separate Python process that imports no
+  project code recomputed each look's five rung MAEs from the predictions
+  file (NumPy mean of absolute errors, G24; the D70.4 day bases: look A
+  persistence on 363 days, look B on 365). All 10 equal both the printed
+  values and the grid file's values to full precision. No other day set
+  or breakdown was scored.
+
+**F119.5 Required framing.**
+- These were the two pre-registered looks (D67.3, D70). They were run
+  once and will not be repeated.
+- The result is for the recipe at a sea-mixed grid point: 37.5% of the
+  0.25° blend's weight is on sea points (F117.3). **It is not directly
+  comparable with the five earlier airports, whose reproduction gates
+  passed.** KSFO's gate is recorded as failed, explained by a difference
+  between the sources (D69, D70.9).
+- Look B's training includes 2024-25, by design (D70.3).
+
+**F119.6 New files.**
+- `data/processed/session78_ksfo_looks_grid.csv`,
+  `data/processed/session78_ksfo_looks_predictions.csv` (written by the
+  frozen script, D70.6).
+- `notes/session-78-output.txt`, `notes/session-78-dryrun-output.txt`,
+  `notes/session-78-looks-output.txt`.
+
+**F119.7 What this did not do.**
+- It edited no script. `scripts/session77_ksfo_looks.py` ran unchanged.
+  The Step 3 re-score ran as an inline process and was not saved as a
+  script.
+- It ran `--run-looks` once and did not re-run it.
+- It tuned, selected or adopted nothing. No extra model, feature set, day
+  set, or per-month or per-season breakdown of held-out errors was scored.
+- It did not edit SPEC.md, RESULTS.md, README.md or CLAUDE.md. It wrote
+  nothing under `data/raw/`. The only writes under `data/processed/` are
+  the two files the frozen script wrote.
+- It touched no row dated 2026-08-01 or later (none exists).
+- It made no network call.
+- F109, F94 and every earlier verdict stand. The five earlier airports'
+  data and verdicts were not touched.
+- It archived nothing (D67, D69, D70 and F115–F118 stay live until the
+  owner's verdict on F119).
+- Nothing was committed.

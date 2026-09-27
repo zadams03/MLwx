@@ -1,0 +1,46 @@
+Session 78: KSFO's two pre-registered looks run once - PASS (F119)
+
+The frozen look script (scripts/session77_ksfo_looks.py, D70.6) was run
+once, unchanged, with --run-looks, after a dry-run gate whose self-test
+reproduced the rehearsal (F118.5) exactly. All four locked SHA-256 values
+matched, the KSFO held-out guard passed, and the counts equalled D70.3.
+
+Both looks pass the frozen bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB)
+and persistence on MAE in each year. The overall reading is PASS, matching
+the pre-registered expectation, "pass in both years" (D70.8).
+- Look A (2024-25): B+D,L,R,T 1.2576 vs raw GFS 1.4263 (+11.83%) and
+  persistence 1.5113 (+16.79%).
+- Look B (2025-26): B+D,L,R,T 1.3830 vs raw GFS 1.7321 (+20.16%) and
+  persistence 1.7172 (+19.46%).
+- Band read (secondary, D70.5): both looks beat B by more than the
+  column-order spread (margins 0.0958 and 0.0824 C, band 0.0377).
+An independent re-score from the predictions file matched all ten rung
+MAEs to full precision.
+
+Framing carried by F119 (D70.9): the result is for the recipe at a
+sea-mixed grid point (37.5% sea weight, F117.3) and is not directly
+comparable with the five earlier airports, whose reproduction gates
+passed. Look B's training includes 2024-25, by design (D70.3). The looks
+were run once and will not be repeated.
+
+Review notes for the owner's verdict (session 79), not yet in F119:
+- Look B's +20% vs raw GFS is flattered by an unusually poor raw-GFS year
+  (1.7321, against 1.4263 in look A and 1.3061/1.4423 in rehearsal). In
+  look B persistence edges raw GFS, so persistence is the binding half of
+  the bar there. The defensible headline is look A's +11.8% vs raw.
+- The mean-bias reference is worse than raw GFS in both looks, unlike in
+  rehearsal (F118.5). From the two training means, 2024-25's mean
+  (obs - raw GFS) is about -0.42 C against +0.36 C in training: KSFO's
+  bias is not stable from year to year, and the recipe still beat raw.
+
+Nothing was tuned or selected. No script was edited. SPEC and RESULTS are
+unchanged (SPEC still says "locked, not yet tested" until session 79).
+Nothing was archived: D67, D69, D70 and F115-F118 stay live until the
+owner's verdict. F109, F94 and every earlier verdict stand.
+
+Files: DECISIONS.md (F119), STATUS.md (overwritten),
+data/processed/session78_ksfo_looks_grid.csv and
+data/processed/session78_ksfo_looks_predictions.csv (written by the frozen
+script), notes/session-78-output.txt, notes/session-78-dryrun-output.txt,
+notes/session-78-looks-output.txt, notes/session-78-review-check.txt,
+docs/session-78.md, docs/commit-78.txt.

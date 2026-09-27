@@ -1,0 +1,38 @@
+==============================================================================
+session77_ksfo_looks.py --dry-run  python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+==============================================================================
+SHA-256 check (before the record script was imported): passed
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+model columns in the features file and the record script equal G15: True
+station(s) in both files: ['SFO']; target hour(s): ['20']
+non-finite values dropped: features 0, observations 0
+
+KSFO held-out guard:
+  largest date in either file: 2026-07-31 (must be <= 2026-07-31)
+  look A: train 2021-03-24..2024-07-31, test 2024-08-01..2025-07-31; rows train 1223, test 364, persistence days 363 (expected 1223, 364, 363)
+  look B: train 2021-03-24..2025-07-31, test 2025-08-01..2026-07-31; rows train 1587, test 365, persistence days 365 (expected 1587, 365, 365)
+  passed
+
+no value in a row dated 2024-08-01 or later was parsed
+
+self-test on the 2023-24 rehearsal fold (2021-03-24..2023-07-31 train, 2023-08-01..2024-07-31 test): rows 858, 365, persistence days 364 (expected 858, 365, 364)
+
+self-test, 2023-24 fold (rehearsal data, not a look, not a gate): train 858, test 365, persistence days 364, training mean bias (obs - raw GFS) 0.3329755244755246
+  rung           n                    MAE     4 dp   common days (descriptive)
+  raw_gfs      365     1.3061369863013699   1.3061   n=364 1.3031
+  persistence   364      1.715659340659341   1.7157   n=364 1.7157
+  mean_bias    365      1.250037292844142   1.2500   n=364 1.2459
+  B            365     1.2922832710768244   1.2923   n=364 1.2895
+  B+D,L,R,T    365      1.174587228071113   1.1746   n=364 1.1709
+  bar (SPEC 5.3): B+D,L,R,T beats raw GFS (GRIB): True; beats persistence: True -> PASS
+  band read (D67.5, secondary, not part of the bar): margin 0.11769604300571146 (0.1177) against band 0.0377 -> beats B by more than the column-order spread
+  self-test raw_gfs    1.3061369863013699 vs Step 2a 1.3061369863013699: equal
+  self-test persistence 1.715659340659341 vs Step 2a 1.715659340659341: equal
+  self-test mean_bias  1.250037292844142 vs Step 2a 1.250037292844142: equal
+  self-test B          1.2922832710768244 vs Step 2a 1.2922832710768244: equal
+  self-test B+D,L,R,T  1.174587228071113 vs Step 2a 1.174587228071113: equal
+  output rows built for the self-test (not written): grid 17, predictions 365
+
+DRY RUN PASSED. Nothing was written. --run-looks was not run.

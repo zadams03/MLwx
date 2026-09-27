@@ -1,0 +1,36 @@
+look,row_type,name,day_basis,n,value
+A,rung,raw_gfs,all_test_days,364,1.4262582417582421
+A,rung,persistence,persistence_days,363,1.5112947658402205
+A,rung,mean_bias,all_test_days,364,1.5000424150665357
+A,rung,B,all_test_days,364,1.3534005468759274
+A,rung,"B+D,L,R,T",all_test_days,364,1.2575770731513778
+A,rung_common_days_descriptive,raw_gfs,persistence_days,363,1.4277630853994492
+A,rung_common_days_descriptive,persistence,persistence_days,363,1.5112947658402205
+A,rung_common_days_descriptive,mean_bias,persistence_days,363,1.502752764394108
+A,rung_common_days_descriptive,B,persistence_days,363,1.3509395880689241
+A,rung_common_days_descriptive,"B+D,L,R,T",persistence_days,363,1.2561759126513323
+A,bar,beats_raw_gfs,,,1
+A,bar,beats_persistence,,,1
+A,bar,look_passes,,,1
+A,band,margin_c,all_test_days,364,0.09582347372454958
+A,band,band_c,,,0.037704595173481126
+A,band,band_read,,,beats B by more than the column-order spread
+A,info,training_mean_bias_c,,1223,0.36381439084219136
+B,rung,raw_gfs,all_test_days,365,1.7321205479452053
+B,rung,persistence,persistence_days,365,1.717232876712329
+B,rung,mean_bias,all_test_days,365,1.7746714296812283
+B,rung,B,all_test_days,365,1.4653639395559965
+B,rung,"B+D,L,R,T",all_test_days,365,1.3830033790440732
+B,rung_common_days_descriptive,raw_gfs,persistence_days,365,1.7321205479452053
+B,rung_common_days_descriptive,persistence,persistence_days,365,1.717232876712329
+B,rung_common_days_descriptive,mean_bias,persistence_days,365,1.7746714296812283
+B,rung_common_days_descriptive,B,persistence_days,365,1.4653639395559965
+B,rung_common_days_descriptive,"B+D,L,R,T",persistence_days,365,1.3830033790440732
+B,bar,beats_raw_gfs,,,1
+B,bar,beats_persistence,,,1
+B,bar,look_passes,,,1
+B,band,margin_c,all_test_days,365,0.08236056051192331
+B,band,band_c,,,0.037704595173481126
+B,band,band_read,,,beats B by more than the column-order spread
+B,info,training_mean_bias_c,,1587,0.1846862003780719
+both,overall,reading,,2,pass
