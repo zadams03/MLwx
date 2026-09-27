@@ -88,10 +88,12 @@ stale copy.
 
 ## Commit discipline
 
-Claude Code **never** commits, adds, or pushes to version control. It prepares
-all changes, writes out the suggested commit message, then stops. The owner
-reviews and commits by hand. Nothing enters the project's history without a
-person looking first.
+Claude Code **never** commits, adds, or pushes to version control. It
+prepares all changes, then stops. It does not write a commit message:
+after reviewing the session, the planning chat writes it to
+`docs/commit-NN.txt`, and the owner commits by hand with
+`git commit -F docs/commit-NN.txt`. Nothing enters the project's history
+without a person looking first.
 
 ## End of every session
 

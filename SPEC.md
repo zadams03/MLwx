@@ -18,8 +18,11 @@ it — so the corrected forecast lands closer to what actually happened than raw
 GFS did.
 
 The same recipe is run **one airport at a time**. What every airport shares is
-the split dates, the method, and the frozen bar, judged once on that airport's
-own test year. The **target hour is chosen per airport**, so that it falls at
+the split dates, the method, and the frozen bar. Each airport is judged on
+its own held-out data: one look at each of the five earlier airports, two
+pre-registered looks at KSFO, and, for any later airport, whatever looks its
+lock fixes in writing before any of its held-out values are read (section
+5.0). The **target hour is chosen per airport**, so that it falls at
 that airport's local midday (section 4.1) — it is a per-airport fact, in the
 same way the minute the station reports at is.
 
@@ -36,10 +39,12 @@ The airports so far:
   the selected-features method** (DECISIONS F109) — see section 8. The
   project's first mountain/terrain-affected airport.
 - **San Francisco International (IEM station code SFO, ICAO code KSFO)** —
-  stage 2 — rehearsed and locked (session 77, DECISIONS D70); not yet
-  tested. The project's first coastal airport. Its GRIB-vs-Open-Meteo
-  reproduction gate failed, explained by a difference between the sources
-  (DECISIONS F116, F117, D69).
+  stage 2, **passes the selected-features method** on both of its
+  pre-registered looks (DECISIONS F119, D71) — see section 8. The project's
+  first coastal airport. Its GRIB-vs-Open-Meteo reproduction gate failed,
+  explained by a difference between the sources (DECISIONS F116, F117,
+  D69). Its result is for the recipe at a sea-mixed grid point and is not
+  directly comparable with the five airports above (DECISIONS D71.5).
 
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
@@ -231,7 +236,7 @@ The airport, and where it is (position from IEM, section 3.1):
 | DSM | Des Moines, Iowa | 2 — passed | 18:00 | `IA_ASOS` | 41.534 | -93.6531 | 294 m |
 | YSDU | Dubbo, Australia | 2 — passed | 02:00 | `AU__ASOS` | -32.2167 | 148.5747 | 275 m |
 | RNO | Reno, Nevada | 2 — failed (minimal method)\* | 20:00 | `NV_ASOS` | 39.4839 | -119.7711 | 1345 m |
-| SFO | San Francisco International (KSFO) | 2 — locked, not yet tested | 20:00 | `CA_ASOS` | 37.619 | -122.3749 | 5 m |
+| SFO | San Francisco International (KSFO) | 2 — passed (selected-features method) | 20:00 | `CA_ASOS` | 37.619 | -122.3749 | 5 m |
 
 \* Reno failed the minimal method (DECISIONS F82). It passes the richer
 method (section 7, DECISIONS F94) and the selected method (section 8,
@@ -401,13 +406,18 @@ DECISIONS D13).
 location. CDG's forecast archive begins on the same hour as EGLC's, 2021-03-24
 00:00 UTC (section 3.2, DECISIONS F20), so the dates need no adjusting for it.
 Each airport has its own train and test *rows* on those shared dates, and its
-own sealed test year, judged once.
+own held-out data, looked at only as section 5.0 sets out: one look at each
+of the five earlier airports, two pre-registered looks at KSFO (DECISIONS
+D67.3), and, for any later airport, whatever its lock fixes in writing.
 
 Inside the training window there is a further subdivision used for rehearsal —
 inner-training 2021-03-24 to 2024-07-31 and a validation year 2024-08-01 to
 2025-07-31 — so the method can be tried out without touching the sealed test
 year. The test model is then refitted on the whole training window. This
-applies per airport too. See DECISIONS D18 and D21.5.
+applies per airport too. See DECISIONS D18 and D21.5. **KSFO is the
+exception:** its rehearsal used the `2022-23` and `2023-24` folds of
+DECISIONS D51's `EXPERIMENT_FOLDS` instead, because 2024-25 was one of its
+looks (DECISIONS D67.4).
 
 **4.4 Model type.** A gradient-boosted tree model (a standard model for
 table-shaped data). This runs on a normal laptop CPU; no GPU is needed.
@@ -460,9 +470,17 @@ the bar below are unchanged in meaning — this section says only *how widely*
 they apply. Every airport is evaluated the same way, on its own data:
 
 - its own rows on the shared split dates (4.3);
-- its own rehearsal on the validation year, then **one** look at its own sealed
-  test year;
-- the same bar, judged **once per airport**.
+- its own rehearsal (4.3), then its own look or looks at held-out data:
+  **one** look at its own sealed test year at each of the five earlier
+  airports; **two** pre-registered looks at KSFO, each judged separately
+  (DECISIONS D67.3, D70.3, D70.4); and, for any later airport, the number
+  of looks, their windows and how their verdicts combine, fixed in writing
+  in its lock before any of its held-out values are read (DECISIONS D71.6);
+- the same bar, judged **once per look**.
+
+**When an airport has more than one look, it passes only if every look
+passes; anything else is recorded as a split or a fail** (DECISIONS D71.6).
+This records existing practice. It changes no earlier result.
 
 An airport passes or fails on its own result. Nothing is pooled, averaged
 across airports, or re-judged; a later airport's result does not change an
@@ -525,8 +543,10 @@ better.
     DECISIONS F116, D70).
 
   The margins of the GRIB methods against a fully unadjusted GRIB baseline
-  were never measured. They cannot be measured now, because both held-out
-  years are spent (DECISIONS D59.5).
+  were never measured. At the five earlier airports they cannot be
+  measured now, because both held-out years are spent there (DECISIONS
+  D59.5). At KSFO no unadjusted rung was registered in its lock (DECISIONS
+  D70), so it was not measured there either.
 - **Persistence** — the lazy guess "tomorrow will be the same as today".
   Beating this proves the model beats the simplest possible predictor.
 - **Climatology** (optional third check) — the seasonal average for that date,
@@ -549,7 +569,10 @@ if the corrected forecast has a lower MAE than **both raw GFS and
 persistence**, over the held-out test period at that airport. The bar itself is
 unchanged; the only things now made concrete are that the test period is the
 fixed window 2025-08-01 to 2026-07-31, set before any model runs (section 4.3,
-DECISIONS D13), and that the bar is applied once per airport (5.0). Stage 1
+DECISIONS D13), and that the bar is applied once per look (5.0). (Scope:
+the test period named here is the sealed year used by the minimal and
+richer methods. The selected-features method's confirmation year and
+KSFO's looks are set out in 8.3 and 8.5.) Stage 1
 is EGLC passing this bar; stage 2 is **each further individual airport put to
 the same bar, one at a time** — CDG, then DSM, then any that follow. The bar
 does not change from one airport to the next, and neither does what it
@@ -596,7 +619,8 @@ to fill in a later stage early, treat it as a warning sign and stop.
   (5.0, DECISIONS F16).
 - **Stage 2 — individual airports, two or more. IN PROGRESS.** Re-run the same
   recipe at further locations, one airport at a time, each judged on its own
-  sealed test year, to prove stage 1 was not a fluke and to find out how far
+  held-out data, in the look or looks its lock fixes (5.0), to prove stage
+  1 was not a fluke and to find out how far
   the recipe travels. Opened at Charles de Gaulle by DECISIONS D26 and widened
   to an open-ended list of airports by D32. There is no separate stage 2
   section and that is the point: sections 1, 3, 4 and 5 are written per airport,
@@ -634,7 +658,8 @@ to fill in a later stage early, treat it as a warning sign and stop.
     too (DECISIONS F94)** — this does not change or erase the record above;
     both results stand (D48.13). **The selected-features method (section
     8) also passes at Reno (DECISIONS F109).**
-  - **San Francisco International (SFO/KSFO) — locked, not yet tested.**
+  - **San Francisco International (SFO/KSFO) — passed (selected-features
+    method).**
     Opened by D67 under the default recipe (8.7), with two pre-registered
     looks, 2024-25 and 2025-26, each judged separately (D67.3). Verified on
     contact, pulled and built in session 76 (F116). **Its GRIB-vs-Open-
@@ -643,12 +668,18 @@ to fill in a later stage early, treat it as a warning sign and stop.
     average, most in summer. The owner recorded the gate as failed,
     explained by a difference between the sources, and kept the recipe
     unchanged (DECISIONS D69). Rehearsed and locked in session 77
-    (DECISIONS F118, D70). Its two looks run once, in session 78. It is
+    (DECISIONS F118, D70). Its two looks were run once, in session 78, and
+    **both pass** (DECISIONS F119). The owner accepted the result as a
+    PASS (DECISIONS D71). The headline is look A's margin over raw GFS
+    (GRIB): 1.2576 vs 1.4263 °C, +11.83% (8.5, 8.6(f)). It is
     the project's first coastal airport. Its target
     hour, 20:00 UTC, and its lead are Reno's.
   - **Further airports may follow before stage 3**, on the same five steps:
-    verify on contact, pull and map, join and rehearse, lock, test once,
-    using the project's default recipe (8.7).
+    verify on contact, pull and map, join and rehearse, lock, test. The
+    lock fixes in writing how many looks there are, their windows and how
+    their verdicts combine, before any held-out value is read, and each
+    look is run once (5.0, DECISIONS D71.6). Each uses the project's
+    default recipe (8.7).
 - **Stage 3 — pool airports.** Combine airports into one model with
   location-describing features, so locations learn from each other. **The
   solar-standard-noon target hour this stage was going to introduce is already
@@ -678,7 +709,9 @@ features, Open-Meteo as the forecast source. That method is unchanged by
 this section, and its results (section 5.0) stand exactly as reported. This
 section describes a second, later, more complete method — five features, a
 different forecast source — that was built, locked and tested once, and
-passed at every airport, including Reno, where the minimal method failed.
+passed at every one of this section's five airports (EGLC, LFPG, DSM, YSDU
+and RNO), including Reno, where the minimal method failed. KSFO was added
+later and judged under section 8 only (8.5).
 **Both methods are real, proven results. Neither erases the other**
 (DECISIONS D48.13).
 
@@ -719,7 +752,9 @@ pairing rule (4.5), and the same frozen bar (5.3).
   (DECISIONS D48.2, F89).
 - **Elevation correction.** GFS's own model terrain, at the resolution of a
   0.25° grid, can sit well above or below an airport's real elevation —
-  negligible at four airports but 275 m at Reno, in mountainous terrain.
+  negligible at four of this section's five airports but 275 m at Reno, in
+  mountainous terrain. (At KSFO, added later under section 8, the gap is
+  93.47 m; see 3.4.)
   This 0.25° grid cell is the raw GRIB model's own terrain, coarser than
   and different from the Open-Meteo grid point section 3.4 already
   established (whose elevation sits within 1 m of Reno's own) — the two
@@ -880,9 +915,10 @@ feature's own source and lead, as its own DECISIONS finding states it:
 - **R (shortwave radiation).** DECISIONS F102: `DSWRF:surface` (downward
   shortwave at the surface) is resolved to a physically consistent
   2-hour window ending at each airport's own target hour — the native
-  24–26h window used directly at the lead-26 airports (YSDU, RNO), and a
-  de-accumulation from the 18–24h and 18–22h windows at the lead-24
-  airports (EGLC, LFPG, DSM) — from the same GRIB source as `B`.
+  24–26h window used directly at the lead-26 airports (YSDU, RNO and
+  KSFO; DECISIONS F116.1, D67.1), and a de-accumulation from the 18–24h
+  and 18–22h windows at the lead-24 airports (EGLC, LFPG, DSM) — from the
+  same GRIB source as `B`.
 
 **8.3 Training window, fold, settings, complete-case rule.** The
 confirmation fold (DECISIONS D58 item 4): train 2021-03-24 to 2024-07-31,
@@ -943,10 +979,37 @@ secondary read also holds: airport-averaged MAE 1.2377 against plain `B`'s
 1.3170, a +6.02% skill margin (DECISIONS F109). No ranking among airports
 is claimed.
 
-**8.6 Caveats (DECISIONS D59.3).** Any use or write-up of this result must
-carry these caveats:
-- (a) This is one year only — the same single-look discipline every method
-  in this project uses (5.3), not a multi-year robustness claim.
+**KSFO (added later; DECISIONS F119, D71).** KSFO was run under this
+recipe, unchanged, with two pre-registered looks, each judged separately
+against the frozen bar (DECISIONS D67.3, D70.3, D70.4). Look A trains on
+2021-03-24..2024-07-31 and tests 2024-25. Look B trains on
+2021-03-24..2025-07-31 and tests 2025-26. MAE in °C (DECISIONS F119.3):
+
+| look | n test | raw GFS (GRIB) MAE | persistence MAE | B MAE | B+D,L,R,T MAE | vs raw GFS | vs persistence | vs B |
+|---|---|---|---|---|---|---|---|---|
+| A (2024-25) | 364 | 1.4263 | 1.5113 | 1.3534 | 1.2576 | +11.83% | +16.79% | +7.08% |
+| B (2025-26) | 365 | 1.7321 | 1.7172 | 1.4654 | 1.3830 | +20.16% | +19.46% | +5.62% |
+
+"Raw GFS (GRIB)" is the elevation-adjusted GRIB temperature (+0.6944 °C,
+5.2). The day basis is the same as above: persistence is scored on test
+days with a previous-day observation (363 of 364 in look A, 365 of 365 in
+look B), and every other rung on every test day (DECISIONS D70.4, F119.3).
+
+**Both looks pass**: `B+D,L,R,T` beats raw GFS and persistence in each.
+The overall reading is **PASS**, as pre-registered ("pass in both years",
+DECISIONS D70.8). The secondary band read (DECISIONS D70.5) holds in both
+looks: the margin over `B`, 0.0958 °C in look A and 0.0824 °C in look B,
+is above the column-order band of 0.0377 °C, so each reads "beats B by
+more than the column-order spread" (DECISIONS F119.3). **These two rows
+are not part of the five-airport table above, and not part of its +6.02%
+airport-averaged secondary read.** Caveat (f) in 8.6 applies.
+
+**8.6 Caveats (DECISIONS D59.3; (f) from D71).** Any use or write-up of
+this result must carry these caveats:
+- (a) This is one year only — one look per airport, the same discipline
+  the five earlier airports' tests followed under every method (5.0, 5.3),
+  not a multi-year robustness claim. KSFO, under this same method, had two
+  pre-registered looks (5.0, caveat (f)).
 - (b) This is the first look at the *selected* feature set on 2024-25, but
   `B` alone was already scored on that same year descriptively, in a
   different, earlier study (DECISIONS F96, D58 item 8) — the
@@ -957,13 +1020,31 @@ carry these caveats:
 - (d) DSM's margin over `B` is small (+1.94%).
 - (e) RNO's margin over `B` (+10.72%) was not pre-registered and is
   descriptive only.
+- (f) **KSFO (DECISIONS D71.2–D71.5).** The headline is look A's margin
+  over raw GFS (GRIB), +11.83% (1.2576 vs 1.4263 °C). Look B's +20.16%
+  over raw GFS is always quoted with the next point. Look B's raw-GFS year
+  was unusually poor (MAE 1.7321 °C, against 1.4263 in look A and 1.4423
+  and 1.3061 in rehearsal), and persistence (1.7172) was the binding half
+  of the bar there (+19.46%). KSFO's mean bias changed sign between years:
+  the mean-bias reference was worse than raw GFS in both looks, and the
+  training means imply a 2024-25 mean(obs − raw GFS) of about −0.42 °C,
+  against about +0.36 °C before it. This is insight only; nothing was
+  changed on it. The result is for the recipe at a sea-mixed grid point
+  (37.5% sea weight, DECISIONS F117.3), whose reproduction gate is
+  recorded as failed, explained by a difference between the sources
+  (DECISIONS D69). It is not directly comparable with the five earlier
+  airports. Look B's training includes 2024-25, by design (DECISIONS
+  D70.3).
 
 **8.7 Status.** This is the project's **default recipe** for any future
 airport work or pooling work (stage 3), applied unchanged and identically
 at every airport (DECISIONS D59.3). Every new airport still needs its own
-lock and single test (6). This status does not change the minimal method's
-(5.0) or the richer 5-feature method's (7.5) own standing results — all
-three stand.
+lock and its own test, with its looks fixed in writing in that lock before
+any of its held-out values are read (5.0, 6; DECISIONS D71.6). KSFO, the
+first airport run under this recipe after F109, had two pre-registered
+looks and passed both (8.5; DECISIONS F119, D71). This status does not
+change the minimal method's (5.0) or the richer 5-feature method's (7.5)
+own standing results — all three stand.
 
 **Build requirements for new-airport code (DECISIONS D62).** Any new code
 written for a new airport must:

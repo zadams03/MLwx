@@ -7,7 +7,7 @@ checked against the original record. Where `SPEC.md` and this file ever
 disagree, `SPEC.md` is right (CLAUDE.md, SPEC section 2).
 
 Written after session 30, revised after session 44, revised after session
-65. As of session 65, the project has **three** independently-tested,
+65, revised after session 79. As of session 65, the project has **three** independently-tested,
 proven methods for correcting GFS's local bias at an airport: a minimal
 three-feature method (sections 2–4 below, the project's original result),
 a richer five-feature method using a different forecast source (section 5,
@@ -15,7 +15,11 @@ a richer five-feature method using a different forecast source (section 5,
 method by a staged feature-selection programme (section 6, "act three").
 The minimal method passes at four of five airports and fails at the fifth,
 Reno; both the richer method and the selected-features method pass at all
-five, including Reno. All three results are real and none erases any other
+five, including Reno. A sixth airport, San Francisco (KSFO), has since
+passed the selected-features method on two pre-registered looks (DECISIONS
+F119, D71). That result is for the recipe at a sea-mixed grid point and is
+not directly comparable with the five earlier airports; see section 6.5.
+All three results are real and none erases any other
 (DECISIONS D48.13, D59.3) — read together, they tell a three-chapter story
 about what the minimal method's ceiling was, what first addressed it, and
 what a disciplined search for more features added on top. Language is kept
@@ -583,7 +587,96 @@ margin over `B` (+10.72%) was not pre-registered.
 
 This method is now the project's **default recipe** for any future airport
 work or pooling work (DECISIONS D59.3) — every new airport still needs its
-own lock and single test (SPEC 6).
+own lock and its own test, with its looks fixed in writing in that lock
+before any of its held-out values are read (SPEC 5.0, 6; DECISIONS D71.6).
+
+### 6.5 A sixth airport: San Francisco (KSFO)
+
+**Why KSFO.** The owner chose to test the selected-features recipe, frozen
+and unchanged, at a new airport (DECISIONS D66.1, D67.1). At a new airport
+neither 2024-25 nor 2025-26 had ever been scored, and the recipe was chosen
+without it, so this was the cheapest truly out-of-sample test left
+(DECISIONS D59.5). KSFO is the project's first coastal airport, a harder
+type (DECISIONS D67.1). Its target hour, 20:00 UTC, is its local standard
+noon, the same hour and lead as Reno's.
+
+**The gate failed, and the owner kept the recipe.** Before any model is
+fit, the GRIB temperature is checked against Open-Meteo's (section 5.2). At
+KSFO this check failed: after the elevation adjustment, GRIB ran 3.326 °C
+colder than Open-Meteo on average, most in summer, against a bar of under
+1.0 °C (DECISIONS F116). A follow-up check found three things (DECISIONS
+F117). The pipeline is exact: pointed at Reno, KSFO's code rebuilt Reno's
+record with no difference. 37.5% of the 0.25° blend's weight at KSFO sits
+on two sea points, which run much colder than the land points in summer.
+And Open-Meteo documents its temperature as coming from a finer, 0.11° GFS
+product, not the 0.25° product used here. The owner recorded the gate as
+failed, explained by a difference between the sources, with no override,
+and kept the recipe unchanged (DECISIONS D69).
+
+**Rehearsal and lock.** KSFO was rehearsed on the 2022-23 and 2023-24
+folds, not on 2024-25, because 2024-25 was one of its looks (DECISIONS
+D67.4). The rehearsal was a pipeline check, not a gate. Every check
+passed, and `B+D,L,R,T` beat raw GFS and persistence on both folds
+(DECISIONS F118). It also fixed the column-order band at 0.0377 °C: how
+far the MAE moves when only the order of the input columns changes
+(DECISIONS F118.7). The recipe, the looks, the bar, the band and the
+frozen script were then locked in writing, before any held-out value was
+read (DECISIONS D70).
+
+**Two looks, not one.** The five earlier airports each had one look per
+method. KSFO had two pre-registered looks, each judged separately against
+the frozen bar (DECISIONS D67.3). Look A trains on 2021-03-24..2024-07-31
+and tests 2024-25, an exact replica of F109's fold. Look B trains on
+2021-03-24..2025-07-31 and tests 2025-26; its training includes 2024-25,
+by design (DECISIONS D70.3). "KSFO passes" was to be claimed only if both
+looks passed. Both were run once, together (DECISIONS F119).
+
+**Result.** MAE in °C (DECISIONS F119.3):
+
+| look | n test | raw GFS (GRIB) MAE | persistence MAE | B MAE | selected-features MAE | vs raw GFS | vs persistence | vs B |
+|---|---|---|---|---|---|---|---|---|
+| A (2024-25) | 364 | 1.4263 | 1.5113 | 1.3534 | 1.2576 | **+11.83%** | +16.79% | +7.08% |
+| B (2025-26) | 365 | 1.7321 | 1.7172 | 1.4654 | 1.3830 | **+20.16%** | +19.46% | +5.62% |
+
+"Raw GFS (GRIB)" is the elevation-adjusted GRIB temperature (+0.6944 °C,
+SPEC 5.2). Persistence is scored on test days with a previous-day
+observation: 363 of 364 in look A, 365 of 365 in look B (DECISIONS D70.4,
+F119.3).
+
+**Both looks pass.** The overall reading is PASS, which matches the
+pre-registered expectation, "pass in both years" (DECISIONS D70.8, F119).
+The owner accepted it (DECISIONS D71.1). The margin over `B` is above the
+column-order band in both looks: 0.0958 and 0.0824 °C against 0.0377
+(DECISIONS D70.5, F119.3).
+
+**How to read it** (DECISIONS D71.2–D71.4):
+- **The headline is look A's +11.83% over raw GFS** (1.2576 vs 1.4263). It
+  is the smallest of the four bar margins (DECISIONS D71.2).
+- **Look B's raw-GFS year was unusually poor.** Raw GFS scored 1.7321 in
+  look B, well above look A's 1.4263 and the two rehearsal folds' 1.4423
+  and 1.3061 (DECISIONS F118.5). In look B, persistence (1.7172) edged raw
+  GFS, so persistence was the binding half of the bar there: a margin of
+  0.3342 °C (+19.46%), against 0.3491 °C (+20.16%) over raw GFS. So look
+  B's +20.16% is always quoted with this point (DECISIONS D71.3).
+- **KSFO's bias is not stable from year to year.** The mean-bias
+  reference (raw GFS plus its average training-period bias) was worse
+  than raw GFS in both looks (A 1.5000 vs 1.4263; B 1.7747 vs 1.7321),
+  though it beat raw GFS on both rehearsal folds (1.3833 vs 1.4423; 1.2500
+  vs 1.3061; DECISIONS F118.5, F119.3). The two looks' training means
+  (look A +0.3638 °C over 1,223 rows; look B +0.1847 °C over 1,587 rows)
+  imply a 2024-25 mean(obs − raw GFS) of about −0.42 °C, against about
+  +0.36 °C before it. This is arithmetic on recorded values, not a new
+  score. `B+D,L,R,T` still beat raw GFS in both looks. It is insight only:
+  nothing was selected, tuned or changed on it (DECISIONS D71.4).
+
+**Framing, carried by every write-up** (DECISIONS D71.5). KSFO's result is
+for the recipe at a sea-mixed grid point (37.5% sea weight, DECISIONS
+F117.3). It is not directly comparable with the five earlier airports,
+whose reproduction gates passed. KSFO's gate is recorded as failed,
+explained by a difference between the sources (DECISIONS D69). Look B's
+training includes 2024-25, by design (DECISIONS D70.3). KSFO's margins are
+not added to section 6.3's five-airport table or to its +6.02%
+airport-averaged read.
 
 ---
 
@@ -613,8 +706,9 @@ They now apply to a project with three proven methods, not one.
   adopted (DECISIONS D52, D57, D58). A genuine terrain descriptor beyond
   the fixed lapse-rate elevation correction (section 5.1) remains
   untested.
-- **Each method rests on one year — and, together, no untouched year now
-  remains.** The minimal and richer methods' sealed tests (sections 3 and
+- **At the five earlier airports each method rests on one year; KSFO had
+  two looks — and, together, no untouched year now remains at any of the
+  six airports.** The minimal and richer methods' sealed tests (sections 3 and
   5) both ran on 2025-08-01 to 2026-07-31, the sealed test year fixed by
   the project's own split dates (SPEC 4.3, finding 5, section 4). The
   selected-features method (section 6) was instead confirmed on a
@@ -625,7 +719,10 @@ They now apply to a project with three proven methods, not one.
   at any of the five airports** (DECISIONS D59.5): the sealed test year
   has been used for the richer method's own sealed test (F94), and the
   reserved year has been used for the selected-features method's own
-  confirmation (F109). A further independent test year is therefore not a
+  confirmation (F109). KSFO's two held-out years (2024-08-01 to
+  2026-07-31) are now also used, by its two looks (section 6.5; DECISIONS
+  D71.1), so no untouched held-out year remains at any of the six
+  airports. A further independent test year is therefore not a
   matter of re-splitting existing data — it needs either a new airport
   (never scored on either year) or a live, forward-looking year not yet
   elapsed (2026-27, DECISIONS D59.5).
@@ -643,25 +740,23 @@ They now apply to a project with three proven methods, not one.
   selected-features method's own margins (section 6) add a second reason
   for care: they are measured on a different year from sections 3 and 5's
   own margins (section 6.4(c)).
-- **Parked directions, not started:** blending in other forecast models
-  (ECMWF, ICON, Google's WeatherNext AI model — SPEC stage 4); widening the
-  target from one fixed hour to a full daily temperature curve (SPEC stage
-  5); the eventual live daily product (SPEC stage 6). SPEC's open Q30
-  question now has three branches (DECISIONS D59.5): a further airport
-  (run under the now-default selected-features recipe, section 6); a
-  second test year (only possible now as a live, forward-looking test on
-  2026-27, pre-registered before any of its data is scored, or a written
-  rule for reusing an already-seen year); or pooling (SPEC stage 3,
-  previously judged premature with only five locations). None of the
-  three has begun; the planning-chat recommendation on record (DECISIONS
-  D59.5) is a further airport now, with 2026-27 pre-registered in
-  parallel, deferring pooling — not yet a decision.
+- **Parked directions, and the current position.** Not started: blending
+  in other forecast models (ECMWF, ICON, Google's WeatherNext AI model —
+  SPEC stage 4); widening the target from one fixed hour to a full daily
+  temperature curve (SPEC stage 5); the eventual live daily product (SPEC
+  stage 6). The open Q30 question now follows the owner's order (DECISIONS
+  D66.1): first Q33, measured descriptively (DECISIONS F115); then a
+  further airport under the frozen selected-features recipe, which is now
+  done (KSFO, section 6.5; DECISIONS D71.7); then a dedicated roadmap
+  planning session, which is the next step. Pooling (SPEC stage 3) and the
+  2026-27 forward test stay deferred, the forward test until the GFS v17
+  date is known (DECISIONS D66.2).
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
-revised (session 44, DECISIONS F95), and revised again (session 65,
-DECISIONS F110). SPEC.md remains the source of truth for how the project
+revised (session 44, DECISIONS F95), revised again (session 65,
+DECISIONS F110), and revised after session 79 (DECISIONS F120). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*
