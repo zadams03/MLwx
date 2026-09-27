@@ -1,0 +1,50 @@
+Session 80: record the roadmap (D72), rewrite SPEC 6, add SPEC 2.5
+
+Documentation only. No data was read, no script was run, no model was
+fit and nothing was scored. No earlier verdict or figure changed.
+
+D72 records the owner's roadmap from the dedicated roadmap planning
+session. The end goal is a private, live daily tool for ten or more
+airports: an hourly temperature curve and the daily maximum at 24h and
+48h leads, a choice of weather model plus a blend, and probabilistic
+ranges. Stages, in order: A benchmark against NWS MOS/NBM (a direction
+gate) and a probe of other sources; B the 2026-27 GFS forward test,
+split at the GFS v17 go-live date, plus daily saving of any source with
+no downloadable archive; C widen the target on GFS only; D correct each
+other weather model on its own; E blend and stack; F upgrade policy;
+G live product v1; H probabilistic. New airports are an ongoing track;
+pooling is conditional. D72 also sets where each claim is judged, the
+forward-test design (locked in session 81), the rule for testing other
+models on spent years, known risks and mitigations, and closes Q30, Q32
+and the parked items P1-P3.
+
+SPEC.md: section 1's end goal; new rule 2.5 (claims need a frozen,
+pre-registered, one-look test; build choices use time-ordered
+cross-validation on data not held out for any claim, identically at
+every airport; no new pre-registration on a forward year once any of it
+is scored); 5.4 now scheduled as stage A; section 6 rewritten as the
+roadmap (stage 2 ongoing, stages A-H, conditional pooling, mapping of
+the former stages 3-6); 8.7's pooling pointer renamed.
+
+RESULTS.md: section 7's last bullet now states the roadmap; the terrain
+descriptor is recorded as parked; revision lines updated.
+
+PROJECT-INSTRUCTIONS.md (now tracked in the repo root): a header note
+that Claude Code does not follow it; section 2 table rows updated and a
+row added for this file; section 5 re-upload list adds it; section 9
+adds the claims-vs-build-choices and forward-year rules. Two stale lines
+fixed at owner review (RESULTS covers three methods; no untouched
+held-out year remains at any of the six airports).
+
+CLAUDE.md: one paragraph saying PROJECT-INSTRUCTIONS.md is the planning
+chat's guide, not Claude Code's, and is edited only when a session
+prompt says exactly what to change.
+
+DECISIONS-archive.md: header now matches practice since session 77 (no
+pointer left in DECISIONS.md for a moved entry). Archived verbatim and
+checked byte for byte: P1-P3, Q30 and its update, Q32, D59, F110 and
+D66. D17, F7, D46, D47, F96, D51, D62, D71, F120, D72 and F121 stay live.
+
+F121 records every edit, including F121.11, the three wording
+corrections made at owner review before commit. STATUS.md is overwritten
+as a current-only snapshot. Full output: notes/session-80-output.txt.

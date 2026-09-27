@@ -1,5 +1,10 @@
 # ML Weather — Planning-Chat Operating Guide
 
+> **For Claude Code:** this file is the operating guide for the
+> claude.ai planning chat. Claude Code does not follow it. Claude Code
+> follows CLAUDE.md, and edits this file only when a session prompt
+> says exactly what to change.
+
 This is the operating guide for **planning sessions** on the ML Weather project (per-airport
 LightGBM MOS models that bias-correct GFS temperature forecasts). It is the planning-side
 counterpart to `CLAUDE.md` (which governs Claude Code execution). Its single purpose: make sure
@@ -40,9 +45,10 @@ except what is written down. So the governing principle is:
 | `STATUS.md` | Current state + the immediate next action | Read first for "where are we." Overwritten each session. |
 | `DECISIONS.md` | Append-only log of decisions (D) and findings (F), live entries only | The binding record. Cited as (Dxx)/(Fxx). |
 | `DECISIONS-archive.md` | Settled entries moved out to keep the live file slim | Read on demand, by number. |
-| `RESULTS.md` | The results narrative (both methods) | Draws from SPEC/DECISIONS; **not** routinely read. |
+| `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; **not** routinely read. |
 | `CLAUDE.md` | Claude Code's execution discipline | Governs sessions, not planning. |
-| Project **memory** | Durable reasoning, preferences, the roadmap and its rationale | Inherited automatically by every chat. |
+| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in the repo root | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
+| Project **memory** | Durable reasoning and preferences (the roadmap itself is SPEC 6 and DECISIONS D72) | Inherited automatically by every chat. |
 
 The **routine read** each session is CLAUDE + SPEC + STATUS + live DECISIONS. Archive and RESULTS
 are read only when needed.
@@ -92,6 +98,7 @@ Project knowledge.** Only the files that actually changed:
 - `DECISIONS.md` — whenever an entry was appended/moved (almost every session).
 - `SPEC.md` / `RESULTS.md` — only when that session edited them.
 - `CLAUDE.md` — only when the execution discipline itself changed.
+- `PROJECT-INSTRUCTIONS.md` — only when a session edited it.
 
 Phrase it plainly, e.g.: *"Re-upload to Project knowledge: STATUS.md, DECISIONS.md."* This reminder
 is not optional — it is the mechanism that keeps the next chat from reading stale state.
@@ -159,13 +166,19 @@ prompt beforehand. House style:
   → 2026-07-31, F94) is spent and stands. Never re-open it.
 - **Both held-out years are spent (D59).** The sealed year (2025-08-01 → 2026-07-31, F94) and the
   reserved year (2024-08-01 → 2025-07-31, D51, confirmed once in F109) have each had their one look.
-  **No untouched held-out year remains at the five airports.** A new verdict therefore needs either
+  **No untouched held-out year remains at any of the six airports (D71.1).** A new verdict therefore needs either
   a new airport (both years unseen there) or a forward-looking year (2026-27), pre-registered before
   any of its data is scored. The in-code reserved-year guard stays as a permanent tripwire.
 - **The feature-selection programme is closed (D59.2).** `B + D, L, R, T` (SPEC §8) is the default
   recipe for any new airport or pooling work, applied unchanged and identically everywhere.
 - **Lock before you look.** Freeze a recipe in writing (features, source, settings, pre-registered
   expectations) *before* opening any held-out data; then run once, unchanged.
+- **Claims vs build choices (D72.2, SPEC 2.5).** Only a stated result
+  needs a frozen, pre-registered, one-look test. Build choices are made
+  by time-ordered cross-validation on data not held out for any claim,
+  identically at every airport, and are never quoted as results.
+- **Forward years.** Once any part of a forward year (e.g. 2026-27) has
+  been scored, no new test may be pre-registered on it.
 - **Same features at every airport, always.** No per-airport feature selection — it is selection
   bias and it breaks the "recipe travels" result. Per-airport *patterns* are read as insight, never
   acted on as per-airport recipes.
