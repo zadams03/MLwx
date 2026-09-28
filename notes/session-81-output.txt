@@ -1,0 +1,268 @@
+SESSION 81 — full real output (2026-09-27)
+
+==============================================================================
+STEP 0 — integrity checks
+==============================================================================
+$ git status --porcelain   (at session start)
+?? docs/session-81.md
+
+$ path checks
+ls: data/models/session81: No such file or directory
+find scripts data/processed notes -maxdepth 1 -name 'session81_*'  -> (no output)
+
+A67-15 files (from notes/audit-session-67.md A67-15 and git ls-files; not opened):
+data/raw/openmeteo_previousruns_gfs_global_DSM_2026-08-05_2026-08-15_q27compare.json
+  size_bytes: 6630
+  sha256: 056f251da567acd63ad3008df3a9b8db59b406d1502ae479f7d3ad416b0894ad
+  added_by: 11de6f54b7d71448642f65415304fa28ea7ba336
+data/raw/openmeteo_previousruns_gfs_seamless_DSM_2026-08-05_2026-08-15_q27compare.json
+  size_bytes: 6629
+  sha256: 3e1aa911cfbffd7918955b7aee1c85f94206c67e95789b9ecfb25d67fea42d99
+  added_by: 11de6f54b7d71448642f65415304fa28ea7ba336
+Tracked .meta.txt sidecars of the same two files (also not opened):
+data/raw/openmeteo_previousruns_gfs_global_DSM_2026-08-05_2026-08-15_q27compare.json.meta.txt
+  size_bytes: 1815
+  sha256: 9a433aa82f23a8c04c93cb9e33af296b53d7843daa5b1ae008551347e9bd3eb3
+  added_by: 11de6f54b7d71448642f65415304fa28ea7ba336
+data/raw/openmeteo_previousruns_gfs_seamless_DSM_2026-08-05_2026-08-15_q27compare.json.meta.txt
+  size_bytes: 1821
+  sha256: ac33a3fad24fa4106417966950296b470c731c44fa99b51c49decdee75ae2ee4
+  added_by: 11de6f54b7d71448642f65415304fa28ea7ba336
+
+==============================================================================
+STEP 1 — D73
+==============================================================================
+Copied docs/session-81.md lines 77-178 with sed, appended under the dated
+heading after a --- separator. DECISIONS.md lines: 1228 -> 1335.
+diff <(sed -n '77,178p' docs/session-81.md) <(tail -n 102 DECISIONS.md): no difference (verbatim match: yes).
+(After the archive step, D73 sits at DECISIONS.md lines 879-983.)
+
+==============================================================================
+STEP 2 — .venv/bin/python scripts/session81_freeze_forward_models.py --build   (exit 0)
+==============================================================================
+==============================================================================
+session81_freeze_forward_models.py --build
+==============================================================================
+f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv  (D70.2: equal)
+b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv  (D70.2: equal)
+
+Input files, SHA-256:
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+  998eb1b4f91e488c8df5b2fdd5906cb3c2e391b591007aece48b395048af8acd  data/processed/grib_features_v16_window.csv
+  0aea2617c36fbddb96ea3e089bd7d82a33e9186902704d288f3e654e6169fbf0  data/processed/grib_features_sealed_window.csv
+  34b9e3d50efed20da287013f6e7ee148fc07bd55b70c833fdba28b2f45a57296  data/processed/session49_v16_window_with_upper_air.csv
+  10db64841158b5a6db0775b78cf32d110502b7a3969ba86f76fb4cd49bced6a9  data/processed/session49_sealed_window_with_upper_air.csv
+  a930719cab65a01812aa1ac82b2fe110d984d3564a967a8125310847ef47658a  data/processed/session63_reserved_window_with_upper_air.csv
+  f25f0a65d70d8955290d3cd041cac025f5f9bfe6915a8097ce7f870dd40a5745  data/processed/session51_v16_window_with_moisture.csv
+  73aff43a49c0bc105517857b7456fe7e6496dbc551231f0acbe9d03d0cb29cc9  data/processed/session51_sealed_window_with_moisture.csv
+  140733e14f5aecdb86db05052044795ce5a49699210786edf9b71efcdf183a46  data/processed/session63_reserved_window_with_moisture.csv
+  9dc95dfd73d57eb3cadc3051898175a64f504a6ca22891f8a50ec0926ee04548  data/processed/session53_v16_window_with_pressure.csv
+  1463c3c884e8a8a5f6afd4ffd3f4a48de620e6ef3d29d8b6f26b4dec2edbf82e  data/processed/session53_sealed_window_with_pressure.csv
+  82a76094eb5487bdf5f579d0d247ec44a473652f672794dc11a0fabe1b0c5f24  data/processed/session63_reserved_window_with_pressure.csv
+  04f1dada71d7a02aafc7feb3ca37a1ae659d2002b0c064ba8b233197f28c9202  data/processed/session55_v16_window_with_radiation.csv
+  2ee1d9e579e345bdd513d66fcdd043537254e3e8d23a89108ab90ebdcc60a25d  data/processed/session55_sealed_window_with_radiation.csv
+  6177e32f39c96318868be6a33c2fd71c96a21612a7af095994e3d8d02d48c61c  data/processed/session63_reserved_window_with_radiation.csv
+  4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19  data/raw/iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv
+  30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16  data/raw/iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv
+  92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e  data/raw/iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv
+  20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f  data/raw/iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv
+  8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb  data/raw/iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv
+  0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233  data/raw/iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv
+  4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23  data/raw/iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv
+  5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5  data/raw/iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv
+  d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223  data/raw/iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv
+  648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24  data/raw/iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv
+  ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df  data/raw/iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv
+  580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c  data/raw/iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv
+  8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7  data/raw/iem_asos_DSM_2021-03-24_2021-12-31_routine.csv
+  94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407  data/raw/iem_asos_DSM_2022-01-01_2022-12-31_routine.csv
+  0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649  data/raw/iem_asos_DSM_2023-01-01_2023-12-31_routine.csv
+  ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be  data/raw/iem_asos_DSM_2024-01-01_2024-12-31_routine.csv
+  82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6  data/raw/iem_asos_DSM_2025-01-01_2025-12-31_routine.csv
+  0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de  data/raw/iem_asos_DSM_2026-01-01_2026-07-31_routine.csv
+  af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f  data/raw/iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv
+  01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352  data/raw/iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv
+  948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d  data/raw/iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv
+  1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a  data/raw/iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv
+  cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff  data/raw/iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv
+  db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1  data/raw/iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv
+  0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c  data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv
+  3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155  data/raw/iem_asos_RNO_2022-01-01_2022-12-31_routine.csv
+  fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a  data/raw/iem_asos_RNO_2023-01-01_2023-12-31_routine.csv
+  88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a  data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv
+  4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b  data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv
+  9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515  data/raw/iem_asos_RNO_2026-01-01_2026-07-31_routine.csv
+  f228301edd2c155bf1062dfb57f5e83ef0ce17050151bcdcf5e9983b2bc3e5c9  data/processed/session76_ksfo_features.csv
+  b987dd4fad6d1baabefd5a15e31df8260e696b4193f4296d31eebb99c027736c  data/processed/session76_ksfo_observations.csv
+
+Per airport (rows are complete-case and paired; D floored):
+
+EGLC (target hour 12 UTC)
+  rows 1953; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 130, 2021-22 365, 2022-23 364, 2023-24 366, 2024-25 364, 2025-26 364
+  duplicate dates: 0
+  base feature rows read: 1956; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 3
+  calendar days in 2021-03-24..2026-07-31 with no row: 3
+    2023-06-11
+    2024-08-14
+    2025-11-21
+
+LFPG (target hour 12 UTC)
+  rows 1953; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 130, 2021-22 363, 2022-23 365, 2023-24 366, 2024-25 365, 2025-26 364
+  duplicate dates: 0
+  base feature rows read: 1956; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 3
+  calendar days in 2021-03-24..2026-07-31 with no row: 3
+    2022-07-23
+    2022-07-25
+    2026-07-08
+
+DSM (target hour 18 UTC)
+  rows 1955; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 130, 2021-22 365, 2022-23 364, 2023-24 366, 2024-25 365, 2025-26 365
+  duplicate dates: 0
+  base feature rows read: 1955; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 0
+  calendar days in 2021-03-24..2026-07-31 with no row: 1
+    2022-11-30
+
+YSDU (target hour 02 UTC)
+  rows 1929; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 130, 2021-22 363, 2022-23 357, 2023-24 363, 2024-25 360, 2025-26 356
+  duplicate dates: 0
+  base feature rows read: 1955; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 26
+  calendar days in 2021-03-24..2026-07-31 with no row: 27
+
+RNO (target hour 20 UTC)
+  rows 1952; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 128, 2021-22 365, 2022-23 364, 2023-24 365, 2024-25 365, 2025-26 365
+  duplicate dates: 0
+  base feature rows read: 1955; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 3
+  calendar days in 2021-03-24..2026-07-31 with no row: 4
+    2021-05-02
+    2021-05-03
+    2022-11-30
+    2024-03-21
+
+SFO (target hour 20 UTC)
+  rows 1952; first 2021-03-24; last 2026-07-31 (on or before 2026-07-31: True)
+  rows per Aug-Jul year: 2020-21 130, 2021-22 364, 2022-23 364, 2023-24 365, 2024-25 364, 2025-26 365
+  duplicate dates: 0
+  base feature rows read: 1955; non-finite values rejected: 0; complete-case rows dropped: 0; rows dropped for no paired observation: 3
+  calendar days in 2021-03-24..2026-07-31 with no row: 4
+    2022-03-17
+    2022-11-30
+    2024-07-13
+    2024-12-20
+
+wrote data/processed/session81_training_set.csv: 11694 data rows; SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+
+==============================================================================
+STEP 3 — .venv/bin/python scripts/session81_freeze_forward_models.py --gate   (exit 0)
+==============================================================================
+==============================================================================
+session81_freeze_forward_models.py --gate
+==============================================================================
+python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+training set data/processed/session81_training_set.csv  SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+
+Reproduction gate (verification only; no verdict):
+fold         stn   model       train   test             recomputed               recorded equal
+F109         EGLC  B            1225    364     1.0860865794631305     1.0860865794631305 yes
+F109         EGLC  B+D,L,R,T    1225    364     1.0007550363323212     1.0007550363323212 yes
+F109         LFPG  B            1224    365     1.3284737879871744     1.3284737879871744 yes
+F109         LFPG  B+D,L,R,T    1224    365     1.2368626165917669     1.2368626165917669 yes
+F109         DSM   B            1225    365     1.4401546527480342     1.4401546527480342 yes
+F109         DSM   B+D,L,R,T    1225    365     1.4122847644111458     1.4122847644111458 yes
+F109         YSDU  B            1213    360     1.3029993377880373     1.3029993377880373 yes
+F109         YSDU  B+D,L,R,T    1213    360     1.2642703316294652     1.2642703316294652 yes
+F109         RNO   B            1222    365     1.4271639701054912     1.4271639701054912 yes
+F109         RNO   B+D,L,R,T    1222    365     1.2741517803385958     1.2741517803385958 yes
+KSFO look B  SFO   B            1587    365     1.4653639395559965     1.4653639395559965 yes
+KSFO look B  SFO   B+D,L,R,T    1587    365     1.3830033790440732     1.3830033790440732 yes
+
+GATE: PASS (all twelve values equal the record exactly)
+
+==============================================================================
+STEP 4 — .venv/bin/python scripts/session81_freeze_forward_models.py --freeze   (exit 0)
+==============================================================================
+==============================================================================
+session81_freeze_forward_models.py --freeze
+==============================================================================
+python 3.12.2  numpy 2.5.2  lightgbm 4.7.0
+training set data/processed/session81_training_set.csv  SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+
+Frozen models:
+  EGLC bdlrt rows 1953  d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110  data/models/session81/EGLC_bdlrt.txt  reload max |diff| 0.0
+  EGLC b     rows 1953  fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461  data/models/session81/EGLC_b.txt  reload max |diff| 0.0
+  EGLC mean-bias constant -0.21434203789042497 (2021-03-24..2026-07-31, 1953 rows)
+  LFPG bdlrt rows 1953  ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e  data/models/session81/LFPG_bdlrt.txt  reload max |diff| 0.0
+  LFPG b     rows 1953  257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022  data/models/session81/LFPG_b.txt  reload max |diff| 0.0
+  LFPG mean-bias constant -0.16713876088069635 (2021-03-24..2026-07-31, 1953 rows)
+  DSM  bdlrt rows 1955  260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b  data/models/session81/DSM_bdlrt.txt  reload max |diff| 0.0
+  DSM  b     rows 1955  e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c  data/models/session81/DSM_b.txt  reload max |diff| 0.0
+  DSM  mean-bias constant -0.29022710997442464 (2021-03-24..2026-07-31, 1955 rows)
+  YSDU bdlrt rows 1929  12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3  data/models/session81/YSDU_bdlrt.txt  reload max |diff| 0.0
+  YSDU b     rows 1929  6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51  data/models/session81/YSDU_b.txt  reload max |diff| 0.0
+  YSDU mean-bias constant -0.3155987558320373 (2021-03-24..2026-07-31, 1929 rows)
+  RNO  bdlrt rows 1952  c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819  data/models/session81/RNO_bdlrt.txt  reload max |diff| 0.0
+  RNO  b     rows 1952  8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d  data/models/session81/RNO_b.txt  reload max |diff| 0.0
+  RNO  mean-bias constant 0.11086936475409828 (2021-03-24..2026-07-31, 1952 rows)
+  SFO  bdlrt rows 1952  c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6  data/models/session81/SFO_bdlrt.txt  reload max |diff| 0.0
+  SFO  b     rows 1952  2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3  data/models/session81/SFO_b.txt  reload max |diff| 0.0
+  SFO  mean-bias constant 0.02647489754098368 (2021-03-24..2026-07-31, 1952 rows)
+
+wrote data/models/session81/manifest.json  SHA-256 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298
+
+==============================================================================
+STEP 5 — records
+==============================================================================
+F122 appended to DECISIONS.md after D73 (now lines 986-    1137).
+SPEC.md diff:
+diff --git a/SPEC.md b/SPEC.md
+index 61cc191..b9e6dda 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -733 +733,3 @@ side, because both are time-critical.
+-  both leads; where to save is decided then (DECISIONS D72.8).
++  both leads; where to save is decided then (DECISIONS D72.8). The
++  2026-27 forward test is pre-registered in DECISIONS D73, and its models
++  are frozen (F122).
+
+==============================================================================
+ARCHIVE STEP
+==============================================================================
+Moved F120 (pre-move DECISIONS.md lines 732-924, 193 lines) and F121 (lines
+1075-1228, 154 lines), each with its dated heading, to DECISIONS-archive.md
+under '## Moved by session 81 (2026-09-27)'. Their trailing '---' separator
+and blank line (925-927, 1229-1231) were removed from DECISIONS.md so no
+double separator is left. Checks:
+  f120.txt block present verbatim in archive: True
+  f121.txt block present verbatim in archive: True
+  DECISIONS.md == before minus cut ranges: True
+  wc -l: DECISIONS.md     1137, DECISIONS-archive.md    16882
+
+==============================================================================
+CONSISTENCY CHECK (mechanical parts)
+==============================================================================
+duplicated headings in SPEC.md, STATUS.md, DECISIONS.md: none
+entry order in DECISIONS.md: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 
+dated headings:
+52:## 2026-09-11 — Session 34b decision: archive move executed, archive-as-you-go adopted
+168:## 2026-09-18 — Session 46 finding: multi-year rolling-origin generalisation
+385:## 2026-09-19 — Session 48 decision: reserve 2024-25 as the feature-selection
+476:## 2026-09-23 — Session 69 decision: audit triage (D60, D61) recorded
+673:## 2026-09-27 — Session 79 decision: the owner's verdict on F119 (KSFO)
+732:## 2026-09-27 — Session 80 decision: the roadmap (owner, planning chat)
+879:## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward test (owner, planning chat)
+986:## 2026-09-27 — Session 81 finding: the 2026-27 forward test's frozen models
+
+$ git status --porcelain   (at session end)
+ M DECISIONS-archive.md
+ M DECISIONS.md
+ M SPEC.md
+ M STATUS.md
+?? data/models/
+?? data/processed/session81_training_set.csv
+?? docs/session-81.md
+?? notes/session-81-output.txt
+?? scripts/session81_freeze_forward_models.py
