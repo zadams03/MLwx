@@ -1,0 +1,113 @@
+{
+  "description": "Session 81 frozen models for the 2026-27 GFS forward test (DECISIONS D73, F122). Never refit.",
+  "training_set": "data/processed/session81_training_set.csv",
+  "training_set_sha256": "ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a",
+  "columns_bdlrt": [
+    "temp",
+    "season_sin",
+    "season_cos",
+    "cloud_cover",
+    "wind_speed_10m",
+    "dewpoint_depression_t2m_floored",
+    "lapse_rate_t2_t850",
+    "dswrf_2h_wm2",
+    "pressure_tendency_3h_hpa"
+  ],
+  "columns_b": [
+    "temp",
+    "season_sin",
+    "season_cos",
+    "cloud_cover",
+    "wind_speed_10m"
+  ],
+  "target": "obs_c - temperature_grib_c (G20)",
+  "prediction": "temperature_grib_c + model prediction",
+  "lgb_params": {
+    "objective": "regression_l1",
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "min_child_samples": 40,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "reg_alpha": 0.0,
+    "reg_lambda": 0.0,
+    "random_state": 42,
+    "n_jobs": 1,
+    "deterministic": true,
+    "force_row_wise": true,
+    "verbose": -1
+  },
+  "api": "lightgbm.LGBMRegressor(**lgb_params).fit(x, y); x float64, no column names; rows in ascending date order",
+  "python": "3.12.2",
+  "numpy": "2.5.2",
+  "lightgbm": "4.7.0",
+  "airports": {
+    "EGLC": {
+      "target_hour_utc": 12,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1953,
+      "mean_bias_c": -0.21434203789042497,
+      "model_bdlrt_file": "EGLC_bdlrt.txt",
+      "model_bdlrt_sha256": "d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110",
+      "model_b_file": "EGLC_b.txt",
+      "model_b_sha256": "fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461"
+    },
+    "LFPG": {
+      "target_hour_utc": 12,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1953,
+      "mean_bias_c": -0.16713876088069635,
+      "model_bdlrt_file": "LFPG_bdlrt.txt",
+      "model_bdlrt_sha256": "ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e",
+      "model_b_file": "LFPG_b.txt",
+      "model_b_sha256": "257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022"
+    },
+    "DSM": {
+      "target_hour_utc": 18,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1955,
+      "mean_bias_c": -0.29022710997442464,
+      "model_bdlrt_file": "DSM_bdlrt.txt",
+      "model_bdlrt_sha256": "260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b",
+      "model_b_file": "DSM_b.txt",
+      "model_b_sha256": "e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c"
+    },
+    "YSDU": {
+      "target_hour_utc": 2,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1929,
+      "mean_bias_c": -0.3155987558320373,
+      "model_bdlrt_file": "YSDU_bdlrt.txt",
+      "model_bdlrt_sha256": "12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3",
+      "model_b_file": "YSDU_b.txt",
+      "model_b_sha256": "6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51"
+    },
+    "RNO": {
+      "target_hour_utc": 20,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1952,
+      "mean_bias_c": 0.11086936475409828,
+      "model_bdlrt_file": "RNO_bdlrt.txt",
+      "model_bdlrt_sha256": "c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819",
+      "model_b_file": "RNO_b.txt",
+      "model_b_sha256": "8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d"
+    },
+    "SFO": {
+      "target_hour_utc": 20,
+      "train_start": "2021-03-24",
+      "train_end": "2026-07-31",
+      "n_rows": 1952,
+      "mean_bias_c": 0.02647489754098368,
+      "model_bdlrt_file": "SFO_bdlrt.txt",
+      "model_bdlrt_sha256": "c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6",
+      "model_b_file": "SFO_b.txt",
+      "model_b_sha256": "2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3"
+    }
+  }
+}

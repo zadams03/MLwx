@@ -16519,3 +16519,364 @@ days against F109's 1,226), so this is a guide to scale only.
 anything; touch any row dated 2024-08-01 or later.
 
 ---
+
+
+
+## Moved by session 81 (2026-09-27)
+
+The archive criterion (D46, live in `DECISIONS.md`), applied per the session 81 prompt: **F120 and F121**. Both are settled: each is a record of documentation edits (session 79: KSFO folded into `SPEC.md` and `RESULTS.md`; session 80: the roadmap folded into `SPEC.md`, `RESULTS.md`, `PROJECT-INSTRUCTIONS.md`, `CLAUDE.md` and this file's header), and those edits now stand in the files themselves. Neither `STATUS.md`'s "Next" nor any live open question (none remain) nor any live entry cites their wording. D17, F7, D46, D47, F96, D51, D62, D71, D72, D73 and F122 stay live. The blocks below are exactly what was cut, unedited.
+
+---
+
+## 2026-09-27 — Session 79 finding: what changed in SPEC.md, RESULTS.md and CLAUDE.md
+
+**F120. Documentation only. What changed in SPEC.md, RESULTS.md and
+CLAUDE.md in session 79.** KSFO's result (F119, D71) is folded into SPEC
+and RESULTS. The session-77 review items B1–B5, C1–C3 and E1
+(`notes/session-77-review.txt`, section 4) are settled. No data was read,
+no script was run, no model was fit and nothing was scored. Every number
+written is copied from F118, F119, D70, D71 or SPEC as it stood. Full
+output: `notes/session-79-output.txt`.
+
+**F120.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-79.md`.
+- SHA-256, both equal to F119.4:
+  - `data/processed/session78_ksfo_looks_grid.csv`:
+    `48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c`
+  - `data/processed/session78_ksfo_looks_predictions.csv`:
+    `b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e`
+  These two reads were of bytes only. No other file under `data/` was
+  opened.
+- D66, D67, D69, D70, F118 and F119 were read in DECISIONS.md, and
+  section 4 of `notes/session-77-review.txt` (B1–B5, C1–C4, E1).
+
+**F120.2 Step 1 arithmetic** (recorded values only: training means from
+F119.3, counts from D70.3):
+`(1587 × 0.1846862003780719 − 1223 × 0.36381439084219136) / 364`
+= −0.41716483516483505, **−0.4172** at 4 dp. It matches. D71 was then
+appended verbatim, before any SPEC or RESULTS edit.
+
+**F120.3 SPEC.md edits.**
+1. **SPEC 1, paragraph 3 (B1).** "judged once on that airport's own test
+   year" → each airport is judged on its own held-out data: one look at
+   each of the five earlier airports, two pre-registered looks at KSFO,
+   and, for any later airport, whatever looks its lock fixes in writing
+   before any held-out value is read (5.0).
+2. **SPEC 1, KSFO bullet (A1).** "rehearsed and locked ...; not yet
+   tested" → "passes the selected-features method on both of its
+   pre-registered looks (DECISIONS F119, D71) — see section 8". The
+   coastal-airport and gate sentences are kept. A pointer to the D71.5
+   framing is added.
+3. **SPEC 3.4 airport table, SFO's stage cell (A2; settles C4).** "2 —
+   locked, not yet tested" → "2 — passed (selected-features method)".
+4. **SPEC 4.3 (B3).** "its own sealed test year, judged once" → its own
+   held-out data, looked at only as 5.0 sets out (one look at the five
+   earlier airports, two at KSFO, D67.3; a later airport's lock fixes its
+   own). The rehearsal paragraph gains: KSFO's rehearsal used the `2022-23`
+   and `2023-24` folds of D51's `EXPERIMENT_FOLDS`, because 2024-25 was
+   one of its looks (D67.4).
+5. **SPEC 5.0 (B2).** The bullets "one look at its own sealed test year"
+   and "judged once per airport" are rewritten: one look at each of the
+   five earlier airports; two pre-registered looks at KSFO, each judged
+   separately (D67.3, D70.3, D70.4); for a later airport, the number of
+   looks, their windows and how their verdicts combine are fixed in
+   writing in its lock before any held-out value is read (D71.6); the bar
+   is judged once per look. **D71.6's combining rule is stated here,
+   once:** with more than one look, an airport passes only if every look
+   passes; anything else is recorded as a split or a fail. It records
+   existing practice and changes no earlier result. It was placed in 5.0
+   (scope), not 5.3 (the bar), so the bar's own text is unchanged.
+6. **SPEC 5.2 (C3).** The reason the unadjusted-GRIB margins cannot be
+   measured is now scoped to the five earlier airports. Added: at KSFO no
+   unadjusted rung was registered in its lock (D70), so it was not
+   measured there either.
+7. **SPEC 6, KSFO bullet (A3).** Heading "— locked, not yet tested" →
+   "— passed (selected-features method)". "Its two looks run once, in
+   session 78" → both looks were run once in session 78 and both pass
+   (F119); the owner accepted it as a PASS (D71); the headline is look A's
+   margin over raw GFS (GRIB), 1.2576 vs 1.4263 °C, +11.83%. The rest is
+   kept.
+8. **SPEC 6, "Further airports" bullet (B4).** "... lock, test once" →
+   "... lock, test", and the lock fixes in writing how many looks there
+   are, their windows and how their verdicts combine, before any held-out
+   value is read; each look is run once (5.0, D71.6).
+9. **SPEC 7 intro (C1).** "passed at every airport" → "passed at every one
+   of this section's five airports (EGLC, LFPG, DSM, YSDU and RNO)", plus:
+   KSFO was added later and judged under section 8 only (8.5).
+10. **SPEC 7.2, elevation correction (C2).** "negligible at four airports"
+    → "negligible at four of this section's five airports", plus: at
+    KSFO, added later under section 8, the gap is 93.47 m (3.4).
+11. **SPEC 8.5 (A4).** New block "KSFO (added later; DECISIONS F119,
+    D71)", after the five-airport paragraphs: the two-look design; a
+    two-row table (look A 2024-25, look B 2025-26: n test, raw GFS (GRIB),
+    persistence, B, B+D,L,R,T, and % vs raw GFS, persistence and B), all
+    at 4 dp as F119.3; the day basis (persistence on 363 of 364 days in
+    look A, 365 of 365 in look B); both looks pass; the overall reading is
+    PASS as pre-registered; the band read (D70.5) holds in both looks
+    (0.0958 and 0.0824 °C against 0.0377). It says plainly that these rows
+    are not part of the five-airport table or its +6.02% average.
+12. **SPEC 8.6 (A5).** Heading "(DECISIONS D59.3)" → "(DECISIONS D59.3;
+    (f) from D71)". New caveat **(f)** carrying D71.2–D71.5 in brief: the
+    headline is look A's +11.83%; look B's raw-GFS year was unusually poor
+    and persistence bound there; KSFO's mean bias changed sign between
+    years (insight only); the sea-mixed grid-point framing; look B's
+    training includes 2024-25.
+13. **SPEC 8.7 (B5).** "its own lock and single test (6)" → its own lock
+    and its own test, with its looks fixed in writing in that lock before
+    any held-out value is read (5.0, 6; D71.6). Added: KSFO, the first
+    airport run under this recipe after F109, had two pre-registered looks
+    and passed both (8.5; F119, D71).
+
+**Item D (other stale lines).** SPEC lines that still called KSFO
+"locked" or "not yet tested": SPEC 1's KSFO bullet, SPEC 3.4's SFO stage
+cell, and SPEC 6's KSFO heading. All three are covered by items 2, 3 and
+7 above. No SPEC line said no untouched held-out year remains "at the
+five airports", so no line needed changing for that.
+
+**F120.4 RESULTS.md edits.**
+1. **Intro.** "revised after session 79" added to the revision line. Two
+   sentences added: a sixth airport, KSFO, has since passed the
+   selected-features method on two pre-registered looks (F119, D71); the
+   result is for the recipe at a sea-mixed grid point and is not directly
+   comparable with the five earlier airports; see section 6.5.
+2. **Section 6.4, closing sentence** (consistent with D71.6). "its own
+   lock and single test (SPEC 6)" → its own lock and its own test, with
+   its looks fixed in writing in that lock before any held-out value is
+   read (SPEC 5.0, 6; D71.6).
+3. **New section 6.5, "A sixth airport: San Francisco (KSFO)".** Why KSFO
+   (D66.1, D67.1, D59.5); the gate failure and the owner's decision (F116,
+   F117, D69); the rehearsal and lock (D67.4, F118, F118.7, D70); the
+   two-look design (D67.3, D70.3); the result table (as SPEC 8.5's KSFO
+   block, F119.3); both looks pass (D70.8, F119, D71.1, D70.5); the
+   headline (D71.2); D71.3 and D71.4 stated plainly (with F118.5 and
+   F119.3); the D71.5 framing. Every number is cited.
+4. **Section 7, "no untouched year" bullet.** Added: KSFO's two held-out
+   years (2024-08-01 to 2026-07-31) are now also used (section 6.5,
+   D71.1), so no untouched held-out year remains at any of the six
+   airports.
+5. **Section 7, last bullet.** Renamed "Parked directions, and the current
+   position". It now states: the owner's order is D66.1; Q33 was measured
+   (F115); the further-airport step is done (KSFO, D71.7); the next step
+   is a roadmap planning session; pooling and 2026-27 stay deferred, the
+   forward test until the GFS v17 date is known (D66.2). Removed: "None of
+   the three has begun" and "not yet a decision", and the D59.5 branch
+   list they belonged to.
+6. **Footer.** "and revised after session 79 (DECISIONS F120)" added.
+
+**F120.5 CLAUDE.md edit (E1).** The body of "Commit discipline" is
+replaced with the text the session prompt gave: Claude Code does not write
+a commit message; the planning chat writes it to `docs/commit-NN.txt`, and
+the owner commits with `git commit -F docs/commit-NN.txt`. Nothing else in
+CLAUDE.md changed.
+
+**F120.6 Archive.** Moved to DECISIONS-archive.md, verbatim, under "Moved
+by session 79 (2026-09-27)": **F115, D67, F116, F117, D69, F118, D70 and
+F119**, each with its dated heading. They are one contiguous block in
+DECISIONS.md (the file order is F115, D67, F116, F117, D69, F118, D70,
+F119). Each is settled: F115 answered Q33 and its one live use (the KSFO
+pre-registration, D67.5) is done; D67, D69 and D70 are carried out and
+their result is recorded (F119, D71); F116–F119 are now codified in SPEC
+(3.3, 3.4, 5.2, 6, 7.3, 8.5, 8.6) and RESULTS (6.5). STATUS.md's "Next"
+and the live open questions (Q30, Q32) cite none of them word for word.
+**D66, D71 and F120 stay live.** No pointer is left in DECISIONS.md, as in
+sessions 77 and 78's practice.
+
+**F120.7 What this did not do.**
+- It read no data (Step 0's SHA-256 check read bytes only), ran no
+  project script, fit no model and scored nothing.
+- It changed no stage status in SPEC 6 (stage 2 stays "IN PROGRESS";
+  stages 3–6 are unchanged).
+- It changed no earlier verdict or figure. F16, F30, F47, F64, F82, F94
+  and F109 and their tables stand.
+- KSFO's margins were not added to F109's five-airport table or to its
+  airport-averaged +6.02% read.
+- It did not edit README.md, PROJECT-INSTRUCTIONS.md, any script, or
+  anything under `data/`.
+- It wrote no commit message file. Nothing was committed.
+
+**F120.8 Corrections at owner review (same session, before commit).**
+Documentation only, same scope guard. No new number. Each settles an item
+the session-79 consistency check reported.
+1. **SPEC 5.3.** "the bar is applied once per airport (5.0)" → "once per
+   look (5.0)". A scope note is added: the test period named in 5.3 is the
+   sealed year used by the minimal and richer methods; the
+   selected-features method's confirmation year and KSFO's looks are set
+   out in 8.3 and 8.5. The bar's meaning is unchanged.
+2. **SPEC 6, stage 2 line.** "each judged on its own sealed test year" →
+   "each judged on its own held-out data, in the look or looks its lock
+   fixes (5.0)".
+3. **SPEC 8.2, R.** "the lead-26 airports (YSDU, RNO)" → "(YSDU, RNO and
+   KSFO; DECISIONS F116.1, D67.1)".
+4. **SPEC 8.6(a).** "the same single-look discipline every method in this
+   project uses (5.3)" → one look per airport, the same discipline the five
+   earlier airports' tests followed under every method (5.0, 5.3); KSFO,
+   under this same method, had two pre-registered looks (5.0, caveat (f)).
+5. **RESULTS §7, second bullet heading.** "Each method rests on one year —
+   and, together, no untouched year now remains." → "At the five earlier
+   airports each method rests on one year; KSFO had two looks — and,
+   together, no untouched year now remains at any of the six airports."
+6. **STATUS.md, GFS v17 item.** "The earliest possible go-live is late
+   October 2026 (D69.6)" added back.
+7. **STATUS.md, carried items.** New item: DECISIONS-archive.md's header
+   still says a pointer is left in DECISIONS.md for each moved section;
+   sessions 77–79 left none. Owner to decide which to keep.
+Nothing was committed and no commit message was written.
+
+---
+
+## 2026-09-27 — Session 80 finding: what changed in SPEC.md, RESULTS.md, PROJECT-INSTRUCTIONS.md, CLAUDE.md and DECISIONS-archive.md
+
+**F121. Documentation only. What changed in SPEC.md, RESULTS.md,
+PROJECT-INSTRUCTIONS.md, CLAUDE.md and DECISIONS-archive.md in session
+80.** The owner's roadmap (D72) is recorded and folded into SPEC, RESULTS,
+PROJECT-INSTRUCTIONS.md and CLAUDE.md. No data was read, no script was
+run, no model was fit and nothing was scored. Full output:
+`notes/session-80-output.txt`.
+
+**F121.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-80.md`, as
+  expected.
+- `git ls-files PROJECT-INSTRUCTIONS.md` printed `PROJECT-INSTRUCTIONS.md`:
+  the file is tracked, at the repo root.
+- Read in DECISIONS.md: the parked block (P1–P3), the Q30 and Q32 blocks
+  (with the Q30 status update), D51, D59, F110, D62, D66, D71 and F120.
+
+**F121.2 D72.** Appended after F120, before any other edit. Its text was
+copied mechanically (`sed`) from the code block in `docs/session-80.md`
+(lines 62–205), not retyped.
+
+**F121.3 SPEC.md edits.**
+1. **SPEC 1, last paragraph.** "The long-term aim is a live daily tool
+   ..." is replaced by the prompt's text: the end goal is a private, live
+   daily tool for ten or more airports (hourly curve and daily maximum, 24-
+   and 48-hour leads, a choice of weather model plus a blend, probabilistic
+   ranges; D72.1). It now points to section 6 "for the roadmap".
+2. **SPEC 2.5 (new).** "Claims and build choices (DECISIONS D72.2)", added
+   after 2.4, with the prompt's exact text.
+3. **SPEC 5.4.** A third paragraph is added after "They are **optional and
+   block nothing.** ...": they are now scheduled as part of roadmap stage
+   A (D72.3); they change no earlier verdict; stage A's gate (D72.7)
+   decides direction, not any airport's pass or fail. Nothing else in
+   section 5 changed.
+4. **SPEC 6, heading.** "Build order (each stage opens only when the
+   previous one passes)" → "Build order and roadmap (DECISIONS D72)".
+5. **SPEC 6, intro paragraph.** The first sentence (stages 1 and 2) is
+   kept. "**Stages 3 to 6 are intentionally left as short descriptions
+   only.**" and the rest of the paragraph → the prompt's text: the roadmap
+   stages after stage 2 stay short descriptions (D72); do not write their
+   detailed design until the owner opens each one.
+6. **SPEC 6, stage 2 heading.** "IN PROGRESS" → "ONGOING (the new-airports
+   track, DECISIONS D72.3)". Every airport bullet is unchanged.
+7. **SPEC 6, "Further airports" bullet.** "before stage 3" → "at any point
+   in the roadmap". One sentence added at the end: from stage G, adding an
+   airport should take one script plus a checklist, and the script
+   downloads its history (D72.2). The rest is kept (rewrapped only).
+8. **SPEC 6, stages 3–6 and the italic closing paragraph.** Replaced by
+   the prompt's text: "The roadmap after stage 2 (DECISIONS D72)", stages
+   A–H and pooling (conditional), the D72.10 mapping of the former stages
+   3 to 6, and the new italic closing paragraph. The text was copied
+   mechanically from `docs/session-80.md` (lines 284–328), with only the
+   prompt's 3-space indent removed.
+9. **SPEC 8.7** (from the Step 2.5 search, below). "pooling work (stage
+   3)" → "pooling work (the conditional pooling step, 6)".
+
+**F121.4 Step 2.5 hit list.** `grep -n -i` on SPEC.md for "stage 3" to
+"stage 6" (also split across a line break), "Q30" and "Q32":
+- SPEC 4.1 (line 399): "DECISIONS D27 wrote that convention down for
+  stage 3, when airports are pooled". **Historical** (it says what D27
+  wrote at the time). Left unchanged.
+- SPEC 8.7 (line 1101): "pooling work (stage 3)". Names former stage 3 as
+  a current pointer. **Updated** to "the conditional pooling step, 6"
+  (D72.10). Meaning unchanged.
+- SPEC 6 (lines 753–756): the D72.10 mapping paragraph written this
+  session. By design; not touched.
+- "Q30" and "Q32": **no hits** in SPEC.md.
+
+**F121.5 RESULTS.md edits.**
+1. **Intro.** "revised after session 80" added to the revision line.
+   Nothing else in the intro changed.
+2. **Section 7, first bullet.** " It is parked (DECISIONS D72.9)." added
+   after "remains untested".
+3. **Section 7, last bullet.** "Parked directions, and the current
+   position" is replaced by the prompt's "The roadmap" bullet (stages A
+   and B next; C–G later; H follows; pooling conditional; D72, SPEC 6).
+4. **Footer.** "and after session 80 (DECISIONS F121)" added to the
+   revision list.
+
+**F121.6 PROJECT-INSTRUCTIONS.md edits (Step 4 only).** Every anchor was
+found.
+1. **Header note** inserted directly after the title line: "For Claude
+   Code: this file is the operating guide for the claude.ai planning
+   chat ...".
+2. **§2 table, "Project memory" row.** "Durable reasoning, preferences,
+   the roadmap and its rationale" → "Durable reasoning and preferences
+   (the roadmap itself is SPEC 6 and DECISIONS D72)".
+3. **§2 table, new row** for `PROJECT-INSTRUCTIONS.md`, after the
+   `CLAUDE.md` row.
+4. **§5 re-upload list.** "`PROJECT-INSTRUCTIONS.md` — only when a session
+   edited it." added after the `CLAUDE.md` line.
+5. **§9.** Two bullets added after "Lock before you look": "Claims vs
+   build choices (D72.2, SPEC 2.5)" and "Forward years".
+Nothing else in the file changed.
+
+**F121.7 CLAUDE.md edit (Step 5 only).** In "The three files", one
+paragraph added after the RESULTS.md bullet: PROJECT-INSTRUCTIONS.md is
+the planning chat's guide; Claude Code does not follow it or read it
+routinely, and edits it only when a session prompt says exactly what to
+change. Nothing else in CLAUDE.md changed.
+
+**F121.8 DECISIONS-archive.md header (Step 6).**
+- Before: "`DECISIONS.md` also leaves a short pointer at the top of each
+  dated section this file absorbed, naming what moved and why."
+- After: "Since session 77, no pointer is left in DECISIONS.md for a
+  moved entry. An entry's number always resolves in whichever of the two
+  files holds it (DECISIONS D46, D72.9)."
+Nothing else in the header changed.
+
+**F121.9 Archive.** Moved to DECISIONS-archive.md, verbatim, under "Moved
+by session 80 (2026-09-27)", in file order, each with its dated heading:
+- "2026-08-16 — Parked items": the heading and P1–P3 only. D17 and F7
+  stay live.
+- "2026-08-18 — Open question raised by session 18" (Q30), "2026-08-19 —
+  Q30 status update" and "2026-08-20 — Open question raised by session
+  27" (Q32). These three are one contiguous block, moved with the `---`
+  lines between them.
+- Both session 65 blocks (D59 and F110), one contiguous block.
+- The session 75 block (D66).
+Each is settled: D72.9 closes Q30 and Q32 and settles P1–P3; D59 and F110
+are codified in SPEC 8 and RESULTS 6, and D59.5's Q30 branches are
+replaced by D72; D66's order is carried out (D71.7) and its GFS v17 point
+is carried forward by D71.8 and D72.11. Neither STATUS.md's "Next" nor
+any live open question (none remain) cites their wording. Stay live:
+D17, F7, D46, D47, F96, D51, D62, D71, F120, D72 and F121. No pointer is
+left in DECISIONS.md. Where a moved block had a `---` separator on both
+sides, one of the two separators (and its blank line) was removed from
+DECISIONS.md so no double separator is left; separators are not entry
+content, and no entry text was changed.
+
+**F121.10 What this did not do.**
+- It read no data, ran no script, fit no model and scored nothing.
+- It wrote no stage's detailed design. SPEC 6's roadmap stages are short
+  descriptions only.
+- It changed no earlier verdict or figure. F16, F30, F47, F64, F82, F94,
+  F109 and F119 and their tables stand.
+- It changed CLAUDE.md only by Step 5's paragraph.
+- It did not edit README.md, any script, or anything under `data/`.
+- It wrote no commit message file. Nothing was committed.
+
+**F121.11 Corrections at owner review (same session, before commit).**
+Documentation only, same scope guard. No new number. Items 1 to 3 settle
+items 3, 1 and 2 of the session-80 consistency check.
+1. **RESULTS.md §7, first bullet.** The sentence added this session, " It
+   is parked (DECISIONS D72.9).", → " A terrain descriptor is now parked
+   (DECISIONS D72.9)."
+2. **PROJECT-INSTRUCTIONS.md §2 table, RESULTS.md row.** "The results
+   narrative (both methods)" → "The results narrative (all three
+   methods)".
+3. **PROJECT-INSTRUCTIONS.md §9, "Both held-out years are spent"
+   bullet.** "No untouched held-out year remains at the five airports." →
+   "No untouched held-out year remains at any of the six airports
+   (D71.1)." The bold formatting is kept.
+Nothing was committed and no commit message was written.
+
+---

@@ -729,202 +729,6 @@ read and no model was fit to make it.
 
 ---
 
-## 2026-09-27 — Session 79 finding: what changed in SPEC.md, RESULTS.md and CLAUDE.md
-
-**F120. Documentation only. What changed in SPEC.md, RESULTS.md and
-CLAUDE.md in session 79.** KSFO's result (F119, D71) is folded into SPEC
-and RESULTS. The session-77 review items B1–B5, C1–C3 and E1
-(`notes/session-77-review.txt`, section 4) are settled. No data was read,
-no script was run, no model was fit and nothing was scored. Every number
-written is copied from F118, F119, D70, D71 or SPEC as it stood. Full
-output: `notes/session-79-output.txt`.
-
-**F120.1 Step 0.**
-- `git status --porcelain` showed only `?? docs/session-79.md`.
-- SHA-256, both equal to F119.4:
-  - `data/processed/session78_ksfo_looks_grid.csv`:
-    `48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c`
-  - `data/processed/session78_ksfo_looks_predictions.csv`:
-    `b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e`
-  These two reads were of bytes only. No other file under `data/` was
-  opened.
-- D66, D67, D69, D70, F118 and F119 were read in DECISIONS.md, and
-  section 4 of `notes/session-77-review.txt` (B1–B5, C1–C4, E1).
-
-**F120.2 Step 1 arithmetic** (recorded values only: training means from
-F119.3, counts from D70.3):
-`(1587 × 0.1846862003780719 − 1223 × 0.36381439084219136) / 364`
-= −0.41716483516483505, **−0.4172** at 4 dp. It matches. D71 was then
-appended verbatim, before any SPEC or RESULTS edit.
-
-**F120.3 SPEC.md edits.**
-1. **SPEC 1, paragraph 3 (B1).** "judged once on that airport's own test
-   year" → each airport is judged on its own held-out data: one look at
-   each of the five earlier airports, two pre-registered looks at KSFO,
-   and, for any later airport, whatever looks its lock fixes in writing
-   before any held-out value is read (5.0).
-2. **SPEC 1, KSFO bullet (A1).** "rehearsed and locked ...; not yet
-   tested" → "passes the selected-features method on both of its
-   pre-registered looks (DECISIONS F119, D71) — see section 8". The
-   coastal-airport and gate sentences are kept. A pointer to the D71.5
-   framing is added.
-3. **SPEC 3.4 airport table, SFO's stage cell (A2; settles C4).** "2 —
-   locked, not yet tested" → "2 — passed (selected-features method)".
-4. **SPEC 4.3 (B3).** "its own sealed test year, judged once" → its own
-   held-out data, looked at only as 5.0 sets out (one look at the five
-   earlier airports, two at KSFO, D67.3; a later airport's lock fixes its
-   own). The rehearsal paragraph gains: KSFO's rehearsal used the `2022-23`
-   and `2023-24` folds of D51's `EXPERIMENT_FOLDS`, because 2024-25 was
-   one of its looks (D67.4).
-5. **SPEC 5.0 (B2).** The bullets "one look at its own sealed test year"
-   and "judged once per airport" are rewritten: one look at each of the
-   five earlier airports; two pre-registered looks at KSFO, each judged
-   separately (D67.3, D70.3, D70.4); for a later airport, the number of
-   looks, their windows and how their verdicts combine are fixed in
-   writing in its lock before any held-out value is read (D71.6); the bar
-   is judged once per look. **D71.6's combining rule is stated here,
-   once:** with more than one look, an airport passes only if every look
-   passes; anything else is recorded as a split or a fail. It records
-   existing practice and changes no earlier result. It was placed in 5.0
-   (scope), not 5.3 (the bar), so the bar's own text is unchanged.
-6. **SPEC 5.2 (C3).** The reason the unadjusted-GRIB margins cannot be
-   measured is now scoped to the five earlier airports. Added: at KSFO no
-   unadjusted rung was registered in its lock (D70), so it was not
-   measured there either.
-7. **SPEC 6, KSFO bullet (A3).** Heading "— locked, not yet tested" →
-   "— passed (selected-features method)". "Its two looks run once, in
-   session 78" → both looks were run once in session 78 and both pass
-   (F119); the owner accepted it as a PASS (D71); the headline is look A's
-   margin over raw GFS (GRIB), 1.2576 vs 1.4263 °C, +11.83%. The rest is
-   kept.
-8. **SPEC 6, "Further airports" bullet (B4).** "... lock, test once" →
-   "... lock, test", and the lock fixes in writing how many looks there
-   are, their windows and how their verdicts combine, before any held-out
-   value is read; each look is run once (5.0, D71.6).
-9. **SPEC 7 intro (C1).** "passed at every airport" → "passed at every one
-   of this section's five airports (EGLC, LFPG, DSM, YSDU and RNO)", plus:
-   KSFO was added later and judged under section 8 only (8.5).
-10. **SPEC 7.2, elevation correction (C2).** "negligible at four airports"
-    → "negligible at four of this section's five airports", plus: at
-    KSFO, added later under section 8, the gap is 93.47 m (3.4).
-11. **SPEC 8.5 (A4).** New block "KSFO (added later; DECISIONS F119,
-    D71)", after the five-airport paragraphs: the two-look design; a
-    two-row table (look A 2024-25, look B 2025-26: n test, raw GFS (GRIB),
-    persistence, B, B+D,L,R,T, and % vs raw GFS, persistence and B), all
-    at 4 dp as F119.3; the day basis (persistence on 363 of 364 days in
-    look A, 365 of 365 in look B); both looks pass; the overall reading is
-    PASS as pre-registered; the band read (D70.5) holds in both looks
-    (0.0958 and 0.0824 °C against 0.0377). It says plainly that these rows
-    are not part of the five-airport table or its +6.02% average.
-12. **SPEC 8.6 (A5).** Heading "(DECISIONS D59.3)" → "(DECISIONS D59.3;
-    (f) from D71)". New caveat **(f)** carrying D71.2–D71.5 in brief: the
-    headline is look A's +11.83%; look B's raw-GFS year was unusually poor
-    and persistence bound there; KSFO's mean bias changed sign between
-    years (insight only); the sea-mixed grid-point framing; look B's
-    training includes 2024-25.
-13. **SPEC 8.7 (B5).** "its own lock and single test (6)" → its own lock
-    and its own test, with its looks fixed in writing in that lock before
-    any held-out value is read (5.0, 6; D71.6). Added: KSFO, the first
-    airport run under this recipe after F109, had two pre-registered looks
-    and passed both (8.5; F119, D71).
-
-**Item D (other stale lines).** SPEC lines that still called KSFO
-"locked" or "not yet tested": SPEC 1's KSFO bullet, SPEC 3.4's SFO stage
-cell, and SPEC 6's KSFO heading. All three are covered by items 2, 3 and
-7 above. No SPEC line said no untouched held-out year remains "at the
-five airports", so no line needed changing for that.
-
-**F120.4 RESULTS.md edits.**
-1. **Intro.** "revised after session 79" added to the revision line. Two
-   sentences added: a sixth airport, KSFO, has since passed the
-   selected-features method on two pre-registered looks (F119, D71); the
-   result is for the recipe at a sea-mixed grid point and is not directly
-   comparable with the five earlier airports; see section 6.5.
-2. **Section 6.4, closing sentence** (consistent with D71.6). "its own
-   lock and single test (SPEC 6)" → its own lock and its own test, with
-   its looks fixed in writing in that lock before any held-out value is
-   read (SPEC 5.0, 6; D71.6).
-3. **New section 6.5, "A sixth airport: San Francisco (KSFO)".** Why KSFO
-   (D66.1, D67.1, D59.5); the gate failure and the owner's decision (F116,
-   F117, D69); the rehearsal and lock (D67.4, F118, F118.7, D70); the
-   two-look design (D67.3, D70.3); the result table (as SPEC 8.5's KSFO
-   block, F119.3); both looks pass (D70.8, F119, D71.1, D70.5); the
-   headline (D71.2); D71.3 and D71.4 stated plainly (with F118.5 and
-   F119.3); the D71.5 framing. Every number is cited.
-4. **Section 7, "no untouched year" bullet.** Added: KSFO's two held-out
-   years (2024-08-01 to 2026-07-31) are now also used (section 6.5,
-   D71.1), so no untouched held-out year remains at any of the six
-   airports.
-5. **Section 7, last bullet.** Renamed "Parked directions, and the current
-   position". It now states: the owner's order is D66.1; Q33 was measured
-   (F115); the further-airport step is done (KSFO, D71.7); the next step
-   is a roadmap planning session; pooling and 2026-27 stay deferred, the
-   forward test until the GFS v17 date is known (D66.2). Removed: "None of
-   the three has begun" and "not yet a decision", and the D59.5 branch
-   list they belonged to.
-6. **Footer.** "and revised after session 79 (DECISIONS F120)" added.
-
-**F120.5 CLAUDE.md edit (E1).** The body of "Commit discipline" is
-replaced with the text the session prompt gave: Claude Code does not write
-a commit message; the planning chat writes it to `docs/commit-NN.txt`, and
-the owner commits with `git commit -F docs/commit-NN.txt`. Nothing else in
-CLAUDE.md changed.
-
-**F120.6 Archive.** Moved to DECISIONS-archive.md, verbatim, under "Moved
-by session 79 (2026-09-27)": **F115, D67, F116, F117, D69, F118, D70 and
-F119**, each with its dated heading. They are one contiguous block in
-DECISIONS.md (the file order is F115, D67, F116, F117, D69, F118, D70,
-F119). Each is settled: F115 answered Q33 and its one live use (the KSFO
-pre-registration, D67.5) is done; D67, D69 and D70 are carried out and
-their result is recorded (F119, D71); F116–F119 are now codified in SPEC
-(3.3, 3.4, 5.2, 6, 7.3, 8.5, 8.6) and RESULTS (6.5). STATUS.md's "Next"
-and the live open questions (Q30, Q32) cite none of them word for word.
-**D66, D71 and F120 stay live.** No pointer is left in DECISIONS.md, as in
-sessions 77 and 78's practice.
-
-**F120.7 What this did not do.**
-- It read no data (Step 0's SHA-256 check read bytes only), ran no
-  project script, fit no model and scored nothing.
-- It changed no stage status in SPEC 6 (stage 2 stays "IN PROGRESS";
-  stages 3–6 are unchanged).
-- It changed no earlier verdict or figure. F16, F30, F47, F64, F82, F94
-  and F109 and their tables stand.
-- KSFO's margins were not added to F109's five-airport table or to its
-  airport-averaged +6.02% read.
-- It did not edit README.md, PROJECT-INSTRUCTIONS.md, any script, or
-  anything under `data/`.
-- It wrote no commit message file. Nothing was committed.
-
-**F120.8 Corrections at owner review (same session, before commit).**
-Documentation only, same scope guard. No new number. Each settles an item
-the session-79 consistency check reported.
-1. **SPEC 5.3.** "the bar is applied once per airport (5.0)" → "once per
-   look (5.0)". A scope note is added: the test period named in 5.3 is the
-   sealed year used by the minimal and richer methods; the
-   selected-features method's confirmation year and KSFO's looks are set
-   out in 8.3 and 8.5. The bar's meaning is unchanged.
-2. **SPEC 6, stage 2 line.** "each judged on its own sealed test year" →
-   "each judged on its own held-out data, in the look or looks its lock
-   fixes (5.0)".
-3. **SPEC 8.2, R.** "the lead-26 airports (YSDU, RNO)" → "(YSDU, RNO and
-   KSFO; DECISIONS F116.1, D67.1)".
-4. **SPEC 8.6(a).** "the same single-look discipline every method in this
-   project uses (5.3)" → one look per airport, the same discipline the five
-   earlier airports' tests followed under every method (5.0, 5.3); KSFO,
-   under this same method, had two pre-registered looks (5.0, caveat (f)).
-5. **RESULTS §7, second bullet heading.** "Each method rests on one year —
-   and, together, no untouched year now remains." → "At the five earlier
-   airports each method rests on one year; KSFO had two looks — and,
-   together, no untouched year now remains at any of the six airports."
-6. **STATUS.md, GFS v17 item.** "The earliest possible go-live is late
-   October 2026 (D69.6)" added back.
-7. **STATUS.md, carried items.** New item: DECISIONS-archive.md's header
-   still says a pointer is left in DECISIONS.md for each moved section;
-   sessions 77–79 left none. Owner to decide which to keep.
-Nothing was committed and no commit message was written.
-
----
-
 ## 2026-09-27 — Session 80 decision: the roadmap (owner, planning chat)
 
 **D72. Owner decision, dedicated roadmap planning session (after session
@@ -1072,157 +876,262 @@ read and no model was fit to make it.
 
 ---
 
-## 2026-09-27 — Session 80 finding: what changed in SPEC.md, RESULTS.md, PROJECT-INSTRUCTIONS.md, CLAUDE.md and DECISIONS-archive.md
+## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward test (owner, planning chat)
 
-**F121. Documentation only. What changed in SPEC.md, RESULTS.md,
-PROJECT-INSTRUCTIONS.md, CLAUDE.md and DECISIONS-archive.md in session
-80.** The owner's roadmap (D72) is recorded and folded into SPEC, RESULTS,
-PROJECT-INSTRUCTIONS.md and CLAUDE.md. No data was read, no script was
-run, no model was fit and nothing was scored. Full output:
-`notes/session-80-output.txt`.
+**D73. Owner decision, planning chat (after session 80): the
+pre-registration of the 2026-27 GFS forward test (D72.5).** Written at the
+start of session 81, before any data was read or any model was fit. No
+2026-27 value has been read or scored. Where this entry is more precise
+than D72.5, this entry governs; D73.4 amends D72.5's "only file paths may
+change".
 
-**F121.1 Step 0.**
-- `git status --porcelain` showed only `?? docs/session-80.md`, as
-  expected.
-- `git ls-files PROJECT-INSTRUCTIONS.md` printed `PROJECT-INSTRUCTIONS.md`:
-  the file is tracked, at the repo root.
-- Read in DECISIONS.md: the parked block (P1–P3), the Q30 and Q32 blocks
-  (with the Q30 status update), D51, D59, F110, D62, D66, D71 and F120.
+- **D73.1 What is tested.** SPEC 8's recipe `B+D,L,R,T`, unchanged: the
+  same features and transforms (SPEC 8.1), the same column order (SPEC
+  8.8 G15), the same frozen LightGBM settings (D21.4/D48.6, lightgbm
+  4.7.0, SPEC 8.8 G14, G17), the same target (observation minus
+  `temperature_grib_c`, SPEC 8.8 G20). Six airports: EGLC, LFPG, DSM,
+  YSDU, RNO and KSFO, each with its own grid point, target hour, lead and
+  elevation constant (SPEC 3.4, 4.1, 5.2, 7.2).
+- **D73.2 The frozen models.** One `B+D,L,R,T` model per airport, trained
+  once on every complete-case row dated 2021-03-24 to 2026-07-31 (all
+  GFS v16), in ascending date order (G19), from committed processed files
+  only. It is saved as a LightGBM text model file and its SHA-256 is
+  recorded in F122. It is never refit. Also frozen, as descriptive rungs
+  only: one plain `B` model per airport, trained the same way on the same
+  rows; and one mean-bias constant per airport, mean(observation minus
+  raw GFS (GRIB)) over the same rows. The training rows keep the
+  historical observation pairing (SPEC 4.5's note); new 2026-27 code
+  pairs explicitly to the nearest report (SPEC 8.7).
+- **D73.3 The test year and its split.** The test year is 2026-08-01 to
+  2027-07-31. A target day is in period B if the GFS cycle that forecasts
+  it (SPEC 7.2's lead convention) is an operational GFS v17 cycle, and in
+  period A otherwise. Any v16.x cycle is period A. The boundary is the
+  first operational v17 cycle, taken from NCEP's Service Change Notice and
+  confirmed in the archive. Parallel ("para") data is never used. If no
+  operational v17 cycle has forecast any day by 2027-07-31, period A is
+  the whole year and period B is not run. If anything other than one
+  clean switch happens (a rollback, a second version change, mixed
+  cycles), stop: the owner decides in writing before any value is scored.
+- **D73.4 Inputs after v17 (amends D72.5).** 2026-27 features are built
+  with the same logic as the record pipelines, with only their date
+  ranges extended (as F107 did for the reserved year); the code itself is
+  new (D73.8). For v17 inputs, file paths may change. How a field is
+  fetched (message name, level specification, which accumulation window
+  is read) may also change, but only if the physical quantity is
+  identical: the same variable, level, time window ending at the target
+  hour, units and transform. The owner approves each such change. It is
+  decided from v17's documentation and the fields themselves, never from
+  any 2026-27 error or score. Each change is written into DECISIONS, with
+  its evidence, before any period-B value is scored. If any input to `B+D,L,R,T` or to raw GFS
+  (GRIB) cannot be built this way, or the 0.25° GRIB2 grid is no longer
+  offered, period B is recorded as void (not run). A void period is not
+  a fail. The elevation constants (SPEC 5.2) stay frozen, even though
+  v17's terrain differs; they apply to raw GFS and the model alike. The
+  grid points (SPEC 3.4) and interpolation (SPEC 8.8 G6) are unchanged.
+  Nothing is refit, retuned or reselected.
+- **D73.5 The bar and the rungs.** The bar is SPEC 5.3, applied per
+  airport per period: the frozen `B+D,L,R,T` model's MAE must be lower
+  than both raw GFS (GRIB, elevation-adjusted, SPEC 5.2) and persistence.
+  Descriptive rungs, never part of the bar: the frozen `B` model and the
+  mean-bias reference. The day basis is SPEC 8.5's: raw GFS and the
+  models on every complete-case test day; persistence on test days that
+  also have a previous-day observation. Missing forecasts or observations
+  are dropped and counted (SPEC 2.2). There is no minimum day count. Each
+  period's row count is reported against its full expected count; a
+  shortfall is reported and does not block the verdict.
+- **D73.6 Verdicts.** Each airport gets one PASS or FAIL per period,
+  labelled with the period's dates and season. The two periods answer
+  different questions (A: does the recipe hold on a new year; B: does the
+  v16-trained model survive v17), so they are not combined, and D71.6's
+  every-look-must-pass rule does not apply. Nothing is averaged across
+  airports (SPEC 5.0). KSFO carries D71.5's framing. The write-up leads,
+  in each period, with the smallest bar margin across the six airports.
+  No earlier verdict changes.
+- **D73.7 Expectations, stated before any value is seen.** Period A:
+  `B+D,L,R,T` passes at all six airports. Period B: no expectation is
+  stated. Period A will probably be short (a few months of autumn); its
+  verdict stands whatever its length, labelled with its dates and season.
+- **D73.8 When it is scored.** No 2026-27 value (model prediction error,
+  raw-GFS error or persistence error) is computed until its period has
+  ended and its observations are in. **Hold rule:** period A is not
+  scored until the owner has decided, in writing, whether to pre-register
+  a comparison against NBM/NWS MOS on 2026-27 (stage A, D72.7). Once any
+  part of 2026-27 is scored, no new test may be pre-registered on it
+  (SPEC 2.5). The 2026-27 data-build and scoring scripts are written in a
+  later session and committed before any 2026-27 row is built. They
+  implement this entry exactly, and SPEC 8.7's build requirements apply
+  to them. Until each period is scored, its data is held out for claims
+  and no build choice may use it (SPEC 2.5).
+- **D73.9 A consequence, accepted.** Period B's data is held out until it
+  is scored, after 2027-07-31. So stage F (upgrade policy) cannot use
+  live v17 data for any build choice before then without spending period
+  B. Before then, its only v17 training data would be NOAA's v17
+  retrospective runs, if they are public (D72.3). The design is not
+  changed for this.
+- **D73.10 The two DSM A67-15 files** (D62.7): the two tracked DSM files
+  for 2026-08-05..2026-08-15. Their paths and SHA-256 are recorded in
+  F122. They were not opened in session 81. They are not used to build
+  or score anything; period A's data is fetched fresh.
+- **D73.11 Session 81's plan.** Record this entry; build the training set
+  from committed files; pass a reproduction gate (the new training code
+  must reproduce F109's and KSFO look B's recorded MAEs exactly); train
+  and freeze the models; record F122.
+- **D73.12 GFS v17 (planning-chat web search, 2026-09-27, not checked by
+  this session).** Still no Service Change Notice; only the April 2026
+  proposals (PNS 26-29, 26-30). The SCN is due 30 days before go-live, so
+  the earliest go-live is about late October 2026.
 
-**F121.2 D72.** Appended after F120, before any other edit. Its text was
-copied mechanically (`sed`) from the code block in `docs/session-80.md`
-(lines 62–205), not retyped.
+---
 
-**F121.3 SPEC.md edits.**
-1. **SPEC 1, last paragraph.** "The long-term aim is a live daily tool
-   ..." is replaced by the prompt's text: the end goal is a private, live
-   daily tool for ten or more airports (hourly curve and daily maximum, 24-
-   and 48-hour leads, a choice of weather model plus a blend, probabilistic
-   ranges; D72.1). It now points to section 6 "for the roadmap".
-2. **SPEC 2.5 (new).** "Claims and build choices (DECISIONS D72.2)", added
-   after 2.4, with the prompt's exact text.
-3. **SPEC 5.4.** A third paragraph is added after "They are **optional and
-   block nothing.** ...": they are now scheduled as part of roadmap stage
-   A (D72.3); they change no earlier verdict; stage A's gate (D72.7)
-   decides direction, not any airport's pass or fail. Nothing else in
-   section 5 changed.
-4. **SPEC 6, heading.** "Build order (each stage opens only when the
-   previous one passes)" → "Build order and roadmap (DECISIONS D72)".
-5. **SPEC 6, intro paragraph.** The first sentence (stages 1 and 2) is
-   kept. "**Stages 3 to 6 are intentionally left as short descriptions
-   only.**" and the rest of the paragraph → the prompt's text: the roadmap
-   stages after stage 2 stay short descriptions (D72); do not write their
-   detailed design until the owner opens each one.
-6. **SPEC 6, stage 2 heading.** "IN PROGRESS" → "ONGOING (the new-airports
-   track, DECISIONS D72.3)". Every airport bullet is unchanged.
-7. **SPEC 6, "Further airports" bullet.** "before stage 3" → "at any point
-   in the roadmap". One sentence added at the end: from stage G, adding an
-   airport should take one script plus a checklist, and the script
-   downloads its history (D72.2). The rest is kept (rewrapped only).
-8. **SPEC 6, stages 3–6 and the italic closing paragraph.** Replaced by
-   the prompt's text: "The roadmap after stage 2 (DECISIONS D72)", stages
-   A–H and pooling (conditional), the D72.10 mapping of the former stages
-   3 to 6, and the new italic closing paragraph. The text was copied
-   mechanically from `docs/session-80.md` (lines 284–328), with only the
-   prompt's 3-space indent removed.
-9. **SPEC 8.7** (from the Step 2.5 search, below). "pooling work (stage
-   3)" → "pooling work (the conditional pooling step, 6)".
+## 2026-09-27 — Session 81 finding: the 2026-27 forward test's frozen models
 
-**F121.4 Step 2.5 hit list.** `grep -n -i` on SPEC.md for "stage 3" to
-"stage 6" (also split across a line break), "Q30" and "Q32":
-- SPEC 4.1 (line 399): "DECISIONS D27 wrote that convention down for
-  stage 3, when airports are pooled". **Historical** (it says what D27
-  wrote at the time). Left unchanged.
-- SPEC 8.7 (line 1101): "pooling work (stage 3)". Names former stage 3 as
-  a current pointer. **Updated** to "the conditional pooling step, 6"
-  (D72.10). Meaning unchanged.
-- SPEC 6 (lines 753–756): the D72.10 mapping paragraph written this
-  session. By design; not touched.
-- "Q30" and "Q32": **no hits** in SPEC.md.
+**F122. Offline. The training set for the 2026-27 GFS forward test (D73)
+was built from committed files only; the new training code passed the
+reproduction gate (all twelve recorded MAEs equal at full precision); and
+one `B+D,L,R,T` model, one plain `B` model and one mean-bias constant were
+trained and frozen per airport, on every row dated 2021-03-24..2026-07-31.
+No 2026-27 value was read. Script: `scripts/session81_freeze_forward_models.py`
+(new; modes `--build`, `--gate`, `--freeze`, each run once). Full real
+output: `notes/session-81-output.txt`.**
 
-**F121.5 RESULTS.md edits.**
-1. **Intro.** "revised after session 80" added to the revision line.
-   Nothing else in the intro changed.
-2. **Section 7, first bullet.** " It is parked (DECISIONS D72.9)." added
-   after "remains untested".
-3. **Section 7, last bullet.** "Parked directions, and the current
-   position" is replaced by the prompt's "The roadmap" bullet (stages A
-   and B next; C–G later; H follows; pooling conditional; D72, SPEC 6).
-4. **Footer.** "and after session 80 (DECISIONS F121)" added to the
-   revision list.
+**F122.1 Step 0.**
+- `git status --porcelain` showed only `?? docs/session-81.md`.
+- `data/models/session81/` did not exist. No file named `session81_*`
+  existed under `scripts/`, `data/processed/` or `notes/`.
+- Read: D62 (D62.7), D71, D72 and F121 in DECISIONS.md; D58, F107, F109,
+  D70 and F119 in DECISIONS-archive.md.
+- **The two A67-15 DSM files** (D62.7, D73.10), identified from
+  `notes/audit-session-67.md` (A67-15 names exactly these two) and
+  `git ls-files`. Not opened; path listing and SHA-256 of bytes only.
 
-**F121.6 PROJECT-INSTRUCTIONS.md edits (Step 4 only).** Every anchor was
-found.
-1. **Header note** inserted directly after the title line: "For Claude
-   Code: this file is the operating guide for the claude.ai planning
-   chat ...".
-2. **§2 table, "Project memory" row.** "Durable reasoning, preferences,
-   the roadmap and its rationale" → "Durable reasoning and preferences
-   (the roadmap itself is SPEC 6 and DECISIONS D72)".
-3. **§2 table, new row** for `PROJECT-INSTRUCTIONS.md`, after the
-   `CLAUDE.md` row.
-4. **§5 re-upload list.** "`PROJECT-INSTRUCTIONS.md` — only when a session
-   edited it." added after the `CLAUDE.md` line.
-5. **§9.** Two bullets added after "Lock before you look": "Claims vs
-   build choices (D72.2, SPEC 2.5)" and "Forward years".
-Nothing else in the file changed.
+| path | size (bytes) | SHA-256 | added by commit |
+|---|---|---|---|
+| `data/raw/openmeteo_previousruns_gfs_global_DSM_2026-08-05_2026-08-15_q27compare.json` | 6630 | `056f251da567acd63ad3008df3a9b8db59b406d1502ae479f7d3ad416b0894ad` | `11de6f54b7d71448642f65415304fa28ea7ba336` |
+| `data/raw/openmeteo_previousruns_gfs_seamless_DSM_2026-08-05_2026-08-15_q27compare.json` | 6629 | `3e1aa911cfbffd7918955b7aee1c85f94206c67e95789b9ecfb25d67fea42d99` | `11de6f54b7d71448642f65415304fa28ea7ba336` |
 
-**F121.7 CLAUDE.md edit (Step 5 only).** In "The three files", one
-paragraph added after the RESULTS.md bullet: PROJECT-INSTRUCTIONS.md is
-the planning chat's guide; Claude Code does not follow it or read it
-routinely, and edits it only when a session prompt says exactly what to
-change. Nothing else in CLAUDE.md changed.
+  Each has a tracked `.meta.txt` sidecar (the pull date and query, SPEC
+  2.3), added by the same commit and also not opened:
+  `..._gfs_global_..._q27compare.json.meta.txt` (1815 bytes,
+  `9a433aa82f23a8c04c93cb9e33af296b53d7843daa5b1ae008551347e9bd3eb3`) and
+  `..._gfs_seamless_..._q27compare.json.meta.txt` (1821 bytes,
+  `ac33a3fad24fa4106417966950296b470c731c44fa99b51c49decdee75ae2ee4`).
+  They are listed here for completeness; A67-15 names the two data files.
 
-**F121.8 DECISIONS-archive.md header (Step 6).**
-- Before: "`DECISIONS.md` also leaves a short pointer at the top of each
-  dated section this file absorbed, naming what moved and why."
-- After: "Since session 77, no pointer is left in DECISIONS.md for a
-  moved entry. An entry's number always resolves in whichever of the two
-  files holds it (DECISIONS D46, D72.9)."
-Nothing else in the header changed.
+**F122.2 Step 1.** D73 was appended to DECISIONS.md under its dated
+heading, before any other edit and before any data was read. Its text was
+copied mechanically (`sed`) from `docs/session-81.md` lines 77–178 and
+checked byte-equal with `diff`.
 
-**F121.9 Archive.** Moved to DECISIONS-archive.md, verbatim, under "Moved
-by session 80 (2026-09-27)", in file order, each with its dated heading:
-- "2026-08-16 — Parked items": the heading and P1–P3 only. D17 and F7
-  stay live.
-- "2026-08-18 — Open question raised by session 18" (Q30), "2026-08-19 —
-  Q30 status update" and "2026-08-20 — Open question raised by session
-  27" (Q32). These three are one contiguous block, moved with the `---`
-  lines between them.
-- Both session 65 blocks (D59 and F110), one contiguous block.
-- The session 75 block (D66).
-Each is settled: D72.9 closes Q30 and Q32 and settles P1–P3; D59 and F110
-are codified in SPEC 8 and RESULTS 6, and D59.5's Q30 branches are
-replaced by D72; D66's order is carried out (D71.7) and its GFS v17 point
-is carried forward by D71.8 and D72.11. Neither STATUS.md's "Next" nor
-any live open question (none remain) cites their wording. Stay live:
-D17, F7, D46, D47, F96, D51, D62, D71, F120, D72 and F121. No pointer is
-left in DECISIONS.md. Where a moved block had a `---` separator on both
-sides, one of the two separators (and its blank line) was removed from
-DECISIONS.md so no double separator is left; separators are not entry
-content, and no entry text was changed.
+**F122.3 Step 2: the training set (`--build`).**
+- Five earlier airports: the `B` files (`grib_features_v16_window.csv`,
+  `grib_features_sealed_window.csv`), the L, D, T, R v16-window,
+  sealed-window and reserved-year files (sessions 49, 51, 53, 55, 63;
+  SPEC 8.1, F107), and the IEM routine observation chunks, with the
+  record script's loading, complete-case and pairing logic (the
+  historical pairing, SPEC 4.5's note; D73.2). Added (SPEC 8.7 item 2): a
+  blank or non-finite value is rejected at load and counted.
+- KSFO: `session76_ksfo_features.csv` and `session76_ksfo_observations.csv`,
+  joined as `session77_ksfo_looks.py` does. SHA-256 both equal D70.2
+  (`f228301e…c5e9`, `b987dd4f…736c`).
+- D's floor transform (SPEC 8.1) applied; complete-case rule (SPEC 8.3).
+- The record script's SHA-256 was checked against D70.2
+  (`9f8af9af…80b4`) before it was imported, read-only, for `LGB_PARAMS`,
+  the G15 column names and `year_fraction`. Every input file's SHA-256 is
+  in the output file.
+- The script stops on any row dated 2026-08-01 or later in any input or in
+  the training set. It did not trip.
 
-**F121.10 What this did not do.**
-- It read no data, ran no script, fit no model and scored nothing.
-- It wrote no stage's detailed design. SPEC 6's roadmap stages are short
-  descriptions only.
-- It changed no earlier verdict or figure. F16, F30, F47, F64, F82, F94,
-  F109 and F119 and their tables stand.
-- It changed CLAUDE.md only by Step 5's paragraph.
-- It did not edit README.md, any script, or anything under `data/`.
-- It wrote no commit message file. Nothing was committed.
+| airport | rows | first | last | 2020-21 | 2021-22 | 2022-23 | 2023-24 | 2024-25 | 2025-26 | dup. dates | non-finite rejected | complete-case dropped | no paired obs. dropped | calendar days with no row |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EGLC | 1953 | 2021-03-24 | 2026-07-31 | 130 | 365 | 364 | 366 | 364 | 364 | 0 | 0 | 0 | 3 | 3 |
+| LFPG | 1953 | 2021-03-24 | 2026-07-31 | 130 | 363 | 365 | 366 | 365 | 364 | 0 | 0 | 0 | 3 | 3 |
+| DSM | 1955 | 2021-03-24 | 2026-07-31 | 130 | 365 | 364 | 366 | 365 | 365 | 0 | 0 | 0 | 0 | 1 |
+| YSDU | 1929 | 2021-03-24 | 2026-07-31 | 130 | 363 | 357 | 363 | 360 | 356 | 0 | 0 | 0 | 26 | 27 |
+| RNO | 1952 | 2021-03-24 | 2026-07-31 | 128 | 365 | 364 | 365 | 365 | 365 | 0 | 0 | 0 | 3 | 4 |
+| KSFO (SFO) | 1952 | 2021-03-24 | 2026-07-31 | 130 | 364 | 364 | 365 | 364 | 365 | 0 | 0 | 0 | 3 | 4 |
 
-**F121.11 Corrections at owner review (same session, before commit).**
-Documentation only, same scope guard. No new number. Items 1 to 3 settle
-items 3, 1 and 2 of the session-80 consistency check.
-1. **RESULTS.md §7, first bullet.** The sentence added this session, " It
-   is parked (DECISIONS D72.9).", → " A terrain descriptor is now parked
-   (DECISIONS D72.9)."
-2. **PROJECT-INSTRUCTIONS.md §2 table, RESULTS.md row.** "The results
-   narrative (both methods)" → "The results narrative (all three
-   methods)".
-3. **PROJECT-INSTRUCTIONS.md §9, "Both held-out years are spent"
-   bullet.** "No untouched held-out year remains at the five airports." →
-   "No untouched held-out year remains at any of the six airports
-   (D71.1)." The bold formatting is kept.
-Nothing was committed and no commit message was written.
+Years are Aug–Jul; "2020-21" is 2021-03-24..2021-07-31. The window has
+1,956 calendar days. Every last date is on or before 2026-07-31. Days with
+no row (listed when 20 or fewer):
+- EGLC: 2023-06-11, 2024-08-14, 2025-11-21.
+- LFPG: 2022-07-23, 2022-07-25, 2026-07-08.
+- DSM: 2022-11-30 (no GRIB row).
+- YSDU: 27 days (1 with no GRIB row, 26 with no paired observation); not
+  listed.
+- RNO: 2021-05-02, 2021-05-03, 2022-11-30, 2024-03-21.
+- KSFO: 2022-03-17, 2022-11-30, 2024-07-13, 2024-12-20.
+No gap was filled. The station column holds the SPEC 3.4 station code, so
+KSFO's rows and model files are named `SFO`.
+
+Saved: `data/processed/session81_training_set.csv`, 11,694 data rows,
+SHA-256 `ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a`.
+Columns: station, target_date, target_hour, the nine G15 columns,
+`temperature_grib_c`, `obs_c`; floats written with `repr`, so they read
+back exactly.
+
+**F122.4 Step 3: the reproduction gate (`--gate`). PASSED.** The same fit
+code as `--freeze`, with only the dates changed. Verification only; no
+verdict. Recorded values from `session63_reserved_confirm_grid.csv` (F109)
+and `session78_ksfo_looks_grid.csv` (F119, look B).
+
+| fold | airport | model | train | test | recomputed | recorded | equal |
+|---|---|---|---|---|---|---|---|
+| F109 | EGLC | B | 1225 | 364 | 1.0860865794631305 | 1.0860865794631305 | yes |
+| F109 | EGLC | B+D,L,R,T | 1225 | 364 | 1.0007550363323212 | 1.0007550363323212 | yes |
+| F109 | LFPG | B | 1224 | 365 | 1.3284737879871744 | 1.3284737879871744 | yes |
+| F109 | LFPG | B+D,L,R,T | 1224 | 365 | 1.2368626165917669 | 1.2368626165917669 | yes |
+| F109 | DSM | B | 1225 | 365 | 1.4401546527480342 | 1.4401546527480342 | yes |
+| F109 | DSM | B+D,L,R,T | 1225 | 365 | 1.4122847644111458 | 1.4122847644111458 | yes |
+| F109 | YSDU | B | 1213 | 360 | 1.3029993377880373 | 1.3029993377880373 | yes |
+| F109 | YSDU | B+D,L,R,T | 1213 | 360 | 1.2642703316294652 | 1.2642703316294652 | yes |
+| F109 | RNO | B | 1222 | 365 | 1.4271639701054912 | 1.4271639701054912 | yes |
+| F109 | RNO | B+D,L,R,T | 1222 | 365 | 1.2741517803385958 | 1.2741517803385958 | yes |
+| KSFO look B | SFO | B | 1587 | 365 | 1.4653639395559965 | 1.4653639395559965 | yes |
+| KSFO look B | SFO | B+D,L,R,T | 1587 | 365 | 1.3830033790440732 | 1.3830033790440732 | yes |
+
+All twelve equal the record exactly. The row counts equal F109's and
+D70.3's.
+
+**F122.5 Step 4: the frozen models (`--freeze`).** Per airport, on all its
+F122.3 rows (2021-03-24..2026-07-31, ascending date), fit once:
+`B+D,L,R,T` (G15 columns, in order) and `B` (the first five). Settings:
+`LGB_PARAMS` (D21.4/D48.6), G14, G17. Saved with the booster's
+`save_model` (LightGBM text format) under `data/models/session81/`.
+Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.
+
+| airport | rows | `<st>_bdlrt.txt` SHA-256 | `<st>_b.txt` SHA-256 | mean-bias constant (°C) |
+|---|---|---|---|---|
+| EGLC | 1953 | `d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110` | `fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461` | -0.21434203789042497 |
+| LFPG | 1953 | `ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e` | `257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022` | -0.16713876088069635 |
+| DSM | 1955 | `260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b` | `e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c` | -0.29022710997442464 |
+| YSDU | 1929 | `12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3` | `6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51` | -0.3155987558320373 |
+| RNO | 1952 | `c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819` | `8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d` | 0.11086936475409828 |
+| KSFO (SFO) | 1952 | `c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6` | `2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3` | 0.02647489754098368 |
+
+The mean-bias constant is mean(`obs_c` − `temperature_grib_c`) over the
+same rows, at full precision (D73.2).
+
+- `data/models/session81/manifest.json`, SHA-256
+  `03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298`. It
+  holds, per airport, the training range, row count, mean-bias constant and
+  both model files' SHA-256; and the training set's SHA-256, the column
+  lists, `LGB_PARAMS` and the Python, numpy and lightgbm versions.
+- **Reload check:** each of the twelve saved models, reloaded with
+  `lightgbm.Booster(model_file=...)`, predicts its own training rows
+  identically to the in-memory model: maximum absolute difference 0.0 in
+  all twelve. No error or MAE was computed on the training rows.
+
+**F122.6 What this did not do.**
+- It read, pulled or built no row dated 2026-08-01 or later, and made no
+  network call. The two A67-15 files were not opened.
+- It computed no score except the Step 3 gate, which re-computed recorded
+  figures only. No MAE or error on the frozen models' training rows.
+- It used only `B+D,L,R,T` and `B`, with the frozen settings. No other
+  feature set, setting, seed or column order.
+- It changed no earlier verdict or figure.
+- It edited no existing script. It wrote no 2026-27 data-build or scoring
+  script (D73.8).
+- It edited SPEC.md only by one sentence at the end of SPEC 6's stage B
+  bullet. It did not edit RESULTS.md, README.md, CLAUDE.md or
+  PROJECT-INSTRUCTIONS.md, and wrote nothing under `data/raw/`.
+- Nothing was committed and no commit message was written.

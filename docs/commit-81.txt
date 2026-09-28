@@ -1,0 +1,34 @@
+Session 81: 2026-27 GFS forward test pre-registered (D73); models frozen (F122)
+
+D73 records the pre-registration of the 2026-27 GFS forward test (D72.5),
+written before any data was read. SPEC 8's B+D,L,R,T at all six airports;
+the year splits at the first operational GFS v17 cycle into period A (v16
+inputs) and period B (v17 inputs, v16-trained model), each judged
+separately against SPEC 5.3. D73.4 amends D72.5: a v17 field's fetch may
+change only if the physical quantity is identical, approved by the owner
+from documentation, never from any 2026-27 score; otherwise period B is
+void. Hold rule (D73.8): period A is not scored until the owner has
+decided whether to pre-register an NBM/NWS MOS comparison on 2026-27.
+Expectation: period A passes at all six; none stated for period B.
+
+F122 records the freeze. The training set (2021-03-24..2026-07-31, 11,694
+rows, committed files only, no row dated 2026-08-01 or later) was built by
+a new script. Its training code first passed a reproduction gate: all
+twelve recorded B and B+D,L,R,T MAEs (F109 fold, KSFO look B) equal at
+full precision. Per airport, one B+D,L,R,T model, one B model and one
+mean-bias constant were then fit once and saved under
+data/models/session81/, with SHA-256 in manifest.json and F122; the
+reload check gave a maximum difference of 0.0 in all twelve.
+
+The two DSM A67-15 files (D62.7, D73.10) are named with SHA-256 in F122
+and were not opened. No 2026-27 value was read or scored. No existing
+script was edited; no earlier verdict or figure changed. SPEC 6's stage B
+bullet gained one pointer sentence. F120 and F121 moved to
+DECISIONS-archive.md.
+
+Files: DECISIONS.md (D73, F122), DECISIONS-archive.md (F120, F121),
+SPEC.md, STATUS.md (overwritten),
+scripts/session81_freeze_forward_models.py,
+data/processed/session81_training_set.csv, data/models/session81/
+(twelve model files and manifest.json), notes/session-81-output.txt,
+docs/session-81.md, docs/commit-81.txt.

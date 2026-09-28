@@ -730,7 +730,9 @@ side, because both are time-critical.
   2026-27 forward test of section 8's recipe on GFS, split at the GFS
   v17 go-live date (DECISIONS D72.5). For any source with no
   downloadable archive, start saving its daily forecasts, all hours and
-  both leads; where to save is decided then (DECISIONS D72.8).
+  both leads; where to save is decided then (DECISIONS D72.8). The
+  2026-27 forward test is pre-registered in DECISIONS D73, and its models
+  are frozen (F122).
 - **Stage C — widen the target, on GFS only.** An hourly temperature
   curve, the daily maximum, and the 48-hour lead. Written with the
   weather model as a setting.
