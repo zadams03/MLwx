@@ -1138,41 +1138,6 @@ same rows, at full precision (D73.2).
 
 ---
 
-## 2026-09-28 — Session 82 decision: SPEC 4.3 wording and the consistency-check rule (owner, planning chat)
-
-**D74. Owner decision, planning chat (after session 81): two
-housekeeping changes, and session 82's plan.** Written at the start of
-session 82, before any network call.
-
-- **D74.1 SPEC 4.3 clarified.** Its sentence "Data after 2026-07-31 is
-  not used, which keeps the test set exactly one calendar year." is
-  replaced by: "For the record's methods (sections 1–6, 7 and 8), data
-  after 2026-07-31 is not used, which keeps the test set exactly one
-  calendar year. The 2026-27 forward year is governed by DECISIONS D73."
-  Why: the old sentence read as a ban on all later data, which D73's
-  forward test contradicts. No method, date, figure or verdict changes.
-  Corrected before commit from 'sections 4, 7 and 8' (session 82
-  consistency check C2; the minimal method is SPEC sections 1–6).
-- **D74.2 Consistency-check findings go into the output file.** From
-  session 82 on, the end-of-session consistency check's findings are
-  written into the session's output file (`notes/session-NN-output.txt`)
-  as well as reported in chat. CLAUDE.md's end-of-session step 3 is
-  amended to say so.
-- **D74.3 Session 82's plan.** Stage A's read-only source probe
-  (D72.3, D72.13): ECMWF (IFS open data and AIFS), ICON (global), GFS's
-  ensemble GEFS, Google's WeatherNext, NBM and NWS MOS, plus whether GFS
-  v17 retrospective runs are public, and Open-Meteo's Previous Runs API
-  as a second route for each model. Read only; no 2026-27 value, no
-  observation, no score, no account. Recorded as F123. It chooses
-  nothing: which sources go forward, where to save (D72.8) and the
-  NBM/MOS outcome rule (D72.7) stay with the owner.
-- **D74.4 GFS v17 (planning-chat web search, 2026-09-28, not checked by
-  this session).** Still no Service Change Notice; only the April 2026
-  proposals (PNS 26-29, 26-30). The SCN is due 30 days before go-live,
-  so the earliest go-live is about late October 2026.
-
----
-
 ## 2026-09-28 — Session 82 finding: stage A's source probe
 
 **F123. Stage A's read-only source probe (D72.3, D74.3). Each source was
@@ -1334,3 +1299,274 @@ outcome rule. Nothing was committed and no commit message was written.
 PNS 26-30 was read in full. It proposes removing the 0.50 and 1.00 degree
 GFS GRIB2 files and says the 0.25 degree pgrb2 files remain available. It is
 a proposal; confirm against the v17 SCN (D73.4).
+
+---
+
+## 2026-09-29 — Session 83 decision: the ICON route check and confidence intervals (owner, planning chat)
+
+**D75. Owner decision, planning chat (after session 82): session 83's
+plan.** Written at the start of session 83, before any network call or
+data read.
+
+- **D75.1 ICON: checked first, decided after.** F123 classed DWD ICON
+  global as "No archive" (about 24 h). The planning chat found two
+  Open-Meteo routes in documentation (2026-09-29, not checked by this
+  session): Previous Runs (`icon_global`, from 2024-01-19, no 850 hPa
+  temperature at any offset, F123.5) and Single Runs (any run by its
+  initialisation time, most models from 2026-04-02; its variable list
+  includes 850 hPa temperature). Session 83 checks, read-only and on
+  valid times no later than 2026-07-31 (F124):
+  (a) the first day `shortwave_radiation_previous_day1` and `_day2` are
+  present, against `temperature_2m_previous_day1`'s floor;
+  (b) whether Single Runs serves `icon_global` from 2026-04-02, with 850
+  hPa temperature, and all four cycles (00, 06, 12, 18 UTC);
+  (c) whether `temperature_2m_previous_day1` at each hour H equals the
+  Single Runs value from the run at floor(H/6)x6 UTC on the day before,
+  at lead 24 + (H mod 6): the GFS convention (F5, F89).
+  The owner decides whether the project saves ICON (D72.8) after
+  reviewing F124. Stated in advance: if 850 hPa temperature is present,
+  the project does not save ICON; if it is absent, the owner chooses
+  between saving ICON natively (to get 850 hPa temperature) and using
+  ICON without feature L.
+- **D75.2 Confidence intervals (stage A; SPEC 5.4, D72.3).** For every
+  result on record: F16, F30, F47, F64, F82 (minimal method), F94
+  (richer method), F109 (selected method) and F119 looks A and B
+  (KSFO). Descriptive only: they change no verdict and are not a new
+  look. They reuse the spent years (sealed 2025-26, reserved 2024-25)
+  descriptively; no verdict, selection or build choice is drawn from
+  them (SPEC 2.5). Gate first: every MAE recomputed must equal its
+  recorded figure at the entry's precision; a result that fails gets no
+  interval. Statistic: the paired per-day MAE difference (reference minus
+  model, degC) and skill (1 - model/reference), model against raw GFS
+  and against persistence, on the days both have. Method: moving-block
+  bootstrap, 7-day blocks, 10,000 resamples, seed 83, 95% percentile
+  interval. Recorded as F125.
+- **D75.3 Carried.** The owner's decision on session 82's MOS near-miss
+  (F123.9) is deferred to the NBM/MOS outcome rule (D72.7, D73.8), and
+  is taken when that rule is written.
+- **D75.4 GFS v17 (planning-chat web search, 2026-09-29, not checked by
+  this session).** Still no Service Change Notice; only the April 2026
+  proposals (PNS 26-29, 26-30). The earliest go-live is about late
+  October 2026.
+
+---
+
+## 2026-09-29 — Session 83 finding: the ICON route check
+
+**F124. A read-only check of Open-Meteo's two ICON routes (D75.1). It
+printed only HTTP status, error reasons, grid metadata, valid-time ranges,
+present/null counts and match counts. Script:
+`scripts/session83_icon_route_check.py` (new; reads the network and
+prints; writes no data file). Full real output:
+`notes/session-83-output.txt`. Run 2026-09-29.**
+
+**F124.1 Steps 0 and 1.**
+- Step 0: `git status --porcelain` showed only `?? docs/session-83.md`.
+  The last entries were D74 and F123; no D75, F124 or F125 existed in
+  either DECISIONS file; neither new script nor the output file existed.
+  D72, D73, D74, F122, F123 and D51, and the archived F5, F89, F16, F30,
+  F47, F64, F82, F94, F109, F119, D21.8, D58 item 6 and D70 were read.
+- Scope note: before D75 was appended, a `head -3` looking for saved
+  predictions printed the header and first two rows of three committed
+  files (`session78_ksfo_looks_predictions.csv`,
+  `session63_reserved_confirm_grid.csv`,
+  `session40_sealed_test_summary.csv`). All are spent-year values already
+  on record. Nothing was scored or used from that print.
+- Step 1: D75 was copied mechanically (`sed`) from `docs/session-83.md`
+  lines 82–125 into DECISIONS.md lines 1342–1385 and checked byte-equal
+  with `diff`. (After this session's archive step moved D74, D75 sits at
+  lines 1307–1350.)
+
+**F124.2 The answers.** EGLC (SPEC 3.4), `icon_global`, default grid-cell
+selection. Every successful response returned grid 51.5, 0.0, 4 m.
+- **(a) Radiation floor, past-run route.** On 2024-01-17..21 (120 hours):
+  `temperature_2m_previous_day1` and `shortwave_radiation_previous_day1`
+  are both first present at 2024-01-19T12:00 (60 present, 60 null each).
+  `shortwave_radiation_previous_day2` is first present at 2024-01-20T12:00
+  (36 present, 84 null), one day later. No widening was needed.
+- **(b) Single Runs.** `run=2026-04-01T18:00`: HTTP 400, "The requested
+  model run is not available. Model: dwd_icon, run: 2026-04-01T18:00Z".
+  `run=2026-04-02T00:00` and `run=2026-07-29T18:00`: HTTP 200, 48 hours
+  each; `temperature_850hPa` 48 present, 0 null; `temperature_2m` 48/0;
+  `shortwave_radiation` 47/1. So 850 hPa temperature is served from
+  2026-04-02 in both runs checked. Cycles: 00, 06 and 12 UTC answered on
+  2026-06-10 and 18 UTC on 2026-07-29, but `run=2026-06-10T18:00` returned
+  HTTP 400 ("not available"). All four cycles exist in the archive, but
+  not on every day checked.
+- **(c) Timing.** 18 of 24 hours of 2026-06-11 match: at hours 00–17 the
+  past-run `temperature_2m_previous_day1` equals exactly the Single Runs
+  value from the run at floor(H/6)x6 UTC on 2026-06-10, lead 24 + (H mod
+  6). Hours 18–23 could not be tested, because that run (2026-06-10 18z)
+  is not available. For those hours an equal value was found in other
+  2026-06-10 runs at hours 20 (00z, 12z), 21 (12z) and 22 (06z, 12z), and
+  in none at 18, 19 and 23. These equalities are not interpreted:
+  they are single-value coincidences, not a run pattern. Of the five
+  requests, the four that answered were fully present (past run 24/0; the
+  00z, 06z and 12z runs 54/0 each); the 18z run returned HTTP 400.
+
+**F124.3 Notes.** No request needed a retry. HTTP 400 answers ("run not
+available") were final and not retried; only network errors, 429 and 5xx
+would have been. No response held a valid time after 2026-07-31T23:00
+(the latest was 2026-07-31T17:00).
+
+**F124.4 What this did not do.**
+- No forecast value was printed or saved.
+- No observation was read, and nothing was scored.
+- No valid time after 2026-07-31 was requested or received.
+- No ICON decision: whether the project saves ICON is the owner's, from
+  this finding (D75.1).
+- It wrote nothing under `data/`, edited no existing script, and
+  installed nothing.
+
+---
+
+## 2026-09-29 — Session 83 finding: confidence intervals for the results on record
+
+**F125. Offline. 95% moving-block bootstrap intervals (D75.2) for the
+paired per-day MAE difference d = MAE(reference) − MAE(model), in °C, and
+for skill = 1 − MAE(model)/MAE(reference), in %, for all 17
+airport-results on record, against raw GFS and against persistence. All
+17 passed the reproduction gate. Script:
+`scripts/session83_confidence_intervals.py` (new; reads committed files
+only; writes nothing). Full real output: `notes/session-83-output.txt`.
+Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+**F125.1 Where the per-day errors came from.**
+- **Saved predictions:** only KSFO's (F119):
+  `data/processed/session78_ksfo_looks_predictions.csv`, SHA-256
+  `b4b46adc…d78e`, equal to F119.4. Used as saved; no refit.
+- **Minimal method (F16–F82):** refit by the record scripts' own
+  functions (`session07`, `13`, `18`, `24`, `29_test.py`). Each script
+  calls `main()` when imported, which would overwrite its committed
+  output note. So each file was parsed and run without three top-level
+  statements: its docstring, its libomp loader shim (already run by the
+  import below) and the bare `main()` call. Then `main()`'s own steps were
+  called in order: `prove_it_matches_the_lock()` (its assertions did not
+  trip), `join()` (reconciled: yes at all five), `fit_on_training()` and
+  `score_test_year()`. Their printed text was suppressed.
+- **F94:** functions imported from `session39_sealed_test.py`, following
+  `run_airport()` step by step, with its guards applied as it applies
+  them (in-window dates, row assertions, training-row reconciliation,
+  sealed-row ceiling). Only the 5-feature model was fitted.
+- **F109:** functions imported from `session62_reserved_confirm.py`
+  (SHA-256 checked against D70.2 first), following `run_confirm()` step
+  by step, with its two guards. As F122.4. The session-48 guard was not
+  called, edited or disabled.
+- All seven record scripts were unchanged against HEAD; their SHA-256 are
+  in the output file. No file was written, and no `__pycache__` file was
+  added.
+- **For the owner:** 3.2 of the session prompt says "from committed
+  processed files only". The record code for the minimal method, F94 and
+  F109 also reads committed raw files, read-only: the Open-Meteo JSON
+  chunks (minimal method) and the IEM observation chunks (all three), as
+  F122.3 did. No processed file exists for the minimal method. This
+  session followed the record code rather than stop.
+
+**F125.2 The gate.** Every MAE (model, raw GFS, persistence) equals the
+entry's recorded figure at the entry's printed precision, and every day
+count equals the entry's.
+
+| result | precision | EGLC | LFPG | DSM | YSDU | RNO |
+|---|---|---|---|---|---|---|
+| minimal (F16, F30, F47, F64, F82) | 3 dp | pass (363) | pass (363) | pass (365) | pass (347) | pass (365) |
+| F94 | 3 dp | pass (364/363) | pass (364/363) | pass (365/365) | pass (356/347) | pass (365/365) |
+| F109 | 4 dp | pass (364/363) | pass (365/365) | pass (365/365) | pass (360/355) | pass (365/365) |
+
+| result | precision | look A | look B |
+|---|---|---|---|
+| F119 (KSFO) | full (repr) | pass (364/363) | pass (365/365) |
+
+Days are model and raw GFS / persistence. **17 of 17 pass.**
+
+**F125.3 Method, as D75.2 and the session prompt's 3.3.** Paired days =
+days on which both the model and the reference have an error, ordered by
+date: the common day set for the minimal method; every test day for raw
+GFS and the persistence day set for persistence in the others. Blocks of
+7 consecutive days, starts uniform on 0..n−7, ceil(n/7) blocks truncated
+to n, the same resampled days for model and reference. 10,000 resamples,
+`numpy.random.default_rng(83)`, one generator, in the order of the tables
+below, raw GFS before persistence. 2.5th and 97.5th percentiles.
+
+**F125.4 Minimal method (F16–F82), sealed year 2025-26, one common day
+set.**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 363 | +0.202 [+0.096, +0.298] | +16.3 [+8.5, +22.1] | yes |
+| EGLC | persistence | 363 | +1.056 [+0.830, +1.262] | +50.4 [+43.0, +56.3] | yes |
+| LFPG | raw GFS | 363 | +0.188 [+0.070, +0.301] | +13.5 [+5.5, +20.3] | yes |
+| LFPG | persistence | 363 | +1.092 [+0.847, +1.291] | +47.5 [+39.8, +53.2] | yes |
+| DSM | raw GFS | 365 | +0.115 [−0.071, +0.287] | +6.3 [−4.2, +14.8] | no |
+| DSM | persistence | 365 | +2.303 [+1.862, +2.823] | +57.5 [+51.5, +62.8] | yes |
+| YSDU | raw GFS | 347 | +0.041 [−0.058, +0.146] | +3.3 [−4.9, +11.1] | no |
+| YSDU | persistence | 347 | +1.458 [+1.135, +1.842] | +54.7 [+47.1, +61.3] | yes |
+| RNO | raw GFS | 365 | −0.044 [−0.179, +0.127] | −3.1 [−13.4, +8.1] | no |
+| RNO | persistence | 365 | +1.032 [+0.750, +1.344] | +41.4 [+32.4, +49.7] | yes |
+
+Raw GFS here is Open-Meteo's (SPEC 5.2).
+
+**F125.5 Richer 5-feature method (F94), sealed year 2025-26.**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 364 | +0.254 [+0.151, +0.347] | +20.2 [+13.7, +25.0] | yes |
+| EGLC | persistence | 363 | +1.096 [+0.872, +1.302] | +52.3 [+45.2, +57.8] | yes |
+| LFPG | raw GFS | 364 | +0.226 [+0.114, +0.332] | +16.4 [+8.9, +22.6] | yes |
+| LFPG | persistence | 363 | +1.144 [+0.904, +1.342] | +49.7 [+42.5, +55.5] | yes |
+| DSM | raw GFS | 365 | +0.098 [−0.078, +0.266] | +5.6 [−4.8, +14.6] | no |
+| DSM | persistence | 365 | +2.367 [+1.924, +2.855] | +59.1 [+53.4, +64.1] | yes |
+| YSDU | raw GFS | 356 | +0.138 [+0.033, +0.251] | +10.5 [+2.6, +18.2] | yes |
+| YSDU | persistence | 347 | +1.504 [+1.169, +1.891] | +56.3 [+49.1, +62.9] | yes |
+| RNO | raw GFS | 365 | +0.166 [−0.017, +0.396] | +11.0 [−1.3, +22.6] | no |
+| RNO | persistence | 365 | +1.144 [+0.874, +1.436] | +45.9 [+38.4, +52.7] | yes |
+
+**F125.6 Selected method `B+D,L,R,T` (F109), reserved year 2024-25.**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 364 | +0.235 [+0.146, +0.312] | +19.0 [+12.6, +24.2] | yes |
+| EGLC | persistence | 363 | +1.224 [+0.995, +1.479] | +55.0 [+48.5, +61.2] | yes |
+| LFPG | raw GFS | 365 | +0.172 [+0.090, +0.263] | +12.2 [+6.8, +17.6] | yes |
+| LFPG | persistence | 365 | +1.286 [+1.016, +1.548] | +51.0 [+43.0, +57.5] | yes |
+| DSM | raw GFS | 365 | +0.292 [+0.118, +0.491] | +17.1 [+7.4, +27.0] | yes |
+| DSM | persistence | 365 | +2.696 [+2.263, +3.228] | +65.6 [+60.8, +70.3] | yes |
+| YSDU | raw GFS | 360 | +0.225 [+0.111, +0.354] | +15.1 [+7.9, +22.3] | yes |
+| YSDU | persistence | 355 | +1.333 [+1.077, +1.598] | +51.7 [+44.9, +57.9] | yes |
+| RNO | raw GFS | 365 | +0.339 [+0.190, +0.532] | +21.0 [+13.2, +28.5] | yes |
+| RNO | persistence | 365 | +1.482 [+1.190, +1.807] | +53.8 [+46.3, +60.4] | yes |
+
+**F125.7 Selected method `B+D,L,R,T` at KSFO (F119).** D71.5's framing
+applies.
+
+| look | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| A (2024-25) | raw GFS | 364 | +0.169 [+0.032, +0.295] | +11.8 [+2.4, +20.0] | yes |
+| A (2024-25) | persistence | 363 | +0.255 [+0.058, +0.453] | +16.9 [+4.1, +28.2] | yes |
+| B (2025-26) | raw GFS | 365 | +0.349 [+0.198, +0.508] | +20.2 [+12.7, +26.8] | yes |
+| B (2025-26) | persistence | 365 | +0.334 [+0.047, +0.581] | +19.5 [+2.9, +31.7] | yes |
+
+Raw GFS in F125.5–F125.7 is the elevation-adjusted GRIB temperature (SPEC
+5.2).
+
+**F125.8 Point estimates on the persistence day set.** Where that set is
+smaller than the test set, the model's MAE on it differs from the recorded
+all-day figure, so the d and skill above differ slightly from the recorded
+margins: F94 EGLC model 1.0008 (recorded 1.000), LFPG 1.1568 (1.156), YSDU
+1.1650 (1.179; as F94 Task 2 found); F109 EGLC 1.0023 (1.0008), YSDU
+1.2446 (1.2643); F119 look A 1.2562 (1.2576, as F119.3's common-day
+re-score). Elsewhere the two sets are the same.
+
+**F125.9 Statements.**
+- These intervals describe day-to-day sampling within one test year
+  only. They do not capture year-to-year variation (see F96).
+- The five airports in F16–F82, F94 and F109 share each test year's
+  weather, so their intervals are not independent.
+- These intervals change no verdict (D75.2).
+
+**F125.10 What this did not do.**
+- Nothing was refit differently, retuned, reselected or re-locked. Every
+  model was refit exactly as recorded, or its saved predictions were used.
+- No network call.
+- Nothing was written under `data/`, and no existing script was edited.
+- No verdict changed.
+- Nothing was committed and no commit message was written.

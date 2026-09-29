@@ -1,0 +1,676 @@
+Session 83 output (docs/session-83.md). Real output, pasted as printed.
+
+==============================================================================
+Step 0 - integrity checks
+==============================================================================
+$ git status --porcelain
+?? docs/session-83.md
+
+Last entries in DECISIONS.md: D74 (line 1143), F123 (line 1178).
+grep for "D75", "F124", "F125" in DECISIONS.md and DECISIONS-archive.md:
+no match (grep exit 1).
+Path checks:
+absent scripts/session83_icon_route_check.py
+absent scripts/session83_confidence_intervals.py
+absent notes/session-83-output.txt
+
+Read: D72 (D72.3, D72.7, D72.8), D73, D74, F122, F123 (F123.5, F123.7),
+D51 in DECISIONS.md; F5, F89, F16, F30, F47, F64, F82, F94, F109, F119,
+D21.8, D58 item 6 and D70 in DECISIONS-archive.md.
+
+Scope note: while looking for saved per-day predictions, before D75 was
+appended, `head -3` printed the header and first two data rows of three
+committed files: data/processed/session78_ksfo_looks_predictions.csv (two
+look-A rows, 2024-08-01 and 2024-08-02), session63_reserved_confirm_grid.csv
+(recorded F109 MAEs) and session40_sealed_test_summary.csv (recorded F94
+MAEs). All are spent-year values already on record. Nothing was scored or
+used from that print.
+
+==============================================================================
+Step 1 - D75
+==============================================================================
+Appended to DECISIONS.md under the dated heading (line 1340), after a
+"---" separator. Text copied with sed from docs/session-83.md lines 82-125
+into DECISIONS.md lines 1342-1385.
+$ diff <(sed -n '82,125p' docs/session-83.md) <(sed -n '1342,1385p' DECISIONS.md) && echo BYTE-EQUAL
+BYTE-EQUAL
+
+==============================================================================
+Step 2 - ICON route check (F124)
+$ .venv/bin/python -B scripts/session83_icon_route_check.py   (exit 0)
+==============================================================================
+Session 83, Step 2: ICON route check (DECISIONS D75.1)
+run at   : 2026-09-29 12:37:02 local
+python   : 3.12.2, requests 2.34.2
+location : EGLC, latitude 51.5053, longitude 0.0553 (SPEC 3.4); model icon_global; default grid-cell selection
+scope    : no valid time after 2026-07-31T23:00; no value printed
+
+==============================================================================
+2(a) Radiation floor on the past-run route (Previous Runs API)
+==============================================================================
+
+  [2(a) window 2024-01-17..2024-01-21]
+    URL    : https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&hourly=shortwave_radiation_previous_day1%2Cshortwave_radiation_previous_day2%2Ctemperature_2m_previous_day1&start_date=2024-01-17&end_date=2024-01-21
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2024-01-17T00:00 .. 2024-01-21T23:00  (120 hours)
+    shortwave_radiation_previous_day1        present    60, null    60
+    shortwave_radiation_previous_day2        present    36, null    84
+    temperature_2m_previous_day1             present    60, null    60
+    first present valid time, shortwave_radiation_previous_day1 : 2024-01-19T12:00
+    first present valid time, shortwave_radiation_previous_day2 : 2024-01-20T12:00
+    first present valid time, temperature_2m_previous_day1      : 2024-01-19T12:00
+
+  2(a) answer (counts only):
+    shortwave_radiation_previous_day1        first present: 2024-01-19T12:00
+    shortwave_radiation_previous_day2        first present: 2024-01-20T12:00
+    temperature_2m_previous_day1             first present: 2024-01-19T12:00
+
+==============================================================================
+2(b) Single Runs: floor, 850 hPa temperature, 18z cycle
+==============================================================================
+
+  [2(b) run=2026-04-01T18:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-04-01T18%3A00&hourly=temperature_850hPa%2Ctemperature_2m%2Cshortwave_radiation&forecast_hours=48
+    status : HTTP 400
+    reason : The requested model run is not available. Model: dwd_icon, run: 2026-04-01T18:00Z
+
+  [2(b) run=2026-04-02T00:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-04-02T00%3A00&hourly=temperature_850hPa%2Ctemperature_2m%2Cshortwave_radiation&forecast_hours=48
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-04-02T00:00 .. 2026-04-03T23:00  (48 hours)
+    temperature_850hPa                       present    48, null     0
+    temperature_2m                           present    48, null     0
+    shortwave_radiation                      present    47, null     1
+
+  [2(b) run=2026-07-29T18:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-07-29T18%3A00&hourly=temperature_850hPa%2Ctemperature_2m%2Cshortwave_radiation&forecast_hours=48
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-07-29T18:00 .. 2026-07-31T17:00  (48 hours)
+    temperature_850hPa                       present    48, null     0
+    temperature_2m                           present    48, null     0
+    shortwave_radiation                      present    47, null     1
+
+==============================================================================
+2(c) Timing: past-run previous_day1 against Single Runs, 2026-06-11
+==============================================================================
+
+  [2(c) past run, 2026-06-11]
+    URL    : https://previous-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&hourly=temperature_2m_previous_day1&start_date=2026-06-11&end_date=2026-06-11
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-06-11T00:00 .. 2026-06-11T23:00  (24 hours)
+    temperature_2m_previous_day1             present    24, null     0
+
+  [2(c) single run=2026-06-10T00:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-06-10T00%3A00&hourly=temperature_2m&forecast_hours=54
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-06-10T00:00 .. 2026-06-12T05:00  (54 hours)
+    temperature_2m                           present    54, null     0
+
+  [2(c) single run=2026-06-10T06:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-06-10T06%3A00&hourly=temperature_2m&forecast_hours=54
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-06-10T06:00 .. 2026-06-12T11:00  (54 hours)
+    temperature_2m                           present    54, null     0
+
+  [2(c) single run=2026-06-10T12:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-06-10T12%3A00&hourly=temperature_2m&forecast_hours=54
+    status : HTTP 200
+    grid   : latitude 51.5, longitude 0.0, elevation 4.0 m
+    valid times: 2026-06-10T12:00 .. 2026-06-12T17:00  (54 hours)
+    temperature_2m                           present    54, null     0
+
+  [2(c) single run=2026-06-10T18:00]
+    URL    : https://single-runs-api.open-meteo.com/v1/forecast?latitude=51.5053&longitude=0.0553&models=icon_global&run=2026-06-10T18%3A00&hourly=temperature_2m&forecast_hours=54
+    status : HTTP 400
+    reason : The requested model run is not available. Model: dwd_icon, run: 2026-06-10T18:00Z
+    run 2026-06-10T18:00: no usable response
+
+  2(c) answer: 18 of 24 hours match the run at floor(H/6)x6 UTC on 2026-06-10, lead 24 + (H mod 6).
+    hour 18: no match (expected run's value null or missing); equal in other 2026-06-10 runs: none
+    hour 19: no match (expected run's value null or missing); equal in other 2026-06-10 runs: none
+    hour 20: no match (expected run's value null or missing); equal in other 2026-06-10 runs: 00z, 12z
+    hour 21: no match (expected run's value null or missing); equal in other 2026-06-10 runs: 12z
+    hour 22: no match (expected run's value null or missing); equal in other 2026-06-10 runs: 06z, 12z
+    hour 23: no match (expected run's value null or missing); equal in other 2026-06-10 runs: none
+
+END. No value was printed or saved. No observation was read.
+
+==============================================================================
+Step 3 - confidence intervals (F125)
+$ .venv/bin/python -B scripts/session83_confidence_intervals.py   (exit 0)
+==============================================================================
+Session 83, Step 3: confidence intervals (DECISIONS D75.2)
+run at   : 2026-09-29 12:39:26 local
+python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+offline; committed files only; nothing written
+bootstrap: moving block, block 7, 10,000 resamples, numpy.random.default_rng(83), 95% percentile interval
+
+Scripts used (read-only), SHA-256 and whether unchanged against HEAD:
+    scripts/session07_test.py                  4ae042b432b1e849c83b4b3bec0cf4cf6b84441bf49173acdad7d7dec56c7252  unchanged
+    scripts/session13_test.py                  751b24f57ea40b292e9d51630924914e2b0b9c36d72ad5b81e5e76653f0493d7  unchanged
+    scripts/session18_test.py                  a83f5bb474a4d813dc2aefe365e048c2d14d872d0dc01a83bd88182f557cb72e  unchanged
+    scripts/session24_test.py                  6a4d52637ccda5d464450948ffbe2ad580da74060e4f2c1fdbf5af1be0948760  unchanged
+    scripts/session29_test.py                  2a18635c003b0bbbdea7579c8f583f081378edbec817cd2697cd06112f2b1753  unchanged
+    scripts/session39_sealed_test.py           375e4eb69bb06c006a97a4474abce0a6027670123093dc0df3cb5bc0c9da5fca  unchanged
+    scripts/session62_reserved_confirm.py      9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  unchanged
+    data/processed/session78_ksfo_looks_predictions.csv b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e  unchanged
+
+==============================================================================
+3.2 Per-day errors and the reproduction gate
+==============================================================================
+
+  F16 EGLC
+    script: session07_test.py
+    skipped: ['line 1: module docstring', 'line 60: libomp loader shim', 'line 1022: main() call']
+    reconciled: True
+    n_train: 1569
+    n_test_paired: 364
+    lock_check: passed (assertions did not trip)
+    suppressed_chars: 15980
+    EGLC: gate at 3 dp
+      model        recomputed 1.040                recorded 1.040                equal   (full: 1.0401057490945265)
+      raw GFS      recomputed 1.242                recorded 1.242                equal   (full: 1.2421487603305785)
+      persistence  recomputed 2.096                recorded 2.096                equal   (full: 2.0964187327823693)
+      days: model/raw 363 (entry 363), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F30 LFPG
+    script: session13_test.py
+    skipped: ['line 1: module docstring', 'line 66: libomp loader shim', 'line 1365: main() call']
+    reconciled: True
+    n_train: 1569
+    n_test_paired: 364
+    lock_check: passed (assertions did not trip)
+    suppressed_chars: 22190
+    LFPG: gate at 3 dp
+      model        recomputed 1.208                recorded 1.208                equal   (full: 1.2078061833833806)
+      raw GFS      recomputed 1.396                recorded 1.396                equal   (full: 1.3961432506887053)
+      persistence  recomputed 2.300                recorded 2.300                equal   (full: 2.3002754820936637)
+      days: model/raw 363 (entry 363), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F47 DSM
+    script: session18_test.py
+    skipped: ['line 1: module docstring', 'line 76: libomp loader shim', 'line 1632: main() call']
+    reconciled: True
+    n_train: 1571
+    n_test_paired: 365
+    lock_check: passed (assertions did not trip)
+    suppressed_chars: 27226
+    DSM: gate at 3 dp
+      model        recomputed 1.700                recorded 1.700                equal   (full: 1.7001437491389502)
+      raw GFS      recomputed 1.815                recorded 1.815                equal   (full: 1.8147671232876714)
+      persistence  recomputed 4.003                recorded 4.003                equal   (full: 4.002904109589042)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F64 YSDU
+    script: session24_test.py
+    skipped: ['line 1: module docstring', 'line 90: libomp loader shim', 'line 1725: main() call']
+    reconciled: True
+    n_train: 1553
+    n_test_paired: 356
+    lock_check: passed (assertions did not trip)
+    suppressed_chars: 27441
+    YSDU: gate at 3 dp
+      model        recomputed 1.210                recorded 1.210                equal   (full: 1.2101566738801068)
+      raw GFS      recomputed 1.251                recorded 1.251                equal   (full: 1.2512968299711817)
+      persistence  recomputed 2.669                recorded 2.669                equal   (full: 2.6685878962536025)
+      days: model/raw 347 (entry 347), persistence 347 (entry 347)  equal
+      GATE: PASSED
+
+  F82 RNO
+    script: session29_test.py
+    skipped: ['line 1: module docstring', 'line 96: libomp loader shim', 'line 1796: main() call']
+    reconciled: True
+    n_train: 1568
+    n_test_paired: 365
+    lock_check: passed (assertions did not trip)
+    suppressed_chars: 24955
+    RNO: gate at 3 dp
+      model        recomputed 1.458                recorded 1.458                equal   (full: 1.458419705971219)
+      raw GFS      recomputed 1.414                recorded 1.414                equal   (full: 1.413945205479452)
+      persistence  recomputed 2.490                recorded 2.490                equal   (full: 2.4901095890410954)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F94 EGLC
+    n_train: 1589
+    n_test: 364
+    expected_train: 1589
+    sealed_ceiling: 364
+    EGLC: gate at 3 dp
+      model        recomputed 1.000                recorded 1.000                equal   (full: 0.9999509571126725)
+      raw GFS      recomputed 1.254                recorded 1.254                equal   (full: 1.2536181318681319)
+      persistence  recomputed 2.096                recorded 2.096                equal   (full: 2.0964187327823693)
+      days: model/raw 364 (entry 364), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F94 LFPG
+    n_train: 1589
+    n_test: 364
+    expected_train: 1589
+    sealed_ceiling: 364
+    LFPG: gate at 3 dp
+      model        recomputed 1.156                recorded 1.156                equal   (full: 1.1561349092086652)
+      raw GFS      recomputed 1.382                recorded 1.382                equal   (full: 1.382241758241758)
+      persistence  recomputed 2.300                recorded 2.300                equal   (full: 2.3002754820936637)
+      days: model/raw 364 (entry 364), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F94 DSM
+    n_train: 1590
+    n_test: 365
+    expected_train: 1590
+    sealed_ceiling: 365
+    DSM: gate at 3 dp
+      model        recomputed 1.636                recorded 1.636                equal   (full: 1.635835181121372)
+      raw GFS      recomputed 1.733                recorded 1.733                equal   (full: 1.7334109589041098)
+      persistence  recomputed 4.003                recorded 4.003                equal   (full: 4.002904109589042)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F94 YSDU
+    n_train: 1573
+    n_test: 356
+    expected_train: 1573
+    sealed_ceiling: 356
+    YSDU: gate at 3 dp
+      model        recomputed 1.179                recorded 1.179                equal   (full: 1.1785861194088123)
+      raw GFS      recomputed 1.317                recorded 1.317                equal   (full: 1.316744382022472)
+      persistence  recomputed 2.669                recorded 2.669                equal   (full: 2.6685878962536025)
+      days: model/raw 356 (entry 356), persistence 347 (entry 347)  equal
+      GATE: PASSED
+
+  F94 RNO
+    n_train: 1587
+    n_test: 365
+    expected_train: 1587
+    sealed_ceiling: 365
+    RNO: gate at 3 dp
+      model        recomputed 1.346                recorded 1.346                equal   (full: 1.3459947987411824)
+      raw GFS      recomputed 1.512                recorded 1.512                equal   (full: 1.511630136986301)
+      persistence  recomputed 2.490                recorded 2.490                equal   (full: 2.4901095890410954)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F109 EGLC
+    n_train: 1225
+    n_test: 364
+    no_obs_dropped: 1
+    EGLC: gate at 4 dp
+      model        recomputed 1.0008               recorded 1.0008               equal   (full: 1.0007550363323212)
+      raw GFS      recomputed 1.2362               recorded 1.2362               equal   (full: 1.23621978021978)
+      persistence  recomputed 2.2259               recorded 2.2259               equal   (full: 2.2258953168044076)
+      days: model/raw 364 (entry 364), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F109 LFPG
+    n_train: 1224
+    n_test: 365
+    no_obs_dropped: 0
+    LFPG: gate at 4 dp
+      model        recomputed 1.2369               recorded 1.2369               equal   (full: 1.2368626165917669)
+      raw GFS      recomputed 1.4091               recorded 1.4091               equal   (full: 1.4091397260273972)
+      persistence  recomputed 2.5233               recorded 2.5233               equal   (full: 2.5232876712328767)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F109 DSM
+    n_train: 1225
+    n_test: 365
+    no_obs_dropped: 0
+    DSM: gate at 4 dp
+      model        recomputed 1.4123               recorded 1.4123               equal   (full: 1.4122847644111458)
+      raw GFS      recomputed 1.7043               recorded 1.7043               equal   (full: 1.7043452054794521)
+      persistence  recomputed 4.1081               recorded 4.1081               equal   (full: 4.10813698630137)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F109 YSDU
+    n_train: 1213
+    n_test: 360
+    no_obs_dropped: 5
+    YSDU: gate at 4 dp
+      model        recomputed 1.2643               recorded 1.2643               equal   (full: 1.2642703316294652)
+      raw GFS      recomputed 1.4897               recorded 1.4897               equal   (full: 1.4896583333333335)
+      persistence  recomputed 2.5775               recorded 2.5775               equal   (full: 2.5774647887323945)
+      days: model/raw 360 (entry 360), persistence 355 (entry 355)  equal
+      GATE: PASSED
+
+  F109 RNO
+    n_train: 1222
+    n_test: 365
+    no_obs_dropped: 0
+    RNO: gate at 4 dp
+      model        recomputed 1.2742               recorded 1.2742               equal   (full: 1.2741517803385958)
+      raw GFS      recomputed 1.6135               recorded 1.6135               equal   (full: 1.6134575342465751)
+      persistence  recomputed 2.7563               recorded 2.7563               equal   (full: 2.7562739726027394)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+  F119 look A (KSFO)
+    n_test: 364
+    source: data/processed/session78_ksfo_looks_predictions.csv
+    A: gate at full precision (repr)
+      model        recomputed 1.2575770731513778   recorded 1.2575770731513778   equal   (full: 1.2575770731513778)
+      raw GFS      recomputed 1.4262582417582421   recorded 1.4262582417582421   equal   (full: 1.4262582417582421)
+      persistence  recomputed 1.5112947658402205   recorded 1.5112947658402205   equal   (full: 1.5112947658402205)
+      days: model/raw 364 (entry 364), persistence 363 (entry 363)  equal
+      GATE: PASSED
+
+  F119 look B (KSFO)
+    n_test: 365
+    source: data/processed/session78_ksfo_looks_predictions.csv
+    B: gate at full precision (repr)
+      model        recomputed 1.3830033790440732   recorded 1.3830033790440732   equal   (full: 1.3830033790440732)
+      raw GFS      recomputed 1.7321205479452053   recorded 1.7321205479452053   equal   (full: 1.7321205479452053)
+      persistence  recomputed 1.717232876712329    recorded 1.717232876712329    equal   (full: 1.717232876712329)
+      days: model/raw 365 (entry 365), persistence 365 (entry 365)  equal
+      GATE: PASSED
+
+==============================================================================
+3.3 The intervals (d = MAE(reference) - MAE(model), degC; skill = 1 - model/reference, %)
+==============================================================================
+
+  F16 EGLC
+    vs raw GFS     n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.0401, raw GFS 1.2421
+      d     = +0.2020 degC   95% [+0.0958, +0.2979]   wholly above zero: yes
+      skill = +16.27%        95% [+8.51%, +22.14%]
+    vs persistence n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.0401, persistence 2.0964
+      d     = +1.0563 degC   95% [+0.8305, +1.2624]   wholly above zero: yes
+      skill = +50.39%        95% [+43.00%, +56.34%]
+
+  F30 LFPG
+    vs raw GFS     n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.2078, raw GFS 1.3961
+      d     = +0.1883 degC   95% [+0.0702, +0.3007]   wholly above zero: yes
+      skill = +13.49%        95% [+5.48%, +20.26%]
+    vs persistence n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.2078, persistence 2.3003
+      d     = +1.0925 degC   95% [+0.8466, +1.2906]   wholly above zero: yes
+      skill = +47.49%        95% [+39.77%, +53.25%]
+
+  F47 DSM
+    vs raw GFS     n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.7001, raw GFS 1.8148
+      d     = +0.1146 degC   95% [-0.0709, +0.2868]   wholly above zero: no
+      skill = +6.32%        95% [-4.24%, +14.85%]
+    vs persistence n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.7001, persistence 4.0029
+      d     = +2.3028 degC   95% [+1.8619, +2.8226]   wholly above zero: yes
+      skill = +57.53%        95% [+51.48%, +62.84%]
+
+  F64 YSDU
+    vs raw GFS     n=347  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.2102, raw GFS 1.2513
+      d     = +0.0411 degC   95% [-0.0579, +0.1456]   wholly above zero: no
+      skill = +3.29%        95% [-4.88%, +11.06%]
+    vs persistence n=347  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.2102, persistence 2.6686
+      d     = +1.4584 degC   95% [+1.1347, +1.8420]   wholly above zero: yes
+      skill = +54.65%        95% [+47.15%, +61.34%]
+
+  F82 RNO
+    vs raw GFS     n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.4584, raw GFS 1.4139
+      d     = -0.0445 degC   95% [-0.1790, +0.1265]   wholly above zero: no
+      skill = -3.15%        95% [-13.44%, +8.14%]
+    vs persistence n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.4584, persistence 2.4901
+      d     = +1.0317 degC   95% [+0.7499, +1.3441]   wholly above zero: yes
+      skill = +41.43%        95% [+32.40%, +49.65%]
+
+  F94 EGLC
+    vs raw GFS     n=364  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.0000, raw GFS 1.2536
+      d     = +0.2537 degC   95% [+0.1506, +0.3469]   wholly above zero: yes
+      skill = +20.23%        95% [+13.68%, +24.97%]
+    vs persistence n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.0008, persistence 2.0964
+      d     = +1.0956 degC   95% [+0.8723, +1.3023]   wholly above zero: yes
+      skill = +52.26%        95% [+45.21%, +57.80%]
+
+  F94 LFPG
+    vs raw GFS     n=364  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.1561, raw GFS 1.3822
+      d     = +0.2261 degC   95% [+0.1141, +0.3316]   wholly above zero: yes
+      skill = +16.36%        95% [+8.91%, +22.64%]
+    vs persistence n=363  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.1568, persistence 2.3003
+      d     = +1.1435 degC   95% [+0.9037, +1.3419]   wholly above zero: yes
+      skill = +49.71%        95% [+42.46%, +55.49%]
+
+  F94 DSM
+    vs raw GFS     n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.6358, raw GFS 1.7334
+      d     = +0.0976 degC   95% [-0.0781, +0.2656]   wholly above zero: no
+      skill = +5.63%        95% [-4.76%, +14.63%]
+    vs persistence n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.6358, persistence 4.0029
+      d     = +2.3671 degC   95% [+1.9242, +2.8546]   wholly above zero: yes
+      skill = +59.13%        95% [+53.43%, +64.15%]
+
+  F94 YSDU
+    vs raw GFS     n=356  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.1786, raw GFS 1.3167
+      d     = +0.1382 degC   95% [+0.0330, +0.2511]   wholly above zero: yes
+      skill = +10.49%        95% [+2.65%, +18.18%]
+    vs persistence n=347  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.1650, persistence 2.6686
+      d     = +1.5036 degC   95% [+1.1687, +1.8908]   wholly above zero: yes
+      skill = +56.35%        95% [+49.08%, +62.91%]
+
+  F94 RNO
+    vs raw GFS     n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.3460, raw GFS 1.5116
+      d     = +0.1656 degC   95% [-0.0174, +0.3958]   wholly above zero: no
+      skill = +10.96%        95% [-1.33%, +22.59%]
+    vs persistence n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.3460, persistence 2.4901
+      d     = +1.1441 degC   95% [+0.8735, +1.4361]   wholly above zero: yes
+      skill = +45.95%        95% [+38.37%, +52.68%]
+
+  F109 EGLC
+    vs raw GFS     n=364  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.0008, raw GFS 1.2362
+      d     = +0.2355 degC   95% [+0.1459, +0.3122]   wholly above zero: yes
+      skill = +19.05%        95% [+12.61%, +24.19%]
+    vs persistence n=363  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.0023, persistence 2.2259
+      d     = +1.2236 degC   95% [+0.9947, +1.4794]   wholly above zero: yes
+      skill = +54.97%        95% [+48.51%, +61.16%]
+
+  F109 LFPG
+    vs raw GFS     n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2369, raw GFS 1.4091
+      d     = +0.1723 degC   95% [+0.0898, +0.2633]   wholly above zero: yes
+      skill = +12.23%        95% [+6.79%, +17.58%]
+    vs persistence n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2369, persistence 2.5233
+      d     = +1.2864 degC   95% [+1.0162, +1.5478]   wholly above zero: yes
+      skill = +50.98%        95% [+42.99%, +57.51%]
+
+  F109 DSM
+    vs raw GFS     n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.4123, raw GFS 1.7043
+      d     = +0.2921 degC   95% [+0.1181, +0.4908]   wholly above zero: yes
+      skill = +17.14%        95% [+7.41%, +27.01%]
+    vs persistence n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.4123, persistence 4.1081
+      d     = +2.6959 degC   95% [+2.2635, +3.2282]   wholly above zero: yes
+      skill = +65.62%        95% [+60.82%, +70.33%]
+
+  F109 YSDU
+    vs raw GFS     n=360  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2643, raw GFS 1.4897
+      d     = +0.2254 degC   95% [+0.1108, +0.3540]   wholly above zero: yes
+      skill = +15.13%        95% [+7.88%, +22.26%]
+    vs persistence n=355  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2446, persistence 2.5775
+      d     = +1.3328 degC   95% [+1.0773, +1.5984]   wholly above zero: yes
+      skill = +51.71%        95% [+44.93%, +57.89%]
+
+  F109 RNO
+    vs raw GFS     n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2742, raw GFS 1.6135
+      d     = +0.3393 degC   95% [+0.1897, +0.5319]   wholly above zero: yes
+      skill = +21.03%        95% [+13.24%, +28.48%]
+    vs persistence n=365  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2742, persistence 2.7563
+      d     = +1.4821 degC   95% [+1.1904, +1.8071]   wholly above zero: yes
+      skill = +53.77%        95% [+46.33%, +60.39%]
+
+  F119 look A (KSFO)
+    vs raw GFS     n=364  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2576, raw GFS 1.4263
+      d     = +0.1687 degC   95% [+0.0318, +0.2953]   wholly above zero: yes
+      skill = +11.83%        95% [+2.36%, +20.03%]
+    vs persistence n=363  (2024-08-01..2025-07-31)
+      MAE on this set: model 1.2562, persistence 1.5113
+      d     = +0.2551 degC   95% [+0.0584, +0.4530]   wholly above zero: yes
+      skill = +16.88%        95% [+4.13%, +28.21%]
+
+  F119 look B (KSFO)
+    vs raw GFS     n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.3830, raw GFS 1.7321
+      d     = +0.3491 degC   95% [+0.1980, +0.5084]   wholly above zero: yes
+      skill = +20.16%        95% [+12.66%, +26.80%]
+    vs persistence n=365  (2025-08-01..2026-07-31)
+      MAE on this set: model 1.3830, persistence 1.7172
+      d     = +0.3342 degC   95% [+0.0467, +0.5812]   wholly above zero: yes
+      skill = +19.46%        95% [+2.88%, +31.73%]
+
+==============================================================================
+Summary table
+==============================================================================
+  result   airport  reference       n  d degC [95%]                 skill % [95%]                above 0
+  minimal  EGLC     raw GFS       363  +0.202 [+0.096, +0.298]      +16.3 [+8.5, +22.1]         yes
+  minimal  EGLC     persistence   363  +1.056 [+0.830, +1.262]      +50.4 [+43.0, +56.3]         yes
+  minimal  LFPG     raw GFS       363  +0.188 [+0.070, +0.301]      +13.5 [+5.5, +20.3]         yes
+  minimal  LFPG     persistence   363  +1.092 [+0.847, +1.291]      +47.5 [+39.8, +53.2]         yes
+  minimal  DSM      raw GFS       365  +0.115 [-0.071, +0.287]      +6.3 [-4.2, +14.8]         no
+  minimal  DSM      persistence   365  +2.303 [+1.862, +2.823]      +57.5 [+51.5, +62.8]         yes
+  minimal  YSDU     raw GFS       347  +0.041 [-0.058, +0.146]      +3.3 [-4.9, +11.1]         no
+  minimal  YSDU     persistence   347  +1.458 [+1.135, +1.842]      +54.7 [+47.1, +61.3]         yes
+  minimal  RNO      raw GFS       365  -0.044 [-0.179, +0.127]      -3.1 [-13.4, +8.1]         no
+  minimal  RNO      persistence   365  +1.032 [+0.750, +1.344]      +41.4 [+32.4, +49.7]         yes
+  F94      EGLC     raw GFS       364  +0.254 [+0.151, +0.347]      +20.2 [+13.7, +25.0]         yes
+  F94      EGLC     persistence   363  +1.096 [+0.872, +1.302]      +52.3 [+45.2, +57.8]         yes
+  F94      LFPG     raw GFS       364  +0.226 [+0.114, +0.332]      +16.4 [+8.9, +22.6]         yes
+  F94      LFPG     persistence   363  +1.144 [+0.904, +1.342]      +49.7 [+42.5, +55.5]         yes
+  F94      DSM      raw GFS       365  +0.098 [-0.078, +0.266]      +5.6 [-4.8, +14.6]         no
+  F94      DSM      persistence   365  +2.367 [+1.924, +2.855]      +59.1 [+53.4, +64.1]         yes
+  F94      YSDU     raw GFS       356  +0.138 [+0.033, +0.251]      +10.5 [+2.6, +18.2]         yes
+  F94      YSDU     persistence   347  +1.504 [+1.169, +1.891]      +56.3 [+49.1, +62.9]         yes
+  F94      RNO      raw GFS       365  +0.166 [-0.017, +0.396]      +11.0 [-1.3, +22.6]         no
+  F94      RNO      persistence   365  +1.144 [+0.874, +1.436]      +45.9 [+38.4, +52.7]         yes
+  F109     EGLC     raw GFS       364  +0.235 [+0.146, +0.312]      +19.0 [+12.6, +24.2]         yes
+  F109     EGLC     persistence   363  +1.224 [+0.995, +1.479]      +55.0 [+48.5, +61.2]         yes
+  F109     LFPG     raw GFS       365  +0.172 [+0.090, +0.263]      +12.2 [+6.8, +17.6]         yes
+  F109     LFPG     persistence   365  +1.286 [+1.016, +1.548]      +51.0 [+43.0, +57.5]         yes
+  F109     DSM      raw GFS       365  +0.292 [+0.118, +0.491]      +17.1 [+7.4, +27.0]         yes
+  F109     DSM      persistence   365  +2.696 [+2.263, +3.228]      +65.6 [+60.8, +70.3]         yes
+  F109     YSDU     raw GFS       360  +0.225 [+0.111, +0.354]      +15.1 [+7.9, +22.3]         yes
+  F109     YSDU     persistence   355  +1.333 [+1.077, +1.598]      +51.7 [+44.9, +57.9]         yes
+  F109     RNO      raw GFS       365  +0.339 [+0.190, +0.532]      +21.0 [+13.2, +28.5]         yes
+  F109     RNO      persistence   365  +1.482 [+1.190, +1.807]      +53.8 [+46.3, +60.4]         yes
+  F119     KSFO A   raw GFS       364  +0.169 [+0.032, +0.295]      +11.8 [+2.4, +20.0]         yes
+  F119     KSFO A   persistence   363  +0.255 [+0.058, +0.453]      +16.9 [+4.1, +28.2]         yes
+  F119     KSFO B   raw GFS       365  +0.349 [+0.198, +0.508]      +20.2 [+12.7, +26.8]         yes
+  F119     KSFO B   persistence   365  +0.334 [+0.047, +0.581]      +19.5 [+2.9, +31.7]         yes
+
+  gate passed: 17 of 17 airport-results
+
+END. Nothing was written. These intervals change no verdict (D75.2).
+
+==============================================================================
+End-of-session step 2 - STATUS.md
+==============================================================================
+Overwritten as a current-only snapshot (29 September 2026, after session
+83). It ends with the "Next planning session" text from the session prompt.
+
+==============================================================================
+End-of-session step 3 - consistency check (SPEC.md, STATUS.md, DECISIONS.md
+re-read after all edits and after the archive step). Report only; nothing
+was fixed.
+==============================================================================
+Mechanical checks:
+  dup headings SPEC.md: 0
+  dup headings STATUS.md: 0
+  dup headings DECISIONS.md: 0
+  dated headings out of order: 0
+  live entry order: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 D75 F124 F125
+  duplicate entry numbers (live+archive): 0
+  D75 still byte-equal with docs/session-83.md lines 82-125 (now at
+  DECISIONS.md lines 1307-1350).
+
+Findings:
+C1. SPEC 5.4 and SPEC 6 (stage A) describe confidence intervals as
+    scheduled. F125 has now computed them. SPEC was not edited (out of
+    scope this session). The owner decides whether SPEC should point to
+    F125.
+C2. D72.13's session plan ("83: start daily collection ... Then stage A's
+    benchmark") differs from what session 83 did. D75, the later owner
+    decision, set this session's plan, so nothing conflicts in effect, but
+    D72.13 is not amended.
+C3. Not a conflict, noted so it is not misread: F123.5 and STATUS's F123
+    row say Open-Meteo's Previous Runs route has no 850 hPa temperature at
+    any offset; F124.2(b) finds 850 hPa temperature on Open-Meteo's Single
+    Runs route. Different routes; both hold.
+C4. The session prompt's 3.2 says "from committed processed files only".
+    The record code for the minimal method, F94 and F109 also reads
+    committed raw files (Open-Meteo JSON, IEM chunks), read-only, as
+    F122.3 did. Recorded in F125.1 and as STATUS's one live open question.
+C5. The session prompt's Step 0.4 lists D51 among the archive reads; D51
+    is live in DECISIONS.md. Read there. No effect.
+C6. Scope note (F124.1): a `head -3` printed two rows of three committed
+    processed files before D75 was appended; spent-year values already on
+    record, nothing scored or used.
+C7. Pre-existing, unchanged: D72.3 lists "whether GFS v17 retrospective
+    runs are public" under stage A; SPEC 6's stage A bullet does not. Also
+    pre-existing: D17, F7 and D47 have no dated heading, and F7 sits after
+    D17 in the live file.
+C8. STATUS's one-line F125 summaries were checked against F125.4-F125.7:
+    they agree.
+
+==============================================================================
+End-of-session step 4 - archive step
+==============================================================================
+Moved: D74 (DECISIONS.md lines 1141-1174 before the move, plus the blank
+line after its separator), appended verbatim to DECISIONS-archive.md under
+"## Moved by session 83 (2026-09-29)", in one awk partition by line number.
+Why: settled. D74.1 is in SPEC 4.3, D74.2 in CLAUDE.md step 3, D74.3 was
+done as F123, and D74.4 is superseded by D75.4. Session 82 kept it live
+only because STATUS cited D74.4; STATUS now cites D75.4.
+Checks:
+  diff (moved lines) vs (archive tail 34 lines): ARCHIVE-BLOCK-BYTE-EQUAL
+  archive before the move is an unchanged prefix: ARCHIVE-PREFIX-UNCHANGED
+  HEAD DECISIONS.md minus lines 1141-1175 is an unchanged prefix of the new
+  file: PREFIX UNCHANGED (git diff --numstat DECISIONS.md: 271 added, 35
+  removed)
+Stay live: D72, D73, F122, F123, D75, F124, F125 (session prompt). D71 and
+D62 could meet the criterion but did not become settled this session; kept
+live ("when in doubt, keep live", D46), as session 82 did. Listed for the
+owner's call only.
+
+==============================================================================
+Final git status --porcelain
+==============================================================================
+ M DECISIONS-archive.md
+ M DECISIONS.md
+ M STATUS.md
+?? docs/session-83.md
+?? notes/session-83-output.txt
+?? scripts/session83_confidence_intervals.py
+?? scripts/session83_icon_route_check.py
+
+Nothing was committed and no commit message was written.
