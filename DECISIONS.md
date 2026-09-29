@@ -1135,3 +1135,202 @@ same rows, at full precision (D73.2).
   bullet. It did not edit RESULTS.md, README.md, CLAUDE.md or
   PROJECT-INSTRUCTIONS.md, and wrote nothing under `data/raw/`.
 - Nothing was committed and no commit message was written.
+
+---
+
+## 2026-09-28 — Session 82 decision: SPEC 4.3 wording and the consistency-check rule (owner, planning chat)
+
+**D74. Owner decision, planning chat (after session 81): two
+housekeeping changes, and session 82's plan.** Written at the start of
+session 82, before any network call.
+
+- **D74.1 SPEC 4.3 clarified.** Its sentence "Data after 2026-07-31 is
+  not used, which keeps the test set exactly one calendar year." is
+  replaced by: "For the record's methods (sections 1–6, 7 and 8), data
+  after 2026-07-31 is not used, which keeps the test set exactly one
+  calendar year. The 2026-27 forward year is governed by DECISIONS D73."
+  Why: the old sentence read as a ban on all later data, which D73's
+  forward test contradicts. No method, date, figure or verdict changes.
+  Corrected before commit from 'sections 4, 7 and 8' (session 82
+  consistency check C2; the minimal method is SPEC sections 1–6).
+- **D74.2 Consistency-check findings go into the output file.** From
+  session 82 on, the end-of-session consistency check's findings are
+  written into the session's output file (`notes/session-NN-output.txt`)
+  as well as reported in chat. CLAUDE.md's end-of-session step 3 is
+  amended to say so.
+- **D74.3 Session 82's plan.** Stage A's read-only source probe
+  (D72.3, D72.13): ECMWF (IFS open data and AIFS), ICON (global), GFS's
+  ensemble GEFS, Google's WeatherNext, NBM and NWS MOS, plus whether GFS
+  v17 retrospective runs are public, and Open-Meteo's Previous Runs API
+  as a second route for each model. Read only; no 2026-27 value, no
+  observation, no score, no account. Recorded as F123. It chooses
+  nothing: which sources go forward, where to save (D72.8) and the
+  NBM/MOS outcome rule (D72.7) stay with the owner.
+- **D74.4 GFS v17 (planning-chat web search, 2026-09-28, not checked by
+  this session).** Still no Service Change Notice; only the April 2026
+  proposals (PNS 26-29, 26-30). The SCN is due 30 days before go-live,
+  so the earliest go-live is about late October 2026.
+
+---
+
+## 2026-09-28 — Session 82 finding: stage A's source probe
+
+**F123. Stage A's read-only source probe (D72.3, D74.3). Each source was
+checked against a fixed checklist: archive, live feed, fields, coverage,
+class. Nothing was chosen. Script: `scripts/session82_source_probe.py`
+(new; reads the network and prints; writes no data file). Full real output,
+with every URL, listing excerpt, decoded message's metadata and the
+documentation read: `notes/session-82-output.txt`. All pages and listings
+accessed 2026-09-28.**
+
+**F123.1 Steps 0–2.**
+- Step 0: `git status --porcelain` showed only `?? docs/session-82.md`. The
+  last entries were D73 and F122; no D74 or F123 existed in either
+  DECISIONS file; neither new path existed. D72, D73, SPEC 8.1 and the
+  archived F85, F88 and F89 were read.
+- Step 1: D74 was copied mechanically (`sed`) from `docs/session-82.md`
+  lines 72–99 and checked byte-equal with `diff`.
+- Step 2: SPEC 4.3's sentence on data after 2026-07-31 was replaced by
+  D74.1's text. CLAUDE.md step 3 gained D74.2's sentence.
+
+**F123.2 Summary.** Fields, in order: 2 m temperature / total cloud / 10 m
+wind / 2 m dewpoint / 850 hPa temperature / surface or MSL pressure /
+downward shortwave at the surface. "y" means yes, "n" means no; a date means
+"from that date". Floors were found by listing, and presence after a floor
+was not scanned for gaps.
+
+| source, product | earliest genuine run | access | 24 h / 48 h leads, step | fields T2/cloud/wind/Td/T850/p/SW | airports | class | weakest tag |
+|---|---|---|---|---|---|---|---|
+| ECMWF IFS open data (AWS `ecmwf-forecasts`) | 2023-01-18 (0.4°); 0.25° from 2024-02-01 | anonymous HTTPS/S3 | both, 3-hourly (00/12z to 360 h, 06/18z to 144 h) | y / 2025-11-21 / y / 2024-03-06 / y / y / 2024-03-06 | all six | Shallow (2023-01-18) | verified |
+| ECMWF AIFS Single (same bucket) | 2025-02-10 (pre-operational `aifs/` 2024-02-29..2025-02-25, no cloud or SW) | anonymous | both, 6-hourly | y / y / y / y / y / y / y | all six | Shallow (2025-02-10) | verified |
+| DWD ICON global (opendata.dwd.de) | none: only the latest run of each cycle is on the server | anonymous HTTPS | both, hourly to 78 h (00/12z to 180 h, 06/18z to 120 h) | y / y / y / y / y / y / y (by folder name; not decoded) | all six | **No archive** (about 24 h) | verified (listing); retention documentation only |
+| NOAA GEFS 0.25° `pgrb2s` + 0.5° `pgrb2a` (AWS `noaa-gefs-pds`) | 2017-01-01 (v12 layout from 2020-09-23) | anonymous | both, 3-hourly (0.25° to 240 h) | y / y / y / y / 0.5° only / y / y | all six | Deep | verified |
+| Google WeatherNext 3 (and 2) | WN3: 2026, 2024–25 backfill in progress; WN2: 2022 | Google account and request form | WN3 hourly; WN2 6-hourly | WN3 all y; WN2 y / n / y / n / y / y / n | all six | **Blocked** (account and request form) | documentation only |
+| NOAA NBM CONUS `core` (AWS `noaa-nbm-grib2-pds`) | 2020-05-18 (`core/` layout from 2020-09-30) | anonymous | both; hourly to 36 h (to 48 h from 2026-05-05), then 3-hourly | y / y / speed y / y / n / n / y | DSM, RNO, KSFO | Deep | verified |
+| NWS MOS (IEM archive: GFS, MEX, NAM, LAV, NBS, NBE) | GFS MOS 2003-12-16; LAV, MEX 2020-07-12; NBS/NBE 2020-07-23 | anonymous (third-party archive) | GFS MOS 3-hourly to 60 h, then 66, 72 h | tmp y / sky cover (category) / wsp y / dpt y / n / n / n | DSM, RNO, KSFO | Deep | verified (stations and projections); versions unknown |
+| GFS v17 retrospective runs | none found public | — | — | — | — | not classed (none found) | unknown |
+| Open-Meteo Previous Runs API (second route) | per model, F123.5 | anonymous | `previous_day1` and `_day2` both present, hourly | all but T850 | all six | Shallow | verified |
+
+**F123.3 Per source.**
+- **ECMWF IFS.** 1,344 date folders, 2023-01-18..2026-09-28; 6 missing
+  (2023-04-27..05-02). The open-data field set grew inside the archive:
+  2 m dewpoint and `ssrd` from 2024-03-06; total cloud cover (`tcc`) only
+  from 2025-11-21. So all seven fields exist together only from
+  2025-11-21. `ssrd` is accumulated from step 0 (J m⁻², `stepRange` 0-24).
+  IFS `tcc` is stored as a fraction (0–1); AIFS `tcc` is in %. Cycle changes
+  inside the archive (documentation only): 48r1 2023-06-27, 49r1 about
+  Oct 2024, 50r1 with AIFS v2 2026-05-12. Live: data.ecmwf.int lists 4 date
+  folders (2026-09-25..28), and the documentation says the last 12 runs are
+  kept. The AWS 00z 2026-09-28 files appeared 06:25–07:34 UTC.
+- **ECMWF AIFS.** `aifs-single/` from 2025-02-10 under `0p25/experimental/`,
+  moved to `0p25/oper/` from 2025-02-26, when the pre-operational `aifs/`
+  folder ended. `aifs-ens/` from 2025-07-02. Six-hourly steps only.
+- **DWD ICON global.** Icosahedral grid (`icon_global_icosahedral_*`),
+  `.grib2.bz2`. Every file on the server is from the current runs
+  (2026-09-27 12z to 2026-09-28 06z), so none was decoded (scope). Shortwave
+  comes as direct plus diffuse (`aswdir_s`, `aswdifd_s`) and net (`asob_s`);
+  their averaging window is unknown. DWD documentation: files are deleted
+  after 24 hours, and there is no public long-term archive. A third-party
+  Zarr copy (Hugging Face `openclimatefix/dwd-icon-global`, folders
+  2023–2025) exists; it is not official and could not be decoded here.
+- **GEFS.** 3,558 date folders, 2017-01-01..2026-09-28, none missing;
+  31 members plus mean and spread. Cloud and SW are 6-hour averages that
+  reset every 6 h (f024 = 18–24 h, f027 = 24–27 h). 850 hPa temperature is
+  in the 0.5° files only. The 0.25° field set grew on 2022-10-19 (VIS,
+  MSLET, CPOFP, ceiling; no field removed). Versions (documentation only):
+  v12.0 2020-09-23; v12.1.2 2021-07-20; v12.3 in 2022; v12.3.18 about
+  2026-02-24; v12.3.20 on 2026-06-15, which fixed "errant negative"
+  shortwave values by storing DSWRF at 6 rather than 3 significant digits.
+  GEFSv13 is planned alongside GFS v17 (documentation only).
+- **WeatherNext.** An anonymous listing of `gs://weathernext` returned
+  HTTP 403/401. WeatherNext 3 (released August 2026) is now current;
+  real-time data is under "experimental terms" and historical data under
+  CC BY 4.0. Cost and retention: unknown.
+- **NBM.** 2,322 date folders, 2020-05-18..2026-09-28; 3 missing
+  (2020-10-23..25); 24 cycles a day; CONUS Lambert grid, 2,345 × 1,597 at
+  2.54 km. The CONUS files carry no surface or MSL pressure and no 850 hPa
+  temperature. A `global` domain from 2024-05-15 carries upper-air fields
+  only (27 messages at f024; no 2 m temperature). The listing dates match
+  the documented v4.0 (2020-09-29/30), v4.2 (2024-05-15) and v5.0
+  (2026-05-05). v4.3's date disagrees between two NOAA VLab pages
+  (2025-04-15 vs 2025-05-27); both are recorded. The v5.0 page notes a
+  "temperature adjustment made July 28, 2026".
+- **Unknown:** ICON's shortwave window and model versions; the retention of
+  WeatherNext and ICON (beyond DWD's 24 h statement); MOS version changes;
+  49r1's exact date.
+
+**F123.4 MOS answer.** KDSM, KRNO and KSFO each appear in IEM's archive for
+GFS MOS (runs 2021-03-24 and 2026-07-28), MEX, NAM, LAV, NBS and NBE (21,
+15, 21, 38, 23 and 21 projections). Each had a `tmp` element. GFS MOS 00z
+and 12z projections are 3-hourly (6–60 h, then 66 and 72 h), so they
+include DSM's 18:00 UTC target hour (SPEC 3.4). **20:00 UTC (RNO, KSFO) is
+not a GFS MOS, NAM MOS or NBS projection** (the nearest are 18:00 and
+21:00). LAV is hourly but reaches only about 38 h. MEX and NBE give
+12-hourly projections. No forecast value was printed or used. Version
+changes inside the archive: unknown.
+
+**F123.5 Open-Meteo second route (EGLC, SPEC 3.4; present/null hour counts
+only).**
+- `gfs_global`: `temperature_2m_previous_day1` from 2021-03-24 (as SPEC
+  3.2); cloud cover from 2024-01-19 (as F85).
+- `ecmwf_ifs025`: from 2024-02-04.
+- `ecmwf_aifs025_single`: from 2025-02-18.
+- `icon_global`: from 2024-01-19. These three models returned grid 51.5,
+  0.0, 4 m.
+- For each of these four models, the six fields other than 850 hPa
+  temperature were present for
+  72 of 72 hours at `previous_day1` and `_day2` on 2025-06-10..12. Cloud
+  cover shares temperature's floor, except for GFS.
+- **`temperature_850hPa_previous_day1` was rejected (HTTP 400) for every
+  model**, with the same error F85 recorded for GFS.
+- **GEFS has no working route:** `ncep_gefs025` and
+  `ncep_hgefs025_ensemble_mean` are accepted but return 0 of 72 hours at
+  the anchor. Their printed "floors" are artifacts of the bisection and mean
+  nothing. `gfs025_ensemble` was rejected.
+- The Historical Forecast API was not used.
+
+**F123.6 GFS v17 answer.** No public GFS v17 retrospective or reforecast
+forecast runs were found. Six candidate AWS bucket names returned
+`NoSuchBucket`. The NOMADS `gfs/para/` and `gfs/v17.0/` listings returned
+HTTP 403. EMC's GFSv17 page links only to verification statistics for
+retrospective streams 1a–4. PNS 26-29 says nothing on retrospective data;
+it plans C1152 (9 km) and "significant folder directory structure and name
+changes". The public `noaa-ufs-gefsv13replay-pds` (1980–2026) is a replay
+to ERA5, not forecast runs. So D73.9's condition ("if they are public") is
+not met as of 2026-09-28 (unknown, not proven absent).
+
+**F123.7 Lists for session 83.**
+- **No archive:** DWD ICON global (official open data; about 24 h
+  retention). Its second routes are Open-Meteo from 2024-01-19 and the
+  unofficial third-party Zarr copy.
+- **Blocked:** Google WeatherNext (all versions): a Google account and an
+  approved request form are needed.
+
+**F123.8 Other global models not probed this session:** UK Met Office
+global, Environment Canada GDPS, JMA GSM. Recorded only so they stay visible
+(D74.3).
+
+**F123.9 Scope notes, reported plainly.**
+- Before the script was written, one exploratory MOS request used runtime
+  2026-07-31 00z. The response held projections valid 2026-08-01..08-08.
+  They sat in memory only; no value was printed, saved or used. The final
+  script uses earlier runtimes and stops if any projection is valid after
+  2026-07-31.
+- The first ECMWF run of the script stopped on a connection reset from a
+  throttled server. The retry was widened and the section re-run in full.
+  Only the complete run is in the output file.
+- Samples decoded: ECMWF 10, GEFS 8, NBM 5, others 0. Every one was dated on
+  or before 2026-07-31, every one was under 2.4 MB, and metadata only was
+  printed. Each run's temporary directory, outside the repo, was deleted.
+
+**F123.10 What this did not do.** It read no 2026-27 value and no
+observation, computed no score, used no account, installed nothing, and
+wrote nothing under `data/`. It edited no existing script, and edited SPEC
+and CLAUDE.md only as D74 says. It did not edit RESULTS.md, README.md or
+PROJECT-INSTRUCTIONS.md. It chose no source, save location or NBM/MOS
+outcome rule. Nothing was committed and no commit message was written.
+
+**F123.11 Planning-chat note, 2026-09-28, not checked by this session.**
+PNS 26-30 was read in full. It proposes removing the 0.50 and 1.00 degree
+GFS GRIB2 files and says the 0.25 degree pgrb2 files remain available. It is
+a proposal; confirm against the v17 SCN (D73.4).
