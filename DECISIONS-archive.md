@@ -16880,3 +16880,46 @@ items 3, 1 and 2 of the session-80 consistency check.
 Nothing was committed and no commit message was written.
 
 ---
+
+
+
+## Moved by session 83 (2026-09-29)
+
+The archive criterion (D46, live in `DECISIONS.md`), applied at session 83's end-of-session step: **D74**. It is settled: D74.1 is codified in SPEC 4.3, D74.2 in CLAUDE.md's end-of-session step 3, D74.3 was done as F123, and D74.4 is superseded by D75.4. Session 82 kept it live only because STATUS.md's carried GFS v17 item cited D74.4; that item now cites D75.4. No live open question or STATUS.md "Next" section needs its wording. Moved verbatim by line range (DECISIONS.md lines 1141–1174 before the move).
+
+---
+
+## 2026-09-28 — Session 82 decision: SPEC 4.3 wording and the consistency-check rule (owner, planning chat)
+
+**D74. Owner decision, planning chat (after session 81): two
+housekeeping changes, and session 82's plan.** Written at the start of
+session 82, before any network call.
+
+- **D74.1 SPEC 4.3 clarified.** Its sentence "Data after 2026-07-31 is
+  not used, which keeps the test set exactly one calendar year." is
+  replaced by: "For the record's methods (sections 1–6, 7 and 8), data
+  after 2026-07-31 is not used, which keeps the test set exactly one
+  calendar year. The 2026-27 forward year is governed by DECISIONS D73."
+  Why: the old sentence read as a ban on all later data, which D73's
+  forward test contradicts. No method, date, figure or verdict changes.
+  Corrected before commit from 'sections 4, 7 and 8' (session 82
+  consistency check C2; the minimal method is SPEC sections 1–6).
+- **D74.2 Consistency-check findings go into the output file.** From
+  session 82 on, the end-of-session consistency check's findings are
+  written into the session's output file (`notes/session-NN-output.txt`)
+  as well as reported in chat. CLAUDE.md's end-of-session step 3 is
+  amended to say so.
+- **D74.3 Session 82's plan.** Stage A's read-only source probe
+  (D72.3, D72.13): ECMWF (IFS open data and AIFS), ICON (global), GFS's
+  ensemble GEFS, Google's WeatherNext, NBM and NWS MOS, plus whether GFS
+  v17 retrospective runs are public, and Open-Meteo's Previous Runs API
+  as a second route for each model. Read only; no 2026-27 value, no
+  observation, no score, no account. Recorded as F123. It chooses
+  nothing: which sources go forward, where to save (D72.8) and the
+  NBM/MOS outcome rule (D72.7) stay with the owner.
+- **D74.4 GFS v17 (planning-chat web search, 2026-09-28, not checked by
+  this session).** Still no Service Change Notice; only the April 2026
+  proposals (PNS 26-29, 26-30). The SCN is due 30 days before go-live,
+  so the earliest go-live is about late October 2026.
+
+---

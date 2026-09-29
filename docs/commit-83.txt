@@ -1,0 +1,45 @@
+Session 83: ICON route check and confidence intervals (D75, F124, F125)
+
+Records D75 (owner, planning chat): session 83's plan. ICON is checked
+first and decided after, with the rule stated in advance (850 hPa
+temperature present on Open-Meteo's Single Runs means the project does
+not save ICON); confidence intervals for every result on record,
+descriptive only; the session-82 MOS near-miss decision (F123.9) is
+carried to the NBM/MOS outcome rule (D72.7, D73.8); and the planning
+chat's GFS v17 check of 2026-09-29 (still no Service Change Notice).
+
+Records F124, a read-only check of Open-Meteo's two ICON routes at
+EGLC, printing counts only, with no valid time after 2026-07-31. (a)
+Past-run shortwave radiation starts on 2024-01-19 12:00, the same hour
+as temperature. (b) Single Runs serves icon_global from 2026-04-02,
+with 850 hPa temperature present 48 of 48 hours in both runs checked;
+the 2026-06-10 18z run is not available, so the archive has at least
+one gap. (c) Past-run timing matches the GFS cycle convention at all 18
+testable hours; the other 6 could not be tested because of that gap.
+
+Records F125: 95% moving-block bootstrap intervals (7-day blocks,
+10,000 resamples, seed 83) for the MAE margin over raw GFS and over
+persistence, for all 17 airport-results on record. All 17 reproduced
+their recorded MAEs and day counts exactly before any interval was
+computed. Against persistence every interval is wholly above zero.
+Against raw GFS, F109 (all five) and F119 (both KSFO looks) are wholly
+above zero; the minimal method at DSM, YSDU and RNO and F94 at DSM and
+RNO are not. The intervals cover within-year sampling only, the five
+airports share each year's weather, and no verdict changes.
+
+Scope notes, disclosed in F124.1 and F125.1: a head -3 before D75 was
+appended printed two spent-year rows already on record, nothing used;
+the refits also read committed raw files, read-only, as the record code
+does (F122.3), which the session prompt had not allowed for; and the
+minimal-method scripts were run without their module-level main() call
+so their output notes were not overwritten. All seven record scripts
+are unchanged against HEAD.
+
+Owner decisions after review, to be recorded in the next decision
+entry: the raw-file read is accepted; the project does not save ICON
+(D75.1's stated rule, 850 hPa temperature present).
+
+Archived: D74 (settled; its parts are in SPEC 4.3, CLAUDE.md and F123,
+and D74.4 is superseded by D75.4). New: scripts/session83_icon_route_check.py,
+scripts/session83_confidence_intervals.py, notes/session-83-output.txt,
+docs/session-83.md. STATUS.md overwritten as a current-only snapshot.
