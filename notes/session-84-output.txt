@@ -1,0 +1,543 @@
+SESSION 84 OUTPUT: GitHub readiness (audit, terms check, edits, checks)
+Run date: 2026-09-29. Nothing here prints a secret value. No em-dash or en-dash is used.
+
+=== STEP 0: integrity checks ===
+0.1 git status --porcelain at start: '?? docs/session-84.md' (only). As expected.
+0.2 DECISIONS.md's last entries before this session: D75, F124, F125 (last line 1572). No D76 or F126 in DECISIONS.md or DECISIONS-archive.md.
+0.3 README.md exists. No LICENSE file (any extension). notes/session-84-output.txt did not exist.
+0.4 Read in full: D72, D73 (incl. D73.8), D75, F123, F124, F125, RESULTS.md, README.md (old), SPEC section 3 (whole SPEC and DECISIONS.md also read).
+0.5 Distinct commit author names: 'Zachary Adams' (1). Distinct committer names: 'Zachary Adams' (1). Single copyright holder.
+
+=== STEP 1: D76 ===
+Appended to DECISIONS.md under '## 2026-09-29: Session 84 decision: GitHub readiness (owner, planning chat)'.
+Copied with sed from docs/session-84.md lines 101 to 137. D76 body sits at DECISIONS.md lines 1578 to 1614. diff against the source range: BYTE-EQUAL.
+
+=== STEP 2: read-only audit ===
+2.1 Tracked files: 1076 (git ls-files).
+  root: 10 files, 1.24 MB | data: 785 files, 138.69 MB | docs: 97 files, 0.81 MB | notes: 91 files, 2.26 MB | scripts: 93 files, 2.25 MB
+  data/models: 13 files, 5.26 MB | data/processed: 54 files, 7.04 MB | data/raw: 670 files, 122.84 MB | data/rebuild: 48 files, 3.54 MB
+  data/raw/diagnostics: 384 files, 97.36 MB | data/raw/features: 12 files, 1.93 MB | data/raw (files directly in it): 274 files, 23.55 MB
+2.2 Secret file names (.env, .env.*, *.pem, *.key, *.p12, *.pfx, id_rsa*, id_ed25519*, .netrc, credentials*, secrets*, *.token):
+  tracked files: none. Files that ever existed in history: none.
+  .DS_Store: not tracked now. One '.DS_Store' path exists in history: added in commit 75fd116 (session 01) and removed in commit 36324e0 (session 02). A macOS folder-view file; not a secret.
+2.3 Secret patterns in the working tree (tracked text files; 9 patterns):
+  AWS key id, private key, GitHub token, Anthropic key, OpenAI-style key, Slack token, Google API key: 0 hits each.
+  assignment pattern: 3 hits, all in scripts/session82_source_probe.py, lines 79, 84, 95.
+    Class: code that names a variable with no value ('token' is an S3 listing pagination token: 'pre, keys, token = [], [], None'; 'if token:'; 'token = m.group(1)'). Not a credential.
+  url_param pattern ('key=' family): 81 hits in 45 files. Every hit is 'key=' followed by an identifier or call, i.e. a code keyword argument name (such as a sort key). No literal value follows any of them. Class: code that names a parameter without a value.
+  Extra check on all hits: none is followed by a quoted or bare literal of 16 or more key-like characters.
+  url_param hits (path:line):
+    notes/audit-session-66.md:200  url_param  (code keyword argument)
+    notes/audit-session-67.md:1294  url_param  (code keyword argument)
+    notes/audit-session-67.md:1624  url_param  (code keyword argument)
+    notes/audit-session-67.md:1724  url_param  (code keyword argument)
+    notes/audit-session-68b.md:1001  url_param  (code keyword argument)
+    notes/audit-session-68b.md:1193  url_param  (code keyword argument)
+    notes/audit-session-68b.md:1628  url_param  (code keyword argument)
+    notes/audit-session-68b.md:2018  url_param  (code keyword argument)
+    notes/audit-session-68b.md:2038  url_param  (code keyword argument)
+    notes/audit-session-68b.md:2070  url_param  (code keyword argument)
+    notes/audit-session-68b.md:2077  url_param  (code keyword argument)
+    notes/audit-session-68b.md:2079  url_param  (code keyword argument)
+    scripts/session03_checks.py:186  url_param  (code keyword argument)
+    scripts/session03_checks.py:286  url_param  (code keyword argument)
+    scripts/session04_model.py:418  url_param  (code keyword argument)
+    scripts/session05_model.py:558  url_param  (code keyword argument)
+    scripts/session10_checks.py:237  url_param  (code keyword argument)
+    scripts/session10_checks.py:389  url_param  (code keyword argument)
+    scripts/session11_model.py:674  url_param  (code keyword argument)
+    scripts/session13_test.py:772  url_param  (code keyword argument)
+    scripts/session14_checks.py:251  url_param  (code keyword argument)
+    scripts/session14_checks.py:468  url_param  (code keyword argument)
+    scripts/session15_checks.py:346  url_param  (code keyword argument)
+    scripts/session15_checks.py:598  url_param  (code keyword argument)
+    scripts/session16_model.py:661  url_param  (code keyword argument)
+    scripts/session16_model.py:906  url_param  (code keyword argument)
+    scripts/session16_model.py:1035  url_param  (code keyword argument)
+    scripts/session16_model.py:1040  url_param  (code keyword argument)
+    scripts/session18_test.py:790  url_param  (code keyword argument)
+    scripts/session18_test.py:913  url_param  (code keyword argument)
+    scripts/session19_checks.py:513  url_param  (code keyword argument)
+    scripts/session20_checks.py:246  url_param  (code keyword argument)
+    scripts/session20_checks.py:456  url_param  (code keyword argument)
+    scripts/session22_model.py:671  url_param  (code keyword argument)
+    scripts/session22_model.py:934  url_param  (code keyword argument)
+    scripts/session22_model.py:1018  url_param  (code keyword argument)
+    scripts/session24_test.py:843  url_param  (code keyword argument)
+    scripts/session24_test.py:974  url_param  (code keyword argument)
+    scripts/session25_checks.py:541  url_param  (code keyword argument)
+    scripts/session26_checks.py:299  url_param  (code keyword argument)
+    scripts/session26_checks.py:522  url_param  (code keyword argument)
+    scripts/session27_model.py:733  url_param  (code keyword argument)
+    scripts/session27_model.py:1028  url_param  (code keyword argument)
+    scripts/session27_model.py:1494  url_param  (code keyword argument)
+    scripts/session27_model.py:1496  url_param  (code keyword argument)
+    scripts/session29_test.py:876  url_param  (code keyword argument)
+    scripts/session29_test.py:1004  url_param  (code keyword argument)
+    scripts/session36_validate.py:99  url_param  (code keyword argument)
+    scripts/session37_decode.py:101  url_param  (code keyword argument)
+    scripts/session37_elevation_fix.py:146  url_param  (code keyword argument)
+    scripts/session38_cloud_diagnostic.py:182  url_param  (code keyword argument)
+    scripts/session38_cloud_diagnostic.py:196  url_param  (code keyword argument)
+    scripts/session40_decode.py:87  url_param  (code keyword argument)
+    scripts/session47_availability_probe.py:231  url_param  (code keyword argument)
+    scripts/session49_upper_air_pull.py:157  url_param  (code keyword argument)
+    scripts/session51_moisture_pull.py:164  url_param  (code keyword argument)
+    scripts/session53_pressure_pull.py:162  url_param  (code keyword argument)
+    scripts/session55_radiation_pull.py:191  url_param  (code keyword argument)
+    scripts/session56_e4_experiment.py:638  url_param  (code keyword argument)
+    scripts/session57_precip_pull.py:220  url_param  (code keyword argument)
+    scripts/session58_e5_experiment.py:571  url_param  (code keyword argument)
+    scripts/session61_combine_sweep.py:759  url_param  (code keyword argument)
+    scripts/session70_grib_manifests.py:267  url_param  (code keyword argument)
+    scripts/session71_ldtr_pull.py:321  url_param  (code keyword argument)
+    scripts/session71_ldtr_pull.py:326  url_param  (code keyword argument)
+    scripts/session71_sample.py:184  url_param  (code keyword argument)
+    scripts/session73_fit_score.py:452  url_param  (code keyword argument)
+    scripts/session76_grib_pull.py:197  url_param  (code keyword argument)
+    scripts/session76_grib_pull.py:348  url_param  (code keyword argument)
+    scripts/session76_grib_pull.py:349  url_param  (code keyword argument)
+    scripts/session76_verify.py:158  url_param  (code keyword argument)
+    scripts/session76_verify.py:277  url_param  (code keyword argument)
+    scripts/session76_verify.py:278  url_param  (code keyword argument)
+    scripts/session76_verify.py:295  url_param  (code keyword argument)
+    scripts/session76_verify.py:297  url_param  (code keyword argument)
+    scripts/session76_verify.py:440  url_param  (code keyword argument)
+    scripts/session76b_check_a.py:104  url_param  (code keyword argument)
+    scripts/session76b_check_b.py:94  url_param  (code keyword argument)
+    scripts/session76b_check_b.py:158  url_param  (code keyword argument)
+    scripts/session77_ksfo_rehearsal.py:472  url_param  (code keyword argument)
+    scripts/session83_confidence_intervals.py:344  url_param  (code keyword argument)
+  assignment hits (path:line):
+    scripts/session82_source_probe.py:79  assignment  (code, pagination token variable)
+    scripts/session82_source_probe.py:84  assignment  (code, pagination token variable)
+    scripts/session82_source_probe.py:95  assignment  (code, pagination token variable)
+2.4 Same patterns over the full history (git log --all -p, added lines only; 887856 diff lines scanned):
+  strong patterns (7 of 9): 0 hits. assignment: 3 added-line hits. url_param: 81 added-line hits.
+  These are the same lines as the working tree (same counts, same 46 (pattern, file) pairs). None is followed by a 16+ character literal.
+  Classification: same as 2.3. Not a credential.
+  history hits (commit, path, pattern, count):
+    6bba07c  notes/audit-session-66.md  url_param  x1
+    9dc426c  notes/audit-session-67.md  url_param  x3
+    ee3e43c  notes/audit-session-68b.md  url_param  x8
+    1b240fd  scripts/session03_checks.py  url_param  x2
+    5d6b2e5  scripts/session04_model.py  url_param  x1
+    88ac8e7  scripts/session05_model.py  url_param  x1
+    709f368  scripts/session10_checks.py  url_param  x2
+    71ae823  scripts/session11_model.py  url_param  x1
+    2d985cf  scripts/session13_test.py  url_param  x1
+    a9896fd  scripts/session14_checks.py  url_param  x2
+    11de6f5  scripts/session15_checks.py  url_param  x2
+    a6c6d91  scripts/session16_model.py  url_param  x4
+    07dcf93  scripts/session18_test.py  url_param  x2
+    aba963b  scripts/session19_checks.py  url_param  x1
+    e6ca38b  scripts/session20_checks.py  url_param  x2
+    c4bb8d1  scripts/session22_model.py  url_param  x3
+    6c5623a  scripts/session24_test.py  url_param  x2
+    4daec1b  scripts/session25_checks.py  url_param  x1
+    b252f5d  scripts/session26_checks.py  url_param  x2
+    955a364  scripts/session27_model.py  url_param  x4
+    5145145  scripts/session29_test.py  url_param  x2
+    e8cf3f6  scripts/session36_validate.py  url_param  x1
+    eb9f4ae  scripts/session37_decode.py  url_param  x1
+    eb9f4ae  scripts/session37_elevation_fix.py  url_param  x1
+    6cfccae  scripts/session38_cloud_diagnostic.py  url_param  x2
+    c0d2954  scripts/session40_decode.py  url_param  x1
+    da24390  scripts/session47_availability_probe.py  url_param  x1
+    5adef4b  scripts/session49_upper_air_pull.py  url_param  x1
+    a2334e8  scripts/session51_moisture_pull.py  url_param  x1
+    3eda496  scripts/session53_pressure_pull.py  url_param  x1
+    650b653  scripts/session55_radiation_pull.py  url_param  x1
+    bd4d18d  scripts/session56_e4_experiment.py  url_param  x1
+    524eded  scripts/session57_precip_pull.py  url_param  x1
+    3e34335  scripts/session58_e5_experiment.py  url_param  x1
+    4d49165  scripts/session61_combine_sweep.py  url_param  x1
+    fde5a8a  scripts/session70_grib_manifests.py  url_param  x1
+    f9bba6c  scripts/session71_ldtr_pull.py  url_param  x2
+    f9bba6c  scripts/session71_sample.py  url_param  x1
+    9d2bb2d  scripts/session73_fit_score.py  url_param  x1
+    f7c74c4  scripts/session76_grib_pull.py  url_param  x3
+    f7c74c4  scripts/session76_verify.py  url_param  x6
+    f2bf645  scripts/session76b_check_a.py  url_param  x1
+    f2bf645  scripts/session76b_check_b.py  url_param  x2
+    b30064f  scripts/session77_ksfo_rehearsal.py  url_param  x1
+    2c2d9ba  scripts/session82_source_probe.py  assignment  x3
+    945ae7f  scripts/session83_confidence_intervals.py  url_param  x1
+2.5 Personal details:
+  '/Users/' paths: 92 occurrences in 31 tracked files (lines not printed). Files:
+    1  docs/session-67.md
+    6  notes/audit-session-66.md
+    16  notes/audit-session-67.md
+    5  notes/audit-session-68a.md
+    3  notes/audit-session-68b.md
+    3  notes/session-37-decode-output.txt
+    1  notes/session-37-elevation-output.txt
+    1  notes/session-37-pull-output.txt
+    1  notes/session-38-cv-output.txt
+    1  notes/session-38-join-output.txt
+    2  notes/session-40-decode-output.txt
+    1  notes/session-40-pull-output.txt
+    2  notes/session-46-backtest-output.txt
+    2  notes/session-49-upper-air-output.txt
+    2  notes/session-50-e1-experiment-output.txt
+    2  notes/session-51-moisture-output.txt
+    2  notes/session-52-e2-experiment-output.txt
+    3  notes/session-53-pressure-output.txt
+    2  notes/session-54-e3-experiment-output.txt
+    3  notes/session-55-radiation-output.txt
+    2  notes/session-56-e4-experiment-output.txt
+    3  notes/session-57-precip-output.txt
+    2  notes/session-58-e5-experiment-output.txt
+    4  notes/session-61-combine-sweep-output.txt
+    13  notes/session-63-reserved-build-output.txt
+    4  notes/session-70-output.txt
+    1  notes/session-74-output.txt
+    1  notes/session-78-output.txt
+    1  notes/session40-sealed-test-output.txt
+    1  notes/session63-join-equivalence-check-output.txt
+    1  notes/session63-wiring-scratch-check-output.txt
+  Reported, not edited (D76.5).
+  Email addresses in tracked text files: 1, in notes/session-82-output.txt (its domain is dwd.de, a weather-service contact seen in the ICON probe; not a personal address). Address not printed.
+  Commit metadata: 1 distinct author email and 1 distinct committer email in the history. Both are GitHub 'noreply' addresses. Not printed.
+2.6 Large files:
+  Tracked files over 10 MB: 1: data/raw/diagnostics/session76/session76_pull_manifest.csv, 11771181 bytes.
+  Blobs over 10 MB in history: 1 (same file, blob 61c27171, 11771181 bytes). Next largest: session37_pull_manifest.csv 8689302 bytes; session72_pull_manifest.csv 7315821 bytes.
+  git count-objects -vH: count 1813 loose objects, size 78.29 MiB, in-pack 0, packs 0, size-pack 0 bytes, prune-packable 0, garbage 0, size-garbage 0 bytes.
+  Nothing exceeds GitHub's 50 MB warning or 100 MB limit.
+2.7 .gitignore coverage: data/raw/grib is not tracked (0 tracked files; matched by .gitignore line 46). No tracked file matches .env, .env.*, *.pem or *.key. Nothing to untrack.
+2.8 Stop rule: no real credential found. Steps 3 to 5 proceeded.
+
+=== STEP 3: read-only terms check (plain GET requests, fetch date 2026-09-29) ===
+3.1 Sources whose data is committed or built into a committed file, from SPEC 3 and the pull scripts (hosts as they appear in scripts/):
+  Open-Meteo Previous Runs API: previous-runs-api.open-meteo.com (data/raw/openmeteo_previousruns_*.json, BZN included).
+  Iowa Environmental Mesonet ASOS download: mesonet.agron.iastate.edu (data/raw/iem_asos_*).
+  NOAA GFS GRIB2 on AWS: noaa-gfs-bdp-pds.s3.amazonaws.com (byte-range pulls; small .grib2 samples and manifests under data/raw/diagnostics/; processed features under data/processed/ and data/raw/features/).
+3.2 Terms table:
+  Open-Meteo | https://open-meteo.com/en/terms (HTTP 200) and https://open-meteo.com/en/licence (HTTP 200; https://open-meteo.com/en/license redirects to it) | CC BY 4.0 for API data | asks: credit, a link to the licence, say if changes were made, and a link to open-meteo.com next to displayed data | limit: the free API is for non-commercial use only, under 10,000 calls a day, 5,000 an hour, 600 a minute; the terms list commercial examples such as subscription or advertising sites and 'undisclosed research at commercial entities' | redistribution: CC BY 4.0 lets you copy and redistribute with credit. The licence page lists NOAA NCEP among the upstream sources.
+  IEM | https://mesonet.agron.iastate.edu/disclaimer.php (HTTP 200) | public domain | says materials may be used freely for any lawful purpose; credit to the Iowa Environmental Mesonet of Iowa State University would be appreciated | no use limit found on that page | redistribution: allowed by the public-domain statement. (https://mesonet.agron.iastate.edu/info/datacredits.phtml returned HTTP 404; its terms are not recorded.)
+  NOAA GFS via NODD on AWS | https://registry.opendata.aws/noaa-gfs-bdp-pds/ (HTTP 200) | NOAA NODD: open to the public, usable as desired | asks: credit NOAA for unaltered data; do not state or imply NOAA endorsement or affiliation; do not present modified data as original NOAA data | no use limit found | redistribution: allowed as above. (https://www.weather.gov/disclaimer was also fetched, HTTP 200; not used for the terms above.)
+3.3 Pages not found: only the IEM datacredits page (404). No terms were guessed.
+3.4 Probed-only sources (ECMWF IFS and AIFS, DWD ICON, NOAA GEFS, Google WeatherNext, NOAA NBM, NWS MOS, Open-Meteo Single Runs): no tracked path under data/ names any of them. Session 80 to 83 outputs under data/: none except session81's own models and training set (built from GFS, not from the probed sources). F123.9 and F124.4 say the probe's samples were kept in temporary folders that were deleted, and that no forecast value was saved. Confirmed. Their terms were not fetched.
+
+=== STEP 4: F126 ===
+Appended to DECISIONS.md after D76: heading '## 2026-09-29: Session 84 finding: the GitHub-readiness audit and terms check', lines 1618 to 1702 (F126.1 to F126.5).
+
+=== STEP 5: edits ===
+5.1 README.md: full rewrite, 232 lines, 9 sections in the prompt's order.
+5.2 RESULTS.md: new '### 6.6 Confidence intervals for every result on record (F125)' at lines 681 to 788, between 6.5 and section 7. Header sentence now ends '... revised after session 80, revised after session 84.' Tables copied mechanically from DECISIONS.md lines 1493-1504, 1510-1521, 1525-1536, 1541-1546 (checked: each block is contained byte-for-byte in RESULTS.md). F125's own wording had en-dashes ('F16-F82' with U+2013), so the ranges in 6.6 are written 'F16 to F82'.
+5.3 LICENSE: standard MIT text, 'Copyright (c) 2026 Zachary Adams'.
+5.4 .gitignore: appended a blank line, the comment '# --- local secrets: never commit (D76) ---', then .env, .env.*, *.pem, *.key.
+5.5 CLAUDE.md: one paragraph added after the plain-writing paragraph, copied as given.
+
+=== 5.6 CHECKS (real output) ===
+Counts of U+2014 and U+2013, counted with Python:
+  README.md: 0 and 0 | LICENSE: 0 and 0 | notes/session-84-output.txt: 0 and 0 (checked before this last append and again after it, see end of file)
+  DECISIONS D76 (lines 1576-1614): 0 and 0 | DECISIONS F126 (lines 1618-1702): 0 and 0 | RESULTS 6.6 (lines 681-788): 0 and 0 | CLAUDE.md addition: 0 and 0 | STATUS.md: 0 and 0 | .gitignore addition: 0 and 0
+git diff --stat (tracked files):
+ .gitignore   |   6 ++
+ CLAUDE.md    |   4 +
+ DECISIONS.md | 129 +++++++++++++++++++++++++
+ README.md    | 303 ++++++++++++++++++++++++++++++++++++++++++++---------------
+ RESULTS.md   | 109 ++++++++++++++++++++-
+ STATUS.md    |  57 +++++------
+ 6 files changed, 498 insertions(+), 110 deletions(-)
+git status --porcelain:
+ M .gitignore
+ M CLAUDE.md
+ M DECISIONS.md
+ M README.md
+ M RESULTS.md
+ M STATUS.md
+?? LICENSE
+?? docs/session-84.md
+?? notes/session-84-output.txt
+  (?? notes/session-84-output.txt is this file; ?? docs/session-84.md is the session prompt; ?? LICENSE is new. All are allowed by the scope guard. No file outside the allowed list changed. Nothing is staged.)
+RESULTS.md git diff: hunks '@@ -7,7 +7,7 @@' (header sentence: 1 line changed) and '@@ -678,6 +678,113 @@' (the new 6.6, additions only). The only removed line is the header line, 'revised after session 80.' changed to add 'revised after session 84'.
+
+Numbers in README.md: each number token (two or more characters, or with a decimal point; URLs excluded) was searched in DECISIONS.md, SPEC.md, RESULTS.md (without the new 6.6), DECISIONS-archive.md and requirements.txt.
+  tokens checked: 136; not found anywhere: none
+  Targeted check of the headline table: for each of the 5 airports, both skill cells with their intervals equal the F125.6 row (raw GFS and persistence) exactly, and both MAE cells equal F109's (SPEC 8.5 reproduces F109's table): 5 of 5.
+  Where each headline number comes from: raw GFS MAE and model MAE, F109 (in DECISIONS-archive.md; SPEC 8.5); skill and intervals, F125.6; minimal-method intervals (+6.3 [-4.2, +14.8], +3.3 [-4.9, +11.1], -3.1 [-13.4, +8.1]), F125.4; -3.1% Reno, F82; KSFO 1.2576, 1.4263, +11.83%, D71.2/F119; bootstrap settings, D75.2/F125.3; MAE stats, SPEC 5.1.
+  number -> files where the token was found:
+    +11.1 -> DECISIONS.md, DECISIONS-archive.md
+    +11.83 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +12.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    +12.6 -> DECISIONS.md, DECISIONS-archive.md
+    +13.2 -> DECISIONS.md, DECISIONS-archive.md
+    +14.8 -> DECISIONS.md, DECISIONS-archive.md
+    +15.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +17.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +17.6 -> DECISIONS.md, DECISIONS-archive.md
+    +19.0 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +21.0 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +22.3 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    +24.2 -> DECISIONS.md, DECISIONS-archive.md
+    +27.0 -> DECISIONS.md
+    +28.5 -> DECISIONS.md
+    +3.3 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +43.0 -> DECISIONS.md
+    +44.9 -> DECISIONS.md, DECISIONS-archive.md
+    +46.3 -> DECISIONS.md
+    +48.5 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    +51.0 -> DECISIONS.md
+    +51.7 -> DECISIONS.md, DECISIONS-archive.md
+    +53.8 -> DECISIONS.md
+    +55.0 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +57.5 -> DECISIONS.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +57.9 -> DECISIONS.md
+    +6.3 -> DECISIONS.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +6.8 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +60.4 -> DECISIONS.md
+    +60.8 -> DECISIONS.md
+    +61.2 -> DECISIONS.md, DECISIONS-archive.md
+    +65.6 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +7.4 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +7.9 -> DECISIONS.md, DECISIONS-archive.md
+    +70.3 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    +8.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -01 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -03 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -07 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -08 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -09 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -13.4 -> DECISIONS.md, DECISIONS-archive.md
+    -24 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    -27 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -29 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -3.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    -31 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -31, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    -4.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    -4.9 -> DECISIONS.md, DECISIONS-archive.md
+    0.25 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.0008 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.2362 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.2369 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.2576 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.2643 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.2742 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.4091 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.4123 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.4263 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.4897 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.6135 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    1.7043 -> SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    10 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    10,000 -> DECISIONS.md
+    109 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    119 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    119, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    122 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    123, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    124 -> DECISIONS.md, DECISIONS-archive.md
+    124.4 -> DECISIONS.md
+    125 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    125.4 -> DECISIONS.md
+    125.6 -> DECISIONS.md
+    125.8 -> DECISIONS.md
+    125.9 -> DECISIONS.md
+    126 -> DECISIONS.md, DECISIONS-archive.md
+    126.2 -> DECISIONS.md
+    126.3 -> DECISIONS.md
+    16, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    17. -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    2.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    2.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    2.3 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    2.4 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    2.5 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    20 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    2021 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    2024 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    2025 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    2026 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    21.4 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    3.12 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md, requirements.txt
+    30, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    37 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    39 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    4.0 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    4.1 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    4.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    4.3 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    4.7 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    40 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    47 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    47, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    48 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    48.10 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    49 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    5.0 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    5.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    5.3 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    59.5 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    6.5 -> DECISIONS.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    6.6 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    60 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    62 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    62.3 -> DECISIONS.md, SPEC.md, DECISIONS-archive.md
+    62.6 -> DECISIONS.md, DECISIONS-archive.md
+    64 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    64, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    69, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    71 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    71.1 -> DECISIONS.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    71.2 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    71.5 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    72 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    73 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    73, -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    73.8 -> DECISIONS.md
+    75.2 -> DECISIONS.md
+    76 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md, requirements.txt
+    76.5 -> DECISIONS.md
+    8.7 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    82 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    94 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+    95 -> DECISIONS.md, SPEC.md, RESULTS.md(without 6.6), DECISIONS-archive.md
+Numbers in RESULTS.md 6.6: the four tables are byte-equal copies of F125.4 to F125.7 (checked). The prose numbers were checked against F125: 17 (F125.2), 7-day blocks / 10,000 resamples / seed 83 (D75.2, F125.3), 1.1650 against 1.179 (F94 YSDU) and 1.2446 against 1.2643 (F109 YSDU) (F125.8), 37.5% (D71.5, F117.3), 6.3 (section 6.3). Each found in its cited entry.
+
+=== END-OF-SESSION STEP 3: consistency check (report only; nothing fixed) ===
+Re-read SPEC.md, STATUS.md and DECISIONS.md (live). Mechanical checks run with Python:
+- Duplicated headings: DECISIONS.md 15 headings, none duplicated; STATUS.md none; SPEC.md none.
+- Order: DECISIONS.md's 14 dated headings are in date order. D entries are ascending (17, 46, 47, 51, 62, 71, 72, 73, 75, 76) and F entries are ascending (7, 96, 122 to 126). Early D17 and F7 sit above D46 by design (kept live by D46). No id appears in both DECISIONS.md and DECISIONS-archive.md.
+- Citations: every D/F number cited in STATUS.md, README.md, RESULTS.md and SPEC.md resolves to an entry head in DECISIONS.md or DECISIONS-archive.md.
+- README.md and RESULTS.md 6.6 against DECISIONS: agree (see the number checks above).
+Findings for the owner:
+C1. Heading style differs by design: the two new DECISIONS headings use a colon; older ones use the long dash (D76.6).
+C2. SPEC.md 5.4 and SPEC 6's stage A bullet still describe the confidence intervals as scheduled work, and the stage A bullet does not say the probe (F123, F124) and the intervals (F125) are done. SPEC is out of this session's scope, so it was not edited.
+C3. RESULTS.md section 7's "The roadmap" bullet still says the intervals and the source probe are "next". Section 7 is outside this session's allowed RESULTS edit (only 6.6 and the header line), so it was not edited. Section 6.6 itself states they are done.
+C4. The audit (2.5) counted 31 tracked files with '/Users/' before this session's edits. DECISIONS.md and STATUS.md now also contain the literal text '/Users/' (F126.2 and STATUS name the audit item in words, with no personal path), and this output file will too. These are references, not personal paths. The count of real personal-path files is still 31 (30 under notes/, 1 in docs/session-67.md).
+C5. README section 6 says two things cannot be verified from the repo: the full script run order (spread across DECISIONS.md) and a from-scratch re-fetch of the GRIB cache (no session has done one). Stated in the README in one line, as the prompt asks.
+C6. Terms: the Open-Meteo free API is for non-commercial use (under 10,000 calls a day). The project is a private, non-sold tool (D72.2(d)), which fits. If that changes, the licence needs a look (recorded in D72.2(d) already).
+C7. One IEM page (info/datacredits.phtml) returned 404, so nothing was recorded from it. The IEM terms come from disclaimer.php only.
+
+=== END-OF-SESSION STEP 4: archive step ===
+Nothing moved. DECISIONS-archive.md was not touched.
+D72, D73, F122, F123, F124, F125, D76 and F126 stay live, as the prompt says.
+D75 stays live. Reason: the criterion needs the entry to be settled and not needed word for word by a live open item, and there is real doubt here, so per D46 the entry stays. D75.1 is decided (D76.2) and D75.4 is superseded (D76.7), but D75.2 is the written definition of the method that live F125.3 says it follows and that README.md and RESULTS.md 6.6 cite, and D75.3 is a still-open carried decision that live D76.3 points at by number. A wrong keep costs a little reading; a wrong move risks the wording. The owner can move it in session 85.
+
+=== END OF SESSION ===
+STATUS.md overwritten as a current-only snapshot (ends with the required "Next planning session" paragraph). Nothing was staged, committed or pushed. No commit message was written.
+
+=== CORRECTIONS BEFORE COMMIT (owner-approved, session 84 scope extended to these edits only) ===
+Diffs of the correction edits only (before = state at end of the first pass), then dash counts on each new passage.
+
+--- diff README.md
+--- before/README.md
++++ README.md
+@@ -92,4 +92,11 @@
+ **Discipline.**
+-- Splits are by time only. Training is 2021-03-24 to 2025-07-31; the
+-  sealed test year is 2025-08-01 to 2026-07-31 (SPEC 4.3, 2.1a).
++- Splits are by time only, and every model is trained only on data from
++  before its own held-out period (SPEC 2.1a). The windows as recorded:
++  - Minimal and richer methods: train 2021-03-24 to 2025-07-31, test the
++    sealed year 2025-08-01 to 2026-07-31 (SPEC 4.3, 7.2).
++  - Selected method: train 2021-03-24 to 2024-07-31, test the reserved
++    year 2024-08-01 to 2025-07-31 (SPEC 8.3, D51).
++  - KSFO, two looks: look A trains 2021-03-24 to 2024-07-31 and tests
++    2024-25; look B trains 2021-03-24 to 2025-07-31 and tests 2025-26
++    (SPEC 8.5, D70.3).
+ - The bar is fixed in writing before any held-out data is opened, and each
+@@ -203,3 +210,5 @@
+   https://open-meteo.com/en/licence. The free API is for non-commercial
+-  use only, under 10,000 calls a day. Weather data by
++  use only, under 10,000 calls a day. The raw JSON pulls under `data/raw/`
++  are Open-Meteo's data unchanged. The processed files built from them
++  (under `data/processed/`) are derived, changed values. Weather data by
+   [Open-Meteo.com](https://open-meteo.com/).
+
+--- diff RESULTS.md
+--- before/RESULTS.md
++++ RESULTS.md
+@@ -850,7 +850,9 @@
+ - **The roadmap.** The owner has set a roadmap to a private, live daily
+-  tool (DECISIONS D72; SPEC 6). Next are a comparison against
+-  operational post-processed forecasts and a probe of other weather
+-  models' data (stage A), and a pre-registered forward test of the
+-  selected-features recipe on 2026-27, split at the GFS v17 go-live
+-  date (stage B). Widening the target to a full daily curve and the
++  tool (DECISIONS D72; SPEC 6). In stage A, the confidence intervals
++  (F125, section 6.6) and the probe of other weather models' data (F123,
++  F124) are done. The comparison against operational post-processed
++  forecasts (NWS MOS and NBM) is still to come (D72.7; session 85, per
++  D76.3). In stage B, the forward test of the selected-features recipe
++  on 2026-27, split at the GFS v17 go-live date, is pre-registered and
++  its models are frozen (D73, F122). It is not yet scored (D73.8). Widening the target to a full daily curve and the
+   48-hour lead, correcting and blending other weather models, and the
+
+--- diff SPEC.md
+--- before/SPEC.md
++++ SPEC.md
+@@ -628,5 +628,6 @@
+ 
+-**They are now scheduled as part of roadmap stage A** (section 6,
+-DECISIONS D72.3): confidence intervals for the results on record, and
+-a comparison against operational post-processed forecasts. They change
++**They were scheduled as part of roadmap stage A** (section 6,
++DECISIONS D72.3). The confidence intervals for the results on record are
++done (DECISIONS F125; RESULTS 6.6). The comparison against operational
++post-processed forecasts is still scheduled (DECISIONS D72.7). They change
+ no earlier verdict. Stage A's own gate (DECISIONS D72.7) decides the
+@@ -728,3 +729,5 @@
+   source (ECMWF, ICON, WeatherNext, NBM, GEFS): archive depth, live
+-  feed, and which fields it offers.
++  feed, and which fields it offers. The confidence intervals (F125) and
++  the source probe (F123, F124) are done. The comparison and its outcome
++  rule are still to come (D72.7, D76.3).
+ - **Stage B [em-dash] forward test and data collection.** Pre-register the
+
+--- diff STATUS.md
+--- before/STATUS.md
++++ STATUS.md
+@@ -75,4 +75,8 @@
+ rewritten, RESULTS.md section 6.6 (F125's intervals), LICENSE (MIT),
+-four `.gitignore` lines, one CLAUDE.md rule (no em-dashes, D76.6). The
+-owner makes the repo public by hand, after review.
++four `.gitignore` lines, one CLAUDE.md rule (no em-dashes, D76.6). Owner-
++approved corrections before commit: a README note that raw Open-Meteo JSON
++is unchanged and processed files are derived, README training and held-out
++windows with citations, RESULTS section 7's roadmap bullet brought up to
++date, and SPEC 5.4 and SPEC 6's stage A bullet brought up to date (wording
++only). The owner makes the repo public by hand, after review.
+ 
+
+--- diff DECISIONS.md
+--- before/DECISIONS.md
++++ DECISIONS.md
+@@ -1690,2 +1690,20 @@
+   `notes/session-84-output.txt` written.
++- Owner-approved corrections before commit (session 84 scope extended to
++  these edits only):
++  - `README.md` section 8, Open-Meteo bullet: one sentence added saying
++    the raw JSON under `data/raw/` is Open-Meteo's data unchanged and the
++    files under `data/processed/` are derived, changed values.
++  - `README.md` section 3, "Discipline", first bullet: replaced with each
++    method's recorded training window and held-out period, cited (SPEC
++    4.3, 7.2, 8.3, 8.5; D51, D70.3). All windows are stated in the record.
++  - `RESULTS.md` section 7, "The roadmap" bullet: reworded only the
++    out-of-date part (F125, F123, F124 done; D73, F122 pre-registered and
++    frozen, not scored; MOS and NBM comparison still to come).
++  - `SPEC.md` 5.4, third paragraph: wording only, intervals done (F125),
++    comparison still scheduled (D72.7). Last two sentences kept.
++  - `SPEC.md` 6, Stage A bullet: one sentence added at its end (F125, F123,
++    F124 done; comparison and rule to come, D72.7, D76.3).
++  - `STATUS.md`, the session 84 paragraph: these edits added to its list.
++  - `DECISIONS.md`, F126.4 and F126.5: this list, and F126.5's SPEC.md
++    line corrected to match.
+ 
+@@ -1699,3 +1717,4 @@
+ - It changed no verdict, and edited no existing DECISIONS entry, SPEC.md,
+-  PROJECT-INSTRUCTIONS.md, `docs/` file or existing `notes/` file.
++  PROJECT-INSTRUCTIONS.md, `docs/` file or existing `notes/` file. The one
++  exception is the owner-approved wording-only SPEC.md edits in F126.4.
+ - Nothing was committed and no commit message was written.
+
+Fresh U+2014 / U+2013 counts (Python) on the added lines of each passage:
+  README.md added lines: U+2014=0 U+2013=0
+  RESULTS.md added lines: U+2014=0 U+2013=0
+  SPEC.md added lines: U+2014=0 U+2013=0
+  STATUS.md added lines: U+2014=0 U+2013=0
+  DECISIONS.md added lines: U+2014=0 U+2013=0
+Note: one diff context line quoting existing SPEC text ('Stage A [em-dash] benchmark...') had its existing em-dash replaced by the marker [em-dash] in this file, so the file holds 0 of both characters. SPEC.md itself is unchanged on that line.

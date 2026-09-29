@@ -1570,3 +1570,151 @@ re-score). Elsewhere the two sets are the same.
 - Nothing was written under `data/`, and no existing script was edited.
 - No verdict changed.
 - Nothing was committed and no commit message was written.
+
+---
+
+## 2026-09-29: Session 84 decision: GitHub readiness (owner, planning chat)
+
+**D76. Owner decisions, planning chat (after session 83): the session 83
+review and session 84's plan.** Written at the start of session 84,
+before any other edit or network call.
+
+- **D76.1 F125.1 accepted.** The refits' read-only use of committed raw
+  files (the Open-Meteo JSON chunks and the IEM observation chunks), as
+  the record code does and as F122.3 did, is accepted. It is within
+  "committed files" for session 83's purpose.
+- **D76.2 ICON: the project does not save ICON.** F124.2(b) found 850
+  hPa temperature present in Open-Meteo's Single Runs `icon_global` from
+  2026-04-02. D75.1's rule, stated in advance, therefore applies: the
+  project does not save ICON itself. This closes D72.8 for ICON. The
+  completeness of the Single Runs archive (one missing 18z run found,
+  not scanned) and the timing at hours 18 to 23 (F124.2) stay open, for
+  stage D.
+- **D76.3 Session order.** Session 84 is a GitHub-readiness session
+  before the repo goes public: a README rewrite, F125's intervals and
+  caveats in RESULTS.md, data credits and terms, a secrets and
+  personal-path check, and a licence file. The NBM/MOS comparison and
+  its outcome rule (D72.7), the carried F123.9 decision (D75.3) and
+  whether 2026-27 gets a pre-registered NBM/MOS test (D73.8) move to
+  session 85. The hold rule (D73.8) is unchanged.
+- **D76.4 Licence.** The code is released under the MIT licence. Data
+  committed in the repo stays under its sources' terms, which the MIT
+  licence cannot change; the README says so.
+- **D76.5 Public contents.** `docs/`, `notes/` and the planning files
+  stay in the public repo as the working record. The README tells
+  readers which files to read and which to skip. Personal paths found by
+  the audit are reported, not edited: editing old notes would alter the
+  record, and the git history keeps them anyway.
+- **D76.6 No em-dashes (standing rule).** No new text from session 84
+  on uses the em-dash (U+2014). Existing text is not edited to remove
+  it. The rule is added to CLAUDE.md's plain-writing rule.
+- **D76.7 GFS v17 (planning-chat web search, 2026-09-29, not checked by
+  this session).** Still no Service Change Notice. NOAA's April 2026
+  proposal says one will be issued 30 days before go-live, so the
+  earliest go-live is about late October 2026.
+
+---
+
+## 2026-09-29: Session 84 finding: the GitHub-readiness audit and terms check
+
+**F126. A read-only audit of the working tree and full git history, and a
+read-only check of each committed data source's terms, before the repo goes
+public (D76.3). Commands only (`git`, `grep`, `find`, `du`, `curl` and
+throwaway Python in the shell); no script was written. Full real output:
+`notes/session-84-output.txt`. Run 2026-09-29. No secret value is printed
+anywhere.**
+
+**F126.1 Steps 0 and 1.**
+- `git status --porcelain` showed only `?? docs/session-84.md`. The last
+  entries were D75, F124 and F125. No D76 or F126 existed in either
+  DECISIONS file. README.md existed; LICENSE and the output file did not.
+- The history has one distinct author name and one committer name (the
+  owner's), so the licence has a single copyright holder.
+- D76 was copied mechanically (`sed`) from `docs/session-84.md` lines
+  101 to 137 into DECISIONS.md lines 1578 to 1614 and checked byte-equal
+  with `diff`, before any other edit or network call.
+
+**F126.2 The audit.**
+- **Files.** 1,076 tracked files. `data/` is 785 files, 138.69 MB (raw
+  122.84 MB, processed 7.04 MB, models 5.26 MB, rebuild 3.54 MB); `docs/`
+  97 files; `notes/` 91 files; `scripts/` 93 files; 10 root files.
+- **Secret files by name (tree and history):** none. No `.DS_Store` is
+  tracked. One was committed in session 01 (commit 75fd116) and removed in
+  session 02 (commit 36324e0); it is a folder-view file, not a secret.
+- **Secret patterns, tree.** Seven strong patterns (AWS, private key,
+  GitHub, Anthropic, OpenAI-style, Slack, Google): 0 hits. The `assignment`
+  pattern: 3 hits in `scripts/session82_source_probe.py` (lines 79, 84,
+  95), class: code naming a variable, an S3 pagination token, no value. The
+  `key=` pattern: 81 hits in 45 files, class: code keyword arguments, no
+  value. No hit is followed by a literal of 16 or more key-like characters.
+- **Secret patterns, history.** The same seven: 0 hits. `assignment` 3 and
+  `key=` 81 added-line hits, the same lines as the tree, same
+  classification. Nothing is classed as a real credential.
+- **Personal details.** `/Users/` paths: 92 occurrences in 31 tracked
+  files (30 under `notes/`, 1 in `docs/session-67.md`; listed in the output
+  file). Reported, not edited (D76.5). Email addresses in tracked files: 1,
+  in `notes/session-82-output.txt` (a `dwd.de` contact seen in the ICON
+  probe, not personal). Commit metadata: 1 distinct author email and 1
+  distinct committer email, both GitHub `noreply` addresses.
+- **Large files.** One tracked file is over 10 MB:
+  `data/raw/diagnostics/session76/session76_pull_manifest.csv`, 11,771,181
+  bytes, and it is also the only blob over 10 MB in history. Loose objects
+  total 78.29 MiB. Nothing reaches GitHub's 50 MB warning or 100 MB limit.
+- **`.gitignore`.** `data/raw/grib` is not tracked and is ignored (line 46).
+  No tracked file matches `.env`, `.env.*`, `*.pem` or `*.key`.
+
+**F126.3 The terms table (plain GET requests, fetched 2026-09-29).**
+
+| source | URL | licence or terms | attribution asked for | redistribution and use limits |
+|---|---|---|---|---|
+| Open-Meteo Previous Runs API | https://open-meteo.com/en/terms and https://open-meteo.com/en/licence | CC BY 4.0 for API data | Credit, a link to the licence, say if changed; a link to open-meteo.com next to displayed data | May be copied and redistributed with credit. The free API is non-commercial only, under 10,000 calls a day (5,000 an hour, 600 a minute); subscription or advertising sites and undisclosed research at commercial entities count as commercial |
+| IEM ASOS observations (Iowa State University) | https://mesonet.agron.iastate.edu/disclaimer.php | Public domain | Credit to the Iowa Environmental Mesonet would be appreciated | Free use for any lawful purpose. No use limit on that page. The `datacredits.phtml` page returned HTTP 404, so nothing is recorded from it |
+| NOAA GFS GRIB2 (NODD, AWS bucket `noaa-gfs-bdp-pds`) | https://registry.opendata.aws/noaa-gfs-bdp-pds/ | NOAA NODD: open, usable as desired | Credit NOAA for unaltered data; do not imply NOAA endorsement; do not present modified data as original | Redistribution allowed on those conditions. No use limit found |
+
+Probed-only sources (ECMWF IFS and AIFS, DWD ICON, NOAA GEFS, Google
+WeatherNext, NOAA NBM, NWS MOS, Open-Meteo Single Runs): no tracked path
+under `data/` names any of them, and F123.9 and F124.4 record that no
+data from them was kept. Their terms were not fetched.
+
+**F126.4 The edits made in Step 5.**
+- `README.md`: rewritten in full (nine sections, no em-dashes).
+- `RESULTS.md`: new section 6.6 (F125's four tables, notes, statements and
+  D71.5's framing, with a plain reading), and "revised after session 84"
+  added to the header sentence. Nothing else changed.
+- `LICENSE`: new, the standard MIT text, `Copyright (c) 2026` with the
+  owner's name.
+- `.gitignore`: appended a comment and four lines (`.env`, `.env.*`,
+  `*.pem`, `*.key`).
+- `CLAUDE.md`: one paragraph added after the plain-writing rule (D76.6).
+- `DECISIONS.md`: D76 and this entry appended. `STATUS.md` overwritten.
+  `notes/session-84-output.txt` written.
+- Owner-approved corrections before commit (session 84 scope extended to
+  these edits only):
+  - `README.md` section 8, Open-Meteo bullet: one sentence added saying
+    the raw JSON under `data/raw/` is Open-Meteo's data unchanged and the
+    files under `data/processed/` are derived, changed values.
+  - `README.md` section 3, "Discipline", first bullet: replaced with each
+    method's recorded training window and held-out period, cited (SPEC
+    4.3, 7.2, 8.3, 8.5; D51, D70.3). All windows are stated in the record.
+  - `RESULTS.md` section 7, "The roadmap" bullet: reworded only the
+    out-of-date part (F125, F123, F124 done; D73, F122 pre-registered and
+    frozen, not scored; MOS and NBM comparison still to come).
+  - `SPEC.md` 5.4, third paragraph: wording only, intervals done (F125),
+    comparison still scheduled (D72.7). Last two sentences kept.
+  - `SPEC.md` 6, Stage A bullet: one sentence added at its end (F125, F123,
+    F124 done; comparison and rule to come, D72.7, D76.3).
+  - `STATUS.md`, the session 84 paragraph: these edits added to its list.
+  - `DECISIONS.md`, F126.4 and F126.5: this list, and F126.5's SPEC.md
+    line corrected to match.
+
+**F126.5 What this did not do.**
+- It read, scored or fitted no forecast or observation value, and wrote
+  nothing under `data/`.
+- It edited no script and wrote no script.
+- It edited no personal path.
+- It made no git write: no staging, no commit, no push, no history rewrite,
+  no remote or GitHub setting.
+- It changed no verdict, and edited no existing DECISIONS entry, SPEC.md,
+  PROJECT-INSTRUCTIONS.md, `docs/` file or existing `notes/` file. The one
+  exception is the owner-approved wording-only SPEC.md edits in F126.4.
+- Nothing was committed and no commit message was written.

@@ -48,3 +48,9 @@ data/raw/grib
 # --- scratch GRIB files a pull script leaves behind only if killed mid-pull
 # (audit A67-08). Matches _scratch_*.grib2 only, never the tracked samples.
 data/raw/diagnostics/**/_scratch_*.grib2
+
+# --- local secrets: never commit (D76) ---
+.env
+.env.*
+*.pem
+*.key

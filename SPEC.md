@@ -626,9 +626,10 @@ the win is not carried by one lucky stretch of weather. So no later stage waits
 on this work, and no session has to do it. If the owner asks for it, it is a
 session of its own. See DECISIONS D29.
 
-**They are now scheduled as part of roadmap stage A** (section 6,
-DECISIONS D72.3): confidence intervals for the results on record, and
-a comparison against operational post-processed forecasts. They change
+**They were scheduled as part of roadmap stage A** (section 6,
+DECISIONS D72.3). The confidence intervals for the results on record are
+done (DECISIONS F125; RESULTS 6.6). The comparison against operational
+post-processed forecasts is still scheduled (DECISIONS D72.7). They change
 no earlier verdict. Stage A's own gate (DECISIONS D72.7) decides the
 project's direction, not any airport's pass or fail.
 
@@ -726,7 +727,9 @@ side, because both are time-critical.
   NBM) at DSM, RNO and SFO; its outcome rule is fixed in writing before
   it is looked at (DECISIONS D72.7). A read-only probe of each other
   source (ECMWF, ICON, WeatherNext, NBM, GEFS): archive depth, live
-  feed, and which fields it offers.
+  feed, and which fields it offers. The confidence intervals (F125) and
+  the source probe (F123, F124) are done. The comparison and its outcome
+  rule are still to come (D72.7, D76.3).
 - **Stage B — forward test and data collection.** Pre-register the
   2026-27 forward test of section 8's recipe on GFS, split at the GFS
   v17 go-live date (DECISIONS D72.5). For any source with no
