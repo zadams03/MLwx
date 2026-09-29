@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 29 September 2026, after session 84._
+_Last updated: 29 September 2026, after session 85._
 
 ---
 
@@ -21,93 +21,68 @@ come stages C to H. New airports are an ongoing track, and pooling is
 conditional.
 
 **Stage B: the 2026-27 GFS forward test is pre-registered (D73), and its
-models are frozen (F122).** Unchanged this session.
+models are frozen (F122).**
 
 - **Design (D73).** SPEC 8's `B+D,L,R,T`, unchanged, at all six airports.
   The test year 2026-08-01..2027-07-31 splits at the first operational GFS
   v17 cycle into period A (v16 inputs) and period B (v17 inputs,
   v16-trained model). Each period is judged separately against SPEC 5.3.
 - **Hold rule (D73.8).** No 2026-27 value is scored until its period has
-  ended and its observations are in. Period A is not scored until the
-  owner has decided, in writing, whether to pre-register a comparison
-  against NBM/NWS MOS on 2026-27 (D72.7). Until each period is scored, its
-  data is held out for claims (SPEC 2.5).
+  ended and its observations are in. The condition that period A waits
+  for, the owner's written decision on an NBM/MOS test on 2026-27, is now
+  met by D77.6. Until each period is scored, its data is held out for
+  claims (SPEC 2.5).
+- **2026-27 NBM/MOS test (D77.6), pre-registered.** The frozen F122
+  `B+D,L,R,T` models against NBM at DSM, RNO and KSFO, and against GFS MOS
+  (MAV) at DSM, per period; PASS if the model's MAE is lower. Separate from
+  D73. Its scripts are written later, with D73.8's.
 
-**Stage A: source probe done (F123); ICON route check done (F124);
-confidence intervals done (F125).**
+**Stage A: done except the direction decision.** Source probe (F123), ICON
+route check (F124, D76.2: ICON is not saved), confidence intervals (F125),
+and now the NBM/MOS comparison on the spent years (F127).
 
-F123's sources, in brief:
+**F127, in brief (descriptive only; it changes no verdict).** All four
+airport-looks passed the reproduction gate. MAE in degC, recorded
+predictions, d = MAE(competitor) minus MAE(model) with its 95% interval:
 
-| source | class | all SPEC 8 fields? |
-|---|---|---|
-| ECMWF IFS open data | Shallow (2023-01-18) | only from 2025-11-21 |
-| ECMWF AIFS Single | Shallow (2025-02-10) | yes |
-| DWD ICON global | No archive (about 24 h) | yes, by listing |
-| NOAA GEFS | Deep (2017-01-01) | yes (850 hPa at 0.5° only) |
-| Google WeatherNext | Blocked (account and form) | WN3 yes, per documentation |
-| NOAA NBM (CONUS) | Deep (2020-05-18) | no 850 hPa, no pressure |
-| NWS MOS (IEM archive) | Deep | temperature, dewpoint, wind, sky only |
-| Open-Meteo Previous Runs | Shallow (2024) | no 850 hPa at any offset |
+| airport-look | competitor | n | model | competitor | raw GFS | d [95%] |
+|---|---|---|---|---|---|---|
+| DSM 2024-25 | NBM | 365 | 1.4123 | 1.2196 | 1.7043 | -0.193 [-0.308, -0.051] |
+| RNO 2024-25 | NBM | 365 | 1.2742 | 1.3192 | 1.6135 | +0.045 [-0.060, +0.156] |
+| KSFO A 2024-25 | NBM | 364 | 1.2576 | 1.0000 | 1.4263 | -0.258 [-0.382, -0.131] |
+| KSFO B 2025-26 | NBM | 365 | 1.3830 | 1.3023 | 1.7321 | -0.081 [-0.220, +0.044] |
+| DSM 2024-25 | MAV | 365 | 1.4123 | 1.5773 | 1.7043 | +0.165 [+0.017, +0.332] |
 
-GFS MOS, NAM MOS and NBS have no 20:00 UTC projection (RNO, KSFO's target
-hour); DSM's 18:00 UTC is covered (F123.4).
-
-**ICON decision (D76.2).** The project does not save ICON: 850 hPa
-temperature is present in Open-Meteo's Single Runs from 2026-04-02
-(F124.2(b)), so D75.1's rule applies.
-
-**Confidence intervals (F125), descriptive only; they change no verdict.**
-All 17 airport-results passed the reproduction gate.
-- Minimal method (F16 to F82): d over persistence above zero at all five;
-  over raw GFS above zero at EGLC and LFPG, not at DSM, YSDU or RNO.
-- Richer 5-feature (F94): over persistence above zero at all five; over
-  raw GFS above zero at EGLC, LFPG and YSDU, not at DSM or RNO.
-- Selected `B+D,L,R,T` (F109): above zero against both, at all five.
-- KSFO (F119): above zero against both, in both looks.
-
-**Session 84: GitHub readiness (D76, F126).** Done, read-only except for
-the edits listed in F126.4. The audit of the tree and full history found
-no secret and no real credential, no large-file problem (largest blob
-11.8 MB), and 92 `/Users/` path occurrences in 31 tracked files (reported,
-not edited, D76.5). The terms check found open terms at all three
-committed sources (Open-Meteo CC BY 4.0, non-commercial free API; IEM
-public domain; NOAA NODD open, credit requested). Edits: README.md
-rewritten, RESULTS.md section 6.6 (F125's intervals), LICENSE (MIT),
-four `.gitignore` lines, one CLAUDE.md rule (no em-dashes, D76.6). Owner-
-approved corrections before commit: a README note that raw Open-Meteo JSON
-is unchanged and processed files are derived, README training and held-out
-windows with citations, RESULTS section 7's roadmap bullet brought up to
-date, and SPEC 5.4 and SPEC 6's stage A bullet brought up to date (wording
-only). The owner makes the repo public by hand, after review.
+**Band under D77.4: MIXED** (the model beats NBM at RNO only). The model
+beats MAV at DSM (not part of the band). KSFO carries D71.5's framing.
 
 ---
 
 ## Open questions (live)
 
-None new this session. F125.1 is closed by D76.1.
+None. The planning-chat corrections after review (NBM version dates,
+NAM MOS wording, the start-hour question) are recorded in F127.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D76.7).** Still no Service Change Notice as of 2026-09-29.
+- **Direction decision (D77.4).** F127's band is mixed. The owner chooses
+  in writing, before stage C's lock: (a) bring a US-only stacking check
+  (NBM as an input) forward from stage E; (b) weight the roadmap towards
+  non-US airports; (c) both; or (d) neither, with reasons.
+- **GFS v17 (D77.8).** Still no Service Change Notice as of 2026-09-29.
   Re-check at each planning session. The go-live date sets period A's
   length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
   to be confirmed against the SCN (D73.4).
-- **Session 82's MOS near-miss (F123.9).** The owner's decision is
-  deferred to the NBM/MOS outcome rule (D72.7, D73.8), now session 85
-  (D76.3).
 - **Stage A/B uncertainties still open.**
   - the v17 go-live date;
-  - whether a comparison against NBM/NWS MOS is pre-registered on
-    2026-27 (D73.8, D72.7);
   - how complete Open-Meteo's Single Runs archive is for `icon_global`
     (one missing 18z run found; not scanned), and the timing at hours
     18 to 23 (F124.2; kept open for stage D by D76.2);
   - retention periods not measured (WeatherNext; ICON beyond DWD's
     statement);
   - model-version histories marked unknown in F123.3;
-  - the NBM v4.3 date disagreement between two NOAA pages;
   - whether GFS v17 retrospective runs are public: none found as of
     2026-09-28 (F123.6; not proven absent).
 
@@ -115,4 +90,4 @@ None new this session. F125.1 is closed by D76.1.
 
 ## Next
 
-**Next planning session:** Review session 84. If the review is clean, the owner makes the repo public. Then design session 85: the NBM/MOS comparison and its outcome rule (D72.7), including the carried F123.9 decision and whether 2026-27 gets a pre-registered NBM/MOS test (D73.8).
+**Next planning session:** Review session 85. If F127's band is mixed or lose, the owner records the direction decision (D77.4). Then design session 86: the next step in stage B or C (the 2026-27 data-build and scoring scripts, or stage C's start).

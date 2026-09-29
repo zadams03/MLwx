@@ -1,0 +1,40 @@
+Session 85: NBM/MOS comparison on the spent years (D77, F127); outcome band mixed
+
+D77 records the owner's decisions, written before any network call or
+data read: the NBM/MOS comparison's competitors and matching rules, its
+outcome rule (D72.7), acceptance of session 82's MOS near-miss (F123.9),
+and a pre-registered comparison of the frozen F122 models against NBM,
+and against GFS MOS at DSM, on 2026-27 (periods A and B judged
+separately, no expectation stated). This meets D73.8's hold-rule
+condition.
+
+F127 records the comparison. A reproduction gate passed at full
+precision for all four airport-looks (DSM and RNO from F109's 2024-25
+refit; KSFO looks A and B from F119's saved predictions). NBM CONUS core
+2 m temperature was pulled for 1,095 files (1.69 GB, none missing, no
+GRIB kept) at the nearest grid point, and GFS MOS (MAV) for 365 runs at
+KDSM. The first pull failed on a DNS error and was re-run once, as the
+session allowed; nothing was written by the failed run.
+
+Results, MAE in degC on common days: DSM model 1.412 vs NBM 1.220; RNO
+1.274 vs 1.319; KSFO look A 1.258 vs 1.000; KSFO look B 1.383 vs 1.302.
+The model is lower than NBM only at RNO, so the band under D77.4 is
+mixed. At DSM the model beats GFS MOS (1.412 vs 1.577, interval for the
+difference wholly above zero). Descriptive only: no verdict changes, and
+the direction decision is the owner's (D77.4).
+
+Planning-chat corrections, applied before commit: v5.0.14 took effect
+from the 12z run on 2026-07-28 (SCN 26-70), so KSFO look B's last 3 days
+use post-fix NBM; NBM v5.0 began on or about 2026-04-30, 13z (SCN 26-24),
+not 2026-05-05, so 5 KSFO look B days in the descriptive segment table
+are mislabelled v4.3; NAM MOS termination (D77.1) is scheduled for
+2026-10-14, not past. SPEC 5.4 and RESULTS' roadmap bullet no longer
+call the comparison pending.
+
+SPEC 6's stage A and B bullets now point to D77 and F127. STATUS.md is
+overwritten. D75 and F126 are archived verbatim.
+
+New files: scripts/session85_nbm_mos_comparison.py,
+data/processed/session85_competitor_points.csv (+ .meta.txt),
+data/raw/iem_mos/session85/ (365 raw MAV responses + meta),
+notes/session-85-output.txt, docs/session-85.md, docs/commit-85.txt.

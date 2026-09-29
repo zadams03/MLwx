@@ -851,8 +851,12 @@ They now apply to a project with three proven methods, not one.
   tool (DECISIONS D72; SPEC 6). In stage A, the confidence intervals
   (F125, section 6.6) and the probe of other weather models' data (F123,
   F124) are done. The comparison against operational post-processed
-  forecasts (NWS MOS and NBM) is still to come (D72.7; session 85, per
-  D76.3). In stage B, the forward test of the selected-features recipe
+  forecasts is done (F127). On the spent years, at one hour a day, the
+  selected recipe's MAE was lower than the National Blend of Models'
+  only at Reno; NBM's was lower at Des Moines and at San Francisco in
+  both years. The recipe's MAE was lower than GFS MOS's at Des Moines.
+  The comparison is descriptive and changes no verdict; the direction
+  decision it leads to is the owner's (D77.4). In stage B, the forward test of the selected-features recipe
   on 2026-27, split at the GFS v17 go-live date, is pre-registered and
   its models are frozen (D73, F122). It is not yet scored (D73.8). Widening the target to a full daily curve and the
   48-hour lead, correcting and blending other weather models, and the
