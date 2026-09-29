@@ -7,7 +7,7 @@ checked against the original record. Where `SPEC.md` and this file ever
 disagree, `SPEC.md` is right (CLAUDE.md, SPEC section 2).
 
 Written after session 30, revised after session 44, revised after session
-65, revised after session 79, revised after session 80. As of session 65, the project has **three** independently-tested,
+65, revised after session 79, revised after session 80, revised after session 84. As of session 65, the project has **three** independently-tested,
 proven methods for correcting GFS's local bias at an airport: a minimal
 three-feature method (sections 2–4 below, the project's original result),
 a richer five-feature method using a different forecast source (section 5,
@@ -678,6 +678,113 @@ training includes 2024-25, by design (DECISIONS D70.3). KSFO's margins are
 not added to section 6.3's five-airport table or to its +6.02%
 airport-averaged read.
 
+### 6.6 Confidence intervals for every result on record (F125)
+
+Stage A of the roadmap asked for confidence intervals on every result on
+record (SPEC 5.4, D72.3, D75.2). They were computed in session 83 (F125).
+Every recorded MAE was first recomputed and had to equal its recorded
+figure at the entry's precision; all 17 airport-results passed (F125.2).
+For each airport-result, the table gives the paired per-day MAE difference
+`d` (reference MAE minus model MAE, in degrees Celsius) and the skill
+(`1 - model MAE / reference MAE`, in percent), against raw GFS and against
+persistence, on the days both have. The intervals are 95% intervals from a
+moving-block bootstrap: 7-day blocks, 10,000 resamples, seed 83 (D75.2,
+F125.3). The last column says whether the interval for `d` lies wholly
+above zero.
+
+**Minimal method (F16 to F82), sealed year 2025-26, one common day set
+(F125.4).**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 363 | +0.202 [+0.096, +0.298] | +16.3 [+8.5, +22.1] | yes |
+| EGLC | persistence | 363 | +1.056 [+0.830, +1.262] | +50.4 [+43.0, +56.3] | yes |
+| LFPG | raw GFS | 363 | +0.188 [+0.070, +0.301] | +13.5 [+5.5, +20.3] | yes |
+| LFPG | persistence | 363 | +1.092 [+0.847, +1.291] | +47.5 [+39.8, +53.2] | yes |
+| DSM | raw GFS | 365 | +0.115 [−0.071, +0.287] | +6.3 [−4.2, +14.8] | no |
+| DSM | persistence | 365 | +2.303 [+1.862, +2.823] | +57.5 [+51.5, +62.8] | yes |
+| YSDU | raw GFS | 347 | +0.041 [−0.058, +0.146] | +3.3 [−4.9, +11.1] | no |
+| YSDU | persistence | 347 | +1.458 [+1.135, +1.842] | +54.7 [+47.1, +61.3] | yes |
+| RNO | raw GFS | 365 | −0.044 [−0.179, +0.127] | −3.1 [−13.4, +8.1] | no |
+| RNO | persistence | 365 | +1.032 [+0.750, +1.344] | +41.4 [+32.4, +49.7] | yes |
+
+Raw GFS here is Open-Meteo's (SPEC 5.2).
+
+**Richer 5-feature method (F94), sealed year 2025-26 (F125.5).**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 364 | +0.254 [+0.151, +0.347] | +20.2 [+13.7, +25.0] | yes |
+| EGLC | persistence | 363 | +1.096 [+0.872, +1.302] | +52.3 [+45.2, +57.8] | yes |
+| LFPG | raw GFS | 364 | +0.226 [+0.114, +0.332] | +16.4 [+8.9, +22.6] | yes |
+| LFPG | persistence | 363 | +1.144 [+0.904, +1.342] | +49.7 [+42.5, +55.5] | yes |
+| DSM | raw GFS | 365 | +0.098 [−0.078, +0.266] | +5.6 [−4.8, +14.6] | no |
+| DSM | persistence | 365 | +2.367 [+1.924, +2.855] | +59.1 [+53.4, +64.1] | yes |
+| YSDU | raw GFS | 356 | +0.138 [+0.033, +0.251] | +10.5 [+2.6, +18.2] | yes |
+| YSDU | persistence | 347 | +1.504 [+1.169, +1.891] | +56.3 [+49.1, +62.9] | yes |
+| RNO | raw GFS | 365 | +0.166 [−0.017, +0.396] | +11.0 [−1.3, +22.6] | no |
+| RNO | persistence | 365 | +1.144 [+0.874, +1.436] | +45.9 [+38.4, +52.7] | yes |
+
+**Selected method `B+D,L,R,T` (F109), reserved year 2024-25 (F125.6).**
+
+| airport | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| EGLC | raw GFS | 364 | +0.235 [+0.146, +0.312] | +19.0 [+12.6, +24.2] | yes |
+| EGLC | persistence | 363 | +1.224 [+0.995, +1.479] | +55.0 [+48.5, +61.2] | yes |
+| LFPG | raw GFS | 365 | +0.172 [+0.090, +0.263] | +12.2 [+6.8, +17.6] | yes |
+| LFPG | persistence | 365 | +1.286 [+1.016, +1.548] | +51.0 [+43.0, +57.5] | yes |
+| DSM | raw GFS | 365 | +0.292 [+0.118, +0.491] | +17.1 [+7.4, +27.0] | yes |
+| DSM | persistence | 365 | +2.696 [+2.263, +3.228] | +65.6 [+60.8, +70.3] | yes |
+| YSDU | raw GFS | 360 | +0.225 [+0.111, +0.354] | +15.1 [+7.9, +22.3] | yes |
+| YSDU | persistence | 355 | +1.333 [+1.077, +1.598] | +51.7 [+44.9, +57.9] | yes |
+| RNO | raw GFS | 365 | +0.339 [+0.190, +0.532] | +21.0 [+13.2, +28.5] | yes |
+| RNO | persistence | 365 | +1.482 [+1.190, +1.807] | +53.8 [+46.3, +60.4] | yes |
+
+**Selected method `B+D,L,R,T` at KSFO (F119), both looks (F125.7).**
+D71.5's framing applies, and is repeated below.
+
+| look | reference | n | d (°C) [95%] | skill (%) [95%] | d wholly above 0 |
+|---|---|---|---|---|---|
+| A (2024-25) | raw GFS | 364 | +0.169 [+0.032, +0.295] | +11.8 [+2.4, +20.0] | yes |
+| A (2024-25) | persistence | 363 | +0.255 [+0.058, +0.453] | +16.9 [+4.1, +28.2] | yes |
+| B (2025-26) | raw GFS | 365 | +0.349 [+0.198, +0.508] | +20.2 [+12.7, +26.8] | yes |
+| B (2025-26) | persistence | 365 | +0.334 [+0.047, +0.581] | +19.5 [+2.9, +31.7] | yes |
+
+Raw GFS in the last three tables is the elevation-adjusted GRIB
+temperature (SPEC 5.2).
+
+**A note on the day sets (F125.8).** Where the persistence day set is
+smaller than the test set, the model's MAE on it differs slightly from the
+recorded all-day figure, so `d` and the skill above differ slightly from
+the recorded margins. Examples: F94 YSDU model 1.1650 against a recorded
+1.179, and F109 YSDU 1.2446 against a recorded 1.2643. Elsewhere the two
+day sets are the same.
+
+**How to read these tables.**
+- Against persistence, every interval lies above zero, in every table.
+- Against raw GFS, the minimal method's intervals include zero at DSM, YSDU
+  and RNO. At RNO the point estimate is itself below zero (F125.4). For the
+  richer method they include zero at DSM and RNO (F125.5).
+- For the selected method, every interval lies above zero against both
+  references, at all five airports (F125.6). At KSFO it holds in both looks
+  (F125.7).
+
+**Statements that go with every use of these intervals (F125.9, D75.2).**
+- They describe day-to-day sampling within one test year only. They do not
+  capture year-to-year variation (see F96).
+- The five airports in F16 to F82, F94 and F109 share each test year's
+  weather, so their intervals are not independent.
+- They are descriptive. They reuse the spent years, and they change no
+  verdict.
+
+**Framing for KSFO, carried by every write-up (D71.5).** KSFO's result is
+for the recipe at a sea-mixed grid point (37.5% sea weight, F117.3). It is
+not directly comparable with the five earlier airports, whose reproduction
+gates passed. KSFO's gate is recorded as failed, explained by a difference
+between the sources (D69). Look B's training includes 2024-25, by design
+(D70.3). KSFO's margins are not added to section 6.3's five-airport table
+or to its airport-averaged read.
+
 ---
 
 ## 7. Limitations and open directions
@@ -741,11 +848,13 @@ They now apply to a project with three proven methods, not one.
   for care: they are measured on a different year from sections 3 and 5's
   own margins (section 6.4(c)).
 - **The roadmap.** The owner has set a roadmap to a private, live daily
-  tool (DECISIONS D72; SPEC 6). Next are a comparison against
-  operational post-processed forecasts and a probe of other weather
-  models' data (stage A), and a pre-registered forward test of the
-  selected-features recipe on 2026-27, split at the GFS v17 go-live
-  date (stage B). Widening the target to a full daily curve and the
+  tool (DECISIONS D72; SPEC 6). In stage A, the confidence intervals
+  (F125, section 6.6) and the probe of other weather models' data (F123,
+  F124) are done. The comparison against operational post-processed
+  forecasts (NWS MOS and NBM) is still to come (D72.7; session 85, per
+  D76.3). In stage B, the forward test of the selected-features recipe
+  on 2026-27, split at the GFS v17 go-live date, is pre-registered and
+  its models are frozen (D73, F122). It is not yet scored (D73.8). Widening the target to a full daily curve and the
   48-hour lead, correcting and blending other weather models, and the
   live product itself are later stages (C–G). Probabilistic forecasts
   follow (H). Pooling is conditional.

@@ -6,6 +6,10 @@ rules apply every time, so they are not repeated in each session prompt.
 Keep all writing plain: simple words, short sentences, define jargon on first
 use. This applies to code comments, the spec files, and chat replies.
 
+Do not use the em-dash (the long dash) in any new text: use a colon, a
+comma, brackets or a new sentence instead. Existing text is not edited
+to remove it (DECISIONS D76.6).
+
 ---
 
 ## The two roles

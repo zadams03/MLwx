@@ -1,0 +1,47 @@
+Session 84: GitHub readiness (D76, F126)
+
+Records D76 (owner, planning chat): the session 83 review and session
+84's plan. The refits' read-only use of committed raw files is accepted
+(F125.1). The project does not save ICON, by D75.1's stated rule (850
+hPa temperature present on Open-Meteo's Single Runs), which closes D72.8
+for ICON. Session 84 prepares the repo to go public, and the NBM/MOS
+comparison, its outcome rule and the carried F123.9 decision move to
+session 85. The code is MIT-licensed, with the data kept under its
+sources' terms. docs/ and notes/ stay public as the working record, and
+personal paths are reported, not edited. A standing rule bans em-dashes
+in new text, and existing text is not rewritten. The planning chat's
+GFS v17 check of 2026-09-29 found still no Service Change Notice.
+
+Records F126, a read-only audit and terms check. Across 1,076 tracked
+files and the full history, no secret file and no credential was found.
+The 84 pattern hits are all code argument or variable names, with no
+value. Commit emails are GitHub noreply addresses. 92 /Users/ path
+occurrences in 31 files (30 in notes/, 1 in docs/) are reported, not
+edited. The largest file or blob is 11.8 MB, well under GitHub's limits.
+The terms were read from each source's own page: Open-Meteo is CC BY
+4.0, with a non-commercial free API; IEM is public domain, with credit
+appreciated; NOAA GFS on AWS (NODD) is open, with credit requested and
+no implied endorsement. No data from probed-only sources is committed.
+
+Edits: README.md rewritten for quant and atmospheric-science readers.
+It leads with the selected-features method and its intervals (F109,
+F125.6), and keeps Reno's minimal-method failure, the intervals that
+include zero, KSFO's non-comparability and the one-year caveats
+visible. It adds a how-this-was-built note, a repo guide, reproduction
+notes, recorded training and held-out windows, and data credits.
+RESULTS.md gains section 6.6 with F125's tables and caveats, and its
+section 7 roadmap bullet is brought up to date. SPEC 5.4 and SPEC 6's
+stage A bullet are updated, wording only, to say the intervals and the
+source probe are done. A new LICENSE (MIT). .gitignore gains .env,
+.env.*, *.pem and *.key. CLAUDE.md gains the no-em-dash rule. STATUS.md
+is overwritten as a current-only snapshot.
+
+The README Open-Meteo "changed values" line, the training windows, the
+RESULTS section 7 bullet and the SPEC wording were owner-approved
+corrections made before commit, and they are recorded in F126.4. No
+data was read, scored or fitted, no script was edited, and no verdict
+changed. Nothing archived: D75 stays live because D75.2 and D75.3 are
+still cited by number.
+
+New: LICENSE, docs/session-84.md, docs/commit-84.txt,
+notes/session-84-output.txt.
