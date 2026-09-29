@@ -1,0 +1,44 @@
+Session 82: stage A read-only source probe (D74, F123)
+
+Records D74 (owner, planning chat): SPEC 4.3 now says its "data after
+2026-07-31 is not used" sentence covers the record's methods (sections
+1-6, 7 and 8) and that the 2026-27 forward year is governed by D73; and
+CLAUDE.md's end-of-session step 3 now requires the consistency-check
+findings to be written into the session output file as well as reported
+in chat. The SPEC wording was corrected before commit from "sections 4,
+7 and 8" after the session's own consistency check (C2).
+
+Records F123, stage A's read-only probe of other forecast sources
+(D72.3, D72.13). No 2026-27 value was used, no observation was read, no
+score was computed, no account was created and nothing was written under
+data/. Sample decodes were metadata only, dated on or before 2026-07-31
+(ECMWF 10, GEFS 8, NBM 5 messages), and all temporary files were deleted.
+
+Findings in brief: ECMWF IFS open data is a shallow archive from
+2023-01-18, with all seven SPEC 8 inputs together only from 2025-11-21;
+AIFS Single is shallow from 2025-02-10 at six-hourly steps. DWD ICON
+global has no official archive (about 24 hours kept) and is the
+candidate for daily saving in session 83. GEFS is a deep archive (v12
+from 2020-09-23), with 850 hPa temperature only at 0.5 degrees and a
+shortwave storage fix on 2026-06-15. WeatherNext is blocked (needs a
+Google account and an approved access request). NBM is deep from
+2020-05-18 (CONUS; no pressure or 850 hPa temperature; v5.0 from
+2026-05-05). NWS MOS is deep via IEM, but GFS MOS, NAM MOS and NBS have
+no 20:00 UTC projection, the target hour at RNO and KSFO. Open-Meteo's
+Previous Runs API is a shallow second route from 2024 for most models,
+rejects 850 hPa temperature at every offset and has no working GEFS
+route. No public GFS v17 retrospective forecast runs were found.
+
+Disclosed in F123: one exploratory MOS request before the script used a
+2026-07-31 run whose reply held projections valid 2026-08-01..08. They
+were held in memory only; no value was printed, saved or used. The
+owner's decision on it is deferred to the NBM/MOS outcome rule (D72.7,
+D73.8).
+
+New: scripts/session82_source_probe.py (network reads and printing
+only), notes/session-82-output.txt (full output, documentation notes,
+consistency check and archive step), docs/session-82.md. STATUS.md
+overwritten as a current-only snapshot and now carries the planning
+chat's reading of PNS 26-30 (the 0.25-degree GFS GRIB2 files are kept
+under the v17 proposal; to be confirmed against the SCN, D73.4). No
+DECISIONS entries were archived.

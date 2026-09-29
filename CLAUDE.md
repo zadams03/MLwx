@@ -111,7 +111,9 @@ without a person looking first.
    accumulating log.** Its history lives in git and DECISIONS.md.
 3. Run a **consistency check**: re-read all three files and report anything
    that disagrees, any duplicated heading, and any log entry out of order.
-   Report only — do not fix silently. The owner decides.
+   Report only — do not fix silently. The owner decides. Write the findings
+   into the session's output file (`notes/session-NN-output.txt`) as well as
+   reporting them in chat.
 4. **Archive step:** move any DECISIONS.md entries that became settled this
    session to DECISIONS-archive.md, per the archive criterion (settled,
    codified elsewhere or superseded, and not needed word-for-word by any live

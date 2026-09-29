@@ -422,9 +422,10 @@ doing the hard work and the correction doing only the local clean-up.
 **4.3 Training window (fixed dates).** Train on **2021-03-24 to 2025-07-31**
 (inclusive). Hold out **2025-08-01 to 2026-07-31** (inclusive) as an untouched
 test period — a clean 12 months, so the result is judged across all four
-seasons. Data after 2026-07-31 is not used, which keeps the test set exactly
-one calendar year. These dates are fixed before any model runs (see
-DECISIONS D13).
+seasons. For the record's methods (sections 1–6, 7 and 8), data after
+2026-07-31 is not used, which keeps the test set exactly one calendar year.
+The 2026-27 forward year is governed by DECISIONS D73. These dates are fixed
+before any model runs (see DECISIONS D13).
 
 **These dates are shared by every airport.** They are not re-chosen per
 location. CDG's forecast archive begins on the same hour as EGLC's, 2021-03-24
