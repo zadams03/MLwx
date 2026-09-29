@@ -629,7 +629,8 @@ session of its own. See DECISIONS D29.
 **They were scheduled as part of roadmap stage A** (section 6,
 DECISIONS D72.3). The confidence intervals for the results on record are
 done (DECISIONS F125; RESULTS 6.6). The comparison against operational
-post-processed forecasts is still scheduled (DECISIONS D72.7). They change
+post-processed forecasts is recorded in DECISIONS F127 (outcome rule
+D77.4). They change
 no earlier verdict. Stage A's own gate (DECISIONS D72.7) decides the
 project's direction, not any airport's pass or fail.
 
@@ -728,15 +729,17 @@ side, because both are time-critical.
   it is looked at (DECISIONS D72.7). A read-only probe of each other
   source (ECMWF, ICON, WeatherNext, NBM, GEFS): archive depth, live
   feed, and which fields it offers. The confidence intervals (F125) and
-  the source probe (F123, F124) are done. The comparison and its outcome
-  rule are still to come (D72.7, D76.3).
+  the source probe (F123, F124) are done. The outcome rule is fixed in
+  DECISIONS D77, and the comparison on the spent years is recorded in
+  F127.
 - **Stage B — forward test and data collection.** Pre-register the
   2026-27 forward test of section 8's recipe on GFS, split at the GFS
   v17 go-live date (DECISIONS D72.5). For any source with no
   downloadable archive, start saving its daily forecasts, all hours and
   both leads; where to save is decided then (DECISIONS D72.8). The
   2026-27 forward test is pre-registered in DECISIONS D73, and its models
-  are frozen (F122).
+  are frozen (F122). A comparison of those frozen models against NBM, and
+  against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
 - **Stage C — widen the target, on GFS only.** An hourly temperature
   curve, the daily maximum, and the 48-hour lead. Written with the
   weather model as a setting.

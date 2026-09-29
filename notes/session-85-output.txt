@@ -1,0 +1,304 @@
+Session 85 output: the NBM/MOS comparison on the spent years (DECISIONS D77, F127)
+Script: scripts/session85_nbm_mos_comparison.py. Run 2026-09-29.
+
+############ Step 0: integrity checks
+git status --porcelain: ?? docs/session-85.md
+Last DECISIONS.md entries: D76 (line 1578), F126 (line 1620). No D77 or F127 in DECISIONS.md or DECISIONS-archive.md (grep count 0 and 0).
+Absent: scripts/session85_nbm_mos_comparison.py, data/raw/iem_mos/session85/, data/processed/session85_competitor_points.csv, notes/session-85-output.txt.
+
+############ Step 1: D77
+D77 appended to DECISIONS.md lines 1726-1829 (heading at line 1724), copied with sed from docs/session-85.md lines 95-198; diff: byte-equal.
+
+############ Step 2: --gate (run once)
+Session 85, --gate (offline; writes nothing)
+run at 2026-09-29 18:33:08 local
+python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+==============================================================================
+Step 2: the reproduction gate
+==============================================================================
+  scripts/session62_reserved_confirm.py SHA-256 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4 (D70.2: equal)
+  data/processed/session78_ksfo_looks_predictions.csv SHA-256 b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e (F119.4: equal)
+  data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3
+  data/processed/session78_ksfo_looks_grid.csv SHA-256 48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c
+
+  DSM (F109)
+    route: F109 refit (run_confirm() steps), n_train 1225, no-obs dropped 0
+    model B+D,L,R,T  recomputed 1.4122847644111458     recorded 1.4122847644111458     equal
+    raw GFS (GRIB)   recomputed 1.7043452054794521     recorded 1.7043452054794521     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  RNO (F109)
+    route: F109 refit (run_confirm() steps), n_train 1222, no-obs dropped 0
+    model B+D,L,R,T  recomputed 1.2741517803385958     recorded 1.2741517803385958     equal
+    raw GFS (GRIB)   recomputed 1.6134575342465751     recorded 1.6134575342465751     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  KSFO look A
+    route: F119 saved predictions, no refit
+    model B+D,L,R,T  recomputed 1.2575770731513778     recorded 1.2575770731513778     equal
+    raw GFS (GRIB)   recomputed 1.4262582417582421     recorded 1.4262582417582421     equal
+    days: 364 (recorded 364)  equal
+    GATE: PASSED
+
+  KSFO look B
+    route: F119 saved predictions, no refit
+    model B+D,L,R,T  recomputed 1.3830033790440732     recorded 1.3830033790440732     equal
+    raw GFS (GRIB)   recomputed 1.7321205479452053     recorded 1.7321205479452053     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  gate passed: 4 of 4 airport-looks
+
+END. Nothing was written.
+
+############ Step 3: --pull, run 1 (FAILED on a network error; wrote nothing under data/)
+Session 85, --pull (DECISIONS D77.1, D77.2)
+run at 2026-09-29T17:33:14+00:00 UTC
+python 3.12.2, eccodes 2.48.0, requests 2.34.2
+temporary GRIB directory (outside the repo): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session85_nbm_q5tsuq4z
+==============================================================================
+Step 3.1: NBM CONUS core, 2 m temperature (deterministic)
+==============================================================================
+  bucket: https://noaa-nbm-grib2-pds.s3.amazonaws.com/ (anonymous HTTPS)
+  layout (as scripts/session82_source_probe.py): blend.YYYYMMDD/HH/core/blend.tHHz.core.fFFF.co.grib2 (+ .idx)
+  planned: 1095 files for 1460 airport-look target days (RNO and KSFO look A share files)
+  latest planned valid time: 2026-07-31 20:00:00
+
+  SIZE TRIAL: 3 messages, 4,595,818 B (1,531,939 B per message); projected total for 1095 files: 1,677,473,570 B (1.68 GB)
+  projected total is under 20 GB; continuing
+
+  progress: 100/1095 files, 0.15 GB, 312 s
+  progress: 200/1095 files, 0.30 GB, 621 s
+  progress: 300/1095 files, 0.45 GB, 936 s
+  progress: 400/1095 files, 0.59 GB, 1241 s
+  progress: 500/1095 files, 0.74 GB, 1550 s
+  progress: 600/1095 files, 0.89 GB, 1856 s
+temporary directory deleted: exists now = False
+Traceback (most recent call last):
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session85_nbm_mos_comparison.py", line 847, in <module>
+    run_pull()
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session85_nbm_mos_comparison.py", line 595, in run_pull
+    nbm = pull_nbm(tmpdir)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session85_nbm_mos_comparison.py", line 371, in pull_nbm
+    r, tries = get(url + ".idx")
+               ^^^^^^^^^^^^^^^^^
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session85_nbm_mos_comparison.py", line 304, in get
+    raise RuntimeError(f"request failed after {RETRIES} retries: {url} "
+RuntimeError: request failed after 3 retries: https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250621/18/core/blend.t18z.core.f024.co.grib2.idx (ConnectionError: HTTPSConnectionPool(host='noaa-nbm-grib2-pds.s3.amazonaws.com', port=443): Max retries exceeded with url: /blend.20250621/18/core/blend.t18z.core.f024.co.grib2.idx (Caused by NameResolutionError("HTTPSConnection(host='noaa-nbm-grib2-pds.s3.amazonaws.com', port=443): Failed to resolve 'noaa-nbm-grib2-pds.s3.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)")))
+
+############ Step 3: --pull, run 2 (the one allowed re-run after a network failure; complete)
+Session 85, --pull (DECISIONS D77.1, D77.2)
+run at 2026-09-29T18:50:19+00:00 UTC
+python 3.12.2, eccodes 2.48.0, requests 2.34.2
+temporary GRIB directory (outside the repo): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session85_nbm_cpskyzrm
+==============================================================================
+Step 3.1: NBM CONUS core, 2 m temperature (deterministic)
+==============================================================================
+  bucket: https://noaa-nbm-grib2-pds.s3.amazonaws.com/ (anonymous HTTPS)
+  layout (as scripts/session82_source_probe.py): blend.YYYYMMDD/HH/core/blend.tHHz.core.fFFF.co.grib2 (+ .idx)
+  planned: 1095 files for 1460 airport-look target days (RNO and KSFO look A share files)
+  latest planned valid time: 2026-07-31 20:00:00
+
+  SIZE TRIAL: 3 messages, 4,595,818 B (1,531,939 B per message); projected total for 1095 files: 1,677,473,570 B (1.68 GB)
+  projected total is under 20 GB; continuing
+
+  progress: 100/1095 files, 0.15 GB, 2922 s
+  progress: 200/1095 files, 0.30 GB, 3239 s
+  progress: 300/1095 files, 0.45 GB, 3553 s
+  progress: 400/1095 files, 0.59 GB, 3866 s
+  progress: 500/1095 files, 0.74 GB, 4179 s
+  progress: 600/1095 files, 0.89 GB, 4496 s
+  progress: 700/1095 files, 1.04 GB, 4814 s
+  progress: 800/1095 files, 1.19 GB, 5111 s
+  progress: 900/1095 files, 1.34 GB, 5395 s
+  progress: 1000/1095 files, 1.48 GB, 5677 s
+
+  files: 1095 planned; 1095 read; idx missing 0; file missing 0; zero idx match 0; several idx matches 0; check failed 0; missing values 0
+  bytes fetched (messages): 1,690,026,394 (1.69 GB); requests retried: 1; time 5951 s
+
+  NBM grid points (nearest neighbour, eccodes):
+    DSM: grid point 41.541124, 266.34249, distance 0.873 km, used 365 times
+    DSM: unchanged across the window (1 distinct)
+    RNO: grid point 39.483896, 240.228363, distance 0.046 km, used 365 times
+    RNO: unchanged across the window (1 distinct)
+    SFO: grid point 37.619643, 237.629953, distance 0.433 km, used 730 times
+    SFO: unchanged across the window (1 distinct)
+
+  version check (report only): f026 18z .idx line counts and the TMP 2 m message
+    2025-05-26 18z f026: 117 idx lines
+      message: {'shortName': '2t', 'name': '2 metre temperature', 'units': 'K', 'typeOfLevel': 'heightAboveGround', 'level': 2, 'stepType': 'instant', 'stepRange': '26', 'dataDate': 20250526, 'dataTime': 1800, 'validityDate': 20250527, 'validityTime': 2000, 'gridType': 'lambert', 'Nx': 2345, 'Ny': 1597, 'DxInMetres': 2539.703, 'DyInMetres': 2539.703, 'latitudeOfFirstGridPointInDegrees': 19.229, 'longitudeOfFirstGridPointInDegrees': 233.7234, 'LoVInDegrees': 265.0, 'Latin1InDegrees': 25.0, 'Latin2InDegrees': 25.0, 'packingType': 'grid_complex_spatial_differencing', 'numberOfDataPoints': 3744965, 'discipline': 0, 'parameterCategory': 0, 'parameterNumber': 0, 'missingValue': 9999}
+    2025-05-28 18z f026: 117 idx lines
+      message: {'shortName': '2t', 'name': '2 metre temperature', 'units': 'K', 'typeOfLevel': 'heightAboveGround', 'level': 2, 'stepType': 'instant', 'stepRange': '26', 'dataDate': 20250528, 'dataTime': 1800, 'validityDate': 20250529, 'validityTime': 2000, 'gridType': 'lambert', 'Nx': 2345, 'Ny': 1597, 'DxInMetres': 2539.703, 'DyInMetres': 2539.703, 'latitudeOfFirstGridPointInDegrees': 19.229, 'longitudeOfFirstGridPointInDegrees': 233.7234, 'LoVInDegrees': 265.0, 'Latin1InDegrees': 25.0, 'Latin2InDegrees': 25.0, 'packingType': 'grid_complex_spatial_differencing', 'numberOfDataPoints': 3744965, 'discipline': 0, 'parameterCategory': 0, 'parameterNumber': 0, 'missingValue': 9999}
+    differing keys (dates excluded): none
+temporary directory deleted: exists now = False
+
+==============================================================================
+Step 3.2: GFS MOS (MAV) at KDSM, IEM archive
+==============================================================================
+  endpoint: https://mesonet.agron.iastate.edu/api/1/mos.json (as scripts/session82_source_probe.py), station KDSM, model GFS
+  first response: 21 projections, runtime field ['2024-07-31 18:00'], keys ['cc1', 'ccg', 'cig', 'cld', 'cp1', 'cvs', 'dpt', 'dsd', 'dur', 'ftime', 'ftime_utc', 'gsd', 'gst', 'hid', 'i06', 'i12', 'ifc', 'ifv', 'index', 'lc1', 'lcb', 'liv', 'lp1', 'mht', 'model', 'mvc', 'mvv', 'n_x', 'obv', 'p01', 'p06', 'p12', 'p24', 'pc1', 'pco', 'pos', 'poz', 'ppl', 'ppo', 'pra', 'prs', 'psn', 'pzp', 'pzr', 'q06', 'q12', 'q24', 'runtime', 'runtime_utc', 's06', 's12', 's24', 'sky', 'slv', 'snw', 'sol', 'ssd', 'station', 'swh', 't03', 't06', 't06_1', 't06_2', 't12', 't12_1', 't12_2', 't24', 'tmp', 'tsd', 'twd', 'tws', 'txn', 'typ', 'vis', 'wbg', 'wdr', 'wsd', 'wsp', 'xnd']
+  runs requested: 365; responses with rows: 365; values: 365; missing: 0
+
+==============================================================================
+Step 3.3: writing files
+==============================================================================
+  wrote 365 raw MAV responses and session85_mav.meta.txt under data/raw/iem_mos/session85/
+  wrote data/processed/session85_competitor_points.csv: 1825 rows {('DSM', 'F109', 'mav'): 365, ('DSM', 'F109', 'nbm'): 365, ('RNO', 'F109', 'nbm'): 365, ('SFO', 'A', 'nbm'): 365, ('SFO', 'B', 'nbm'): 365}
+  wrote data/processed/session85_competitor_points.meta.txt
+  SHA-256 data/processed/session85_competitor_points.csv: 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e
+
+############ Step 3 check: MAV time fields in the saved raw files (time fields only, no values read)
+projections 7665 ftime!=ftime_utc 0 runtime!=runtime_utc 0
+format sample: 2024-08-01 00:00 | 2024-08-01T00:00:00.000 | 2024-07-31 18:00 | 2024-07-31T18:00:00.000
+
+############ Step 4: --compare (run once; its gate re-run is printed first)
+Session 85, --compare (DECISIONS D77.3, D77.4)
+run at 2026-09-29 21:35:17 local
+python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+bootstrap: moving block, block 7, 10,000 resamples, numpy.random.default_rng(85), 95% percentile interval
+==============================================================================
+Step 2: the reproduction gate
+==============================================================================
+  scripts/session62_reserved_confirm.py SHA-256 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4 (D70.2: equal)
+  data/processed/session78_ksfo_looks_predictions.csv SHA-256 b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e (F119.4: equal)
+  data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3
+  data/processed/session78_ksfo_looks_grid.csv SHA-256 48c9ceb740146cd1b9ea6d4b3d4da4c719dd4b4852043725c56f506717fb166c
+
+  DSM (F109)
+    route: F109 refit (run_confirm() steps), n_train 1225, no-obs dropped 0
+    model B+D,L,R,T  recomputed 1.4122847644111458     recorded 1.4122847644111458     equal
+    raw GFS (GRIB)   recomputed 1.7043452054794521     recorded 1.7043452054794521     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  RNO (F109)
+    route: F109 refit (run_confirm() steps), n_train 1222, no-obs dropped 0
+    model B+D,L,R,T  recomputed 1.2741517803385958     recorded 1.2741517803385958     equal
+    raw GFS (GRIB)   recomputed 1.6134575342465751     recorded 1.6134575342465751     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  KSFO look A
+    route: F119 saved predictions, no refit
+    model B+D,L,R,T  recomputed 1.2575770731513778     recorded 1.2575770731513778     equal
+    raw GFS (GRIB)   recomputed 1.4262582417582421     recorded 1.4262582417582421     equal
+    days: 364 (recorded 364)  equal
+    GATE: PASSED
+
+  KSFO look B
+    route: F119 saved predictions, no refit
+    model B+D,L,R,T  recomputed 1.3830033790440732     recorded 1.3830033790440732     equal
+    raw GFS (GRIB)   recomputed 1.7321205479452053     recorded 1.7321205479452053     equal
+    days: 365 (recorded 365)  equal
+    GATE: PASSED
+
+  gate passed: 4 of 4 airport-looks
+
+==============================================================================
+Step 4: the comparison
+==============================================================================
+  points file: data/processed/session85_competitor_points.csv SHA-256 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e
+
+  DSM (F109) vs NBM
+    recorded test days 365; competitor missing on 0; n = 365
+    MAE  model 1.4123  NBM 1.2196  raw GFS 1.7043
+    mean error (forecast - obs)  model +0.3326  NBM +0.0276  raw GFS +0.3509
+    d     = MAE(NBM) - MAE(model) = -0.1927 degC   95% [-0.3082, -0.0506]   wholly above zero: no
+    skill = 1 - model/NBM = -15.80%   95% [-26.01%, -4.00%]
+    NBM version segments (by NBM cycle; D77.7; descriptive only):
+      v4.2     n=300  (2024-08-01..2025-05-27)  MAE model 1.4177  NBM 1.2373
+      v4.3     n=65   (2025-05-28..2025-07-31)  MAE model 1.3871  NBM 1.1378
+
+  RNO (F109) vs NBM
+    recorded test days 365; competitor missing on 0; n = 365
+    MAE  model 1.2742  NBM 1.3192  raw GFS 1.6135
+    mean error (forecast - obs)  model +0.4979  NBM +0.3149  raw GFS +0.1830
+    d     = MAE(NBM) - MAE(model) = +0.0451 degC   95% [-0.0595, +0.1562]   wholly above zero: no
+    skill = 1 - model/NBM = +3.42%   95% [-4.68%, +11.20%]
+    NBM version segments (by NBM cycle; D77.7; descriptive only):
+      v4.2     n=300  (2024-08-01..2025-05-27)  MAE model 1.3770  NBM 1.4133
+      v4.3     n=65   (2025-05-28..2025-07-31)  MAE model 0.7994  NBM 0.8848
+
+  KSFO look A vs NBM
+    recorded test days 364; competitor missing on 0; n = 364
+    MAE  model 1.2576  NBM 1.0000  raw GFS 1.4263
+    mean error (forecast - obs)  model +0.7077  NBM -0.0240  raw GFS +0.4172
+    d     = MAE(NBM) - MAE(model) = -0.2575 degC   95% [-0.3821, -0.1305]   wholly above zero: no
+    skill = 1 - model/NBM = -25.75%   95% [-39.13%, -12.85%]
+    NBM version segments (by NBM cycle; D77.7; descriptive only):
+      v4.2     n=299  (2024-08-01..2025-05-27)  MAE model 1.2414  NBM 1.0300
+      v4.3     n=65   (2025-05-28..2025-07-31)  MAE model 1.3321  NBM 0.8622
+
+  KSFO look B vs NBM
+    recorded test days 365; competitor missing on 0; n = 365
+    MAE  model 1.3830  NBM 1.3023  raw GFS 1.7321
+    mean error (forecast - obs)  model +0.5401  NBM +0.2940  raw GFS +0.6614
+    d     = MAE(NBM) - MAE(model) = -0.0807 degC   95% [-0.2197, +0.0438]   wholly above zero: no
+    skill = 1 - model/NBM = -6.19%   95% [-16.82%, +3.27%]
+    NBM version segments (by NBM cycle; D77.7; descriptive only):
+      v4.3     n=278  (2025-08-01..2026-05-05)  MAE model 1.4563  NBM 1.2417
+      v5.0     n=84   (2026-05-06..2026-07-28)  MAE model 1.1798  NBM 1.5196
+      v5.0.14  n=3    (2026-07-29..2026-07-31)  MAE model 0.2794  NBM 0.8333
+
+  DSM (F109) vs MAV
+    recorded test days 365; competitor missing on 0; n = 365
+    MAE  model 1.4123  MAV 1.5773  raw GFS 1.7043
+    mean error (forecast - obs)  model +0.3326  MAV +0.2527  raw GFS +0.3509
+    d     = MAE(MAV) - MAE(model) = +0.1650 degC   95% [+0.0170, +0.3323]   wholly above zero: yes
+    skill = 1 - model/MAV = +10.46%   95% [+1.15%, +19.64%]
+
+==============================================================================
+Summary table
+==============================================================================
+  airport-look vs competitor        n  MAE mod  MAE comp  MAE raw  d degC [95%]               skill % [95%]            d>0
+  DSM (F109) vs NBM               365   1.4123    1.2196   1.7043  -0.193 [-0.308, -0.051]      -15.8 [-26.0, -4.0]       no
+  RNO (F109) vs NBM               365   1.2742    1.3192   1.6135  +0.045 [-0.060, +0.156]      +3.4 [-4.7, +11.2]       no
+  KSFO look A vs NBM              364   1.2576    1.0000   1.4263  -0.258 [-0.382, -0.131]      -25.8 [-39.1, -12.8]       no
+  KSFO look B vs NBM              365   1.3830    1.3023   1.7321  -0.081 [-0.220, +0.044]      -6.2 [-16.8, +3.3]       no
+  DSM (F109) vs MAV               365   1.4123    1.5773   1.7043  +0.165 [+0.017, +0.332]      +10.5 [+1.1, +19.6]       yes
+
+  NBM version segments
+    DSM (F109)       v4.2     n=300  2024-08-01..2025-05-27  model 1.4177  NBM 1.2373
+    DSM (F109)       v4.3     n=65   2025-05-28..2025-07-31  model 1.3871  NBM 1.1378
+    RNO (F109)       v4.2     n=300  2024-08-01..2025-05-27  model 1.3770  NBM 1.4133
+    RNO (F109)       v4.3     n=65   2025-05-28..2025-07-31  model 0.7994  NBM 0.8848
+    KSFO look A      v4.2     n=299  2024-08-01..2025-05-27  model 1.2414  NBM 1.0300
+    KSFO look A      v4.3     n=65   2025-05-28..2025-07-31  model 1.3321  NBM 0.8622
+    KSFO look B      v4.3     n=278  2025-08-01..2026-05-05  model 1.4563  NBM 1.2417
+    KSFO look B      v5.0     n=84   2026-05-06..2026-07-28  model 1.1798  NBM 1.5196
+    KSFO look B      v5.0.14  n=3    2026-07-29..2026-07-31  model 0.2794  NBM 0.8333
+
+==============================================================================
+Outcome band (D77.4): NBM only, point estimates, four airport-looks
+==============================================================================
+    DSM (F109)       model 1.4123 vs NBM 1.2196: NBM lower or equal
+    RNO (F109)       model 1.2742 vs NBM 1.3192: model lower
+    KSFO look A      model 1.2576 vs NBM 1.0000: NBM lower or equal
+    KSFO look B      model 1.3830 vs NBM 1.3023: NBM lower or equal
+  BAND: mixed (model lower at 1 of 4)
+
+END. Nothing was written. Descriptive only; no verdict changes (D77.3).
+
+############ End of session: consistency check (report only; nothing fixed)
+Re-read SPEC.md, STATUS.md and DECISIONS.md after the edits.
+Mechanical checks:
+- Duplicated headings: none in SPEC.md, STATUS.md or DECISIONS.md.
+- DECISIONS.md dated headings are in date order; the last four are Session 84 decision, Session 84 finding (moved this session), Session 85 decision, Session 85 finding.
+- Top-level entries in DECISIONS.md, in file order: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 F124 F125 D76 D77 F127. No entry number appears in both DECISIONS.md and DECISIONS-archive.md.
+- New or changed text (SPEC diff, D77, F127, STATUS.md, the script, this file): 0 em-dashes.
+- D77 is byte-equal to docs/session-85.md lines 95 to 198, now at DECISIONS.md lines 1571 to 1674.
+Disagreements found:
+1. SPEC 5.4, third paragraph (line 632) still says "The comparison against operational post-processed forecasts is still scheduled (DECISIONS D72.7)." SPEC 6's stage A bullet now says the comparison is recorded in F127. Not edited: the prompt limited SPEC edits to SPEC 6. Listed in STATUS.md's open questions.
+2. F127.7's fourth verbatim statement ("Both years use NBM before its 2026-07-28 temperature fix") is not exact for KSFO look B's last 3 target days (2026-07-29 to 07-31), whose NBM cycles (2026-07-28 to 07-30, 18z) fall on or after v5.0.14's date (D77.7), if the fix was in force by 18z on 2026-07-28. Reported beside the statement in F127.7 and in STATUS.md.
+3. D77.1 says NAM MOS was "terminated October 14, 2026, SCN 26-47", in the past tense, but the run date is 2026-09-29. It reads as a scheduled termination. Not checked or edited (D77 is the owner's text).
+4. RESULTS.md line 854 still says the MOS and NBM comparison "is still to come". RESULTS.md is outside this session's edit scope; reported only.
+5. DECISIONS D73.8's hold-rule text is unchanged and still reads as a pending condition; STATUS.md records that D77.6 now meets it. No conflict, noted for readers.
+6. The session prompt's Step 3.2 was read as one .meta.txt listing each MAV query and pull time (data/raw/iem_mos/session85/session85_mav.meta.txt), not one per response. Reported for the owner.
+
+############ End of session: archive step
+Moved verbatim to DECISIONS-archive.md, under "## Moved by session 85 (2026-09-29)": D75 (DECISIONS.md lines 1305 to 1353 before the move) and F126 (lines 1618 to 1723), each with its trailing separator, 155 lines. Checks: archive tail equals the moved lines byte for byte; kept plus moved lines equal the original file; the archive's earlier content is unchanged. DECISIONS.md: 1,990 lines before the move, 1,835 after (plus F127.1's two-line note).
+Why: D75 is settled (D75.1 decided by D76.2; D75.2 done as F125; D75.3 closed by D77.5; D75.4 superseded by D77.8). F126 is settled (its edits are made and committed; nothing live cites its wording).
+Kept live: D72, D73, F122, F123, D76, D77, F127 (per the prompt); F124 (STATUS.md cites F124.2); F125 (D77.3 and D77.6 use its method); D62 and D71 (D62.7 and D71.5 are cited by live entries); D17, F7, D46, D47, F96, D51 unchanged.

@@ -1302,55 +1302,6 @@ a proposal; confirm against the v17 SCN (D73.4).
 
 ---
 
-## 2026-09-29 — Session 83 decision: the ICON route check and confidence intervals (owner, planning chat)
-
-**D75. Owner decision, planning chat (after session 82): session 83's
-plan.** Written at the start of session 83, before any network call or
-data read.
-
-- **D75.1 ICON: checked first, decided after.** F123 classed DWD ICON
-  global as "No archive" (about 24 h). The planning chat found two
-  Open-Meteo routes in documentation (2026-09-29, not checked by this
-  session): Previous Runs (`icon_global`, from 2024-01-19, no 850 hPa
-  temperature at any offset, F123.5) and Single Runs (any run by its
-  initialisation time, most models from 2026-04-02; its variable list
-  includes 850 hPa temperature). Session 83 checks, read-only and on
-  valid times no later than 2026-07-31 (F124):
-  (a) the first day `shortwave_radiation_previous_day1` and `_day2` are
-  present, against `temperature_2m_previous_day1`'s floor;
-  (b) whether Single Runs serves `icon_global` from 2026-04-02, with 850
-  hPa temperature, and all four cycles (00, 06, 12, 18 UTC);
-  (c) whether `temperature_2m_previous_day1` at each hour H equals the
-  Single Runs value from the run at floor(H/6)x6 UTC on the day before,
-  at lead 24 + (H mod 6): the GFS convention (F5, F89).
-  The owner decides whether the project saves ICON (D72.8) after
-  reviewing F124. Stated in advance: if 850 hPa temperature is present,
-  the project does not save ICON; if it is absent, the owner chooses
-  between saving ICON natively (to get 850 hPa temperature) and using
-  ICON without feature L.
-- **D75.2 Confidence intervals (stage A; SPEC 5.4, D72.3).** For every
-  result on record: F16, F30, F47, F64, F82 (minimal method), F94
-  (richer method), F109 (selected method) and F119 looks A and B
-  (KSFO). Descriptive only: they change no verdict and are not a new
-  look. They reuse the spent years (sealed 2025-26, reserved 2024-25)
-  descriptively; no verdict, selection or build choice is drawn from
-  them (SPEC 2.5). Gate first: every MAE recomputed must equal its
-  recorded figure at the entry's precision; a result that fails gets no
-  interval. Statistic: the paired per-day MAE difference (reference minus
-  model, degC) and skill (1 - model/reference), model against raw GFS
-  and against persistence, on the days both have. Method: moving-block
-  bootstrap, 7-day blocks, 10,000 resamples, seed 83, 95% percentile
-  interval. Recorded as F125.
-- **D75.3 Carried.** The owner's decision on session 82's MOS near-miss
-  (F123.9) is deferred to the NBM/MOS outcome rule (D72.7, D73.8), and
-  is taken when that rule is written.
-- **D75.4 GFS v17 (planning-chat web search, 2026-09-29, not checked by
-  this session).** Still no Service Change Notice; only the April 2026
-  proposals (PNS 26-29, 26-30). The earliest go-live is about late
-  October 2026.
-
----
-
 ## 2026-09-29 — Session 83 finding: the ICON route check
 
 **F124. A read-only check of Open-Meteo's two ICON routes (D75.1). It
@@ -1615,106 +1566,285 @@ before any other edit or network call.
 
 ---
 
-## 2026-09-29: Session 84 finding: the GitHub-readiness audit and terms check
+## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and the 2026-27 NBM/MOS test (owner, planning chat)
 
-**F126. A read-only audit of the working tree and full git history, and a
-read-only check of each committed data source's terms, before the repo goes
-public (D76.3). Commands only (`git`, `grep`, `find`, `du`, `curl` and
-throwaway Python in the shell); no script was written. Full real output:
-`notes/session-84-output.txt`. Run 2026-09-29. No secret value is printed
-anywhere.**
+**D77. Owner decisions, planning chat (after session 84): the NBM/MOS
+comparison (D72.7), its outcome rule, the F123.9 decision (D75.3) and a
+pre-registered NBM/MOS test on 2026-27 (D73.8).** Written at the start of
+session 85, before any network call or data read. No NBM or MOS value
+and no 2026-27 value has been read.
 
-**F126.1 Steps 0 and 1.**
-- `git status --porcelain` showed only `?? docs/session-84.md`. The last
-  entries were D75, F124 and F125. No D76 or F126 existed in either
-  DECISIONS file. README.md existed; LICENSE and the output file did not.
-- The history has one distinct author name and one committer name (the
-  owner's), so the licence has a single copyright holder.
-- D76 was copied mechanically (`sed`) from `docs/session-84.md` lines
-  101 to 137 into DECISIONS.md lines 1578 to 1614 and checked byte-equal
-  with `diff`, before any other edit or network call.
+- **D77.1 Competitors.** NBM CONUS `core`, the deterministic 2 m
+  temperature, at DSM, RNO and KSFO: the primary comparison. GFS MOS
+  (MAV) at DSM only: a secondary, descriptive comparison, because MAV
+  has no 20:00 UTC projection at RNO or KSFO (F123.4) and no value is
+  interpolated in time. NAM MOS is excluded (terminated October 14,
+  2026, SCN 26-47). LAMP is excluded (not a day-ahead product).
+- **D77.2 Matching.** For each target day D: the same target hour as
+  the record (SPEC 3.4); the competitor run with the same nominal cycle
+  as our GFS cycle (floor(H/6)x6 UTC on D-1, F5, F89), at the lead that
+  makes its valid time equal the target hour (DSM: 18z D-1, 24 h; RNO
+  and KSFO: 18z D-1, 26 h). NBM's value is taken at the grid point
+  nearest the station's position in SPEC 3.4 (nearest neighbour, no
+  interpolation), converted from K to degC. MAV's value is used as
+  issued (whole degF), converted to degC exactly; the rounding is a
+  recorded caveat and is not corrected. The observation is the one in
+  the recorded rows, so every forecast is scored against the same
+  value. Missing competitor values are dropped and counted (SPEC 2.2).
+- **D77.3 The spent-year comparison.** Recorded predictions only, after
+  a reproduction gate: F109's `B+D,L,R,T` at DSM and RNO (2024-08-01 to
+  2025-07-31) and F119's saved predictions at KSFO, look A (2024-25) and
+  look B (2025-26). No other years: the feature-selection folds
+  (2022-23, 2023-24 and truncated 2025-26) chose `B+D,L,R,T`'s features
+  and would flatter it. Day set: the recorded model test days on which
+  the competitor value is present. Reported per airport-look: MAE of
+  the model, the competitor and raw GFS (GRIB, elevation-adjusted), mean
+  errors, d = MAE(competitor) - MAE(model) in degC and skill =
+  1 - MAE(model)/MAE(competitor), with F125's interval method (7-day
+  moving blocks, 10,000 resamples, 95% percentile) and seed 85. NBM
+  version segments are labelled; MAE per segment is descriptive only.
+  This spends no held-out data: the years are already spent (F94, F109,
+  F119). It is descriptive and decides direction only (D72.7). It
+  changes no verdict. KSFO carries D71.5's framing. The comparison is
+  at one hour; stage C re-runs it on the full curve, as a description
+  (D72.8).
+- **D77.4 The outcome rule (D72.7), fixed before the comparison is
+  run.** Judged on NBM only, on point estimates, over the four
+  airport-looks (DSM, RNO, KSFO look A, KSFO look B):
+  - **Win:** the model's MAE is lower than NBM's at all four. The
+    roadmap carries on as D72 sets it.
+  - **Lose:** NBM's MAE is lower than or equal to the model's at all
+    four.
+  - **Mixed:** anything else.
+  On "lose" or "mixed", the gap is recorded (d, skill and intervals),
+  and the owner decides in writing, before stage C's lock, between:
+  (a) bringing a US-only stacking check (NBM as an input) forward from
+  stage E; (b) weighting the roadmap towards non-US airports; (c) both;
+  or (d) neither, with reasons. The intervals are reported but do not
+  set the band. The MAV comparison is reported and does not set the
+  band. The comparison is reported in full whatever the band.
+- **D77.5 F123.9 accepted.** Session 82's exploratory MOS request held
+  projections valid 2026-08-01 to 08-08 in memory only; no value was
+  printed, saved or used, and no observation or score was involved. No
+  information about 2026-27 outcomes was learned. It is accepted and
+  recorded; no 2026-27 day is excluded because of it.
+- **D77.6 A pre-registered NBM/MOS test on 2026-27.** This entry is the
+  owner's written decision that D73.8's hold rule requires.
+  - What is tested: the frozen F122 `B+D,L,R,T` models (SHA-256 in
+    F122), unchanged, at DSM, RNO and KSFO.
+  - Competitors and matching: as D77.1 and D77.2. NBM at all three; MAV
+    at DSM only.
+  - Periods: D73.3's period A and period B, judged separately. Neither
+    is scored before it has ended and its observations are in (D73.8).
+  - Day set: D73.5's complete-case test days on which the competitor
+    value is also present. Missing values are dropped and counted.
+  - Pass rule: per airport, per period, per competitor, PASS if the
+    frozen model's MAE is lower than the competitor's MAE on that day
+    set, otherwise FAIL. Each verdict is labelled with its dates, its
+    season and the competitor versions in force.
+  - Descriptive, never part of the rule: F125-method intervals, and the
+    frozen `B` model and raw GFS on the same days.
+  - Separate from D73: no D73 verdict depends on this test, and this
+    test changes none.
+  - Expectations: none stated.
+  - Competitor changes: a version change inside a period does not split
+    it; it is labelled. If a competitor has no value in a period (for
+    example, it is discontinued), that comparison is void for that
+    period. A void comparison is not a fail.
+  - Data: fetched from the archives after each period ends, with the
+    same valid-time guards. The scripts are written in a later session,
+    with D73.8's scripts, and committed before any 2026-27 row is built.
+  - KSFO carries D71.5's framing. The write-up leads, in each period,
+    with the smallest margin.
+- **D77.7 NBM versions (planning-chat web search, 2026-09-29, not
+  checked by this session).** v4.2 from 2024-05-15; v4.3 effective on
+  or about 2025-05-27 from the 12z run (SCN 25-34 was issued
+  2025-04-15, which explains F123.3's two dates); v5.0 from 2026-05-05;
+  v5.0.14 on 2026-07-28, which fixed anomalous temperature and dewpoint
+  guidance, notably in transition seasons and coastal areas. So both
+  spent years use NBM before that fix. v4.3's changes were mainly to
+  tropical-cyclone wind and severe-weather products.
+- **D77.8 GFS v17 (planning-chat web search, 2026-09-29, not checked by
+  this session).** Still no Service Change Notice; the newest SCN listed
+  is SCN 26-87 (2026-09-22). With 30 days' notice, the earliest go-live
+  is about late October 2026 or later.
+- **D77.9 Session 85's plan.** Record this entry; run the reproduction
+  gate; pull NBM and MAV for the spent-year days only; run the
+  comparison and apply D77.4's rule; record F127. SPEC 6's stage A and
+  stage B bullets are updated to point to this entry and F127.
 
-**F126.2 The audit.**
-- **Files.** 1,076 tracked files. `data/` is 785 files, 138.69 MB (raw
-  122.84 MB, processed 7.04 MB, models 5.26 MB, rebuild 3.54 MB); `docs/`
-  97 files; `notes/` 91 files; `scripts/` 93 files; 10 root files.
-- **Secret files by name (tree and history):** none. No `.DS_Store` is
-  tracked. One was committed in session 01 (commit 75fd116) and removed in
-  session 02 (commit 36324e0); it is a folder-view file, not a secret.
-- **Secret patterns, tree.** Seven strong patterns (AWS, private key,
-  GitHub, Anthropic, OpenAI-style, Slack, Google): 0 hits. The `assignment`
-  pattern: 3 hits in `scripts/session82_source_probe.py` (lines 79, 84,
-  95), class: code naming a variable, an S3 pagination token, no value. The
-  `key=` pattern: 81 hits in 45 files, class: code keyword arguments, no
-  value. No hit is followed by a literal of 16 or more key-like characters.
-- **Secret patterns, history.** The same seven: 0 hits. `assignment` 3 and
-  `key=` 81 added-line hits, the same lines as the tree, same
-  classification. Nothing is classed as a real credential.
-- **Personal details.** `/Users/` paths: 92 occurrences in 31 tracked
-  files (30 under `notes/`, 1 in `docs/session-67.md`; listed in the output
-  file). Reported, not edited (D76.5). Email addresses in tracked files: 1,
-  in `notes/session-82-output.txt` (a `dwd.de` contact seen in the ICON
-  probe, not personal). Commit metadata: 1 distinct author email and 1
-  distinct committer email, both GitHub `noreply` addresses.
-- **Large files.** One tracked file is over 10 MB:
-  `data/raw/diagnostics/session76/session76_pull_manifest.csv`, 11,771,181
-  bytes, and it is also the only blob over 10 MB in history. Loose objects
-  total 78.29 MiB. Nothing reaches GitHub's 50 MB warning or 100 MB limit.
-- **`.gitignore`.** `data/raw/grib` is not tracked and is ignored (line 46).
-  No tracked file matches `.env`, `.env.*`, `*.pem` or `*.key`.
+---
 
-**F126.3 The terms table (plain GET requests, fetched 2026-09-29).**
+## 2026-09-29: Session 85 finding: the NBM/MOS comparison on the spent years
 
-| source | URL | licence or terms | attribution asked for | redistribution and use limits |
+**F127. The NBM/MOS comparison (D72.7, D77) on the spent years, with
+recorded predictions only. All four airport-looks passed the reproduction
+gate. NBM and GFS MOS (MAV) values were pulled for the spent-year target
+days only. Under D77.4's rule the band is MIXED: the model's MAE is lower
+than NBM's at RNO only. Script: `scripts/session85_nbm_mos_comparison.py`
+(new; modes `--gate`, `--pull`, `--compare`). Full real output:
+`notes/session-85-output.txt`. Run 2026-09-29. Python 3.12.2, numpy
+2.5.2, lightgbm 4.7.0, eccodes 2.48.0, requests 2.34.2.**
+
+**F127.1 Steps 0 and 1.**
+- `git status --porcelain` showed only `?? docs/session-85.md`. The last
+  entries were D76 and F126. No D77 or F127 existed in either DECISIONS
+  file. None of the four new paths existed.
+- Read: D71.5, D72, D73, F122, F123, F125 and D76 in DECISIONS.md; F5,
+  F89, D58 item 6, D70, F109 and F119 in DECISIONS-archive.md; SPEC 3.4,
+  5, 8.5 and 8.7; `scripts/session82_source_probe.py` and
+  `scripts/session83_confidence_intervals.py` (read only).
+- D77 was copied mechanically (`sed`) from `docs/session-85.md` lines 95
+  to 198 into DECISIONS.md lines 1726 to 1829 and checked byte-equal with
+  `diff`, before any network call or data read. (After this session's
+  archive step moved D75 and F126, D77 sits at lines 1571 to 1674.)
+- Archive step: D75 and F126 were moved verbatim to DECISIONS-archive.md
+  (see its "Moved by session 85" section).
+
+**F127.2 The gate (`--gate`, run once; re-run inside `--compare`). PASSED
+at all four.** `session62_reserved_confirm.py` SHA-256 equals D70.2;
+`session78_ksfo_looks_predictions.csv` SHA-256 equals F119.4. DSM and RNO
+were refit by F125.1's route (functions imported from the record script,
+`run_confirm()`'s steps and both guards, only `B+D,L,R,T`); KSFO used the
+saved predictions. Compared at full precision with
+`session63_reserved_confirm_grid.csv` and `session78_ksfo_looks_grid.csv`.
+
+| airport-look | model MAE (recomputed = recorded) | raw GFS MAE (recomputed = recorded) | days | gate |
 |---|---|---|---|---|
-| Open-Meteo Previous Runs API | https://open-meteo.com/en/terms and https://open-meteo.com/en/licence | CC BY 4.0 for API data | Credit, a link to the licence, say if changed; a link to open-meteo.com next to displayed data | May be copied and redistributed with credit. The free API is non-commercial only, under 10,000 calls a day (5,000 an hour, 600 a minute); subscription or advertising sites and undisclosed research at commercial entities count as commercial |
-| IEM ASOS observations (Iowa State University) | https://mesonet.agron.iastate.edu/disclaimer.php | Public domain | Credit to the Iowa Environmental Mesonet would be appreciated | Free use for any lawful purpose. No use limit on that page. The `datacredits.phtml` page returned HTTP 404, so nothing is recorded from it |
-| NOAA GFS GRIB2 (NODD, AWS bucket `noaa-gfs-bdp-pds`) | https://registry.opendata.aws/noaa-gfs-bdp-pds/ | NOAA NODD: open, usable as desired | Credit NOAA for unaltered data; do not imply NOAA endorsement; do not present modified data as original | Redistribution allowed on those conditions. No use limit found |
+| DSM (F109) | 1.4122847644111458 | 1.7043452054794521 | 365 | pass |
+| RNO (F109) | 1.2741517803385958 | 1.6134575342465751 | 365 | pass |
+| KSFO look A | 1.2575770731513778 | 1.4262582417582421 | 364 | pass |
+| KSFO look B | 1.3830033790440732 | 1.7321205479452053 | 365 | pass |
 
-Probed-only sources (ECMWF IFS and AIFS, DWD ICON, NOAA GEFS, Google
-WeatherNext, NOAA NBM, NWS MOS, Open-Meteo Single Runs): no tracked path
-under `data/` names any of them, and F123.9 and F124.4 record that no
-data from them was kept. Their terms were not fetched.
+**F127.3 The pull (`--pull`).**
+- **Run 1 failed on a network error and wrote nothing.** After about 600
+  of 1,095 NBM files, the host name `noaa-nbm-grib2-pds.s3.amazonaws.com`
+  could not be resolved (DNS) for `blend.20250621/18/core/...f024` after
+  3 retries. The script writes nothing under `data/` until both
+  sub-steps finish, and its temporary directory was deleted. **Run 2**,
+  the one re-run the prompt allows, with the script unchanged, completed.
+  Both runs' output is in the output file.
+- **NBM.** Layout as session 82's probe:
+  `blend.YYYYMMDD/HH/core/blend.tHHz.core.fFFF.co.grib2` and `.idx`.
+  1,095 files planned (for 1,460 airport-look target days; RNO and KSFO
+  look A share files) and 1,095 read. Missing: `.idx` 0, file 0; zero
+  matching `.idx` lines 0; several 0; failed checks (valid time, units K,
+  `2t`, `.idx` date) 0; missing values 0. Size trial: 3 messages,
+  4,595,818 B (1,531,939 B each), projected 1.68 GB, under 20 GB.
+  Fetched: 1,690,026,394 B (1.69 GB) of messages; 1 request retried. No
+  GRIB byte was kept. Latest valid time requested: 2026-07-31 20:00 UTC.
+  No valid time after 2026-07-31T23:00 appeared.
+- **NBM grid points** (eccodes nearest neighbour; unchanged across each
+  window):
 
-**F126.4 The edits made in Step 5.**
-- `README.md`: rewritten in full (nine sections, no em-dashes).
-- `RESULTS.md`: new section 6.6 (F125's four tables, notes, statements and
-  D71.5's framing, with a plain reading), and "revised after session 84"
-  added to the header sentence. Nothing else changed.
-- `LICENSE`: new, the standard MIT text, `Copyright (c) 2026` with the
-  owner's name.
-- `.gitignore`: appended a comment and four lines (`.env`, `.env.*`,
-  `*.pem`, `*.key`).
-- `CLAUDE.md`: one paragraph added after the plain-writing rule (D76.6).
-- `DECISIONS.md`: D76 and this entry appended. `STATUS.md` overwritten.
-  `notes/session-84-output.txt` written.
-- Owner-approved corrections before commit (session 84 scope extended to
-  these edits only):
-  - `README.md` section 8, Open-Meteo bullet: one sentence added saying
-    the raw JSON under `data/raw/` is Open-Meteo's data unchanged and the
-    files under `data/processed/` are derived, changed values.
-  - `README.md` section 3, "Discipline", first bullet: replaced with each
-    method's recorded training window and held-out period, cited (SPEC
-    4.3, 7.2, 8.3, 8.5; D51, D70.3). All windows are stated in the record.
-  - `RESULTS.md` section 7, "The roadmap" bullet: reworded only the
-    out-of-date part (F125, F123, F124 done; D73, F122 pre-registered and
-    frozen, not scored; MOS and NBM comparison still to come).
-  - `SPEC.md` 5.4, third paragraph: wording only, intervals done (F125),
-    comparison still scheduled (D72.7). Last two sentences kept.
-  - `SPEC.md` 6, Stage A bullet: one sentence added at its end (F125, F123,
-    F124 done; comparison and rule to come, D72.7, D76.3).
-  - `STATUS.md`, the session 84 paragraph: these edits added to its list.
-  - `DECISIONS.md`, F126.4 and F126.5: this list, and F126.5's SPEC.md
-    line corrected to match.
+| station | grid latitude | grid longitude (0 to 360) | distance | uses |
+|---|---|---|---|---|
+| DSM | 41.541124 | 266.34249 | 0.873 km | 365 |
+| RNO | 39.483896 | 240.228363 | 0.046 km | 365 |
+| SFO | 37.619643 | 237.629953 | 0.433 km | 730 |
 
-**F126.5 What this did not do.**
-- It read, scored or fitted no forecast or observation value, and wrote
-  nothing under `data/`.
-- It edited no script and wrote no script.
-- It edited no personal path.
-- It made no git write: no staging, no commit, no push, no history rewrite,
-  no remote or GitHub setting.
-- It changed no verdict, and edited no existing DECISIONS entry, SPEC.md,
-  PROJECT-INSTRUCTIONS.md, `docs/` file or existing `notes/` file. The one
-  exception is the owner-approved wording-only SPEC.md edits in F126.4.
+- **Version check (report only).** The 18z f026 files for cycles
+  2025-05-26 and 2025-05-28 each have 117 `.idx` lines. Their 2 m
+  temperature messages have the same name, units (K), level, grid (Lambert,
+  2,345 × 1,597, 2,539.703 m) and packing: no key differs except the
+  dates.
+- **MAV** (IEM `api/1/mos.json`, KDSM, model GFS, 18z runs): 365 runs
+  requested, 365 with rows, 365 values, 0 missing. Every response's
+  projections were valid on or before 2025-08-02. In all 7,665 saved
+  projections, `ftime` equals `ftime_utc` and `runtime` equals
+  `runtime_utc` (time fields only), so matching was on UTC. The 365 raw
+  responses are saved unchanged in `data/raw/iem_mos/session85/`, with one
+  `session85_mav.meta.txt` that lists each file's exact query and pull
+  time.
+- **Points file.** `data/processed/session85_competitor_points.csv`, 1,825
+  rows (NBM: DSM 365, RNO 365, KSFO A 365, KSFO B 365; MAV: DSM 365),
+  SHA-256
+  `681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e`. Its
+  `.meta.txt` lists the pull date, the bucket, every NBM URL with its byte
+  range and `.idx` line, and the counts.
+
+**F127.4 The comparison (`--compare`, run once).** Day set: the recorded
+test days on which the competitor value is present (no competitor value
+was missing). d = MAE(competitor) − MAE(model), in °C; skill = 1 −
+MAE(model)/MAE(competitor). F125's moving-block bootstrap, seed 85, one
+generator in the order of the table. Raw GFS is the elevation-adjusted
+GRIB temperature (SPEC 5.2). KSFO carries D71.5's framing.
+
+| airport-look | competitor | n | MAE model | MAE competitor | MAE raw GFS | d (°C) [95%] | skill (%) [95%] | d wholly above zero |
+|---|---|---|---|---|---|---|---|---|
+| DSM (2024-25) | NBM | 365 | 1.4123 | 1.2196 | 1.7043 | −0.193 [−0.308, −0.051] | −15.8 [−26.0, −4.0] | no |
+| RNO (2024-25) | NBM | 365 | 1.2742 | 1.3192 | 1.6135 | +0.045 [−0.060, +0.156] | +3.4 [−4.7, +11.2] | no |
+| KSFO look A (2024-25) | NBM | 364 | 1.2576 | 1.0000 | 1.4263 | −0.258 [−0.382, −0.131] | −25.8 [−39.1, −12.8] | no |
+| KSFO look B (2025-26) | NBM | 365 | 1.3830 | 1.3023 | 1.7321 | −0.081 [−0.220, +0.044] | −6.2 [−16.8, +3.3] | no |
+| DSM (2024-25) | MAV | 365 | 1.4123 | 1.5773 | 1.7043 | +0.165 [+0.017, +0.332] | +10.5 [+1.1, +19.6] | yes |
+
+Mean errors (forecast minus observation, °C): DSM model +0.333, NBM
++0.028, MAV +0.253, raw GFS +0.351; RNO model +0.498, NBM +0.315, raw GFS
++0.183; KSFO A model +0.708, NBM −0.024, raw GFS +0.417; KSFO B model
++0.540, NBM +0.294, raw GFS +0.661.
+
+**F127.5 NBM version segments (D77.7 dates, by NBM cycle; descriptive
+only).** A target day's segment is the version in force at its 18z D−1
+cycle. v4.3 starts at the 2025-05-27 12z run. The hour of v5.0
+(2026-05-05) and v5.0.14 (2026-07-28) is not given; 00z is assumed, which
+only matters if a switch came after 18z.
+
+| airport-look | segment | n | target days | MAE model | MAE NBM |
+|---|---|---|---|---|---|
+| DSM | v4.2 | 300 | 2024-08-01..2025-05-27 | 1.4177 | 1.2373 |
+| DSM | v4.3 | 65 | 2025-05-28..2025-07-31 | 1.3871 | 1.1378 |
+| RNO | v4.2 | 300 | 2024-08-01..2025-05-27 | 1.3770 | 1.4133 |
+| RNO | v4.3 | 65 | 2025-05-28..2025-07-31 | 0.7994 | 0.8848 |
+| KSFO look A | v4.2 | 299 | 2024-08-01..2025-05-27 | 1.2414 | 1.0300 |
+| KSFO look A | v4.3 | 65 | 2025-05-28..2025-07-31 | 1.3321 | 0.8622 |
+| KSFO look B | v4.3 | 278 | 2025-08-01..2026-05-05 | 1.4563 | 1.2417 |
+| KSFO look B | v5.0 | 84 | 2026-05-06..2026-07-28 | 1.1798 | 1.5196 |
+| KSFO look B | v5.0.14 | 3 | 2026-07-29..2026-07-31 | 0.2794 | 0.8333 |
+
+**F127.6 The band under D77.4: MIXED.** On NBM point estimates: DSM,
+NBM lower (1.2196 vs 1.4123); RNO, model lower (1.2742 vs 1.3192); KSFO
+look A, NBM lower (1.0000 vs 1.2576); KSFO look B, NBM lower (1.3023 vs
+1.3830). The model is lower at 1 of 4. Under D77.4, the owner decides in
+writing, before stage C's lock, between (a), (b), (c) and (d). The gap is
+recorded in F127.4. The MAV comparison and the intervals do not set the
+band.
+
+**F127.7 Statements.**
+- "This comparison uses spent years and recorded predictions. It is
+  descriptive and decides direction only (D72.7, D77.3). It changes no
+  verdict."
+- "These intervals describe day-to-day sampling within one test year
+  only. They do not capture year-to-year variation."
+- "MAV values are whole degrees F, used as issued; the rounding is not
+  corrected (D77.2)."
+- "Both years use NBM before its 2026-07-28 temperature fix (v5.0.14,
+  D77.7)."
+- Planning-chat correction (SCN 26-70, web search 2026-09-29): v5.0.14
+  took effect from the 12z run on 2026-07-28. So KSFO look B's last 3
+  target days (2026-07-29 to 07-31) use NBM after the fix; every other
+  day in both years uses NBM before it. The segment table already assigns
+  them this way.
+
+**Planning-chat corrections to D77 (D77 itself stays byte-equal).**
+- D77.1: NAM MOS's end is scheduled, not past. It should read "to be
+  terminated effective October 14, 2026 (SCN 26-47)".
+- D77.7: SCN 26-24 (updated) sets NBM v5.0 on or about 2026-04-30, from
+  the 13z run, not 2026-05-05 (MDL's announcement date). So KSFO look B
+  targets 2026-05-01 to 05-05 (5 days) are labelled v4.3 in the segment
+  table but were probably made by v5.0. Segments are descriptive only;
+  not re-run.
+- The start-hour question is closed: v4.3 (12z), v5.0 (13z) and v5.0.14
+  (12z) all began before 18z, so assigning 18z runs by date is correct
+  given the right dates.
+
+**F127.8 What this did not do.**
+- No refit other than F109's recorded route (DSM and RNO, `B+D,L,R,T`
+  only). No retune, reselection or re-lock. KSFO used saved predictions.
+- No 2026-27 value was requested, received or read.
+- No GRIB file was kept. NBM bytes went to a temporary directory outside
+  the repo; each message was deleted after its value was read, and the
+  directory was deleted.
+- No existing script was edited; no guard was edited, bypassed or
+  disabled. `data/models/` was not touched. Nothing was installed.
+- No direction was decided (D77.4). No verdict changed.
 - Nothing was committed and no commit message was written.

@@ -16923,3 +16923,166 @@ session 82, before any network call.
   so the earliest go-live is about late October 2026.
 
 ---
+
+
+## Moved by session 85 (2026-09-29)
+
+The archive criterion (D46, live in `DECISIONS.md`), applied at session 85's end-of-session step: **D75** and **F126**. D75 is settled: D75.1's ICON question was decided by D76.2, D75.2's intervals are done (F125, whose method stays live), D75.3 is closed by D77.5, and D75.4 is superseded by D77.8. F126 is settled: its edits are made and committed, and no live open question or STATUS.md's "Next" cites its wording. Moved verbatim by line range (DECISIONS.md lines 1305 to 1353 and 1618 to 1723 before the move), each with its trailing separator. Kept live: D72, D73, F122, F123, D76, D77 and F127 (per the session prompt); F124 (STATUS.md cites F124.2); F125 (D77.3 and D77.6 use its method); D71 and D62 (D71.5 and D62.7 are cited by live entries).
+
+---
+
+## 2026-09-29 — Session 83 decision: the ICON route check and confidence intervals (owner, planning chat)
+
+**D75. Owner decision, planning chat (after session 82): session 83's
+plan.** Written at the start of session 83, before any network call or
+data read.
+
+- **D75.1 ICON: checked first, decided after.** F123 classed DWD ICON
+  global as "No archive" (about 24 h). The planning chat found two
+  Open-Meteo routes in documentation (2026-09-29, not checked by this
+  session): Previous Runs (`icon_global`, from 2024-01-19, no 850 hPa
+  temperature at any offset, F123.5) and Single Runs (any run by its
+  initialisation time, most models from 2026-04-02; its variable list
+  includes 850 hPa temperature). Session 83 checks, read-only and on
+  valid times no later than 2026-07-31 (F124):
+  (a) the first day `shortwave_radiation_previous_day1` and `_day2` are
+  present, against `temperature_2m_previous_day1`'s floor;
+  (b) whether Single Runs serves `icon_global` from 2026-04-02, with 850
+  hPa temperature, and all four cycles (00, 06, 12, 18 UTC);
+  (c) whether `temperature_2m_previous_day1` at each hour H equals the
+  Single Runs value from the run at floor(H/6)x6 UTC on the day before,
+  at lead 24 + (H mod 6): the GFS convention (F5, F89).
+  The owner decides whether the project saves ICON (D72.8) after
+  reviewing F124. Stated in advance: if 850 hPa temperature is present,
+  the project does not save ICON; if it is absent, the owner chooses
+  between saving ICON natively (to get 850 hPa temperature) and using
+  ICON without feature L.
+- **D75.2 Confidence intervals (stage A; SPEC 5.4, D72.3).** For every
+  result on record: F16, F30, F47, F64, F82 (minimal method), F94
+  (richer method), F109 (selected method) and F119 looks A and B
+  (KSFO). Descriptive only: they change no verdict and are not a new
+  look. They reuse the spent years (sealed 2025-26, reserved 2024-25)
+  descriptively; no verdict, selection or build choice is drawn from
+  them (SPEC 2.5). Gate first: every MAE recomputed must equal its
+  recorded figure at the entry's precision; a result that fails gets no
+  interval. Statistic: the paired per-day MAE difference (reference minus
+  model, degC) and skill (1 - model/reference), model against raw GFS
+  and against persistence, on the days both have. Method: moving-block
+  bootstrap, 7-day blocks, 10,000 resamples, seed 83, 95% percentile
+  interval. Recorded as F125.
+- **D75.3 Carried.** The owner's decision on session 82's MOS near-miss
+  (F123.9) is deferred to the NBM/MOS outcome rule (D72.7, D73.8), and
+  is taken when that rule is written.
+- **D75.4 GFS v17 (planning-chat web search, 2026-09-29, not checked by
+  this session).** Still no Service Change Notice; only the April 2026
+  proposals (PNS 26-29, 26-30). The earliest go-live is about late
+  October 2026.
+
+---
+
+## 2026-09-29: Session 84 finding: the GitHub-readiness audit and terms check
+
+**F126. A read-only audit of the working tree and full git history, and a
+read-only check of each committed data source's terms, before the repo goes
+public (D76.3). Commands only (`git`, `grep`, `find`, `du`, `curl` and
+throwaway Python in the shell); no script was written. Full real output:
+`notes/session-84-output.txt`. Run 2026-09-29. No secret value is printed
+anywhere.**
+
+**F126.1 Steps 0 and 1.**
+- `git status --porcelain` showed only `?? docs/session-84.md`. The last
+  entries were D75, F124 and F125. No D76 or F126 existed in either
+  DECISIONS file. README.md existed; LICENSE and the output file did not.
+- The history has one distinct author name and one committer name (the
+  owner's), so the licence has a single copyright holder.
+- D76 was copied mechanically (`sed`) from `docs/session-84.md` lines
+  101 to 137 into DECISIONS.md lines 1578 to 1614 and checked byte-equal
+  with `diff`, before any other edit or network call.
+
+**F126.2 The audit.**
+- **Files.** 1,076 tracked files. `data/` is 785 files, 138.69 MB (raw
+  122.84 MB, processed 7.04 MB, models 5.26 MB, rebuild 3.54 MB); `docs/`
+  97 files; `notes/` 91 files; `scripts/` 93 files; 10 root files.
+- **Secret files by name (tree and history):** none. No `.DS_Store` is
+  tracked. One was committed in session 01 (commit 75fd116) and removed in
+  session 02 (commit 36324e0); it is a folder-view file, not a secret.
+- **Secret patterns, tree.** Seven strong patterns (AWS, private key,
+  GitHub, Anthropic, OpenAI-style, Slack, Google): 0 hits. The `assignment`
+  pattern: 3 hits in `scripts/session82_source_probe.py` (lines 79, 84,
+  95), class: code naming a variable, an S3 pagination token, no value. The
+  `key=` pattern: 81 hits in 45 files, class: code keyword arguments, no
+  value. No hit is followed by a literal of 16 or more key-like characters.
+- **Secret patterns, history.** The same seven: 0 hits. `assignment` 3 and
+  `key=` 81 added-line hits, the same lines as the tree, same
+  classification. Nothing is classed as a real credential.
+- **Personal details.** `/Users/` paths: 92 occurrences in 31 tracked
+  files (30 under `notes/`, 1 in `docs/session-67.md`; listed in the output
+  file). Reported, not edited (D76.5). Email addresses in tracked files: 1,
+  in `notes/session-82-output.txt` (a `dwd.de` contact seen in the ICON
+  probe, not personal). Commit metadata: 1 distinct author email and 1
+  distinct committer email, both GitHub `noreply` addresses.
+- **Large files.** One tracked file is over 10 MB:
+  `data/raw/diagnostics/session76/session76_pull_manifest.csv`, 11,771,181
+  bytes, and it is also the only blob over 10 MB in history. Loose objects
+  total 78.29 MiB. Nothing reaches GitHub's 50 MB warning or 100 MB limit.
+- **`.gitignore`.** `data/raw/grib` is not tracked and is ignored (line 46).
+  No tracked file matches `.env`, `.env.*`, `*.pem` or `*.key`.
+
+**F126.3 The terms table (plain GET requests, fetched 2026-09-29).**
+
+| source | URL | licence or terms | attribution asked for | redistribution and use limits |
+|---|---|---|---|---|
+| Open-Meteo Previous Runs API | https://open-meteo.com/en/terms and https://open-meteo.com/en/licence | CC BY 4.0 for API data | Credit, a link to the licence, say if changed; a link to open-meteo.com next to displayed data | May be copied and redistributed with credit. The free API is non-commercial only, under 10,000 calls a day (5,000 an hour, 600 a minute); subscription or advertising sites and undisclosed research at commercial entities count as commercial |
+| IEM ASOS observations (Iowa State University) | https://mesonet.agron.iastate.edu/disclaimer.php | Public domain | Credit to the Iowa Environmental Mesonet would be appreciated | Free use for any lawful purpose. No use limit on that page. The `datacredits.phtml` page returned HTTP 404, so nothing is recorded from it |
+| NOAA GFS GRIB2 (NODD, AWS bucket `noaa-gfs-bdp-pds`) | https://registry.opendata.aws/noaa-gfs-bdp-pds/ | NOAA NODD: open, usable as desired | Credit NOAA for unaltered data; do not imply NOAA endorsement; do not present modified data as original | Redistribution allowed on those conditions. No use limit found |
+
+Probed-only sources (ECMWF IFS and AIFS, DWD ICON, NOAA GEFS, Google
+WeatherNext, NOAA NBM, NWS MOS, Open-Meteo Single Runs): no tracked path
+under `data/` names any of them, and F123.9 and F124.4 record that no
+data from them was kept. Their terms were not fetched.
+
+**F126.4 The edits made in Step 5.**
+- `README.md`: rewritten in full (nine sections, no em-dashes).
+- `RESULTS.md`: new section 6.6 (F125's four tables, notes, statements and
+  D71.5's framing, with a plain reading), and "revised after session 84"
+  added to the header sentence. Nothing else changed.
+- `LICENSE`: new, the standard MIT text, `Copyright (c) 2026` with the
+  owner's name.
+- `.gitignore`: appended a comment and four lines (`.env`, `.env.*`,
+  `*.pem`, `*.key`).
+- `CLAUDE.md`: one paragraph added after the plain-writing rule (D76.6).
+- `DECISIONS.md`: D76 and this entry appended. `STATUS.md` overwritten.
+  `notes/session-84-output.txt` written.
+- Owner-approved corrections before commit (session 84 scope extended to
+  these edits only):
+  - `README.md` section 8, Open-Meteo bullet: one sentence added saying
+    the raw JSON under `data/raw/` is Open-Meteo's data unchanged and the
+    files under `data/processed/` are derived, changed values.
+  - `README.md` section 3, "Discipline", first bullet: replaced with each
+    method's recorded training window and held-out period, cited (SPEC
+    4.3, 7.2, 8.3, 8.5; D51, D70.3). All windows are stated in the record.
+  - `RESULTS.md` section 7, "The roadmap" bullet: reworded only the
+    out-of-date part (F125, F123, F124 done; D73, F122 pre-registered and
+    frozen, not scored; MOS and NBM comparison still to come).
+  - `SPEC.md` 5.4, third paragraph: wording only, intervals done (F125),
+    comparison still scheduled (D72.7). Last two sentences kept.
+  - `SPEC.md` 6, Stage A bullet: one sentence added at its end (F125, F123,
+    F124 done; comparison and rule to come, D72.7, D76.3).
+  - `STATUS.md`, the session 84 paragraph: these edits added to its list.
+  - `DECISIONS.md`, F126.4 and F126.5: this list, and F126.5's SPEC.md
+    line corrected to match.
+
+**F126.5 What this did not do.**
+- It read, scored or fitted no forecast or observation value, and wrote
+  nothing under `data/`.
+- It edited no script and wrote no script.
+- It edited no personal path.
+- It made no git write: no staging, no commit, no push, no history rewrite,
+  no remote or GitHub setting.
+- It changed no verdict, and edited no existing DECISIONS entry, SPEC.md,
+  PROJECT-INSTRUCTIONS.md, `docs/` file or existing `notes/` file. The one
+  exception is the owner-approved wording-only SPEC.md edits in F126.4.
+- Nothing was committed and no commit message was written.
+
+---
+
