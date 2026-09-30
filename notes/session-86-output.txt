@@ -1,0 +1,1448 @@
+SESSION 86 OUTPUT (2026-09-30)
+==============================
+
+STEP 0
+- git status --porcelain: '?? docs/session-86.md' only.
+- Last DECISIONS entries D77 and F127; no D78 or F128 in either file; script and this file did not exist.
+- SHA-256 training set ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a (= F122.3); manifest.json 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298 (= F122.5).
+- Not read in full: F100 and F101 in DECISIONS-archive.md (located; their fields were read from the scripts).
+
+STEP 1: D78 copied with sed from docs/session-86.md lines 92-156 to DECISIONS.md lines 1856-1920; diff: byte-equal.
+
+SESSION 86, STEP 2: THE RECIPE (read only, no network)
+=====================================================
+
+Files read: scripts/session37_decode.py, session37_grib_pull.py, session40_decode.py,
+session49_upper_air_pull.py, session51_moisture_pull.py, session53_pressure_pull.py,
+session55_radiation_pull.py, session62_reserved_confirm.py, session63_reserved_year_build.py,
+session76_grib_pull.py, session76_build.py, session81_freeze_forward_models.py.
+(session77_ksfo_looks.py and session63's join functions were checked by grep against the
+same formulas.) DECISIONS-archive.md: F5, F89, F90, D48, F98, F100, F101, F102, F107, F116.
+
+Every part below agrees across the v16-window, sealed-window, reserved-year and KSFO scripts,
+except where stated as "no effect on a value". No stop-rule condition was found.
+
+1. THE SHARED FRAME (all columns)
+- Source: GFS 0.25 degree GRIB2, AWS bucket noaa-gfs-bdp-pds, path
+  gfs.YYYYMMDD/CC/atmos/gfs.tCCz.pgrb2.0p25.fFFF, with its .idx beside it
+  (session37_grib_pull.py l.94-99; session76_grib_pull.py l.133-135).
+  Each message is fetched by byte range taken from the .idx, never the whole file.
+- Lead convention (SPEC 7.2; F89): for target hour H on day D, the run of day D-1 at cycle
+  floor(H/6)*6, forecast hour 24 + (H mod 6)
+  (session37_grib_pull.py l.88-91; session49_upper_air_pull.py l.98-101).
+- .idx match: exactly one line with the variable, the level and the step string "N hour fcst"
+  (this excludes the "24-26 hour ave fcst" TCDC entry); a message is complete only if it
+  starts with GRIB and ends with 7777 (session37_grib_pull.py l.119-133;
+  session76_grib_pull.py l.167-177, 270).
+- Grid point and interpolation (SPEC 8.8 G6): the four surrounding points from eccodes
+  codes_grib_find_nearest; standard bilinear (fraction along latitude and along longitude, not
+  inverse distance); a negative longitude is shifted by +360 before the weight is taken; if the
+  four points are not a 2x2 box and one span is zero, the nearest point's value is used
+  (session37_decode.py l.80-118; session49_upper_air_pull.py l.148-171; session76_grib_pull.py
+  l.180-207). Grid points come from SPEC 3.4 (table below).
+- Checks on each message: identity codes, run date and time, and full validity date and hour
+  (session76_grib_pull.py l.210-233). The v16-window scripts for L and D checked the date but
+  not the hour (A68b-05); no effect on a value.
+- Missing days: a target day is dropped, and counted, if any message it needs is missing, fails
+  the checks or is not finite. Nothing is filled (SPEC 2.2). The record's family files (B, L, D,
+  T, R) each drop a day if any of their own messages fails, so a day is in the record only if all
+  of them decoded. The new code fetches the same messages (14 at lead 26, 15 at lead 24) and
+  drops a day the same way, so its row set matches the record's.
+
+2. B
+- temperature_grib_c = round((K - 273.15) + correction_c, 3), from TMP 2 m above ground at the
+  standard lead. It is also the model column "temp" and the raw-GFS (GRIB) rung
+  (session37_decode.py l.154, 164; session76_build.py l.162; SPEC 8.8 G4).
+  Stored at 3 decimals, rounded AFTER the constant is added.
+- correction_c: read from the params CSV, 4 decimals as stored, never the unrounded formula
+  value (SPEC 8.8 G5): data/raw/diagnostics/session37/session37_elevation_correction_params.csv
+  (EGLC, LFPG, DSM, YSDU, RNO) and data/raw/diagnostics/session76/
+  session76_elevation_correction_params.csv (SFO). It applies to temperature only.
+- cloud_cover (cloud_cover_grib_pct) = round(TCDC entire atmosphere, 3), used as GRIB reports it.
+- wind_speed_10m (wind_speed_grib_kmh) = round(sqrt(UGRD^2 + VGRD^2) * 3.6, 3), 10 m above
+  ground, m/s to km/h (session37_decode.py l.155).
+- season_sin, season_cos = sin, cos of 2*pi*year_fraction(date), where year_fraction =
+  (day_of_year - 1) / (366 in a leap year, else 365). Full float precision, not rounded
+  (session62_reserved_confirm.py l.217-219, 224).
+
+3. L (lapse rate)
+- Fields: TMP at 925, 850 and 700 mb, standard lead, bilinear only (no elevation correction:
+  fixed pressure surfaces) (session49_upper_air_pull.py l.60-63, F98).
+- t2m_raw = round(temperature_grib_c - correction_c, 3), built from the stored 3-decimal value.
+- lapse_rate_t2_t850 = round(t2m_raw - (T850_K - 273.15), 3). T850 is NOT rounded before the
+  subtraction (session49_upper_air_pull.py l.299-301, 384; SPEC 8.8 G7). t925, t850 and t700
+  are stored as round(K - 273.15, 3) separately.
+
+4. D (moisture)
+- Fields: RH, DPT, SPFH, all 2 m above ground, standard lead (session51_moisture_pull.py
+  l.96-100). All three are fetched; a day is dropped if any fails, as in the record.
+- dewpoint_depression_t2m = round(t2m_raw - (DPT_K - 273.15), 3), DPT not rounded first (G7).
+  The model column is the FLOOR TRANSFORM: dewpoint_depression_t2m_floored = max(depression, 0)
+  (SPEC 8.1; session62_reserved_confirm.py l.360, build_complete_case).
+  relative_humidity_2m and dew_point_2m are stored at 3 decimals, specific_humidity_2m at 6.
+
+5. T (pressure tendency)
+- Fields: PRMSL mean sea level and PRES surface at the standard lead, and PRMSL at lead - 3 from
+  the SAME run (f021 at lead 24, f023 at lead 26) (session53_pressure_pull.py l.91-98, 349-450).
+- Each of the three is stored as round(Pa / 100, 3). pressure_tendency_3h_hpa =
+  round(msl_hpa - msl_lead_minus3_hpa, 3), from the two ROUNDED values
+  (session53_pressure_pull.py l.473-480; session76_build.py l.186-191).
+
+6. R (shortwave radiation)
+- Field: DSWRF surface. It exists only as a time-averaged "ave fcst" message; no instantaneous
+  variant exists (F102). The target is the 2-hour average ending at the target hour.
+- Window start = 6 * ((lead - 1) // 6) (the 6-hour reset marks).
+- Lead 26 airports (YSDU, RNO, SFO): the native "24-26 hour ave fcst" message at f026 already is
+  the 2-hour window. dswrf_2h_wm2 = round(value, 3). No second message.
+- Lead 24 airports (EGLC, LFPG, DSM): the native message at f024 is "18-24 hour ave fcst" (6 h).
+  A second message at f022 is "18-22 hour ave fcst" (4 h). Energy is subtracted:
+  dswrf_2h_wm2 = round((ave_f024 * 6 - ave_f022 * 4) / 2, 3), using the UNROUNDED decoded values
+  (session55_radiation_pull.py l.552-562; F102). The two raw endpoints are stored at 3 decimals.
+- Units W m-2, no conversion. At the lead-26 airports the "minus 2" column is blank (not
+  applicable), never a filled zero.
+
+7. KSFO (session76_grib_pull.py, session76_build.py; F116)
+- Same recipe as RNO (also cycle 18z, lead 26, target 20:00 UTC): 14 messages per day, one
+  fetch-decode-discard pass. Same formulas and rounding as sections 2 to 6. Its constant is
+  +0.6944 degC. Its observation is paired to the nearest report, a tie keeping the earlier one.
+  The file scripts/session76_build.py is the newest copy of the whole recipe, and the new script
+  copies from it.
+
+8. THE OBSERVATION AND THE PREVIOUS-DAY OBSERVATION
+- Truth: IEM ASOS routine reports (report_type=3), tz=UTC, tmpc in degC. Query form (any
+  data/raw/iem_asos_*.meta.txt): station, data=tmpc, data=dwpc, day-level start, EXCLUSIVE day-level
+  end, latlon=yes, elev=yes, missing=M, trace=T, direct=no.
+- Historical pairing (five earlier airports; session62_reserved_confirm.py l.321-344): each
+  report is assigned to its nearest whole hour (a report at :30 goes to the next hour); it is
+  kept if that hour is the target hour, it is within 15 minutes INCLUSIVE (G3), and its tmpc is
+  not M, blank, T or None (skipped BEFORE the choice, G2); the LAST kept report in the file wins
+  (G1). It differs from "nearest" only on a day with two usable reports in the window (1 day in
+  the whole record, equal temperatures, D62).
+- New pairing (SPEC 8.7 item 1; KSFO's, session76_build.py l.230-256): the nearest usable
+  routine report within 15 minutes inclusive. A tie keeps the earlier report and is counted.
+- Previous-day observation for persistence (session62_reserved_confirm.py l.394-404;
+  SPEC 8.5): the paired observation at the target hour of day D-1. It may be missing; then
+  persistence is not scored on that day and the day is counted.
+- Non-finite tmpc is rejected at load and counted (SPEC 8.7 item 2).
+
+9. ROUNDING AND PRECISION SUMMARY (SPEC 8.8 G4, G5, G7)
+- temperature_grib_c, cloud, wind, t925/t850/t700, RH, dew point, pressure values, DSWRF:
+  3 decimals. Specific humidity: 6 decimals. Derived L, D, T, R columns: 3 decimals.
+  season_sin, season_cos: full precision. The floor of D is applied after rounding.
+- The model target (G20) is the unrounded obs - temperature_grib_c; the fit is not part of this
+  session.
+
+PER-AIRPORT PARAMETERS (printed by the script from SPEC 3.4's tables and the two params CSVs;
+the same table is printed at the top of the Step 5 output below)
+
+Per-airport parameters (SPEC 3.4 tables and the two params CSVs; nothing typed in):
+station hour cycle lead    grid lat     grid lon grid elev const degC reports     offset  R at this lead
+EGLC      12   12z f024   51.487137     0.000000        4m    +0.2486   `:50` 10 minutes  de-accumulate
+LFPG      12   12z f024   49.027008     2.578125      109m    -0.1697   `:00`  0 minutes  de-accumulate
+DSM       18   18z f024   41.529450   -93.632810      285m    -0.1106   `:54`  6 minutes  de-accumulate
+YSDU       2    0z f026  -32.274643   148.593750      279m    +0.2461   `:00`  0 minutes  native window
+RNO       20   18z f026   39.537918  -119.765625     1344m    +2.0436   `:55`  5 minutes  native window
+SFO       20   18z f026   37.546370  -122.343750        1m    +0.6944   `:56`  4 minutes  native window
+
+
+SCRIPT SHA-256 (as run in gate run 3):
+da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125  scripts/session86_forward_build.py
+
+STEP 4: --guard-check (run once)
+-------------------------------
+SESSION 86 --guard-check (offline: no network call, no data read)
+run date (UTC): 2026-09-30
+gate date guard:
+  [OK ] gate date 2026-07-31: allowed
+  [OK ] gate date 2026-08-01: REFUSED (gate date 2026-08-01 is after 2026-07-31)
+build guards (pure function; nothing is fetched):
+  [OK ] --build with no first-v17-cycle and no --no-v17: REFUSED (needs --first-v17-cycle (from a DECISIONS entry, D73.3) or --no-v17; run date 2026-09-30 is before the latest last day 2027-07-31 plus 3 days)
+  [OK ] --build --period B: REFUSED (period B needs D73.4's v17 entry first)
+    last period-A day per airport for a first v17 cycle of 2026-11-15T00: EGLC 2026-11-15, LFPG 2026-11-15, DSM 2026-11-15, YSDU 2026-11-15, RNO 2026-11-15, SFO 2026-11-15
+  [OK ] --build whose last day + 3 days is after the run date: REFUSED (run date 2026-09-30 is before the latest last day 2026-11-15 plus 3 days)
+  [OK ] --build with a date on or after 2027-08-01 (simulated run date 2028-03-01): REFUSED (EGLC: last period-A target day 2027-09-01 is on or after 2027-08-01; LFPG: last period-A target day 2027-09-01 is on or after 2027-08-01; DSM: last period-A target day 2027-09-01 is on or after 2027-08-01; YSDU: last period-A target day 2027-09-01 is on or after 2027-08-01; RNO: last period-A target day 2027-09-01 is on or after 2027-08-01; SFO: last period-A target day 2027-09-01 is on or after 2027-08-01)
+all cases behaved as the session prompt's Step 3.2 says
+
+STEP 5: THE GATE. THREE RUNS.
+-------------------------------
+RUN 1 (started 09:45 UTC): interrupted. The project folder disappeared from disk mid-run; the IEM step failed with a missing TLS CA bundle path inside .venv. Nothing was compared. The folder was later restored intact. Not a script failure. Its output:
+
+SESSION 86 --gate (network; spent years only)
+gate start (UTC): 2026-09-30T09:45:24Z
+Per-airport parameters (SPEC 3.4 tables and the two params CSVs; nothing typed in):
+station hour cycle lead    grid lat     grid lon grid elev const degC reports     offset  R at this lead
+EGLC      12   12z f024   51.487137     0.000000        4m    +0.2486   `:50` 10 minutes  de-accumulate
+LFPG      12   12z f024   49.027008     2.578125      109m    -0.1697   `:00`  0 minutes  de-accumulate
+DSM       18   18z f024   41.529450   -93.632810      285m    -0.1106   `:54`  6 minutes  de-accumulate
+YSDU       2    0z f026  -32.274643   148.593750      279m    +0.2461   `:00`  0 minutes  native window
+RNO       20   18z f026   39.537918  -119.765625     1344m    +2.0436   `:55`  5 minutes  native window
+SFO       20   18z f026   37.546370  -122.343750        1m    +0.6944   `:56`  4 minutes  native window
+
+--- checks on the committed inputs
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+models manifest.json SHA-256 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; F122.5 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; equal: True
+target hour per airport, training set vs SPEC 3.4: EGLC [12] vs 12, LFPG [12] vs 12, DSM [18] vs 18, YSDU [2] vs 2, RNO [20] vs 20, SFO [20] vs 20
+
+sample: 9 dates x 6 airports = 54 station-days
+dates: 2021-04-15 (v16 window), 2022-01-10 (v16 window), 2023-07-20 (v16 window), 2023-10-05 (v16 window), 2024-11-12 (reserved year), 2025-02-18 (reserved year), 2025-09-03 (sealed year), 2026-04-22 (sealed year), 2026-07-31 (sealed year, last day)
+station-days with no committed row: 0
+
+--- 5.2 size trial
+messages per station-day: EGLC 15, LFPG 15, DSM 15, YSDU 14, RNO 14, SFO 14; total messages 783
+  trial message tmp2m (TMP:2 m above ground:24 hour fcst) EGLC 2021-04-15: 514,601 bytes
+  trial message t850 (TMP:850 mb:24 hour fcst) EGLC 2021-04-15: 845,948 bytes
+  trial message dswrf (DSWRF:surface:18-24 hour ave fcst) EGLC 2021-04-15: 952,479 bytes
+bytes per message (mean of 3): 771,009; projected total 603,700,308 bytes (0.56 GiB); limit 5 GiB
+
+--- 5.3 rebuild from fresh GRIB and IEM pulls
+temporary directory (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_me7kj8ye
+
+temporary directory deleted: True
+Traceback (most recent call last):
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 1130, in <module>
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 1122, in main
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 944, in run_gate
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 714, in build_rows
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 613, in fetch_iem
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 199, in http_get
+  File "/Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/requests/sessions.py", line 671, in get
+  File "/Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/requests/sessions.py", line 651, in request
+  File "/Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/requests/sessions.py", line 784, in send
+  File "/Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/requests/adapters.py", line 668, in send
+  File "/Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/requests/adapters.py", line 332, in cert_verify
+OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/certifi/cacert.pem
+exit 1
+
+RUN 2 (09:52-09:57 UTC): all comparisons passed; the writer exercise failed (bug in write_new, mode 'wx'). Output:
+
+SESSION 86 --gate (network; spent years only)
+gate start (UTC): 2026-09-30T09:52:20Z
+Per-airport parameters (SPEC 3.4 tables and the two params CSVs; nothing typed in):
+station hour cycle lead    grid lat     grid lon grid elev const degC reports     offset  R at this lead
+EGLC      12   12z f024   51.487137     0.000000        4m    +0.2486   `:50` 10 minutes  de-accumulate
+LFPG      12   12z f024   49.027008     2.578125      109m    -0.1697   `:00`  0 minutes  de-accumulate
+DSM       18   18z f024   41.529450   -93.632810      285m    -0.1106   `:54`  6 minutes  de-accumulate
+YSDU       2    0z f026  -32.274643   148.593750      279m    +0.2461   `:00`  0 minutes  native window
+RNO       20   18z f026   39.537918  -119.765625     1344m    +2.0436   `:55`  5 minutes  native window
+SFO       20   18z f026   37.546370  -122.343750        1m    +0.6944   `:56`  4 minutes  native window
+
+--- checks on the committed inputs
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+models manifest.json SHA-256 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; F122.5 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; equal: True
+target hour per airport, training set vs SPEC 3.4: EGLC [12] vs 12, LFPG [12] vs 12, DSM [18] vs 18, YSDU [2] vs 2, RNO [20] vs 20, SFO [20] vs 20
+
+sample: 9 dates x 6 airports = 54 station-days
+dates: 2021-04-15 (v16 window), 2022-01-10 (v16 window), 2023-07-20 (v16 window), 2023-10-05 (v16 window), 2024-11-12 (reserved year), 2025-02-18 (reserved year), 2025-09-03 (sealed year), 2026-04-22 (sealed year), 2026-07-31 (sealed year, last day)
+station-days with no committed row: 0
+
+--- 5.2 size trial
+messages per station-day: EGLC 15, LFPG 15, DSM 15, YSDU 14, RNO 14, SFO 14; total messages 783
+  trial message tmp2m (TMP:2 m above ground:24 hour fcst) EGLC 2021-04-15: 514,601 bytes
+  trial message t850 (TMP:850 mb:24 hour fcst) EGLC 2021-04-15: 845,948 bytes
+  trial message dswrf (DSWRF:surface:18-24 hour ave fcst) EGLC 2021-04-15: 952,479 bytes
+bytes per message (mean of 3): 771,009; projected total 603,700,308 bytes (0.56 GiB); limit 5 GiB
+
+--- 5.3 rebuild from fresh GRIB and IEM pulls
+temporary directory (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_n842yfh9
+pull started 2026-09-30T09:52:23Z, ended 2026-09-30T09:57:13Z
+
+gate rebuild: rows per airport against the expected full count
+  EGLC  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  LFPG  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  DSM   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  YSDU  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  RNO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  SFO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  total rows 54 of 54
+  GRIB messages: 783 requested, 783 OK, 0 failed; bytes 674,387,577
+  IEM EGLC: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM LFPG: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM DSM: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM YSDU: reports read 430, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM RNO: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM SFO: reports read 431, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+
+Pass counts per column (exact equality; observation columns include the listed pairing-only differences):
+  temp                               54 of 54
+  season_sin                         54 of 54
+  season_cos                         54 of 54
+  cloud_cover                        54 of 54
+  wind_speed_10m                     54 of 54
+  dewpoint_depression_t2m_floored    54 of 54
+  lapse_rate_t2_t850                 54 of 54
+  dswrf_2h_wm2                       54 of 54
+  pressure_tendency_3h_hpa           54 of 54
+  temperature_grib_c                 54 of 54
+  obs_c                              54 of 54
+  prev_obs_c                         54 of 54
+Pass counts per feature group (a station-day passes if all its columns are equal):
+  B: 54 of 54
+  L: 54 of 54
+  D: 54 of 54
+  T: 54 of 54
+  R: 54 of 54
+  obs: 54 of 54
+  prev_obs: 54 of 54
+Pass counts per airport and group:
+                 B         L         D         T         R       obs  prev_obs
+  EGLC     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  LFPG     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  DSM      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  YSDU     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  RNO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  SFO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+
+station-days not rebuilt although a committed row exists: 0 
+pairing-only observation differences (nearest vs the record's last report; not failures): 0
+mismatches: 0
+
+--- 5.4 frozen-model plumbing check (no error is computed)
+  EGLC_bdlrt.txt   SHA-256 d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110  equals F122.5 and manifest.json: True
+  EGLC_b.txt       SHA-256 fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461  equals F122.5 and manifest.json: True
+  LFPG_bdlrt.txt   SHA-256 ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e  equals F122.5 and manifest.json: True
+  LFPG_b.txt       SHA-256 257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022  equals F122.5 and manifest.json: True
+  DSM_bdlrt.txt    SHA-256 260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b  equals F122.5 and manifest.json: True
+  DSM_b.txt        SHA-256 e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c  equals F122.5 and manifest.json: True
+  YSDU_bdlrt.txt   SHA-256 12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3  equals F122.5 and manifest.json: True
+  YSDU_b.txt       SHA-256 6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51  equals F122.5 and manifest.json: True
+  RNO_bdlrt.txt    SHA-256 c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819  equals F122.5 and manifest.json: True
+  RNO_b.txt        SHA-256 8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d  equals F122.5 and manifest.json: True
+  SFO_bdlrt.txt    SHA-256 c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6  equals F122.5 and manifest.json: True
+  SFO_b.txt        SHA-256 2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3  equals F122.5 and manifest.json: True
+maximum absolute difference between the predictions on the committed and the rebuilt row (expected 0.0):
+  airport  station-days      B+D,L,R,T              B
+  EGLC                9              0              0
+  LFPG                9              0              0
+  DSM                 9              0              0
+  YSDU                9              0              0
+  RNO                 9              0              0
+  SFO                 9              0              0
+
+--- exercising the --build writers in the temporary directory (nothing is written under data/)
+
+temporary directory deleted: True
+Traceback (most recent call last):
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 1130, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 1122, in main
+    return run_gate(a)
+           ^^^^^^^^^^^
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 954, in run_gate
+    write_outputs(built, dirs, "gate exercise (spent years)")
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 790, in write_outputs
+    write_new(dirs["rows"], csv_text(ROW_COLS, rows))
+  File "/Users/zacharyadams/Coding Projects/MLwx/scripts/session86_forward_build.py", line 765, in write_new
+    with open(path, mode + "x", **({"newline": ""} if "b" not in mode else {})) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: must have exactly one of create/read/write/append mode
+exit 1
+
+FIX: write_new opened files with mode 'wx' (invalid); changed to 'x'. Nothing else changed.
+
+RUN 3 (09:57-10:03 UTC), the whole gate again. Output:
+
+SESSION 86 --gate (network; spent years only)
+gate start (UTC): 2026-09-30T09:57:29Z
+Per-airport parameters (SPEC 3.4 tables and the two params CSVs; nothing typed in):
+station hour cycle lead    grid lat     grid lon grid elev const degC reports     offset  R at this lead
+EGLC      12   12z f024   51.487137     0.000000        4m    +0.2486   `:50` 10 minutes  de-accumulate
+LFPG      12   12z f024   49.027008     2.578125      109m    -0.1697   `:00`  0 minutes  de-accumulate
+DSM       18   18z f024   41.529450   -93.632810      285m    -0.1106   `:54`  6 minutes  de-accumulate
+YSDU       2    0z f026  -32.274643   148.593750      279m    +0.2461   `:00`  0 minutes  native window
+RNO       20   18z f026   39.537918  -119.765625     1344m    +2.0436   `:55`  5 minutes  native window
+SFO       20   18z f026   37.546370  -122.343750        1m    +0.6944   `:56`  4 minutes  native window
+
+--- checks on the committed inputs
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+models manifest.json SHA-256 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; F122.5 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; equal: True
+target hour per airport, training set vs SPEC 3.4: EGLC [12] vs 12, LFPG [12] vs 12, DSM [18] vs 18, YSDU [2] vs 2, RNO [20] vs 20, SFO [20] vs 20
+
+sample: 9 dates x 6 airports = 54 station-days
+dates: 2021-04-15 (v16 window), 2022-01-10 (v16 window), 2023-07-20 (v16 window), 2023-10-05 (v16 window), 2024-11-12 (reserved year), 2025-02-18 (reserved year), 2025-09-03 (sealed year), 2026-04-22 (sealed year), 2026-07-31 (sealed year, last day)
+station-days with no committed row: 0
+
+--- 5.2 size trial
+messages per station-day: EGLC 15, LFPG 15, DSM 15, YSDU 14, RNO 14, SFO 14; total messages 783
+  trial message tmp2m (TMP:2 m above ground:24 hour fcst) EGLC 2021-04-15: 514,601 bytes
+  trial message t850 (TMP:850 mb:24 hour fcst) EGLC 2021-04-15: 845,948 bytes
+  trial message dswrf (DSWRF:surface:18-24 hour ave fcst) EGLC 2021-04-15: 952,479 bytes
+bytes per message (mean of 3): 771,009; projected total 603,700,308 bytes (0.56 GiB); limit 5 GiB
+
+--- 5.3 rebuild from fresh GRIB and IEM pulls
+temporary directory (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_hp01ibpu
+pull started 2026-09-30T09:57:32Z, ended 2026-09-30T10:03:35Z
+
+gate rebuild: rows per airport against the expected full count
+  EGLC  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  LFPG  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  DSM   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  YSDU  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  RNO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  SFO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+  total rows 54 of 54
+  GRIB messages: 783 requested, 783 OK, 0 failed; bytes 674,387,577
+  IEM EGLC: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM LFPG: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM DSM: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM YSDU: reports read 430, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM RNO: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+  IEM SFO: reports read 431, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+
+Pass counts per column (exact equality; observation columns include the listed pairing-only differences):
+  temp                               54 of 54
+  season_sin                         54 of 54
+  season_cos                         54 of 54
+  cloud_cover                        54 of 54
+  wind_speed_10m                     54 of 54
+  dewpoint_depression_t2m_floored    54 of 54
+  lapse_rate_t2_t850                 54 of 54
+  dswrf_2h_wm2                       54 of 54
+  pressure_tendency_3h_hpa           54 of 54
+  temperature_grib_c                 54 of 54
+  obs_c                              54 of 54
+  prev_obs_c                         54 of 54
+Pass counts per feature group (a station-day passes if all its columns are equal):
+  B: 54 of 54
+  L: 54 of 54
+  D: 54 of 54
+  T: 54 of 54
+  R: 54 of 54
+  obs: 54 of 54
+  prev_obs: 54 of 54
+Pass counts per airport and group:
+                 B         L         D         T         R       obs  prev_obs
+  EGLC     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  LFPG     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  DSM      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  YSDU     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  RNO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+  SFO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+
+station-days not rebuilt although a committed row exists: 0 
+pairing-only observation differences (nearest vs the record's last report; not failures): 0
+mismatches: 0
+
+--- 5.4 frozen-model plumbing check (no error is computed)
+  EGLC_bdlrt.txt   SHA-256 d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110  equals F122.5 and manifest.json: True
+  EGLC_b.txt       SHA-256 fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461  equals F122.5 and manifest.json: True
+  LFPG_bdlrt.txt   SHA-256 ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e  equals F122.5 and manifest.json: True
+  LFPG_b.txt       SHA-256 257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022  equals F122.5 and manifest.json: True
+  DSM_bdlrt.txt    SHA-256 260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b  equals F122.5 and manifest.json: True
+  DSM_b.txt        SHA-256 e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c  equals F122.5 and manifest.json: True
+  YSDU_bdlrt.txt   SHA-256 12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3  equals F122.5 and manifest.json: True
+  YSDU_b.txt       SHA-256 6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51  equals F122.5 and manifest.json: True
+  RNO_bdlrt.txt    SHA-256 c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819  equals F122.5 and manifest.json: True
+  RNO_b.txt        SHA-256 8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d  equals F122.5 and manifest.json: True
+  SFO_bdlrt.txt    SHA-256 c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6  equals F122.5 and manifest.json: True
+  SFO_b.txt        SHA-256 2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3  equals F122.5 and manifest.json: True
+maximum absolute difference between the predictions on the committed and the rebuilt row (expected 0.0):
+  airport  station-days      B+D,L,R,T              B
+  EGLC                9              0              0
+  LFPG                9              0              0
+  DSM                 9              0              0
+  YSDU                9              0              0
+  RNO                 9              0              0
+  SFO                 9              0              0
+
+--- exercising the --build writers in the temporary directory (nothing is written under data/)
+wrote rows, manifest, drop log and 54 raw IEM files; rows read back equal: True
+a second write refused, as required: STOP: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_hp01ibpu/rows.csv already exists; not overwriting (SPEC 8.7 item 5)
+
+--- every request made (pull time UTC, kind, URL, byte range, bytes)
+2026-09-30T09:57:29Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41279
+2026-09-30T09:57:30Z  message (size trial) https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  425420146-425934746  514601
+2026-09-30T09:57:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41279
+2026-09-30T09:57:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41279
+2026-09-30T09:57:31Z  message (size trial) https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  346589128-347435075  845948
+2026-09-30T09:57:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41282
+2026-09-30T09:57:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41276
+2026-09-30T09:57:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41255
+2026-09-30T09:57:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41262
+2026-09-30T09:57:32Z  message (size trial) https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  471231760-472184238  952479
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41281
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41279
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41276
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41273
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41255
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41250
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41260
+2026-09-30T09:57:33Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41256
+2026-09-30T09:57:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  425420146-425934746  514601
+2026-09-30T09:57:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  420330432-421207579  877148
+2026-09-30T09:57:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  423526087-424044214  518128
+2026-09-30T09:57:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  420412997-420925908  512912
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  430017400-430992658  975259
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  453963864-454793018  829155
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  426351019-427317507  966489
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  450649177-451489183  840007
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  428177001-429157306  980306
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  452923506-453736951  813446
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  425007705-425983010  975306
+2026-09-30T09:57:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  448830354-449658648  828295
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  370385246-371253656  868411
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  430992659-431937214  944556
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  365050826-365907055  856230
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  427317508-428265417  947910
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  346082814-346938275  855462
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  369985818-370483798  497981
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  429157307-430115628  958322
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  365379414-366237389  857976
+2026-09-30T09:57:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  425983011-426929417  946407
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  312465337-313235871  770535
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  346589128-347435075  845948
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  306746084-307498648  752565
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  340954088-341802302  848215
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  310994451-311777941  783491
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  425812086-426604045  791960
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  306795257-307559393  764137
+2026-09-30T09:57:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  341108599-341957061  848463
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  427131751-427671629  539879
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  427671630-428455259  783630
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  422391492-423308591  917100
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  423308592-424093338  784747
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  425276235-425812085  535851
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  422140190-422671084  530895
+2026-09-30T09:57:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  422671085-423451154  780070
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-890152  890153
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  425934747-427131750  1197004
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1001261  1001262
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  411264422-412105885  841464
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  421207580-422391491  1183912
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-882781  882782
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  424044215-425276234  1232020
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-995458  995459
+2026-09-30T09:57:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  420925909-422140189  1214281
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-882628  882629
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  416539370-417383786  844417
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-997521  997522
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  468033726-468955998  922273
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1008078  1008079
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  415206313-416045826  839514
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-990642  990643
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  411852952-412690254  837303
+2026-09-30T09:57:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  466052534-466983107  930574
+2026-09-30T09:57:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41254
+2026-09-30T09:57:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41255
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f022  468488977-469337165  848189
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  471231760-472184238  952479
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f022  462872287-463723871  851585
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f022  470658998-471544426  885429
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  470194950-471174454  979505
+2026-09-30T09:57:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f022  463790597-464640618  850022
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41253
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41249
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41256
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41253
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41251
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41254
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41249
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41259
+2026-09-30T09:57:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41260
+2026-09-30T09:57:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  414985787-415865322  879536
+2026-09-30T09:57:42Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41255
+2026-09-30T09:57:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  444954300-445806921  852622
+2026-09-30T09:57:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  411369825-412246630  876806
+2026-09-30T09:57:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  441180167-442002919  822753
+2026-09-30T09:57:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  415115965-415632935  516971
+2026-09-30T09:57:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  422205749-423094947  889199
+2026-09-30T09:57:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  417401002-418366174  965173
+2026-09-30T09:57:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  355896155-356756487  860333
+2026-09-30T09:57:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  418366175-419308946  942772
+2026-09-30T09:57:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  419747600-420723183  975584
+2026-09-30T09:57:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  444472488-445301614  829127
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  360913133-361763880  850748
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  421040153-422002271  962119
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  422002272-422940510  938239
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  297751889-298504317  752429
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  331717240-332565861  848622
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  359854562-360722554  867993
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  420723184-421679774  956591
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  427598540-428571373  972834
+2026-09-30T09:57:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  452022800-452869699  846900
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  336903266-337741567  838302
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  413433149-414354055  920907
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  414354056-415128825  774770
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  335586437-336438854  852418
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  367981826-368846315  864490
+2026-09-30T09:57:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  428571374-429521924  950551
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  302860155-303612117  751963
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  417984385-418772287  787903
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  412246631-413433148  1186518
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  301117842-301889959  772118
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  417396779-418188720  791942
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  310679873-311453307  773435
+2026-09-30T09:57:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  344422091-345268332  846242
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1028027  1028028
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  415865323-417068856  1203534
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  417068857-417984384  915528
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1036610  1036611
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  402273938-403109453  835516
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  415632936-416863692  1230757
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  416863693-417396778  533086
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  424304393-425233513  929121
+2026-09-30T09:57:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  425233514-426020101  786588
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1024494  1024495
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  406016530-406855519  838990
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-992868  992869
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  458155667-459086062  930396
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-868791  868792
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  406724268-407555160  830893
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1010379  1010380
+2026-09-30T09:57:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  423094948-424304392  1209445
+2026-09-30T09:57:50Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41258
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f022  462945416-463786064  840649
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  462302067-463215394  913328
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f022  460296605-461147184  850580
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-993023  993024
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  461255254-462227570  972317
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1003258  1003259
+2026-09-30T09:57:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  413303707-414144028  840322
+2026-09-30T09:57:51Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41282
+2026-09-30T09:57:51Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41281
+2026-09-30T09:57:51Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41279
+2026-09-30T09:57:51Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41255
+2026-09-30T09:57:51Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41253
+2026-09-30T09:57:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f022  460405309-461291746  886438
+2026-09-30T09:57:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f022  468088827-468945505  856679
+2026-09-30T09:57:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  469346393-470309803  963411
+2026-09-30T09:57:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  410730136-411248464  518329
+2026-09-30T09:57:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41276
+2026-09-30T09:57:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41276
+2026-09-30T09:57:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41273
+2026-09-30T09:57:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41255
+2026-09-30T09:57:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41255
+2026-09-30T09:57:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  425420146-425934746  514601
+2026-09-30T09:57:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  453963864-454793018  829155
+2026-09-30T09:57:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  420330432-421207579  877148
+2026-09-30T09:57:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  415388809-415981039  592231
+2026-09-30T09:57:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  438829371-439667213  837843
+2026-09-30T09:57:53Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41250
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  370385246-371253656  868411
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  430017400-430992658  975259
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  430992659-431937214  944556
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  450649177-451489183  840007
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  423526087-424044214  518128
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  452923506-453736951  813446
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  360011218-360509372  498155
+2026-09-30T09:57:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  415981040-416555227  574188
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  346589128-347435075  845948
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  426351019-427317507  966489
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  427317508-428265417  947910
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  428177001-429157306  980306
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  429157307-430115628  958322
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  305117371-305903523  786153
+2026-09-30T09:57:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  337926796-338781853  855058
+2026-09-30T09:57:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  312465337-313235871  770535
+2026-09-30T09:57:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  427671630-428455259  783630
+2026-09-30T09:57:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  340954088-341802302  848215
+2026-09-30T09:57:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  365050826-365907055  856230
+2026-09-30T09:57:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  413018698-413812524  793827
+2026-09-30T09:57:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  306746084-307498648  752565
+2026-09-30T09:57:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  346082814-346938275  855462
+2026-09-30T09:57:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  369985818-370483798  497981
+2026-09-30T09:57:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  425934747-427131750  1197004
+2026-09-30T09:57:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  427131751-427671629  539879
+2026-09-30T09:57:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  423308592-424093338  784747
+2026-09-30T09:57:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  310994451-311777941  783491
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-890152  890153
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  416539370-417383786  844417
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  421207580-422391491  1183912
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  422391492-423308591  917100
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  425276235-425812085  535851
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  425812086-426604045  791960
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  411248465-412481978  1233514
+2026-09-30T09:57:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  412481979-413018697  536719
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-882628  882629
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f024  471231760-472184238  952479
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1001261  1001262
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  411264422-412105885  841464
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-882781  882782
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  424044215-425276234  1232020
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-882572  882573
+2026-09-30T09:57:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  402375146-403211810  836665
+2026-09-30T09:58:00Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41262
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/12/atmos/gfs.t12z.pgrb2.0p25.f022  468488977-469337165  848189
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-997521  997522
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1008078  1008079
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  415206313-416045826  839514
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-880014  880015
+2026-09-30T09:58:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  455941338-456917275  975938
+2026-09-30T09:58:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41260
+2026-09-30T09:58:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41256
+2026-09-30T09:58:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41254
+2026-09-30T09:58:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f022  462872287-463723871  851585
+2026-09-30T09:58:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/12/atmos/gfs.t12z.pgrb2.0p25.f024  468033726-468955998  922273
+2026-09-30T09:58:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f024  470194950-471174454  979505
+2026-09-30T09:58:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  420412997-420925908  512912
+2026-09-30T09:58:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f022  453251402-454127782  876381
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41253
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41249
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41255
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41256
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41253
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41251
+2026-09-30T09:58:02Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41254
+2026-09-30T09:58:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/12/atmos/gfs.t12z.pgrb2.0p25.f022  470658998-471544426  885429
+2026-09-30T09:58:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  425007705-425983010  975306
+2026-09-30T09:58:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  448830354-449658648  828295
+2026-09-30T09:58:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  414985787-415865322  879536
+2026-09-30T09:58:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  411369825-412246630  876806
+2026-09-30T09:58:03Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41249
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  365379414-366237389  857976
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  425983011-426929417  946407
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  421040153-422002271  962119
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  444954300-445806921  852622
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  441180167-442002919  822753
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  415115965-415632935  516971
+2026-09-30T09:58:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  444472488-445301614  829127
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  306795257-307559393  764137
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  341108599-341957061  848463
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  360913133-361763880  850748
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  422002272-422940510  938239
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  417401002-418366174  965173
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  418366175-419308946  942772
+2026-09-30T09:58:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  419747600-420723183  975584
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  422140190-422671084  530895
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  422671085-423451154  780070
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  302860155-303612117  751963
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  336903266-337741567  838302
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  331717240-332565861  848622
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  355896155-356756487  860333
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  359854562-360722554  867993
+2026-09-30T09:58:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  420723184-421679774  956591
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-995458  995459
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  420925909-422140189  1214281
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  417068857-417984384  915528
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  417984385-418772287  787903
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  297751889-298504317  752429
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  414354056-415128825  774770
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  301117842-301889959  772118
+2026-09-30T09:58:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  335586437-336438854  852418
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-990642  990643
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  411852952-412690254  837303
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  415865323-417068856  1203534
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  412246631-413433148  1186518
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  413433149-414354055  920907
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  416863693-417396778  533086
+2026-09-30T09:58:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  417396779-418188720  791942
+2026-09-30T09:58:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f024  466052534-466983107  930574
+2026-09-30T09:58:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1028027  1028028
+2026-09-30T09:58:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  406016530-406855519  838990
+2026-09-30T09:58:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1036610  1036611
+2026-09-30T09:58:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  415632936-416863692  1230757
+2026-09-30T09:58:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/12/atmos/gfs.t12z.pgrb2.0p25.f022  463790597-464640618  850022
+2026-09-30T09:58:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  402273938-403109453  835516
+2026-09-30T09:58:10Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41259
+2026-09-30T09:58:10Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41260
+2026-09-30T09:58:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1024494  1024495
+2026-09-30T09:58:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f024  462302067-463215394  913328
+2026-09-30T09:58:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-992868  992869
+2026-09-30T09:58:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-868791  868792
+2026-09-30T09:58:11Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41255
+2026-09-30T09:58:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/12/atmos/gfs.t12z.pgrb2.0p25.f022  462945416-463786064  840649
+2026-09-30T09:58:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f024  458155667-459086062  930396
+2026-09-30T09:58:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-993023  993024
+2026-09-30T09:58:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  406724268-407555160  830893
+2026-09-30T09:58:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  422205749-423094947  889199
+2026-09-30T09:58:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41282
+2026-09-30T09:58:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx    41258
+2026-09-30T09:58:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f022.idx    41255
+2026-09-30T09:58:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx    41253
+2026-09-30T09:58:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/12/atmos/gfs.t12z.pgrb2.0p25.f022  460296605-461147184  850580
+2026-09-30T09:58:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f024  461255254-462227570  972317
+2026-09-30T09:58:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  427598540-428571373  972834
+2026-09-30T09:58:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  452022800-452869699  846900
+2026-09-30T09:58:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  410730136-411248464  518329
+2026-09-30T09:58:13Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41281
+2026-09-30T09:58:13Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41277
+2026-09-30T09:58:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  424171537-424687322  515786
+2026-09-30T09:58:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/12/atmos/gfs.t12z.pgrb2.0p25.f022  460405309-461291746  886438
+2026-09-30T09:58:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  367981826-368846315  864490
+2026-09-30T09:58:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  428571374-429521924  950551
+2026-09-30T09:58:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  438829371-439667213  837843
+2026-09-30T09:58:14Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41278
+2026-09-30T09:58:14Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41280
+2026-09-30T09:58:14Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41275
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  452552094-453389487  837394
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  310679873-311453307  773435
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  344422091-345268332  846242
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  360011218-360509372  498155
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  415388809-415981039  592231
+2026-09-30T09:58:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  415981040-416555227  574188
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  428783097-429754865  971769
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  429754866-430700985  946120
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  419796490-420679086  882597
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  449764462-450604823  840362
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  424304393-425233513  929121
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  425233514-426020101  786588
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  305117371-305903523  786153
+2026-09-30T09:58:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  337926796-338781853  855058
+2026-09-30T09:58:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  369190733-370061073  870341
+2026-09-30T09:58:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  425860142-426830725  970584
+2026-09-30T09:58:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  423094948-424304392  1209445
+2026-09-30T09:58:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  412481979-413018697  536719
+2026-09-30T09:58:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  413018698-413812524  793827
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  311361436-312130951  769516
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  345228383-346076591  848209
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  426830726-427779322  948597
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-1010379  1010380
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  413303707-414144028  840322
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  0-882572  882573
+2026-09-30T09:58:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  411248465-412481978  1233514
+2026-09-30T09:58:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  426424558-427212459  787902
+2026-09-30T09:58:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  364383893-365246734  862842
+2026-09-30T09:58:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-1003258  1003259
+2026-09-30T09:58:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f024  469346393-470309803  963411
+2026-09-30T09:58:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  402375146-403211810  836665
+2026-09-30T09:58:19Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41256
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  424687323-425884965  1197643
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  425884966-426424557  539592
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  305958743-306722748  764006
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  340269689-341120365  850677
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/12/atmos/gfs.t12z.pgrb2.0p25.f022  468088827-468945505  856679
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f021  0-880014  880015
+2026-09-30T09:58:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f024  455941338-456917275  975938
+2026-09-30T09:58:20Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41258
+2026-09-30T09:58:20Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41254
+2026-09-30T09:58:20Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41260
+2026-09-30T09:58:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-891881  891882
+2026-09-30T09:58:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  415294602-416138005  843404
+2026-09-30T09:58:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  422788166-423578482  790317
+2026-09-30T09:58:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  426433597-426953147  519551
+2026-09-30T09:58:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/12/atmos/gfs.t12z.pgrb2.0p25.f022  453251402-454127782  876381
+2026-09-30T09:58:21Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41261
+2026-09-30T09:58:21Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41257
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-892901  892902
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  420679087-421864455  1185369
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  421864456-422788165  923710
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  431094026-432080440  986415
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  455826488-456651857  825370
+2026-09-30T09:58:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  423373118-423890522  517405
+2026-09-30T09:58:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f024  469828025-470788829  960805
+2026-09-30T09:58:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  452037038-452875800  838763
+2026-09-30T09:58:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-1008127  1008128
+2026-09-30T09:58:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  432080441-433040168  959728
+2026-09-30T09:58:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  427982439-428961289  978851
+2026-09-30T09:58:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f022  469733178-470586603  853426
+2026-09-30T09:58:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  410730649-411573031  842383
+2026-09-30T09:58:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  371657476-372530164  872689
+2026-09-30T09:58:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  428961290-429915721  954432
+2026-09-30T09:58:25Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41253
+2026-09-30T09:58:25Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41254
+2026-09-30T09:58:25Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41249
+2026-09-30T09:58:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-1005707  1005708
+2026-09-30T09:58:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  347288698-348145388  856691
+2026-09-30T09:58:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  368231991-369093685  861695
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f024  467300174-468220994  920821
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  312057639-312846325  788687
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  428724756-429517694  792939
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  308982032-309754554  772523
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  343850916-344699710  848795
+2026-09-30T09:58:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  415135426-416016372  880947
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f022  468833606-469685758  852153
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  426953148-428187115  1233968
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  428187116-428724755  537640
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  425637217-426422100  784884
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  421206354-422172010  965657
+2026-09-30T09:58:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  445357473-446224236  866764
+2026-09-30T09:58:28Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41257
+2026-09-30T09:58:28Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41257
+2026-09-30T09:58:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-886925  886926
+2026-09-30T09:58:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  418108373-418949824  841452
+2026-09-30T09:58:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  423890523-425104349  1213827
+2026-09-30T09:58:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  425104350-425637216  532867
+2026-09-30T09:58:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  422172011-423118468  946458
+2026-09-30T09:58:29Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41253
+2026-09-30T09:58:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-1001612  1001613
+2026-09-30T09:58:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-1004275  1004276
+2026-09-30T09:58:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  414853553-415691371  837819
+2026-09-30T09:58:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  361000213-361852481  852269
+2026-09-30T09:58:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  416797693-417682575  884883
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-885379  885380
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f024  473111249-474095352  984104
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f022  465400683-466269486  868804
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f024  469222797-470173862  951066
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  337190271-338032432  842162
+2026-09-30T09:58:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  446202669-447022910  820242
+2026-09-30T09:58:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41252
+2026-09-30T09:58:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41252
+2026-09-30T09:58:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41248
+2026-09-30T09:58:31Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41261
+2026-09-30T09:58:31Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f022  473467506-474380058  912553
+2026-09-30T09:58:31Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  303083316-303842599  759284
+2026-09-30T09:58:31Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  422487810-423456767  968958
+2026-09-30T09:58:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41261
+2026-09-30T09:58:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41257
+2026-09-30T09:58:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  418140586-418930321  789736
+2026-09-30T09:58:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  423456768-424405166  948399
+2026-09-30T09:58:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  415574939-416093403  518465
+2026-09-30T09:58:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  444798136-445636239  838104
+2026-09-30T09:58:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  422134778-423026384  891607
+2026-09-30T09:58:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  417219295-418140585  921291
+2026-09-30T09:58:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  361223168-362086497  863330
+2026-09-30T09:58:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  427515716-428493361  977646
+2026-09-30T09:58:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  452104952-452942583  837632
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-992699  992700
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  416016373-417219294  1202922
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  337029310-337879746  850437
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  420216929-421198201  981273
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  367815546-368683615  868070
+2026-09-30T09:58:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  428493362-429446393  953032
+2026-09-30T09:58:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  406173897-407012451  838555
+2026-09-30T09:58:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  303240262-303997043  756782
+2026-09-30T09:58:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  360316557-361188054  871498
+2026-09-30T09:58:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  421198202-422153779  955578
+2026-09-30T09:58:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  344289714-345135403  845690
+2026-09-30T09:58:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-991904  991905
+2026-09-30T09:58:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  301180641-301953542  772902
+2026-09-30T09:58:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  335914372-336771454  857083
+2026-09-30T09:58:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  310490170-311263277  773108
+2026-09-30T09:58:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  419420430-420198139  777710
+2026-09-30T09:58:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  417859289-418651274  791986
+2026-09-30T09:58:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  418873288-419420429  547142
+2026-09-30T09:58:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  424230277-424773064  542788
+2026-09-30T09:58:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  424773065-425565104  792040
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f022  461441875-462301288  859414
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f024  462726607-463656976  930370
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-1005702  1005703
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  417682576-418873287  1190712
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-1016442  1016443
+2026-09-30T09:58:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  423026385-424230276  1203892
+2026-09-30T09:58:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f021.idx    41257
+2026-09-30T09:58:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f022.idx    41258
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-1002363  1002364
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  407698118-408536022  837905
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-871608  871609
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  416093404-417324854  1231451
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  417324855-417859288  534434
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-1013544  1013545
+2026-09-30T09:58:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  413231769-414071441  839673
+2026-09-30T09:58:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024.idx    41254
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f022  461587394-462434140  846747
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f024  463195702-464119404  923703
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  407183364-408014959  831596
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f022  469058459-469930357  871899
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f024  469510244-470481966  971723
+2026-09-30T09:58:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  412686646-413206202  519557
+2026-09-30T09:58:42Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41282
+2026-09-30T09:58:42Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41282
+2026-09-30T09:58:42Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41276
+2026-09-30T09:58:42Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41276
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  423917856-424425044  507189
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  451900090-452717452  817363
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  423049351-423920186  870836
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-870756  870757
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f024  461984145-462968044  983900
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  417346701-417936571  589871
+2026-09-30T09:58:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  440805179-441645173  839995
+2026-09-30T09:58:43Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41254
+2026-09-30T09:58:43Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41255
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  428610746-429575534  964789
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  429190485-430153045  962561
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  452255236-453072854  817619
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f022  459291314-460191159  899846
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  360789128-361661271  872144
+2026-09-30T09:58:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  417936572-418515480  578909
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  369009781-369870374  860594
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  429575535-430516366  940832
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  368076166-368927861  851696
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  430153046-431096921  943876
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  423968086-424485526  517441
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  452283258-453100174  816917
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  305544896-306329118  784223
+2026-09-30T09:58:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  338405631-339260839  855209
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  345050376-345894428  844053
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  344113098-344957447  844350
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  428627946-429606410  978465
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  429606411-430563640  957230
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  414439360-414976041  536682
+2026-09-30T09:58:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  414976042-415770054  794013
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  311642163-312400719  758557
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  425736978-426271292  534315
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  426271293-427052057  780765
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  344853906-345712460  858555
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  369113523-369988633  875111
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  0-882944  882945
+2026-09-30T09:58:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  413206203-414439359  1233157
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-881759  881760
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  424425045-425736977  1311933
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  310079751-310835252  755502
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  425756918-426543140  786223
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  309678730-310459454  780725
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  426252260-427049669  797410
+2026-09-30T09:58:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  404344743-405181573  836831
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-888426  888427
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  414867948-415712244  844297
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  423920187-425223233  1303047
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  425223234-425756917  533684
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-881576  881577
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  424485527-425718769  1233243
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  425718770-426252259  533490
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f021  0-883527  883528
+2026-09-30T09:58:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f024  457903888-458882504  978617
+2026-09-30T09:58:49Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41264
+2026-09-30T09:58:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/00/atmos/gfs.t00z.pgrb2.0p25.f026  467868120-468647349  779230
+2026-09-30T09:58:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-880942  880943
+2026-09-30T09:58:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  413999853-414841630  841778
+2026-09-30T09:58:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  415646896-416486918  840023
+2026-09-30T09:58:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f022  453911547-454813694  902148
+2026-09-30T09:58:50Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41264
+2026-09-30T09:58:50Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41254
+2026-09-30T09:58:50Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41253
+2026-09-30T09:58:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-884220  884221
+2026-09-30T09:58:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-883686  883687
+2026-09-30T09:58:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  420771401-421279537  508137
+2026-09-30T09:58:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/00/atmos/gfs.t00z.pgrb2.0p25.f026  468389823-469243989  854167
+2026-09-30T09:58:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  417683288-418556682  873395
+2026-09-30T09:58:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41257
+2026-09-30T09:58:52Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41255
+2026-09-30T09:58:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  448533755-449354492  820738
+2026-09-30T09:58:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  423744576-424705094  960519
+2026-09-30T09:58:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  446949167-447784816  835650
+2026-09-30T09:58:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  425363188-426333121  969934
+2026-09-30T09:58:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  424705095-425648174  943080
+2026-09-30T09:58:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  414176967-415049177  872211
+2026-09-30T09:58:53Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  443427629-444245596  817968
+2026-09-30T09:58:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/00/atmos/gfs.t00z.pgrb2.0p25.f026  468454819-469251965  797147
+2026-09-30T09:58:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  365677101-366532312  855212
+2026-09-30T09:58:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  426333122-427280756  947635
+2026-09-30T09:58:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  362316576-363158954  842379
+2026-09-30T09:58:54Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  420199581-421160712  961132
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  307486701-308243421  756721
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  341458764-342299589  840826
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  304364383-305111700  747318
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  338194781-339027336  832556
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  359164983-360020525  855543
+2026-09-30T09:58:55Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  421160713-422100379  939667
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  421279538-422491930  1212393
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  422491931-423024169  532239
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  423024170-423807297  783128
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  420676614-421465612  788999
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  301737875-302490833  752959
+2026-09-30T09:58:56Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  335368406-336211810  843405
+2026-09-30T09:58:57Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41253
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-992122  992123
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  412031186-412869029  837844
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  418556683-419756958  1200276
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  419756959-420676613  919655
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  416225330-417145314  919985
+2026-09-30T09:58:57Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  417145315-417920026  774712
+2026-09-30T09:58:58Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41253
+2026-09-30T09:58:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-998841  998842
+2026-09-30T09:58:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/00/atmos/gfs.t00z.pgrb2.0p25.f026  464648116-465436489  788374
+2026-09-30T09:58:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-986962  986963
+2026-09-30T09:58:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  415049178-416225329  1176152
+2026-09-30T09:58:58Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  415768463-416282040  513578
+2026-09-30T09:58:59Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41262
+2026-09-30T09:58:59Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41263
+2026-09-30T09:58:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-995584  995585
+2026-09-30T09:58:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  408538813-409379316  840504
+2026-09-30T09:58:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-877021  877022
+2026-09-30T09:58:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  405100504-405934541  834038
+2026-09-30T09:58:59Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  424456671-425337773  881103
+2026-09-30T09:59:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/00/atmos/gfs.t00z.pgrb2.0p25.f026  463044619-463833365  788747
+2026-09-30T09:59:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-881927  881928
+2026-09-30T09:59:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  444423673-445247248  823576
+2026-09-30T09:59:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  429806441-430770317  963877
+2026-09-30T09:59:00Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  453333856-454168185  834330
+2026-09-30T09:59:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41282
+2026-09-30T09:59:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41280
+2026-09-30T09:59:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f023.idx    41258
+2026-09-30T09:59:01Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026.idx    41259
+2026-09-30T09:59:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/00/atmos/gfs.t00z.pgrb2.0p25.f026  459114657-459897875  783219
+2026-09-30T09:59:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  346928406-347771693  843288
+2026-09-30T09:59:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  370313415-371177673  864259
+2026-09-30T09:59:01Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  430770318-431715990  945673
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  423401809-423916062  514254
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  450811395-451656577  845183
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  420400120-421372642  972523
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  313534215-314293845  759631
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  427077894-427868967  791074
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  409921051-410437451  516401
+2026-09-30T09:59:02Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  436736701-437570587  833887
+2026-09-30T09:59:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  428005052-428975987  970936
+2026-09-30T09:59:03Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  414574966-415162537  587572
+2026-09-30T09:59:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  428975988-429920562  944575
+2026-09-30T09:59:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  421372643-422325777  953135
+2026-09-30T09:59:04Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  415162538-415733504  570967
+2026-09-30T09:59:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  368262084-369131002  868919
+2026-09-30T09:59:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  426538570-427077893  539324
+2026-09-30T09:59:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  337568432-338417487  849056
+2026-09-30T09:59:05Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  359435274-360303108  867835
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  310558063-311323064  765002
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  344354249-345201216  846968
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  360829076-361698326  869251
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-1002951  1002952
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  425337774-426538569  1200796
+2026-09-30T09:59:06Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  305902965-306681717  778753
+2026-09-30T09:59:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  425642734-426431188  788455
+2026-09-30T09:59:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-1014929  1014930
+2026-09-30T09:59:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  415383944-416221951  838008
+2026-09-30T09:59:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/00/atmos/gfs.t00z.pgrb2.0p25.f026  469325193-470111843  786651
+2026-09-30T09:59:07Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  412206666-413002502  795837
+2026-09-30T09:59:08Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41279
+2026-09-30T09:59:08Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41279
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  423916063-425104637  1188575
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  425104638-425642733  538096
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  420736857-421617087  880231
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  336640198-337496513  856316
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  410437452-411667810  1230359
+2026-09-30T09:59:08Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  411667811-412206665  538855
+2026-09-30T09:59:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-890984  890985
+2026-09-30T09:59:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  414340503-415183495  842993
+2026-09-30T09:59:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  451062531-451905204  842674
+2026-09-30T09:59:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  301886603-302657120  770518
+2026-09-30T09:59:09Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-880586  880587
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-893000  893001
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  466898474-467693169  794696
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  365344166-366205387  861222
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  427193922-428163645  969724
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  428163646-429114920  951275
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  418043846-418837324  793479
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-879829  879830
+2026-09-30T09:59:10Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  401580173-402415884  835712
+2026-09-30T09:59:11Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41258
+2026-09-30T09:59:11Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41259
+2026-09-30T09:59:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  307069134-307832452  763319
+2026-09-30T09:59:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  341320175-342168393  848219
+2026-09-30T09:59:11Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/00/atmos/gfs.t00z.pgrb2.0p25.f026  452387114-453237484  850371
+2026-09-30T09:59:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41259
+2026-09-30T09:59:12Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41263
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  422802002-423725609  923608
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  423725610-424517439  791830
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  427624366-428144783  520418
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  456354656-457184772  830117
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  422708171-423222286  514116
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  416282041-417507045  1225005
+2026-09-30T09:59:12Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  417507046-418043845  536800
+2026-09-30T09:59:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  421617088-422802001  1184914
+2026-09-30T09:59:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  432293133-433280122  986990
+2026-09-30T09:59:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  433280123-434240439  960317
+2026-09-30T09:59:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  427324014-428302831  978818
+2026-09-30T09:59:13Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  450489383-451328132  838750
+2026-09-30T09:59:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1010594  1010595
+2026-09-30T09:59:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  372629836-373503446  873611
+2026-09-30T09:59:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  428302832-429255958  953127
+2026-09-30T09:59:14Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  0-866851  866852
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1008312  1008313
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  411677179-412519109  841931
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  313012377-313799165  786789
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  348322715-349178282  855568
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  343100858-343949929  849072
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  367482614-368344314  861701
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f023  0-870615  870616
+2026-09-30T09:59:15Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  407389850-408220770  830921
+2026-09-30T09:59:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  467438271-468236936  798666
+2026-09-30T09:59:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  429377924-429911968  534045
+2026-09-30T09:59:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  429911969-430705473  793505
+2026-09-30T09:59:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  308208236-308976998  768763
+2026-09-30T09:59:16Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/00/atmos/gfs.t00z.pgrb2.0p25.f026  460074918-460874497  799580
+2026-09-30T09:59:17Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41253
+2026-09-30T09:59:17Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41253
+2026-09-30T09:59:17Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41257
+2026-09-30T09:59:17Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  424969232-425755662  786431
+2026-09-30T09:59:18Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41256
+2026-09-30T09:59:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  424435956-424969231  533276
+2026-09-30T09:59:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  416332913-417212706  879794
+2026-09-30T09:59:18Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  415595514-416114623  519110
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1003828  1003829
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  423222287-424435955  1213669
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  422416928-423382062  965135
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  445862188-446726807  864620
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  420209808-421177895  968088
+2026-09-30T09:59:19Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  443040706-443864331  823626
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-887187  887188
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  428144784-429377923  1233140
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  414148140-414985153  837014
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  362308737-363158773  850037
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  423382063-424328923  946861
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  360111559-360973685  862127
+2026-09-30T09:59:20Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  421177896-422125487  947592
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-886107  886108
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  419298978-420140332  841355
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1003913  1003914
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  304579399-305333764  754366
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  338576113-339411461  835349
+2026-09-30T09:59:21Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  335948873-336797402  848530
+2026-09-30T09:59:22Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41251
+2026-09-30T09:59:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  472459954-473293056  833103
+2026-09-30T09:59:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  466545402-467357011  811610
+2026-09-30T09:59:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  419335312-420129206  793895
+2026-09-30T09:59:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  302096001-302852886  756886
+2026-09-30T09:59:22Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  417847730-418626884  779155
+2026-09-30T09:59:23Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41252
+2026-09-30T09:59:23Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41261
+2026-09-30T09:59:23Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41259
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  417212707-418418263  1205557
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  418418264-419335311  917048
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  416114624-417305265  1190642
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  417305266-417847729  542464
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  415585466-416103690  518225
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  444083340-444924297  840958
+2026-09-30T09:59:23Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  422215032-423100461  885430
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1034139  1034140
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  407369786-408207406  837621
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1005858  1005859
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  406495169-407333723  838555
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  420243631-421224684  981054
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  427955039-428926855  971817
+2026-09-30T09:59:24Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  451426855-452261288  834434
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-992175  992176
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1005181  1005182
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  458918173-459710476  792304
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  360448272-361319907  871636
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  421224685-422184597  959913
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  367678333-368546833  868501
+2026-09-30T09:59:25Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  428926856-429878677  951822
+2026-09-30T09:59:26Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41282
+2026-09-30T09:59:26Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41280
+2026-09-30T09:59:26Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41258
+2026-09-30T09:59:26Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41257
+2026-09-30T09:59:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  462034481-462844176  809696
+2026-09-30T09:59:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  301299514-302072683  773170
+2026-09-30T09:59:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  336081127-336938206  857080
+2026-09-30T09:59:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  344212754-345056644  843891
+2026-09-30T09:59:26Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  411637710-412161156  523447
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  423401809-423916062  514254
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  450811395-451656577  845183
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  417334605-417869541  534937
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  417869542-418661801  792260
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  310486638-311258575  771938
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  424844028-425637554  793527
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  416318385-416809887  491503
+2026-09-30T09:59:27Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  438579266-439421164  841899
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  428005052-428975987  970936
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  428975988-429920562  944575
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-871203  871204
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  416103691-417334604  1230914
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  424302885-424844027  541143
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  337405255-338259781  854527
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  359730560-360601970  871411
+2026-09-30T09:59:28Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  416809888-417293015  483128
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  344354249-345201216  846968
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  368262084-369131002  868919
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  407195603-408026135  830533
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1015336  1015337
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  423100462-424302884  1202423
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  304532115-305316777  784663
+2026-09-30T09:59:29Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  413932814-414727891  795078
+2026-09-30T09:59:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  310558063-311323064  765002
+2026-09-30T09:59:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-871301  871302
+2026-09-30T09:59:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  413128321-413968057  839737
+2026-09-30T09:59:30Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  413396709-413932813  536105
+2026-09-30T09:59:31Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  460162062-460985562  823501
+2026-09-30T09:59:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41279
+2026-09-30T09:59:32Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41279
+2026-09-30T09:59:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  425104638-425642733  538096
+2026-09-30T09:59:32Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  425642734-426431188  788455
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-890984  890985
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  423916063-425104637  1188575
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  420736857-421617087  880231
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  451062531-451905204  842674
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1017118  1017119
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  467604052-468404612  800561
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-882362  882363
+2026-09-30T09:59:33Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  412161157-413396708  1235552
+2026-09-30T09:59:34Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41258
+2026-09-30T09:59:34Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41259
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  414340503-415183495  842993
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  427193922-428163645  969724
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  428163646-429114920  951275
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  427624366-428144783  520418
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-883693  883694
+2026-09-30T09:59:34Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  403292115-404128770  836656
+2026-09-30T09:59:35Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41259
+2026-09-30T09:59:35Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41263
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-893000  893001
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  341320175-342168393  848219
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  365344166-366205387  861222
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  432293133-433280122  986990
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  456354656-457184772  830117
+2026-09-30T09:59:35Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  454562888-455389228  826341
+2026-09-30T09:59:36Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41253
+2026-09-30T09:59:36Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41253
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20210414/18/atmos/gfs.t18z.pgrb2.0p25.f026  466898474-467693169  794696
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  307069134-307832452  763319
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  348322715-349178282  855568
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  372629836-373503446  873611
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  433280123-434240439  960317
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  422708171-423222286  514116
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  427324014-428302831  978818
+2026-09-30T09:59:36Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  450489383-451328132  838750
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  422802002-423725609  923608
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  423725610-424517439  791830
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  313012377-313799165  786789
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  429911969-430705473  793505
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  367482614-368344314  861701
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  428302832-429255958  953127
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  416332913-417212706  879794
+2026-09-30T09:59:37Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  445862188-446726807  864620
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1010594  1010595
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  421617088-422802001  1184914
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-887187  887188
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  428144784-429377923  1233140
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  429377924-429911968  534045
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  308208236-308976998  768763
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  343100858-343949929  849072
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  422416928-423382062  965135
+2026-09-30T09:59:38Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  423382063-424328923  946861
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1008312  1008313
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  411677179-412519109  841931
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-886107  886108
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  419298978-420140332  841355
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  424435956-424969231  533276
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  424969232-425755662  786431
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  338576113-339411461  835349
+2026-09-30T09:59:39Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  362308737-363158773  850037
+2026-09-30T09:59:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41257
+2026-09-30T09:59:40Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41251
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20220109/18/atmos/gfs.t18z.pgrb2.0p25.f026  467438271-468236936  798666
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230719/18/atmos/gfs.t18z.pgrb2.0p25.f026  472459954-473293056  833103
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  423222287-424435955  1213669
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  304579399-305333764  754366
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  418418264-419335311  917048
+2026-09-30T09:59:40Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  419335312-420129206  793895
+2026-09-30T09:59:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41256
+2026-09-30T09:59:41Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41252
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1003828  1003829
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1034139  1034140
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  417212707-418418263  1205557
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  415595514-416114623  519110
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  443040706-443864331  823626
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  415585466-416103690  518225
+2026-09-30T09:59:41Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  444083340-444924297  840958
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  414148140-414985153  837014
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-992175  992176
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  407369786-408207406  837621
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  420209808-421177895  968088
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  421177896-422125487  947592
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  420243631-421224684  981054
+2026-09-30T09:59:42Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  421224685-422184597  959913
+2026-09-30T09:59:43Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41261
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1003913  1003914
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20241111/18/atmos/gfs.t18z.pgrb2.0p25.f026  462034481-462844176  809696
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  302096001-302852886  756886
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  335948873-336797402  848530
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  360111559-360973685  862127
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  336081127-336938206  857080
+2026-09-30T09:59:43Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  360448272-361319907  871636
+2026-09-30T09:59:44Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41259
+2026-09-30T09:59:44Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f023.idx    41258
+2026-09-30T09:59:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20231004/18/atmos/gfs.t18z.pgrb2.0p25.f026  466545402-467357011  811610
+2026-09-30T09:59:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  301299514-302072683  773170
+2026-09-30T09:59:44Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  422215032-423100461  885430
+2026-09-30T09:59:45Z  idx                https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026.idx    41257
+2026-09-30T09:59:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  417334605-417869541  534937
+2026-09-30T09:59:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  417869542-418661801  792260
+2026-09-30T09:59:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  427955039-428926855  971817
+2026-09-30T09:59:45Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  451426855-452261288  834434
+2026-09-30T09:59:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  417847730-418626884  779155
+2026-09-30T09:59:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-871203  871204
+2026-09-30T09:59:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  416103691-417334604  1230914
+2026-09-30T09:59:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  428926856-429878677  951822
+2026-09-30T09:59:46Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  411637710-412161156  523447
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  416114624-417305265  1190642
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  417305266-417847729  542464
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-871301  871302
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  407195603-408026135  830533
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  344212754-345056644  843891
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  367678333-368546833  868501
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  416318385-416809887  491503
+2026-09-30T09:59:47Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  438579266-439421164  841899
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1005858  1005859
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  406495169-407333723  838555
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250902/18/atmos/gfs.t18z.pgrb2.0p25.f026  460162062-460985562  823501
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  310486638-311258575  771938
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  424844028-425637554  793527
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  359730560-360601970  871411
+2026-09-30T09:59:48Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  416809888-417293015  483128
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1005181  1005182
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20250217/18/atmos/gfs.t18z.pgrb2.0p25.f026  458918173-459710476  792304
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  423100462-424302884  1202423
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  424302885-424844027  541143
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  304532115-305316777  784663
+2026-09-30T09:59:49Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  337405255-338259781  854527
+2026-09-30T09:59:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-1015336  1015337
+2026-09-30T09:59:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  413128321-413968057  839737
+2026-09-30T09:59:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  412161157-413396708  1235552
+2026-09-30T09:59:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  413396709-413932813  536105
+2026-09-30T09:59:50Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  413932814-414727891  795078
+2026-09-30T09:59:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-1017118  1017119
+2026-09-30T09:59:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  0-882362  882363
+2026-09-30T09:59:51Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  403292115-404128770  836656
+2026-09-30T09:59:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260421/18/atmos/gfs.t18z.pgrb2.0p25.f026  467604052-468404612  800561
+2026-09-30T09:59:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f023  0-883693  883694
+2026-09-30T09:59:52Z  message            https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260730/18/atmos/gfs.t18z.pgrb2.0p25.f026  454562888-455389228  826341
+2026-09-30T09:59:53Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2554
+2026-09-30T09:59:55Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2538
+2026-09-30T09:59:58Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2625
+2026-09-30T10:00:00Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2626
+2026-09-30T10:00:02Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2573
+2026-09-30T10:00:07Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2586
+2026-09-30T10:00:18Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2634
+2026-09-30T10:00:26Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2565
+2026-09-30T10:00:35Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2620
+2026-09-30T10:00:39Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2680
+2026-09-30T10:00:43Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2636
+2026-09-30T10:00:46Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2722
+2026-09-30T10:00:49Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2706
+2026-09-30T10:00:51Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2652
+2026-09-30T10:01:00Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2694
+2026-09-30T10:01:17Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2730
+2026-09-30T10:01:21Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2666
+2026-09-30T10:01:26Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2730
+2026-09-30T10:01:30Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2727
+2026-09-30T10:01:33Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2834
+2026-09-30T10:01:36Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2778
+2026-09-30T10:01:38Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2767
+2026-09-30T10:01:40Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2698
+2026-09-30T10:01:43Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2874
+2026-09-30T10:01:48Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2775
+2026-09-30T10:01:51Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2758
+2026-09-30T10:01:55Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2778
+2026-09-30T10:01:58Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2822
+2026-09-30T10:02:01Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2756
+2026-09-30T10:02:04Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2807
+2026-09-30T10:02:06Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2820
+2026-09-30T10:02:08Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2874
+2026-09-30T10:02:12Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2837
+2026-09-30T10:02:17Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2803
+2026-09-30T10:02:21Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2822
+2026-09-30T10:02:25Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2794
+2026-09-30T10:02:29Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2832
+2026-09-30T10:02:32Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2844
+2026-09-30T10:02:35Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2829
+2026-09-30T10:02:37Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2817
+2026-09-30T10:02:39Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2848
+2026-09-30T10:02:43Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2843
+2026-09-30T10:02:48Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2844
+2026-09-30T10:02:52Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2844
+2026-09-30T10:02:56Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2854
+2026-09-30T10:03:00Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2021&month1=4&day1=14&year2=2021&month2=4&day2=16&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2678
+2026-09-30T10:03:03Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2022&month1=1&day1=9&year2=2022&month2=1&day2=11&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2663
+2026-09-30T10:03:07Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2023&month1=7&day1=19&year2=2023&month2=7&day2=21&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2674
+2026-09-30T10:03:10Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2023&month1=10&day1=4&year2=2023&month2=10&day2=6&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2730
+2026-09-30T10:03:12Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2024&month1=11&day1=11&year2=2024&month2=11&day2=13&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2728
+2026-09-30T10:03:19Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2025&month1=2&day1=17&year2=2025&month2=2&day2=19&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2710
+2026-09-30T10:03:23Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2025&month1=9&day1=2&year2=2025&month2=9&day2=4&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2730
+2026-09-30T10:03:26Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2026&month1=4&day1=21&year2=2026&month2=4&day2=23&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2711
+2026-09-30T10:03:30Z  iem                https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2026&month1=7&day1=30&year2=2026&month2=8&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3    2730
+requests: 978; GRIB manifest rows: 783
+
+temporary directory deleted: True
+gate end (UTC): 2026-09-30T10:03:36Z
+exit 0
+
+CONSISTENCY CHECK (CLAUDE.md end-of-session step 3; report only, nothing fixed)
+Re-read: SPEC.md, STATUS.md (new), DECISIONS.md (with D78 and F128).
+- Duplicated headings: none in SPEC.md, STATUS.md or DECISIONS.md (checked by script for #, ## and ### headings).
+- Entry order in DECISIONS.md: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 F124 F125 D76 D77 F127 D78 F128. Ascending in number and date; no entry out of order. (Existing style note: older dated headings use an em-dash, from session 84 on a colon; D76.6 leaves existing text alone.)
+- SPEC 6, stage A and stage B bullets do not mention D78 (the direction decision) or F128 (the build script and its gate). SPEC 6 stage A still reads as if the D72.7 direction is open ("decides the project's direction"). Not edited: the session prompt does not authorise a SPEC edit. Owner to decide.
+- STATUS.md and DECISIONS.md agree: D78.1 option (d); D78.2, D78.3 carried; F128 gate passed; session 87 plan is D78.7's. STATUS "Open questions: None" while D78.2 and D78.3 are open items: they are listed under Carried items, as D78 calls them "open items", not open questions. Consistent, noted for clarity.
+- F128.1 says F100 and F101 were located but not read in full. The session prompt's Step 0 item 5 asked for them to be read.
+- Minor: the docstring of derive() in scripts/session86_forward_build.py cites session55_radiation_pull.py "l.541-562" for R's de-accumulation; F128.3 cites l.552-562 (the exact lines). The range in the script contains the exact lines. The script was not edited after the gate for this.
+- The SPEC 3.4 tables were the source of every per-airport value in the script; the printed table matches SPEC 5.2's constants (EGLC +0.2486, LFPG -0.1697, DSM -0.1106, YSDU +0.2461, RNO +2.0436, KSFO +0.6944).
+
+ARCHIVE STEP (CLAUDE.md end-of-session step 4)
+Nothing moved. D72, D73, F122, D77, F127, D78 and F128 stay live by the session prompt. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125, D76) are each cited by a live entry or by STATUS's carried items (for example F123.3, F123.4 by F127 and STATUS; F124.2 by STATUS; D76.2 by STATUS; D71.4/D71.5 by D78 and F127), so under the criterion "when in doubt, keep it live" none was moved.

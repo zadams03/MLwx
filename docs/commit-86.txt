@@ -1,0 +1,54 @@
+Session 86: direction decision (d) and the 2026-27 data-build script (D78, F128); gate exact
+
+D78 records the owner's decisions, written before any other edit,
+network call or data read. Direction under D77.4 after F127's mixed
+band: option (d), neither. F127 is the expected result of a
+single-model correction trained once, against a multi-model blend
+whose bias correction updates continuously; the gap is not uniform;
+NBM as an input is already stage E; and option (b)'s premise (no strong
+competitor outside the US) is untested. Two open items are recorded:
+bias drift (the model's mean error is warm at all four F127
+airport-looks; an adaptive bias correction is a candidate stage C build
+choice, to be tested by cross-validation) and a probe of non-US
+competitors (for example DWD MOSMIX) before stage C's new airports are
+chosen. D78 also notes that D77.6's 2026-27 test uses the frozen F122
+models, so no later recipe change can be claimed against NBM on
+2026-27; that GFS v17 still has no Service Change Notice as of
+2026-09-29; and that NBM v5.0.15 (SCN 26-74, 2026-08-26, Hawaii domain)
+falls inside period A. D78 is byte-equal to the session prompt.
+
+F128 records the new script, scripts/session86_forward_build.py. It
+builds the forward test's inputs with the record pipelines' recipe
+(written out in plain words, with file and line references, in the
+session notes). Its 2026-27 mode (--build) builds period A only, with
+v16 paths, runs only 3 days after period A's last target day, prints
+counts only and refuses to overwrite any file. It was written but not
+run. All six --guard-check cases behaved as specified.
+
+The gate rebuilt 54 spent-year station-days (9 fixed dates x 6
+airports) from fresh GRIB and IEM pulls: 783 GRIB messages, about
+0.56 GiB, nothing kept. All 12 columns (the nine model columns,
+temperature_grib_c, the observation and the previous-day observation)
+equal the committed F122 training set exactly, 54 of 54 at every
+airport, with no pairing differences. The 12 frozen F122 model files
+match their SHA-256 values, and their predictions on committed and
+rebuilt rows differ by 0 everywhere. No error or score was computed.
+
+The gate ran three times. Run 1 was interrupted when the project folder
+briefly disappeared from disk (cause not established; it returned
+intact; nothing was compared). Run 2 passed every comparison but its
+exercise of the --build writers, in a temporary directory, failed on an
+invalid file mode in the new script ("wx"); it was fixed to "x". Run 3
+passed in full, including the writer exercise and its refusal to
+overwrite. F100 and F101 were located but not read in full; their
+fields were taken from the scripts, and the exact gate confirms the
+recipe.
+
+No 2026-27 value was requested or read. Nothing was written under
+data/. No existing script and no SPEC, RESULTS or CLAUDE text was
+edited. The consistency check notes that SPEC 6's stage A and B bullets
+do not yet cite D78 or F128; left for session 87. STATUS.md is
+overwritten. Nothing was archived.
+
+New files: scripts/session86_forward_build.py,
+notes/session-86-output.txt, docs/session-86.md, docs/commit-86.txt.
