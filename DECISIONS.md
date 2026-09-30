@@ -1848,3 +1848,243 @@ band.
   disabled. `data/models/` was not touched. Nothing was installed.
 - No direction was decided (D77.4). No verdict changed.
 - Nothing was committed and no commit message was written.
+
+---
+
+## 2026-09-30: Session 86 decision: the direction decision, two open items and the 2026-27 scripts (owner, planning chat)
+
+**D78. Owner decisions, planning chat (after session 85): the direction
+decision that D77.4 requires, two open items, and the plan for the
+2026-27 scripts.** Written at the start of session 86, before any other
+edit, network call or data read. No 2026-27 value has been read.
+
+- **D78.1 Direction: option (d), neither.** F127's band is mixed. The
+  owner chooses neither (a) nor (b), for these reasons:
+  - (i) F127 is the expected result of a correction of one weather
+    model, trained once on a fixed window, against NBM, a blend of many
+    models whose bias correction is updated continuously. The gap is
+    not uniform: the model's MAE is lower at RNO, and KSFO look B's
+    interval spans zero.
+  - (ii) NBM as an input is already stage E (D72.3). Bringing it
+    forward would break D72.2(b), one input first. NBM also changed
+    version several times inside the training window (F123.3, D77.7).
+  - (iii) Option (b) rests on an untested premise. Stage A probed no
+    non-US post-processed forecast, and some exist (for example DWD's
+    MOSMIX, and the Bureau of Meteorology's forecasts at Dubbo).
+  - (iv) The lever F127 points to (D78.2) applies at every airport, US
+    or not.
+  The roadmap carries on as D72 sets it.
+- **D78.2 Open item: bias drift.** In F127 the model's mean error is
+  warm at all four airport-looks (+0.333 to +0.708 degC). At RNO and
+  KSFO look A it is warmer than raw GFS's. The correction learned in
+  training was carried into test years in which GFS's own bias had
+  shifted, as D71.4 found at KSFO. Planning-chat arithmetic on F127's
+  summary figures, assuming normally distributed errors and using each
+  test year's own mean (hindsight, insight only, not a finding): with
+  both biases removed, NBM's MAE would still be lower at DSM, KSFO look
+  A and KSFO look B, so the band would still be mixed. A correction
+  that adapts to recent bias is recorded as a candidate build choice
+  for stage C. If taken up, it is tested by time-ordered
+  cross-validation, identically at every airport (SPEC 2.5). Nothing is
+  decided on it now.
+- **D78.3 Open item: non-US competitors.** Before stage C's new
+  airports are chosen (D72.8), a read-only probe of non-US
+  post-processed station forecasts (for example DWD's MOSMIX): archive
+  depth, live feed and station coverage. Nothing is chosen on it now.
+- **D78.4 A consequence, recorded.** D77.6's 2026-27 test uses the
+  frozen F122 models. No later change to the recipe can be claimed
+  against NBM on 2026-27. Such a claim would need new airports or the
+  2027-28 forward year.
+- **D78.5 GFS v17 (planning-chat web search, 2026-09-29, not checked by
+  this session).** Still no Service Change Notice. The newest SCN
+  listed is SCN 26-87 (2026-09-22). With 30 days' notice, the earliest
+  go-live is about 29 October 2026.
+- **D78.6 NBM v5.0.15 (planning-chat web search, 2026-09-29, not
+  checked by this session).** SCN 26-74 (2026-08-26) upgraded NBM to
+  v5.0.15, effective immediately, to fix its use of gridded tropical
+  cyclone data in the Hawaii domain. It falls inside 2026-27 period A,
+  so D77.6's labels for period A name it. Its effect on CONUS
+  temperature is not known.
+- **D78.7 The 2026-27 scripts (D73.8, D77.6), in two sessions.**
+  Session 86: the data-build script
+  (`scripts/session86_forward_build.py`), with a gate on spent-year
+  station-days; its 2026-27 mode is written but not run. Session 87:
+  the scoring script and D77.6's NBM and MAV fetch. Both are committed
+  before any 2026-27 row is built. The build script's 2026-27 mode:
+  - builds period A only, with GFS v16 file paths. Period B needs
+    D73.4's v17 entry first;
+  - runs only after period A has ended and its observations are in,
+    with the first operational v17 cycle taken from a DECISIONS entry
+    (D73.3);
+  - prints counts only, never a 2026-27 value;
+  - writes only new files, and refuses to overwrite any file.
+
+---
+
+## 2026-09-30: Session 86 finding: the 2026-27 data-build script and its gate
+
+**F128. The 2026-27 data-build script exists and passed its gate. The gate
+rebuilt 54 spent-year station-days from fresh GRIB and IEM pulls and every
+value equals the committed training set exactly. `--build` was written and
+not run. No 2026-27 value was requested or read. Script:
+`scripts/session86_forward_build.py` (new; modes `--guard-check`, `--gate`,
+`--build`). Full real output: `notes/session-86-output.txt`. Run 2026-09-30.
+Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, eccodes 2.48.0, requests
+2.34.2.**
+
+**F128.1 Steps 0 and 1.**
+- `git status --porcelain` showed only `?? docs/session-86.md`. The last
+  entries were D77 and F127. No D78 or F128 existed in either DECISIONS
+  file. Neither `scripts/session86_forward_build.py` nor
+  `notes/session-86-output.txt` existed.
+- SHA-256 equal to F122: `data/processed/session81_training_set.csv`
+  (`ab8f25f2…8d4a`) and `data/models/session81/manifest.json`
+  (`03830586…c298`).
+- Read: D62, D71.4, D72, D73, F122, F127 and D77 in DECISIONS.md;
+  F5, F89, F90, D48, F98, F102, F107 and F116 in DECISIONS-archive.md
+  (F100 and F101 were located, not read in full; their fields were read from
+  the scripts); SPEC 3.4, 4.5, 5.2, 7.2, 8.1, 8.2, 8.7 and 8.8.
+- D78 was copied mechanically (`sed`) from `docs/session-86.md` lines 92 to
+  156 into DECISIONS.md lines 1856 to 1920 (heading at line 1854) and checked
+  byte-equal with `diff`, before any other edit, network call or data read.
+
+**F128.2 The recipe (Step 2).** Written out in full, with file and line
+numbers, in `notes/session-86-output.txt`. In brief: GFS 0.25 degree GRIB2
+from `noaa-gfs-bdp-pds`, by byte range from the `.idx`; the run of day D-1
+at cycle floor(H/6)x6, forecast hour 24 + (H mod 6); bilinear interpolation
+to SPEC 3.4's grid point; the elevation constant on temperature only;
+stored at 3 decimals (6 for specific humidity), D's floor after rounding,
+T from the two rounded pressures, R native at the lead-26 airports and
+de-accumulated (6 h x ave to f024 minus 4 h x ave to f022, over 2) at the
+lead-24 airports. The five earlier airports' observation is the record's
+last qualifying report; the new code and KSFO use the nearest.
+No ambiguity, and no difference between the v16-window, sealed-window,
+reserved-year and KSFO scripts that changes a value, was found. Two
+differences with no effect: the L and D v16-window scripts checked the
+validity date but not the hour (A68b-05); the KSFO scripts fetch all fields
+in one pass. The stop rule did not fire.
+
+| station | hour | cycle | lead | grid lat | grid lon | grid elev | constant (degC) | reports at | R |
+|---|---|---|---|---|---|---|---|---|---|
+| EGLC | 12 | 12z | f024 | 51.487137 | 0.000000 | 4 m | +0.2486 | :50 | de-accumulate |
+| LFPG | 12 | 12z | f024 | 49.027008 | 2.578125 | 109 m | -0.1697 | :00 | de-accumulate |
+| DSM | 18 | 18z | f024 | 41.529450 | -93.632810 | 285 m | -0.1106 | :54 | de-accumulate |
+| YSDU | 2 | 00z | f026 | -32.274643 | 148.593750 | 279 m | +0.2461 | :00 | native window |
+| RNO | 20 | 18z | f026 | 39.537918 | -119.765625 | 1344 m | +2.0436 | :55 | native window |
+| SFO (KSFO) | 20 | 18z | f026 | 37.546370 | -122.343750 | 1 m | +0.6944 | :56 | native window |
+
+The script read every value in this table from SPEC 3.4 and the two params
+CSVs; nothing is typed in. Messages per station-day: 15 at the lead-24
+airports, 14 at the lead-26 airports (783 for the sample).
+
+**F128.3 Functions copied (nothing imported from a record script; the record
+scripts were not run).**
+
+| new function | source |
+|---|---|
+| `year_fraction` | `session62_reserved_confirm.py` l.217-219 |
+| `find_range` | `session76_grib_pull.py` l.167-177 |
+| `bilinear_from_gid` | `session76_grib_pull.py` l.180-207 (record: `session49_upper_air_pull.py` l.148-171) |
+| `decode` | `session76_grib_pull.py` l.210-233, with the validity limit checked before any value is read |
+| `field_plan` (14 fields; R's second message at lead 24) | `session76_grib_pull.py` l.84-99; `session55_radiation_pull.py` l.137-141, 433-443 |
+| `derive` | `session76_build.py` l.155-198; R's de-accumulation from `session55_radiation_pull.py` l.552-562 |
+| `pair_nearest` | `session76_build.py` l.230-256 |
+| `pair_historical` (gate comparison only) | `session62_reserved_confirm.py` l.321-344 |
+| libomp loader shim | `session62_reserved_confirm.py` l.89-99 |
+
+Logic taken from the record but written new: the byte-range fetch loop, the
+IEM query (the form in any `data/raw/iem_asos_*.meta.txt`), the persistence
+lookup (`session62_reserved_confirm.py` l.394-404), the parsing of SPEC 3.4
+and the params CSVs, and all `--build` guards and writers. A tie between
+two equally near usable reports keeps the earlier one, as `session76_build.py`
+does; this is copied convention, not a new choice. The script's SHA-256 is
+in the output file.
+
+**F128.4 `--guard-check` (Step 4, run once, all six cases as specified).**
+Gate date 2026-07-31 allowed; 2026-08-01 refused. `--build` refused with no
+first-v17-cycle and no `--no-v17`; for period B ("period B needs D73.4's v17
+entry first"); when the last period-A day plus 3 days is after the run date
+(first v17 cycle 2026-11-15T00, run date 2026-09-30); and when a target date
+is on or after 2027-08-01 (first v17 cycle 2027-09-01T00, with a simulated
+run date of 2028-03-01 so that only this guard fires). No network call, no
+data read. There is no positive control for the `--build` guards, because
+`--build` is not run.
+
+**F128.5 The gate (`--gate`).** Sample as fixed in the session prompt: 9
+dates at 6 airports, 54 station-days. No station-day lacked a committed row.
+Size trial: 3 messages (514,601, 845,948 and 952,479 bytes), mean 771,009,
+projected 0.56 GiB against the 5 GiB limit.
+
+**Three gate runs, all reported.**
+- **Run 1 (started 09:45 UTC): interrupted, not a script failure.** After the
+  GRIB pull, the IEM step failed with "Could not find a suitable TLS CA
+  certificate bundle" because the whole project folder had disappeared from
+  disk while the run was going (it was later restored intact; `git status`
+  matched what it was before). Nothing was compared. Its temporary directory
+  was deleted. The cause of the folder's disappearance is not known to this
+  session; it was not this script.
+- **Run 2 (09:52 to 09:57): all comparisons passed** (below), but the writer
+  exercise failed with `ValueError: must have exactly one of create/read/
+  write/append mode`. A real bug in `write_new` (mode `"wx"`), in
+  `--build` code. Fixed (`"x"`).
+- **Run 3 (09:57 to 10:03, the whole gate again, script otherwise unchanged):
+  everything passed.** Results below are run 3's; run 2's comparison figures
+  were identical.
+
+Run 3: 978 requests (138 `.idx`, 54 IEM, 786 message ranges, of which 3 are
+the size trial); 783 of 783 GRIB messages OK, 674,387,577 bytes; 54 of 54
+rows built, 0 drops; IEM reports read per airport 430 to 432, none unusable;
+0 tie days. Pull times and every URL are in the output file.
+
+| group (columns) | pass |
+|---|---|
+| B (`temp`, `season_sin`, `season_cos`, `cloud_cover`, `wind_speed_10m`, `temperature_grib_c`) | 54 of 54 |
+| L (`lapse_rate_t2_t850`) | 54 of 54 |
+| D (`dewpoint_depression_t2m_floored`) | 54 of 54 |
+| T (`pressure_tendency_3h_hpa`) | 54 of 54 |
+| R (`dswrf_2h_wm2`) | 54 of 54 |
+| observation (`obs_c`) | 54 of 54 |
+| previous-day observation | 54 of 54 |
+
+Every one of the 12 columns is 54 of 54, and every airport is 9 of 9 in
+every group. Exact equality, no tolerance. Mismatches: 0. Pairing-only
+differences (nearest against the record's last report): 0. Station-days not
+rebuilt: 0. (The session prompt lists pairing-only differences for the
+observation; the script applies the same rule to the previous-day
+observation. None occurred.)
+
+**Plumbing check (5.4).** All 12 model files' SHA-256 equal F122.5 and
+`manifest.json`. Predictions of `B+D,L,R,T` and `B` on each committed row
+and its rebuilt row: maximum absolute difference 0 at every airport and
+model (9 station-days each). No error was computed and no prediction
+printed.
+
+**Writer exercise.** In a temporary directory outside the repo, `--build`'s
+own writers wrote the rows, manifest, drop log and 54 raw IEM files; the rows
+read back equal to the rebuilt values; a second write was refused. The
+directory was deleted.
+
+**F128.6 What `--build` will write** (all new; it refuses to run if any
+exists): `data/processed/forward2627_periodA_rows.csv` and `.meta.txt`;
+`data/raw/diagnostics/forward2627/periodA_grib_manifest.csv` and
+`periodA_drop_log.csv`; `data/raw/iem/forward2627/` (raw IEM responses, each
+with a `.meta.txt`). Arguments: `--period A`, one of `--first-v17-cycle
+YYYY-MM-DDTHH` or `--no-v17`, and `--decision`. It prints counts only. Untested
+parts of `--build`: the argument handling and the per-airport last-day
+loop run only through the guard function; its use of the shared build
+function and writers is covered by the gate.
+
+**F128.7 What this did not do.**
+- No 2026-27 value was requested or read. No message or IEM report valid on
+  or after 2026-08-01 was requested, and none was returned.
+- No `--build` run, with any arguments.
+- No model was fit. No error, MAE, bias, skill or verdict was computed. The
+  frozen models were only loaded, to compare their outputs on two identical
+  inputs.
+- Nothing was written under `data/`. `data/models/` was only read. The two
+  A67-15 DSM files were not opened.
+- No existing script was edited, and no guard was edited, bypassed or
+  disabled. SPEC.md, RESULTS.md, CLAUDE.md, README.md and
+  PROJECT-INSTRUCTIONS.md were not edited.
+- Nothing was installed. Nothing was committed and no commit message was
+  written.
