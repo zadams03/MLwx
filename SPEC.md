@@ -731,7 +731,8 @@ side, because both are time-critical.
   feed, and which fields it offers. The confidence intervals (F125) and
   the source probe (F123, F124) are done. The outcome rule is fixed in
   DECISIONS D77, and the comparison on the spent years is recorded in
-  F127.
+  F127. The direction decision is recorded in DECISIONS D78.1: option (d),
+  neither; the roadmap carries on as D72 sets it.
 - **Stage B — forward test and data collection.** Pre-register the
   2026-27 forward test of section 8's recipe on GFS, split at the GFS
   v17 go-live date (DECISIONS D72.5). For any source with no
@@ -740,6 +741,9 @@ side, because both are time-critical.
   2026-27 forward test is pre-registered in DECISIONS D73, and its models
   are frozen (F122). A comparison of those frozen models against NBM, and
   against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
+  Its data-build script exists and passed its gate (DECISIONS D78.7,
+  F128). Its scoring script and the NBM and MAV fetch exist and passed
+  their gates (DECISIONS D79, F129).
 - **Stage C — widen the target, on GFS only.** An hourly temperature
   curve, the daily maximum, and the 48-hour lead. Written with the
   weather model as a setting.

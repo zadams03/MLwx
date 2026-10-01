@@ -2088,3 +2088,321 @@ function and writers is covered by the gate.
   PROJECT-INSTRUCTIONS.md were not edited.
 - Nothing was installed. Nothing was committed and no commit message was
   written.
+
+---
+
+## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the scoring and competitor scripts (owner, planning chat)
+
+**D79. Owner decisions, planning chat (after session 86): how the
+2026-27 tests (D73, D77.6) are reported, and the scope of the scoring
+and competitor scripts (D78.7).** Written at the start of session 87,
+before any other edit, network call or data read. No 2026-27 value has
+been read or scored. This entry makes D73 and D77.6 precise where they
+leave a reporting detail open. It changes no pass rule, rung, day set
+or expectation.
+
+- **D79.1 Margin.** Where D73.6 and D77.6 say the write-up leads with
+  the smallest margin, the margin is a percentage: 100 x (1 -
+  MAE(model)/MAE(baseline)), at full precision, with the difference
+  MAE(baseline) - MAE(model) in degC shown beside it.
+  - D73: per period, the smallest over the six airports and both halves
+    of the bar (raw GFS (GRIB) and persistence), twelve values.
+  - D77.6: per period, the smallest over DSM against NBM, RNO against
+    NBM, KSFO against NBM and DSM against MAV.
+  A failing result has a negative margin, so it leads. Reason: the
+  airports' error levels differ, so a percentage compares like with
+  like; it is also the form of the record's tables (SPEC 7.4, 8.5).
+- **D79.2 Ties.** PASS needs a strictly lower MAE at full precision
+  (SPEC 5.3, D73.5, D77.6). An equal MAE is FAIL.
+- **D79.3 No days.** If an airport has no complete-case day in a period,
+  or has complete-case days but none with a previous-day observation,
+  its D73 result for that period is "no verdict (0 days)". It is neither
+  a pass nor a fail, and it is reported. D77.6's own rule for a
+  competitor with no value in a period (void) is unchanged. Otherwise
+  D73.5's rule stands: there is no minimum day count.
+- **D79.4 Labels.** Each verdict's season label is its first and last
+  target date and the calendar months it covers, for example
+  "2026-08-01 to 2026-11-10 (Aug, Sep, Oct, Nov)". NBM and MAV version
+  labels (D77.6) come from a DECISIONS entry written before that period
+  is scored, naming each version and the cycle it started from. The
+  scripts print these labels; they do not infer versions.
+- **D79.5 Intervals.** D77.6's descriptive intervals use F125's method
+  as F127 used it: 7-day moving blocks, 10,000 resamples, 95% percentile,
+  for d and skill. Each period uses a new generator,
+  numpy.random.default_rng(87), in this order: DSM against NBM, RNO
+  against NBM, KSFO against NBM, DSM against MAV. D73 reports no
+  intervals, because it did not pre-register any (D73.8: its scripts
+  implement it exactly).
+- **D79.6 Periods.** The competitor fetch and the scoring script cover
+  both periods, so neither needs editing after any 2026-27 row exists.
+  Period B is used only with the first operational v17 cycle from a
+  DECISIONS entry (D73.3), and is scored only from a period-B rows file
+  made by a later build mode that D73.4's v17 entry allows. If period B
+  is not run (D73.3) or is void (D73.4), the scripts are not run for it.
+- **D79.7 GFS v17 (planning-chat web search, 2026-09-30, not checked by
+  this session).** Still no Service Change Notice. The newest SCN listed
+  is SCN 26-87 (2026-09-22). The only v17 notices are still the April
+  proposals, PNS 26-29 and PNS 26-30. With 30 days' notice, the earliest
+  go-live is about 30 October 2026. PNS 26-30 still says the 0.25 degree
+  pgrb2 files remain; this is to be confirmed against the SCN (D73.4).
+- **D79.8 Session 87's plan.** Record this entry; write and gate the
+  competitor script and the scoring script; record F129; add citations
+  of D78, F128 and (if both gates pass) F129 to SPEC 6. Neither script's
+  2026-27 mode is run.
+
+---
+
+## 2026-09-30: Session 87 finding: the 2026-27 scoring and competitor scripts and their gates
+
+**F129. The 2026-27 scoring script and the NBM and MAV fetch script exist and
+both passed their gates. The competitor gate fetched 21 NBM and 5 MAV
+spent-year values from the archives and every one equals the session 85 file
+exactly. The scoring gate reproduced F119.3 and F127.4 with the new scoring
+core, checked the frozen-model plumbing without computing any error, and
+exercised the writers. `--fetch` and `--score` were written and never run. No
+2026-27 value was requested, read, built or scored. Scripts:
+`scripts/session87_forward_competitors.py` (new; modes `--guard-check`,
+`--gate`, `--fetch`) and `scripts/session87_forward_score.py` (new; modes
+`--guard-check`, `--gate`, `--score`). Full real output:
+`notes/session-87-output.txt`. Run 2026-09-30. Python 3.12.2, numpy 2.5.2,
+lightgbm 4.7.0, eccodes 2.48.0, requests 2.34.2.**
+
+**F129.1 Steps 0 and 1.**
+- `git status --porcelain` showed only `?? docs/session-87.md`. The last
+  entries were D78 and F128. No D79 or F129 existed in either DECISIONS file.
+  Neither new script, `notes/session-87-output.txt`, nor any file named
+  `forward2627_*` under `data/` existed.
+- SHA-256, all equal to the recorded values: `session81_training_set.csv`
+  and `data/models/session81/manifest.json` (F122); the twelve model files
+  (F122.5); `session85_competitor_points.csv` (F127.3);
+  `session78_ksfo_looks_predictions.csv` (F119.4);
+  `scripts/session62_reserved_confirm.py` (D70.2);
+  `scripts/session86_forward_build.py` (`da2ff50c...4125`, from
+  `notes/session-86-output.txt`).
+- Read: D62, D71.5, D73, F122, F125, D77, F127, D78 and F128 in
+  DECISIONS.md; D70 and F119 in DECISIONS-archive.md; SPEC 3.4, 5.2, 5.3,
+  8.5, 8.7 and 8.8; `scripts/session85_nbm_mos_comparison.py`,
+  `scripts/session83_confidence_intervals.py` and
+  `scripts/session86_forward_build.py` (read, not run).
+- D79 was copied mechanically (`sed`) from `docs/session-87.md` lines 97 to
+  152 into DECISIONS.md lines 2096 to 2151 (heading at line 2094) and checked
+  byte-equal with `diff`, before any script was written, any network call
+  was made or any model or data file was read for the gates. (Step 0's
+  SHA-256 checks and reading of the three scripts came first, as the prompt
+  orders them.)
+- Scope note. To learn the field names before writing the MAV code, one saved
+  spent-year response (`data/raw/iem_mos/session85/KDSM_GFS_20240731T18Z.json`)
+  was opened and its keys and first projection were printed. To learn the
+  file layouts, the header and first rows of `session78_ksfo_looks_predictions.csv`,
+  `session78_ksfo_looks_grid.csv`, `session85_competitor_points.csv` and
+  `session81_training_set.csv` were printed. All are spent-year values already
+  on record. Nothing was scored from them.
+
+**F129.2 Functions imported or copied.** Nothing was imported from a record
+script except in the scoring gate's G2.
+
+| new function | source |
+|---|---|
+| competitors: `cycle_and_lead` | `session85_nbm_mos_comparison.py` l.113-122 (copied) |
+| competitors: `get` (retries, spacing; adds a request log) | same file, l.285-305 (copied, `Missing` from l.281-282) |
+| competitors: `nbm_url`, `META_KEYS`, `grib_meta` | same file, l.308-310, l.313-331 (copied) |
+| competitors: `fetch_nbm` | same file, `pull_nbm` l.334-511 (adapted: a generic plan of station-days, the limit is "on or after", a drop log by reason, a message SHA-256) |
+| competitors: `fetch_mav` | same file, `pull_mav` l.514-578 (adapted: only the matched projection's `tmp` is read; the time fields of the others are read to match and to check the UTC fields; a drop log by reason) |
+| both: `load_spec_airports`, `load_spec_cycles` | `session86_forward_build.py` l.226-263 (adapted: SPEC 3.4's first table) |
+| both: `last_period_a_day` | same file, l.284-296 (copied) |
+| both: `validate_request` | same file, `validate_build_request` l.299-322 (adapted: period B allowed with a first v17 cycle) |
+| competitors: `check_gate_date` | same file, l.278-281 (copied) |
+| score: libomp loader shim | `session62_reserved_confirm.py` l.89-99 (copied) |
+| score: `bootstrap`, `N_BOOT`, `BLOCK` | `session85_nbm_mos_comparison.py` l.685-686, l.707-718 (copied; identical to `session83_confidence_intervals.py` l.407-417) |
+| score: `f109_rows` | `session85_nbm_mos_comparison.py` l.156-196 (copied, with the record module passed in) |
+| score: `load_frozen_models` | `session86_forward_build.py` `plumbing` l.1061-1084 (adapted: it also loads the boosters and the mean-bias constants) |
+| score, G2 only, imported read-only after the SHA-256 check | `session62_reserved_confirm.py`: `load_family` l.249, `load_base_unfiltered` l.299, `load_obs_all` l.321, `build_complete_case` l.347, `join_obs` l.367, `fit_and_score` l.382, and the constants `AIRPORTS` l.107, `FINAL_CODES` l.118, `FINAL_FEATURE_KEYS` l.127, `CONFIRMATION_FOLD` l.171 |
+
+Written new: the two `validate_request` argument checks, the guards and their
+cases, `d73_core`, `d77_core`, `season_label`, the row and points loaders, all
+writers, the score printing, the gate's comparison with session 85's printed
+lines (`parse_s85_notes`) and every gate step. The scripts' SHA-256 are in
+F129.7.
+
+**F129.3 `--guard-check`, both scripts (offline: no network call, no data file
+read; each run twice, once while building and once to save the output; the
+results were identical).**
+- Competitors: gate date 2026-07-31 allowed and 2026-08-01 refused. `--fetch`
+  refused with neither `--first-v17-cycle` nor `--no-v17`; for period B with
+  `--no-v17`; when the last day plus 3 days is after the run date (first v17
+  cycle 2026-11-15T00, run date 2026-09-30; the last period-A day is
+  2026-11-15 at all six airports); and when a target date is on or after
+  2027-08-01 (first v17 cycle 2027-09-01T00, simulated run date 2028-03-01).
+  An existing output file is refused, in a temporary directory outside the
+  repo, and an absent one is allowed. Positive controls (the same pure
+  function, simulated run dates): period A allowed at run date 2026-11-18
+  and refused at 2026-11-17; period B (first v17 cycle 2026-11-15T00, days
+  2026-11-16 to 2027-07-31) allowed at 2027-08-03. 11 of 11 cases behaved as
+  specified.
+- Scoring: `--score` refused with neither v17 option; for period B with
+  `--no-v17`; for period B when the period-B rows file does not exist (a path
+  check only); when the last day plus 3 days is after the run date; for a
+  period range or a rows-file date on or after 2027-08-01; for a rows-file
+  date outside its period (2026-07-31 in period A); without
+  `--nbm-versions`; when an output file exists (temporary directory); and
+  when a rows file's SHA-256 differs from `--rows-sha256` (a small temporary
+  file). Positive controls: period A allowed at run date 2026-11-18; a rows
+  file whose SHA-256 equals the value passed accepted; no output file
+  accepted. 13 of 13 cases behaved as specified.
+- The guards for `--fetch` and `--score` also refuse a missing `--decision`.
+  Their argument-handling code (`run_fetch`, `run_score`) ran only through
+  these pure functions, so it is untested end to end, as `--build` was in F128.6.
+  It was checked by reading, and by a static check for undefined names.
+
+**F129.4 The competitor gate (`--gate`, run once; 2026-09-30 12:10:24Z to
+12:11:20Z).** The session 85 points file's SHA-256 equals F127.3. The sample is
+the fixed one: DSM and RNO 2024-08-01, 2024-11-12, 2025-02-18, 2025-05-28,
+2025-07-31, and KSFO those five plus 2025-08-01, 2025-09-03, 2026-04-22,
+2026-05-06, 2026-07-29 and 2026-07-31. Every target date is on or before
+2026-07-31; the latest valid time requested was 2026-07-31 20:00 UTC; every
+message's validity was checked before its value was read.
+- **Requests and bytes.** 37 requests: 16 NBM `.idx` (165,500 B), 16 NBM
+  message ranges (26,182,145 B) and 5 MAV queries (114,323 B). 16 NBM files
+  cover the 21 values (RNO and KSFO share a file where they share a day). The
+  script does not count retries; the request log lists each answered request
+  once. No GRIB byte was kept; the temporary directory was deleted.
+- **Values.** **NBM 21 of 21 equal** to the session 85 file (exact
+  equality of the stored value). **MAV 5 of 5 equal.** Drops: none. The MAV
+  UTC fields were checked on 105 projections, none unequal (time fields only).
+- **NBM grid points**, equal to F127.3's table at 6 decimals and to each
+  stored row exactly: DSM 41.541124, 266.34249 (0.873 km); RNO 39.483896,
+  240.228363 (0.046 km); SFO 37.619643, 237.629953 (0.433 km).
+- **Version check (report only).** All 16 files carry the same 2 m
+  temperature message: name "2 metre temperature", short name `2t`, units K,
+  level height above ground 2 m, Lambert grid 2,345 x 1,597 at 2,539.703 m,
+  packing grid_complex_spatial_differencing. The `.idx` line counts are 161
+  (f024) and 114 (f026) for the cycles of 2024-07-31, 2024-11-11 and
+  2025-02-17; 164 and 117 for 2025-05-27, 2025-07-30 and later 2025 to
+  2026-04-21 cycles; and 157 (f026) for 2026-05-05, 2026-07-28 and
+  2026-07-30. The sample covers NBM v4.2, v4.3, v5.0 and v5.0.14 (D77.7,
+  F127.5).
+- **Writer exercise.** In a temporary directory outside the repo the
+  `--fetch` writers wrote the gate's points, manifest, drop log and the 5 raw
+  MAV responses; the points read back equal to the fetched values and the raw
+  responses read back byte-equal; a second write was refused. The directory
+  was deleted.
+- Runs: 1 (passed at once; no fix was needed).
+
+**F129.5 The scoring gate (`--gate`, run once; 2026-09-30 12:15:06Z to
+12:15:07Z). Offline. All four parts passed.**
+- **G1. F119.3 through the D73 core.** The KSFO predictions file's SHA-256
+  equals F119.4. Columns used, all from that file: `obs_c`, `raw_gfs_c`,
+  `persistence_c` (blank on the one day with no previous-day observation),
+  `mean_bias_c`, `B_c`, `BDLRT_c`. The core needs nothing else, so no file
+  that `session77_ksfo_looks.py` reads was opened. Every rung MAE equals
+  `session78_ksfo_looks_grid.csv` at full precision (`repr`) in both looks
+  (raw GFS, persistence, mean-bias, `B`, `B+D,L,R,T`, 5 of 5 each), and
+  every day count is equal (look A 364, persistence 363; look B 365, 365).
+  Both verdicts are PASS. Margins at 2 decimals: look A +11.83% over raw GFS
+  and +16.79% over persistence; look B +20.16% and +19.46%; all equal
+  F119.3's.
+- **G2. F127.4 through the D77.6 core.** DSM and RNO were refit by F125.1's
+  route (functions imported read-only from `session62_reserved_confirm.py`
+  after its SHA-256 check, `run_confirm()`'s steps and both guards,
+  `B+D,L,R,T` only). KSFO looks A and B used the saved predictions. The
+  competitor values are from `session85_competitor_points.csv`.
+  `numpy.random.default_rng(85)`, in F127's table order. **All five rows
+  equal the record**: n; the model, competitor and raw GFS MAEs (4
+  decimals); the three mean errors (4 decimals); d and its interval (4
+  decimals); skill and its interval (2 decimals). Precision used:
+  `notes/session-85-output.txt` prints the MAEs and mean errors at 4
+  decimals, d and its interval at 4 decimals and skill and its interval at 2
+  decimals, so those are the highest recorded precision for those figures.
+  For the model and raw GFS MAEs, the grid files record full precision, and
+  those also equal (`repr`) in all five rows. n is exact (365, 365, 364, 365,
+  365). The competitor MAEs, mean errors and intervals have no full-precision
+  record.
+- **G3. Frozen-model plumbing.** The training set's SHA-256 equals F122.3 and
+  the twelve model files and `manifest.json` equal F122.5. On the 54
+  station-days of F128's gate sample, the scoring script's own predict path
+  and a fresh `lightgbm.Booster(model_file=...).predict` on the same G15 array
+  differ by a maximum of 0.0 at every airport and both models (9
+  station-days each). No error was computed against any observation.
+- **G4. Writers.** In a temporary directory outside the repo, the `--score`
+  writers wrote G1's and G2's figures as a stand-in predictions file (744
+  rows) and scores file (101 rows). Both read back equal, with floats exact. A
+  second write was refused. The directory was deleted.
+- Runs: 1 (passed at once; no fix was needed).
+
+**F129.6 What `--fetch` and `--score` will write, and their arguments.** Both
+write only new files and refuse to run if any exists.
+- `scripts/session87_forward_competitors.py --fetch --period A|B
+  (--first-v17-cycle YYYY-MM-DDTHH | --no-v17) --decision <entry>`. Period B
+  needs `--first-v17-cycle`. It refuses to run until the run date (UTC) is at
+  least 3 days after the period's last target day at all six airports. It
+  writes `data/processed/forward2627_period{A,B}_competitor_points.csv` and
+  `.csv.meta.txt`; `data/raw/diagnostics/forward2627/period{A,B}_nbm_manifest.csv`
+  and `period{A,B}_competitor_drop_log.csv`; and
+  `data/raw/iem_mos/forward2627/period{A,B}/` (the raw MAV responses, each with
+  a `.meta.txt` giving its query and pull time). It prints counts only, never
+  a 2026-27 value.
+- `scripts/session87_forward_score.py --score --period A|B
+  (--first-v17-cycle YYYY-MM-DDTHH | --no-v17) --rows-sha256 <sha>
+  --points-sha256 <sha> --nbm-versions "<text>" --mav-versions "<text>"
+  --decision <entry>`. Same timing guard. The two SHA-256 values come from the
+  findings that record the build and the fetch; the version text is copied
+  from a DECISIONS entry written before the period is scored (D79.4). It
+  checks all twelve model files and `manifest.json` against F122.5 before
+  computing anything. It writes
+  `data/processed/forward2627_period{A,B}_predictions.csv`,
+  `forward2627_period{A,B}_scores.csv` and its `.csv.meta.txt`. It prints the
+  full D73 and D77.6 tables, the labels, and the smallest margin first in each.
+- Order of use, per period: build (`session86_forward_build.py --build`), fetch,
+  score. Period B needs a later build mode and D73.4's v17 entry first.
+
+**F129.7 SHA-256 of the two scripts (final; neither was edited after its
+gate).**
+- `scripts/session87_forward_competitors.py`:
+  `8f176562954b5b43bdf110bc292f5b04d6d728d2295df9a178d5a5ff5b23d55c`
+- `scripts/session87_forward_score.py`:
+  `5a6f32c505a5c0a39577a05f2ac82bfac31994f600fe6edbba3f1e936171de6a`
+
+**F129.8 Readings made where the prompt is silent (for the owner to confirm or
+change before period A is run).** None changes a pass rule, a rung, a day set
+or an expectation.
+- **Timing guard scope.** "At every airport" is read as all six airports, for
+  `--fetch` as well as `--score`, although `--fetch` only fetches DSM, RNO and
+  KSFO. This can only delay `--fetch`, never allow it early.
+- **Draws.** D79.5 fixes the order DSM/NBM, RNO/NBM, KSFO/NBM, DSM/MAV. A
+  comparison that is void (no competitor value) or has fewer than 7 days
+  consumes no draws, and with fewer than 7 days its intervals are not computed
+  (the block length is 7). F125 also made no draws for a failed gate.
+- **Zero-row airport.** A rows file with an unknown station code or a missing
+  column stops the run. An airport with no rows in the file is D79.3's case,
+  "no verdict (0 days)", not a stop.
+- **Season label (D79.4).** The first and last target date of the verdict's day
+  set, and every calendar month from the first to the last.
+- **Margin over persistence (D79.1).** The model's MAE on every complete-case
+  day against persistence's MAE on the days with a previous-day observation,
+  the day basis of D73.5, F119.3 and SPEC 8.5. G1 reproduces F119.3 this way.
+- **File names.** The `.meta.txt` names follow F128.6: `<file>.csv.meta.txt`.
+- **MAV projections.** Only the one matched projection's `tmp` is read. The
+  time fields of the other projections in a response are read, to match and to
+  check that the UTC fields equal the plain ones; their values are never read,
+  printed or used. In `--gate` a projection valid on or after the limit stops
+  the step; in `--fetch` the limit is applied to the projection that is used,
+  because a response for the last run of a period holds later projections by
+  design.
+- **No size trial.** `--fetch` has no projected-size stop as session 85's pull
+  had; a period needs at most a few hundred messages of about 1.5 MB.
+
+**F129.9 What this did not do.**
+- No 2026-27 value was requested, received, read, built or scored. No NBM
+  message, MOS projection or observation valid on or after 2026-08-01 was
+  requested, and none was returned. No `--fetch` or `--score` was run, with
+  any arguments.
+- No fit except G2's verification refit of DSM and RNO by F125.1's route. The
+  frozen F122 models were only loaded and used to predict. No error, MAE, bias
+  or skill was computed on the frozen models' training rows (F122.6) and none
+  on any 2026-27 row.
+- Nothing was written under `data/`. `data/models/` was only read. The two
+  A67-15 DSM files were not opened.
+- No existing script was edited and no guard was edited, bypassed or
+  disabled. No `__pycache__` file of the new scripts was kept.
+- Nothing was installed. No account was used. Nothing was committed and no
+  commit message was written.
