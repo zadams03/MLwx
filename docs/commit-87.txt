@@ -1,0 +1,46 @@
+Session 87: the 2026-27 scoring and competitor scripts (D79, F129); both gates exact
+
+D79 records the owner's decisions, written before any other edit,
+network call or data read. It fixes how D73 and D77.6 are reported,
+without changing any pass rule, rung, day set or expectation: the
+smallest margin is a percentage with the degC difference beside it; an
+equal MAE is a fail; an airport with no days gets "no verdict (0 days)";
+season labels are the date range and its months; NBM and MAV version
+labels come from a DECISIONS entry written before scoring; D77.6's
+intervals use F125's method with seed 87 per period. Both new scripts
+cover periods A and B, so neither needs editing once 2026-27 rows
+exist. D79 also notes that GFS v17 still has no Service Change Notice
+as of 2026-09-30 (newest SCN 26-87; earliest go-live about 30 October
+2026). D79 is byte-equal to the session prompt.
+
+F129 records two new scripts. scripts/session87_forward_competitors.py
+fetches D77.6's NBM values (DSM, RNO, KSFO) and MAV values (DSM) for
+2026-27. scripts/session87_forward_score.py scores D73 and D77.6 from
+the build and fetch outputs and the frozen F122 models; it checks every
+input's SHA-256 and writes once, so each period is a single look.
+Their 2026-27 modes (--fetch, --score) were written but not run. Every
+--guard-check case in both scripts behaved as specified.
+
+The competitor gate re-fetched a fixed spent-year sample covering NBM
+v4.2 to v5.0.14: 21 of 21 NBM values, 5 of 5 MAV values and all three
+NBM grid points equal session 85's points file exactly. The scoring
+gate reproduced F119.3 (KSFO, both looks: every MAE at full precision,
+every day count, both verdicts and margins) and all five rows of
+F127.4, including the seed-85 intervals at 4 decimals (d) and 2
+decimals (skill). DSM and RNO used F127.2's verification refit, the
+only fit made. The frozen models' predictions through the new script
+differ by 0 from direct prediction at all six airports; no error was
+computed on them. The writers passed, and refused to overwrite. Each
+gate ran once.
+
+F129.8 records eight readings made where the prompt was silent; the
+owner accepts them, to be recorded in the next decision entry.
+
+SPEC 6's stage A bullet now cites D78.1, and its stage B bullet cites
+D78.7, F128, D79 and F129. No 2026-27 value was requested or read.
+Nothing was written under data/. No existing script and no RESULTS or
+CLAUDE text was edited. STATUS.md is overwritten. Nothing was archived.
+
+New files: scripts/session87_forward_competitors.py,
+scripts/session87_forward_score.py, notes/session-87-output.txt,
+docs/session-87.md, docs/commit-87.txt.

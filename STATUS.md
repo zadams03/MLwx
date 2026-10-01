@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 30 September 2026, after session 86._
+_Last updated: 30 September 2026, after session 87._
 
 ---
 
@@ -24,31 +24,38 @@ conditional.
 on as D72 sets it.
 
 **Stage B: the 2026-27 GFS forward test is pre-registered (D73), its
-models are frozen (F122), and its data-build script exists and passed
-its gate (F128).**
+models are frozen (F122), and all three 2026-27 scripts exist and passed
+their gates (F128, F129).**
 
 - **Design (D73).** SPEC 8's `B+D,L,R,T`, unchanged, at all six airports.
   The test year 2026-08-01..2027-07-31 splits at the first operational GFS
   v17 cycle into period A (v16 inputs) and period B (v17 inputs,
   v16-trained model). Each period is judged separately against SPEC 5.3.
 - **Hold rule (D73.8).** No 2026-27 value is scored until its period has
-  ended and its observations are in. The owner's written decision on an
-  NBM/MOS test on 2026-27 is D77.6. Until each period is scored, its data
+  ended and its observations are in. Until each period is scored, its data
   is held out for claims (SPEC 2.5).
 - **2026-27 NBM/MOS test (D77.6), pre-registered.** The frozen F122
   models against NBM at DSM, RNO and KSFO, and against GFS MOS (MAV) at
-  DSM, per period. Separate from D73.
-- **Build script (F128).** `scripts/session86_forward_build.py`. Its gate
-  rebuilt 54 spent-year station-days (9 dates, 6 airports) from fresh
-  GRIB and IEM pulls: every value equals the committed training set
-  exactly (12 columns, 54 of 54 each), and the frozen models predict
-  identically on committed and rebuilt rows (difference 0). Its `--build`
-  mode (period A only) is written and has never been run. It runs only
-  after period A has ended and its observations are in, with the first
-  v17 cycle taken from a DECISIONS entry (D78.7).
-- **Next scripts (D78.7).** Session 87: the scoring script and D77.6's
-  NBM and MAV fetch. Both scripts are committed before any 2026-27 row
-  is built (D73.8).
+  DSM, per period. Separate from D73. D79 fixes how both tests are
+  reported: margin as a percentage with the difference beside it (D79.1),
+  an equal MAE is a fail (D79.2), "no verdict (0 days)" (D79.3), season
+  labels (D79.4), intervals with seed 87 (D79.5).
+- **The three scripts.** Each 2026-27 mode runs only after its period has
+  ended and its observations are in, in this order: build, fetch, score.
+  The first operational v17 cycle and the NBM and MAV version labels come
+  from DECISIONS entries written first.
+  1. Build: `scripts/session86_forward_build.py --build` (period A only;
+     gate passed, F128). Never run.
+  2. Fetch: `scripts/session87_forward_competitors.py --fetch` (NBM at
+     DSM, RNO, KSFO; MAV at DSM; gate passed, 21 of 21 NBM and 5 of 5 MAV
+     values equal, F129.4). Never run.
+  3. Score: `scripts/session87_forward_score.py --score` (D73 and D77.6;
+     gate reproduced F119.3 and F127.4 exactly, F129.5). Never run. It
+     needs the rows file's and points file's SHA-256 from the build and
+     fetch findings, and the version text from a DECISIONS entry (D79.4).
+     Period A's NBM label must name v5.0.15 (D78.6).
+  Period B needs a later build mode and D73.4's v17 entry first (D79.6).
+  Its arguments and outputs are in F128.6 and F129.6.
 
 **Stage A: done.** Source probe (F123), ICON route check (F124, D76.2:
 ICON is not saved), confidence intervals (F125), NBM/MOS comparison on
@@ -58,16 +65,22 @@ the spent years (F127, band MIXED), and the direction decision (D78.1).
 
 ## Open questions (live)
 
-None.
+- **F129.8's readings.** Eight readings were made where session 87's prompt
+  was silent (timing guard over all six airports; no draws for a void or
+  short comparison; a zero-row airport is "no verdict (0 days)"; the
+  season label; the persistence margin's day basis; file names; MAV
+  projection handling; no size trial in `--fetch`). The owner confirms or
+  changes them before period A is run.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D78.5).** Still no Service Change Notice as of 2026-09-29.
-  Re-check at each planning session. The go-live date sets period A's
-  length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
-  to be confirmed against the SCN (D73.4).
+- **GFS v17 (D79.7).** Still no Service Change Notice as of 2026-09-30
+  (planning-chat search; the newest SCN listed is SCN 26-87). Re-check at
+  each planning session. The go-live date sets period A's length. PNS
+  26-30's statement that the 0.25 degree GRIB2 files remain is to be
+  confirmed against the SCN (D73.4).
 - **Open item D78.2 (bias drift).** A correction that adapts to recent
   bias is a candidate build choice for stage C, tested by time-ordered
   cross-validation, identically at every airport. Nothing is decided.
@@ -89,4 +102,4 @@ None.
 
 ## Next
 
-**Next planning session:** Review session 86. Then design session 87: the 2026-27 scoring script and D77.6's NBM and MAV fetch (D78.7). Re-check GFS v17 (D78.5).
+**Next planning session:** Review session 87. Then choose the next step while period A runs: open stage C, or run D78.3's non-US competitor probe first. Re-check GFS v17 (D79.7).

@@ -1,0 +1,402 @@
+SESSION 87 OUTPUT (2026-27 scoring script and NBM/MAV fetch script; DECISIONS D79, F129)
+Run date 2026-09-30. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, eccodes 2.48.0, requests 2.34.2.
+Nothing was committed. No 2026-27 value was requested, read, built or scored. --fetch and --score were never run.
+
+==============================================================================
+STEP 0: integrity checks
+==============================================================================
+Step 0.1 git status --porcelain at the start of the session (recorded from the session's first check):
+  ?? docs/session-87.md
+
+Step 0.4 SHA-256 checks
+  data/processed/session81_training_set.csv                      ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a  F122.3: equal
+  data/models/session81/manifest.json                            03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298  F122.5: equal
+  data/models/session81/EGLC_bdlrt.txt                           d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110  F122.5: equal
+  data/models/session81/EGLC_b.txt                               fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461  F122.5: equal
+  data/models/session81/LFPG_bdlrt.txt                           ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e  F122.5: equal
+  data/models/session81/LFPG_b.txt                               257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022  F122.5: equal
+  data/models/session81/DSM_bdlrt.txt                            260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b  F122.5: equal
+  data/models/session81/DSM_b.txt                                e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c  F122.5: equal
+  data/models/session81/YSDU_bdlrt.txt                           12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3  F122.5: equal
+  data/models/session81/YSDU_b.txt                               6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51  F122.5: equal
+  data/models/session81/RNO_bdlrt.txt                            c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819  F122.5: equal
+  data/models/session81/RNO_b.txt                                8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d  F122.5: equal
+  data/models/session81/SFO_bdlrt.txt                            c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6  F122.5: equal
+  data/models/session81/SFO_b.txt                                2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3  F122.5: equal
+  data/processed/session85_competitor_points.csv                 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e  F127.3: equal
+  data/processed/session78_ksfo_looks_predictions.csv            b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e  F119.4: equal
+  scripts/session62_reserved_confirm.py                          9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  D70.2: equal
+  scripts/session86_forward_build.py                             da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125  notes/session-86-output.txt: equal
+
+Step 0.2: DECISIONS.md's last entries were D78 and F128 (F128.7 is its last block); no D79 or F129 existed in DECISIONS.md or DECISIONS-archive.md (grep found none).
+Step 0.3: no scripts/session87_*, no notes/session-87-output.txt, and no file named forward2627_* under data/ existed (ls and find found none).
+Step 0.5: read D62, D71.5, D73, F122, F125, D77, F127, D78, F128 (DECISIONS.md); D70, F119 (DECISIONS-archive.md); SPEC 3.4, 5.2, 5.3, 8.5, 8.7, 8.8;
+          scripts/session85_nbm_mos_comparison.py, session83_confidence_intervals.py, session86_forward_build.py (read, not run).
+
+==============================================================================
+STEP 1: D79 recorded
+==============================================================================
+Copied mechanically (sed) from docs/session-87.md lines 97 to 152 into DECISIONS.md lines 2096 to 2151 (heading at line 2094, '---' separator before it).
+Check: sed -n '2096,2151p' DECISIONS.md | diff - <(sed -n '97,152p' docs/session-87.md)  ->  no difference (byte-equal), checked again at the end of the session.
+
+==============================================================================
+FUNCTIONS IMPORTED OR COPIED (with source file and lines)
+==============================================================================
+**F129.2 Functions imported or copied.** Nothing was imported from a record
+script except in the scoring gate's G2.
+
+| new function | source |
+|---|---|
+| competitors: `cycle_and_lead` | `session85_nbm_mos_comparison.py` l.113-122 (copied) |
+| competitors: `get` (retries, spacing; adds a request log) | same file, l.285-305 (copied, `Missing` from l.281-282) |
+| competitors: `nbm_url`, `META_KEYS`, `grib_meta` | same file, l.308-310, l.313-331 (copied) |
+| competitors: `fetch_nbm` | same file, `pull_nbm` l.334-511 (adapted: a generic plan of station-days, the limit is "on or after", a drop log by reason, a message SHA-256) |
+| competitors: `fetch_mav` | same file, `pull_mav` l.514-578 (adapted: only the matched projection's `tmp` is read; the time fields of the others are read to match and to check the UTC fields; a drop log by reason) |
+| both: `load_spec_airports`, `load_spec_cycles` | `session86_forward_build.py` l.226-263 (adapted: SPEC 3.4's first table) |
+| both: `last_period_a_day` | same file, l.284-296 (copied) |
+| both: `validate_request` | same file, `validate_build_request` l.299-322 (adapted: period B allowed with a first v17 cycle) |
+| competitors: `check_gate_date` | same file, l.278-281 (copied) |
+| score: libomp loader shim | `session62_reserved_confirm.py` l.89-99 (copied) |
+| score: `bootstrap`, `N_BOOT`, `BLOCK` | `session85_nbm_mos_comparison.py` l.685-686, l.707-718 (copied; identical to `session83_confidence_intervals.py` l.407-417) |
+| score: `f109_rows` | `session85_nbm_mos_comparison.py` l.156-196 (copied, with the record module passed in) |
+| score: `load_frozen_models` | `session86_forward_build.py` `plumbing` l.1061-1084 (adapted: it also loads the boosters and the mean-bias constants) |
+| score, G2 only, imported read-only after the SHA-256 check | `session62_reserved_confirm.py`: `load_family` l.249, `load_base_unfiltered` l.299, `load_obs_all` l.321, `build_complete_case` l.347, `join_obs` l.367, `fit_and_score` l.382, and the constants `AIRPORTS` l.107, `FINAL_CODES` l.118, `FINAL_FEATURE_KEYS` l.127, `CONFIRMATION_FOLD` l.171 |
+
+Written new: the two `validate_request` argument checks, the guards and their
+cases, `d73_core`, `d77_core`, `season_label`, the row and points loaders, all
+writers, the score printing, the gate's comparison with session 85's printed
+lines (`parse_s85_notes`) and every gate step. The scripts' SHA-256 are in
+F129.7.
+
+
+==============================================================================
+STEP 2.3: scripts/session87_forward_competitors.py --guard-check (real output)
+==============================================================================
+SESSION 87 competitors --guard-check (offline: no network call, no data read)
+run date (UTC): 2026-09-30
+gate date guard:
+  [OK ] gate date 2026-07-31: allowed
+  [OK ] gate date 2026-08-01: REFUSED (gate date 2026-08-01 is after 2026-07-31)
+fetch guards (pure function; nothing is fetched):
+  [OK ] --fetch with neither --first-v17-cycle nor --no-v17: REFUSED (needs --first-v17-cycle (from a DECISIONS entry, D73.3) or --no-v17; run date 2026-09-30 is before the latest last day 2027-07-31 plus 3 days)
+  [OK ] --fetch --period B --no-v17: REFUSED (period B needs --first-v17-cycle: --no-v17 with --period B is refused (D73.3); EGLC: no period-B day; LFPG: no period-B day; DSM: no period-B day; YSDU: no period-B day; RNO: no period-B day; SFO: no period-B day)
+    period-A range per airport for a first v17 cycle of 2026-11-15T00: EGLC 2026-08-01..2026-11-15, LFPG 2026-08-01..2026-11-15, DSM 2026-08-01..2026-11-15, YSDU 2026-08-01..2026-11-15, RNO 2026-08-01..2026-11-15, SFO 2026-08-01..2026-11-15
+  [OK ] --fetch whose last day + 3 days is after the run date: REFUSED (run date 2026-09-30 is before the latest last day 2026-11-15 plus 3 days)
+  [OK ] --fetch with a target date on or after 2027-08-01 (simulated run date 2028-03-01): REFUSED (EGLC: last period-A target day 2027-09-01 is on or after 2027-08-01; LFPG: last period-A target day 2027-09-01 is on or after 2027-08-01; DSM: last period-A target day 2027-09-01 is on or after 2027-08-01; YSDU: last period-A target day 2027-09-01 is on or after 2027-08-01; RNO: last period-A target day 2027-09-01 is on or after 2027-08-01; SFO: last period-A target day 2027-09-01 is on or after 2027-08-01)
+positive controls (simulated run dates; the same pure function):
+  [OK ] period A, first v17 cycle 2026-11-15T00, run date 2026-11-18 (last day + 3): allowed
+  [OK ] period A, first v17 cycle 2026-11-15T00, run date 2026-11-17 (one day early): REFUSED (run date 2026-11-17 is before the latest last day 2026-11-15 plus 3 days)
+    period-B range per airport for a first v17 cycle of 2026-11-15T00: EGLC 2026-11-16..2027-07-31, LFPG 2026-11-16..2027-07-31, DSM 2026-11-16..2027-07-31, YSDU 2026-11-16..2027-07-31, RNO 2026-11-16..2027-07-31, SFO 2026-11-16..2027-07-31
+  [OK ] period B, first v17 cycle 2026-11-15T00, run date 2027-08-03: allowed
+output files already exist (temporary directory outside the repo):
+  [OK ] no output exists: allowed
+  [OK ] one output exists: REFUSED (an output file already exists: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_guard_vwvy43l0/manifest.csv)
+  temporary directory deleted: True
+all cases behaved as the session prompt's Step 2.3 says
+
+==============================================================================
+STEP 3.3: scripts/session87_forward_score.py --guard-check (real output)
+==============================================================================
+SESSION 87 score --guard-check (offline: no network call, no data file read)
+run date (UTC): 2026-09-30
+score guards (pure function; nothing is read):
+  [OK ] --score with neither --first-v17-cycle nor --no-v17: REFUSED (needs --first-v17-cycle (from a DECISIONS entry, D73.3) or --no-v17; run date 2026-09-30 is before the latest last day 2027-07-31 plus 3 days)
+  [OK ] --score --period B --no-v17: REFUSED (period B needs --first-v17-cycle: --no-v17 with --period B is refused (D73.3); EGLC: no period-B day; LFPG: no period-B day; DSM: no period-B day; YSDU: no period-B day; RNO: no period-B day; SFO: no period-B day)
+  [OK ] --score --period B when the period-B rows file does not exist: REFUSED (the period-B rows file does not exist: /Users/zacharyadams/Coding Projects/MLwx/data/processed/forward2627_periodB_rows.csv)
+    period-A range per airport for a first v17 cycle of 2026-11-15T00: EGLC 2026-08-01..2026-11-15, LFPG 2026-08-01..2026-11-15, DSM 2026-08-01..2026-11-15, YSDU 2026-08-01..2026-11-15, RNO 2026-08-01..2026-11-15, SFO 2026-08-01..2026-11-15
+  [OK ] --score whose last day + 3 days is after the run date: REFUSED (run date 2026-09-30 is before the latest last day 2026-11-15 plus 3 days)
+  [OK ] --score with a target date on or after 2027-08-01 (period range, simulated run date 2028-03-01): REFUSED (EGLC: last period-A target day 2027-09-01 is on or after 2027-08-01; LFPG: last period-A target day 2027-09-01 is on or after 2027-08-01; DSM: last period-A target day 2027-09-01 is on or after 2027-08-01; YSDU: last period-A target day 2027-09-01 is on or after 2027-08-01; RNO: last period-A target day 2027-09-01 is on or after 2027-08-01; SFO: last period-A target day 2027-09-01 is on or after 2027-08-01)
+  [OK ] a rows-file date of 2027-08-01: REFUSED (DSM: a target date 2027-08-01 is on or after 2027-08-01)
+  [OK ] a period-A rows-file date of 2026-07-31 (wrong period): REFUSED (DSM: target date 2026-07-31 is outside its period range (datetime.date(2026, 8, 1), datetime.date(2026, 11, 15)))
+  [OK ] positive control: period A, first v17 cycle 2026-11-15T00, run date 2026-11-18: allowed
+  [OK ] --score without --nbm-versions: REFUSED (needs --nbm-versions)
+output files and the rows-file SHA-256 (temporary directory outside the repo):
+  [OK ] no output exists: allowed
+  [OK ] one output exists: REFUSED (an output file already exists: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_score_guard_guyu3cvg/predictions.csv)
+  [OK ] a rows file whose SHA-256 equals --rows-sha256: allowed
+  [OK ] a rows file whose SHA-256 differs from --rows-sha256: REFUSED (rows file SHA-256 47721ddbed08259663f848ff30b14ca2f844ba8fcc7fb03f8f3074e64a76d4c5 differs from the value passed (0000000000000000000000000000000000000000000000000000000000000000))
+  temporary directory deleted: True
+all cases behaved as the session prompt's Step 3.3 says
+
+==============================================================================
+STEP 2.4: scripts/session87_forward_competitors.py --gate (run once; real output, every URL with its pull time)
+==============================================================================
+SESSION 87 competitors --gate (network; spent years only)
+gate start (UTC): 2026-09-30T12:10:24Z
+python 3.12.2, eccodes 2.48.0, requests 2.34.2
+sample: NBM 21 values (DSM 5, RNO 5, SFO 11); MAV 5 values (DSM)
+data/processed/session85_competitor_points.csv SHA-256 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e; F127.3 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e; equal: True
+temporary directory (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_gate_8taat59r
+
+NBM: files planned 16, read 16, bytes 26,182,145; values 21 of 21; drops none
+MAV: responses 5, values 5 of 5; drops none; UTC fields checked on 105 projections, unequal 0 (time fields only)
+
+comparison with the session 85 points (exact equality of the stored value; NBM grid point):
+  DSM  nbm  2024-08-01  value equal: True  grid point equal: True
+  RNO  nbm  2024-08-01  value equal: True  grid point equal: True
+  SFO  nbm  2024-08-01  value equal: True  grid point equal: True
+  DSM  nbm  2024-11-12  value equal: True  grid point equal: True
+  RNO  nbm  2024-11-12  value equal: True  grid point equal: True
+  SFO  nbm  2024-11-12  value equal: True  grid point equal: True
+  DSM  nbm  2025-02-18  value equal: True  grid point equal: True
+  RNO  nbm  2025-02-18  value equal: True  grid point equal: True
+  SFO  nbm  2025-02-18  value equal: True  grid point equal: True
+  DSM  nbm  2025-05-28  value equal: True  grid point equal: True
+  RNO  nbm  2025-05-28  value equal: True  grid point equal: True
+  SFO  nbm  2025-05-28  value equal: True  grid point equal: True
+  DSM  nbm  2025-07-31  value equal: True  grid point equal: True
+  RNO  nbm  2025-07-31  value equal: True  grid point equal: True
+  SFO  nbm  2025-07-31  value equal: True  grid point equal: True
+  SFO  nbm  2025-08-01  value equal: True  grid point equal: True
+  SFO  nbm  2025-09-03  value equal: True  grid point equal: True
+  SFO  nbm  2026-04-22  value equal: True  grid point equal: True
+  SFO  nbm  2026-05-06  value equal: True  grid point equal: True
+  SFO  nbm  2026-07-29  value equal: True  grid point equal: True
+  SFO  nbm  2026-07-31  value equal: True  grid point equal: True
+  DSM  mav  2024-08-01  value equal: True  grid point equal: n/a
+  DSM  mav  2024-11-12  value equal: True  grid point equal: n/a
+  DSM  mav  2025-02-18  value equal: True  grid point equal: n/a
+  DSM  mav  2025-05-28  value equal: True  grid point equal: n/a
+  DSM  mav  2025-07-31  value equal: True  grid point equal: n/a
+NBM values equal: 21 of 21; MAV values equal: 5 of 5
+NBM grid point against F127.3's table (6 decimals):
+  DSM: 41.541124, 266.34249 (F127.3 (41.541124, 266.34249)), distance 0.873 km, used 5; equal: True
+  RNO: 39.483896, 240.228363 (F127.3 (39.483896, 240.228363)), distance 0.046 km, used 5; equal: True
+  SFO: 37.619643, 237.629953 (F127.3 (37.619643, 237.629953)), distance 0.433 km, used 11; equal: True
+NBM version check per file read (name, units, level, grid, packing):
+  2024-07-31 18z f024: .idx lines 161; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2024-07-31 18z f026: .idx lines 114; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2024-11-11 18z f024: .idx lines 161; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2024-11-11 18z f026: .idx lines 114; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-02-17 18z f024: .idx lines 161; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-02-17 18z f026: .idx lines 114; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-05-27 18z f024: .idx lines 164; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-05-27 18z f026: .idx lines 117; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-07-30 18z f024: .idx lines 164; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-07-30 18z f026: .idx lines 117; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-07-31 18z f026: .idx lines 117; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2025-09-02 18z f026: .idx lines 117; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2026-04-21 18z f026: .idx lines 117; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2026-05-05 18z f026: .idx lines 157; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2026-07-28 18z f026: .idx lines 157; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+  2026-07-30 18z f026: .idx lines 157; message name '2 metre temperature', shortName 2t, units K, level heightAboveGround 2, grid lambert 2345x1597 dx 2539.703, packing grid_complex_spatial_differencing
+
+--- exercising the --fetch writers in the temporary directory (nothing is written under data/)
+wrote points, manifest, drop log and 5 raw MAV responses; points read back equal: True
+raw MAV responses read back byte-equal: True
+a second write refused, as required: STOP: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_gate_8taat59r/w/points.csv already exists; not overwriting (SPEC 8.7 item 5)
+
+--- every request made (pull time UTC, kind, URL, byte range, bytes)
+2026-09-30T12:10:24Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20240731/18/core/blend.t18z.core.f024.co.grib2.idx    12277
+2026-09-30T12:10:25Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20240731/18/core/blend.t18z.core.f024.co.grib2  bytes=129605137-131134043  1528907
+2026-09-30T12:10:28Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20240731/18/core/blend.t18z.core.f026.co.grib2.idx    8270
+2026-09-30T12:10:29Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20240731/18/core/blend.t18z.core.f026.co.grib2  bytes=100653211-102190161  1536951
+2026-09-30T12:10:32Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20241111/18/core/blend.t18z.core.f024.co.grib2.idx    12276
+2026-09-30T12:10:32Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20241111/18/core/blend.t18z.core.f024.co.grib2  bytes=132822403-134298652  1476250
+2026-09-30T12:10:34Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20241111/18/core/blend.t18z.core.f026.co.grib2.idx    8270
+2026-09-30T12:10:35Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20241111/18/core/blend.t18z.core.f026.co.grib2  bytes=101272253-102750566  1478314
+2026-09-30T12:10:38Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250217/18/core/blend.t18z.core.f024.co.grib2.idx    12278
+2026-09-30T12:10:39Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250217/18/core/blend.t18z.core.f024.co.grib2  bytes=131074816-132529008  1454193
+2026-09-30T12:10:41Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250217/18/core/blend.t18z.core.f026.co.grib2.idx    8273
+2026-09-30T12:10:42Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250217/18/core/blend.t18z.core.f026.co.grib2  bytes=101232404-102705986  1473583
+2026-09-30T12:10:44Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250527/18/core/blend.t18z.core.f024.co.grib2.idx    12597
+2026-09-30T12:10:45Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250527/18/core/blend.t18z.core.f024.co.grib2  bytes=136752581-138260175  1507595
+2026-09-30T12:10:48Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250527/18/core/blend.t18z.core.f026.co.grib2.idx    8593
+2026-09-30T12:10:48Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250527/18/core/blend.t18z.core.f026.co.grib2  bytes=111290738-112806118  1515381
+2026-09-30T12:10:51Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250730/18/core/blend.t18z.core.f024.co.grib2.idx    12601
+2026-09-30T12:10:51Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250730/18/core/blend.t18z.core.f024.co.grib2  bytes=138814007-140339247  1525241
+2026-09-30T12:10:54Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250730/18/core/blend.t18z.core.f026.co.grib2.idx    8597
+2026-09-30T12:10:55Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250730/18/core/blend.t18z.core.f026.co.grib2  bytes=111615292-113146346  1531055
+2026-09-30T12:10:59Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250731/18/core/blend.t18z.core.f026.co.grib2.idx    8598
+2026-09-30T12:10:59Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250731/18/core/blend.t18z.core.f026.co.grib2  bytes=110674900-112206741  1531842
+2026-09-30T12:11:01Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250902/18/core/blend.t18z.core.f026.co.grib2.idx    8602
+2026-09-30T12:11:02Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20250902/18/core/blend.t18z.core.f026.co.grib2  bytes=114871224-116401088  1529865
+2026-09-30T12:11:03Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260421/18/core/blend.t18z.core.f026.co.grib2.idx    8595
+2026-09-30T12:11:04Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260421/18/core/blend.t18z.core.f026.co.grib2  bytes=112805444-114285157  1479714
+2026-09-30T12:11:07Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260505/18/core/blend.t18z.core.f026.co.grib2.idx    11894
+2026-09-30T12:11:07Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260505/18/core/blend.t18z.core.f026.co.grib2  bytes=134088810-136251649  2162840
+2026-09-30T12:11:10Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260728/18/core/blend.t18z.core.f026.co.grib2.idx    11890
+2026-09-30T12:11:11Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260728/18/core/blend.t18z.core.f026.co.grib2  bytes=131661374-133914912  2253539
+2026-09-30T12:11:13Z  nbm idx      https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260730/18/core/blend.t18z.core.f026.co.grib2.idx    11889
+2026-09-30T12:11:13Z  nbm message  https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20260730/18/core/blend.t18z.core.f026.co.grib2  bytes=129990184-132187058  2196875
+2026-09-30T12:11:16Z  mav          https://mesonet.agron.iastate.edu/api/1/mos.json?station=KDSM&model=GFS&runtime=2024-07-31+18%3A00Z    22934
+2026-09-30T12:11:16Z  mav          https://mesonet.agron.iastate.edu/api/1/mos.json?station=KDSM&model=GFS&runtime=2024-11-11+18%3A00Z    22822
+2026-09-30T12:11:17Z  mav          https://mesonet.agron.iastate.edu/api/1/mos.json?station=KDSM&model=GFS&runtime=2025-02-17+18%3A00Z    22847
+2026-09-30T12:11:18Z  mav          https://mesonet.agron.iastate.edu/api/1/mos.json?station=KDSM&model=GFS&runtime=2025-05-27+18%3A00Z    22822
+2026-09-30T12:11:19Z  mav          https://mesonet.agron.iastate.edu/api/1/mos.json?station=KDSM&model=GFS&runtime=2025-07-30+18%3A00Z    22898
+requests: 37; by kind (count, bytes): {'nbm idx': [16, 165500], 'nbm message': [16, 26182145], 'mav': [5, 114323]}
+
+temporary directory deleted: True
+mismatches: 0
+GATE: PASSED
+gate end (UTC): 2026-09-30T12:11:20Z
+
+==============================================================================
+STEP 3.4: scripts/session87_forward_score.py --gate (run once; real output)
+==============================================================================
+SESSION 87 score --gate (offline; recorded results only; writes nothing under data/)
+gate start (UTC): 2026-09-30T12:15:06Z
+python 3.12.2, numpy 2.5.2, lightgbm 4.7.0
+==============================================================================
+G1: F119.3 (KSFO, both looks) through the D73 scoring core
+==============================================================================
+  data/processed/session78_ksfo_looks_predictions.csv SHA-256 b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e (F119.4: equal)
+  columns used, and their source (all in that file): obs_c (observation), raw_gfs_c (raw GFS),
+    persistence_c (persistence, blank on days with no previous-day observation), mean_bias_c,
+    B_c (plain B), BDLRT_c (B+D,L,R,T). The core needs nothing else, so no file that
+    session77_ksfo_looks.py reads is opened.
+
+  look A: rows 364, persistence days 363
+    raw GFS      recomputed 1.4262582417582421     recorded 1.4262582417582421     n 364 (recorded 364)  equal
+    persistence  recomputed 1.5112947658402205     recorded 1.5112947658402205     n 363 (recorded 363)  equal
+    mean-bias    recomputed 1.5000424150665357     recorded 1.5000424150665357     n 364 (recorded 364)  equal
+    B            recomputed 1.3534005468759274     recorded 1.3534005468759274     n 364 (recorded 364)  equal
+    B+D,L,R,T    recomputed 1.2575770731513778     recorded 1.2575770731513778     n 364 (recorded 364)  equal
+    verdict PASS (F119.3: PASS); margins over raw GFS 11.83% and over persistence 16.79% (F119.3: 11.83% and 16.79%): equal at 2 decimals
+
+  look B: rows 365, persistence days 365
+    raw GFS      recomputed 1.7321205479452053     recorded 1.7321205479452053     n 365 (recorded 365)  equal
+    persistence  recomputed 1.717232876712329      recorded 1.717232876712329      n 365 (recorded 365)  equal
+    mean-bias    recomputed 1.7746714296812283     recorded 1.7746714296812283     n 365 (recorded 365)  equal
+    B            recomputed 1.4653639395559965     recorded 1.4653639395559965     n 365 (recorded 365)  equal
+    B+D,L,R,T    recomputed 1.3830033790440732     recorded 1.3830033790440732     n 365 (recorded 365)  equal
+    verdict PASS (F119.3: PASS); margins over raw GFS 20.16% and over persistence 19.46% (F119.3: 20.16% and 19.46%): equal at 2 decimals
+  G1: PASSED
+
+==============================================================================
+G2: F127.4 (all five rows) through the D77.6 core and the interval function
+==============================================================================
+  scripts/session62_reserved_confirm.py SHA-256 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4 (session62_reserved_confirm.py (D70.2): equal)
+  data/processed/session78_ksfo_looks_predictions.csv SHA-256 b4b46adc266ecb5475f253e5b20d02c6505d02af2bd578426095d6ef7f8ad78e (the KSFO predictions (F119.4): equal)
+  data/processed/session85_competitor_points.csv SHA-256 681802a27338d0bafddabffdf1bd6d2168b6dd39a2460e07964340445819a63e (the session 85 points (F127.3): equal)
+  DSM and RNO: refit by F125.1's route (functions imported read-only from the record script,
+  run_confirm()'s steps and both guards, B+D,L,R,T only)
+
+  DSM (F109) vs NBM: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: MAE  model 1.4123  NBM 1.2196  raw GFS 1.7043
+    equal  recomputed: mean error (forecast - obs)  model +0.3326  NBM +0.0276  raw GFS +0.3509
+    equal  recomputed: d     = MAE(NBM) - MAE(model) = -0.1927 degC   95% [-0.3082, -0.0506]   wholly above zero: no
+    equal  recomputed: skill = 1 - model/NBM = -15.80%   95% [-26.01%, -4.00%]
+    model MAE at full precision: recomputed 1.4122847644111458 recorded 1.4122847644111458: equal
+    raw GFS MAE at full precision: recomputed 1.7043452054794521 recorded 1.7043452054794521: equal
+
+  RNO (F109) vs NBM: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: MAE  model 1.2742  NBM 1.3192  raw GFS 1.6135
+    equal  recomputed: mean error (forecast - obs)  model +0.4979  NBM +0.3149  raw GFS +0.1830
+    equal  recomputed: d     = MAE(NBM) - MAE(model) = +0.0451 degC   95% [-0.0595, +0.1562]   wholly above zero: no
+    equal  recomputed: skill = 1 - model/NBM = +3.42%   95% [-4.68%, +11.20%]
+    model MAE at full precision: recomputed 1.2741517803385958 recorded 1.2741517803385958: equal
+    raw GFS MAE at full precision: recomputed 1.6134575342465751 recorded 1.6134575342465751: equal
+
+  KSFO look A vs NBM: recorded test days 364; competitor missing on 0; n = 364
+    equal  recomputed: recorded test days 364; competitor missing on 0; n = 364
+    equal  recomputed: MAE  model 1.2576  NBM 1.0000  raw GFS 1.4263
+    equal  recomputed: mean error (forecast - obs)  model +0.7077  NBM -0.0240  raw GFS +0.4172
+    equal  recomputed: d     = MAE(NBM) - MAE(model) = -0.2575 degC   95% [-0.3821, -0.1305]   wholly above zero: no
+    equal  recomputed: skill = 1 - model/NBM = -25.75%   95% [-39.13%, -12.85%]
+    model MAE at full precision: recomputed 1.2575770731513778 recorded 1.2575770731513778: equal
+    raw GFS MAE at full precision: recomputed 1.4262582417582421 recorded 1.4262582417582421: equal
+
+  KSFO look B vs NBM: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: MAE  model 1.3830  NBM 1.3023  raw GFS 1.7321
+    equal  recomputed: mean error (forecast - obs)  model +0.5401  NBM +0.2940  raw GFS +0.6614
+    equal  recomputed: d     = MAE(NBM) - MAE(model) = -0.0807 degC   95% [-0.2197, +0.0438]   wholly above zero: no
+    equal  recomputed: skill = 1 - model/NBM = -6.19%   95% [-16.82%, +3.27%]
+    model MAE at full precision: recomputed 1.3830033790440732 recorded 1.3830033790440732: equal
+    raw GFS MAE at full precision: recomputed 1.7321205479452053 recorded 1.7321205479452053: equal
+
+  DSM (F109) vs MAV: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: recorded test days 365; competitor missing on 0; n = 365
+    equal  recomputed: MAE  model 1.4123  MAV 1.5773  raw GFS 1.7043
+    equal  recomputed: mean error (forecast - obs)  model +0.3326  MAV +0.2527  raw GFS +0.3509
+    equal  recomputed: d     = MAE(MAV) - MAE(model) = +0.1650 degC   95% [+0.0170, +0.3323]   wholly above zero: yes
+    equal  recomputed: skill = 1 - model/MAV = +10.46%   95% [+1.15%, +19.64%]
+    model MAE at full precision: recomputed 1.4122847644111458 recorded 1.4122847644111458: equal
+    raw GFS MAE at full precision: recomputed 1.7043452054794521 recorded 1.7043452054794521: equal
+  precision used per figure: model, competitor and raw GFS MAEs at 4 decimals (session 85's print) and,
+  for the model and raw GFS, at full precision against the two grid files; mean errors at 4 decimals;
+  d and its interval at 4 decimals; skill and its interval at 2 decimals; n exact.
+  G2: PASSED
+
+==============================================================================
+G3: frozen-model plumbing (no error is computed)
+==============================================================================
+  data/processed/session81_training_set.csv SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a (F122.3: equal)
+  12 model files and manifest.json equal F122.5 (13 hashes checked)
+  airport  station-days     B+D,L,R,T max abs diff     B max abs diff
+  EGLC                9                          0                  0
+  LFPG                9                          0                  0
+  DSM                 9                          0                  0
+  YSDU                9                          0                  0
+  RNO                 9                          0                  0
+  SFO                 9                          0                  0
+  G3: PASSED
+
+==============================================================================
+G4: the --score writers, in a temporary directory outside the repo
+==============================================================================
+  temporary directory (deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_score_gate_gkk9gddy
+  wrote 744 prediction rows and 101 score rows; read back equal: predictions True (floats exact True), scores True (floats exact True)
+  a second write refused, as required: STOP: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session87_score_gate_gkk9gddy/p/predictions.csv already exists; not overwriting (SPEC 8.7 item 5)
+  temporary directory deleted: True
+  G4: PASSED
+
+GATE: G1 PASSED, G2 PASSED, G3 PASSED, G4 PASSED
+gate end (UTC): 2026-09-30T12:15:07Z
+
+==============================================================================
+FINAL SHA-256 OF THE TWO SCRIPTS (neither edited after its gate)
+==============================================================================
+8f176562954b5b43bdf110bc292f5b04d6d728d2295df9a178d5a5ff5b23d55c  scripts/session87_forward_competitors.py
+5a6f32c505a5c0a39577a05f2ac82bfac31994f600fe6edbba3f1e936171de6a  scripts/session87_forward_score.py
+
+==============================================================================
+STEP 4: F129 recorded
+==============================================================================
+Appended to DECISIONS.md after D79, under '## 2026-09-30: Session 87 finding: the 2026-27 scoring and competitor scripts and their gates' (heading at line 2155).
+
+==============================================================================
+STEP 5: SPEC 6 edit (before and after)
+==============================================================================
+Stage A bullet, before (lines 733-734):
+  DECISIONS D77, and the comparison on the spent years is recorded in
+  F127.
+Stage A bullet, after (lines 733-735):
+  DECISIONS D77, and the comparison on the spent years is recorded in
+  F127. The direction decision is recorded in DECISIONS D78.1: option (d),
+  neither; the roadmap carries on as D72 sets it.
+Stage B bullet, before (line 742 ends):
+  against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
+Stage B bullet, after (lines 743 to 746):
+  against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
+  Its data-build script exists and passed its gate (DECISIONS D78.7,
+  F128). Its scoring script and the NBM and MAV fetch exist and passed
+  their gates (DECISIONS D79, F129).
+(The third sentence is included because both gates in F129 passed. git diff SPEC.md shows only these lines.)
+
+==============================================================================
+END-OF-SESSION STEPS
+==============================================================================
+2. STATUS.md was overwritten as a current-only snapshot (pruned, not appended). It ends with the sentence the prompt requires.
+
+3. CONSISTENCY CHECK (report only; nothing fixed silently)
+Re-read: SPEC.md, STATUS.md (new), DECISIONS.md (with D79 and F129).
+- Duplicated headings (checked by script for #, ## and ### headings): none in SPEC.md (9 headings), STATUS.md (5) or DECISIONS.md (19).
+- Entry order in DECISIONS.md: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 F124 F125 D76 D77 F127 D78 F128 D79 F129. Ascending in number; the dated headings are ascending (last four: 2026-09-30 Session 86 decision, Session 86 finding, Session 87 decision, Session 87 finding). No entry out of order.
+- D79 in DECISIONS.md is still byte-equal to docs/session-87.md lines 97 to 152.
+- SPEC 6 now cites D78.1, D78.7, F128, D79 and F129. STATUS.md and DECISIONS.md agree on the state: three 2026-27 scripts, all gated; nothing run; order build, fetch, score.
+- STATUS.md 'Open questions' now lists F129.8's eight readings (it read 'None' after session 86). This is deliberate: the readings are live questions for the owner. The count was first written as seven and corrected to eight against F129.8's list, before this check.
+- The session prompt says each output has a '.meta.txt'. The scripts name it '<file>.csv.meta.txt', as F128.6 did for the build script. Recorded in F129.8.
+- Session prompt Step 3.2 lists 'a station or column is missing' as a stop. D79.3 says an airport with no complete-case day gets 'no verdict (0 days)'. The script stops on an unknown station code or a missing column, and treats an airport with no rows as D79.3's case. Recorded in F129.8.
+- D79.4 says the NBM and MAV version labels come from a DECISIONS entry written before the period is scored. STATUS notes that period A's NBM label must name v5.0.15 (D78.6). No such entry exists yet: it is a task before scoring, not a disagreement.
+- D79.6 says period B is scored only from a period-B rows file made by a later build mode. No such mode exists yet (session 86's --build is period A only). STATUS says so. Not a disagreement.
+- Older dated headings in DECISIONS.md use an em-dash; from session 84 on they use a colon. D76.6 leaves existing text alone. No em-dash was added by this session (checked in DECISIONS.md's added lines, SPEC.md's added lines and both scripts).
+- F129.8 records eight readings made where the prompt was silent; the owner decides.
+
+4. ARCHIVE STEP
+Nothing moved. D72, D73, F122, D77, F127, D78, F128, D79 and F129 stay live by the session prompt. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125, D76) were kept live on the same assessment session 86 made; this session did not re-derive it entry by entry. Several are still cited by live text (F123.3 and F124.2 and D76.2 by STATUS's carried items; D71.4 and D71.5 by D73, D78 and D79; D62.7 by D73.10; F125 by F127 and F129), and none became settled this session, so under the criterion 'when in doubt, keep it live' none was moved.
+
+5. Stopped. Nothing committed. No commit message written.
