@@ -1,0 +1,684 @@
+SESSION 88 OUTPUT: the non-US competitor probe (D78.3, D80). Run date 2026-10-01.
+No forecast value is printed, recorded or saved anywhere in this file.
+
+PART A. Step 0 and Step 1
+-------------------------
+Step 0.1  git status --porcelain  ->  "?? docs/session-88.md"  (only that line).
+Step 0.2  DECISIONS.md last entries were D79 and F129 (heading at line 2155 was the last).
+          grep for "**D80." and "**F130." in DECISIONS.md and DECISIONS-archive.md: no match.
+Step 0.3  scripts/session88_competitor_probe.py and notes/session-88-output.txt did not exist.
+Step 0.4  Read: D72 (D72.3, D72.8), D77.1, D77.2, D78 (D78.1, D78.3), F123, F124, D76.2, and SPEC 3.4, 4.1, 7.2.
+Step 1    D80 appended to DECISIONS.md. Heading at line 2412, body (copied with sed from docs/session-88.md
+          lines 91 to 148) at DECISIONS.md lines 2414 to 2471. Checked with diff: BYTE-EQUAL (no difference).
+          Done before any other edit and before any network call.
+
+PART B. Helper script
+---------------------
+scripts/session88_competitor_probe.py  SHA-256 e168a0c8d07bade5e27e8539bc7704bae9eed078f87832f8a814a7a56368c214
+It was executed five times while being fixed (see Part E). Part C is the output of the last run, unedited.
+
+PART C. Output of the last run of the helper script (verbatim)
+--------------------------------------------------------------
+Session 88 MOSMIX probe. Started 2026-10-01T16:32:55Z. Python 3.12.2, requests 2.34.2
+Metadata only: no forecast value is printed, recorded or saved.
+
+===== 2.1 Listings =====
+
+MOSMIX_L all stations (first listing)
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/all_stations/kml/  accessed 2026-10-01T16:32:56Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921.kmz                  server time 29-Sep-2026 22:12:24   79867555 bytes
+    MOSMIX_L_2026093003.kmz                  server time 30-Sep-2026 04:16:04   80611107 bytes
+    MOSMIX_L_2026093009.kmz                  server time 30-Sep-2026 10:12:24   80607627 bytes
+    MOSMIX_L_2026093015.kmz                  server time 30-Sep-2026 16:16:19   80768779 bytes
+    MOSMIX_L_2026093021.kmz                  server time 30-Sep-2026 22:13:33   81196304 bytes
+    MOSMIX_L_2026100103.kmz                  server time 01-Oct-2026 04:16:19   81750921 bytes
+    MOSMIX_L_2026100109.kmz                  server time 01-Oct-2026 10:13:19   81961411 bytes
+    MOSMIX_L_2026100115.kmz                  server time 01-Oct-2026 16:15:48   82156958 bytes
+    MOSMIX_L_LATEST.kmz                      server time 01-Oct-2026 16:15:48   82156958 bytes
+
+MOSMIX_S all stations
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/  accessed 2026-10-01T16:32:57Z  HTTP 200
+  issue files: 48 (plus 1 other entries: ['MOSMIX_S_LATEST_240.kmz'])
+  oldest issue 2026-09-29 16Z, newest issue 2026-10-01 15Z, span 47 h
+    MOSMIX_S_2026092916_240.kmz              server time 29-Sep-2026 16:41:05   37024970 bytes
+    MOSMIX_S_2026092917_240.kmz              server time 29-Sep-2026 17:40:11   36978704 bytes
+    MOSMIX_S_2026092918_240.kmz              server time 29-Sep-2026 18:39:49   36901821 bytes
+    MOSMIX_S_2026092919_240.kmz              server time 29-Sep-2026 19:39:37   37023003 bytes
+    MOSMIX_S_2026092920_240.kmz              server time 29-Sep-2026 20:39:33   37003929 bytes
+    MOSMIX_S_2026092921_240.kmz              server time 29-Sep-2026 21:40:14   36998695 bytes
+    MOSMIX_S_2026092922_240.kmz              server time 29-Sep-2026 22:40:37   37145783 bytes
+    MOSMIX_S_2026092923_240.kmz              server time 29-Sep-2026 23:39:34   37161085 bytes
+    MOSMIX_S_2026093000_240.kmz              server time 30-Sep-2026 00:39:20   37081936 bytes
+    MOSMIX_S_2026093001_240.kmz              server time 30-Sep-2026 01:39:25   37169097 bytes
+    MOSMIX_S_2026093002_240.kmz              server time 30-Sep-2026 02:41:38   37131756 bytes
+    MOSMIX_S_2026093003_240.kmz              server time 30-Sep-2026 03:40:34   37120574 bytes
+    MOSMIX_S_2026093004_240.kmz              server time 30-Sep-2026 04:41:14   37209308 bytes
+    MOSMIX_S_2026093005_240.kmz              server time 30-Sep-2026 05:39:49   37162983 bytes
+    MOSMIX_S_2026093006_240.kmz              server time 30-Sep-2026 06:40:08   37120118 bytes
+    MOSMIX_S_2026093007_240.kmz              server time 30-Sep-2026 07:39:54   37238787 bytes
+    MOSMIX_S_2026093008_240.kmz              server time 30-Sep-2026 08:40:38   37224180 bytes
+    MOSMIX_S_2026093009_240.kmz              server time 30-Sep-2026 09:39:52   37207276 bytes
+    MOSMIX_S_2026093010_240.kmz              server time 30-Sep-2026 10:40:47   37291275 bytes
+    MOSMIX_S_2026093011_240.kmz              server time 30-Sep-2026 11:39:37   37290078 bytes
+    MOSMIX_S_2026093012_240.kmz              server time 30-Sep-2026 12:39:20   37200435 bytes
+    MOSMIX_S_2026093013_240.kmz              server time 30-Sep-2026 13:39:16   37271011 bytes
+    MOSMIX_S_2026093014_240.kmz              server time 30-Sep-2026 14:40:09   37206596 bytes
+    MOSMIX_S_2026093015_240.kmz              server time 30-Sep-2026 15:40:32   37150752 bytes
+    MOSMIX_S_2026093016_240.kmz              server time 30-Sep-2026 16:41:31   37229221 bytes
+    MOSMIX_S_2026093017_240.kmz              server time 30-Sep-2026 17:39:52   37182771 bytes
+    MOSMIX_S_2026093018_240.kmz              server time 30-Sep-2026 18:39:54   37097269 bytes
+    MOSMIX_S_2026093019_240.kmz              server time 30-Sep-2026 19:40:13   37223874 bytes
+    MOSMIX_S_2026093020_240.kmz              server time 30-Sep-2026 20:40:11   37209799 bytes
+    MOSMIX_S_2026093021_240.kmz              server time 30-Sep-2026 21:40:17   37186863 bytes
+    MOSMIX_S_2026093022_240.kmz              server time 30-Sep-2026 22:40:34   37430922 bytes
+    MOSMIX_S_2026093023_240.kmz              server time 30-Sep-2026 23:39:11   37437205 bytes
+    MOSMIX_S_2026100100_240.kmz              server time 01-Oct-2026 00:39:17   37355354 bytes
+    MOSMIX_S_2026100101_240.kmz              server time 01-Oct-2026 01:39:37   37433821 bytes
+    MOSMIX_S_2026100102_240.kmz              server time 01-Oct-2026 02:40:32   37388101 bytes
+    MOSMIX_S_2026100103_240.kmz              server time 01-Oct-2026 03:40:37   37355645 bytes
+    MOSMIX_S_2026100104_240.kmz              server time 01-Oct-2026 04:41:06   37395857 bytes
+    MOSMIX_S_2026100105_240.kmz              server time 01-Oct-2026 05:40:28   37350076 bytes
+    MOSMIX_S_2026100106_240.kmz              server time 01-Oct-2026 06:40:08   37294442 bytes
+    MOSMIX_S_2026100107_240.kmz              server time 01-Oct-2026 07:39:48   37416599 bytes
+    MOSMIX_S_2026100108_240.kmz              server time 01-Oct-2026 08:40:32   37403929 bytes
+    MOSMIX_S_2026100109_240.kmz              server time 01-Oct-2026 09:40:14   37391648 bytes
+    MOSMIX_S_2026100110_240.kmz              server time 01-Oct-2026 10:40:38   37616549 bytes
+    MOSMIX_S_2026100111_240.kmz              server time 01-Oct-2026 11:39:36   37617981 bytes
+    MOSMIX_S_2026100112_240.kmz              server time 01-Oct-2026 12:39:21   37522818 bytes
+    MOSMIX_S_2026100113_240.kmz              server time 01-Oct-2026 13:39:32   37591125 bytes
+    MOSMIX_S_2026100114_240.kmz              server time 01-Oct-2026 14:39:58   37532554 bytes
+    MOSMIX_S_2026100115_240.kmz              server time 01-Oct-2026 15:40:49   37480319 bytes
+    MOSMIX_S_LATEST_240.kmz                  server time 01-Oct-2026 15:40:49   37480319 bytes
+
+===== 2.4 Stations =====
+Catalogue https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationskatalog.cfg?view=nasPublication
+  accessed 2026-10-01T16:32:58Z, 299502 bytes, 5649 data lines, 5649 parsed
+  The cfg gives latitude and longitude as degrees.minutes (DWD procedure doc 9.1); converted here.
+  EGLC: airport 51.5053, 0.0553, 5 m
+         7.69 km  ID P0478  ICAO EGLC  LONDON/CITY INTL  cfg 51.29,-0.03 (= 51.4833,-0.0500)  5 m  height difference +0 m
+        10.82 km  ID 03779  ICAO EGRB  LONDON WEATHER CENT.  cfg 51.31,-0.06 (= 51.5167,-0.1000)  43 m  height difference +38 m
+        24.77 km  ID 03781  ICAO ----  KENLEY  cfg 51.18,-0.05 (= 51.3000,-0.0833)  170 m  height difference +165 m
+  LFPG: airport 49.0153, 2.5344, 109 m
+         0.17 km  ID 07157  ICAO LFPG  PARIS CH.D.GAULLE  cfg 49.01,2.32 (= 49.0167,2.5333)  108 m  height difference -1 m
+         9.14 km  ID 07150  ICAO LFPB  PARIS-LE BOURGET  cfg 48.58,2.26 (= 48.9667,2.4333)  67 m  height difference -42 m
+        32.86 km  ID 07149  ICAO LFPO  PARIS  cfg 48.44,2.24 (= 48.7333,2.4000)  89 m  height difference -20 m
+  DSM: airport 41.534, -93.6531, 294 m
+         0.27 km  ID 72546  ICAO KDSM  DES MOINES/MUN. IA.  cfg 41.32,-93.39 (= 41.5333,-93.6500)  294 m  height difference +0 m
+       193.27 km  ID 72554  ICAO KOFF  OMAHA/OFFUTT AFB.  cfg 41.07,-95.54 (= 41.1167,-95.9000)  315 m  height difference +21 m
+       262.44 km  ID 72547  ICAO KDBQ  DUBUQUE/MUN. IA.  cfg 42.24,-90.42 (= 42.4000,-90.7000)  328 m  height difference +34 m
+  YSDU: airport -32.2167, 148.5747, 275 m
+       221.75 km  ID 94743  ICAO ----  MOUNT BOYCE AWS.  cfg -33.37,150.16 (= -33.6167,150.2667)  1080 m  height difference +805 m
+       307.07 km  ID 94768  ICAO ----  SYDNEY  cfg -33.52,151.13 (= -33.8667,151.2167)  39 m  height difference -236 m
+       310.16 km  ID 94767  ICAO YSSY  SYDNEY AIRPORT  cfg -33.57,151.11 (= -33.9500,151.1833)  6 m  height difference -269 m
+  RNO: airport 39.4839, -119.7711, 1345 m
+         2.08 km  ID 72488  ICAO KRNO  RENO  cfg 39.30,-119.47 (= 39.5000,-119.7833)  1344 m  height difference -1 m
+       179.04 km  ID 72482  ICAO KSMF  SACRAMENTO INT.  cfg 38.42,-121.35 (= 38.7000,-121.5833)  7 m  height difference -1338 m
+       217.92 km  ID 72492  ICAO KSCK  STOCKTON METRO. CA.  cfg 37.54,-121.15 (= 37.9000,-121.2500)  8 m  height difference -1337 m
+  SFO: airport 37.619, -122.3749, 5 m
+         0.79 km  ID 72494  ICAO KSFO  SAN FRANCISCO  cfg 37.37,-122.23 (= 37.6167,-122.3833)  6 m  height difference +1 m
+        20.15 km  ID 72493  ICAO KOAK  OAKLAND INT.  cfg 37.45,-122.13 (= 37.7500,-122.2167)  4 m  height difference -1 m
+        48.01 km  ID 72388  ICAO KSJC  SAN JOSE INT.  cfg 37.22,-121.56 (= 37.3667,-121.9333)  18 m  height difference +13 m
+  YSDU: no station within 10 km (nearest above); no single-station directory to check.
+
+Single-station directories:
+  https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/ HTTP 200, 6045 station directories listed
+
+single station P0478 (EGLC), in the index
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/  accessed 2026-10-01T16:33:01Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST_P0478.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921_P0478.kmz            server time 29-Sep-2026 22:12:25   16585 bytes
+    MOSMIX_L_2026093003_P0478.kmz            server time 30-Sep-2026 04:16:04   16859 bytes
+    MOSMIX_L_2026093009_P0478.kmz            server time 30-Sep-2026 10:12:19   16554 bytes
+    MOSMIX_L_2026093015_P0478.kmz            server time 30-Sep-2026 16:16:19   16463 bytes
+    MOSMIX_L_2026093021_P0478.kmz            server time 30-Sep-2026 22:13:35   16485 bytes
+    MOSMIX_L_2026100103_P0478.kmz            server time 01-Oct-2026 04:16:19   16772 bytes
+    MOSMIX_L_2026100109_P0478.kmz            server time 01-Oct-2026 10:13:19   16610 bytes
+    MOSMIX_L_2026100115_P0478.kmz            server time 01-Oct-2026 16:15:48   16705 bytes
+    MOSMIX_L_LATEST_P0478.kmz                server time 01-Oct-2026 16:15:48   16705 bytes
+
+single station 07157 (LFPG), in the index
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/  accessed 2026-10-01T16:33:01Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST_07157.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921_07157.kmz            server time 29-Sep-2026 22:12:24   17699 bytes
+    MOSMIX_L_2026093003_07157.kmz            server time 30-Sep-2026 04:16:04   17959 bytes
+    MOSMIX_L_2026093009_07157.kmz            server time 30-Sep-2026 10:12:19   17531 bytes
+    MOSMIX_L_2026093015_07157.kmz            server time 30-Sep-2026 16:16:19   17558 bytes
+    MOSMIX_L_2026093021_07157.kmz            server time 30-Sep-2026 22:13:35   17780 bytes
+    MOSMIX_L_2026100103_07157.kmz            server time 01-Oct-2026 04:16:19   17608 bytes
+    MOSMIX_L_2026100109_07157.kmz            server time 01-Oct-2026 10:13:19   17783 bytes
+    MOSMIX_L_2026100115_07157.kmz            server time 01-Oct-2026 16:15:48   17908 bytes
+    MOSMIX_L_LATEST_07157.kmz                server time 01-Oct-2026 16:15:48   17908 bytes
+
+single station 72546 (DSM), in the index
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72546/kml/  accessed 2026-10-01T16:33:02Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST_72546.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921_72546.kmz            server time 29-Sep-2026 22:12:24   11203 bytes
+    MOSMIX_L_2026093003_72546.kmz            server time 30-Sep-2026 04:16:04   11100 bytes
+    MOSMIX_L_2026093009_72546.kmz            server time 30-Sep-2026 10:12:19   11134 bytes
+    MOSMIX_L_2026093015_72546.kmz            server time 30-Sep-2026 16:16:19   11004 bytes
+    MOSMIX_L_2026093021_72546.kmz            server time 30-Sep-2026 22:13:35   11065 bytes
+    MOSMIX_L_2026100103_72546.kmz            server time 01-Oct-2026 04:16:19   10837 bytes
+    MOSMIX_L_2026100109_72546.kmz            server time 01-Oct-2026 10:13:19   10891 bytes
+    MOSMIX_L_2026100115_72546.kmz            server time 01-Oct-2026 16:15:48   10771 bytes
+    MOSMIX_L_LATEST_72546.kmz                server time 01-Oct-2026 16:15:48   10771 bytes
+
+single station 72488 (RNO), in the index
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72488/kml/  accessed 2026-10-01T16:33:03Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST_72488.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921_72488.kmz            server time 29-Sep-2026 22:12:23   8938 bytes
+    MOSMIX_L_2026093003_72488.kmz            server time 30-Sep-2026 04:16:04   8961 bytes
+    MOSMIX_L_2026093009_72488.kmz            server time 30-Sep-2026 10:12:19   9000 bytes
+    MOSMIX_L_2026093015_72488.kmz            server time 30-Sep-2026 16:16:19   8993 bytes
+    MOSMIX_L_2026093021_72488.kmz            server time 30-Sep-2026 22:13:35   9044 bytes
+    MOSMIX_L_2026100103_72488.kmz            server time 01-Oct-2026 04:16:19   9114 bytes
+    MOSMIX_L_2026100109_72488.kmz            server time 01-Oct-2026 10:13:19   9208 bytes
+    MOSMIX_L_2026100115_72488.kmz            server time 01-Oct-2026 16:15:48   9235 bytes
+    MOSMIX_L_LATEST_72488.kmz                server time 01-Oct-2026 16:15:48   9235 bytes
+
+single station 72494 (SFO), in the index
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72494/kml/  accessed 2026-10-01T16:33:04Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST_72494.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921_72494.kmz            server time 29-Sep-2026 22:12:24   10013 bytes
+    MOSMIX_L_2026093003_72494.kmz            server time 30-Sep-2026 04:16:04   10083 bytes
+    MOSMIX_L_2026093009_72494.kmz            server time 30-Sep-2026 10:12:19   10177 bytes
+    MOSMIX_L_2026093015_72494.kmz            server time 30-Sep-2026 16:16:19   10108 bytes
+    MOSMIX_L_2026093021_72494.kmz            server time 30-Sep-2026 22:13:35   10065 bytes
+    MOSMIX_L_2026100103_72494.kmz            server time 01-Oct-2026 04:16:19   10145 bytes
+    MOSMIX_L_2026100109_72494.kmz            server time 01-Oct-2026 10:13:19   10198 bytes
+    MOSMIX_L_2026100115_72494.kmz            server time 01-Oct-2026 16:15:48   10190 bytes
+    MOSMIX_L_LATEST_72494.kmz                server time 01-Oct-2026 16:15:48   10190 bytes
+
+===== 2.3 / 2.5 KML headers (names, times, positions only) =====
+
+  MOSMIX_L_2026092921_P0478.kmz  HTTP 200  16585 bytes
+    IssueTime 2026-09-29T21:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-29T12:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+    time steps 247: first 2026-09-29T22:00:00.000Z, second 2026-09-29T23:00:00.000Z, last 2026-10-10T04:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093003_P0478.kmz  HTTP 200  16859 bytes
+    IssueTime 2026-09-30T03:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+    time steps 247: first 2026-09-30T04:00:00.000Z, second 2026-09-30T05:00:00.000Z, last 2026-10-10T10:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093009_P0478.kmz  HTTP 200  16554 bytes
+    IssueTime 2026-09-30T09:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+    time steps 247: first 2026-09-30T10:00:00.000Z, second 2026-09-30T11:00:00.000Z, last 2026-10-10T16:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093015_P0478.kmz  HTTP 200  16463 bytes
+    IssueTime 2026-09-30T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+    time steps 247: first 2026-09-30T16:00:00.000Z, second 2026-09-30T17:00:00.000Z, last 2026-10-10T22:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093021_P0478.kmz  HTTP 200  16485 bytes
+    IssueTime 2026-09-30T21:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    time steps 247: first 2026-09-30T22:00:00.000Z, second 2026-09-30T23:00:00.000Z, last 2026-10-11T04:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100103_P0478.kmz  HTTP 200  16772 bytes
+    IssueTime 2026-10-01T03:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    time steps 247: first 2026-10-01T04:00:00.000Z, second 2026-10-01T05:00:00.000Z, last 2026-10-11T10:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100109_P0478.kmz  HTTP 200  16610 bytes
+    IssueTime 2026-10-01T09:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T00:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T10:00:00.000Z, second 2026-10-01T11:00:00.000Z, last 2026-10-11T16:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100115_P0478.kmz  HTTP 200  16705 bytes
+    IssueTime 2026-10-01T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T22:00:00.000Z
+    placemark P0478 'LONDON/CITY INTL' coordinates (lon,lat,elev) -0.05,51.48,5.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026092921_07157.kmz  HTTP 200  17699 bytes
+    IssueTime 2026-09-29T21:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-29T12:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+    time steps 247: first 2026-09-29T22:00:00.000Z, second 2026-09-29T23:00:00.000Z, last 2026-10-10T04:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093003_07157.kmz  HTTP 200  17959 bytes
+    IssueTime 2026-09-30T03:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+    time steps 247: first 2026-09-30T04:00:00.000Z, second 2026-09-30T05:00:00.000Z, last 2026-10-10T10:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093009_07157.kmz  HTTP 200  17531 bytes
+    IssueTime 2026-09-30T09:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+    time steps 247: first 2026-09-30T10:00:00.000Z, second 2026-09-30T11:00:00.000Z, last 2026-10-10T16:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093015_07157.kmz  HTTP 200  17558 bytes
+    IssueTime 2026-09-30T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+    time steps 247: first 2026-09-30T16:00:00.000Z, second 2026-09-30T17:00:00.000Z, last 2026-10-10T22:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026093021_07157.kmz  HTTP 200  17780 bytes
+    IssueTime 2026-09-30T21:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    time steps 247: first 2026-09-30T22:00:00.000Z, second 2026-09-30T23:00:00.000Z, last 2026-10-11T04:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100103_07157.kmz  HTTP 200  17608 bytes
+    IssueTime 2026-10-01T03:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    time steps 247: first 2026-10-01T04:00:00.000Z, second 2026-10-01T05:00:00.000Z, last 2026-10-11T10:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100109_07157.kmz  HTTP 200  17783 bytes
+    IssueTime 2026-10-01T09:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T00:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T10:00:00.000Z, second 2026-10-01T11:00:00.000Z, last 2026-10-11T16:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100115_07157.kmz  HTTP 200  17908 bytes
+    IssueTime 2026-10-01T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T22:00:00.000Z
+    placemark 07157 'PARIS CH.D.GAULLE' coordinates (lon,lat,elev) 2.53,49.02,108.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100115_72546.kmz  HTTP 200  10771 bytes
+    IssueTime 2026-10-01T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T22:00:00.000Z
+    placemark 72546 'DES MOINES/MUN. IA.' coordinates (lon,lat,elev) -93.65,41.53,294.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100115_72488.kmz  HTTP 200  9235 bytes
+    IssueTime 2026-10-01T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T22:00:00.000Z
+    placemark 72488 'RENO' coordinates (lon,lat,elev) -119.78,39.5,1344.0
+    elements 114; TTT present: True
+
+  MOSMIX_L_2026100115_72494.kmz  HTTP 200  10190 bytes
+    IssueTime 2026-10-01T15:00:00.000Z  process 'DWD MOSMIX hourly, Version 1.0'
+    ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+    time steps 247: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T22:00:00.000Z
+    placemark 72494 'SAN FRANCISCO' coordinates (lon,lat,elev) -122.38,37.62,6.0
+    elements 114; TTT present: True
+
+  Distance from the SPEC 3.4 airport position, using the KML position (decimal degrees):
+    EGLC -> P0478: 7.81 km, height difference +0 m
+    LFPG -> 07157: 0.61 km, height difference -1 m
+    DSM -> 72546: 0.51 km, height difference +0 m
+    RNO -> 72488: 1.95 km, height difference -1 m
+    SFO -> 72494: 0.46 km, height difference +1 m
+
+  Element list of one MOSMIX_L file (114 names): PPPP, E_PPP, TX, TTT, E_TTT, Td, E_Td, TN, TG, TM, T5cm, DD, E_DD, FF, E_FF, FX1, FX3, FX625, FX640, FX655, FXh, FXh25, FXh40, FXh55, N, Neff, Nlm, Nh, Nm, Nl, N05, VV, VV10, wwM, wwM6, wwMh, wwMd, ww, ww3, W1W2, wwP, wwP6, wwPh, wwPd, wwZ, wwZ6, wwZh, wwD, wwD6, wwDh, wwC, wwC6, wwCh, wwT, wwT6, wwTh, wwTd, wwS, wwS6, wwSh, wwL, wwL6, wwLh, wwF, wwF6, wwFh, DRR1, RR6c, RRhc, RRdc, RR1c, RRS1c, RRL1c, RR3c, RRS3c, R101, R102, R103, R105, R107, R110, R120, R130, R150, RR1o1, RR1w1, RR1u1, R600, R602, R610, R650, Rh00, Rh02, Rh10, Rh50, Rd00, Rd02, Rd10, Rd50, SunD, RSunD, PSd00, PSd30, PSd60, RRad1, Rad1h, SunD1, SunD3, PEvap, WPc11, WPc31, WPc61, WPch1, WPcd1
+
+===== 2.3 MetElementDefinition.xml: TTT =====
+  https://opendata.dwd.de/weather/lib/MetElementDefinition.xml accessed 2026-10-01T16:34:09Z HTTP 200 26484 bytes
+   {'ShortName': 'TTT', 'UnitOfMeasurement': 'K', 'Description': 'Temperature 2m above surface'}
+   {'ShortName': 'E_TTT', 'UnitOfMeasurement': 'K', 'Description': 'Absolute error temperature 2m above surface'}
+
+===== 2.4 Station parameter list (main or interpolation) =====
+  https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationsparameterliste.xlsx?__blob=publicationFile&v=8 accessed 2026-10-01T16:34:11Z 3132720 bytes; sheet 'MOSMIX-Stationen ab 06-2026'
+  Legend (procedure documentation, Annex A, table A.2): +++ nearly hourly forecasts from MOS equations;
+  ++ nearly 3-hourly from MOS equations; ooo nearly hourly from interpolated equations; ++o nearly hourly,
+  of which nearly 3-hourly from MOS equations (the rest interpolated); empty = element not forecast.
+  Columns: {'A': 'ID', 'B': 'name', 'C': 'lon', 'D': 'lat', 'E': 'elev', 'F': 'Geändert', 'G': 'CofX', 'H': 'TTT', 'I': 'Td', 'J': 'T5cm', 'K': 'PPPP', 'L': 'FF', 'M': 'FX1', 'N': 'FX3', 'O': 'DD', 'P': 'RR1', 'Q': 'RR3', 'R': 'wwP', 'S': 'N', 'T': 'SunD1', 'U': 'Rad1h', 'V': 'ww', 'W': 'wwT3'}
+  EGLC P0478 'LONDON/CITY INTL': changed since previous version = Nein; TTT symbol 'ooo'; symbols across the other 15 elements ['ooo']
+  LFPG 07157 'PARIS CH.D.GAULLE': changed since previous version = Nein; TTT symbol '+++'; symbols across the other 15 elements ['+++', '++o']
+  DSM 72546 'DES MOINES/MUN. IA.': changed since previous version = Nein; TTT symbol '++o'; symbols across the other 15 elements ['++o']
+  RNO 72488 'RENO': changed since previous version = Nein; TTT symbol '++o'; symbols across the other 15 elements ['++o', '+oo']
+  SFO 72494 'SAN FRANCISCO': changed since previous version = Nein; TTT symbol '++o'; symbols across the other 15 elements ['++', '++o', '+o']
+
+===== 2.2 / 2.3 MOSMIX_S, one all-stations file =====
+  newest dated file MOSMIX_S_2026100115_240.kmz server time 01-Oct-2026 15:40:49 size 37480319 bytes (limit 209715200)
+  downloaded 37480319 bytes; KML 627662773 bytes; placemarks 5648
+  IssueTime 2026-10-01T15:00:00.000Z; ReferencedModel [('ICON', '2026-10-01T12:00:00Z'), ('ECMWF/IFS', '2026-10-01T00:00:00Z')]
+  time steps 240: first 2026-10-01T16:00:00.000Z, second 2026-10-01T17:00:00.000Z, last 2026-10-11T15:00:00.000Z
+  station 72546 'DES MOINES/MUN. IA.' coordinates -93.65,41.53,294.0; 40 elements; TTT present: True
+  station 72488 'RENO' coordinates -119.78,39.5,1344.0; 40 elements; TTT present: True
+  station 72494 'SAN FRANCISCO' coordinates -122.38,37.62,6.0; 40 elements; TTT present: True
+  station P0478 'LONDON/CITY INTL' coordinates -0.05,51.48,5.0; 40 elements; TTT present: True
+  station 07157 'PARIS CH.D.GAULLE' coordinates 2.53,49.02,108.0; 40 elements; TTT present: True
+  MOSMIX_S element list (40): PPPP, TX, TTT, Td, TN, T5cm, DD, FF, FX1, FX3, FXh, FXh25, FXh40, FXh55, N, Neff, Nh, Nm, Nl, N05, VV, wwM, wwM6, wwMh, ww, W1W2, RR1c, RRS1c, RR3c, RRS3c, R602, R650, Rh00, Rh02, Rh10, Rh50, Rd02, Rd50, Rad1h, SunD1
+
+===== 2.5 Timing =====
+  Illustration day D = 2026-10-01 (all four MOSMIX_L issues of D-1 = 2026-09-30 are on the server).
+
+  EGLC: target 2026-10-01 12Z. Our GFS (SPEC 7.2, D77.2): 12z on D-1, lead 24 h.
+    MOSMIX_L issues on D-1 (lead = target minus issue time; models are the header's ReferencedModel):
+      issue 2026-09-30 03Z  lead 33 h  models [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+      issue 2026-09-30 09Z  lead 27 h  models [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+      issue 2026-09-30 15Z  lead 21 h  models [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+      issue 2026-09-30 21Z  lead 15 h  models [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    MOSMIX_S issues on D-1: hourly, 00Z to 23Z, one per hour (listing above); leads 13 h (23Z) to 36 h (00Z).
+    MOSMIX_S models: only the one S header read above is available; older S files were not downloaded.
+
+  LFPG: target 2026-10-01 12Z. Our GFS (SPEC 7.2, D77.2): 12z on D-1, lead 24 h.
+    MOSMIX_L issues on D-1 (lead = target minus issue time; models are the header's ReferencedModel):
+      issue 2026-09-30 03Z  lead 33 h  models [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-29T12:00:00Z')]
+      issue 2026-09-30 09Z  lead 27 h  models [('ICON', '2026-09-30T00:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+      issue 2026-09-30 15Z  lead 21 h  models [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T00:00:00Z')]
+      issue 2026-09-30 21Z  lead 15 h  models [('ICON', '2026-09-30T12:00:00Z'), ('ECMWF/IFS', '2026-09-30T12:00:00Z')]
+    MOSMIX_S issues on D-1: hourly, 00Z to 23Z, one per hour (listing above); leads 13 h (23Z) to 36 h (00Z).
+    MOSMIX_S models: only the one S header read above is available; older S files were not downloaded.
+
+  YSDU: target 2026-10-01 02Z. Our GFS (SPEC 7.2, D77.2): 00z on D-1, lead 26 h.
+    No MOSMIX station within 10 km, so no MOSMIX issue is listed for it.
+    (Timing for a MOSMIX station would follow the same rule: every issue on D-1 with lead = target - issue.)
+
+===== 2.1 MOSMIX_L all stations, second listing =====
+
+MOSMIX_L all stations (second listing)
+  URL https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/all_stations/kml/  accessed 2026-10-01T16:34:19Z  HTTP 200
+  issue files: 8 (plus 1 other entries: ['MOSMIX_L_LATEST.kmz'])
+  oldest issue 2026-09-29 21Z, newest issue 2026-10-01 15Z, span 42 h
+    MOSMIX_L_2026092921.kmz                  server time 29-Sep-2026 22:12:24   79867555 bytes
+    MOSMIX_L_2026093003.kmz                  server time 30-Sep-2026 04:16:04   80611107 bytes
+    MOSMIX_L_2026093009.kmz                  server time 30-Sep-2026 10:12:24   80607627 bytes
+    MOSMIX_L_2026093015.kmz                  server time 30-Sep-2026 16:16:19   80768779 bytes
+    MOSMIX_L_2026093021.kmz                  server time 30-Sep-2026 22:13:33   81196304 bytes
+    MOSMIX_L_2026100103.kmz                  server time 01-Oct-2026 04:16:19   81750921 bytes
+    MOSMIX_L_2026100109.kmz                  server time 01-Oct-2026 10:13:19   81961411 bytes
+    MOSMIX_L_2026100115.kmz                  server time 01-Oct-2026 16:15:48   82156958 bytes
+    MOSMIX_L_LATEST.kmz                      server time 01-Oct-2026 16:15:48   82156958 bytes
+
+===== Totals (this script only) =====
+  requests 32, bytes 41948793
+   2026-10-01T16:32:56Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/all_stations/kml/ 200 1418
+   2026-10-01T16:32:57Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/ 200 6854
+   2026-10-01T16:32:58Z https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationskatalog.cfg?view=nasPublication 200 299502
+   2026-10-01T16:32:59Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/ 200 687573
+   2026-10-01T16:33:00Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/ 200 1490
+   2026-10-01T16:33:01Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/ 200 1490
+   2026-10-01T16:33:01Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72546/kml/ 200 1490
+   2026-10-01T16:33:02Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72488/kml/ 200 1490
+   2026-10-01T16:33:03Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72494/kml/ 200 1490
+   2026-10-01T16:33:04Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026092921_P0478.kmz 200 16585
+   2026-10-01T16:33:05Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026093003_P0478.kmz 200 16859
+   2026-10-01T16:33:06Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026093009_P0478.kmz 200 16554
+   2026-10-01T16:33:06Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026093015_P0478.kmz 200 16463
+   2026-10-01T16:33:07Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026093021_P0478.kmz 200 16485
+   2026-10-01T16:33:08Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026100103_P0478.kmz 200 16772
+   2026-10-01T16:33:59Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026100109_P0478.kmz 200 16610
+   2026-10-01T16:34:00Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/P0478/kml/MOSMIX_L_2026100115_P0478.kmz 200 16705
+   2026-10-01T16:34:00Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026092921_07157.kmz 200 17699
+   2026-10-01T16:34:01Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026093003_07157.kmz 200 17959
+   2026-10-01T16:34:02Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026093009_07157.kmz 200 17531
+   2026-10-01T16:34:02Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026093015_07157.kmz 200 17558
+   2026-10-01T16:34:03Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026093021_07157.kmz 200 17780
+   2026-10-01T16:34:04Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026100103_07157.kmz 200 17608
+   2026-10-01T16:34:05Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026100109_07157.kmz 200 17783
+   2026-10-01T16:34:05Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/07157/kml/MOSMIX_L_2026100115_07157.kmz 200 17908
+   2026-10-01T16:34:06Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72546/kml/MOSMIX_L_2026100115_72546.kmz 200 10771
+   2026-10-01T16:34:07Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72488/kml/MOSMIX_L_2026100115_72488.kmz 200 9235
+   2026-10-01T16:34:07Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations/72494/kml/MOSMIX_L_2026100115_72494.kmz 200 10190
+   2026-10-01T16:34:08Z https://opendata.dwd.de/weather/lib/MetElementDefinition.xml 200 26484
+   2026-10-01T16:34:10Z https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationsparameterliste.xlsx?__blob=publicationFile&v=8 200 3132720
+   2026-10-01T16:34:11Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_2026100115_240.kmz 200 37480319
+   2026-10-01T16:34:18Z https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/all_stations/kml/ 200 1418
+  temporary directory /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/s88_nc_ib10w deleted: True
+Finished 2026-10-01T16:34:19Z
+
+PART D. Manual reading (done with curl, WebSearch and WebFetch, outside the helper script)
+------------------------------------------------------------------------------------------
+Tags: verified = seen in a listing or file read this session; documentation only = read in official DWD
+documentation; secondary = non-DWD source; unknown = not found. Access times are UTC, 2026-10-01.
+PDF text was extracted with a throwaway standard-library extractor kept in the scratchpad (not in the repo).
+The extraction of the German procedure PDF loses word spaces, so German passages there are given as a
+translation, with the German key words. Web search and web fetch results were summarised by the tool, so
+anything read that way is tagged secondary and was not read page by page by this session.
+
+D1. Retention: DWD's own statements
+- DWD MOSMIX product page, English (https://www.dwd.de/EN/ourservices/met_application_mosmix/met_application_mosmix.html,
+  16:21Z) and German (https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/met_verfahren_mosmix.html, 16:21Z):
+  NO STATEMENT FOUND on how long files are kept. (documentation only)
+- MOSMIX procedure documentation, German PDF, 2.1 MB, "Verfahrensdokumentation" (v=6)
+  (https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_verfahrenbeschreibung_gesamt.pdf, 16:21Z), 41 pages:
+  searched for aufbewahr, Archiv, archiv, geloescht (gelöscht), gespeichert, Tage: no statement on retention found.
+  (The only "gespeichert" hits are about stored MOS coefficients and the Fimos file format.)
+- English application description PDF (https://www.dwd.de/EN/ourservices/met_application_mosmix/mosmix_application_description.pdf,
+  16:21Z) and English KML format description PDF (.../mosmix_kml_format_description.pdf, 16:21Z): searched for archiv, delet,
+  kept, retain, stored: no statement found.
+- DWD open data help page (https://www.dwd.de/DE/leistungen/opendata/hilfe.html, 16:21Z): searched for vorgehalten,
+  Vorhaltezeit, geloescht, Archiv, Tage, Stunden lang, Aufbewahrung: no statement on retention (only a site-menu word "Archiv").
+- Open data server README (https://opendata.dwd.de/README.txt, 16:25Z) and LIESMICH.txt (16:25Z): no statement on retention.
+  README line on IP addresses: "stores your IP address for a maximum of 7 days" (about server logs, not forecast files).
+  README says details on individual products are in "service profiles" (https://www.dwd.de/EN/ourservices/_functions/search/search_Formular.html);
+  this session did not find or read a MOSMIX service profile.
+- Result: DWD publishes no retention period for MOSMIX in anything read. What the listings show (verified): 8 MOSMIX_L
+  issues (span 42 h, oldest 2026-09-29 21Z, newest 2026-10-01 15Z) and 48 MOSMIX_S hourly issues (2026-09-29 16Z to
+  2026-10-01 15Z, 47 h), plus LATEST files. Single-station directories hold the same 8 issues.
+- Second MOSMIX_L listing: the prompt asks for a second listing at least six hours after the first. This session could not
+  wait that long. The script's two listings are 16:20:54Z and 16:34:19Z (13 minutes apart): same 8 files, no new issue yet
+  (the next, 21Z, is due about 22:15Z). So this session did NOT observe the oldest file go.
+  Context only, not checked here: D80.7 (planning chat, 2026-10-01) saw 8 issues, 28 Sep 21z to 30 Sep 15z, so
+  8 issues on two listings about a day apart, with the window moved on by about one day. That fits a rolling window of
+  8 issues (about two days). It is secondary (planning-chat note), tag: secondary.
+
+D2. DWD's facts that bear on live feed, timing and fairness (documentation only unless stated)
+- Issue times and cycle (procedure documentation 2.1.3, table 2.1; product pages): new forecasts hourly, "about 25 minutes
+  after every full hour" (product page). First 24 forecast hours are updated hourly "and include the latest observational
+  data" (English product page, "Production Cycle"); hours +25 to +240 are updated 4 times daily at 03, 09, 15 and 21 UTC
+  (procedure doc 2.1.3; the product pages say "04, 10, 16 and 22 UTC", which are the delivery times). Procedure doc table 2.1:
+  input models ICON global (DWD) and IFS (ECMWF), "deterministic runs of 00 and 12 UTC"; start 10 minutes past each full
+  hour (before 2024-07-01); delivery of +25 h about 45 minutes past each hour, of +240 h about 04:20, 10:15, 16:20, 22:15 UTC.
+  MOSMIX_S: hourly output, 40 parameters (table 2.1 says "bis +24h"; the product page says "up to +240h"; the file name says
+  240 and the S header read this session has 240 time steps, verified: the table 2.1 text is out of date or means the
+  hourly-update part). MOSMIX_L: runs of 03, 09, 15, 21 UTC, about 115 parameters, to +240 h.
+- Newsletter 2024-07-01 (https://www.dwd.de/DE/fachnutzer/forschung_lehre/meteorologische_fachverfahren/mosmix_aenderungen/downloads/2024_0701_mosmix_aenderung.pdf,
+  16:23Z), in force 2024-07-01 08 UTC: the MOSMIX start moves 20 minutes later, from minute 10 to minute 30 past the hour,
+  because late station reports were missing. MOSMIX_L availability moved from about 04:00, 09:55, 16:00, 21:55 UTC to about
+  04:20, 10:15, 16:20, 22:15 UTC. Verified against the listing: server times 04:16, 10:12/10:13, 16:15/16:16, 22:12/22:13 UTC.
+- Observations as predictors (procedure documentation 2.1.2, German PDF page 7; the German words below are
+  the extracted text with word spaces restored by this session): "Eingabedaten (Praediktoren) in der
+  Vorhersagephase sind wie in der Trainingsphase einerseits die Modelldaten und andererseits aktuelle Stationsbeobachtungen.
+  Letztere dienen in der Vorhersagephase (im Gegensatz zur Trainingsphase) nicht als Wahrheit sondern gehen nur als
+  Praediktoren in die Regressionsgleichungen ein. Damit hat MOSMIX ueber die aktuellen Stationsbeobachtungen Zugriff auf eine
+  Nowcastinformation ..." (translation: current station observations enter only as predictors, giving MOSMIX nowcast
+  information). The 2024-07-01 newsletter adds: MOSMIX uses hourly SYNOP observations of stations worldwide, referring to the
+  hour just ended; if they have not arrived, the last forecast for that time is used instead. The newsletter text also says
+  "Die meisten Praediktoren kommen aus der NWV, doch auch die Beobachtung selbst wird als Praediktor im Sinne eines Nowcastings
+  verwendet". How recent: observations up to the hour before the run starts (minute 30). So a MOSMIX issue on D-1 can use
+  observations from that day, which our GFS-based correction does not. (Fairness note only. No matching rule is chosen, D80.4.)
+- Station kinds (procedure doc chapter 3; newsletter 2026-06-10): main stations ("Hauptstationen") have observations and MOS
+  equations for at least one predictand; interpolation stations have none and use equations of up to five surrounding main
+  stations, weighted by distance and height. About 5400 stations (about 2800 main, about 2600 interpolation; the 2026-06-10
+  newsletter says more than 6000 stations). Station parameter list symbols (procedure doc Annex A, table A.2): +++ nearly hourly
+  from MOS equations; ++ nearly 3-hourly from MOS equations; ooo nearly hourly from interpolated equations; ++o nearly hourly,
+  of which nearly 3-hourly from MOS equations; empty = not forecast.
+- Position format (procedure doc FAQ 9.1): KML files give degrees and hundredths of a degree; the cfg station list gives
+  degrees and minutes (53.23 means 53 deg 23 min). The script converts the cfg that way. Times are UTC (FAQ 9.2).
+- Element TTT (https://opendata.dwd.de/weather/lib/MetElementDefinition.xml, 16:30Z, verified): ShortName TTT, unit K
+  (kelvin, not degC), description "Temperature 2m above surface". E_TTT: "Absolute error temperature 2m above surface".
+  Note for any later comparison: the unit is kelvin.
+
+D3. Version history (https://www.dwd.de/DE/fachnutzer/forschung_lehre/meteorologische_fachverfahren/mosmix_aenderungen/mosmix_aenderungen_node.html,
+    16:21Z; each notice page read 16:22Z; "in force" times are from the notice pages)
+- 2026-06-10 (in force 2026-06-10 07 UTC): retraining with data to September 2025 (the earlier version was trained with
+  data to September 2023); fix of observation data outside Germany (reference periods of gusts and min/max temperature were
+  misread, "especially France and Hungary", which made hourly temperature and gust forecasts at the affected stations of
+  "very poor quality"); more than 300 interpolation stations removed. (PDF read.)
+- 2025-06-18 (planned 2025-06-25 09 UTC): thunderstorm forecasts dropped, bug fixes, new stations in Lithuania. (Title only.)
+- 2025-05-07 (planned 2025-05-07 09 UTC): more parameters; main and interpolation stations told apart; 5 cm temperature
+  dropped at some interpolation stations. (Title only.)
+- 2024-10-30 (planned 2024-10-30 08 UTC): coefficient retraining. (Title only.)
+- 2024-07-01 (2024-07-01 08 UTC): delivery times, start 20 minutes later. (PDF read.)
+- 2023-09-26: sunshine-duration fix. 2023-08-24 notice (planned 2023-09-05 09 UTC): retraining, wider quality control, changed
+  choice of main stations for interpolation, changes to forecast points. 2023-01-10 notice (planned 2023-01-17 09 UTC): forecasts
+  for more airports worldwide, DMO forecasts as KML, station metadata corrections. 2022-09-19 notice (planned 2022-10-11 09 UTC):
+  consistency of probabilistic elements, observations at automatic stations, station-list change. 2021-03-16: renamed and
+  deleted forecast points. 2019-05-20: station list updates (valid 2019-05-21 06 UTC and 2019-06-03). 2018-09-20: coefficient
+  update and fix (valid 2018-09-27). (Titles only.)
+- Effect: the MOSMIX system changed in coefficients (2018-09, 2023-09, 2024-10, 2026-06), station set, delivery times (2024-07)
+  and observation handling (2022-10, 2026-06). Any saved history would span these versions; EGLC (P0478) was probably added in
+  the 2023-01 airport expansion (inferred from the title only; not read).
+
+D4. Archive routes beyond the rolling window (pages read only; no contact, no request filed)
+- DWD open data server: https://opendata.dwd.de/ (16:24Z) lists climate_environment/, test/, weather/. weather/local_forecasts/
+  (16:24Z) lists dmo/, mos/, swsmos/, warnmos/. mos/ lists MOSMIX-SNOW_S/, MOSMIX_L/, MOSMIX_S/. MOSMIX_L/ lists
+  all_stations/ and single_stations/. No MOSMIX archive folder anywhere. (verified)
+- DWD Climate Data Center https://opendata.dwd.de/climate_environment/CDC/ (16:24Z): folders derived_germany, event_catalogues,
+  grids_europe, grids_germany, help, observations_germany, observations_global, regional_averages_DE. No forecast archive.
+  (verified)
+- PAMORE (https://www.dwd.de/EN/ourservices/pamore/pamore.html, 16:25Z, documentation only): "archived data generated by the
+  numerical weather prediction models"; "forecasts from the last approx. 1.5 years" for all forecasting models; "Only data that
+  are at least 48 hours old can be accessed"; registration needed, "available for research and educational institutions, for
+  German federal and federal state authorities and for institutions involved in disaster prevention". The word MOSMIX does not
+  appear on the page (0 matches). So whether PAMORE holds MOSMIX is not stated: unknown. It is NWP model data, and access is
+  restricted to eligible institutions.
+- wetterdienst project, GitHub discussion 780 (https://github.com/earthobservations/wetterdienst/discussions/780, read through
+  WebFetch, tag secondary): 2022-10-28 maintainer: "unfortunately at this moment it is not possible to get historized mosmix";
+  belief that DWD does not keep it because of the number of runs; 2022-11-02 a Meteostat representative said they can provide
+  historical MOSMIX forecast data for most stations but their public service only stores the latest forecast; the University of
+  Applied Sciences Kempten was named as storing it (scope unknown); Fraunhofer Energy Meteorology was said to persist DWD
+  forecast data and charge "4000+" euro; DWD research access (PAMORE) was said to offer nearly 2 years of past predictions
+  for about 300 euro "but notably excludes MOSMIX data" (the tool's wording); 2023-01-17 a researcher wrote they "have already
+  received full coverage of MOS-MIX L forecast back to 2020-08-01" (source not named). All secondary.
+- Web search (tool summary of results, secondary): a snippet says "MOSMIX data older than two days gets removed from DWD's open
+  data portal" (the R package mosmix, https://retostauffer.github.io/Rmosmix/; this session read that page, 16:25Z, 11,377 bytes,
+  and found no such statement in its text, so this remains an unverified search snippet).
+- Meteostat (https://dev.meteostat.net/, WebFetch): the page content gave no information on MOSMIX or past forecast issues.
+  Unknown.
+- Open-Meteo (https://open-meteo.com/en/docs/dwd-api, WebFetch): offers DWD ICON models; no mention of MOSMIX. Unknown, none found.
+- Result: no public archive of past MOSMIX issues was found. Commercial or institutional holders were named by secondary
+  sources only (Meteostat on request, Kempten, Fraunhofer), with unknown depth, coverage and terms.
+
+PART E. Step 3: other non-US products (documentation and listings only)
+-----------------------------------------------------------------------
+E1. Bureau of Meteorology (Dubbo)
+- Requests: web search (1), https://www.bom.gov.au/catalogue/data-feeds.shtml (HTTP 403, 1,386 bytes; the 403 page itself
+  describes access: anonymous FTP "free to access, but use is subject to the default terms of the Bureau's copyright notice"
+  (http://www.bom.gov.au/other/copyright.shtml); a Registered User service is for use that does not comply with the default
+  terms, "noting charges apply to most data products"; documentation only), the FTP listing ftp://ftp.bom.gov.au/anon/gen/fwo/
+  (16:25:48Z, 397,058 bytes, 5,116 entries) and one file, ftp://ftp.bom.gov.au/anon/gen/fwo/IDN11060.xml (16:26:11Z, 727,709
+  bytes), the NSW town-forecast ("precis") product. Total 4 requests.
+- IDN11060.xml, metadata only (verified): product type F; issued 2026-10-01T11:45:17Z; next routine issue 2026-10-01T18:15:00Z;
+  164 locations; Dubbo is a listed location (AAC NSW_PT047); 8 forecast periods per location (index 0 to 7): period 0 is 2 hours
+  (2026-10-01T12:00Z to 14:00Z), the others are one day each, ending 2026-10-07T13:00Z. Element types present are
+  forecast_icon_code, precis (text), probability_of_precipitation, air_temperature_minimum and air_temperature_maximum (units
+  Celsius), precipitation_range. So the product has DAILY minimum and maximum only: no hourly temperature and no 02:00 UTC value.
+  No value was printed.
+- Retention (verified from the listing): 5,116 files, almost all dated 2026-09-28 to 2026-10-01 (253, 755, 817 and 3,257 files on
+  28, 29, 30 Sep and 1 Oct), a few from 2026-09-24 to 09-27, and 6 older stray entries (Feb, Apr, May, Oct 10 dates). A rolling
+  window of about a week; the file name has no date, so each product file is overwritten by the next issue. No public archive was
+  found in the pages read. Class: No archive (current files only; no past issues).
+E2. Met Office site-specific forecasts
+- Requests: web search (1), WebFetch of https://datahub.metoffice.gov.uk/pricing/site-specific and
+  https://datahub.metoffice.gov.uk/docs/f/category/site-specific/overview (tool summaries, tag secondary).
+- Reported: "Global Spot" is post-processed and blended ("incorporating the latest observations, correcting the data to account
+  for orography and coastal proximity, and combining all the available data ..."), hourly update, 48 h hourly, to 168 h;
+  Blended Probabilistic Forecast (BPF) is also offered. Access needs a Met Office DataHub account and an API key; the free plan
+  is "Up to 360 calls per day" (Global spot) and "Up to 55 calls per day" (BPF). The pages read give no statement on past
+  forecasts, retention or an archive. Coverage of London City: Global Spot is a latitude/longitude product, so it would cover it;
+  the pages did not say so explicitly (not verified).
+- Per D80.3 and the scope guard: it needs an account and key, so this session recorded that and STOPPED. No account, no key,
+  no data. Class: Blocked (needs a DataHub account and API key; no archive stated).
+
+PART F. Manual request log (curl, UTC; sizes as the downloads reported)
+-----------------------------------------------------------------------
+Early requests (times from the session; sizes not logged for two small index pages):
+2026-10-01T16:20:54Z  MOSMIX_L all-stations listing  200  1418 B
+2026-10-01T16:20:54Z  MOSMIX_S all-stations listing  200  6854 B
+2026-10-01T16:20:5xZ  .../local_forecasts/mos/ and .../mos/MOSMIX_L/ index pages  200  small (size not logged)
+2026-10-01T16:21:04Z  dwd.de MOSMIX product page DE 59,738 B; EN 52,782 B; station catalogue cfg 299,502 B
+2026-10-01T16:21:32Z  procedure PDF (DE) 2,108,107 B; application description PDF (EN) 752,690 B; KML format PDF (EN) 435,354 B;
+                      change page 59,386 B; open data help page 107,092 B; MetElementDefinition.xml 26,484 B
+2026-10-01T16:22:58Z  13 newsletter notice pages, 48,470 to 49,329 B each (2026_0610, 2025_0604, 2025_0507, 2024_1011, 2024_0701,
+                      2023_0926, 2023_0905, 2023_0117, 2022_1011, 2021_0316, 2019_0603, 2019_0521, 2018_0927)
+2026-10-01T16:23:xxZ  newsletter PDFs 2024_0701 121,944 B and 2026_0610 365,032 B
+2026-10-01T16:23:51Z  single_stations index 687,573 B; 5 single-station directory pages 1,490 B each; one P0478 KMZ 16,705 B
+2026-10-01T16:24:32Z  station parameter list xlsx 3,132,720 B
+Later requests (logged by a shell function; time, URL, HTTP status or FTP code, bytes):
+2026-10-01T16:24:58Z	https://opendata.dwd.de/	200	869
+2026-10-01T16:24:58Z	https://opendata.dwd.de/weather/	200	2031
+2026-10-01T16:24:59Z	https://opendata.dwd.de/weather/local_forecasts/	200	761
+2026-10-01T16:24:59Z	https://opendata.dwd.de/climate_environment/CDC/	200	2744
+2026-10-01T16:25:06Z	https://opendata.dwd.de/README.txt	200	1280
+2026-10-01T16:25:06Z	https://opendata.dwd.de/LIESMICH.txt	200	1369
+2026-10-01T16:25:27Z	https://www.dwd.de/EN/ourservices/pamore/pamore.html	200	49698
+2026-10-01T16:25:27Z	https://retostauffer.github.io/Rmosmix/	200	11377
+2026-10-01T16:25:48Z	https://www.bom.gov.au/catalogue/data-feeds.shtml	403	1386
+2026-10-01T16:25:48Z	ftp://ftp.bom.gov.au/anon/gen/fwo/	226	397058
+2026-10-01T16:26:11Z	ftp://ftp.bom.gov.au/anon/gen/fwo/IDN11060.xml	226	727709
+
+PART G. Totals and what was fetched
+-----------------------------------
+- Helper script: 5 executions while it was fixed. Runs 1 and 2 stopped on errors (an XML wildcard bug; an answer from the
+  station parameter list that was not a zip). Runs 3 and 4 completed but had a station catalogue that failed to parse
+  (run 3: the server answered the catalogue with 239 bytes; run 4: a regular expression missed 1,440 lines with a leading space).
+  Run 5 (Part C) is the clean run: 32 requests, 41,948,793 bytes. The earlier runs' request logs were not saved.
+- MOSMIX_S all-stations: ONE file (MOSMIX_S_2026100115_240.kmz, 37,480,319 bytes, under the 200 MB limit), but the script
+  downloaded that same file in three of its five executions (runs 3, 4 and 5) because each run starts from nothing. That is
+  three downloads of one file, about 112 MB, not the one download the prompt intended. Nothing else was downloaded twice at
+  that scale. No MOSMIX_L all-stations file was downloaded (listing only).
+- Manual curl requests: 47 (about 10.07 MB in total: about 8.88 MB in the early group above and 1,196,282 B in the logged group).
+  Web tool calls: 3 web searches and 5 web fetches (tool summaries, not counted in bytes).
+- Overall request count is therefore about 47 manual + 32 in the last script run + the earlier script runs (not counted) +
+  8 web tool calls. Bytes: about 10 MB manual + 41.9 MB last run + about 75 MB from the two earlier S downloads + small items.
+- Temporary directories: the script's own directory was deleted by the script (Part C, last lines). The manual download
+  directory (mktemp -d, outside the repo) is deleted at the end of the session (confirmed in Part H).
+
+
+PART H. End-of-session steps
+----------------------------
+H1. Temporary directories: the script's own directory was deleted by the script (Part C). The manual download directory
+    (/var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.6Clsesm3uj, created with mktemp -d, outside the repo) was deleted at the end of the session: confirmed (path no longer exists).
+H2. STATUS.md was overwritten as a current-only snapshot (pruned, not appended).
+H3. Consistency check (re-read of SPEC.md, STATUS.md and DECISIONS.md; report only, nothing fixed). Mechanical checks run:
+    - Duplicate "## " headings: none in DECISIONS.md, none in SPEC.md.
+    - Entry order at the end of DECISIONS.md: D79, F129 (session 87), then D80 (heading line 2412), then F130 (heading line 2475).
+      In order. Entry ids that repeat as "**Dnn." or "**Fnn." at line starts are sub-items of one entry (D62.x, F122.x to F130.x),
+      not duplicated entries.
+    - Em-dashes: none in this session's new text (D80 is the owner's text as supplied; F130; STATUS; the script).
+    Disagreements and gaps found (for the owner to decide):
+    1. SPEC 6 does not mention D78.3's probe, D80 or F130. SPEC 6's stage A and B bullets stop at D78.1, D78.7, F128 and F129.
+       The session prompt says "No SPEC edit", so none was made. Not an error, a gap.
+    2. The session prompt's Step 2.1 asks for a second MOSMIX_L listing at least six hours after the first. This could not be
+       done in the session. F130.2 says so. STATUS carries it. D80.5's "if F130 confirms short retention" condition is met by
+       the listings (about two days, verified), but the fixed-count rolling window is supported by the 13-minute pair of
+       listings only as "nothing changed", and by D80.7's planning-chat listing as secondary evidence.
+    3. DWD's own documentation disagrees with itself on MOSMIX_S: procedure documentation table 2.1 says "bis +24h", the product
+       page and file names say +240 h, and the S header read this session has 240 time steps (verified). Recorded in Part D.
+       It does not conflict with any project file.
+    4. The product pages give MOSMIX_L update times as 04, 10, 16, 22 UTC; the procedure documentation gives run times 03, 09, 15,
+       21 UTC and delivery about 04:20, 10:15, 16:20, 22:15. Both are in the output; F130.3 uses the run times and the delivery times.
+    5. STATUS "Open questions" lists three items (D80.5; F130.9's four readings; F130.8's repeat download). The prompt listed
+       only the removal of F129.8's question. Items 2 and 3 were added by this session, because F130.8 and F130.9 are things the
+       owner should see. Remove them if the owner prefers.
+    6. DECISIONS lines: F130.1 cites D80 at lines 2414 to 2471 (heading 2412). No archive move this session, so these stay valid.
+    7. No other disagreement found between SPEC, STATUS and DECISIONS. STATUS's cited ids (D71, D72, D73, D76.2, D77.6, D78.x,
+       D79.x, D80.x, F109, F119, F122 to F130 and their sub-items) all exist in DECISIONS.md or DECISIONS-archive.md (F109,
+       F119 and D71's sub-items were checked by the earlier sessions' practice; this session grepped DECISIONS.md only for the
+       live ones).
+H4. Archive step (CLAUDE.md criterion). Nothing moved. D72, D73, F122, D77, F127, D78, F128, D79, F129, D80 and F130 stay live,
+    as the prompt says. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125 and D76, D77's
+    companions) are still cited by STATUS, by an open question or by this session's own checklist (F123, F124, D76.2), so they
+    do not meet "not needed word-for-word by any live open question or STATUS". When in doubt, keep live (D46).
+H5. Commit: nothing was committed, added or pushed. No commit message was written. Waiting for review.

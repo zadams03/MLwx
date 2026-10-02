@@ -1,0 +1,49 @@
+Session 88: the non-US competitor probe (D80, F130); MOSMIX has no archive
+
+D80 records the owner's decisions, written before any other edit or
+network call. The owner accepts all eight F129.8 readings; neither
+2026-27 script changes and F129.7's SHA-256 values stand. The owner ran
+D78.3's read-only non-US competitor probe before opening stage C,
+because MOSMIX may be kept only about two days. D80 sets the probe's
+rules: metadata only from live files, never a forecast value. It leaves
+any MOSMIX matching rule and the daily-save choice (D72.8) open, and
+lists the save options without deciding. It also notes that GFS v17
+still has no Service Change Notice as of 2026-10-01 (newest SCN 26-87;
+earliest go-live about 31 October 2026). D80 is byte-equal to the
+session prompt.
+
+F130 records the probe. DWD MOSMIX is class No archive. The server
+holds 8 MOSMIX_L issues (03, 09, 15, 21 UTC; 42 h) and 48 hourly
+MOSMIX_S issues (47 h). DWD states no retention period anywhere read.
+No public archive of past issues was found. PAMORE holds about 1.5
+years of NWP forecasts for eligible institutions, but does not name
+MOSMIX. Other holders are named only by secondary sources.
+
+Stations:
+- LFPG has a main station, 07157, at 0.17 km.
+- EGLC's station, P0478, is an interpolation station only, published
+  7.7 km west of the airport.
+- YSDU has no station within 10 km.
+- DSM, RNO and KSFO have main stations (for information only).
+
+Fields and timing: 2 m temperature is TTT, in kelvin. F130 tabulates
+the leads to a 12:00 UTC target (33, 27, 21 and 15 h for the D-1 L
+issues) and each issue's ICON and IFS runs. MOSMIX uses current
+station observations as predictors, which bears on the fairness of any
+later matching. The version history includes a June 2026 retraining
+that fixed bad observation data in France. The BoM's Dubbo town
+forecast gives daily minimum and maximum only, with no archive. The
+Met Office's site-specific product is blocked (account and API key).
+
+Disclosed in F130: the second listing was 13 minutes after the first,
+not six hours. The helper script downloaded the one MOSMIX_S file
+three times (about 112 MB) across reruns. F130.9 records four readings
+made where the prompt was silent.
+
+No forecast value was printed or saved, no observation was read, no
+score was computed and no account was used. Nothing was written under
+data/. No SPEC, RESULTS or CLAUDE text was edited. STATUS.md is
+overwritten. Nothing was archived.
+
+New files: scripts/session88_competitor_probe.py,
+notes/session-88-output.txt, docs/session-88.md, docs/commit-88.txt.
