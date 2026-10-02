@@ -2406,3 +2406,229 @@ or an expectation.
   disabled. No `__pycache__` file of the new scripts was kept.
 - Nothing was installed. No account was used. Nothing was committed and no
   commit message was written.
+
+---
+
+## 2026-10-01: Session 88 decision: F129.8 accepted, the non-US competitor probe first, and its rules (owner, planning chat)
+
+**D80. Owner decisions, planning chat (after session 87): F129.8
+accepted, the next step, and the rules of the non-US competitor probe
+(D78.3).** Written at the start of session 88, before any other edit or
+network call. No 2026-27 value has been read or scored.
+
+- **D80.1 F129.8 accepted.** The owner accepts all eight readings in
+  F129.8 as written: the timing guard over all six airports; no draws
+  for a void comparison or one with fewer than 7 days; a zero-row
+  airport is "no verdict (0 days)"; the season label; the persistence
+  margin's day basis; the file names; the MAV projection handling; and
+  no size trial in `--fetch`. Neither script changes; F129.7's SHA-256
+  values stand.
+- **D80.2 Next step: D78.3's probe before stage C.** The owner runs the
+  read-only non-US competitor probe before stage C is opened. Reason:
+  secondary sources say DWD keeps MOSMIX on its open data server for
+  only about two days, so if MOSMIX is to be saved, every day of delay
+  is lost for good.
+- **D80.3 The probe's rules.** DWD MOSMIX first; other non-US
+  post-processed station forecasts only where cheap (documentation and a
+  handful of requests, no account). Candidates: the Bureau of
+  Meteorology's forecasts at Dubbo and the Met Office's site-specific
+  forecasts. Live files may be downloaded, but only their metadata is
+  printed or recorded, never a forecast value; nothing is saved under
+  `data/`. At most one MOSMIX_S all-stations file is downloaded, and only
+  if it is under 200 MB. Recorded as F130.
+- **D80.4 Matching is not decided.** The probe records MOSMIX's issue
+  times, the model runs each issue is built on, and the leads to each
+  target hour, beside D77.2's rule for NBM. Any matching rule for a
+  MOSMIX comparison is the owner's later decision.
+- **D80.5 Daily saves: options recorded, nothing decided (D72.8).** If
+  F130 confirms short retention, the owner chooses later between:
+  (A) no saving, so MOSMIX has no history anywhere; (B) MOSMIX_L
+  single-station files at a short list (EGLC, LFPG and YSDU now, stage
+  C's candidate airports later), all four daily issues, well under 1 MB
+  a day; (C) the whole map, about 320 MB a day for MOSMIX_L, or only the
+  2 m temperature at all stations. Where a saver would run: the owner's
+  laptop (free; misses days it is off), GitHub Actions (free; scheduled
+  runs can be late or skipped, and stop after 60 days without repo
+  activity; the repo is public), or a small cloud machine or bucket
+  (reliable; small cost). A saver is new code and needs its own session.
+  A MOSMIX test on 2026-27 could still be pre-registered, since no
+  2026-27 value has been scored, but it would cover only saved days.
+- **D80.6 GFS v17 (planning-chat web search, 2026-10-01, not checked by
+  this session).** Still no Service Change Notice. The newest SCN listed
+  is SCN 26-87 (2026-09-22). The only v17 notices are still PNS 26-29
+  and PNS 26-30. With 30 days' notice, the earliest go-live is about 31
+  October 2026.
+- **D80.7 Planning-chat notes on MOSMIX (2026-10-01, not checked by this
+  session).** No retention period was found in DWD's MOSMIX pages. A
+  listing of DWD's MOSMIX_L all-stations directory showed eight issues,
+  28 Sep 21z to 30 Sep 15z, about 80 MB each: about two days. A 2022
+  discussion in the wetterdienst project said no historical MOSMIX was
+  available; Meteostat said it keeps only the latest forecast; a
+  Fraunhofer group was said to sell some; DWD's PAMORE research service
+  was said to hold about two years of past predictions, possibly not
+  MOSMIX. All secondary; F130 checks them.
+- **D80.8 Session 88's plan.** Record this entry; run the probe (D80.3);
+  record F130. No SPEC edit. Nothing is chosen.
+
+---
+
+## 2026-10-01: Session 88 finding: the non-US competitor probe
+
+**F130. Read-only probe of non-US post-processed station forecasts (D78.3,
+D80). DWD MOSMIX was probed against a fixed checklist; the Bureau of
+Meteorology (Dubbo) and the Met Office were looked at briefly. MOSMIX keeps
+only about two days of issues on DWD's server and no public archive of past
+issues was found: class No archive. Nothing was chosen. Script:
+`scripts/session88_competitor_probe.py` (new; reads the network and prints;
+writes no data file; SHA-256 `e168a0c8d07bade5e27e8539bc7704bae9eed078f87832f8a814a7a56368c214`). Full real output, with every URL,
+listing, access time and the documentation read:
+`notes/session-88-output.txt`. Run 2026-10-01.**
+
+**F130.1 Steps 0 and 1.** `git status --porcelain` showed only
+`?? docs/session-88.md`. The last entries were D79 and F129; no D80 or F130
+existed in either DECISIONS file; neither new path existed. D72, D77.1, D77.2,
+D78, F123, F124, D76.2 and SPEC 3.4, 4.1, 7.2 were read. D80 was copied
+mechanically (`sed`) from `docs/session-88.md` lines 91 to 148 into
+DECISIONS.md lines 2414 to 2471 (heading at line 2412) and checked byte-equal
+with `diff`, before any other edit or network call.
+
+**F130.2 Retention (the main question).**
+- Listings (verified, 2026-10-01 16:20Z and again 16:34Z): MOSMIX_L
+  all-stations holds **8 issues**, 2026-09-29 21Z to 2026-10-01 15Z, span
+  42 h (about 80 MB each; not downloaded). MOSMIX_S all-stations holds
+  **48 hourly issues**, 2026-09-29 16Z to 2026-10-01 15Z, span 47 h (about
+  37 MB each). Single-station directories hold the same 8 L issues.
+- **The second-listing rule was not met.** The prompt asks for a second
+  listing at least six hours after the first. This session could not wait; its
+  two listings are 13 minutes apart and identical, so it did not see the
+  oldest file go. D80.7's planning-chat listing (secondary) saw 8 issues, 28
+  Sep 21z to 30 Sep 15z, which fits a rolling window of 8 L issues.
+- DWD's statement: **no statement found** on retention in the MOSMIX product
+  pages (DE, EN), the German procedure documentation, the English application
+  and KML descriptions, the open data help page and the server README
+  (documentation only). A per-product "service profile" is mentioned in the
+  README; none was found or read.
+- Archive routes (pages only, nobody contacted): DWD open data server, no
+  MOSMIX archive folder (verified); Climate Data Center, no forecast folder
+  (verified); **PAMORE** (documentation only) holds archived NWP model data,
+  "forecasts from the last approx. 1.5 years", only data at least 48 hours
+  old, registration for research and education, federal and state authorities
+  and disaster prevention; the page never names MOSMIX, so whether it holds
+  MOSMIX is unknown. Third parties (all secondary): wetterdienst discussion
+  780 (2022: "not possible to get historized mosmix"; Meteostat said it holds
+  historical MOSMIX on request but its public service keeps only the latest;
+  Kempten and Fraunhofer named; 2023-01: a researcher reported full MOSMIX_L
+  coverage back to 2020-08-01, source not named); Meteostat's and Open-Meteo's
+  documentation: nothing on MOSMIX found.
+
+**F130.3 Summary table, one row per product.**
+
+| product | archive | retention | issue times | 2 m temperature | stations at EGLC, LFPG, YSDU | class | weakest tag |
+|---|---|---|---|---|---|---|---|
+| DWD MOSMIX_L | none public | 8 issues, about 2 days (verified); no DWD statement | 03, 09, 15, 21 UTC; on the server about 04:20, 10:15, 16:20, 22:15 | `TTT`, kelvin, "Temperature 2m above surface", hourly steps to +240 h | EGLC P0478 (7.69 km); LFPG 07157 (0.17 km); YSDU none within 10 km (nearest 221.75 km) | **No archive** (about 2 days) | secondary (the third-party holders); retention itself verified |
+| DWD MOSMIX_S | none public | 48 hourly issues, about 2 days (verified) | hourly; server time about 40 minutes past the hour | `TTT`, kelvin, 240 hourly steps | same stations | **No archive** (about 2 days) | verified |
+| BoM town forecasts (précis, `IDN11060.xml`) | none public found | files overwritten; about a week of other files on the FTP | next routine issue shown in the file; 11:45Z and 18:15Z seen | daily minimum and maximum only, Celsius; no hourly value | Dubbo is a location (NSW_PT047); no EGLC or LFPG | **No archive**; daily only | documentation only (terms), listing verified |
+| Met Office site-specific | not stated | not stated | hourly update (reported) | hourly (reported) | not checked | **Blocked** (DataHub account and API key) | secondary |
+
+**F130.4 Station table (SPEC 3.4 positions; DWD cfg positions are degrees and
+minutes, converted; DWD procedure documentation FAQ 9.1).**
+
+| airport | MOSMIX station | ICAO | distance, cfg / KML position | height | kind, from the 2026-06 station parameter list (TTT symbol) | single-station directory |
+|---|---|---|---|---|---|---|
+| EGLC | P0478 LONDON/CITY INTL | EGLC | 7.69 km / 7.81 km (published position is west of the airport) | 5 m, difference 0 | **interpolation station** (`ooo` on all 16 elements) | exists |
+| LFPG | 07157 PARIS CH.D.GAULLE | LFPG | 0.17 km / 0.61 km | 108 m, -1 | main (`+++`) | exists |
+| YSDU | none within 10 km | - | nearest 94743 MOUNT BOYCE AWS, 221.75 km | 1080 m, +805 | - | not applicable |
+| DSM (info) | 72546 | KDSM | 0.27 km | 294 m, 0 | main (`++o`) | exists |
+| RNO (info) | 72488 | KRNO | 2.08 km | 1344 m, -1 | main (`++o`) | exists |
+| KSFO (info) | 72494 | KSFO | 0.79 km | 6 m, +1 | main (`++o`) | exists |
+
+Symbols (procedure documentation, annex A): `+++` nearly hourly from MOS
+equations; `++o` nearly hourly, of which nearly 3-hourly from MOS equations,
+the rest interpolated; `ooo` nearly hourly from interpolated equations.
+
+**F130.5 Timing (illustration day D = 2026-10-01, D-1 = 2026-09-30; headers
+read from the single-station files of P0478).** Our GFS (SPEC 7.2, D77.2):
+EGLC and LFPG 12z on D-1, lead 24 h; YSDU 00z on D-1, lead 26 h. Target
+12:00 UTC at EGLC and LFPG.
+
+| MOSMIX_L issue on D-1 | lead to 12:00 UTC | referenced model runs |
+|---|---|---|
+| 03Z | 33 h | ICON 2026-09-30 00Z, ECMWF/IFS 2026-09-29 12Z |
+| 09Z | 27 h | ICON 00Z, IFS 00Z (2026-09-30) |
+| 15Z | 21 h | ICON 12Z, IFS 00Z |
+| 21Z | 15 h | ICON 12Z, IFS 12Z |
+
+MOSMIX_S issues on D-1 are hourly, leads 13 h (23Z) to 36 h (00Z), so one
+S issue (12Z) has a 24 h lead. Only one S header was read (issue 2026-10-01
+15Z: ICON 12Z, IFS 00Z), so the model runs behind an S issue at other hours
+are unknown. YSDU has no MOSMIX station, so no MOSMIX timing exists for it.
+**Observations as predictors (documentation only, procedure documentation
+2.1.2 and the 2024-07-01 newsletter):** current station observations enter
+the forecast equations as predictors ("Nowcastinformation"); the run starts at
+minute 30 and uses the hourly reports of the hour just ended. A MOSMIX issue
+on D-1 can therefore use observations up to its own issue time, which our
+GFS-based correction does not. This bears on fairness of any later matching.
+No matching rule was chosen (D80.4).
+
+**F130.6 Version history (DWD change page; details in the output file).**
+2026-06-10 retraining with data to September 2025 (previous: to September
+2023), a fix to observation data outside Germany ("especially France and
+Hungary": hourly temperature forecasts at affected stations were of "very
+poor quality"), and over 300 interpolation stations removed; 2025-06-25
+thunderstorm forecasts dropped and new stations; 2025-05-07 more parameters
+and main and interpolation stations told apart; 2024-10-30 coefficient
+retraining; 2024-07-01 start moved 20 minutes later (minute 10 to 30) and
+delivery times changed; 2023-09 retraining and quality control; 2023-01
+forecasts for more airports; 2022-10, 2021-03, 2019 and 2018-09 station and
+coefficient changes. Any saved history spans several versions, including a
+temperature fix that touched France (LFPG).
+
+**F130.7 Step 3.**
+- **Bureau of Meteorology (Dubbo).** Anonymous FTP (`ftp.bom.gov.au/anon/gen/fwo/`)
+  holds the NSW town forecast `IDN11060.xml` with Dubbo as a location: daily
+  minimum and maximum for 8 periods (the first 2 hours long), no hourly or
+  02:00 UTC value. Terms: free anonymous access under the Bureau's copyright
+  notice; a registered user service with charges for use outside it
+  (documentation only; the data-feeds page itself answered HTTP 403, the 403
+  text carries the terms). Only current files are on the FTP; no archive
+  found. Class: **No archive**, and daily values only.
+- **Met Office.** Site-specific "Global Spot" is described as post-processed
+  and blended; it needs a DataHub account and API key (free plan 360 calls a
+  day), and the pages read state nothing on past forecasts. Per the scope
+  guard this session recorded that and stopped. Class: **Blocked**. These two
+  points were read through a web fetch tool's summary (secondary).
+
+**F130.8 Requests and bytes.** Honest accounting is in the output file (Part
+G). The clean script run made 32 requests and 41,948,793 bytes. The script was
+executed five times while it was fixed. **It downloaded the same single MOSMIX_S
+file (37,480,319 bytes) three times, in three of those runs, so about 112 MB
+was downloaded for what the prompt meant as one download.** The prompt's limit
+was one file under 200 MB; the file was one and under the limit, but the
+repeat downloads were not intended. 47 manual curl requests (about 10 MB) and
+8 web search or fetch calls were also made. No MOSMIX_L all-stations file was
+downloaded. Both temporary directories were deleted.
+
+**F130.9 Readings made where the prompt is silent (for the owner to confirm).**
+- The "weakest tag" for the MOSMIX rows: retention is verified from listings,
+  and the rest of the archive search rests on secondary sources.
+- A station is called "main" when its TTT symbol contains a `+` (DWD's
+  definition: at least one predictand has station-specific MOS equations);
+  P0478's `ooo` makes it interpolation. DWD's cfg gives EGLC's position to the
+  nearest minute and the published position is 7.7 km west of IEM's.
+- The timing table uses one past day for which all four L issues exist, not a
+  future day, so no forecast was needed.
+- The Met Office and BoM terms and pages were read through search and fetch
+  tools for some items; they are tagged secondary where so.
+
+**F130.10 What this did not do.**
+- No forecast value was printed, recorded or saved. KML files were read for
+  header fields, element names, station names and positions only; the BoM file
+  for element types, area names and period times only.
+- No observation was read and no score, error or difference was computed.
+- No account, key or sign-up was used or created; no one was contacted and no
+  data request was filed. Nothing was installed.
+- Nothing was written under `data/`, `data/models/` was not touched, and no
+  existing script was edited.
+- No matching rule, no save decision (D80.5) and no stage C choice was made.
+- SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were
+  not edited. Nothing was committed and no commit message was written.
