@@ -51,12 +51,14 @@ facts — its code, its position, the forecast grid point it maps to, when it
 reports, and its target hour — live in the airport table in section 3.4.
 Everything else in this file is shared by all of them.
 
-The end goal is a private, live daily tool that shows corrected
-day-ahead temperature forecasts for ten or more airports: an hourly
-temperature curve and the daily maximum, at 24-hour and 48-hour leads;
-a choice of which weather model is corrected, plus a blend; and
-probabilistic ranges (DECISIONS D72.1). That is the destination, not
-the starting point. See section 6 for the roadmap.
+The end goal is a private, live tool for ten or more airports that
+corrects every GFS run (four a day), as each run arrives, into an
+hourly temperature curve out to the forecast horizon, plus the daily
+maximum. The horizon is 24 hours first and 48 hours later. Then come
+a choice of which weather model is corrected, plus a blend, and
+probabilistic ranges (DECISIONS D72.1, reworded by D82.2). That is
+the destination, not the starting point. See section 6 for the
+roadmap.
 
 ---
 
@@ -747,9 +749,12 @@ side, because both are time-critical.
   (DECISIONS D78.3) found that DWD's MOSMIX keeps only about two days of
   issues (F130); daily saves of MOSMIX_L single-station files are chosen
   in DECISIONS D81.
-- **Stage C — widen the target, on GFS only.** An hourly temperature
-  curve, the daily maximum, and the 48-hour lead. Written with the
-  weather model as a setting.
+- **Stage C — widen the target, on GFS only.** Correct every GFS run
+  into an hourly temperature curve, plus the daily maximum, for
+  forecast hours 0 to 24 first and to 48 later. Written with the
+  weather model as a setting. Opened in DECISIONS D81; its design is in
+  DECISIONS D82. Its claim is judged on new airports only, drawn by the
+  rule in DECISIONS D82.7.
 - **Stage D — correct each other weather model on its own,** on the
   full curve, screening each at a few hours first.
 - **Stage E — blend and stack.** Combine the corrected models, with NBM

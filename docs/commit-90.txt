@@ -1,0 +1,46 @@
+Session 90: stage C's design (D82), the 47-airport metadata check and the claim batch (F132)
+
+D82 records the owner's decisions, written before any other edit or
+network call and byte-equal to the session prompt. The owner accepts
+F131 and its readings; the dynamical.org archive is not used. The end
+goal is reworded: a private, live tool that corrects every GFS run
+(four a day) into an hourly temperature curve plus the daily maximum,
+24 hours ahead first and 48 later, then other weather models, a blend
+and probabilistic ranges. Stage C's design: every cycle, forecast
+hours 0 to 24 first; a GRIB pull by byte range on GitHub Actions,
+keeping raw values at the four grid points around each airport for
+ten fields; the owner's 47 airports, with build choices made on the
+six development airports only; a claim batch of six drawn by a rule
+fixed in advance (seed 20261003); and the daily maximum defined as the
+highest hourly report over the local calendar day, with at least 22
+of 24 hours usable.
+
+SPEC 1's end-goal paragraph and SPEC 6's stage C bullet are reworded
+to D82.
+
+F132 records the metadata check and the draw.
+- All 47 airports matched exactly one IEM station. LFPB is 9.47 km
+  from LFPG.
+- 18 airports have sea in their GFS grid box (a flag only). The KSFO
+  code check reproduces F117.3.
+- 37 airports have a MOSMIX station within 10 km. Only EGLC's
+  longitude sign is flagged (D81.6).
+- The 45 new airports' hourly reports were downloaded and saved (270
+  files with .meta.txt) and only counted; no value was printed.
+- Not eligible on coverage: MMMX, OPKC, VILK, RCSS, FACT.
+- The claim batch: EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN. The draw ran
+  once; held-out window 2024-08-01..2026-07-31.
+
+Disclosed in F132.8: the data collection ran twice after a bug in
+half-hour time zones (VILK only) was fixed. No other airport's counts
+changed, and eligibility and the draw used the second run only. The
+owner accepts F132 and its readings.
+
+Nothing from 2026-27 was read. No score was computed. No committed
+file under data/ was changed. STATUS.md is overwritten. Nothing was
+archived.
+
+New files: scripts/session90_airport_check.py,
+data/processed/session90_airports.csv (+ .meta.txt), 270 observation
+files under data/raw/ (+ .meta.txt), notes/session-90-output.txt,
+docs/session-90.md, docs/commit-90.txt.
