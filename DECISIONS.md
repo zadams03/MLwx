@@ -2851,3 +2851,233 @@ IEM's download page (documentation only) lists "Raw METAR" and no 6 h or 24 h ma
 - No account, key, token, paid tier, contact or data request. Nothing written under `data/`; `data/models/` was not touched.
 - No existing script was edited. The project's environment and `requirements.txt` were not touched. RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited; SPEC was edited only as Step 2 says.
 - No choice of data route, daily-maximum definition, airport or any other stage C design. Nothing was committed and no commit message was written.
+
+---
+
+## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and stage C's design (owner, planning chat)
+
+**D82. Owner decisions, planning chat (after session 89): F131
+accepted, the end goal reworded, and stage C's design: target and
+horizon, data route, airports, the claim batch rule and the daily
+maximum.** Written at the start of session 90, before any other edit or
+network call. No 2026-27 value has been read or scored.
+
+- **D82.1 F131 accepted.** The owner accepts F131 and all eleven
+  F131.9 readings, including the reduced reproduction sample (13 of 63
+  dates) and the strided speed test. Its conclusions stand: the
+  dynamical.org archive lacks two of the recipe's inputs (850 hPa
+  temperature, 2 m dew point) and defines cloud cover differently, so
+  it is not used; the GRIB route holds every field at every hour.
+- **D82.2 The end goal, reworded (replaces D72.1's wording).** A
+  private, live tool for ten or more airports that corrects every GFS
+  run (four a day), as each run arrives, into an hourly temperature
+  curve out to the forecast horizon, plus the daily maximum; the
+  horizon is 24 hours first and 48 hours later; then a choice of which
+  weather model is corrected, plus a blend; and probabilistic ranges.
+  It stays a private product built with good academic practice (D72.1,
+  D72.2(d)). The rest of D72 is unchanged.
+- **D82.3 Stage C's target and horizon.** The corrected forecast is
+  made from every GFS cycle (00, 06, 12 and 18 UTC), for every forecast
+  hour from 0 to 24 first. Forecast hours 25 to 48 are added later by a
+  separate, additive pull; nothing in the first pull is repeated. The
+  daily maximum is part of stage C's target (D82.8).
+- **D82.4 The data route.** NOAA's GFS GRIB files on
+  `noaa-gfs-bdp-pds`, fetched by byte range as the record does (SPEC
+  7.2). The pull runs on GitHub Actions in the public project
+  repository, as resumable chunks (each job is capped at 6 hours); the
+  first chunk measures speed. Each global field is downloaded, the
+  values at the four grid points around each airport are read out, and
+  the field is discarded: no global field is kept. Fields: the record's
+  eight (2 m temperature, total cloud cover, 10 m u and v wind, 2 m dew
+  point, 850 hPa temperature, downward shortwave radiation at the
+  surface, mean sea level pressure) plus GFS's 2 m maximum and minimum
+  temperature. Kept: the raw value at each of the four grid points, per
+  airport, field, cycle and forecast hour, so interpolation choices stay
+  open. Period: every cycle and forecast hour whose valid time lies
+  between 2021-03-24T00:00 and 2026-07-31T23:00 UTC; nothing from
+  2026-27. Estimated at about 100 files a day, about 1.6 to 1.8 TB of
+  downloads and about 1.5 GB kept for 47 airports (planning-chat
+  estimate from F131, not checked). The kept files are published as
+  GitHub Release files and downloaded once to the owner's laptop, so
+  the repository stays small. Gate: at each existing airport's target
+  hour, cycle and lead, the new values equal the committed ones. The
+  design details are session 91's.
+- **D82.5 What is not decided.** Whether one model takes lead time as an
+  input or each lead has its own model; whether the daily maximum is
+  read off the corrected curve or has its own model; and stage C's
+  claim design (bar, looks, lead bands). These are fixed by
+  time-ordered cross-validation on the development airports (D82.6) or
+  at stage C's lock, before any claim airport's held-out data is read.
+  Stage C's SPEC section is written at its lock. Bias drift follows
+  D81.10(b).
+- **D82.6 The airports.** The owner's 47-airport list, by ICAO code and
+  the owner's region label:
+  Europe: EHAM, LTAC, EFHK, LTFM, EGLC, LEMD, LIMC, UUWW, EDDM, LFPB,
+  EPWA.
+  North America: KATL, KAUS, KORD, KDAL, KBKF, KHOU, KLAX, MMMX, KMIA,
+  KLGA, KSFO, KSEA, CYYZ.
+  South America: SAEZ, SBGR.
+  Asia: ZBAA, RKPK, ZUUU, ZUCK, ZGGG, OEJN, OPKC, WMKK, VILK, RPLL,
+  ZSQD, RKSI, ZSPD, ZGSZ, WSSS, RCSS, LLBG, RJTT, ZHHH.
+  Africa: FACT. Oceania: NZWN.
+  All 47 are in the pull and are the product's airports. EGLC and KSFO
+  are already spent. The 45 others are new. **Until a later decision
+  says otherwise, no new airport's data is used for any build choice:**
+  build choices use the six development airports (EGLC, LFPG, DSM,
+  YSDU, RNO, KSFO) only, so every new airport stays clean for this and
+  later claim batches (D72.2(a), D72.3 "Ongoing"). Whether the MOSMIX
+  list (D81.2) grows to new airports is left to the saver session;
+  session 90 records which have a station within 10 km.
+- **D82.7 The claim batch: rules fixed before any check is run.** Six
+  airports, drawn by this rule and nothing else:
+  (a) Excluded: EGLC and KSFO (spent), and LFPB (about 9 km from LFPG, a
+  development airport, so weak evidence; it stays in the product).
+  (b) Eligible: an airport whose saved hourly observations give a usable
+  daily maximum (D82.8) on at least 90 percent of local days in
+  2021-03-24..2026-07-31, and on at least 90 percent of local days in
+  its held-out window 2024-08-01..2026-07-31. A local day counts only if
+  it starts on or after 2021-03-24T00:00 UTC and ends on or before
+  2026-07-31T23:59 UTC. An airport with no IEM archive is not eligible.
+  (c) Strata and sizes, in this order: Europe 1; North America 2; Asia
+  2; South (the owner's South America, Africa and Oceania labels
+  together) 1.
+  (d) Draw: Python's `random.Random(20261003)`, one generator for the
+  whole draw. For each stratum in (c)'s order, `sample` its eligible
+  airports, sorted by ICAO code, for its size. If a stratum has fewer
+  eligible airports than its size, take them all, and after the last
+  stratum fill the shortfall by `sample` from all remaining eligible
+  airports, sorted by ICAO code, with the same generator. Record the
+  Python version.
+  (e) Each drawn airport's held-out window is 2024-08-01..2026-07-31
+  (D72.4); its earlier years are for training. Its looks are fixed at
+  stage C's lock.
+- **D82.8 The daily maximum (stage C's target).** From the routine
+  hourly reports (SPEC 3), at every airport: the local calendar day,
+  midnight to midnight in the airport's own time zone (civil time,
+  daylight saving included); each report assigned to its nearest whole
+  hour by SPEC 8.8 G2 and G3; the day's maximum is the highest usable
+  hourly value. A day is usable only if usable hours are at least its
+  number of hours minus 2 (22 of 24; 21 of 23 and 23 of 25 on
+  clock-change days). A peak between hourly reports is missed; this is
+  accepted, being the same everywhere. It is not meant to match any
+  outside published figure; the aim is accuracy.
+- **D82.9 SPEC.** SPEC 1's end-goal paragraph is reworded to D82.2, and
+  SPEC 6's stage C bullet records D81 and D82 (session 90, Step 2).
+- **D82.10 Sequence.** Session 90: this entry, the SPEC edits, the
+  airport metadata check (counts only) and the draw. Session 91: build
+  the GitHub Actions pull and run a small local test chunk through
+  D82.4's gate. The owner then pushes and starts the full pull. Session
+  92: verify the extracts.
+
+---
+
+## 2026-10-03: Session 90 finding: the airport metadata check and the claim batch
+
+**F132. Stage C's 47-airport metadata check (D82.6) and the claim batch draw (D82.7). All 47 airports are in IEM, one station each; the 45 new airports' hourly reports were downloaded and saved, and only counted. The draw ran once and named six airports: EDDM, KORD, CYYZ, ZGSZ, ZUCK and NZWN. Script: `scripts/session90_airport_check.py` (new; modes `--collect` and `--decide`; SHA-256 `c55bab8dc736c2d43a66d640892038e19b2cb517cf5dc2f812e6c9eba6310a8d`). Table: `data/processed/session90_airports.csv` (47 rows, SHA-256 `b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7`, with a `.meta.txt`). Full real output: `notes/session-90-output.txt`. Run 2026-10-03. Python 3.12.2, eccodes 2.48.0, requests 2.34.2.**
+
+**F132.1 Steps 0 to 2.**
+- `git status --porcelain` showed only `?? docs/session-90.md`. The last entries were D81 and F131; no D82 or F132 existed in either DECISIONS file; the script, output file and table did not exist. D72, D81, F130, F131, SPEC 1, 3, 4, 6 and 8.8 were read, and the `.meta.txt` of the committed DSM 2021 file.
+- D82 was copied mechanically (`sed`) from `docs/session-90.md` lines 94 to 205 into DECISIONS.md lines 2859 to 2970 (heading at line 2857) and checked byte-equal with `diff`, before any other edit or network call.
+- SPEC 1's end-goal paragraph and SPEC 6's stage C bullet were replaced as Step 2 says (both passages were found exactly; `git diff -- SPEC.md` is in the output file). Nothing else in SPEC changed.
+
+**F132.2 Identity and position (3.1).** Source: IEM's station metadata, `https://mesonet.agron.iastate.edu/api/1/station/<id>.json`, accessed 2026-10-03 (tag: verified). Each ICAO code was looked up, and for the 11 US airports its three-letter form too; only `*_ASOS` networks count. **All 47 matched exactly one IEM station: none missing, none ambiguous.** US airports use the three-letter id (ATL, AUS, ORD, DAL, BKF, HOU, LAX, MIA, LGA, SFO, SEA), the others the ICAO code. Positions, elevations and time zones are in the table file. Two readings: IEM lists NZWN (Wellington) under the network `NF__ASOS`; and IEM's time zone for ZUUU and ZUCK is `Asia/Chongqing` (a legacy zone name; it loaded). **EGLC and KSFO still match SPEC 3.4** at its precision (EGLC: 51.50528, 0.05528, 5 m, 2.6 m from SPEC's position; KSFO: 37.61897, -122.37489, 5 m, 3.5 m). **LFPB to LFPG: 9.47 km** (SPEC 3.4's position for LFPG).
+
+**F132.3 GFS grid box, land, sea and terrain (3.2, 3.3).** File `gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000` (both messages were in f000; f001 not needed). Two messages read by byte range, nothing else: `LAND:surface` (bytes 498234083-498266118, 32,036 B) and `HGT:surface` (409252673-409745115, 492,443 B). Each was checked for identity (discipline, category, number, surface type), run date and time, and validity 2024-03-14 00:00. The box and weights follow SPEC 8.8 G6, at IEM's airport position. **Code check:** at KSFO's SPEC 3.4 grid point the sea weight is 0.3750 (F117.3: 0.375) and the model height 94.47 m (SPEC 3.4 notes: 94.47 m). **18 airports have sea in the grid box (land fraction under 1.0):** LTFM, KLAX, KSFO, CYYZ (lake), RKPK, OEJN, OPKC, WMKK, RPLL, ZSQD, RKSI (land 0.0000), ZSPD, ZGSZ, WSSS, RCSS, RJTT, FACT, NZWN. This is a flag only; it excludes nothing. Of the claim batch, ZGSZ (land 0.2223), CYYZ (0.8609) and NZWN (0.6912) carry the flag. Model-height differences run from -58.2 m (ZSQD) to +185.0 m (LTAC); the three beyond 100 m in size are LTAC +185.0, RCSS +183.5 and MMMX +163.6. All 47 are in the table below and in the file.
+
+**F132.4 Hourly observations (3.4).** Request as the committed files (same parameters; `.meta.txt` in the same format, with row count and SHA-256 added). Six yearly pieces per airport (2021-03-24 to 2021-12-31, 2022, 2023, 2024, 2025, then 2026-01-01 to 2026-07-31), 45 airports, 270 files and 270 `.meta.txt` files under `data/raw/`. **No row was later than 2026-07-31 23:59 UTC and none was dropped.** Row counts per airport are 39,041 (MMMX) to 46,935 (WSSS); the usual report minute, rows with no usable temperature, and the days per whole hour are in the output file. The counting code was first checked against F131.6 on the committed files: the count of UTC days with all 24 hours equals F131.6 at all six airports (EGLC 1,933, LFPG 1,875, DSM 1,946, YSDU 1,690, RNO 1,930, SFO 1,931). Notable: MMMX reports at scattered minutes (mostly :40 to :50, 15,380 of 39,041 at :45), so many reports are more than 15 minutes from the hour (G3), and its files are short in 2021 and 2022 (2,199 and 5,763 rows).
+
+**F132.5 MOSMIX and NBM (3.5).** DWD station catalogue (`.cfg`, F130.4's method), accessed 2026-10-03, 5,649 stations. **37 of the 47 airports have a MOSMIX station within 10 km**; the ten beyond 10 km are UUWW (26.0 km), KAUS (13.2), KDAL (18.0), KBKF (11.2), KHOU (37.2), ZBAA (30.2), ZUUU (17.9), ZGGG (29.3), WMKK (47.5) and ZSPD (42.5). Nearest-station ids and distances are in the table file. Of the claim batch: EDDM 10870 (1.15 km), KORD 72530 (3.67), CYYZ 71624 (1.19), ZGSZ 59493 (1.14), ZUCK 57516 (0.49), NZWN 93436 (0.81), all within 10 km. **Longitude sign: only EGLC is flagged** (P0478: 7.69 km as listed, 2.47 km with the sign flipped, as D81.6 noted). No other airport's station of the same ICAO code moves nearer when flipped. NBM domain, from NBM's documentation only (`https://vlab.noaa.gov/web/mdl/nbm-data-availability-v5.0`, read 2026-10-03, which names CONUS, Alaska, Hawaii, Puerto Rico, Guam, Oceanic and Global Upper Air and gives no extents in its text): CONUS for the 11 contiguous US airports (by location; inference), unknown for CYYZ and MMMX, none for the other 34.
+
+**F132.6 Eligibility and the draw (Step 4).** The rule was applied mechanically to the counts. Not eligible: EGLC and KSFO (spent), LFPB (D82.7(a)), and five that fall under 90 percent in at least one window: **MMMX** (5.32 and 0.69), **OPKC** (79.74 in the whole window; 97.40 held out), **VILK** (80.36 and 72.05), **RCSS** (91.51 and 77.81) and **FACT** (93.50 and 84.66). KBKF (97.14 and 93.96) passes. The strata then had Europe 9 eligible, North America 11, Asia 16 and South 3. The draw, as printed (`random.Random(20261003)`, Python 3.12.2):
+```
+stratum Europe (size 1): ['EDDM', 'EFHK', 'EHAM', 'EPWA', 'LEMD', 'LIMC', 'LTAC', 'LTFM', 'UUWW']
+  sample(9 eligible, 1) returned ['EDDM']
+stratum North America (size 2): ['CYYZ', 'KATL', 'KAUS', 'KBKF', 'KDAL', 'KHOU', 'KLAX', 'KLGA', 'KMIA', 'KORD', 'KSEA']
+  sample(11 eligible, 2) returned ['KORD', 'CYYZ']
+stratum Asia (size 2): ['LLBG', 'OEJN', 'RJTT', 'RKPK', 'RKSI', 'RPLL', 'WMKK', 'WSSS', 'ZBAA', 'ZGGG', 'ZGSZ', 'ZHHH', 'ZSPD', 'ZSQD', 'ZUCK', 'ZUUU']
+  sample(16 eligible, 2) returned ['ZGSZ', 'ZUCK']
+stratum South (size 1): ['NZWN', 'SAEZ', 'SBGR']
+  sample(3 eligible, 1) returned ['NZWN']
+```
+No stratum was short, so no fill was needed. **THE CLAIM BATCH: EDDM (Munich), KORD (Chicago O'Hare), CYYZ (Toronto), ZGSZ (Shenzhen), ZUCK (Chongqing), NZWN (Wellington).** Each one's held-out window is 2024-08-01..2026-07-31 (D82.7(e)). The draw was run once, and neither the seed nor any eligibility result was changed after it.
+
+**F132.7 The 47 airports (compact; the full table is the csv).** Daily maximum percentages are D82.8's usable local days, over 2021-03-24..2026-07-31 and over 2024-08-01..2026-07-31.
+
+| ICAO | IEM ID | sea in box | height diff (m) | MOSMIX within 10 km | daily max usable, all (%) | held-out (%) | eligible | drawn |
+|---|---|---|---|---|---|---|---|---|
+| EHAM | EHAM | no | -9.3 | yes (2.3 km) | 99.80 | 99.86 | yes | no |
+| LTAC | LTAC | no | +185.0 | yes (1.6 km) | 99.85 | 99.86 | yes | no |
+| EFHK | EFHK | no | -14.4 | yes (0.2 km) | 99.95 | 100.00 | yes | no |
+| LTFM | LTFM | yes | -49.6 | yes (0.8 km) | 99.85 | 99.86 | yes | no |
+| EGLC | EGLC | no | +28.3 | yes (7.7 km) | 99.80 | 100.00 | no: spent | no |
+| LEMD | LEMD | no | +67.2 | yes (1.9 km) | 99.64 | 100.00 | yes | no |
+| LIMC | LIMC | no | +38.7 | yes (1.7 km) | 99.49 | 99.59 | yes | no |
+| UUWW | UUWW | no | -21.0 | no (26.0 km) | 99.80 | 100.00 | yes | no |
+| EDDM | EDDM | no | +34.8 | yes (1.1 km) | 99.95 | 100.00 | yes | yes |
+| LFPB | LFPB | no | +16.1 | yes (0.5 km) | 97.49 | 98.63 | no: LFPB rule | no |
+| EPWA | EPWA | no | -3.9 | yes (0.6 km) | 99.64 | 99.86 | yes | no |
+| KATL | ATL | no | -34.1 | yes (3.2 km) | 99.85 | 99.86 | yes | no |
+| KAUS | AUS | no | +37.9 | no (13.1 km) | 99.69 | 99.73 | yes | no |
+| KORD | ORD | no | +7.4 | yes (3.7 km) | 99.80 | 99.59 | yes | yes |
+| KDAL | DAL | no | +20.0 | no (17.9 km) | 99.90 | 99.86 | yes | no |
+| KBKF | BKF | no | -13.0 | no (11.2 km) | 97.14 | 93.96 | yes | no |
+| KHOU | HOU | no | +2.4 | no (37.2 km) | 99.74 | 99.73 | yes | no |
+| KLAX | LAX | yes | +38.2 | yes (1.4 km) | 99.74 | 99.45 | yes | no |
+| MMMX | MMMX | no | +163.6 | yes (1.2 km) | 5.32 | 0.69 | no: under 90% | no |
+| KMIA | MIA | no | +2.2 | yes (4.6 km) | 99.85 | 99.73 | yes | no |
+| KLGA | LGA | no | +13.8 | yes (2.2 km) | 99.90 | 99.86 | yes | no |
+| KSFO | SFO | yes | +69.9 | yes (0.8 km) | 99.85 | 99.73 | no: spent | no |
+| KSEA | SEA | no | -53.5 | yes (1.2 km) | 99.85 | 99.73 | yes | no |
+| CYYZ | CYYZ | yes | +5.9 | yes (1.2 km) | 99.64 | 99.86 | yes | yes |
+| SAEZ | SAEZ | no | +0.7 | yes (0.7 km) | 99.49 | 99.73 | yes | no |
+| SBGR | SBGR | no | +66.5 | yes (0.3 km) | 99.80 | 100.00 | yes | no |
+| ZBAA | ZBAA | no | +21.4 | no (30.2 km) | 99.74 | 100.00 | yes | no |
+| RKPK | RKPK | yes | +89.8 | yes (0.6 km) | 99.64 | 99.59 | yes | no |
+| ZUUU | ZUUU | no | +4.4 | no (17.9 km) | 99.80 | 100.00 | yes | no |
+| ZUCK | ZUCK | no | -33.9 | yes (0.5 km) | 99.85 | 100.00 | yes | yes |
+| ZGGG | ZGGG | no | +45.1 | no (29.3 km) | 99.85 | 100.00 | yes | no |
+| OEJN | OEJN | yes | +32.8 | yes (7.7 km) | 99.85 | 100.00 | yes | no |
+| OPKC | OPKC | yes | +13.3 | yes (6.7 km) | 79.74 | 97.40 | no: under 90% | no |
+| WMKK | WMKK | yes | +10.5 | no (47.5 km) | 99.74 | 100.00 | yes | no |
+| VILK | VILK | no | -5.8 | yes (1.3 km) | 80.36 | 72.05 | no: under 90% | no |
+| RPLL | RPLL | yes | -5.6 | yes (1.2 km) | 99.54 | 99.86 | yes | no |
+| ZSQD | ZSQD | yes | -58.2 | yes (0.0 km) | 99.85 | 100.00 | yes | no |
+| RKSI | RKSI | yes | -1.7 | yes (1.5 km) | 99.69 | 100.00 | yes | no |
+| ZSPD | ZSPD | yes | -0.9 | no (42.5 km) | 99.69 | 100.00 | yes | no |
+| ZGSZ | ZGSZ | yes | +19.9 | yes (1.1 km) | 99.85 | 100.00 | yes | yes |
+| WSSS | WSSS | yes | -3.9 | yes (0.0 km) | 99.85 | 100.00 | yes | no |
+| RCSS | RCSS | yes | +183.5 | yes (5.3 km) | 91.51 | 77.81 | no: under 90% | no |
+| LLBG | LLBG | no | +75.1 | yes (1.8 km) | 99.39 | 99.45 | yes | no |
+| RJTT | RJTT | yes | +1.1 | yes (1.4 km) | 99.80 | 100.00 | yes | no |
+| ZHHH | ZHHH | no | +4.7 | yes (0.5 km) | 99.85 | 100.00 | yes | no |
+| FACT | FACT | yes | +39.7 | yes (1.9 km) | 93.50 | 84.66 | no: under 90% | no |
+| NZWN | NZWN | yes | +79.2 | yes (0.8 km) | 99.54 | 99.86 | yes | yes |
+
+**F132.8 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. **The grid box is at IEM's airport position** for every airport. For the record airports the recipe uses SPEC 3.4's Open-Meteo grid point instead; that point was used only once, as a code check at KSFO.
+2. **Local day bounds.** A local day's "end" in D82.7(b) is read as its last minute (23:59 local), so a UTC+0 airport's local 2026-07-31 counts and a UTC-7 one's does not. The first local day counted starts on or after 2021-03-24 00:00 UTC. So most airports have 1,955 local days in the whole window (EGLC 1,956).
+3. **The held-out window** is read as local dates from 2024-08-01, with the same day rule (729 or 730 days).
+4. **Hours in a local day** are the whole UTC hours inside it. For India (UTC+5:30) the first hour starts after local midnight; the day still has 24 whole hours. A day is usable at 22 of 24 (21 of 23, 23 of 25).
+5. **A usable hour** has at least one report with a finite `tmpc` assigned to it by G2 and G3 (nearest whole hour; :30 goes up; more than 15 minutes out is dropped). Which report is nearest does not change a count, so no tie rule was needed. Non-finite values found: 0.
+6. **The IEM match** counts only `*_ASOS` networks (other-network rows are listed per airport in the output file); for K-airports both the ICAO and the three-letter id were tried. An ambiguous match would have been recorded and left out of the draw as "not eligible"; none occurred.
+7. **MOSMIX nearest station** is the nearest of all catalogue entries by the cfg position. The longitude-sign flag is raised when the entry with the same ICAO code would be at least 2 km nearer with its longitude sign flipped (a threshold chosen here; only a flag).
+8. **NBM domain** is by location, from domain names only (F132.5); the CONUS grid's extent over Toronto and Mexico City is not stated in the text read, so those are "unknown".
+9. **Six yearly pieces,** not seven: the prompt's list gives six.
+10. **Time zones** are IEM's `tzname`, loaded with the system tz database through `zoneinfo`.
+11. **The `.meta.txt` files** follow the committed format and add row count, byte count and SHA-256.
+12. **Run history.** `--collect` was run twice. Run 1 (15:03 to 15:56 UTC) downloaded the files and counted; its VILK result (0 usable local days) was a bug in the script: for half-hour zones the day's hour slots never matched whole UTC hours. The bug was fixed and run 2 (about 16:00 UTC; the downloaded files were checked by SHA-256 and kept, not fetched again) redid the lookups, GRIB messages, counts and MOSMIX. VILK is 80.36 and 72.05 percent in run 2. **No other airport's counts changed between the runs** (checked). The eligibility and the draw came only from run 2's counts, run once. Run 1's output is in the output file.
+
+**F132.9 Requests, bytes, clean-up.**
+- Run 1 (script): IEM station metadata 58 requests (147,856 B; two 404 for unknown three-letter ids), GFS idx 1 (31,816 B), GFS messages 2 (524,479 B), IEM ASOS download 309 requests (117,852,013 B; 270 files; 39 requests were network errors, all retried successfully), DWD catalogue 1 (299,502 B): 371 requests, 118,855,666 B. Run 2: IEM station metadata 59 (147,856 B), GFS idx 1, GFS messages 2, DWD catalogue 1: 63 requests, 1,003,653 B. IEM calls were one at a time, at least 1.2 s apart.
+- Before the script: 8 exploratory requests (a test of the script's lookup and GRIB functions: IEM station metadata 5 and GRIB 3), and by `curl` while planning: IEM `networks.geojson` (148,655 B), IEM station `EHAM`, network `NL__ASOS` as JSON and as GeoJSON (4 requests), and NBM documentation pages at `vlab.noaa.gov` and `weather.gov` (7 requests; two 404 and one 403). No forecast or observation value was read in any of them.
+- **Each run's temporary directory (the two GRIB messages and the DWD catalogue) was deleted at its end** (the script prints "removed: True"; none is left under the scratch directory).
+- Rows dropped by the 2026-07-31 limit: 0.
+
+**F132.10 What this did not do.**
+- No temperature or dew point value was printed, stored in the state file or summarised; observations were kept in memory only as "usable, yes or no", with times. No statistic of a value was computed.
+- No forecast field was read beyond the land-sea mask and the surface height. No score, error or skill of anything.
+- Nothing from 2026-27 was requested, received or counted.
+- No account, key, token, sign-up or contact.
+- No committed file under `data/` was changed, and `data/models/` was not touched. The only new files under `data/` are 270 observation files with 270 `.meta.txt` files, `data/processed/session90_airports.csv` and its `.meta.txt`.
+- No existing script was edited. No GRIB pull was built (that is session 91, D82.10). RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited; SPEC was edited only as Step 2 says.
+- Nothing was installed, and nothing was committed. No commit message was written.

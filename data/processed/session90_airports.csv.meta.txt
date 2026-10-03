@@ -1,0 +1,15 @@
+Provenance (SPEC 2.3). Do not edit the data file.
+
+file        : session90_airports.csv
+purpose     : session 90, Step 5.1 - the 47 airports of DECISIONS D82.6: IEM identity, GFS grid box,
+              land and sea, MOSMIX station, NBM domain, daily-maximum counts, eligibility and the draw.
+              No temperature or dew point value is in it.
+written at  : 2026-10-03T16:00:56Z
+written by  : scripts/session90_airport_check.py --decide
+rows        : 47
+sha256      : b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+
+sources: IEM station metadata and saved routine hourly reports (data/raw/iem_asos_*); NOAA GFS file
+https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000 (LAND:surface and HGT:surface only); DWD MOSMIX station catalogue
+https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationskatalog.cfg?view=nasPublication (accessed 2026-10-03T16:00:43Z); NBM documentation (domain names only).
+The draw is DECISIONS D82.7(d) with random.Random(20261003).

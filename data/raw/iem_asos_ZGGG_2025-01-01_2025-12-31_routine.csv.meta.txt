@@ -1,0 +1,38 @@
+Raw pull provenance (SPEC 2.3). Do not edit the data file.
+
+file        : iem_asos_ZGGG_2025-01-01_2025-12-31_routine.csv
+purpose     : session 90, Step 3.4 - hourly routine reports for ZGGG (IEM id ZGGG),
+              saved for the stage C airport check (DECISIONS D82). Counted only; no value is
+              printed or summarised.
+pulled at   : 2026-10-03 15:14:18 UTC
+source      : Iowa Environmental Mesonet (IEM) ASOS/METAR download service
+tool        : python requests (scripts/session90_airport_check.py)
+
+exact URL requested:
+https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=ZGGG&data=tmpc&data=dwpc&year1=2025&month1=1&day1=1&year2=2026&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+
+parameters:
+  station     = ZGGG
+  data        = tmpc, dwpc  (tmpc = air temperature degC, dwpc = dew point degC)
+  date range  = 2025-01-01 to 2025-12-31 inclusive. IEM treats its end date as exclusive, so the
+                request asks for the day after.
+  tz          = UTC
+  format      = onlycomma
+  latlon      = yes
+  elev        = yes
+  missing     = M
+  trace       = T
+  report_type = 3   (routine METAR only)
+
+HTTP status : 200
+bytes       : 497844
+data rows   : 8760 (header excluded)
+sha256      : 2701cafcf535aed43461e452ecb07e4e24b0df47130da3dfab4bec8136de123d
+rows dropped for being later than 2026-07-31 23:59 UTC: 0
+
+notes:
+- Same request as the committed IEM files (for example the DSM files), with a different
+  station.
+- Rows marked M are left exactly as they arrived. Nothing was filled in (SPEC 2.2).
+- The first hour of a request window has no report inside that window, so the very first
+  hour of 2021-03-24 may be missing. Nothing is filled to cover it.

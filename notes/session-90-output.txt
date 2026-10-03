@@ -1,0 +1,1160 @@
+SESSION 90 OUTPUT (real output, assembled from the run logs)
+assembled 2026-10-03T16:03:21Z
+
+=== STEP 0: integrity checks (run at the start of the session) ===
+git status --porcelain at the start: '?? docs/session-90.md' only.
+D82 or F132 in DECISIONS.md or DECISIONS-archive.md at the start: none. Last entries: D81 (heading line 2638) and F131 (line 2707).
+scripts/session90_airport_check.py, notes/session-90-output.txt, data/processed/session90_airports.csv: all absent at the start.
+
+=== STEP 1: D82 byte-equality check (re-run at the end) ===
+BYTE-EQUAL: DECISIONS.md lines 2859-2970 vs docs/session-90.md lines 94-205 (heading at line 2857)
+
+=== STEP 2: git diff -- SPEC.md ===
+diff --git a/SPEC.md b/SPEC.md
+index 57dfa92..90d704b 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -51,12 +51,14 @@ facts — its code, its position, the forecast grid point it maps to, when it
+ reports, and its target hour — live in the airport table in section 3.4.
+ Everything else in this file is shared by all of them.
+ 
+-The end goal is a private, live daily tool that shows corrected
+-day-ahead temperature forecasts for ten or more airports: an hourly
+-temperature curve and the daily maximum, at 24-hour and 48-hour leads;
+-a choice of which weather model is corrected, plus a blend; and
+-probabilistic ranges (DECISIONS D72.1). That is the destination, not
+-the starting point. See section 6 for the roadmap.
++The end goal is a private, live tool for ten or more airports that
++corrects every GFS run (four a day), as each run arrives, into an
++hourly temperature curve out to the forecast horizon, plus the daily
++maximum. The horizon is 24 hours first and 48 hours later. Then come
++a choice of which weather model is corrected, plus a blend, and
++probabilistic ranges (DECISIONS D72.1, reworded by D82.2). That is
++the destination, not the starting point. See section 6 for the
++roadmap.
+ 
+ ---
+ 
+@@ -747,9 +749,12 @@ side, because both are time-critical.
+   (DECISIONS D78.3) found that DWD's MOSMIX keeps only about two days of
+   issues (F130); daily saves of MOSMIX_L single-station files are chosen
+   in DECISIONS D81.
+-- **Stage C — widen the target, on GFS only.** An hourly temperature
+-  curve, the daily maximum, and the 48-hour lead. Written with the
+-  weather model as a setting.
++- **Stage C — widen the target, on GFS only.** Correct every GFS run
++  into an hourly temperature curve, plus the daily maximum, for
++  forecast hours 0 to 24 first and to 48 later. Written with the
++  weather model as a setting. Opened in DECISIONS D81; its design is in
++  DECISIONS D82. Its claim is judged on new airports only, drawn by the
++  rule in DECISIONS D82.7.
+ - **Stage D — correct each other weather model on its own,** on the
+   full curve, screening each at a few hours first.
+ - **Stage E — blend and stack.** Combine the corrected models, with NBM
+
+=== STEP 3.4 to 5: run logs ===
+--- collect run 1 (started 2026-10-03T15:03:14Z, ended 2026-10-03T15:56:44Z); its VILK result was wrong (bug, see F132.8 item 12) ---
+temporary directory: /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/e6e16962-2c1b-495f-afa9-f0841c58b7ac/scratchpad/s90_3h0bt923
+python 3.12.2, eccodes 2.48.0, requests 2.34.2
+
+==============================================================================
+3.1 Identity and position (IEM station metadata)
+==============================================================================
+source: https://mesonet.agron.iastate.edu/api/1/station/<id>.json (IEM's own station metadata; the id is the ICAO code, and for
+US airports its three-letter form too). Only *_ASOS networks count as matches.
+
+EHAM  Europe        id EHAM  NL__ASOS    Amsterdam                    lat 52.3154 lon 4.7902 elev 9.0 m  Europe/Amsterdam  archive 1932-05-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+LTAC  Europe        id LTAC  TR__ASOS    Ankara                       lat 40.1281 lon 32.9951 elev 949.0 m  Europe/Istanbul  archive 1966-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+EFHK  Europe        id EFHK  FI__ASOS    Helsinki                     lat 60.3172 lon 24.9633 elev 56.0 m  Europe/Helsinki  archive 1951-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+LTFM  Europe        id LTFM  TR__ASOS    Istanbul                     lat 41.2629 lon 28.7413 elev 120.470314 m  Europe/Istanbul  archive 2018-11-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+EGLC  Europe        id EGLC  GB__ASOS    London City                  lat 51.5053 lon 0.0553 elev 5.0 m  Europe/London  archive 1988-01-29T00:00:00Z..None online True  (other-network rows ignored: 0)
+LEMD  Europe        id LEMD  ES__ASOS    Madrid                       lat 40.4667 lon -3.5556 elev 582.0 m  Europe/Madrid  archive 1931-01-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+LIMC  Europe        id LIMC  IT__ASOS    Milano                       lat 45.6300 lon 8.7231 elev 211.0 m  Europe/Rome  archive 1965-02-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+UUWW  Europe        id UUWW  RU__ASOS    Moscow                       lat 55.5915 lon 37.2615 elev 203.0 m  Europe/Moscow  archive 1972-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+EDDM  Europe        id EDDM  DE__ASOS    Munich                       lat 48.3583 lon 11.8092 elev 447.0 m  Europe/Berlin  archive 1929-08-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+LFPB  Europe        id LFPB  FR__ASOS    Paris                        lat 48.9672 lon 2.4272 elev 65.0 m  Europe/Paris  archive 1928-01-04T00:00:00Z..None online True  (other-network rows ignored: 0)
+EPWA  Europe        id EPWA  PL__ASOS    Warsaw                       lat 52.1628 lon 20.9611 elev 107.0 m  Europe/Warsaw  archive 1928-01-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+KATL  North America id ATL   GA_ASOS     ATLANTA INTL ARPT            lat 33.6301 lon -84.4418 elev 315.0 m  America/New_York  archive 1945-01-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KAUS  North America id AUS   TX_ASOS     Austin Bergstrom Intl        lat 30.1830 lon -97.6799 elev 146.0 m  America/Chicago  archive 1998-04-28T00:00:00Z..None online True  (other-network rows ignored: 1)
+KORD  North America id ORD   IL_ASOS     Chicago OHare                lat 41.9602 lon -87.9316 elev 205.0 m  America/Chicago  archive 1946-10-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KDAL  North America id DAL   TX_ASOS     DALLAS/LOVE FIELD            lat 32.8471 lon -96.8518 elev 148.0 m  America/Chicago  archive 1930-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KBKF  North America id BKF   CO_ASOS     BUCKLEY ANGB/DENVER          lat 39.7017 lon -104.7517 elev 1726.0 m  America/Denver  archive 1944-03-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+KHOU  North America id HOU   TX_ASOS     HOUSTON/WILL HOBBY           lat 29.6375 lon -95.2824 elev 14.0 m  America/Chicago  archive 1929-02-01T00:00:00Z..None online True  (other-network rows ignored: 2)
+KLAX  North America id LAX   CA_ASOS     LOS ANGELES INTL             lat 33.9382 lon -118.3865 elev 32.0 m  America/Los_Angeles  archive 1931-06-02T00:00:00Z..None online True  (other-network rows ignored: 2)
+MMMX  North America id MMMX  MX__ASOS    Mexico City                  lat 19.4363 lon -99.0721 elev 2238.0 m  America/Mexico_City  archive 1973-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KMIA  North America id MIA   FL_ASOS     MIAMI INTL AIRPORT           lat 25.7880 lon -80.3169 elev 4.0 m  America/New_York  archive 1932-07-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KLGA  North America id LGA   NY_ASOS     New York/LaGuardia           lat 40.7794 lon -73.8803 elev 9.0 m  America/New_York  archive 1935-02-22T00:00:00Z..None online True  (other-network rows ignored: 2)
+KSFO  North America id SFO   CA_ASOS     SAN FRANCISCO INTL           lat 37.6190 lon -122.3749 elev 5.0 m  America/Los_Angeles  archive 1932-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KSEA  North America id SEA   WA_ASOS     SEATTLE-TACOMA INTL          lat 47.4447 lon -122.3144 elev 137.0 m  America/Los_Angeles  archive 1944-07-07T00:00:00Z..None online True  (other-network rows ignored: 2)
+CYYZ  North America id CYYZ  CA_ON_ASOS  LESTER B PEARSON INTL        lat 43.6772 lon -79.6306 elev 173.0 m  America/Toronto  archive 1949-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+SAEZ  South America id SAEZ  AR__ASOS    Buenos Aires                 lat -34.8222 lon -58.5358 elev 20.0 m  America/Argentina/Buenos_Aires  archive 1957-06-29T00:00:00Z..None online True  (other-network rows ignored: 0)
+SBGR  South America id SBGR  BR__ASOS    Sao Paulo                    lat -23.4321 lon -46.4695 elev 750.0 m  America/Sao_Paulo  archive 2001-07-21T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZBAA  Asia          id ZBAA  CN__ASOS    Beijing                      lat 40.0741 lon 116.5870 elev 30.0 m  Asia/Shanghai  archive 1945-10-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+RKPK  Asia          id RKPK  KR__ASOS    Busan                        lat 35.1795 lon 128.9382 elev 15.0 m  Asia/Seoul  archive 1954-07-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZUUU  Asia          id ZUUU  CN__ASOS    Chengdu                      lat 30.6667 lon 104.0167 elev 508.0 m  Asia/Chongqing  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZUCK  Asia          id ZUCK  CN__ASOS    Chongqing                    lat 29.5200 lon 106.4800 elev 351.0 m  Asia/Chongqing  archive 1944-11-10T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZGGG  Asia          id ZGGG  CN__ASOS    Guangzhou                    lat 23.3964 lon 113.3008 elev 15.0 m  Asia/Shanghai  archive 1945-11-30T00:00:00Z..None online True  (other-network rows ignored: 0)
+OEJN  Asia          id OEJN  SA__ASOS    Jeddah                       lat 21.6598 lon 39.1222 elev 2.0 m  Asia/Riyadh  archive 1981-05-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+OPKC  Asia          id OPKC  PK__ASOS    Karachi                      lat 24.8456 lon 67.1614 elev 18.0 m  Asia/Karachi  archive 1942-05-06T00:00:00Z..None online True  (other-network rows ignored: 0)
+WMKK  Asia          id WMKK  MY__ASOS    Kuala Lumpur                 lat 2.7167 lon 101.7000 elev 22.0 m  Asia/Kuala_Lumpur  archive 2000-02-10T00:00:00Z..None online True  (other-network rows ignored: 0)
+VILK  Asia          id VILK  IN__ASOS    Lucknow                      lat 26.7606 lon 80.8893 elev 128.0 m  Asia/Kolkata  archive 1944-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+RPLL  Asia          id RPLL  PH__ASOS    Manila                       lat 14.5069 lon 121.0042 elev 19.242466 m  Asia/Manila  archive 1945-03-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZSQD  Asia          id ZSQD  CN__ASOS    Qingdao                      lat 36.0667 lon 120.3333 elev 77.0 m  Asia/Shanghai  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+RKSI  Asia          id RKSI  KR__ASOS    Seoul                        lat 37.4667 lon 126.4500 elev 7.0 m  Asia/Seoul  archive 2001-11-26T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZSPD  Asia          id ZSPD  CN__ASOS    Shanghai                     lat 31.1167 lon 121.7667 elev 4.0 m  Asia/Shanghai  archive 2001-07-21T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZGSZ  Asia          id ZGSZ  CN__ASOS    Shenzhen                     lat 22.6323 lon 113.8056 elev 1.0 m  Asia/Shanghai  archive 1957-06-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+WSSS  Asia          id WSSS  SG__ASOS    Singapore                    lat 1.3667 lon 103.9833 elev 16.0 m  Asia/Singapore  archive 1956-01-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+RCSS  Asia          id RCSS  TW__ASOS    Taipei                       lat 25.0694 lon 121.5517 elev 6.0 m  Asia/Taipei  archive 2000-12-13T00:00:00Z..None online True  (other-network rows ignored: 0)
+LLBG  Asia          id LLBG  IL__ASOS    Tel-aviv                     lat 32.0114 lon 34.8867 elev 49.0 m  Asia/Jerusalem  archive 2001-02-15T00:00:00Z..None online True  (other-network rows ignored: 0)
+RJTT  Asia          id RJTT  JP__ASOS    Tokyo                        lat 35.5533 lon 139.7811 elev 8.0 m  Asia/Tokyo  archive 1946-09-11T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZHHH  Asia          id ZHHH  CN__ASOS    Wuhan                        lat 30.6200 lon 114.1300 elev 23.0 m  Asia/Shanghai  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+FACT  Africa        id FACT  ZA__ASOS    Cape Town                    lat -33.9667 lon 18.6000 elev 42.0 m  Africa/Johannesburg  archive 1949-01-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+NZWN  Oceania       id NZWN  NF__ASOS    Wellington                   lat -41.3272 lon 174.8053 elev 0.0 m  Pacific/Auckland  archive 2000-01-07T00:00:00Z..None online True  (other-network rows ignored: 0)
+
+missing from IEM: none; ambiguous: none
+
+EGLC and KSFO against SPEC 3.4:
+  EGLC: IEM lat 51.50528 lon 0.05528 elev 5.0 m; SPEC 3.4 lat 51.5053 lon 0.0553 elev 5 m; same at SPEC 3.4's precision: True; offset 2.6 m
+  KSFO: IEM lat 37.61897 lon -122.37489 elev 5.0 m; SPEC 3.4 lat 37.619 lon -122.3749 elev 5 m; same at SPEC 3.4's precision: True; offset 3.5 m
+
+LFPB to LFPG (SPEC 3.4 position (49.0153, 2.5344)): 9.47 km
+
+==============================================================================
+3.2 and 3.3 GFS grid box, land-sea mask and model terrain (two messages, one spent-year file)
+==============================================================================
+file: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000 (run 2024-03-14 00z, f000)
+idx: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000.idx
+  LAND: idx line LAND:surface:anl, byte range 498234083-498266118, 32036 bytes, sha256 0cb69819532f60a51c648c8c77543dd89e517efb2dce6450a38c350198124ccf
+  HGT: idx line HGT:surface:anl, byte range 409252673-409745115, 492443 bytes, sha256 1e5c13855bf6b78aa3b453bc71c38eea36bca7cfcfabed9f8fe517b954e60572
+  LAND message: {'identity': (2, 0, 0, 1), 'level': 0, 'stepType': 'instant', 'units': '(0 - 1)', 'shortName': 'lsm', 'dataDate': 20240314, 'dataTime': 0, 'validityDate': 20240314, 'validityTime': 0, 'Ni': 1440, 'Nj': 721}
+  HGT message: {'identity': (0, 3, 5, 1), 'level': 0, 'stepType': 'instant', 'units': 'm', 'shortName': 'orog', 'dataDate': 20240314, 'dataTime': 0, 'validityDate': 20240314, 'validityTime': 0, 'Ni': 1440, 'Nj': 721}
+EHAM  (52.25,4.75) w0.6197 m1 (52.25,5.00) w0.1186 m1 (52.50,4.75) w0.2196 m1 (52.50,5.00) w0.0420 m1  land 1.0000  model height -0.26 m  station 9.0 m  diff -9.26 m  
+LTAC  (40.00,32.75) w0.0096 m1 (40.00,33.00) w0.4781 m1 (40.25,32.75) w0.0101 m1 (40.25,33.00) w0.5022 m1  land 1.0000  model height 1134.04 m  station 949.0 m  diff +185.04 m  
+EFHK  (60.25,24.75) w0.1072 m1 (60.25,25.00) w0.6239 m1 (60.50,24.75) w0.0394 m1 (60.50,25.00) w0.2294 m1  land 1.0000  model height 41.61 m  station 56.0 m  diff -14.39 m  
+LTFM  (41.25,28.50) w0.0330 m1 (41.25,28.75) w0.9154 m1 (41.50,28.50) w0.0018 m0 (41.50,28.75) w0.0498 m0  land 0.9484  model height 70.91 m  station 120.470314 m  diff -49.56 m  SEA IN THE GRID BOX
+EGLC  (51.50,0.00) w0.7624 m1 (51.50,0.25) w0.2164 m1 (51.75,0.00) w0.0164 m1 (51.75,0.25) w0.0047 m1  land 1.0000  model height 33.31 m  station 5.0 m  diff +28.31 m  
+LEMD  (40.25,356.25) w0.0296 m1 (40.25,356.50) w0.1037 m1 (40.50,356.25) w0.1926 m1 (40.50,356.50) w0.6741 m1  land 1.0000  model height 649.16 m  station 582.0 m  diff +67.16 m  
+LIMC  (45.50,8.50) w0.0517 m1 (45.50,8.75) w0.4283 m1 (45.75,8.50) w0.0560 m1 (45.75,8.75) w0.4640 m1  land 1.0000  model height 249.71 m  station 211.0 m  diff +38.71 m  
+UUWW  (55.50,37.25) w0.6048 m1 (55.50,37.50) w0.0292 m1 (55.75,37.25) w0.3492 m1 (55.75,37.50) w0.0168 m1  land 1.0000  model height 181.95 m  station 203.0 m  diff -21.05 m  
+EDDM  (48.25,11.75) w0.4326 m1 (48.25,12.00) w0.1341 m1 (48.50,11.75) w0.3308 m1 (48.50,12.00) w0.1026 m1  land 1.0000  model height 481.85 m  station 447.0 m  diff +34.85 m  
+LFPB  (48.75,2.25) w0.0382 m1 (48.75,2.50) w0.0929 m1 (49.00,2.25) w0.2529 m1 (49.00,2.50) w0.6159 m1  land 1.0000  model height 81.09 m  station 65.0 m  diff +16.09 m  
+EPWA  (52.00,20.75) w0.0543 m1 (52.00,21.00) w0.2946 m1 (52.25,20.75) w0.1013 m1 (52.25,21.00) w0.5498 m1  land 1.0000  model height 103.10 m  station 107.0 m  diff -3.90 m  
+KATL  (33.50,275.50) w0.3679 m1 (33.50,275.75) w0.1117 m1 (33.75,275.50) w0.3993 m1 (33.75,275.75) w0.1211 m1  land 1.0000  model height 280.86 m  station 315.0 m  diff -34.14 m  
+KAUS  (30.00,262.25) w0.1927 m1 (30.00,262.50) w0.0751 m1 (30.25,262.25) w0.5268 m1 (30.25,262.50) w0.2054 m1  land 1.0000  model height 183.86 m  station 146.0 m  diff +37.86 m  
+KORD  (41.75,272.00) w0.1156 m1 (41.75,272.25) w0.0436 m1 (42.00,272.00) w0.6108 m1 (42.00,272.25) w0.2300 m1  land 1.0000  model height 212.38 m  station 205.0 m  diff +7.38 m  
+KDAL  (32.75,263.00) w0.2490 m1 (32.75,263.25) w0.3626 m1 (33.00,263.00) w0.1581 m1 (33.00,263.25) w0.2303 m1  land 1.0000  model height 167.96 m  station 148.0 m  diff +19.96 m  
+KBKF  (39.50,255.00) w0.0013 m1 (39.50,255.25) w0.1920 m1 (39.75,255.00) w0.0054 m1 (39.75,255.25) w0.8013 m1  land 1.0000  model height 1713.04 m  station 1726.0 m  diff -12.96 m  
+KHOU  (29.50,264.50) w0.0584 m1 (29.50,264.75) w0.3917 m1 (29.75,264.50) w0.0714 m1 (29.75,264.75) w0.4785 m1  land 1.0000  model height 16.37 m  station 14.0 m  diff +2.37 m  
+KLAX  (33.75,241.50) w0.1351 m0 (33.75,241.75) w0.1123 m1 (34.00,241.50) w0.4110 m1 (34.00,241.75) w0.3416 m1  land 0.8649  model height 70.19 m  station 32.0 m  diff +38.19 m  SEA IN THE GRID BOX
+MMMX  (19.25,260.75) w0.0735 m1 (19.25,261.00) w0.1813 m1 (19.50,260.75) w0.2149 m1 (19.50,261.00) w0.5303 m1  land 1.0000  model height 2401.59 m  station 2238.0 m  diff +163.59 m  
+KMIA  (25.75,279.50) w0.2270 m1 (25.75,279.75) w0.6208 m1 (26.00,279.50) w0.0407 m1 (26.00,279.75) w0.1115 m1  land 1.0000  model height 6.16 m  station 4.0 m  diff +2.16 m  
+KLGA  (40.75,286.00) w0.4597 m1 (40.75,286.25) w0.4225 m1 (41.00,286.00) w0.0614 m1 (41.00,286.25) w0.0564 m1  land 1.0000  model height 22.84 m  station 9.0 m  diff +13.84 m  
+KSFO  (37.50,237.50) w0.2618 m0 (37.50,237.75) w0.2623 m1 (37.75,237.50) w0.2377 m0 (37.75,237.75) w0.2381 m1  land 0.5004  model height 74.91 m  station 5.0 m  diff +69.91 m  SEA IN THE GRID BOX
+KSEA  (47.25,237.50) w0.0570 m1 (47.25,237.75) w0.1643 m1 (47.50,237.50) w0.2005 m1 (47.50,237.75) w0.5782 m1  land 1.0000  model height 83.51 m  station 137.0 m  diff -53.49 m  
+CYYZ  (43.50,280.25) w0.1520 m1 (43.50,280.50) w0.1391 m0 (43.75,280.25) w0.3702 m1 (43.75,280.50) w0.3387 m1  land 0.8609  model height 178.93 m  station 173.0 m  diff +5.93 m  SEA IN THE GRID BOX
+SAEZ  (-35.00,301.25) w0.0414 m1 (-35.00,301.50) w0.2475 m1 (-34.75,301.25) w0.1019 m1 (-34.75,301.50) w0.6092 m1  land 1.0000  model height 20.67 m  station 20.0 m  diff +0.67 m  
+SBGR  (-23.50,313.50) w0.6395 m1 (-23.50,313.75) w0.0888 m1 (-23.25,313.50) w0.2385 m1 (-23.25,313.75) w0.0331 m1  land 1.0000  model height 816.50 m  station 750.0 m  diff +66.50 m  
+ZBAA  (40.00,116.50) w0.4587 m1 (40.00,116.75) w0.2448 m1 (40.25,116.50) w0.1933 m1 (40.25,116.75) w0.1032 m1  land 1.0000  model height 51.39 m  station 30.0 m  diff +21.39 m  
+RKPK  (35.00,128.75) w0.0697 m0 (35.00,129.00) w0.2122 m0 (35.25,128.75) w0.1775 m1 (35.25,129.00) w0.5407 m1  land 0.7181  model height 104.81 m  station 15.0 m  diff +89.81 m  SEA IN THE GRID BOX
+ZUUU  (30.50,104.00) w0.3111 m1 (30.50,104.25) w0.0222 m1 (30.75,104.00) w0.6222 m1 (30.75,104.25) w0.0444 m1  land 1.0000  model height 512.36 m  station 508.0 m  diff +4.36 m  
+ZUCK  (29.50,106.25) w0.0736 m1 (29.50,106.50) w0.8464 m1 (29.75,106.25) w0.0064 m1 (29.75,106.50) w0.0736 m1  land 1.0000  model height 317.07 m  station 351.0 m  diff -33.93 m  
+ZGGG  (23.25,113.25) w0.3302 m1 (23.25,113.50) w0.0843 m1 (23.50,113.25) w0.4665 m1 (23.50,113.50) w0.1191 m1  land 1.0000  model height 60.08 m  station 15.0 m  diff +45.08 m  
+OEJN  (21.50,39.00) w0.1844 m0 (21.50,39.25) w0.1763 m1 (21.75,39.00) w0.3268 m0 (21.75,39.25) w0.3125 m1  land 0.4888  model height 34.78 m  station 2.0 m  diff +32.78 m  SEA IN THE GRID BOX
+OPKC  (24.75,67.00) w0.2190 m0 (24.75,67.25) w0.3987 m1 (25.00,67.00) w0.1355 m1 (25.00,67.25) w0.2468 m1  land 0.7810  model height 31.31 m  station 18.0 m  diff +13.31 m  SEA IN THE GRID BOX
+WMKK  (2.50,101.50) w0.0267 m0 (2.50,101.75) w0.1067 m0 (2.75,101.50) w0.1733 m1 (2.75,101.75) w0.6933 m1  land 0.8667  model height 32.50 m  station 22.0 m  diff +10.50 m  SEA IN THE GRID BOX
+VILK  (26.75,80.75) w0.4239 m1 (26.75,81.00) w0.5338 m1 (27.00,80.75) w0.0188 m1 (27.00,81.00) w0.0236 m1  land 1.0000  model height 122.25 m  station 128.0 m  diff -5.75 m  
+RPLL  (14.50,121.00) w0.9561 m1 (14.50,121.25) w0.0163 m0 (14.75,121.00) w0.0271 m1 (14.75,121.25) w0.0005 m1  land 0.9837  model height 13.62 m  station 19.242466 m  diff -5.62 m  SEA IN THE GRID BOX
+ZSQD  (36.00,120.25) w0.4889 m0 (36.00,120.50) w0.2444 m0 (36.25,120.25) w0.1778 m1 (36.25,120.50) w0.0889 m1  land 0.2667  model height 18.79 m  station 77.0 m  diff -58.21 m  SEA IN THE GRID BOX
+RKSI  (37.25,126.25) w0.0267 m0 (37.25,126.50) w0.1067 m0 (37.50,126.25) w0.1733 m0 (37.50,126.50) w0.6933 m0  land 0.0000  model height 5.32 m  station 7.0 m  diff -1.68 m  SEA IN THE GRID BOX
+ZSPD  (31.00,121.75) w0.4978 m1 (31.00,122.00) w0.0356 m0 (31.25,121.75) w0.4356 m0 (31.25,122.00) w0.0311 m0  land 0.4978  model height 3.13 m  station 4.0 m  diff -0.87 m  SEA IN THE GRID BOX
+ZGSZ  (22.50,113.75) w0.3660 m0 (22.50,114.00) w0.1047 m1 (22.75,113.75) w0.4116 m0 (22.75,114.00) w0.1177 m1  land 0.2223  model height 20.86 m  station 1.0 m  diff +19.86 m  SEA IN THE GRID BOX
+WSSS  (1.25,103.75) w0.0356 m0 (1.25,104.00) w0.4978 m0 (1.50,103.75) w0.0311 m1 (1.50,104.00) w0.4356 m1  land 0.4667  model height 12.13 m  station 16.0 m  diff -3.87 m  SEA IN THE GRID BOX
+RCSS  (25.00,121.50) w0.5730 m1 (25.00,121.75) w0.1493 m1 (25.25,121.50) w0.2204 m1 (25.25,121.75) w0.0574 m0  land 0.9426  model height 189.48 m  station 6.0 m  diff +183.48 m  SEA IN THE GRID BOX
+LLBG  (32.00,34.75) w0.4327 m1 (32.00,35.00) w0.5218 m1 (32.25,34.75) w0.0207 m1 (32.25,35.00) w0.0249 m1  land 1.0000  model height 124.14 m  station 49.0 m  diff +75.14 m  
+RJTT  (35.50,139.75) w0.6888 m0 (35.50,140.00) w0.0979 m0 (35.75,139.75) w0.1868 m1 (35.75,140.00) w0.0265 m1  land 0.2133  model height 9.13 m  station 8.0 m  diff +1.13 m  SEA IN THE GRID BOX
+ZHHH  (30.50,114.00) w0.2496 m1 (30.50,114.25) w0.2704 m1 (30.75,114.00) w0.2304 m1 (30.75,114.25) w0.2496 m1  land 1.0000  model height 27.71 m  station 23.0 m  diff +4.71 m  
+FACT  (-34.00,18.50) w0.5200 m1 (-34.00,18.75) w0.3467 m1 (-33.75,18.50) w0.0800 m0 (-33.75,18.75) w0.0533 m1  land 0.9200  model height 81.72 m  station 42.0 m  diff +39.72 m  SEA IN THE GRID BOX
+NZWN  (-41.50,174.75) w0.2405 m0 (-41.50,175.00) w0.0683 m0 (-41.25,174.75) w0.5383 m1 (-41.25,175.00) w0.1529 m1  land 0.6912  model height 79.17 m  station 0.0 m  diff +79.17 m  SEA IN THE GRID BOX
+
+code check at KSFO's SPEC 3.4 grid point (37.54637, -122.34375): sea weight 0.3750 (F117.3: 0.375), model height 94.47 m (SPEC 3.4 notes: 94.47 m)
+
+==============================================================================
+3.4 Hourly observations: download the 45 new airports, then counts only
+==============================================================================
+EHAM  id EHAM  requests 6, bytes 2492741, rows dropped for the limit 0, pieces already saved 0
+LTAC  id LTAC  requests 6, bytes 2635034, rows dropped for the limit 0, pieces already saved 0
+EFHK  id EFHK  requests 6, bytes 2597254, rows dropped for the limit 0, pieces already saved 0
+LTFM  id LTFM  requests 6, bytes 2643802, rows dropped for the limit 0, pieces already saved 0
+LEMD  id LEMD  requests 6, bytes 2631745, rows dropped for the limit 0, pieces already saved 0
+LIMC  id LIMC  requests 6, bytes 2590686, rows dropped for the limit 0, pieces already saved 0
+UUWW  id UUWW  requests 6, bytes 2650087, rows dropped for the limit 0, pieces already saved 0
+EDDM  id EDDM  requests 6, bytes 2635848, rows dropped for the limit 0, pieces already saved 0
+LFPB  id LFPB  requests 6, bytes 2516705, rows dropped for the limit 0, pieces already saved 0
+EPWA  id EPWA  requests 6, bytes 2636455, rows dropped for the limit 0, pieces already saved 0
+KATL  id ATL   requests 6, bytes 2656735, rows dropped for the limit 0, pieces already saved 0
+KAUS  id AUS   requests 6, bytes 2657946, rows dropped for the limit 0, pieces already saved 0
+KORD  id ORD   requests 6, bytes 2653010, rows dropped for the limit 0, pieces already saved 0
+KDAL  id DAL   requests 6, bytes 2660135, rows dropped for the limit 0, pieces already saved 0
+KBKF  id BKF   requests 6, bytes 2721570, rows dropped for the limit 0, pieces already saved 0
+KHOU  id HOU   requests 6, bytes 2617593, rows dropped for the limit 0, pieces already saved 0
+KLAX  id LAX   requests 6, bytes 2662502, rows dropped for the limit 0, pieces already saved 0
+MMMX  id MMMX  requests 6, bytes 2281401, rows dropped for the limit 0, pieces already saved 0
+KMIA  id MIA   requests 6, bytes 2578446, rows dropped for the limit 0, pieces already saved 0
+KLGA  id LGA   requests 6, bytes 2557264, rows dropped for the limit 0, pieces already saved 0
+KSEA  id SEA   requests 6, bytes 2672683, rows dropped for the limit 0, pieces already saved 0
+CYYZ  id CYYZ  requests 6, bytes 2694914, rows dropped for the limit 0, pieces already saved 0
+SAEZ  id SAEZ  requests 6, bytes 2693363, rows dropped for the limit 0, pieces already saved 0
+SBGR  id SBGR  requests 6, bytes 2764590, rows dropped for the limit 0, pieces already saved 0
+ZBAA  id ZBAA  requests 6, bytes 2668601, rows dropped for the limit 0, pieces already saved 0
+RKPK  id RKPK  requests 6, bytes 2652235, rows dropped for the limit 0, pieces already saved 0
+ZUUU  id ZUUU  requests 6, bytes 2700684, rows dropped for the limit 0, pieces already saved 0
+ZUCK  id ZUCK  requests 6, bytes 2702484, rows dropped for the limit 0, pieces already saved 0
+ZGGG  id ZGGG  requests 6, bytes 2668186, rows dropped for the limit 0, pieces already saved 0
+OEJN  id OEJN  requests 6, bytes 2577890, rows dropped for the limit 0, pieces already saved 0
+OPKC  id OPKC  requests 6, bytes 2435006, rows dropped for the limit 0, pieces already saved 0
+WMKK  id WMKK  requests 6, bytes 2628052, rows dropped for the limit 0, pieces already saved 0
+VILK  id VILK  requests 6, bytes 2539422, rows dropped for the limit 0, pieces already saved 0
+RPLL  id RPLL  requests 6, bytes 2669103, rows dropped for the limit 0, pieces already saved 0
+ZSQD  id ZSQD  requests 6, bytes 2657089, rows dropped for the limit 0, pieces already saved 0
+RKSI  id RKSI  requests 6, bytes 2608722, rows dropped for the limit 0, pieces already saved 0
+ZSPD  id ZSPD  requests 6, bytes 2607174, rows dropped for the limit 0, pieces already saved 0
+ZGSZ  id ZGSZ  requests 6, bytes 2622794, rows dropped for the limit 0, pieces already saved 0
+WSSS  id WSSS  requests 6, bytes 2628612, rows dropped for the limit 0, pieces already saved 0
+RCSS  id RCSS  requests 6, bytes 2473943, rows dropped for the limit 0, pieces already saved 0
+LLBG  id LLBG  requests 6, bytes 2610938, rows dropped for the limit 0, pieces already saved 0
+RJTT  id RJTT  requests 6, bytes 2609038, rows dropped for the limit 0, pieces already saved 0
+ZHHH  id ZHHH  requests 6, bytes 2654752, rows dropped for the limit 0, pieces already saved 0
+FACT  id FACT  requests 6, bytes 2585396, rows dropped for the limit 0, pieces already saved 0
+NZWN  id NZWN  requests 6, bytes 2649383, rows dropped for the limit 0, pieces already saved 0
+
+download totals this run: 270 requests, 117852013 bytes, rows dropped for the 2026-07-31 limit: 0, pieces already saved by an earlier run: 0
+
+Counting-code check against F131.6 (days with all 24 UTC hours covered, committed files):
+  EGLC  counted 1933, F131.6 1933: equal
+  LFPG  counted 1875, F131.6 1875: equal
+  DSM   counted 1946, F131.6 1946: equal
+  YSDU  counted 1690, F131.6 1690: equal
+  RNO   counted 1930, F131.6 1930: equal
+  SFO   counted 1931, F131.6 1931: equal
+
+Counts per airport (no value of any report is printed):
+EHAM  rows 46908, first 2021-03-24 00:55, last 2026-07-31 23:55, no usable temperature 1, non-finite 0
+      usual minute :55, share not at it 0.17%; UTC days with all 24 hours 1854 of 1956
+      days per whole hour 00..23: [1948, 1951, 1945, 1947, 1951, 1951, 1955, 1953, 1954, 1956, 1950, 1951, 1950, 1948, 1953, 1952, 1951, 1951, 1949, 1952, 1952, 1951, 1953, 1950]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+LTAC  rows 46923, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.04%; UTC days with all 24 hours 1931 of 1956
+      days per whole hour 00..23: [1954, 1955, 1953, 1954, 1953, 1954, 1955, 1954, 1954, 1956, 1955, 1955, 1955, 1954, 1956, 1954, 1954, 1954, 1954, 1955, 1954, 1955, 1953, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+EFHK  rows 46929, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.02%; UTC days with all 24 hours 1937 of 1956
+      days per whole hour 00..23: [1952, 1955, 1956, 1955, 1954, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1955, 1956, 1954, 1956, 1955, 1954, 1953, 1955, 1954, 1954, 1956, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1954 of 1955 (99.95%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LTFM  rows 46919, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.03%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1954, 1955, 1953, 1954, 1956, 1954, 1955, 1955, 1955, 1954, 1955, 1956, 1955, 1955, 1955, 1953, 1954, 1952, 1953, 1954, 1955, 1954, 1955, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+EGLC  rows 46919, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 10, non-finite 0
+      usual minute :50, share not at it 0.02%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1953, 1954, 1956, 1956, 1955, 1955, 1954, 1954, 1954, 1955, 1955, 1954, 1953, 1954, 1954, 1953, 1953, 1953, 1954, 1952, 1953, 1956, 1956, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1956 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LEMD  rows 46899, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.13%; UTC days with all 24 hours 1920 of 1956
+      days per whole hour 00..23: [1949, 1951, 1952, 1951, 1951, 1951, 1951, 1951, 1952, 1952, 1953, 1952, 1951, 1951, 1952, 1954, 1954, 1953, 1952, 1951, 1952, 1950, 1949, 1952]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LIMC  rows 46812, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 8, non-finite 0
+      usual minute :50, share not at it 0.26%; UTC days with all 24 hours 1757 of 1956
+      days per whole hour 00..23: [1931, 1922, 1923, 1935, 1940, 1947, 1952, 1952, 1953, 1949, 1951, 1951, 1948, 1952, 1948, 1947, 1949, 1949, 1944, 1953, 1948, 1949, 1950, 1939]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1945 of 1955 (99.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 730 (99.59%)
+UUWW  rows 46931, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1947 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1954, 1954, 1953, 1954, 1954, 1953, 1954, 1954, 1954, 1953, 1954, 1954, 1955, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+EDDM  rows 46934, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 2, non-finite 0
+      usual minute :50, share not at it 0.01%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1956, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1956, 1955, 1954, 1954, 1955, 1954, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1954 of 1955 (99.95%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LFPB  rows 46436, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 23, non-finite 0
+      usual minute :00, share not at it 0.13%; UTC days with all 24 hours 1863 of 1956
+      days per whole hour 00..23: [1928, 1926, 1927, 1927, 1927, 1928, 1930, 1931, 1930, 1933, 1933, 1936, 1933, 1930, 1932, 1936, 1935, 1936, 1936, 1933, 1931, 1933, 1931, 1929]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1906 of 1955 (97.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 720 of 730 (98.63%)
+EPWA  rows 46913, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.12%; UTC days with all 24 hours 1928 of 1956
+      days per whole hour 00..23: [1953, 1953, 1950, 1952, 1951, 1953, 1952, 1952, 1952, 1951, 1951, 1952, 1954, 1954, 1954, 1955, 1953, 1952, 1952, 1952, 1951, 1952, 1953, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+KATL  rows 46904, first 2021-03-24 00:52, last 2026-07-31 23:52, no usable temperature 3, non-finite 0
+      usual minute :52, share not at it 0.02%; UTC days with all 24 hours 1921 of 1956
+      days per whole hour 00..23: [1953, 1956, 1956, 1954, 1953, 1949, 1954, 1954, 1953, 1955, 1953, 1955, 1954, 1954, 1955, 1955, 1954, 1952, 1954, 1955, 1954, 1953, 1954, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KAUS  rows 46860, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 5, non-finite 0
+      usual minute :53, share not at it 0.06%; UTC days with all 24 hours 1898 of 1956
+      days per whole hour 00..23: [1952, 1952, 1954, 1952, 1951, 1950, 1953, 1952, 1952, 1953, 1946, 1951, 1948, 1953, 1952, 1952, 1953, 1953, 1948, 1953, 1956, 1951, 1953, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KORD  rows 46918, first 2021-03-24 00:51, last 2026-07-31 23:51, no usable temperature 18, non-finite 0
+      usual minute :51, share not at it 0.06%; UTC days with all 24 hours 1922 of 1956
+      days per whole hour 00..23: [1952, 1954, 1954, 1954, 1955, 1952, 1952, 1953, 1954, 1954, 1953, 1953, 1954, 1954, 1952, 1954, 1955, 1955, 1954, 1954, 1954, 1955, 1955, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 726 of 729 (99.59%)
+KDAL  rows 46926, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 5, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1934 of 1956
+      days per whole hour 00..23: [1953, 1956, 1956, 1953, 1955, 1952, 1954, 1954, 1955, 1956, 1955, 1955, 1955, 1956, 1955, 1956, 1955, 1955, 1952, 1953, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1953 of 1955 (99.90%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KBKF  rows 46424, first 2021-03-24 00:58, last 2026-07-31 23:58, no usable temperature 0, non-finite 0
+      usual minute :58, share not at it 0.22%; UTC days with all 24 hours 1783 of 1956
+      days per whole hour 00..23: [1930, 1918, 1937, 1936, 1939, 1939, 1942, 1943, 1942, 1942, 1940, 1942, 1942, 1933, 1930, 1927, 1932, 1928, 1921, 1921, 1934, 1931, 1933, 1930]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1899 of 1955 (97.14%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 685 of 729 (93.96%)
+KHOU  rows 46916, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 14, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1918 of 1956
+      days per whole hour 00..23: [1953, 1953, 1956, 1953, 1953, 1952, 1953, 1952, 1955, 1956, 1953, 1953, 1954, 1955, 1955, 1952, 1954, 1955, 1953, 1954, 1954, 1956, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KLAX  rows 46904, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 1, non-finite 0
+      usual minute :53, share not at it 0.02%; UTC days with all 24 hours 1929 of 1956
+      days per whole hour 00..23: [1955, 1956, 1954, 1951, 1952, 1953, 1954, 1953, 1953, 1956, 1953, 1954, 1955, 1955, 1955, 1953, 1953, 1954, 1955, 1954, 1955, 1955, 1956, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 725 of 729 (99.45%)
+MMMX  rows 39041, first 2021-03-24 00:45, last 2026-07-31 23:50, no usable temperature 2, non-finite 0
+      usual minute :45, share not at it 60.61%; UTC days with all 24 hours 8 of 1956
+      days per whole hour 00..23: [1379, 1269, 1229, 1247, 1329, 1348, 1547, 849, 767, 1153, 924, 871, 1373, 1289, 1177, 1304, 1193, 1242, 1369, 1268, 1170, 1206, 1212, 1235]
+      daily maximum usable local days 2021-03-24..2026-07-31: 104 of 1955 (5.32%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 5 of 729 (0.69%)
+KMIA  rows 46906, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 12, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1918 of 1956
+      days per whole hour 00..23: [1951, 1956, 1956, 1949, 1953, 1952, 1951, 1953, 1954, 1956, 1955, 1955, 1954, 1955, 1955, 1955, 1951, 1953, 1951, 1954, 1954, 1953, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KLGA  rows 46905, first 2021-03-24 00:51, last 2026-07-31 23:51, no usable temperature 3, non-finite 0
+      usual minute :51, share not at it 0.03%; UTC days with all 24 hours 1920 of 1956
+      days per whole hour 00..23: [1954, 1955, 1955, 1955, 1951, 1952, 1951, 1955, 1954, 1955, 1954, 1955, 1955, 1955, 1953, 1955, 1955, 1955, 1954, 1955, 1955, 1953, 1952, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1953 of 1955 (99.90%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KSFO  rows 46916, first 2021-03-24 00:56, last 2026-07-31 23:56, no usable temperature 3, non-finite 0
+      usual minute :56, share not at it 0.02%; UTC days with all 24 hours 1931 of 1956
+      days per whole hour 00..23: [1954, 1955, 1955, 1955, 1955, 1953, 1955, 1954, 1952, 1956, 1955, 1955, 1956, 1956, 1955, 1955, 1954, 1953, 1955, 1953, 1953, 1955, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KSEA  rows 46904, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 8, non-finite 0
+      usual minute :53, share not at it 0.02%; UTC days with all 24 hours 1915 of 1956
+      days per whole hour 00..23: [1955, 1956, 1953, 1952, 1955, 1951, 1952, 1955, 1954, 1955, 1954, 1955, 1952, 1953, 1953, 1950, 1953, 1954, 1953, 1955, 1956, 1955, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+CYYZ  rows 46869, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.02%; UTC days with all 24 hours 1934 of 1956
+      days per whole hour 00..23: [1951, 1953, 1954, 1952, 1953, 1953, 1954, 1953, 1954, 1954, 1952, 1955, 1954, 1954, 1952, 1952, 1952, 1951, 1952, 1949, 1952, 1952, 1952, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+SAEZ  rows 46854, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 25, non-finite 0
+      usual minute :00, share not at it 0.04%; UTC days with all 24 hours 1857 of 1956
+      days per whole hour 00..23: [1949, 1946, 1953, 1951, 1950, 1951, 1947, 1950, 1946, 1949, 1946, 1948, 1950, 1954, 1952, 1955, 1953, 1951, 1949, 1951, 1954, 1949, 1954, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1945 of 1955 (99.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+SBGR  rows 46909, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1948 of 1956
+      days per whole hour 00..23: [1955, 1955, 1955, 1955, 1955, 1955, 1954, 1954, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1954, 1954, 1952, 1953, 1954, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 729 (100.00%)
+ZBAA  rows 46927, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1953, 1952, 1952, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RKPK  rows 46836, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 2, non-finite 0
+      usual minute :00, share not at it 0.02%; UTC days with all 24 hours 1872 of 1956
+      days per whole hour 00..23: [1952, 1952, 1951, 1951, 1949, 1946, 1950, 1952, 1953, 1953, 1954, 1954, 1951, 1955, 1952, 1950, 1948, 1949, 1950, 1948, 1949, 1953, 1952, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 730 (99.59%)
+ZUUU  rows 46923, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1953, 1955, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZUCK  rows 46926, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1951 of 1956
+      days per whole hour 00..23: [1956, 1955, 1955, 1955, 1954, 1955, 1955, 1956, 1956, 1956, 1955, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1954, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZGGG  rows 46934, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1949 of 1956
+      days per whole hour 00..23: [1954, 1954, 1954, 1953, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+OEJN  rows 46928, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1948 of 1956
+      days per whole hour 00..23: [1955, 1955, 1955, 1955, 1953, 1955, 1955, 1955, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1955, 1955, 1956, 1956, 1955, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+OPKC  rows 43632, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 118, non-finite 0
+      usual minute :00, share not at it 4.49%; UTC days with all 24 hours 826 of 1956
+      days per whole hour 00..23: [1457, 1779, 1794, 1818, 1763, 1812, 1792, 1779, 1774, 1778, 1767, 1806, 1797, 1753, 1789, 1760, 1769, 1748, 1787, 1794, 1780, 1804, 1805, 1803]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1559 of 1955 (79.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 711 of 730 (97.40%)
+WMKK  rows 46925, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1944 of 1956
+      days per whole hour 00..23: [1954, 1954, 1953, 1952, 1953, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1954, 1953, 1954, 1954, 1952, 1953, 1952, 1953, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+VILK  rows 44637, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 22, non-finite 0
+      usual minute :00, share not at it 5.23%; UTC days with all 24 hours 925 of 1956
+      days per whole hour 00..23: [1755, 1755, 1773, 1795, 1770, 1767, 1773, 1769, 1757, 1753, 1764, 1750, 1754, 1768, 1776, 1774, 1774, 1772, 1788, 1774, 1752, 1720, 1713, 1738]
+      daily maximum usable local days 2021-03-24..2026-07-31: 0 of 1955 (0.00%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 0 of 730 (0.00%)
+RPLL  rows 46831, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 62, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1824 of 1956
+      days per whole hour 00..23: [1946, 1948, 1952, 1946, 1944, 1948, 1943, 1943, 1945, 1950, 1945, 1948, 1947, 1948, 1949, 1953, 1950, 1948, 1949, 1951, 1955, 1954, 1956, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1946 of 1955 (99.54%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+ZSQD  rows 46924, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1954, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1954, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RKSI  rows 46923, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1942 of 1956
+      days per whole hour 00..23: [1954, 1953, 1953, 1953, 1953, 1951, 1953, 1953, 1954, 1954, 1953, 1953, 1954, 1954, 1954, 1953, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZSPD  rows 46927, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1953, 1952, 1952, 1953, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZGSZ  rows 46925, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1946 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1954, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+WSSS  rows 46935, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1950 of 1956
+      days per whole hour 00..23: [1954, 1954, 1954, 1953, 1954, 1953, 1954, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1955, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RCSS  rows 44216, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 2.42%; UTC days with all 24 hours 1716 of 1956
+      days per whole hour 00..23: [1802, 1811, 1805, 1814, 1814, 1810, 1807, 1805, 1813, 1810, 1806, 1802, 1798, 1802, 1803, 1802, 1790, 1797, 1801, 1793, 1803, 1929, 1818, 1807]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1789 of 1955 (91.51%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 568 of 730 (77.81%)
+LLBG  rows 46836, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 3, non-finite 0
+      usual minute :50, share not at it 0.07%; UTC days with all 24 hours 1902 of 1956
+      days per whole hour 00..23: [1943, 1951, 1949, 1949, 1949, 1951, 1952, 1953, 1954, 1953, 1953, 1954, 1954, 1950, 1947, 1948, 1950, 1948, 1947, 1949, 1950, 1948, 1950, 1949]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1943 of 1955 (99.39%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 726 of 730 (99.45%)
+RJTT  rows 46934, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1950 of 1956
+      days per whole hour 00..23: [1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1955, 1954, 1954, 1954, 1953, 1954, 1954, 1953, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZHHH  rows 46926, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1951 of 1956
+      days per whole hour 00..23: [1956, 1955, 1955, 1955, 1954, 1955, 1955, 1956, 1956, 1956, 1955, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1954, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+FACT  rows 45611, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 6, non-finite 0
+      usual minute :00, share not at it 0.18%; UTC days with all 24 hours 1560 of 1956
+      days per whole hour 00..23: [1894, 1884, 1885, 1896, 1894, 1905, 1918, 1901, 1907, 1908, 1904, 1909, 1903, 1903, 1900, 1902, 1907, 1901, 1911, 1906, 1879, 1886, 1864, 1864]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1828 of 1955 (93.50%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 618 of 730 (84.66%)
+NZWN  rows 46904, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.10%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1951, 1950, 1952, 1953, 1951, 1952, 1952, 1951, 1952, 1953, 1952, 1953, 1954, 1953, 1953, 1955, 1954, 1953, 1953, 1952, 1951, 1952, 1953, 1952]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1946 of 1955 (99.54%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+
+==============================================================================
+3.5 MOSMIX stations (DWD catalogue) and NBM domain
+==============================================================================
+catalogue https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationskatalog.cfg?view=nasPublication
+  accessed 2026-10-03T15:56:44Z, 299502 bytes, 5649 stations parsed
+  The cfg gives latitude and longitude as degrees.minutes (DWD procedure documentation FAQ 9.1);
+  converted here. A longitude sign is flagged when the station of the same ICAO code would be at least
+  2 km nearer the airport with its longitude sign flipped.
+EHAM  nearest 06240  EHAM  AMSTERDAM                      2.34 km within 10 km | same ICAO 06240 2.34 km, flipped 649.27 km | NBM none
+LTAC  nearest 17128  LTAC  ANKARA                         1.61 km within 10 km | same ICAO 17128 1.61 km, flipped 5471.74 km | NBM none
+EFHK  nearest 02974  EFHK  HELSINKI/VANTAA                0.19 km within 10 km | same ICAO 02974 0.19 km, flipped 2682.95 km | NBM none
+LTFM  nearest F9731  LTFM  ISTANBUL AIRPORT               0.84 km within 10 km | same ICAO F9731 0.84 km, flipped 4712.90 km | NBM none
+EGLC  nearest P0478  EGLC  LONDON/CITY INTL               7.69 km within 10 km | same ICAO P0478 7.69 km, flipped 2.47 km SIGN FLAG | NBM none
+LEMD  nearest 08221  LEMD  MADRID/BARAJAS                 1.91 km within 10 km | same ICAO 08221 1.91 km, flipped 601.01 km | NBM none
+LIMC  nearest 16066  LIMC  MILANO/MALPENSA                1.68 km within 10 km | same ICAO 16066 1.68 km, flipped 1354.83 km | NBM none
+UUWW  nearest 27612  UUUU  MOSKAU                        26.02 km beyond 10 km | same ICAO P0567 45.44 km, flipped 4426.51 km | NBM none
+EDDM  nearest 10870  EDDM  MUENCHEN-FL.                   1.15 km within 10 km | same ICAO 10870 1.15 km, flipped 1737.30 km | NBM none
+LFPB  nearest 07150  LFPB  PARIS-LE BOURGET               0.45 km within 10 km | same ICAO 07150 0.45 km, flipped 354.75 km | NBM none
+EPWA  nearest 12375  EPWA  WARSCHAU                       0.57 km within 10 km | same ICAO 12375 0.57 km, flipped 2819.31 km | NBM none
+KATL  nearest 72219  KATL  ATLANTA GA.                    3.21 km within 10 km | same ICAO 72219 3.21 km, flipped 12443.93 km | NBM CONUS
+KAUS  nearest 72254  KAUS  AUSTIN                        13.15 km beyond 10 km | same ICAO 72254 13.15 km, flipped 13095.66 km | NBM CONUS
+KORD  nearest 72530  KORD  CHICAGO                        3.67 km within 10 km | same ICAO 72530 3.67 km, flipped 10671.64 km | NBM CONUS
+KDAL  nearest 72259  KDFW  DALLAS                        17.95 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KBKF  nearest 72469  ----  DENVER                        11.21 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KHOU  nearest 72243  KIAH  HOUSTON TX.                   37.18 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KLAX  nearest 72295  KLAX  LOS ANGELES                    1.35 km within 10 km | same ICAO 72295 1.35 km, flipped 10424.45 km | NBM CONUS
+MMMX  nearest 76679  MMMX  MEXICO INT.                    1.22 km within 10 km | same ICAO 76679 1.22 km, flipped 15261.34 km | NBM unknown
+KMIA  nearest 72202  KMIA  MIAMI                          4.63 km within 10 km | same ICAO 72202 4.63 km, flipped 13910.96 km | NBM CONUS
+KLGA  nearest 72503  KLGA  NEW YORK                       2.19 km within 10 km | same ICAO 72503 2.19 km, flipped 10381.74 km | NBM CONUS
+KSFO  nearest 72494  KSFO  SAN FRANCISCO                  0.79 km within 10 km | same ICAO 72494 0.79 km, flipped 9337.23 km | NBM CONUS
+KSEA  nearest 72793  KSEA  SEATTLE                        1.23 km within 10 km | same ICAO 72793 1.23 km, flipped 7752.59 km | NBM CONUS
+CYYZ  nearest 71624  CYYZ  TORONTO                        1.19 km within 10 km | same ICAO 71624 1.19 km, flipped 10086.88 km | NBM unknown
+SAEZ  nearest 87576  SAEZ  BUENOS AIRES AERO              0.66 km within 10 km | same ICAO 87576 0.66 km, flipped 9884.38 km | NBM none
+SBGR  nearest 83779  SBGR  SAO PAULO/INTL.                0.32 km within 10 km | same ICAO 83779 0.32 km, flipped 9273.14 km | NBM none
+ZBAA  nearest 54511  ZBAA  PEKING                        30.23 km beyond 10 km | same ICAO 54511 30.23 km, flipped 9631.07 km | NBM none
+RKPK  nearest 47153  RKPK  PUSAN                          0.61 km within 10 km | same ICAO 47153 0.61 km, flipped 8779.19 km | NBM none
+ZUUU  nearest 56187  ----  WENJIANG                      17.92 km beyond 10 km | no catalogue entry with this ICAO code | NBM none
+ZUCK  nearest 57516  ----  CHONGQING                      0.49 km within 10 km | no catalogue entry with this ICAO code | NBM none
+ZGGG  nearest 59287  ZGGG  GUANGZHOU                     29.30 km beyond 10 km | same ICAO 59287 29.30 km, flipped 12795.03 km | NBM none
+OEJN  nearest 41024  OEJN  JEDDAH/KING ABDUL              7.74 km within 10 km | same ICAO 41024 7.74 km, flipped 7989.39 km | NBM none
+OPKC  nearest 41780  OPKC  KARACHI                        6.68 km within 10 km | same ICAO 41780 6.68 km, flipped 12614.72 km | NBM none
+WMKK  nearest 48647  WMKK  KUALA LUMPUR                  47.49 km beyond 10 km | same ICAO 48647 47.49 km, flipped 17350.80 km | NBM none
+VILK  nearest 42369  VILK  LUCKNOW                        1.32 km within 10 km | same ICAO 42369 1.32 km, flipped 13753.47 km | NBM none
+RPLL  nearest 98429  ----  NINOY AQUINO/INTL.             1.18 km within 10 km | same ICAO 98425 8.79 km, flipped 12470.09 km | NBM none
+ZSQD  nearest 54857  ZSQD  QUINGDAO                       0.00 km within 10 km | same ICAO 54857 0.00 km, flipped 9838.68 km | NBM none
+RKSI  nearest 47113  RKSI  INCHEON/INTL.                  1.47 km within 10 km | same ICAO 47113 1.47 km, flipped 8824.58 km | NBM none
+ZSPD  nearest 58362  ZSPD  SHANGHAI PUDONG               42.49 km beyond 10 km | same ICAO 58362 42.49 km, flipped 10389.06 km | NBM none
+ZGSZ  nearest 59493  ZGSZ  SHENZHEN HUANGTIAN             1.14 km within 10 km | same ICAO 59493 1.14 km, flipped 12812.01 km | NBM none
+WSSS  nearest 48698  WSSS  SINGAPUR                       0.00 km within 10 km | same ICAO 48698 0.00 km, flipped 16890.84 km | NBM none
+RCSS  nearest 58968  RCTP  TAIBEI                         5.34 km within 10 km | no catalogue entry with this ICAO code | NBM none
+LLBG  nearest 40180  LLBG  TEL AVIV                       1.78 km within 10 km | same ICAO 40180 1.78 km, flipped 6453.49 km | NBM none
+RJTT  nearest 47671  RJTT  TOKYO INTERNATIONAL            1.36 km within 10 km | same ICAO 47671 1.36 km, flipped 7049.03 km | NBM none
+ZHHH  nearest 57494  ----  WUHAN                          0.49 km within 10 km | no catalogue entry with this ICAO code | NBM none
+FACT  nearest 68816  FACT  KAPSTADT                       1.85 km within 10 km | same ICAO 68816 1.85 km, flipped 3410.95 km | NBM none
+NZWN  nearest 93436  NZWN  WELLINGTON AIRPORT             0.81 km within 10 km | same ICAO 93436 0.81 km, flipped 867.42 km | NBM none
+
+NBM domains (documentation only; see the note in the script above nbm_domain): CONUS for the contiguous US,
+unknown for CYYZ and MMMX, none for every other airport.
+
+temporary directory removed: True
+
+==============================================================================
+Request and byte totals by source (this run)
+==============================================================================
+  IEM station metadata               requests    58  bytes       147856  not 200/206 (404 for station lookups is expected): 0
+  GFS GRIB idx                       requests     1  bytes        31816  not 200/206 (404 for station lookups is expected): 0
+  GFS GRIB message                   requests     2  bytes       524479  not 200/206 (404 for station lookups is expected): 0
+  IEM ASOS download                  requests   309  bytes    117852013  not 200/206 (404 for station lookups is expected): 39
+  DWD MOSMIX station catalogue       requests     1  bytes       299502  not 200/206 (404 for station lookups is expected): 0
+  total requests 371, bytes 118855666
+state saved to /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/e6e16962-2c1b-495f-afa9-f0841c58b7ac/scratchpad/state.json
+exit 0
+
+--- collect run 2 (started 2026-10-03T15:57:19Z, ended 2026-10-03T16:00:43Z) ---
+temporary directory: /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/e6e16962-2c1b-495f-afa9-f0841c58b7ac/scratchpad/s90_kpt6hbd0
+python 3.12.2, eccodes 2.48.0, requests 2.34.2
+
+==============================================================================
+3.1 Identity and position (IEM station metadata)
+==============================================================================
+source: https://mesonet.agron.iastate.edu/api/1/station/<id>.json (IEM's own station metadata; the id is the ICAO code, and for
+US airports its three-letter form too). Only *_ASOS networks count as matches.
+
+EHAM  Europe        id EHAM  NL__ASOS    Amsterdam                    lat 52.3154 lon 4.7902 elev 9.0 m  Europe/Amsterdam  archive 1932-05-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+LTAC  Europe        id LTAC  TR__ASOS    Ankara                       lat 40.1281 lon 32.9951 elev 949.0 m  Europe/Istanbul  archive 1966-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+EFHK  Europe        id EFHK  FI__ASOS    Helsinki                     lat 60.3172 lon 24.9633 elev 56.0 m  Europe/Helsinki  archive 1951-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+LTFM  Europe        id LTFM  TR__ASOS    Istanbul                     lat 41.2629 lon 28.7413 elev 120.470314 m  Europe/Istanbul  archive 2018-11-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+EGLC  Europe        id EGLC  GB__ASOS    London City                  lat 51.5053 lon 0.0553 elev 5.0 m  Europe/London  archive 1988-01-29T00:00:00Z..None online True  (other-network rows ignored: 0)
+LEMD  Europe        id LEMD  ES__ASOS    Madrid                       lat 40.4667 lon -3.5556 elev 582.0 m  Europe/Madrid  archive 1931-01-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+LIMC  Europe        id LIMC  IT__ASOS    Milano                       lat 45.6300 lon 8.7231 elev 211.0 m  Europe/Rome  archive 1965-02-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+UUWW  Europe        id UUWW  RU__ASOS    Moscow                       lat 55.5915 lon 37.2615 elev 203.0 m  Europe/Moscow  archive 1972-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+EDDM  Europe        id EDDM  DE__ASOS    Munich                       lat 48.3583 lon 11.8092 elev 447.0 m  Europe/Berlin  archive 1929-08-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+LFPB  Europe        id LFPB  FR__ASOS    Paris                        lat 48.9672 lon 2.4272 elev 65.0 m  Europe/Paris  archive 1928-01-04T00:00:00Z..None online True  (other-network rows ignored: 0)
+EPWA  Europe        id EPWA  PL__ASOS    Warsaw                       lat 52.1628 lon 20.9611 elev 107.0 m  Europe/Warsaw  archive 1928-01-02T00:00:00Z..None online True  (other-network rows ignored: 0)
+KATL  North America id ATL   GA_ASOS     ATLANTA INTL ARPT            lat 33.6301 lon -84.4418 elev 315.0 m  America/New_York  archive 1945-01-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KAUS  North America id AUS   TX_ASOS     Austin Bergstrom Intl        lat 30.1830 lon -97.6799 elev 146.0 m  America/Chicago  archive 1998-04-28T00:00:00Z..None online True  (other-network rows ignored: 1)
+KORD  North America id ORD   IL_ASOS     Chicago OHare                lat 41.9602 lon -87.9316 elev 205.0 m  America/Chicago  archive 1946-10-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KDAL  North America id DAL   TX_ASOS     DALLAS/LOVE FIELD            lat 32.8471 lon -96.8518 elev 148.0 m  America/Chicago  archive 1930-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KBKF  North America id BKF   CO_ASOS     BUCKLEY ANGB/DENVER          lat 39.7017 lon -104.7517 elev 1726.0 m  America/Denver  archive 1944-03-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+KHOU  North America id HOU   TX_ASOS     HOUSTON/WILL HOBBY           lat 29.6375 lon -95.2824 elev 14.0 m  America/Chicago  archive 1929-02-01T00:00:00Z..None online True  (other-network rows ignored: 2)
+KLAX  North America id LAX   CA_ASOS     LOS ANGELES INTL             lat 33.9382 lon -118.3865 elev 32.0 m  America/Los_Angeles  archive 1931-06-02T00:00:00Z..None online True  (other-network rows ignored: 2)
+MMMX  North America id MMMX  MX__ASOS    Mexico City                  lat 19.4363 lon -99.0721 elev 2238.0 m  America/Mexico_City  archive 1973-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KMIA  North America id MIA   FL_ASOS     MIAMI INTL AIRPORT           lat 25.7880 lon -80.3169 elev 4.0 m  America/New_York  archive 1932-07-01T00:00:00Z..None online True  (other-network rows ignored: 3)
+KLGA  North America id LGA   NY_ASOS     New York/LaGuardia           lat 40.7794 lon -73.8803 elev 9.0 m  America/New_York  archive 1935-02-22T00:00:00Z..None online True  (other-network rows ignored: 2)
+KSFO  North America id SFO   CA_ASOS     SAN FRANCISCO INTL           lat 37.6190 lon -122.3749 elev 5.0 m  America/Los_Angeles  archive 1932-01-01T00:00:00Z..None online True  (other-network rows ignored: 1)
+KSEA  North America id SEA   WA_ASOS     SEATTLE-TACOMA INTL          lat 47.4447 lon -122.3144 elev 137.0 m  America/Los_Angeles  archive 1944-07-07T00:00:00Z..None online True  (other-network rows ignored: 2)
+CYYZ  North America id CYYZ  CA_ON_ASOS  LESTER B PEARSON INTL        lat 43.6772 lon -79.6306 elev 173.0 m  America/Toronto  archive 1949-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+SAEZ  South America id SAEZ  AR__ASOS    Buenos Aires                 lat -34.8222 lon -58.5358 elev 20.0 m  America/Argentina/Buenos_Aires  archive 1957-06-29T00:00:00Z..None online True  (other-network rows ignored: 0)
+SBGR  South America id SBGR  BR__ASOS    Sao Paulo                    lat -23.4321 lon -46.4695 elev 750.0 m  America/Sao_Paulo  archive 2001-07-21T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZBAA  Asia          id ZBAA  CN__ASOS    Beijing                      lat 40.0741 lon 116.5870 elev 30.0 m  Asia/Shanghai  archive 1945-10-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+RKPK  Asia          id RKPK  KR__ASOS    Busan                        lat 35.1795 lon 128.9382 elev 15.0 m  Asia/Seoul  archive 1954-07-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZUUU  Asia          id ZUUU  CN__ASOS    Chengdu                      lat 30.6667 lon 104.0167 elev 508.0 m  Asia/Chongqing  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZUCK  Asia          id ZUCK  CN__ASOS    Chongqing                    lat 29.5200 lon 106.4800 elev 351.0 m  Asia/Chongqing  archive 1944-11-10T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZGGG  Asia          id ZGGG  CN__ASOS    Guangzhou                    lat 23.3964 lon 113.3008 elev 15.0 m  Asia/Shanghai  archive 1945-11-30T00:00:00Z..None online True  (other-network rows ignored: 0)
+OEJN  Asia          id OEJN  SA__ASOS    Jeddah                       lat 21.6598 lon 39.1222 elev 2.0 m  Asia/Riyadh  archive 1981-05-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+OPKC  Asia          id OPKC  PK__ASOS    Karachi                      lat 24.8456 lon 67.1614 elev 18.0 m  Asia/Karachi  archive 1942-05-06T00:00:00Z..None online True  (other-network rows ignored: 0)
+WMKK  Asia          id WMKK  MY__ASOS    Kuala Lumpur                 lat 2.7167 lon 101.7000 elev 22.0 m  Asia/Kuala_Lumpur  archive 2000-02-10T00:00:00Z..None online True  (other-network rows ignored: 0)
+VILK  Asia          id VILK  IN__ASOS    Lucknow                      lat 26.7606 lon 80.8893 elev 128.0 m  Asia/Kolkata  archive 1944-12-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+RPLL  Asia          id RPLL  PH__ASOS    Manila                       lat 14.5069 lon 121.0042 elev 19.242466 m  Asia/Manila  archive 1945-03-31T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZSQD  Asia          id ZSQD  CN__ASOS    Qingdao                      lat 36.0667 lon 120.3333 elev 77.0 m  Asia/Shanghai  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+RKSI  Asia          id RKSI  KR__ASOS    Seoul                        lat 37.4667 lon 126.4500 elev 7.0 m  Asia/Seoul  archive 2001-11-26T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZSPD  Asia          id ZSPD  CN__ASOS    Shanghai                     lat 31.1167 lon 121.7667 elev 4.0 m  Asia/Shanghai  archive 2001-07-21T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZGSZ  Asia          id ZGSZ  CN__ASOS    Shenzhen                     lat 22.6323 lon 113.8056 elev 1.0 m  Asia/Shanghai  archive 1957-06-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+WSSS  Asia          id WSSS  SG__ASOS    Singapore                    lat 1.3667 lon 103.9833 elev 16.0 m  Asia/Singapore  archive 1956-01-03T00:00:00Z..None online True  (other-network rows ignored: 0)
+RCSS  Asia          id RCSS  TW__ASOS    Taipei                       lat 25.0694 lon 121.5517 elev 6.0 m  Asia/Taipei  archive 2000-12-13T00:00:00Z..None online True  (other-network rows ignored: 0)
+LLBG  Asia          id LLBG  IL__ASOS    Tel-aviv                     lat 32.0114 lon 34.8867 elev 49.0 m  Asia/Jerusalem  archive 2001-02-15T00:00:00Z..None online True  (other-network rows ignored: 0)
+RJTT  Asia          id RJTT  JP__ASOS    Tokyo                        lat 35.5533 lon 139.7811 elev 8.0 m  Asia/Tokyo  archive 1946-09-11T00:00:00Z..None online True  (other-network rows ignored: 0)
+ZHHH  Asia          id ZHHH  CN__ASOS    Wuhan                        lat 30.6200 lon 114.1300 elev 23.0 m  Asia/Shanghai  archive 1956-08-19T00:00:00Z..None online True  (other-network rows ignored: 0)
+FACT  Africa        id FACT  ZA__ASOS    Cape Town                    lat -33.9667 lon 18.6000 elev 42.0 m  Africa/Johannesburg  archive 1949-01-01T00:00:00Z..None online True  (other-network rows ignored: 0)
+NZWN  Oceania       id NZWN  NF__ASOS    Wellington                   lat -41.3272 lon 174.8053 elev 0.0 m  Pacific/Auckland  archive 2000-01-07T00:00:00Z..None online True  (other-network rows ignored: 0)
+
+missing from IEM: none; ambiguous: none
+
+EGLC and KSFO against SPEC 3.4:
+  EGLC: IEM lat 51.50528 lon 0.05528 elev 5.0 m; SPEC 3.4 lat 51.5053 lon 0.0553 elev 5 m; same at SPEC 3.4's precision: True; offset 2.6 m
+  KSFO: IEM lat 37.61897 lon -122.37489 elev 5.0 m; SPEC 3.4 lat 37.619 lon -122.3749 elev 5 m; same at SPEC 3.4's precision: True; offset 3.5 m
+
+LFPB to LFPG (SPEC 3.4 position (49.0153, 2.5344)): 9.47 km
+
+==============================================================================
+3.2 and 3.3 GFS grid box, land-sea mask and model terrain (two messages, one spent-year file)
+==============================================================================
+file: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000 (run 2024-03-14 00z, f000)
+idx: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20240314/00/atmos/gfs.t00z.pgrb2.0p25.f000.idx
+  LAND: idx line LAND:surface:anl, byte range 498234083-498266118, 32036 bytes, sha256 0cb69819532f60a51c648c8c77543dd89e517efb2dce6450a38c350198124ccf
+  HGT: idx line HGT:surface:anl, byte range 409252673-409745115, 492443 bytes, sha256 1e5c13855bf6b78aa3b453bc71c38eea36bca7cfcfabed9f8fe517b954e60572
+  LAND message: {'identity': (2, 0, 0, 1), 'level': 0, 'stepType': 'instant', 'units': '(0 - 1)', 'shortName': 'lsm', 'dataDate': 20240314, 'dataTime': 0, 'validityDate': 20240314, 'validityTime': 0, 'Ni': 1440, 'Nj': 721}
+  HGT message: {'identity': (0, 3, 5, 1), 'level': 0, 'stepType': 'instant', 'units': 'm', 'shortName': 'orog', 'dataDate': 20240314, 'dataTime': 0, 'validityDate': 20240314, 'validityTime': 0, 'Ni': 1440, 'Nj': 721}
+EHAM  (52.25,4.75) w0.6197 m1 (52.25,5.00) w0.1186 m1 (52.50,4.75) w0.2196 m1 (52.50,5.00) w0.0420 m1  land 1.0000  model height -0.26 m  station 9.0 m  diff -9.26 m  
+LTAC  (40.00,32.75) w0.0096 m1 (40.00,33.00) w0.4781 m1 (40.25,32.75) w0.0101 m1 (40.25,33.00) w0.5022 m1  land 1.0000  model height 1134.04 m  station 949.0 m  diff +185.04 m  
+EFHK  (60.25,24.75) w0.1072 m1 (60.25,25.00) w0.6239 m1 (60.50,24.75) w0.0394 m1 (60.50,25.00) w0.2294 m1  land 1.0000  model height 41.61 m  station 56.0 m  diff -14.39 m  
+LTFM  (41.25,28.50) w0.0330 m1 (41.25,28.75) w0.9154 m1 (41.50,28.50) w0.0018 m0 (41.50,28.75) w0.0498 m0  land 0.9484  model height 70.91 m  station 120.470314 m  diff -49.56 m  SEA IN THE GRID BOX
+EGLC  (51.50,0.00) w0.7624 m1 (51.50,0.25) w0.2164 m1 (51.75,0.00) w0.0164 m1 (51.75,0.25) w0.0047 m1  land 1.0000  model height 33.31 m  station 5.0 m  diff +28.31 m  
+LEMD  (40.25,356.25) w0.0296 m1 (40.25,356.50) w0.1037 m1 (40.50,356.25) w0.1926 m1 (40.50,356.50) w0.6741 m1  land 1.0000  model height 649.16 m  station 582.0 m  diff +67.16 m  
+LIMC  (45.50,8.50) w0.0517 m1 (45.50,8.75) w0.4283 m1 (45.75,8.50) w0.0560 m1 (45.75,8.75) w0.4640 m1  land 1.0000  model height 249.71 m  station 211.0 m  diff +38.71 m  
+UUWW  (55.50,37.25) w0.6048 m1 (55.50,37.50) w0.0292 m1 (55.75,37.25) w0.3492 m1 (55.75,37.50) w0.0168 m1  land 1.0000  model height 181.95 m  station 203.0 m  diff -21.05 m  
+EDDM  (48.25,11.75) w0.4326 m1 (48.25,12.00) w0.1341 m1 (48.50,11.75) w0.3308 m1 (48.50,12.00) w0.1026 m1  land 1.0000  model height 481.85 m  station 447.0 m  diff +34.85 m  
+LFPB  (48.75,2.25) w0.0382 m1 (48.75,2.50) w0.0929 m1 (49.00,2.25) w0.2529 m1 (49.00,2.50) w0.6159 m1  land 1.0000  model height 81.09 m  station 65.0 m  diff +16.09 m  
+EPWA  (52.00,20.75) w0.0543 m1 (52.00,21.00) w0.2946 m1 (52.25,20.75) w0.1013 m1 (52.25,21.00) w0.5498 m1  land 1.0000  model height 103.10 m  station 107.0 m  diff -3.90 m  
+KATL  (33.50,275.50) w0.3679 m1 (33.50,275.75) w0.1117 m1 (33.75,275.50) w0.3993 m1 (33.75,275.75) w0.1211 m1  land 1.0000  model height 280.86 m  station 315.0 m  diff -34.14 m  
+KAUS  (30.00,262.25) w0.1927 m1 (30.00,262.50) w0.0751 m1 (30.25,262.25) w0.5268 m1 (30.25,262.50) w0.2054 m1  land 1.0000  model height 183.86 m  station 146.0 m  diff +37.86 m  
+KORD  (41.75,272.00) w0.1156 m1 (41.75,272.25) w0.0436 m1 (42.00,272.00) w0.6108 m1 (42.00,272.25) w0.2300 m1  land 1.0000  model height 212.38 m  station 205.0 m  diff +7.38 m  
+KDAL  (32.75,263.00) w0.2490 m1 (32.75,263.25) w0.3626 m1 (33.00,263.00) w0.1581 m1 (33.00,263.25) w0.2303 m1  land 1.0000  model height 167.96 m  station 148.0 m  diff +19.96 m  
+KBKF  (39.50,255.00) w0.0013 m1 (39.50,255.25) w0.1920 m1 (39.75,255.00) w0.0054 m1 (39.75,255.25) w0.8013 m1  land 1.0000  model height 1713.04 m  station 1726.0 m  diff -12.96 m  
+KHOU  (29.50,264.50) w0.0584 m1 (29.50,264.75) w0.3917 m1 (29.75,264.50) w0.0714 m1 (29.75,264.75) w0.4785 m1  land 1.0000  model height 16.37 m  station 14.0 m  diff +2.37 m  
+KLAX  (33.75,241.50) w0.1351 m0 (33.75,241.75) w0.1123 m1 (34.00,241.50) w0.4110 m1 (34.00,241.75) w0.3416 m1  land 0.8649  model height 70.19 m  station 32.0 m  diff +38.19 m  SEA IN THE GRID BOX
+MMMX  (19.25,260.75) w0.0735 m1 (19.25,261.00) w0.1813 m1 (19.50,260.75) w0.2149 m1 (19.50,261.00) w0.5303 m1  land 1.0000  model height 2401.59 m  station 2238.0 m  diff +163.59 m  
+KMIA  (25.75,279.50) w0.2270 m1 (25.75,279.75) w0.6208 m1 (26.00,279.50) w0.0407 m1 (26.00,279.75) w0.1115 m1  land 1.0000  model height 6.16 m  station 4.0 m  diff +2.16 m  
+KLGA  (40.75,286.00) w0.4597 m1 (40.75,286.25) w0.4225 m1 (41.00,286.00) w0.0614 m1 (41.00,286.25) w0.0564 m1  land 1.0000  model height 22.84 m  station 9.0 m  diff +13.84 m  
+KSFO  (37.50,237.50) w0.2618 m0 (37.50,237.75) w0.2623 m1 (37.75,237.50) w0.2377 m0 (37.75,237.75) w0.2381 m1  land 0.5004  model height 74.91 m  station 5.0 m  diff +69.91 m  SEA IN THE GRID BOX
+KSEA  (47.25,237.50) w0.0570 m1 (47.25,237.75) w0.1643 m1 (47.50,237.50) w0.2005 m1 (47.50,237.75) w0.5782 m1  land 1.0000  model height 83.51 m  station 137.0 m  diff -53.49 m  
+CYYZ  (43.50,280.25) w0.1520 m1 (43.50,280.50) w0.1391 m0 (43.75,280.25) w0.3702 m1 (43.75,280.50) w0.3387 m1  land 0.8609  model height 178.93 m  station 173.0 m  diff +5.93 m  SEA IN THE GRID BOX
+SAEZ  (-35.00,301.25) w0.0414 m1 (-35.00,301.50) w0.2475 m1 (-34.75,301.25) w0.1019 m1 (-34.75,301.50) w0.6092 m1  land 1.0000  model height 20.67 m  station 20.0 m  diff +0.67 m  
+SBGR  (-23.50,313.50) w0.6395 m1 (-23.50,313.75) w0.0888 m1 (-23.25,313.50) w0.2385 m1 (-23.25,313.75) w0.0331 m1  land 1.0000  model height 816.50 m  station 750.0 m  diff +66.50 m  
+ZBAA  (40.00,116.50) w0.4587 m1 (40.00,116.75) w0.2448 m1 (40.25,116.50) w0.1933 m1 (40.25,116.75) w0.1032 m1  land 1.0000  model height 51.39 m  station 30.0 m  diff +21.39 m  
+RKPK  (35.00,128.75) w0.0697 m0 (35.00,129.00) w0.2122 m0 (35.25,128.75) w0.1775 m1 (35.25,129.00) w0.5407 m1  land 0.7181  model height 104.81 m  station 15.0 m  diff +89.81 m  SEA IN THE GRID BOX
+ZUUU  (30.50,104.00) w0.3111 m1 (30.50,104.25) w0.0222 m1 (30.75,104.00) w0.6222 m1 (30.75,104.25) w0.0444 m1  land 1.0000  model height 512.36 m  station 508.0 m  diff +4.36 m  
+ZUCK  (29.50,106.25) w0.0736 m1 (29.50,106.50) w0.8464 m1 (29.75,106.25) w0.0064 m1 (29.75,106.50) w0.0736 m1  land 1.0000  model height 317.07 m  station 351.0 m  diff -33.93 m  
+ZGGG  (23.25,113.25) w0.3302 m1 (23.25,113.50) w0.0843 m1 (23.50,113.25) w0.4665 m1 (23.50,113.50) w0.1191 m1  land 1.0000  model height 60.08 m  station 15.0 m  diff +45.08 m  
+OEJN  (21.50,39.00) w0.1844 m0 (21.50,39.25) w0.1763 m1 (21.75,39.00) w0.3268 m0 (21.75,39.25) w0.3125 m1  land 0.4888  model height 34.78 m  station 2.0 m  diff +32.78 m  SEA IN THE GRID BOX
+OPKC  (24.75,67.00) w0.2190 m0 (24.75,67.25) w0.3987 m1 (25.00,67.00) w0.1355 m1 (25.00,67.25) w0.2468 m1  land 0.7810  model height 31.31 m  station 18.0 m  diff +13.31 m  SEA IN THE GRID BOX
+WMKK  (2.50,101.50) w0.0267 m0 (2.50,101.75) w0.1067 m0 (2.75,101.50) w0.1733 m1 (2.75,101.75) w0.6933 m1  land 0.8667  model height 32.50 m  station 22.0 m  diff +10.50 m  SEA IN THE GRID BOX
+VILK  (26.75,80.75) w0.4239 m1 (26.75,81.00) w0.5338 m1 (27.00,80.75) w0.0188 m1 (27.00,81.00) w0.0236 m1  land 1.0000  model height 122.25 m  station 128.0 m  diff -5.75 m  
+RPLL  (14.50,121.00) w0.9561 m1 (14.50,121.25) w0.0163 m0 (14.75,121.00) w0.0271 m1 (14.75,121.25) w0.0005 m1  land 0.9837  model height 13.62 m  station 19.242466 m  diff -5.62 m  SEA IN THE GRID BOX
+ZSQD  (36.00,120.25) w0.4889 m0 (36.00,120.50) w0.2444 m0 (36.25,120.25) w0.1778 m1 (36.25,120.50) w0.0889 m1  land 0.2667  model height 18.79 m  station 77.0 m  diff -58.21 m  SEA IN THE GRID BOX
+RKSI  (37.25,126.25) w0.0267 m0 (37.25,126.50) w0.1067 m0 (37.50,126.25) w0.1733 m0 (37.50,126.50) w0.6933 m0  land 0.0000  model height 5.32 m  station 7.0 m  diff -1.68 m  SEA IN THE GRID BOX
+ZSPD  (31.00,121.75) w0.4978 m1 (31.00,122.00) w0.0356 m0 (31.25,121.75) w0.4356 m0 (31.25,122.00) w0.0311 m0  land 0.4978  model height 3.13 m  station 4.0 m  diff -0.87 m  SEA IN THE GRID BOX
+ZGSZ  (22.50,113.75) w0.3660 m0 (22.50,114.00) w0.1047 m1 (22.75,113.75) w0.4116 m0 (22.75,114.00) w0.1177 m1  land 0.2223  model height 20.86 m  station 1.0 m  diff +19.86 m  SEA IN THE GRID BOX
+WSSS  (1.25,103.75) w0.0356 m0 (1.25,104.00) w0.4978 m0 (1.50,103.75) w0.0311 m1 (1.50,104.00) w0.4356 m1  land 0.4667  model height 12.13 m  station 16.0 m  diff -3.87 m  SEA IN THE GRID BOX
+RCSS  (25.00,121.50) w0.5730 m1 (25.00,121.75) w0.1493 m1 (25.25,121.50) w0.2204 m1 (25.25,121.75) w0.0574 m0  land 0.9426  model height 189.48 m  station 6.0 m  diff +183.48 m  SEA IN THE GRID BOX
+LLBG  (32.00,34.75) w0.4327 m1 (32.00,35.00) w0.5218 m1 (32.25,34.75) w0.0207 m1 (32.25,35.00) w0.0249 m1  land 1.0000  model height 124.14 m  station 49.0 m  diff +75.14 m  
+RJTT  (35.50,139.75) w0.6888 m0 (35.50,140.00) w0.0979 m0 (35.75,139.75) w0.1868 m1 (35.75,140.00) w0.0265 m1  land 0.2133  model height 9.13 m  station 8.0 m  diff +1.13 m  SEA IN THE GRID BOX
+ZHHH  (30.50,114.00) w0.2496 m1 (30.50,114.25) w0.2704 m1 (30.75,114.00) w0.2304 m1 (30.75,114.25) w0.2496 m1  land 1.0000  model height 27.71 m  station 23.0 m  diff +4.71 m  
+FACT  (-34.00,18.50) w0.5200 m1 (-34.00,18.75) w0.3467 m1 (-33.75,18.50) w0.0800 m0 (-33.75,18.75) w0.0533 m1  land 0.9200  model height 81.72 m  station 42.0 m  diff +39.72 m  SEA IN THE GRID BOX
+NZWN  (-41.50,174.75) w0.2405 m0 (-41.50,175.00) w0.0683 m0 (-41.25,174.75) w0.5383 m1 (-41.25,175.00) w0.1529 m1  land 0.6912  model height 79.17 m  station 0.0 m  diff +79.17 m  SEA IN THE GRID BOX
+
+code check at KSFO's SPEC 3.4 grid point (37.54637, -122.34375): sea weight 0.3750 (F117.3: 0.375), model height 94.47 m (SPEC 3.4 notes: 94.47 m)
+
+==============================================================================
+3.4 Hourly observations: download the 45 new airports, then counts only
+==============================================================================
+EHAM  id EHAM  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LTAC  id LTAC  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+EFHK  id EFHK  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LTFM  id LTFM  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LEMD  id LEMD  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LIMC  id LIMC  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+UUWW  id UUWW  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+EDDM  id EDDM  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LFPB  id LFPB  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+EPWA  id EPWA  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KATL  id ATL   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KAUS  id AUS   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KORD  id ORD   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KDAL  id DAL   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KBKF  id BKF   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KHOU  id HOU   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KLAX  id LAX   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+MMMX  id MMMX  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KMIA  id MIA   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KLGA  id LGA   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+KSEA  id SEA   requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+CYYZ  id CYYZ  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+SAEZ  id SAEZ  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+SBGR  id SBGR  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZBAA  id ZBAA  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+RKPK  id RKPK  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZUUU  id ZUUU  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZUCK  id ZUCK  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZGGG  id ZGGG  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+OEJN  id OEJN  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+OPKC  id OPKC  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+WMKK  id WMKK  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+VILK  id VILK  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+RPLL  id RPLL  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZSQD  id ZSQD  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+RKSI  id RKSI  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZSPD  id ZSPD  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZGSZ  id ZGSZ  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+WSSS  id WSSS  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+RCSS  id RCSS  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+LLBG  id LLBG  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+RJTT  id RJTT  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+ZHHH  id ZHHH  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+FACT  id FACT  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+NZWN  id NZWN  requests 0, bytes 0, rows dropped for the limit 0, pieces already saved 6
+
+download totals this run: 0 requests, 0 bytes, rows dropped for the 2026-07-31 limit: 0, pieces already saved by an earlier run: 270
+
+Counting-code check against F131.6 (days with all 24 UTC hours covered, committed files):
+  EGLC  counted 1933, F131.6 1933: equal
+  LFPG  counted 1875, F131.6 1875: equal
+  DSM   counted 1946, F131.6 1946: equal
+  YSDU  counted 1690, F131.6 1690: equal
+  RNO   counted 1930, F131.6 1930: equal
+  SFO   counted 1931, F131.6 1931: equal
+
+Counts per airport (no value of any report is printed):
+EHAM  rows 46908, first 2021-03-24 00:55, last 2026-07-31 23:55, no usable temperature 1, non-finite 0
+      usual minute :55, share not at it 0.17%; UTC days with all 24 hours 1854 of 1956
+      days per whole hour 00..23: [1948, 1951, 1945, 1947, 1951, 1951, 1955, 1953, 1954, 1956, 1950, 1951, 1950, 1948, 1953, 1952, 1951, 1951, 1949, 1952, 1952, 1951, 1953, 1950]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+LTAC  rows 46923, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.04%; UTC days with all 24 hours 1931 of 1956
+      days per whole hour 00..23: [1954, 1955, 1953, 1954, 1953, 1954, 1955, 1954, 1954, 1956, 1955, 1955, 1955, 1954, 1956, 1954, 1954, 1954, 1954, 1955, 1954, 1955, 1953, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+EFHK  rows 46929, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.02%; UTC days with all 24 hours 1937 of 1956
+      days per whole hour 00..23: [1952, 1955, 1956, 1955, 1954, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1955, 1956, 1954, 1956, 1955, 1954, 1953, 1955, 1954, 1954, 1956, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1954 of 1955 (99.95%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LTFM  rows 46919, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 0, non-finite 0
+      usual minute :50, share not at it 0.03%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1954, 1955, 1953, 1954, 1956, 1954, 1955, 1955, 1955, 1954, 1955, 1956, 1955, 1955, 1955, 1953, 1954, 1952, 1953, 1954, 1955, 1954, 1955, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+EGLC  rows 46919, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 10, non-finite 0
+      usual minute :50, share not at it 0.02%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1953, 1954, 1956, 1956, 1955, 1955, 1954, 1954, 1954, 1955, 1955, 1954, 1953, 1954, 1954, 1953, 1953, 1953, 1954, 1952, 1953, 1956, 1956, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1956 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LEMD  rows 46899, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.13%; UTC days with all 24 hours 1920 of 1956
+      days per whole hour 00..23: [1949, 1951, 1952, 1951, 1951, 1951, 1951, 1951, 1952, 1952, 1953, 1952, 1951, 1951, 1952, 1954, 1954, 1953, 1952, 1951, 1952, 1950, 1949, 1952]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LIMC  rows 46812, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 8, non-finite 0
+      usual minute :50, share not at it 0.26%; UTC days with all 24 hours 1757 of 1956
+      days per whole hour 00..23: [1931, 1922, 1923, 1935, 1940, 1947, 1952, 1952, 1953, 1949, 1951, 1951, 1948, 1952, 1948, 1947, 1949, 1949, 1944, 1953, 1948, 1949, 1950, 1939]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1945 of 1955 (99.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 730 (99.59%)
+UUWW  rows 46931, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1947 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1954, 1954, 1953, 1954, 1954, 1953, 1954, 1954, 1954, 1953, 1954, 1954, 1955, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+EDDM  rows 46934, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 2, non-finite 0
+      usual minute :50, share not at it 0.01%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1956, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1956, 1955, 1954, 1954, 1955, 1954, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1954 of 1955 (99.95%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+LFPB  rows 46436, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 23, non-finite 0
+      usual minute :00, share not at it 0.13%; UTC days with all 24 hours 1863 of 1956
+      days per whole hour 00..23: [1928, 1926, 1927, 1927, 1927, 1928, 1930, 1931, 1930, 1933, 1933, 1936, 1933, 1930, 1932, 1936, 1935, 1936, 1936, 1933, 1931, 1933, 1931, 1929]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1906 of 1955 (97.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 720 of 730 (98.63%)
+EPWA  rows 46913, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.12%; UTC days with all 24 hours 1928 of 1956
+      days per whole hour 00..23: [1953, 1953, 1950, 1952, 1951, 1953, 1952, 1952, 1952, 1951, 1951, 1952, 1954, 1954, 1954, 1955, 1953, 1952, 1952, 1952, 1951, 1952, 1953, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+KATL  rows 46904, first 2021-03-24 00:52, last 2026-07-31 23:52, no usable temperature 3, non-finite 0
+      usual minute :52, share not at it 0.02%; UTC days with all 24 hours 1921 of 1956
+      days per whole hour 00..23: [1953, 1956, 1956, 1954, 1953, 1949, 1954, 1954, 1953, 1955, 1953, 1955, 1954, 1954, 1955, 1955, 1954, 1952, 1954, 1955, 1954, 1953, 1954, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KAUS  rows 46860, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 5, non-finite 0
+      usual minute :53, share not at it 0.06%; UTC days with all 24 hours 1898 of 1956
+      days per whole hour 00..23: [1952, 1952, 1954, 1952, 1951, 1950, 1953, 1952, 1952, 1953, 1946, 1951, 1948, 1953, 1952, 1952, 1953, 1953, 1948, 1953, 1956, 1951, 1953, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KORD  rows 46918, first 2021-03-24 00:51, last 2026-07-31 23:51, no usable temperature 18, non-finite 0
+      usual minute :51, share not at it 0.06%; UTC days with all 24 hours 1922 of 1956
+      days per whole hour 00..23: [1952, 1954, 1954, 1954, 1955, 1952, 1952, 1953, 1954, 1954, 1953, 1953, 1954, 1954, 1952, 1954, 1955, 1955, 1954, 1954, 1954, 1955, 1955, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 726 of 729 (99.59%)
+KDAL  rows 46926, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 5, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1934 of 1956
+      days per whole hour 00..23: [1953, 1956, 1956, 1953, 1955, 1952, 1954, 1954, 1955, 1956, 1955, 1955, 1955, 1956, 1955, 1956, 1955, 1955, 1952, 1953, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1953 of 1955 (99.90%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KBKF  rows 46424, first 2021-03-24 00:58, last 2026-07-31 23:58, no usable temperature 0, non-finite 0
+      usual minute :58, share not at it 0.22%; UTC days with all 24 hours 1783 of 1956
+      days per whole hour 00..23: [1930, 1918, 1937, 1936, 1939, 1939, 1942, 1943, 1942, 1942, 1940, 1942, 1942, 1933, 1930, 1927, 1932, 1928, 1921, 1921, 1934, 1931, 1933, 1930]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1899 of 1955 (97.14%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 685 of 729 (93.96%)
+KHOU  rows 46916, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 14, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1918 of 1956
+      days per whole hour 00..23: [1953, 1953, 1956, 1953, 1953, 1952, 1953, 1952, 1955, 1956, 1953, 1953, 1954, 1955, 1955, 1952, 1954, 1955, 1953, 1954, 1954, 1956, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KLAX  rows 46904, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 1, non-finite 0
+      usual minute :53, share not at it 0.02%; UTC days with all 24 hours 1929 of 1956
+      days per whole hour 00..23: [1955, 1956, 1954, 1951, 1952, 1953, 1954, 1953, 1953, 1956, 1953, 1954, 1955, 1955, 1955, 1953, 1953, 1954, 1955, 1954, 1955, 1955, 1956, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 725 of 729 (99.45%)
+MMMX  rows 39041, first 2021-03-24 00:45, last 2026-07-31 23:50, no usable temperature 2, non-finite 0
+      usual minute :45, share not at it 60.61%; UTC days with all 24 hours 8 of 1956
+      days per whole hour 00..23: [1379, 1269, 1229, 1247, 1329, 1348, 1547, 849, 767, 1153, 924, 871, 1373, 1289, 1177, 1304, 1193, 1242, 1369, 1268, 1170, 1206, 1212, 1235]
+      daily maximum usable local days 2021-03-24..2026-07-31: 104 of 1955 (5.32%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 5 of 729 (0.69%)
+KMIA  rows 46906, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 12, non-finite 0
+      usual minute :53, share not at it 0.04%; UTC days with all 24 hours 1918 of 1956
+      days per whole hour 00..23: [1951, 1956, 1956, 1949, 1953, 1952, 1951, 1953, 1954, 1956, 1955, 1955, 1954, 1955, 1955, 1955, 1951, 1953, 1951, 1954, 1954, 1953, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KLGA  rows 46905, first 2021-03-24 00:51, last 2026-07-31 23:51, no usable temperature 3, non-finite 0
+      usual minute :51, share not at it 0.03%; UTC days with all 24 hours 1920 of 1956
+      days per whole hour 00..23: [1954, 1955, 1955, 1955, 1951, 1952, 1951, 1955, 1954, 1955, 1954, 1955, 1955, 1955, 1953, 1955, 1955, 1955, 1954, 1955, 1955, 1953, 1952, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1953 of 1955 (99.90%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+KSFO  rows 46916, first 2021-03-24 00:56, last 2026-07-31 23:56, no usable temperature 3, non-finite 0
+      usual minute :56, share not at it 0.02%; UTC days with all 24 hours 1931 of 1956
+      days per whole hour 00..23: [1954, 1955, 1955, 1955, 1955, 1953, 1955, 1954, 1952, 1956, 1955, 1955, 1956, 1956, 1955, 1955, 1954, 1953, 1955, 1953, 1953, 1955, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+KSEA  rows 46904, first 2021-03-24 00:53, last 2026-07-31 23:53, no usable temperature 8, non-finite 0
+      usual minute :53, share not at it 0.02%; UTC days with all 24 hours 1915 of 1956
+      days per whole hour 00..23: [1955, 1956, 1953, 1952, 1955, 1951, 1952, 1955, 1954, 1955, 1954, 1955, 1952, 1953, 1953, 1950, 1953, 1954, 1953, 1955, 1956, 1955, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+CYYZ  rows 46869, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.02%; UTC days with all 24 hours 1934 of 1956
+      days per whole hour 00..23: [1951, 1953, 1954, 1952, 1953, 1953, 1954, 1953, 1954, 1954, 1952, 1955, 1954, 1954, 1952, 1952, 1952, 1951, 1952, 1949, 1952, 1952, 1952, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 728 of 729 (99.86%)
+SAEZ  rows 46854, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 25, non-finite 0
+      usual minute :00, share not at it 0.04%; UTC days with all 24 hours 1857 of 1956
+      days per whole hour 00..23: [1949, 1946, 1953, 1951, 1950, 1951, 1947, 1950, 1946, 1949, 1946, 1948, 1950, 1954, 1952, 1955, 1953, 1951, 1949, 1951, 1954, 1949, 1954, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1945 of 1955 (99.49%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 729 (99.73%)
+SBGR  rows 46909, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1948 of 1956
+      days per whole hour 00..23: [1955, 1955, 1955, 1955, 1955, 1955, 1954, 1954, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1955, 1954, 1954, 1952, 1953, 1954, 1955, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 729 (100.00%)
+ZBAA  rows 46927, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1953, 1952, 1952, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RKPK  rows 46836, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 2, non-finite 0
+      usual minute :00, share not at it 0.02%; UTC days with all 24 hours 1872 of 1956
+      days per whole hour 00..23: [1952, 1952, 1951, 1951, 1949, 1946, 1950, 1952, 1953, 1953, 1954, 1954, 1951, 1955, 1952, 1950, 1948, 1949, 1950, 1948, 1949, 1953, 1952, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1948 of 1955 (99.64%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 727 of 730 (99.59%)
+ZUUU  rows 46923, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1953, 1955, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZUCK  rows 46926, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1951 of 1956
+      days per whole hour 00..23: [1956, 1955, 1955, 1955, 1954, 1955, 1955, 1956, 1956, 1956, 1955, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1954, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZGGG  rows 46934, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1949 of 1956
+      days per whole hour 00..23: [1954, 1954, 1954, 1953, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+OEJN  rows 46928, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1948 of 1956
+      days per whole hour 00..23: [1955, 1955, 1955, 1955, 1953, 1955, 1955, 1955, 1956, 1956, 1955, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1955, 1955, 1956, 1956, 1955, 1955]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+OPKC  rows 43632, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 118, non-finite 0
+      usual minute :00, share not at it 4.49%; UTC days with all 24 hours 826 of 1956
+      days per whole hour 00..23: [1457, 1779, 1794, 1818, 1763, 1812, 1792, 1779, 1774, 1778, 1767, 1806, 1797, 1753, 1789, 1760, 1769, 1748, 1787, 1794, 1780, 1804, 1805, 1803]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1559 of 1955 (79.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 711 of 730 (97.40%)
+WMKK  rows 46925, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1944 of 1956
+      days per whole hour 00..23: [1954, 1954, 1953, 1952, 1953, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1954, 1953, 1954, 1954, 1952, 1953, 1952, 1953, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1950 of 1955 (99.74%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+VILK  rows 44637, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 22, non-finite 0
+      usual minute :00, share not at it 5.23%; UTC days with all 24 hours 925 of 1956
+      days per whole hour 00..23: [1755, 1755, 1773, 1795, 1770, 1767, 1773, 1769, 1757, 1753, 1764, 1750, 1754, 1768, 1776, 1774, 1774, 1772, 1788, 1774, 1752, 1720, 1713, 1738]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1571 of 1955 (80.36%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 526 of 730 (72.05%)
+RPLL  rows 46831, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 62, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1824 of 1956
+      days per whole hour 00..23: [1946, 1948, 1952, 1946, 1944, 1948, 1943, 1943, 1945, 1950, 1945, 1948, 1947, 1948, 1949, 1953, 1950, 1948, 1949, 1951, 1955, 1954, 1956, 1951]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1946 of 1955 (99.54%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+ZSQD  rows 46924, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1954, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1954, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RKSI  rows 46923, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1942 of 1956
+      days per whole hour 00..23: [1954, 1953, 1953, 1953, 1953, 1951, 1953, 1953, 1954, 1954, 1953, 1953, 1954, 1954, 1954, 1953, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZSPD  rows 46927, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1945 of 1956
+      days per whole hour 00..23: [1954, 1953, 1954, 1953, 1952, 1952, 1953, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1953, 1953, 1953, 1953, 1953, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1949 of 1955 (99.69%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZGSZ  rows 46925, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1946 of 1956
+      days per whole hour 00..23: [1956, 1954, 1956, 1955, 1954, 1954, 1955, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1956, 1955, 1955, 1954, 1953, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+WSSS  rows 46935, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1950 of 1956
+      days per whole hour 00..23: [1954, 1954, 1954, 1953, 1954, 1953, 1954, 1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1955, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+RCSS  rows 44216, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 2.42%; UTC days with all 24 hours 1716 of 1956
+      days per whole hour 00..23: [1802, 1811, 1805, 1814, 1814, 1810, 1807, 1805, 1813, 1810, 1806, 1802, 1798, 1802, 1803, 1802, 1790, 1797, 1801, 1793, 1803, 1929, 1818, 1807]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1789 of 1955 (91.51%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 568 of 730 (77.81%)
+LLBG  rows 46836, first 2021-03-24 00:50, last 2026-07-31 23:50, no usable temperature 3, non-finite 0
+      usual minute :50, share not at it 0.07%; UTC days with all 24 hours 1902 of 1956
+      days per whole hour 00..23: [1943, 1951, 1949, 1949, 1949, 1951, 1952, 1953, 1954, 1953, 1953, 1954, 1954, 1950, 1947, 1948, 1950, 1948, 1947, 1949, 1950, 1948, 1950, 1949]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1943 of 1955 (99.39%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 726 of 730 (99.45%)
+RJTT  rows 46934, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.09%; UTC days with all 24 hours 1950 of 1956
+      days per whole hour 00..23: [1953, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1954, 1955, 1954, 1954, 1954, 1953, 1954, 1954, 1953, 1953]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1951 of 1955 (99.80%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+ZHHH  rows 46926, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 0, non-finite 0
+      usual minute :00, share not at it 0.00%; UTC days with all 24 hours 1951 of 1956
+      days per whole hour 00..23: [1956, 1955, 1955, 1955, 1954, 1955, 1955, 1956, 1956, 1956, 1955, 1956, 1955, 1956, 1956, 1956, 1955, 1954, 1954, 1954, 1955, 1955, 1956, 1956]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1952 of 1955 (99.85%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 730 of 730 (100.00%)
+FACT  rows 45611, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 6, non-finite 0
+      usual minute :00, share not at it 0.18%; UTC days with all 24 hours 1560 of 1956
+      days per whole hour 00..23: [1894, 1884, 1885, 1896, 1894, 1905, 1918, 1901, 1907, 1908, 1904, 1909, 1903, 1903, 1900, 1902, 1907, 1901, 1911, 1906, 1879, 1886, 1864, 1864]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1828 of 1955 (93.50%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 618 of 730 (84.66%)
+NZWN  rows 46904, first 2021-03-24 00:00, last 2026-07-31 23:00, no usable temperature 1, non-finite 0
+      usual minute :00, share not at it 0.10%; UTC days with all 24 hours 1933 of 1956
+      days per whole hour 00..23: [1951, 1950, 1952, 1953, 1951, 1952, 1952, 1951, 1952, 1953, 1952, 1953, 1954, 1953, 1953, 1955, 1954, 1953, 1953, 1952, 1951, 1952, 1953, 1952]
+      daily maximum usable local days 2021-03-24..2026-07-31: 1946 of 1955 (99.54%)
+      daily maximum usable local days 2024-08-01..2026-07-31: 729 of 730 (99.86%)
+
+==============================================================================
+3.5 MOSMIX stations (DWD catalogue) and NBM domain
+==============================================================================
+catalogue https://www.dwd.de/DE/leistungen/met_verfahren_mosmix/mosmix_stationskatalog.cfg?view=nasPublication
+  accessed 2026-10-03T16:00:43Z, 299502 bytes, 5649 stations parsed
+  The cfg gives latitude and longitude as degrees.minutes (DWD procedure documentation FAQ 9.1);
+  converted here. A longitude sign is flagged when the station of the same ICAO code would be at least
+  2 km nearer the airport with its longitude sign flipped.
+EHAM  nearest 06240  EHAM  AMSTERDAM                      2.34 km within 10 km | same ICAO 06240 2.34 km, flipped 649.27 km | NBM none
+LTAC  nearest 17128  LTAC  ANKARA                         1.61 km within 10 km | same ICAO 17128 1.61 km, flipped 5471.74 km | NBM none
+EFHK  nearest 02974  EFHK  HELSINKI/VANTAA                0.19 km within 10 km | same ICAO 02974 0.19 km, flipped 2682.95 km | NBM none
+LTFM  nearest F9731  LTFM  ISTANBUL AIRPORT               0.84 km within 10 km | same ICAO F9731 0.84 km, flipped 4712.90 km | NBM none
+EGLC  nearest P0478  EGLC  LONDON/CITY INTL               7.69 km within 10 km | same ICAO P0478 7.69 km, flipped 2.47 km SIGN FLAG | NBM none
+LEMD  nearest 08221  LEMD  MADRID/BARAJAS                 1.91 km within 10 km | same ICAO 08221 1.91 km, flipped 601.01 km | NBM none
+LIMC  nearest 16066  LIMC  MILANO/MALPENSA                1.68 km within 10 km | same ICAO 16066 1.68 km, flipped 1354.83 km | NBM none
+UUWW  nearest 27612  UUUU  MOSKAU                        26.02 km beyond 10 km | same ICAO P0567 45.44 km, flipped 4426.51 km | NBM none
+EDDM  nearest 10870  EDDM  MUENCHEN-FL.                   1.15 km within 10 km | same ICAO 10870 1.15 km, flipped 1737.30 km | NBM none
+LFPB  nearest 07150  LFPB  PARIS-LE BOURGET               0.45 km within 10 km | same ICAO 07150 0.45 km, flipped 354.75 km | NBM none
+EPWA  nearest 12375  EPWA  WARSCHAU                       0.57 km within 10 km | same ICAO 12375 0.57 km, flipped 2819.31 km | NBM none
+KATL  nearest 72219  KATL  ATLANTA GA.                    3.21 km within 10 km | same ICAO 72219 3.21 km, flipped 12443.93 km | NBM CONUS
+KAUS  nearest 72254  KAUS  AUSTIN                        13.15 km beyond 10 km | same ICAO 72254 13.15 km, flipped 13095.66 km | NBM CONUS
+KORD  nearest 72530  KORD  CHICAGO                        3.67 km within 10 km | same ICAO 72530 3.67 km, flipped 10671.64 km | NBM CONUS
+KDAL  nearest 72259  KDFW  DALLAS                        17.95 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KBKF  nearest 72469  ----  DENVER                        11.21 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KHOU  nearest 72243  KIAH  HOUSTON TX.                   37.18 km beyond 10 km | no catalogue entry with this ICAO code | NBM CONUS
+KLAX  nearest 72295  KLAX  LOS ANGELES                    1.35 km within 10 km | same ICAO 72295 1.35 km, flipped 10424.45 km | NBM CONUS
+MMMX  nearest 76679  MMMX  MEXICO INT.                    1.22 km within 10 km | same ICAO 76679 1.22 km, flipped 15261.34 km | NBM unknown
+KMIA  nearest 72202  KMIA  MIAMI                          4.63 km within 10 km | same ICAO 72202 4.63 km, flipped 13910.96 km | NBM CONUS
+KLGA  nearest 72503  KLGA  NEW YORK                       2.19 km within 10 km | same ICAO 72503 2.19 km, flipped 10381.74 km | NBM CONUS
+KSFO  nearest 72494  KSFO  SAN FRANCISCO                  0.79 km within 10 km | same ICAO 72494 0.79 km, flipped 9337.23 km | NBM CONUS
+KSEA  nearest 72793  KSEA  SEATTLE                        1.23 km within 10 km | same ICAO 72793 1.23 km, flipped 7752.59 km | NBM CONUS
+CYYZ  nearest 71624  CYYZ  TORONTO                        1.19 km within 10 km | same ICAO 71624 1.19 km, flipped 10086.88 km | NBM unknown
+SAEZ  nearest 87576  SAEZ  BUENOS AIRES AERO              0.66 km within 10 km | same ICAO 87576 0.66 km, flipped 9884.38 km | NBM none
+SBGR  nearest 83779  SBGR  SAO PAULO/INTL.                0.32 km within 10 km | same ICAO 83779 0.32 km, flipped 9273.14 km | NBM none
+ZBAA  nearest 54511  ZBAA  PEKING                        30.23 km beyond 10 km | same ICAO 54511 30.23 km, flipped 9631.07 km | NBM none
+RKPK  nearest 47153  RKPK  PUSAN                          0.61 km within 10 km | same ICAO 47153 0.61 km, flipped 8779.19 km | NBM none
+ZUUU  nearest 56187  ----  WENJIANG                      17.92 km beyond 10 km | no catalogue entry with this ICAO code | NBM none
+ZUCK  nearest 57516  ----  CHONGQING                      0.49 km within 10 km | no catalogue entry with this ICAO code | NBM none
+ZGGG  nearest 59287  ZGGG  GUANGZHOU                     29.30 km beyond 10 km | same ICAO 59287 29.30 km, flipped 12795.03 km | NBM none
+OEJN  nearest 41024  OEJN  JEDDAH/KING ABDUL              7.74 km within 10 km | same ICAO 41024 7.74 km, flipped 7989.39 km | NBM none
+OPKC  nearest 41780  OPKC  KARACHI                        6.68 km within 10 km | same ICAO 41780 6.68 km, flipped 12614.72 km | NBM none
+WMKK  nearest 48647  WMKK  KUALA LUMPUR                  47.49 km beyond 10 km | same ICAO 48647 47.49 km, flipped 17350.80 km | NBM none
+VILK  nearest 42369  VILK  LUCKNOW                        1.32 km within 10 km | same ICAO 42369 1.32 km, flipped 13753.47 km | NBM none
+RPLL  nearest 98429  ----  NINOY AQUINO/INTL.             1.18 km within 10 km | same ICAO 98425 8.79 km, flipped 12470.09 km | NBM none
+ZSQD  nearest 54857  ZSQD  QUINGDAO                       0.00 km within 10 km | same ICAO 54857 0.00 km, flipped 9838.68 km | NBM none
+RKSI  nearest 47113  RKSI  INCHEON/INTL.                  1.47 km within 10 km | same ICAO 47113 1.47 km, flipped 8824.58 km | NBM none
+ZSPD  nearest 58362  ZSPD  SHANGHAI PUDONG               42.49 km beyond 10 km | same ICAO 58362 42.49 km, flipped 10389.06 km | NBM none
+ZGSZ  nearest 59493  ZGSZ  SHENZHEN HUANGTIAN             1.14 km within 10 km | same ICAO 59493 1.14 km, flipped 12812.01 km | NBM none
+WSSS  nearest 48698  WSSS  SINGAPUR                       0.00 km within 10 km | same ICAO 48698 0.00 km, flipped 16890.84 km | NBM none
+RCSS  nearest 58968  RCTP  TAIBEI                         5.34 km within 10 km | no catalogue entry with this ICAO code | NBM none
+LLBG  nearest 40180  LLBG  TEL AVIV                       1.78 km within 10 km | same ICAO 40180 1.78 km, flipped 6453.49 km | NBM none
+RJTT  nearest 47671  RJTT  TOKYO INTERNATIONAL            1.36 km within 10 km | same ICAO 47671 1.36 km, flipped 7049.03 km | NBM none
+ZHHH  nearest 57494  ----  WUHAN                          0.49 km within 10 km | no catalogue entry with this ICAO code | NBM none
+FACT  nearest 68816  FACT  KAPSTADT                       1.85 km within 10 km | same ICAO 68816 1.85 km, flipped 3410.95 km | NBM none
+NZWN  nearest 93436  NZWN  WELLINGTON AIRPORT             0.81 km within 10 km | same ICAO 93436 0.81 km, flipped 867.42 km | NBM none
+
+NBM domains (documentation only; see the note in the script above nbm_domain): CONUS for the contiguous US,
+unknown for CYYZ and MMMX, none for every other airport.
+
+temporary directory removed: True
+
+==============================================================================
+Request and byte totals by source (this run)
+==============================================================================
+  IEM station metadata               requests    59  bytes       147856  not 200/206 (404 for station lookups is expected): 1
+  GFS GRIB idx                       requests     1  bytes        31816  not 200/206 (404 for station lookups is expected): 0
+  GFS GRIB message                   requests     2  bytes       524479  not 200/206 (404 for station lookups is expected): 0
+  DWD MOSMIX station catalogue       requests     1  bytes       299502  not 200/206 (404 for station lookups is expected): 0
+  total requests 63, bytes 1003653
+state saved to /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/e6e16962-2c1b-495f-afa9-f0841c58b7ac/scratchpad/state.json
+
+--- decide run (Step 4 and Step 5.1), run once ---
+
+==============================================================================
+Step 4.1 Eligibility (D82.7(a) and (b), applied mechanically)
+==============================================================================
+EHAM  Europe        all  99.80% of 1955  held-out  99.86% of 730  -> eligible
+LTAC  Europe        all  99.85% of 1955  held-out  99.86% of 730  -> eligible
+EFHK  Europe        all  99.95% of 1955  held-out 100.00% of 730  -> eligible
+LTFM  Europe        all  99.85% of 1955  held-out  99.86% of 730  -> eligible
+EGLC  Europe        all  99.80% of 1956  held-out 100.00% of 730  -> NOT eligible: spent (EGLC, D82.7(a))
+LEMD  Europe        all  99.64% of 1955  held-out 100.00% of 730  -> eligible
+LIMC  Europe        all  99.49% of 1955  held-out  99.59% of 730  -> eligible
+UUWW  Europe        all  99.80% of 1955  held-out 100.00% of 730  -> eligible
+EDDM  Europe        all  99.95% of 1955  held-out 100.00% of 730  -> eligible
+LFPB  Europe        all  97.49% of 1955  held-out  98.63% of 730  -> NOT eligible: excluded (LFPB is about 9 km from LFPG, a development airport, D82.7(a))
+EPWA  Europe        all  99.64% of 1955  held-out  99.86% of 730  -> eligible
+KATL  North America all  99.85% of 1955  held-out  99.86% of 729  -> eligible
+KAUS  North America all  99.69% of 1955  held-out  99.73% of 729  -> eligible
+KORD  North America all  99.80% of 1955  held-out  99.59% of 729  -> eligible
+KDAL  North America all  99.90% of 1955  held-out  99.86% of 729  -> eligible
+KBKF  North America all  97.14% of 1955  held-out  93.96% of 729  -> eligible
+KHOU  North America all  99.74% of 1955  held-out  99.73% of 729  -> eligible
+KLAX  North America all  99.74% of 1955  held-out  99.45% of 729  -> eligible
+MMMX  North America all   5.32% of 1955  held-out   0.69% of 729  -> NOT eligible: daily maximum usable on under 90% of local days: all window 5.32%, held-out window 0.69%
+KMIA  North America all  99.85% of 1955  held-out  99.73% of 729  -> eligible
+KLGA  North America all  99.90% of 1955  held-out  99.86% of 729  -> eligible
+KSFO  North America all  99.85% of 1955  held-out  99.73% of 729  -> NOT eligible: spent (KSFO, D82.7(a))
+KSEA  North America all  99.85% of 1955  held-out  99.73% of 729  -> eligible
+CYYZ  North America all  99.64% of 1955  held-out  99.86% of 729  -> eligible
+SAEZ  South         all  99.49% of 1955  held-out  99.73% of 729  -> eligible
+SBGR  South         all  99.80% of 1955  held-out 100.00% of 729  -> eligible
+ZBAA  Asia          all  99.74% of 1955  held-out 100.00% of 730  -> eligible
+RKPK  Asia          all  99.64% of 1955  held-out  99.59% of 730  -> eligible
+ZUUU  Asia          all  99.80% of 1955  held-out 100.00% of 730  -> eligible
+ZUCK  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+ZGGG  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+OEJN  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+OPKC  Asia          all  79.74% of 1955  held-out  97.40% of 730  -> NOT eligible: daily maximum usable on under 90% of local days: all window 79.74%
+WMKK  Asia          all  99.74% of 1955  held-out 100.00% of 730  -> eligible
+VILK  Asia          all  80.36% of 1955  held-out  72.05% of 730  -> NOT eligible: daily maximum usable on under 90% of local days: all window 80.36%, held-out window 72.05%
+RPLL  Asia          all  99.54% of 1955  held-out  99.86% of 730  -> eligible
+ZSQD  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+RKSI  Asia          all  99.69% of 1955  held-out 100.00% of 730  -> eligible
+ZSPD  Asia          all  99.69% of 1955  held-out 100.00% of 730  -> eligible
+ZGSZ  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+WSSS  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+RCSS  Asia          all  91.51% of 1955  held-out  77.81% of 730  -> NOT eligible: daily maximum usable on under 90% of local days: held-out window 77.81%
+LLBG  Asia          all  99.39% of 1955  held-out  99.45% of 730  -> eligible
+RJTT  Asia          all  99.80% of 1955  held-out 100.00% of 730  -> eligible
+ZHHH  Asia          all  99.85% of 1955  held-out 100.00% of 730  -> eligible
+FACT  South         all  93.50% of 1955  held-out  84.66% of 730  -> NOT eligible: daily maximum usable on under 90% of local days: held-out window 84.66%
+NZWN  South         all  99.54% of 1955  held-out  99.86% of 730  -> eligible
+
+==============================================================================
+Step 4.2 The draw (D82.7(d)), run once
+==============================================================================
+python 3.12.2, random.Random(20261003)
+
+stratum Europe (size 1): 9 eligible, sorted: ['EDDM', 'EFHK', 'EHAM', 'EPWA', 'LEMD', 'LIMC', 'LTAC', 'LTFM', 'UUWW']
+  sample(9 eligible, 1) returned ['EDDM']
+
+stratum North America (size 2): 11 eligible, sorted: ['CYYZ', 'KATL', 'KAUS', 'KBKF', 'KDAL', 'KHOU', 'KLAX', 'KLGA', 'KMIA', 'KORD', 'KSEA']
+  sample(11 eligible, 2) returned ['KORD', 'CYYZ']
+
+stratum Asia (size 2): 16 eligible, sorted: ['LLBG', 'OEJN', 'RJTT', 'RKPK', 'RKSI', 'RPLL', 'WMKK', 'WSSS', 'ZBAA', 'ZGGG', 'ZGSZ', 'ZHHH', 'ZSPD', 'ZSQD', 'ZUCK', 'ZUUU']
+  sample(16 eligible, 2) returned ['ZGSZ', 'ZUCK']
+
+stratum South (size 1): 3 eligible, sorted: ['NZWN', 'SAEZ', 'SBGR']
+  sample(3 eligible, 1) returned ['NZWN']
+
+THE CLAIM BATCH (6 airports): ['EDDM', 'KORD', 'CYYZ', 'ZGSZ', 'ZUCK', 'NZWN']
+
+==============================================================================
+Step 5.1 data/processed/session90_airports.csv
+==============================================================================
+wrote data/processed/session90_airports.csv: 47 rows, sha256 b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+
+=== STEP 5: records ===
+c55bab8dc736c2d43a66d640892038e19b2cb517cf5dc2f812e6c9eba6310a8d  scripts/session90_airport_check.py
+b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7  data/processed/session90_airports.csv
+36825b4153d9572a364ae8675077583df1231b5d3fa02b33da5a6107fe3503c5  data/processed/session90_airports.csv.meta.txt
+
+=== END-OF-SESSION STEP 3 ===
+Consistency check (CLAUDE.md end step 3). Report only; nothing was fixed.
+Method: headings, entry numbers and dates checked by script over SPEC.md, STATUS.md and DECISIONS.md; the
+passages touched this session read against each other.
+
+Mechanical results
+- Duplicated headings: none in SPEC.md (9 headings), STATUS.md (5) or DECISIONS.md (25).
+- Entry order in DECISIONS.md: D numbers (17, 46, 47, 51, 62, 71 to 73, 76 to 82) and F numbers (7, 96,
+  122 to 125, 127 to 132) ascend with no gap-order problem; dated headings are in date order (last two are
+  both 2026-10-03). A pattern match listed D62, F122 and so on more than once; those are their numbered
+  sub-items (for example F122.1), not duplicate entries.
+- F132.1 quotes D82 at DECISIONS.md lines 2859 to 2970 (heading at 2857): checked, correct.
+- No em-dash in any text added this session (STATUS.md, D82 body, F132, SPEC edits). The one em-dash in the SPEC 6
+  diff is the existing Stage C title, kept as Step 2 instructs.
+
+Points where files say different things (for the owner)
+1. D72.1 (end goal, 24 h and 48 h leads) and D72.3's stage C line still carry the older wording. D82.2 replaces
+   D72.1's wording and SPEC 1 and SPEC 6 now follow D82. D72 is append-only, so the old text stays; a reader of
+   D72 alone would see the old goal.
+2. D81.9 and D81.10 describe stage C with the 48-hour lead and the old target; D82.3 supersedes them (24 h first).
+   Not edited.
+3. D82.7(b)'s day rule says a local day must end "on or before 2026-07-31T23:59 UTC". "Ends" is read as the day's
+   last minute (F132.8 item 2). The text does not say; a one-day difference at some airports under the other reading.
+4. D82.4 and D81.4 name two GitHub setups (the GRIB pull in the public repository; the MOSMIX saver in a separate
+   private one). These are different jobs, so no conflict, but both are live and the difference is easy to miss.
+5. SPEC 3.4's airport table lists only the six development airports. The 45 new airports have no row there; D82.6
+   says they enter the record with the claim batch's lock. Not a disagreement, noted so it is not read as an omission.
+6. D82.4's size estimate (about 100 files a day, 1.6 to 1.8 TB) is a planning-chat estimate, not checked (D82.4 says so).
+7. STATUS.md's GFS v17 line still dates from 2026-10-02 (planning-chat check, D81.7); this session did not check it.
+   F132 and SPEC are consistent with STATUS on the claim batch, the 37 airports with a MOSMIX station within 10 km,
+   and the EGLC sign flag.
+
+Archive step (CLAUDE.md end step 4)
+Nothing was moved. The prompt keeps D72, D73, F122, D77, F127, D78, F128, D79, F129, D80, F130, D81, F131, D82
+and F132 live. The other live entries (D17, F7, D46, F96, D51, D62, D71) are still cited by wording in live
+entries or in STATUS.md (for example D71.4 and D71.5 in D73.6, D77.3 and D82.7; D62.7 in D73.10 and F122.1), so
+they do not meet the criterion. When in doubt the rule is to keep them live.
