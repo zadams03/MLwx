@@ -1,0 +1,21 @@
+Provenance (SPEC 2.3). Do not edit the data file.
+
+file        : session91_pull_airports.csv
+purpose     : session 91, Step 3 - the 51 pull airports (DECISIONS D83.2, D83.3): the position used, the
+              four GFS 0.25 degree grid points around it (index in the 721 x 1440 grid, latitude,
+              longitude, in the order eccodes returns them) and each point's bilinear weight (SPEC 8.8 G6).
+written at  : 2026-10-03T17:22:16Z (run started 2026-10-03T17:22:15Z)
+written by  : scripts/session91_grib_pull.py --positions
+rows        : 51
+sha256      : cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+
+positions   : development airports (EGLC, LFPG, KDSM, YSDU, KRNO, KSFO): SPEC 3.4's grid latitude and
+              longitude, read from SPEC.md by station code; the other 45: IEM's latitude and longitude
+              from data/processed/session90_airports.csv. lon_used is as the source gives it; a
+              negative longitude was shifted by +360 before codes_grib_find_nearest and the weights (G6).
+sources     : SPEC.md sha256 930fbccaac025364d2cc99c43e780b751f2f77217f9b6cfc0ba2b24d7ea48c0a; data/processed/session90_airports.csv sha256 b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+GRIB message: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20230712/12/atmos/gfs.t12z.pgrb2.0p25.f000 bytes 413333316-413851604 (518,289 B), idx line '580:413333316:d=2023071212:TMP:2 m above ground:anl:'
+              (one decoded message; the four points depend only on the grid geometry)
+grid        : Ni 1440, Nj 721, lat_first 90.0, lon_first 0.0, lat_last -90.0, lon_last 359.75, di 0.25, dj 0.25
+packages    : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+requests    : 2 (31,818 B idx, 518,289 B message)

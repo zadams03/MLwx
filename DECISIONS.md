@@ -3081,3 +3081,137 @@ No stratum was short, so no fill was needed. **THE CLAIM BATCH: EDDM (Munich), K
 - No committed file under `data/` was changed, and `data/models/` was not touched. The only new files under `data/` are 270 observation files with 270 `.meta.txt` files, `data/processed/session90_airports.csv` and its `.meta.txt`.
 - No existing script was edited. No GRIB pull was built (that is session 91, D82.10). RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited; SPEC was edited only as Step 2 says.
 - Nothing was installed, and nothing was committed. No commit message was written.
+
+---
+
+## 2026-10-03: Session 91 decision: F132 accepted, the 51-airport pull list, grid positions, and the pull's design (owner, planning chat)
+
+**D83. Owner decisions, planning chat (after session 90): F132
+accepted, the pull list, grid positions, an open item, and the design
+of the stage C GRIB pull.** Written at the start of session 91, before
+any other edit or network call. No 2026-27 value has been read or
+scored.
+
+- **D83.1 F132 accepted.** The owner accepts F132 and all twelve F132.8
+  readings.
+- **D83.2 The pull list is 51 airports:** D82.6's 47 plus LFPG, DSM,
+  YSDU and RNO. Build choices use all six development airports (D82.6),
+  so the pull must include them. Each global field serves every
+  airport, so the extra cost is negligible. The four added airports are
+  also product airports: the product list is now these 51 (D82.6's 47
+  plus LFPG, DSM, YSDU and RNO). They remain development airports, so
+  they are never in a claim batch.
+- **D83.3 Grid positions.** The six development airports (EGLC, LFPG,
+  DSM, YSDU, RNO, KSFO) use SPEC 3.4's grid points: the gate needs
+  them, and they keep the record consistent. The 45 new airports use
+  IEM's airport position, as F132 did. The raw values at the four grid
+  points are kept, so the interpolation choice stays open.
+- **D83.4 Open item: MMMX.** It reports at scattered minutes (mostly
+  :40 to :50), so under the 15-minute rule (SPEC 8.8 G3) it has almost
+  no usable observations (5.32 percent of local days, F132.6). It needs
+  its own handling or to be dropped. That is a later decision. It stays
+  in the pull.
+- **D83.5 The pull's design (completes D82.4).**
+  (a) Forecast hours are a setting of the script. The real pull uses
+  f000 to f024 (D82.3). The local test chunk uses f000 to f026, so the
+  gate reaches the lead-26 airports (YSDU, RNO, KSFO) as well as the
+  lead-24 ones. The later f025 to f048 pull reuses the same script.
+  (b) A chunk is one calendar month of GFS cycles, by the cycle's
+  initialisation date. The first cycle is 2021-03-23T00 (its f024 is
+  valid at 2021-03-24T00); the last is 2026-07-31T18. A forecast hour
+  whose valid time lies outside 2021-03-24T00 to 2026-07-31T23 UTC is
+  not requested.
+  (c) Values are kept exactly as decoded, with no rounding and no unit
+  conversion, written in a form that reads back to the identical
+  number. The kept size may exceed D82.4's 1.5 GB estimate; this is
+  accepted.
+  (d) Each chunk writes one data file, one per-message manifest and one
+  metadata file. A chunk is published as GitHub Release files only if
+  it completed. A rerun skips months already published, so the pull is
+  resumable.
+  (e) A field that GFS does not provide at a forecast hour (for example
+  an average or maximum at f000) is recorded as absent by design. A
+  missing index file or a message that fails its identity or validity
+  check is recorded and left empty. Neither is ever filled (SPEC 2.2).
+  A download that still fails after its retries fails the chunk, so
+  nothing partial is published.
+  (f) On GitHub Actions, at most four months run at once.
+  (g) The owner's first Actions run is one month. It measures real
+  speed and size. Session 92 checks it before the rest is started. The
+  local test chunk checks correctness only; its speed is limited by the
+  owner's connection.
+- **D83.6 The local test chunk.** Three cycle dates, 2022-01-12,
+  2023-07-12 and 2024-04-12, all four cycles, f000 to f026, all 51
+  airports. The gate compares, at each development airport's target
+  hour, cycle and lead, the GRIB-derived values rebuilt from the new
+  extract with the committed values in
+  `data/processed/session81_training_set.csv`, on target dates
+  2022-01-13, 2023-07-13 and 2024-04-13: 18 station-days, exact
+  equality, no tolerance.
+- **D83.7 GFS v17 (planning-chat check of the NWS notices page,
+  2026-10-03, not checked by this session).** Still no Service Change
+  Notice. The newest SCN listed is still SCN 26-87 (2026-09-22). With 30
+  days' notice, the earliest go-live is about 2 November 2026.
+- **D83.8 Sequence.** Session 91: this entry, the script, the
+  positions file, the workflow, and the local test chunk through the
+  gate. The owner then pushes and runs one month on GitHub Actions
+  (D83.5(g)). Session 92: verify that month's extract, speed and size,
+  then the owner starts the rest.
+
+---
+
+## 2026-10-03: Session 91 finding: the stage C GRIB pull and its gate
+
+**F133. The stage C GRIB pull script, its positions file and its GitHub Actions workflow exist. The local test chunk passed the gate: run 1 (all three dates, made by the pre-fix script) 18 of 18 station-days, and run 2 (2024-04-12 only, the fixed script end to end) 6 of 6, exact equality, no mismatch. The workflow was written and not run; nothing was pushed or published. Script: `scripts/session91_grib_pull.py` (new; modes `--positions`, `--plan`, `--chunk`, `--gate`, `--guard-check`; final SHA-256 `72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e`). Workflow: `.github/workflows/stagec-grib-pull.yml` (SHA-256 `f3e05c9a41d4ad86c45921b66df5ca82785910bb88e2fcac2c42580b531c19a0`) and `.github/grib-pull-requirements.txt` (`6ebf1b26a61927aaef792dece6e6af5ab55ffa7ec48218b75ce4a3a211946f51`). Positions: `data/processed/session91_pull_airports.csv` (51 rows, SHA-256 `cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08`, with a `.meta.txt`). Full real output: `notes/session-91-output.txt`. Run 2026-10-03. Python 3.12.2, eccodes 2.48.0 (ecCodes library 2.48.0), numpy 2.5.2, requests 2.34.2.**
+
+**F133.1 Steps 0 and 1.** `git status --porcelain` showed only `?? docs/session-91.md`. The last entries were D82 and F132; no D83 or F133 existed in either DECISIONS file; none of the new paths existed, and there was no `.github/` folder. SHA-256 equal: `session81_training_set.csv` (F122.3) and `session90_airports.csv` (F132). Read: D47, D62, D82, F128, F131, F132; SPEC 3.4, 7.2, 8.2, 8.7, 8.8; `scripts/session86_forward_build.py` in full; `session90_airports.csv` and its `.meta.txt`. `pip show eccodes`: Requires attrs, cffi, eccodeslib, findlibs, numpy (`eccodeslib` only off Windows; it requires `eckitlib==2.1.1.26`). D83 was copied with `sed` from `docs/session-91.md` lines 98 to 168 into DECISIONS.md lines 3089 to 3159 (heading at 3087) and checked byte-equal with `diff`, before any other edit or network call.
+
+**F133.2 Index survey (Step 2; `gfs.20230712/12`, f000 to f026, 27 `.idx` requests, 1,097,380 B).** Every line listed is in the output file. Selector rules, each matching exactly one line or none at every hour:
+- Instantaneous fields (t2m `TMP:2 m above ground`, tcdc `TCDC:entire atmosphere`, u10, v10, d2m, t850 `TMP:850 mb`, prmsl): step `N hour fcst`, the record's form (`session86_forward_build.py` l.371-387, `fc = f"{L} hour fcst"`); at f000 the step is `anl`, and the rule takes `anl` at f000 only. TCDC also has a `W-N hour ave fcst` line at f001 onward; the rule never takes it.
+- dswrf (`DSWRF:surface`): `W-N hour ave fcst` with W = 6 x floor((N-1)/6) (`session86_forward_build.py` l.173-176, l.388-389).
+- tmax2m, tmin2m (`TMAX`, `TMIN:2 m above ground`): `W-N hour max fcst`, `W-N hour min fcst`, the only matching line, same W.
+- **Absent by design:** dswrf, tmax2m and tmin2m at f000 (no line). No other field and hour. So 7 messages at f000 and 10 at every other hour.
+
+**F133.3 Positions file (Step 3).** 51 rows sorted by ICAO: 6 development (SPEC 3.4 grid point, read from SPEC.md by code), 6 claim batch and 39 new (IEM position from `session90_airports.csv`). Four points per airport from `codes_grib_find_nearest` on one message (`gfs.20230712/12` f000 `TMP:2 m above ground`, bytes 413333316-413851604), longitude shifted by +360 first; grid geometry Ni 1440, Nj 721, 90.0 to -90.0, 0.0 to 359.75, increments 0.25. **Check: at all six development airports the four points equal those the record's `bilinear_from_gid` finds, and the bilinear value from the stored indices and weights equals `bilinear_from_gid`'s value exactly.** Cross-check: the 45 IEM-position boxes and weights equal session 90's exactly (as sets; session 90 stores points sorted by latitude, then longitude).
+
+**F133.4 Script, guards, workflow (Steps 4 and 5).**
+- Modes as the prompt lists, plus `--positions` (reading 1). `--chunk` fetches by byte range from the `.idx` (`find_range` copied), 16 workers by default, retries only on network errors, 429 and 5xx; checks each message's identity, step type, start and end step, run date and time, full validity date and hour, and grid geometry against the positions file; reads 4 values per airport by grid index; writes `gfs_points_<chunk>.csv.gz`, `manifest_<chunk>.csv.gz` and `chunk_<chunk>.meta.txt` exclusively, and writes nothing if any download fails after its retries or the byte budget would be passed. No interpolation, derivation or rounding in the output; values written with `repr`.
+- Guards in code: no cycle after 2026-07-31T18; no valid time after 2026-07-31T23 or before 2021-03-24T00; `--hours` within 0 to 48; months within 2021-03 to 2026-07; existing output refused.
+- Workflow: `workflow_dispatch` with input `months`; a plan job lists the Release `stagec-grib-pull-v1`'s assets with `gh` and the job token, expands the range and passes only months whose three files are not all published; a matrix job per month, `max-parallel: 4`, `timeout-minutes: 350`, `ubuntu-latest`, Python 3.12; installs only the pinned file with `--no-deps` (then `pip check`); runs `--chunk --month <m> --hours 0-24 --out out --workers 16`; on success creates the Release if needed and uploads the three files (`permissions: contents: write`, no secret). No cache, no artifact.
+- Pinned (the local versions): eccodes 2.48.0, eccodeslib 2.48.0.26, eckitlib 2.1.1.26, findlibs 0.1.3, attrs 26.1.0, cffi 2.1.1, pycparser 3.0, numpy 2.5.2, requests 2.34.2, urllib3 2.7.0, certifi 2026.7.22, idna 3.19, charset-normalizer 3.5.1. **The ecCodes library on Linux comes from `eccodeslib`:** PyPI lists `eccodeslib-2.48.0.26-cp312-cp312-manylinux_2_28_x86_64.whl` and an `eckitlib` manylinux wheel (5 PyPI metadata reads).
+- PyYAML is not installed: the workflow was **not parsed**. Its month-expansion code was run locally on six inputs and behaved as intended. **Not testable locally:** the `gh` release listing, creation and upload; the matrix and job outputs; the Linux install of the pinned wheels; speed, size and the 350-minute limit on Actions; four jobs creating the Release at once (handled by a fallback, untested).
+
+**F133.5 Guard check and plan (Step 6.1, 6.2).** 10 of 10 cases behaved as specified: refused cycle 2026-07-31T18 f006, cycle 2026-08-01T00, valid 2021-03-23T23, `--hours 0-49`, an existing output file, `--month 2026-08`, `--dates 2026-08-01`; allowed 2026-07-31T18 f005, 2021-03-23T00 f024, an absent output file. No network. Plan, f000 to f024: **65 months, 7,828 cycles, 195,600 files, 1,932,528 expected messages, valid 2021-03-24T00 to 2026-07-31T23; 0 valid times outside the window.** 2021-03 has 36 cycles and 840 files; 2026-07 has 3,060 files.
+
+**F133.6 The test chunk (Step 6.3), two runs.**
+- **Run 1 (pre-fix script, SHA-256 `3b17207377e68de66263df359c83f5f29bb6656d260199e52c3e6aef9c9c466f`):** dates 2022-01-12, 2023-07-12, 2024-04-12, all four cycles, f000 to f026, 8 workers. 12 cycles, 324 files, 324 `.idx` and 3,204 message requests, 0 retries, 2,526,907,686 B, 520.7 s. Statuses: ok 3,194, absent by design 36, idx missing 0, check failed 10. Files: points 2,000,619 B (16,524 rows), manifest 82,817 B, meta 1,571 B. **The 10 failures were a bug in my spot-check code** (it read a key the positions rows do not have), all at 2024-04-12T18 f026; because the spot check sat inside the message checks, the error marked the messages failed, and their values, read before it, were still written. The spot check recorded nothing.
+- **The fix** (full diff in the output file; the pre-fix text was rebuilt by reversing the edit and its SHA-256 equals run 1's): the spot check reads `lat_used`/`lon_used` and runs outside the message checks, so an error in it stops the run; values are stored only for a message whose status is `ok`. **Confirmed:** a run with a positions copy whose grid increment is wrong gave 40 of 40 messages "check failed" and 0 of 8,160 value cells non-empty. (A first attempt at this test was invalid: my test patched the module constant but not `read_positions`' default path, so it read the true file; 40 ok. Recorded in the output file.)
+- **Run 2 (fixed script, owner's choice in session):** date 2024-04-12, f000 to f026, 8 workers, budget 1.9 x 10^9. 4 cycles, 108 files, 108 `.idx` and 1,068 message requests, 0 retries, 820,753,100 B, 190.7 s. ok 1,068, absent by design 12, idx missing 0, check failed 0. **The ten 2024-04-12T18 f026 messages are all `ok`.** Points 668,449 B, manifest 27,938 B. Its 5,508 points rows equal run 1's for that date string for string; the manifests differ only in those ten statuses.
+- **Spot check (run 2):** at EFHK and KATL, for each of the ten fields at 2024-04-12T18 f026, the four grid indices and values read by index equal `codes_grib_find_nearest`'s: 20 of 20.
+
+**F133.7 The gate (Step 6.4).** Record arithmetic copied from `session86_forward_build.py` (`derive`, bilinear term order). Training set SHA-256 checked against F122.3; the positions file's SHA-256 is in each chunk's meta.
+- **Run 1's extract: PASSED, 18 of 18 station-days, every one of the 7 columns 18 of 18, every airport 3 of 3 (21 of 21 values). 0 mismatches, 0 missing committed rows, 0 not rebuilt.** Made by the pre-fix script; the values used at RNO and KSFO 2024-04-13 are the ten that were marked "check failed" but had passed every real check.
+- **Run 2's extract: 6 of 6 station-days (2024-04-13) equal, 7 of 7 columns each, 0 mismatches.** The other 12 are "not rebuilt" because run 2 holds one date, so the script's all-18 rule prints "GATE NOT PASSED".
+
+**F133.8 Projection (ESTIMATES, from run 1's sizes and speed).** Full f000 to f024 pull: 195,600 files (`.idx` requests), 1,932,528 messages, about 1.52 TB downloaded (about 23.5 GB a month); kept, compressed: points about 1.21 GB (121 B a row, 9,975,600 rows) and manifests about 50 MB; about 19.9 MB a full month. Time at run 1's rate (0.62 files/s, 4.9 MB/s, 8 workers, the owner's connection): about 83 min a month, 87 h for all months in sequence. Limited by the local connection (D83.5(g)); the first Actions run measures the real rate.
+
+**F133.9 Readings made where the prompt is silent (for the owner to confirm).**
+1. The positions file is written by a fifth mode, `--positions`, of the pull script, so its provenance is code.
+2. At f000 the instantaneous rule takes `anl`.
+3. "At most 5 times" is read as 5 retries after the first try, waits 2, 4, 8, 16, 32 s; a short body or a body without the GRIB and 7777 markers counts as a network error.
+4. An `.idx` 404 is "idx missing"; a missing or doubled `.idx` line, or an unreadable `.idx`, is "check failed"; a 404 on a message listed in its `.idx` fails the chunk.
+5. A missing or non-finite value at any needed grid index fails the whole message (left empty for all airports). None occurred.
+6. The process type is eccodes' `stepType` plus `typeOfStatisticalProcessing` where defined.
+7. eccodes calls run under one lock (threads download in parallel).
+8. Gzip with a zero timestamp, so equal content gives equal bytes.
+9. The grid geometry is a set of columns on every positions row (and in the meta); `lon_used` is as the source gives it.
+10. `--budget-bytes` is optional with no default limit (Actions runs have none).
+11. Spot-check airports: EFHK (first new airport by ICAO code) and KATL (first new airport with a negative longitude); messages: the chunk's last file (all ten fields).
+12. The gate leaves out the record's finiteness check on five fields the pull does not hold (t925, t700, rh2m, spfh2m, pres_sfc) and the season columns.
+13. In the workflow, Python "3.12" (the newest 3.12.x, printed in each chunk's meta), a month counts as published only with all three files, and uploads replace a partial upload (`--clobber`).
+14. A month's cycles with no requested hour are left out (2021-03 starts at 2021-03-23T00, as D83.5(b)).
+- Note, not a decision: the later f025 to f048 pull would reach cycles 2021-03-22T00 and T06 (for valid times from 2021-03-24T00). SPEC 7.2 gives v16's start as 2021-03-22 with no hour, so whether those two cycles are v16 is to be checked before that pull.
+
+**F133.10 Requests, bytes, clean-up.** GRIB requests 4,821 and 3,410,709,377 B (survey 27, positions 2, run 1 3,528, run 2 1,176, the two failure tests 44 each), under the 4.5 x 10^9 limit; plus 5 PyPI metadata reads (bytes not counted). No message was written to disk. **The temporary directory (all extracts) was deleted; the path no longer exists.**
+
+**F133.11 What this did not do.** No observation was read; no score, error, MAE, bias or skill was computed; nothing from 2026-27 was requested or read; no forecast value was printed (the gate had no mismatch); no push, workflow run, `gh` call or Release; no account or token; no committed file under `data/` was changed and `data/models/` was not touched; no existing script was edited; nothing was installed; SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited. Nothing was committed and no commit message was written.

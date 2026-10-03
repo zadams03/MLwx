@@ -1,0 +1,45 @@
+Session 91: D83, the stage C GRIB pull (script, positions, workflow) and its gate (F133)
+
+D83 records the owner's decisions after session 90: F132 and its twelve
+readings accepted; the pull list and the product list are 51 airports
+(D82.6's 47 plus the development airports LFPG, DSM, YSDU and RNO, which
+are never in a claim batch); development airports at SPEC 3.4's grid
+points and the others at IEM's position; MMMX carried as an open item;
+the pull's design (forecast hours as a setting, monthly chunks, values
+kept unrounded, absent fields never filled, at most four months at once,
+a one-month first run on Actions); the local test chunk; and the
+2026-10-03 GFS v17 check (no SCN; earliest go-live about 2 November).
+
+F133 records the build. New: scripts/session91_grib_pull.py (modes
+--positions, --plan, --chunk, --gate, --guard-check),
+data/processed/session91_pull_airports.csv with its .meta.txt, and
+.github/workflows/stagec-grib-pull.yml with its pinned requirements.
+The index survey fixed one selector rule per field; DSWRF, TMAX and TMIN
+are absent by design at f000. The positions file reproduces the record's
+grid points at all six development airports and session 90's boxes at
+the other 45. All ten guard cases behaved as specified. The plan covers
+65 months, 195,600 files and 1,932,528 messages, with no valid time
+outside 2021-03-24T00 to 2026-07-31T23.
+
+The gate passed with exact equality against session81_training_set.csv:
+run 1 (three dates, the pre-fix script) 18 of 18 station-days; run 2
+(2024-04-12, the fixed script end to end) 6 of 6. Run 1 found a bug in
+the spot-check code that marked ten messages failed while still writing
+their values. The fix moves the spot check outside the message checks
+and writes values only for messages whose status is ok; a deliberate
+failure test then gave 40 of 40 failed and 0 values written, and run 2's
+rows equal run 1's for that date. The spot check passed 20 of 20.
+Estimates: about 1.52 TB downloaded and about 1.26 GB kept for the full
+f000 to f024 pull. 3.41 GB was downloaded, inside the 4.5 GB budget.
+Nothing from 2026-27 was read, no observation was read, nothing was
+scored, and the workflow was not run.
+
+Planning-chat notes, to be recorded in D84 at the start of session 92:
+- F133 and all fourteen F133.9 readings accepted.
+- GFS v16 began with the 12z run of 2021-03-22 (NWS SCN 21-20), so the
+  later f025 to f048 pull must start at cycle 2021-03-22T12; cycles
+  2021-03-22T00 and T06 are GFS v15 and are not used.
+- Session 92 should check, per month, that a month whose messages are
+  mostly "check failed" is caught: today such a month would publish with
+  empty values (never filled, but not flagged).
+- The owner's first Actions run is month 2022-01.

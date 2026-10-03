@@ -1,0 +1,112 @@
+# Stage C GRIB pull (DECISIONS D82.4, D83.5; session 91).
+#
+# Runs only when started by hand. Input `months`: one month (2021-03) or a
+# range (2021-03..2021-08). Months already published on the Release
+# `stagec-grib-pull-v1` (all three files present) are skipped, so a rerun
+# resumes. Each remaining month is one job, at most four at once. A month's
+# three files are uploaded only if its pull completed. Nothing else is kept:
+# no GRIB message is written to disk, and there is no cache.
+
+name: stagec-grib-pull
+
+on:
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "One month (2021-03) or a range (2021-03..2021-08), from 2021-03 to 2026-07"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: stagec-grib-pull-v1
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      months: ${{ steps.expand.outputs.months }}
+    steps:
+      - name: List the assets already on the Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' > assets.txt; then
+            echo "Release $RELEASE_TAG exists; $(wc -l < assets.txt) assets"
+          else
+            echo "Release $RELEASE_TAG not found; no month is published yet"
+            : > assets.txt
+          fi
+      - name: Expand the range and keep the months not yet published
+        id: expand
+        env:
+          MONTHS_INPUT: ${{ inputs.months }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, re, sys
+          spec = os.environ["MONTHS_INPUT"].strip()
+          m = re.fullmatch(r"(\d{4})-(\d{2})(?:\.\.(\d{4})-(\d{2}))?", spec)
+          if not m:
+              sys.exit(f"months must be YYYY-MM or YYYY-MM..YYYY-MM, got {spec!r}")
+          a = (int(m.group(1)), int(m.group(2)))
+          b = (int(m.group(3)), int(m.group(4))) if m.group(3) else a
+          if not (1 <= a[1] <= 12 and 1 <= b[1] <= 12) or a > b or a < (2021, 3) or b > (2026, 7):
+              sys.exit(f"months must lie within 2021-03..2026-07, in order, got {spec!r}")
+          months, y, mo = [], a[0], a[1]
+          while (y, mo) <= b:
+              months.append(f"{y}-{mo:02d}")
+              y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
+          have = set(open("assets.txt").read().split())
+          todo = [x for x in months if not {f"gfs_points_{x}.csv.gz", f"manifest_{x}.csv.gz",
+                                            f"chunk_{x}.meta.txt"} <= have]
+          print("requested:", months)
+          print("already published:", [x for x in months if x not in todo])
+          print("to run:", todo)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"months={json.dumps(todo)}\n")
+          EOF
+
+  pull:
+    needs: plan
+    if: needs.plan.outputs.months != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: write
+    strategy:
+      max-parallel: 4
+      fail-fast: false
+      matrix:
+        month: ${{ fromJSON(needs.plan.outputs.months) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned packages only
+        run: |
+          python -m pip install --no-deps -r .github/grib-pull-requirements.txt
+          python -m pip check
+          python -c "import eccodes, numpy, requests, sys; print(sys.version); print('eccodes', eccodes.__version__, 'library', eccodes.codes_get_api_version()); print('numpy', numpy.__version__, 'requests', requests.__version__)"
+      - name: Pull one month
+        env:
+          MONTH: ${{ matrix.month }}
+        run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours 0-24 --out out --workers 16
+      - name: Publish the three files (only reached if the pull succeeded)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MONTH: ${{ matrix.month }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --title "Stage C GRIB pull" \
+              --notes "Raw GFS values at the four grid points around each pull airport (DECISIONS D82.4, D83). One month per set of three files." \
+              || gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null
+          fi
+          gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
+            "out/gfs_points_${MONTH}.csv.gz" "out/manifest_${MONTH}.csv.gz" "out/chunk_${MONTH}.meta.txt"

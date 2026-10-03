@@ -1,0 +1,737 @@
+SESSION 91 OUTPUT (sections in session order; the session paused at a usage limit after the projection and resumed for F133, STATUS, the consistency check and the archive step)
+
+===== step2_survey
+accessed (UTC): 2026-10-03T17:17:36Z
+f000 HTTP 200 31818 B lines 696
+f001 HTTP 200 40471 B lines 743
+f002 HTTP 200 40472 B lines 743
+f003 HTTP 200 40472 B lines 743
+f004 HTTP 200 40473 B lines 743
+f005 HTTP 200 40473 B lines 743
+f006 HTTP 200 40473 B lines 743
+f007 HTTP 200 40474 B lines 743
+f008 HTTP 200 40476 B lines 743
+f009 HTTP 200 40477 B lines 743
+f010 HTTP 200 41221 B lines 743
+f011 HTTP 200 41221 B lines 743
+f012 HTTP 200 41221 B lines 743
+f013 HTTP 200 41261 B lines 743
+f014 HTTP 200 41261 B lines 743
+f015 HTTP 200 41262 B lines 743
+f016 HTTP 200 41263 B lines 743
+f017 HTTP 200 41260 B lines 743
+f018 HTTP 200 41259 B lines 743
+f019 HTTP 200 41261 B lines 743
+f020 HTTP 200 41259 B lines 743
+f021 HTTP 200 41258 B lines 743
+f022 HTTP 200 41259 B lines 743
+f023 HTTP 200 41259 B lines 743
+f024 HTTP 200 41254 B lines 743
+f025 HTTP 200 41260 B lines 743
+f026 HTTP 200 41262 B lines 743
+
+=== t2m: TMP:2 m above ground
+f000: 580:413333316:d=2023071212:TMP:2 m above ground:anl:   [518289 B]
+f001: 581:416304468:d=2023071212:TMP:2 m above ground:1 hour fcst:   [518454 B]
+f002: 581:415160422:d=2023071212:TMP:2 m above ground:2 hour fcst:   [518719 B]
+f003: 581:416847665:d=2023071212:TMP:2 m above ground:3 hour fcst:   [519721 B]
+f004: 581:417628961:d=2023071212:TMP:2 m above ground:4 hour fcst:   [519294 B]
+f005: 581:419153818:d=2023071212:TMP:2 m above ground:5 hour fcst:   [518655 B]
+f006: 581:419404593:d=2023071212:TMP:2 m above ground:6 hour fcst:   [519487 B]
+f007: 581:419359780:d=2023071212:TMP:2 m above ground:7 hour fcst:   [519634 B]
+f008: 581:422348337:d=2023071212:TMP:2 m above ground:8 hour fcst:   [520087 B]
+f009: 581:422346230:d=2023071212:TMP:2 m above ground:9 hour fcst:   [519832 B]
+f010: 581:423538916:d=2023071212:TMP:2 m above ground:10 hour fcst:   [518758 B]
+f011: 581:422899139:d=2023071212:TMP:2 m above ground:11 hour fcst:   [517986 B]
+f012: 581:419945446:d=2023071212:TMP:2 m above ground:12 hour fcst:   [517226 B]
+f013: 581:420918548:d=2023071212:TMP:2 m above ground:13 hour fcst:   [516655 B]
+f014: 581:421432063:d=2023071212:TMP:2 m above ground:14 hour fcst:   [517242 B]
+f015: 581:423495266:d=2023071212:TMP:2 m above ground:15 hour fcst:   [517749 B]
+f016: 581:424393522:d=2023071212:TMP:2 m above ground:16 hour fcst:   [516757 B]
+f017: 581:423527908:d=2023071212:TMP:2 m above ground:17 hour fcst:   [517424 B]
+f018: 581:422248993:d=2023071212:TMP:2 m above ground:18 hour fcst:   [516438 B]
+f019: 581:421921670:d=2023071212:TMP:2 m above ground:19 hour fcst:   [516912 B]
+f020: 581:421007435:d=2023071212:TMP:2 m above ground:20 hour fcst:   [519051 B]
+f021: 581:418217466:d=2023071212:TMP:2 m above ground:21 hour fcst:   [520288 B]
+f022: 581:419440123:d=2023071212:TMP:2 m above ground:22 hour fcst:   [519888 B]
+f023: 581:420609198:d=2023071212:TMP:2 m above ground:23 hour fcst:   [519791 B]
+f024: 581:420292098:d=2023071212:TMP:2 m above ground:24 hour fcst:   [519328 B]
+f025: 581:422199987:d=2023071212:TMP:2 m above ground:25 hour fcst:   [518749 B]
+f026: 581:424930380:d=2023071212:TMP:2 m above ground:26 hour fcst:   [519650 B]
+
+=== tcdc: TCDC:entire atmosphere
+f000: 611:429895945:d=2023071212:TCDC:entire atmosphere:anl:   [835286 B]
+f001: 636:444215532:d=2023071212:TCDC:entire atmosphere:1 hour fcst:   [835243 B] | 637:445050775:d=2023071212:TCDC:entire atmosphere:0-1 hour ave fcst:   [789297 B]
+f002: 636:443403267:d=2023071212:TCDC:entire atmosphere:2 hour fcst:   [834060 B] | 637:444237327:d=2023071212:TCDC:entire atmosphere:0-2 hour ave fcst:   [829954 B]
+f003: 636:445195976:d=2023071212:TCDC:entire atmosphere:3 hour fcst:   [833604 B] | 637:446029580:d=2023071212:TCDC:entire atmosphere:0-3 hour ave fcst:   [854252 B]
+f004: 636:446203825:d=2023071212:TCDC:entire atmosphere:4 hour fcst:   [838619 B] | 637:447042444:d=2023071212:TCDC:entire atmosphere:0-4 hour ave fcst:   [872167 B]
+f005: 636:447836148:d=2023071212:TCDC:entire atmosphere:5 hour fcst:   [839826 B] | 637:448675974:d=2023071212:TCDC:entire atmosphere:0-5 hour ave fcst:   [887752 B]
+f006: 636:448215029:d=2023071212:TCDC:entire atmosphere:6 hour fcst:   [841184 B] | 637:449056213:d=2023071212:TCDC:entire atmosphere:0-6 hour ave fcst:   [900156 B]
+f007: 636:447035773:d=2023071212:TCDC:entire atmosphere:7 hour fcst:   [845797 B] | 637:447881570:d=2023071212:TCDC:entire atmosphere:6-7 hour ave fcst:   [797772 B]
+f008: 636:450370689:d=2023071212:TCDC:entire atmosphere:8 hour fcst:   [849597 B] | 637:451220286:d=2023071212:TCDC:entire atmosphere:6-8 hour ave fcst:   [840958 B]
+f009: 636:450569581:d=2023071212:TCDC:entire atmosphere:9 hour fcst:   [850496 B] | 637:451420077:d=2023071212:TCDC:entire atmosphere:6-9 hour ave fcst:   [866745 B]
+f010: 636:451931487:d=2023071212:TCDC:entire atmosphere:10 hour fcst:   [850157 B] | 637:452781644:d=2023071212:TCDC:entire atmosphere:6-10 hour ave fcst:   [884939 B]
+f011: 636:451327494:d=2023071212:TCDC:entire atmosphere:11 hour fcst:   [849184 B] | 637:452176678:d=2023071212:TCDC:entire atmosphere:6-11 hour ave fcst:   [898035 B]
+f012: 636:448507561:d=2023071212:TCDC:entire atmosphere:12 hour fcst:   [849328 B] | 637:449356889:d=2023071212:TCDC:entire atmosphere:6-12 hour ave fcst:   [907366 B]
+f013: 636:449108952:d=2023071212:TCDC:entire atmosphere:13 hour fcst:   [846083 B] | 637:449955035:d=2023071212:TCDC:entire atmosphere:12-13 hour ave fcst:   [804153 B]
+f014: 636:449876288:d=2023071212:TCDC:entire atmosphere:14 hour fcst:   [842493 B] | 637:450718781:d=2023071212:TCDC:entire atmosphere:12-14 hour ave fcst:   [843502 B]
+f015: 636:452032968:d=2023071212:TCDC:entire atmosphere:15 hour fcst:   [838085 B] | 637:452871053:d=2023071212:TCDC:entire atmosphere:12-15 hour ave fcst:   [865419 B]
+f016: 636:453060859:d=2023071212:TCDC:entire atmosphere:16 hour fcst:   [836528 B] | 637:453897387:d=2023071212:TCDC:entire atmosphere:12-16 hour ave fcst:   [881270 B]
+f017: 636:452404431:d=2023071212:TCDC:entire atmosphere:17 hour fcst:   [835128 B] | 637:453239559:d=2023071212:TCDC:entire atmosphere:12-17 hour ave fcst:   [892642 B]
+f018: 636:451515376:d=2023071212:TCDC:entire atmosphere:18 hour fcst:   [831778 B] | 637:452347154:d=2023071212:TCDC:entire atmosphere:12-18 hour ave fcst:   [902614 B]
+f019: 636:449884665:d=2023071212:TCDC:entire atmosphere:19 hour fcst:   [826881 B] | 637:450711546:d=2023071212:TCDC:entire atmosphere:18-19 hour ave fcst:   [786149 B]
+f020: 636:449750117:d=2023071212:TCDC:entire atmosphere:20 hour fcst:   [827068 B] | 637:450577185:d=2023071212:TCDC:entire atmosphere:18-20 hour ave fcst:   [826011 B]
+f021: 636:446790082:d=2023071212:TCDC:entire atmosphere:21 hour fcst:   [828595 B] | 637:447618677:d=2023071212:TCDC:entire atmosphere:18-21 hour ave fcst:   [849724 B]
+f022: 636:448270982:d=2023071212:TCDC:entire atmosphere:22 hour fcst:   [831233 B] | 637:449102215:d=2023071212:TCDC:entire atmosphere:18-22 hour ave fcst:   [867389 B]
+f023: 636:449651163:d=2023071212:TCDC:entire atmosphere:23 hour fcst:   [831539 B] | 637:450482702:d=2023071212:TCDC:entire atmosphere:18-23 hour ave fcst:   [881546 B]
+f024: 636:449408841:d=2023071212:TCDC:entire atmosphere:24 hour fcst:   [832412 B] | 637:450241253:d=2023071212:TCDC:entire atmosphere:18-24 hour ave fcst:   [892898 B]
+f025: 636:450624075:d=2023071212:TCDC:entire atmosphere:25 hour fcst:   [833507 B] | 637:451457582:d=2023071212:TCDC:entire atmosphere:24-25 hour ave fcst:   [789065 B]
+f026: 636:453688405:d=2023071212:TCDC:entire atmosphere:26 hour fcst:   [832522 B] | 637:454520927:d=2023071212:TCDC:entire atmosphere:24-26 hour ave fcst:   [828920 B]
+
+=== u10: UGRD:10 m above ground
+f000: 585:416975738:d=2023071212:UGRD:10 m above ground:anl:   [982213 B]
+f001: 588:420970673:d=2023071212:UGRD:10 m above ground:1 hour fcst:   [981334 B]
+f002: 588:419826275:d=2023071212:UGRD:10 m above ground:2 hour fcst:   [981535 B]
+f003: 588:421515259:d=2023071212:UGRD:10 m above ground:3 hour fcst:   [978489 B]
+f004: 588:422290494:d=2023071212:UGRD:10 m above ground:4 hour fcst:   [984187 B]
+f005: 588:423816597:d=2023071212:UGRD:10 m above ground:5 hour fcst:   [984569 B]
+f006: 588:424063345:d=2023071212:UGRD:10 m above ground:6 hour fcst:   [984838 B]
+f007: 588:424037106:d=2023071212:UGRD:10 m above ground:7 hour fcst:   [980729 B]
+f008: 588:427022324:d=2023071212:UGRD:10 m above ground:8 hour fcst:   [980614 B]
+f009: 588:427010544:d=2023071212:UGRD:10 m above ground:9 hour fcst:   [984231 B]
+f010: 588:428191820:d=2023071212:UGRD:10 m above ground:10 hour fcst:   [979971 B]
+f011: 588:427551251:d=2023071212:UGRD:10 m above ground:11 hour fcst:   [979505 B]
+f012: 588:424595790:d=2023071212:UGRD:10 m above ground:12 hour fcst:   [982370 B]
+f013: 588:425583209:d=2023071212:UGRD:10 m above ground:13 hour fcst:   [977034 B]
+f014: 588:426088166:d=2023071212:UGRD:10 m above ground:14 hour fcst:   [976679 B]
+f015: 588:428156187:d=2023071212:UGRD:10 m above ground:15 hour fcst:   [976928 B]
+f016: 588:429041941:d=2023071212:UGRD:10 m above ground:16 hour fcst:   [980602 B]
+f017: 588:428176091:d=2023071212:UGRD:10 m above ground:17 hour fcst:   [976931 B]
+f018: 588:426892297:d=2023071212:UGRD:10 m above ground:18 hour fcst:   [977165 B]
+f019: 588:426581209:d=2023071212:UGRD:10 m above ground:19 hour fcst:   [976948 B]
+f020: 588:425667964:d=2023071212:UGRD:10 m above ground:20 hour fcst:   [978554 B]
+f021: 588:422873679:d=2023071212:UGRD:10 m above ground:21 hour fcst:   [979570 B]
+f022: 588:424092738:d=2023071212:UGRD:10 m above ground:22 hour fcst:   [979730 B]
+f023: 588:425260572:d=2023071212:UGRD:10 m above ground:23 hour fcst:   [980803 B]
+f024: 588:424938928:d=2023071212:UGRD:10 m above ground:24 hour fcst:   [980258 B]
+f025: 588:426875031:d=2023071212:UGRD:10 m above ground:25 hour fcst:   [980101 B]
+f026: 588:429600090:d=2023071212:UGRD:10 m above ground:26 hour fcst:   [980616 B]
+
+=== v10: VGRD:10 m above ground
+f000: 586:417957951:d=2023071212:VGRD:10 m above ground:anl:   [954694 B]
+f001: 589:421952007:d=2023071212:VGRD:10 m above ground:1 hour fcst:   [954991 B]
+f002: 589:420807810:d=2023071212:VGRD:10 m above ground:2 hour fcst:   [959075 B]
+f003: 589:422493748:d=2023071212:VGRD:10 m above ground:3 hour fcst:   [956095 B]
+f004: 589:423274681:d=2023071212:VGRD:10 m above ground:4 hour fcst:   [961169 B]
+f005: 589:424801166:d=2023071212:VGRD:10 m above ground:5 hour fcst:   [957698 B]
+f006: 589:425048183:d=2023071212:VGRD:10 m above ground:6 hour fcst:   [957911 B]
+f007: 589:425017835:d=2023071212:VGRD:10 m above ground:7 hour fcst:   [962082 B]
+f008: 589:428002938:d=2023071212:VGRD:10 m above ground:8 hour fcst:   [962015 B]
+f009: 589:427994775:d=2023071212:VGRD:10 m above ground:9 hour fcst:   [957820 B]
+f010: 589:429171791:d=2023071212:VGRD:10 m above ground:10 hour fcst:   [957697 B]
+f011: 589:428530756:d=2023071212:VGRD:10 m above ground:11 hour fcst:   [957595 B]
+f012: 589:425578160:d=2023071212:VGRD:10 m above ground:12 hour fcst:   [956641 B]
+f013: 589:426560243:d=2023071212:VGRD:10 m above ground:13 hour fcst:   [956105 B]
+f014: 589:427064845:d=2023071212:VGRD:10 m above ground:14 hour fcst:   [959479 B]
+f015: 589:429133115:d=2023071212:VGRD:10 m above ground:15 hour fcst:   [955715 B]
+f016: 589:430022543:d=2023071212:VGRD:10 m above ground:16 hour fcst:   [954952 B]
+f017: 589:429153022:d=2023071212:VGRD:10 m above ground:17 hour fcst:   [959136 B]
+f018: 589:427869462:d=2023071212:VGRD:10 m above ground:18 hour fcst:   [958060 B]
+f019: 589:427558157:d=2023071212:VGRD:10 m above ground:19 hour fcst:   [957633 B]
+f020: 589:426646518:d=2023071212:VGRD:10 m above ground:20 hour fcst:   [958453 B]
+f021: 589:423853249:d=2023071212:VGRD:10 m above ground:21 hour fcst:   [958992 B]
+f022: 589:425072468:d=2023071212:VGRD:10 m above ground:22 hour fcst:   [959000 B]
+f023: 589:426241375:d=2023071212:VGRD:10 m above ground:23 hour fcst:   [958755 B]
+f024: 589:425919186:d=2023071212:VGRD:10 m above ground:24 hour fcst:   [958893 B]
+f025: 589:427855132:d=2023071212:VGRD:10 m above ground:25 hour fcst:   [954913 B]
+f026: 589:430580706:d=2023071212:VGRD:10 m above ground:26 hour fcst:   [959511 B]
+
+=== d2m: DPT:2 m above ground
+f000: 582:415081955:d=2023071212:DPT:2 m above ground:anl:   [535918 B]
+f001: 583:418053997:d=2023071212:DPT:2 m above ground:1 hour fcst:   [532520 B]
+f002: 583:416910607:d=2023071212:DPT:2 m above ground:2 hour fcst:   [536669 B]
+f003: 583:418599322:d=2023071212:DPT:2 m above ground:3 hour fcst:   [536769 B]
+f004: 583:419379512:d=2023071212:DPT:2 m above ground:4 hour fcst:   [532593 B]
+f005: 583:420902661:d=2023071212:DPT:2 m above ground:5 hour fcst:   [535831 B]
+f006: 583:421154252:d=2023071212:DPT:2 m above ground:6 hour fcst:   [531808 B]
+f007: 583:421109024:d=2023071212:DPT:2 m above ground:7 hour fcst:   [531276 B]
+f008: 583:424097595:d=2023071212:DPT:2 m above ground:8 hour fcst:   [535523 B]
+f009: 583:424094193:d=2023071212:DPT:2 m above ground:9 hour fcst:   [530975 B]
+f010: 583:425285386:d=2023071212:DPT:2 m above ground:10 hour fcst:   [530680 B]
+f011: 583:424644602:d=2023071212:DPT:2 m above ground:11 hour fcst:   [533602 B]
+f012: 583:421690171:d=2023071212:DPT:2 m above ground:12 hour fcst:   [534101 B]
+f013: 583:422663738:d=2023071212:DPT:2 m above ground:13 hour fcst:   [529769 B]
+f014: 583:423178675:d=2023071212:DPT:2 m above ground:14 hour fcst:   [530643 B]
+f015: 583:425243116:d=2023071212:DPT:2 m above ground:15 hour fcst:   [535080 B]
+f016: 583:426139174:d=2023071212:DPT:2 m above ground:16 hour fcst:   [534255 B]
+f017: 583:425274070:d=2023071212:DPT:2 m above ground:17 hour fcst:   [534727 B]
+f018: 583:423994430:d=2023071212:DPT:2 m above ground:18 hour fcst:   [534575 B]
+f019: 583:423667976:d=2023071212:DPT:2 m above ground:19 hour fcst:   [534261 B]
+f020: 583:422756526:d=2023071212:DPT:2 m above ground:20 hour fcst:   [535570 B]
+f021: 583:419968514:d=2023071212:DPT:2 m above ground:21 hour fcst:   [531668 B]
+f022: 583:421190451:d=2023071212:DPT:2 m above ground:22 hour fcst:   [531411 B]
+f023: 583:422358928:d=2023071212:DPT:2 m above ground:23 hour fcst:   [535193 B]
+f024: 583:422041437:d=2023071212:DPT:2 m above ground:24 hour fcst:   [531395 B]
+f025: 583:423948999:d=2023071212:DPT:2 m above ground:25 hour fcst:   [535346 B]
+f026: 583:426680414:d=2023071212:DPT:2 m above ground:26 hour fcst:   [536147 B]
+
+=== t850: TMP:850 mb
+f000: 462:339299223:d=2023071212:TMP:850 mb:anl:   [483117 B]
+f001: 462:341698623:d=2023071212:TMP:850 mb:1 hour fcst:   [481980 B]
+f002: 462:340302159:d=2023071212:TMP:850 mb:2 hour fcst:   [481955 B]
+f003: 462:342115271:d=2023071212:TMP:850 mb:3 hour fcst:   [486865 B]
+f004: 462:342961703:d=2023071212:TMP:850 mb:4 hour fcst:   [487768 B]
+f005: 462:344199526:d=2023071212:TMP:850 mb:5 hour fcst:   [488061 B]
+f006: 462:344406923:d=2023071212:TMP:850 mb:6 hour fcst:   [487978 B]
+f007: 462:344407783:d=2023071212:TMP:850 mb:7 hour fcst:   [484072 B]
+f008: 462:347391071:d=2023071212:TMP:850 mb:8 hour fcst:   [483512 B]
+f009: 462:347343627:d=2023071212:TMP:850 mb:9 hour fcst:   [484114 B]
+f010: 462:348600291:d=2023071212:TMP:850 mb:10 hour fcst:   [487358 B]
+f011: 462:347958028:d=2023071212:TMP:850 mb:11 hour fcst:   [483657 B]
+f012: 462:345073063:d=2023071212:TMP:850 mb:12 hour fcst:   [484727 B]
+f013: 462:346117337:d=2023071212:TMP:850 mb:13 hour fcst:   [398927 B]
+f014: 462:346509311:d=2023071212:TMP:850 mb:14 hour fcst:   [489388 B]
+f015: 462:348395035:d=2023071212:TMP:850 mb:15 hour fcst:   [485403 B]
+f016: 462:349325806:d=2023071212:TMP:850 mb:16 hour fcst:   [490283 B]
+f017: 462:348524916:d=2023071212:TMP:850 mb:17 hour fcst:   [489681 B]
+f018: 462:347398822:d=2023071212:TMP:850 mb:18 hour fcst:   [489812 B]
+f019: 462:346962599:d=2023071212:TMP:850 mb:19 hour fcst:   [489863 B]
+f020: 462:346209716:d=2023071212:TMP:850 mb:20 hour fcst:   [486811 B]
+f021: 462:343517036:d=2023071212:TMP:850 mb:21 hour fcst:   [486076 B]
+f022: 462:344632482:d=2023071212:TMP:850 mb:22 hour fcst:   [486702 B]
+f023: 462:345927536:d=2023071212:TMP:850 mb:23 hour fcst:   [486876 B]
+f024: 462:345383744:d=2023071212:TMP:850 mb:24 hour fcst:   [489999 B]
+f025: 462:347296962:d=2023071212:TMP:850 mb:25 hour fcst:   [488727 B]
+f026: 462:349993794:d=2023071212:TMP:850 mb:26 hour fcst:   [489650 B]
+
+=== dswrf: DSWRF:surface
+f000: (no line)
+f001: 653:459648874:d=2023071212:DSWRF:surface:0-1 hour ave fcst:   [790988 B]
+f002: 653:459440169:d=2023071212:DSWRF:surface:0-2 hour ave fcst:   [813291 B]
+f003: 653:461640163:d=2023071212:DSWRF:surface:0-3 hour ave fcst:   [839621 B]
+f004: 653:462966633:d=2023071212:DSWRF:surface:0-4 hour ave fcst:   [900284 B]
+f005: 653:464851052:d=2023071212:DSWRF:surface:0-5 hour ave fcst:   [935029 B]
+f006: 653:465436338:d=2023071212:DSWRF:surface:0-6 hour ave fcst:   [968423 B]
+f007: 653:462494319:d=2023071212:DSWRF:surface:6-7 hour ave fcst:   [805170 B]
+f008: 653:466449402:d=2023071212:DSWRF:surface:6-8 hour ave fcst:   [824831 B]
+f009: 653:467047552:d=2023071212:DSWRF:surface:6-9 hour ave fcst:   [854718 B]
+f010: 653:468708088:d=2023071212:DSWRF:surface:6-10 hour ave fcst:   [882655 B]
+f011: 653:468343922:d=2023071212:DSWRF:surface:6-11 hour ave fcst:   [912430 B]
+f012: 653:465726167:d=2023071212:DSWRF:surface:6-12 hour ave fcst:   [975738 B]
+f013: 653:464587287:d=2023071212:DSWRF:surface:12-13 hour ave fcst:   [803411 B]
+f014: 653:465939563:d=2023071212:DSWRF:surface:12-14 hour ave fcst:   [844646 B]
+f015: 653:468473574:d=2023071212:DSWRF:surface:12-15 hour ave fcst:   [872175 B]
+f016: 653:469769925:d=2023071212:DSWRF:surface:12-16 hour ave fcst:   [904386 B]
+f017: 653:469386117:d=2023071212:DSWRF:surface:12-17 hour ave fcst:   [937945 B]
+f018: 653:468701151:d=2023071212:DSWRF:surface:12-18 hour ave fcst:   [969766 B]
+f019: 653:465342971:d=2023071212:DSWRF:surface:18-19 hour ave fcst:   [795306 B]
+f020: 653:465779101:d=2023071212:DSWRF:surface:18-20 hour ave fcst:   [814017 B]
+f021: 653:463207309:d=2023071212:DSWRF:surface:18-21 hour ave fcst:   [840674 B]
+f022: 653:464986381:d=2023071212:DSWRF:surface:18-22 hour ave fcst:   [872269 B]
+f023: 653:466608910:d=2023071212:DSWRF:surface:18-23 hour ave fcst:   [904752 B]
+f024: 653:466571670:d=2023071212:DSWRF:surface:18-24 hour ave fcst:   [965996 B]
+f025: 653:466070060:d=2023071212:DSWRF:surface:24-25 hour ave fcst:   [793828 B]
+f026: 653:469704469:d=2023071212:DSWRF:surface:24-26 hour ave fcst:   [815141 B]
+
+=== prmsl: PRMSL:mean sea level
+f000: 1:0:d=2023071212:PRMSL:mean sea level:anl:   [1005726 B]
+f001: 1:0:d=2023071212:PRMSL:mean sea level:1 hour fcst:   [1005885 B]
+f002: 1:0:d=2023071212:PRMSL:mean sea level:2 hour fcst:   [1006490 B]
+f003: 1:0:d=2023071212:PRMSL:mean sea level:3 hour fcst:   [1008070 B]
+f004: 1:0:d=2023071212:PRMSL:mean sea level:4 hour fcst:   [1010076 B]
+f005: 1:0:d=2023071212:PRMSL:mean sea level:5 hour fcst:   [1010111 B]
+f006: 1:0:d=2023071212:PRMSL:mean sea level:6 hour fcst:   [1011074 B]
+f007: 1:0:d=2023071212:PRMSL:mean sea level:7 hour fcst:   [1011153 B]
+f008: 1:0:d=2023071212:PRMSL:mean sea level:8 hour fcst:   [1011781 B]
+f009: 1:0:d=2023071212:PRMSL:mean sea level:9 hour fcst:   [1015214 B]
+f010: 1:0:d=2023071212:PRMSL:mean sea level:10 hour fcst:   [1010991 B]
+f011: 1:0:d=2023071212:PRMSL:mean sea level:11 hour fcst:   [1010818 B]
+f012: 1:0:d=2023071212:PRMSL:mean sea level:12 hour fcst:   [1010514 B]
+f013: 1:0:d=2023071212:PRMSL:mean sea level:13 hour fcst:   [1009913 B]
+f014: 1:0:d=2023071212:PRMSL:mean sea level:14 hour fcst:   [1008742 B]
+f015: 1:0:d=2023071212:PRMSL:mean sea level:15 hour fcst:   [1008398 B]
+f016: 1:0:d=2023071212:PRMSL:mean sea level:16 hour fcst:   [1008598 B]
+f017: 1:0:d=2023071212:PRMSL:mean sea level:17 hour fcst:   [882512 B]
+f018: 1:0:d=2023071212:PRMSL:mean sea level:18 hour fcst:   [882474 B]
+f019: 1:0:d=2023071212:PRMSL:mean sea level:19 hour fcst:   [882497 B]
+f020: 1:0:d=2023071212:PRMSL:mean sea level:20 hour fcst:   [883730 B]
+f021: 1:0:d=2023071212:PRMSL:mean sea level:21 hour fcst:   [884534 B]
+f022: 1:0:d=2023071212:PRMSL:mean sea level:22 hour fcst:   [885938 B]
+f023: 1:0:d=2023071212:PRMSL:mean sea level:23 hour fcst:   [886582 B]
+f024: 1:0:d=2023071212:PRMSL:mean sea level:24 hour fcst:   [887365 B]
+f025: 1:0:d=2023071212:PRMSL:mean sea level:25 hour fcst:   [887135 B]
+f026: 1:0:d=2023071212:PRMSL:mean sea level:26 hour fcst:   [887467 B]
+
+=== tmax2m: TMAX:2 m above ground
+f000: (no line)
+f001: 586:419947029:d=2023071212:TMAX:2 m above ground:0-1 hour max fcst:   [508757 B]
+f002: 586:418812431:d=2023071212:TMAX:2 m above ground:0-2 hour max fcst:   [503753 B]
+f003: 586:420504380:d=2023071212:TMAX:2 m above ground:0-3 hour max fcst:   [501307 B]
+f004: 586:421281375:d=2023071212:TMAX:2 m above ground:0-4 hour max fcst:   [500622 B]
+f005: 586:422807049:d=2023071212:TMAX:2 m above ground:0-5 hour max fcst:   [502667 B]
+f006: 586:423054979:d=2023071212:TMAX:2 m above ground:0-6 hour max fcst:   [501868 B]
+f007: 586:423010678:d=2023071212:TMAX:2 m above ground:6-7 hour max fcst:   [510182 B]
+f008: 586:426004111:d=2023071212:TMAX:2 m above ground:6-8 hour max fcst:   [504860 B]
+f009: 586:425997009:d=2023071212:TMAX:2 m above ground:6-9 hour max fcst:   [501731 B]
+f010: 586:427181337:d=2023071212:TMAX:2 m above ground:6-10 hour max fcst:   [499870 B]
+f011: 586:426542746:d=2023071212:TMAX:2 m above ground:6-11 hour max fcst:   [498988 B]
+f012: 586:423589123:d=2023071212:TMAX:2 m above ground:6-12 hour max fcst:   [498483 B]
+f013: 586:424561047:d=2023071212:TMAX:2 m above ground:12-13 hour max fcst:   [508703 B]
+f014: 586:425073594:d=2023071212:TMAX:2 m above ground:12-14 hour max fcst:   [504255 B]
+f015: 586:427145705:d=2023071212:TMAX:2 m above ground:12-15 hour max fcst:   [502105 B]
+f016: 586:428035123:d=2023071212:TMAX:2 m above ground:12-16 hour max fcst:   [500864 B]
+f017: 586:427170688:d=2023071212:TMAX:2 m above ground:12-17 hour max fcst:   [500021 B]
+f018: 586:425889162:d=2023071212:TMAX:2 m above ground:12-18 hour max fcst:   [499667 B]
+f019: 586:425560438:d=2023071212:TMAX:2 m above ground:18-19 hour max fcst:   [508214 B]
+f020: 586:424653828:d=2023071212:TMAX:2 m above ground:18-20 hour max fcst:   [504126 B]
+f021: 586:421863004:d=2023071212:TMAX:2 m above ground:18-21 hour max fcst:   [502009 B]
+f022: 586:423084595:d=2023071212:TMAX:2 m above ground:18-22 hour max fcst:   [500860 B]
+f023: 586:424254691:d=2023071212:TMAX:2 m above ground:18-23 hour max fcst:   [499313 B]
+f024: 586:423934227:d=2023071212:TMAX:2 m above ground:18-24 hour max fcst:   [498650 B]
+f025: 586:425848233:d=2023071212:TMAX:2 m above ground:24-25 hour max fcst:   [511393 B]
+f026: 586:428581755:d=2023071212:TMAX:2 m above ground:24-26 hour max fcst:   [506283 B]
+
+=== tmin2m: TMIN:2 m above ground
+f000: (no line)
+f001: 587:420455786:d=2023071212:TMIN:2 m above ground:0-1 hour min fcst:   [514887 B]
+f002: 587:419316184:d=2023071212:TMIN:2 m above ground:0-2 hour min fcst:   [510091 B]
+f003: 587:421005687:d=2023071212:TMIN:2 m above ground:0-3 hour min fcst:   [509572 B]
+f004: 587:421781997:d=2023071212:TMIN:2 m above ground:0-4 hour min fcst:   [508497 B]
+f005: 587:423309716:d=2023071212:TMIN:2 m above ground:0-5 hour min fcst:   [506881 B]
+f006: 587:423556847:d=2023071212:TMIN:2 m above ground:0-6 hour min fcst:   [506498 B]
+f007: 587:423520860:d=2023071212:TMIN:2 m above ground:6-7 hour min fcst:   [516246 B]
+f008: 587:426508971:d=2023071212:TMIN:2 m above ground:6-8 hour min fcst:   [513353 B]
+f009: 587:426498740:d=2023071212:TMIN:2 m above ground:6-9 hour min fcst:   [511804 B]
+f010: 587:427681207:d=2023071212:TMIN:2 m above ground:6-10 hour min fcst:   [510613 B]
+f011: 587:427041734:d=2023071212:TMIN:2 m above ground:6-11 hour min fcst:   [509517 B]
+f012: 587:424087606:d=2023071212:TMIN:2 m above ground:6-12 hour min fcst:   [508184 B]
+f013: 587:425069750:d=2023071212:TMIN:2 m above ground:12-13 hour min fcst:   [513459 B]
+f014: 587:425577849:d=2023071212:TMIN:2 m above ground:12-14 hour min fcst:   [510317 B]
+f015: 587:427647810:d=2023071212:TMIN:2 m above ground:12-15 hour min fcst:   [508377 B]
+f016: 587:428535987:d=2023071212:TMIN:2 m above ground:12-16 hour min fcst:   [505954 B]
+f017: 587:427670709:d=2023071212:TMIN:2 m above ground:12-17 hour min fcst:   [505382 B]
+f018: 587:426388829:d=2023071212:TMIN:2 m above ground:12-18 hour min fcst:   [503468 B]
+f019: 587:426068652:d=2023071212:TMIN:2 m above ground:18-19 hour min fcst:   [512557 B]
+f020: 587:425157954:d=2023071212:TMIN:2 m above ground:18-20 hour min fcst:   [510010 B]
+f021: 587:422365013:d=2023071212:TMIN:2 m above ground:18-21 hour min fcst:   [508666 B]
+f022: 587:423585455:d=2023071212:TMIN:2 m above ground:18-22 hour min fcst:   [507283 B]
+f023: 587:424754004:d=2023071212:TMIN:2 m above ground:18-23 hour min fcst:   [506568 B]
+f024: 587:424432877:d=2023071212:TMIN:2 m above ground:18-24 hour min fcst:   [506051 B]
+f025: 587:426359626:d=2023071212:TMIN:2 m above ground:24-25 hour min fcst:   [515405 B]
+f026: 587:429088038:d=2023071212:TMIN:2 m above ground:24-26 hour min fcst:   [512052 B]
+
+requests 27, bytes 1097380
+
+===== step3_positions
+SESSION 91 --positions
+airports: 51; by role {'development': 6, 'claim batch': 6, 'new': 39}
+grid geometry: Ni 1440, Nj 721, lat_first 90.0, lon_first 0.0, lat_last -90.0, lon_last 359.75, di 0.25, dj 0.25
+
+development-airport check: the four points against those the record's bilinear_from_gid uses (codes_grib_find_nearest at the unshifted SPEC 3.4 longitude), and the bilinear value from the stored indices and weights against bilinear_from_gid's value (equality only; no value printed)
+  EGLC: points equal True; indices [223201, 223200, 221761, 221760]; bilinear equal (record term order) True
+  KDSM: points equal True; indices [280426, 280425, 278986, 278985]; bilinear equal (record term order) True
+  KRNO: points equal True; indices [291841, 291840, 290401, 290400]; bilinear equal (record term order) True
+  KSFO: points equal True; indices [303351, 303350, 301911, 301910]; bilinear equal (record term order) True
+  LFPG: points equal True; indices [236171, 236170, 234731, 234730]; bilinear equal (record term order) True
+  YSDU: points equal True; indices [706195, 706194, 704755, 704754]; bilinear equal (record term order) True
+
+wrote data/processed/session91_pull_airports.csv (51 rows), SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+wrote data/processed/session91_pull_airports.csv.meta.txt
+requests 2; bytes 550,107
+cross-check with session90_airports.csv (same IEM positions; session 90 stores points sorted by latitude then longitude, so compared as sets): 45 airports; points and weights exactly equal: 45
+
+===== step6_1_guard
+SESSION 91 --guard-check (offline: no network call, no data read)
+  [OK ] cycle 2026-07-31T18 f006 (valid 2026-08-01T00): REFUSED (valid time 2026-08-01T00:00Z is after 2026-07-31T23:00Z)
+  [OK ] cycle 2026-08-01T00 f000: REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+  [OK ] valid 2021-03-23T23 (cycle 2021-03-23T18 f005): REFUSED (valid time 2021-03-23T23:00Z is before 2021-03-24T00:00Z)
+  [OK ] --hours 0-49: REFUSED (--hours 0-49 is outside 0 to 48)
+  [OK ] writing over an existing output file: REFUSED (an output file already exists, not writing over it: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session91_guard_o5wtmc3i/gfs_points_test.csv.gz)
+  [OK ] writing to an absent output file: allowed
+  [OK ] cycle 2026-07-31T18 f005 (valid 2026-07-31T23): allowed
+  [OK ] cycle 2021-03-23T00 f024 (valid 2021-03-24T00): allowed
+  [OK ] --month 2026-08: REFUSED (month 2026-08 is outside 2021-03 to 2026-07)
+  [OK ] --chunk --dates 2026-08-01 (cycles after the last): REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+temporary directory deleted: True
+all cases behaved as specified
+
+===== step6_2_plan
+SESSION 91 --plan (offline): forecast hours 0-24; window 2021-03-24T00:00Z to 2026-07-31T23:00Z; last cycle 2026-07-31T18:00Z
+absent by design (Step 2): dswrf, tmax2m, tmin2m at f000; every other field at every hour
+month   first cycle       last cycle        cycles  files messages earliest valid    latest valid     
+2021-03 2021-03-23T00:00Z 2021-03-31T18:00Z     36    840     8304 2021-03-24T00:00Z 2021-04-01T18:00Z
+2021-04 2021-04-01T00:00Z 2021-04-30T18:00Z    120   3000    29640 2021-04-01T00:00Z 2021-05-01T18:00Z
+2021-05 2021-05-01T00:00Z 2021-05-31T18:00Z    124   3100    30628 2021-05-01T00:00Z 2021-06-01T18:00Z
+2021-06 2021-06-01T00:00Z 2021-06-30T18:00Z    120   3000    29640 2021-06-01T00:00Z 2021-07-01T18:00Z
+2021-07 2021-07-01T00:00Z 2021-07-31T18:00Z    124   3100    30628 2021-07-01T00:00Z 2021-08-01T18:00Z
+2021-08 2021-08-01T00:00Z 2021-08-31T18:00Z    124   3100    30628 2021-08-01T00:00Z 2021-09-01T18:00Z
+2021-09 2021-09-01T00:00Z 2021-09-30T18:00Z    120   3000    29640 2021-09-01T00:00Z 2021-10-01T18:00Z
+2021-10 2021-10-01T00:00Z 2021-10-31T18:00Z    124   3100    30628 2021-10-01T00:00Z 2021-11-01T18:00Z
+2021-11 2021-11-01T00:00Z 2021-11-30T18:00Z    120   3000    29640 2021-11-01T00:00Z 2021-12-01T18:00Z
+2021-12 2021-12-01T00:00Z 2021-12-31T18:00Z    124   3100    30628 2021-12-01T00:00Z 2022-01-01T18:00Z
+2022-01 2022-01-01T00:00Z 2022-01-31T18:00Z    124   3100    30628 2022-01-01T00:00Z 2022-02-01T18:00Z
+2022-02 2022-02-01T00:00Z 2022-02-28T18:00Z    112   2800    27664 2022-02-01T00:00Z 2022-03-01T18:00Z
+2022-03 2022-03-01T00:00Z 2022-03-31T18:00Z    124   3100    30628 2022-03-01T00:00Z 2022-04-01T18:00Z
+2022-04 2022-04-01T00:00Z 2022-04-30T18:00Z    120   3000    29640 2022-04-01T00:00Z 2022-05-01T18:00Z
+2022-05 2022-05-01T00:00Z 2022-05-31T18:00Z    124   3100    30628 2022-05-01T00:00Z 2022-06-01T18:00Z
+2022-06 2022-06-01T00:00Z 2022-06-30T18:00Z    120   3000    29640 2022-06-01T00:00Z 2022-07-01T18:00Z
+2022-07 2022-07-01T00:00Z 2022-07-31T18:00Z    124   3100    30628 2022-07-01T00:00Z 2022-08-01T18:00Z
+2022-08 2022-08-01T00:00Z 2022-08-31T18:00Z    124   3100    30628 2022-08-01T00:00Z 2022-09-01T18:00Z
+2022-09 2022-09-01T00:00Z 2022-09-30T18:00Z    120   3000    29640 2022-09-01T00:00Z 2022-10-01T18:00Z
+2022-10 2022-10-01T00:00Z 2022-10-31T18:00Z    124   3100    30628 2022-10-01T00:00Z 2022-11-01T18:00Z
+2022-11 2022-11-01T00:00Z 2022-11-30T18:00Z    120   3000    29640 2022-11-01T00:00Z 2022-12-01T18:00Z
+2022-12 2022-12-01T00:00Z 2022-12-31T18:00Z    124   3100    30628 2022-12-01T00:00Z 2023-01-01T18:00Z
+2023-01 2023-01-01T00:00Z 2023-01-31T18:00Z    124   3100    30628 2023-01-01T00:00Z 2023-02-01T18:00Z
+2023-02 2023-02-01T00:00Z 2023-02-28T18:00Z    112   2800    27664 2023-02-01T00:00Z 2023-03-01T18:00Z
+2023-03 2023-03-01T00:00Z 2023-03-31T18:00Z    124   3100    30628 2023-03-01T00:00Z 2023-04-01T18:00Z
+2023-04 2023-04-01T00:00Z 2023-04-30T18:00Z    120   3000    29640 2023-04-01T00:00Z 2023-05-01T18:00Z
+2023-05 2023-05-01T00:00Z 2023-05-31T18:00Z    124   3100    30628 2023-05-01T00:00Z 2023-06-01T18:00Z
+2023-06 2023-06-01T00:00Z 2023-06-30T18:00Z    120   3000    29640 2023-06-01T00:00Z 2023-07-01T18:00Z
+2023-07 2023-07-01T00:00Z 2023-07-31T18:00Z    124   3100    30628 2023-07-01T00:00Z 2023-08-01T18:00Z
+2023-08 2023-08-01T00:00Z 2023-08-31T18:00Z    124   3100    30628 2023-08-01T00:00Z 2023-09-01T18:00Z
+2023-09 2023-09-01T00:00Z 2023-09-30T18:00Z    120   3000    29640 2023-09-01T00:00Z 2023-10-01T18:00Z
+2023-10 2023-10-01T00:00Z 2023-10-31T18:00Z    124   3100    30628 2023-10-01T00:00Z 2023-11-01T18:00Z
+2023-11 2023-11-01T00:00Z 2023-11-30T18:00Z    120   3000    29640 2023-11-01T00:00Z 2023-12-01T18:00Z
+2023-12 2023-12-01T00:00Z 2023-12-31T18:00Z    124   3100    30628 2023-12-01T00:00Z 2024-01-01T18:00Z
+2024-01 2024-01-01T00:00Z 2024-01-31T18:00Z    124   3100    30628 2024-01-01T00:00Z 2024-02-01T18:00Z
+2024-02 2024-02-01T00:00Z 2024-02-29T18:00Z    116   2900    28652 2024-02-01T00:00Z 2024-03-01T18:00Z
+2024-03 2024-03-01T00:00Z 2024-03-31T18:00Z    124   3100    30628 2024-03-01T00:00Z 2024-04-01T18:00Z
+2024-04 2024-04-01T00:00Z 2024-04-30T18:00Z    120   3000    29640 2024-04-01T00:00Z 2024-05-01T18:00Z
+2024-05 2024-05-01T00:00Z 2024-05-31T18:00Z    124   3100    30628 2024-05-01T00:00Z 2024-06-01T18:00Z
+2024-06 2024-06-01T00:00Z 2024-06-30T18:00Z    120   3000    29640 2024-06-01T00:00Z 2024-07-01T18:00Z
+2024-07 2024-07-01T00:00Z 2024-07-31T18:00Z    124   3100    30628 2024-07-01T00:00Z 2024-08-01T18:00Z
+2024-08 2024-08-01T00:00Z 2024-08-31T18:00Z    124   3100    30628 2024-08-01T00:00Z 2024-09-01T18:00Z
+2024-09 2024-09-01T00:00Z 2024-09-30T18:00Z    120   3000    29640 2024-09-01T00:00Z 2024-10-01T18:00Z
+2024-10 2024-10-01T00:00Z 2024-10-31T18:00Z    124   3100    30628 2024-10-01T00:00Z 2024-11-01T18:00Z
+2024-11 2024-11-01T00:00Z 2024-11-30T18:00Z    120   3000    29640 2024-11-01T00:00Z 2024-12-01T18:00Z
+2024-12 2024-12-01T00:00Z 2024-12-31T18:00Z    124   3100    30628 2024-12-01T00:00Z 2025-01-01T18:00Z
+2025-01 2025-01-01T00:00Z 2025-01-31T18:00Z    124   3100    30628 2025-01-01T00:00Z 2025-02-01T18:00Z
+2025-02 2025-02-01T00:00Z 2025-02-28T18:00Z    112   2800    27664 2025-02-01T00:00Z 2025-03-01T18:00Z
+2025-03 2025-03-01T00:00Z 2025-03-31T18:00Z    124   3100    30628 2025-03-01T00:00Z 2025-04-01T18:00Z
+2025-04 2025-04-01T00:00Z 2025-04-30T18:00Z    120   3000    29640 2025-04-01T00:00Z 2025-05-01T18:00Z
+2025-05 2025-05-01T00:00Z 2025-05-31T18:00Z    124   3100    30628 2025-05-01T00:00Z 2025-06-01T18:00Z
+2025-06 2025-06-01T00:00Z 2025-06-30T18:00Z    120   3000    29640 2025-06-01T00:00Z 2025-07-01T18:00Z
+2025-07 2025-07-01T00:00Z 2025-07-31T18:00Z    124   3100    30628 2025-07-01T00:00Z 2025-08-01T18:00Z
+2025-08 2025-08-01T00:00Z 2025-08-31T18:00Z    124   3100    30628 2025-08-01T00:00Z 2025-09-01T18:00Z
+2025-09 2025-09-01T00:00Z 2025-09-30T18:00Z    120   3000    29640 2025-09-01T00:00Z 2025-10-01T18:00Z
+2025-10 2025-10-01T00:00Z 2025-10-31T18:00Z    124   3100    30628 2025-10-01T00:00Z 2025-11-01T18:00Z
+2025-11 2025-11-01T00:00Z 2025-11-30T18:00Z    120   3000    29640 2025-11-01T00:00Z 2025-12-01T18:00Z
+2025-12 2025-12-01T00:00Z 2025-12-31T18:00Z    124   3100    30628 2025-12-01T00:00Z 2026-01-01T18:00Z
+2026-01 2026-01-01T00:00Z 2026-01-31T18:00Z    124   3100    30628 2026-01-01T00:00Z 2026-02-01T18:00Z
+2026-02 2026-02-01T00:00Z 2026-02-28T18:00Z    112   2800    27664 2026-02-01T00:00Z 2026-03-01T18:00Z
+2026-03 2026-03-01T00:00Z 2026-03-31T18:00Z    124   3100    30628 2026-03-01T00:00Z 2026-04-01T18:00Z
+2026-04 2026-04-01T00:00Z 2026-04-30T18:00Z    120   3000    29640 2026-04-01T00:00Z 2026-05-01T18:00Z
+2026-05 2026-05-01T00:00Z 2026-05-31T18:00Z    124   3100    30628 2026-05-01T00:00Z 2026-06-01T18:00Z
+2026-06 2026-06-01T00:00Z 2026-06-30T18:00Z    120   3000    29640 2026-06-01T00:00Z 2026-07-01T18:00Z
+2026-07 2026-07-01T00:00Z 2026-07-31T18:00Z    124   3060    30228 2026-07-01T00:00Z 2026-07-31T23:00Z
+total                                         7828 195600  1932528 2021-03-24T00:00Z 2026-07-31T23:00Z
+valid times outside the window: 0
+
+===== step6_3_chunk
+SESSION 91 --chunk test: hours 0-26; 12 cycles; 324 files; 3204 expected messages; 51 airports; workers 8; budget 4400000000
+first cycle 2022-01-12T00:00Z, last cycle 2024-04-12T18:00Z; valid 2022-01-12T00:00Z to 2024-04-13T20:00Z
+  50/324 files; 454,223,981 bytes; 94 s
+  100/324 files; 898,565,870 bytes; 184 s
+  150/324 files; 1,251,971,016 bytes; 256 s
+  200/324 files; 1,614,875,486 bytes; 330 s
+  250/324 files; 1,981,256,518 bytes; 405 s
+  300/324 files; 2,368,880,807 bytes; 484 s
+  324/324 files; 2,526,907,686 bytes; 520 s
+stage C GRIB pull, chunk test (DECISIONS D82.4, D83.5)
+run start (UTC)   : 2026-10-03T17:23:37Z
+run end (UTC)     : 2026-10-03T17:32:18Z
+seconds           : 520.7
+arguments         : --chunk --dates 2022-01-12,2023-07-12,2024-04-12 --hours 0-26 --out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session91_test.1jgJQRIRJQ/extract --workers 8 --budget-bytes 4400000000 --spot-check EFHK,KATL
+cycles            : 12 (2022-01-12T00:00Z to 2024-04-12T18:00Z)
+files             : 324
+messages          : 3240 manifest rows; ok 3194; absent by design 36; idx missing 0; check failed 10
+points rows       : 16524 (324 files x 51 airports)
+requests          : idx 324, message 3204; retries 0; HTTP 404 0
+bytes downloaded  : idx 13,170,824, message 2,513,736,862, total 2,526,907,686
+gfs_points_test.csv.gz sha256 c7072f61e965392ed200418d601ca6fc7db78ba653321ec9137b4756d5e33218 (2,000,619 B)
+manifest_test.csv.gz sha256 e22f21b60176eb773dd80b0e8ca4491c53d4fbdc798d270f142f44c7d2d7278b (82,817 B)
+script sha256     : 3b17207377e68de66263df359c83f5f29bb6656d260199e52c3e6aef9c9c466f (scripts/session91_grib_pull.py)
+positions sha256  : cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08 (session91_pull_airports.csv)
+packages          : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+source            : https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as in the manifest
+spot check (values read by grid index vs codes_grib_find_nearest's four values): 
+exit 0
+
+===== step6_4_gate_run1
+SESSION 91 --gate (offline; reads a finished chunk's files and committed files only)
+chunk test; positions file SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08; recorded in the chunk's meta: True
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+
+station target date cycle             lead  result
+EGLC    2022-01-13  2022-01-12T12:00Z f024  all 7 columns equal
+EGLC    2023-07-13  2023-07-12T12:00Z f024  all 7 columns equal
+EGLC    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+LFPG    2022-01-13  2022-01-12T12:00Z f024  all 7 columns equal
+LFPG    2023-07-13  2023-07-12T12:00Z f024  all 7 columns equal
+LFPG    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+DSM     2022-01-13  2022-01-12T18:00Z f024  all 7 columns equal
+DSM     2023-07-13  2023-07-12T18:00Z f024  all 7 columns equal
+DSM     2024-04-13  2024-04-12T18:00Z f024  all 7 columns equal
+YSDU    2022-01-13  2022-01-12T00:00Z f026  all 7 columns equal
+YSDU    2023-07-13  2023-07-12T00:00Z f026  all 7 columns equal
+YSDU    2024-04-13  2024-04-12T00:00Z f026  all 7 columns equal
+RNO     2022-01-13  2022-01-12T18:00Z f026  all 7 columns equal
+RNO     2023-07-13  2023-07-12T18:00Z f026  all 7 columns equal
+RNO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+SFO     2022-01-13  2022-01-12T18:00Z f026  all 7 columns equal
+SFO     2023-07-13  2023-07-12T18:00Z f026  all 7 columns equal
+SFO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+
+pass table by column (exact equality, no tolerance):
+  temperature_grib_c                 18 of 18
+  cloud_cover                        18 of 18
+  wind_speed_10m                     18 of 18
+  dewpoint_depression_t2m_floored    18 of 18
+  lapse_rate_t2_t850                 18 of 18
+  pressure_tendency_3h_hpa           18 of 18
+  dswrf_2h_wm2                       18 of 18
+pass table by airport (station-days with all 7 columns equal, and values equal):
+  EGLC  (EGLC): station-days 3 of 3; values 21 of 21
+  LFPG  (LFPG): station-days 3 of 3; values 21 of 21
+  DSM   (KDSM): station-days 3 of 3; values 21 of 21
+  YSDU  (YSDU): station-days 3 of 3; values 21 of 21
+  RNO   (KRNO): station-days 3 of 3; values 21 of 21
+  SFO   (KSFO): station-days 3 of 3; values 21 of 21
+station-days with no committed row: 0 
+station-days not rebuilt: 0 
+mismatches: 0
+GATE PASSED
+
+===== step6_3_chunk_run2
+SESSION 91 --chunk test: hours 0-26; 4 cycles; 108 files; 1068 expected messages; 51 airports; workers 8; budget 1900000000
+first cycle 2024-04-12T00:00Z, last cycle 2024-04-12T18:00Z; valid 2024-04-12T00:00Z to 2024-04-13T20:00Z
+  50/108 files; 388,404,024 bytes; 87 s
+  100/108 files; 781,348,842 bytes; 182 s
+  108/108 files; 820,753,100 bytes; 190 s
+stage C GRIB pull, chunk test (DECISIONS D82.4, D83.5)
+run start (UTC)   : 2026-10-03T17:54:12Z
+run end (UTC)     : 2026-10-03T17:57:23Z
+seconds           : 190.7
+arguments         : --chunk --dates 2024-04-12 --hours 0-26 --out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session91_test.1jgJQRIRJQ/extract2 --workers 8 --budget-bytes 1900000000 --spot-check EFHK,KATL
+cycles            : 4 (2024-04-12T00:00Z to 2024-04-12T18:00Z)
+files             : 108
+messages          : 1080 manifest rows; ok 1068; absent by design 12; idx missing 0; check failed 0
+points rows       : 5508 (108 files x 51 airports)
+requests          : idx 108, message 1068; retries 0; HTTP 404 0
+bytes downloaded  : idx 4,390,010, message 816,363,090, total 820,753,100
+gfs_points_test.csv.gz sha256 b3cd64d4eb62bc2904af22f35233f89091c0bc503687954513633926dd9878e5 (668,449 B)
+manifest_test.csv.gz sha256 ebfdaa4b55ff18bc625aa2b9c7e4aab2523b7afdd4e148c87c623aa49ec03cd3 (27,938 B)
+script sha256     : 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e (scripts/session91_grib_pull.py)
+positions sha256  : cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08 (session91_pull_airports.csv)
+packages          : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+source            : https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as in the manifest
+spot check (values read by grid index vs codes_grib_find_nearest's four values): t2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; t2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tcdc 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tcdc 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; u10 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; u10 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; v10 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; v10 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; d2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; d2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; t850 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; t850 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; dswrf 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; dswrf 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; prmsl 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; prmsl 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tmax2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tmax2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tmin2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tmin2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True
+exit 0
+
+===== step6_3_run2_checks
+run 2, the ten 2024-04-12T18 f026 messages:
+  t2m     status ok; step range 26; instant; bytes 512834
+  tcdc    status ok; step range 26; instant; bytes 837753
+  u10     status ok; step range 26; instant; bytes 970765
+  v10     status ok; step range 26; instant; bytes 951619
+  d2m     status ok; step range 26; instant; bytes 537580
+  t850    status ok; step range 26; instant; bytes 853788
+  dswrf   status ok; step range 24-26; avg (typeOfStatisticalProcessing 0); bytes 800628
+  prmsl   status ok; step range 26; instant; bytes 1007304
+  tmax2m  status ok; step range 24-26; max (typeOfStatisticalProcessing 2); bytes 500976
+  tmin2m  status ok; step range 24-26; min (typeOfStatisticalProcessing 3); bytes 509126
+run 1 vs run 2 points rows for cycle date 2024-04-12: keys equal True; rows 5508; rows identical (every value string) 5508
+run 1 vs run 2 manifest rows for 2024-04-12: 1080 rows; differing rows 10; all differences are the ten f026 statuses: True
+
+===== step6_4_gate_run2
+SESSION 91 --gate (offline; reads a finished chunk's files and committed files only)
+chunk test; positions file SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08; recorded in the chunk's meta: True
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+
+station target date cycle             lead  result
+EGLC    2022-01-13  2022-01-12T12:00Z f024  NOT REBUILT: KeyError(('2022-01-12T12:00Z', 24, 'EGLC'))
+EGLC    2023-07-13  2023-07-12T12:00Z f024  NOT REBUILT: KeyError(('2023-07-12T12:00Z', 24, 'EGLC'))
+EGLC    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+LFPG    2022-01-13  2022-01-12T12:00Z f024  NOT REBUILT: KeyError(('2022-01-12T12:00Z', 24, 'LFPG'))
+LFPG    2023-07-13  2023-07-12T12:00Z f024  NOT REBUILT: KeyError(('2023-07-12T12:00Z', 24, 'LFPG'))
+LFPG    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+DSM     2022-01-13  2022-01-12T18:00Z f024  NOT REBUILT: KeyError(('2022-01-12T18:00Z', 24, 'KDSM'))
+DSM     2023-07-13  2023-07-12T18:00Z f024  NOT REBUILT: KeyError(('2023-07-12T18:00Z', 24, 'KDSM'))
+DSM     2024-04-13  2024-04-12T18:00Z f024  all 7 columns equal
+YSDU    2022-01-13  2022-01-12T00:00Z f026  NOT REBUILT: KeyError(('2022-01-12T00:00Z', 26, 'YSDU'))
+YSDU    2023-07-13  2023-07-12T00:00Z f026  NOT REBUILT: KeyError(('2023-07-12T00:00Z', 26, 'YSDU'))
+YSDU    2024-04-13  2024-04-12T00:00Z f026  all 7 columns equal
+RNO     2022-01-13  2022-01-12T18:00Z f026  NOT REBUILT: KeyError(('2022-01-12T18:00Z', 26, 'KRNO'))
+RNO     2023-07-13  2023-07-12T18:00Z f026  NOT REBUILT: KeyError(('2023-07-12T18:00Z', 26, 'KRNO'))
+RNO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+SFO     2022-01-13  2022-01-12T18:00Z f026  NOT REBUILT: KeyError(('2022-01-12T18:00Z', 26, 'KSFO'))
+SFO     2023-07-13  2023-07-12T18:00Z f026  NOT REBUILT: KeyError(('2023-07-12T18:00Z', 26, 'KSFO'))
+SFO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+
+pass table by column (exact equality, no tolerance):
+  temperature_grib_c                 6 of 6
+  cloud_cover                        6 of 6
+  wind_speed_10m                     6 of 6
+  dewpoint_depression_t2m_floored    6 of 6
+  lapse_rate_t2_t850                 6 of 6
+  pressure_tendency_3h_hpa           6 of 6
+  dswrf_2h_wm2                       6 of 6
+pass table by airport (station-days with all 7 columns equal, and values equal):
+  EGLC  (EGLC): station-days 1 of 1; values 7 of 7
+  LFPG  (LFPG): station-days 1 of 1; values 7 of 7
+  DSM   (KDSM): station-days 1 of 1; values 7 of 7
+  YSDU  (YSDU): station-days 1 of 1; values 7 of 7
+  RNO   (KRNO): station-days 1 of 1; values 7 of 7
+  SFO   (KSFO): station-days 1 of 1; values 7 of 7
+station-days with no committed row: 0 
+station-days not rebuilt: 12 [('EGLC', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T12:00Z', 24, 'EGLC'))"), ('EGLC', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T12:00Z', 24, 'EGLC'))"), ('LFPG', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T12:00Z', 24, 'LFPG'))"), ('LFPG', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T12:00Z', 24, 'LFPG'))"), ('DSM', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T18:00Z', 24, 'KDSM'))"), ('DSM', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T18:00Z', 24, 'KDSM'))"), ('YSDU', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T00:00Z', 26, 'YSDU'))"), ('YSDU', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T00:00Z', 26, 'YSDU'))"), ('RNO', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T18:00Z', 26, 'KRNO'))"), ('RNO', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T18:00Z', 26, 'KRNO'))"), ('SFO', datetime.date(2022, 1, 13), "KeyError(('2022-01-12T18:00Z', 26, 'KSFO'))"), ('SFO', datetime.date(2023, 7, 13), "KeyError(('2023-07-12T18:00Z', 26, 'KSFO'))")]
+mismatches: 0
+GATE NOT PASSED
+exit 1
+
+===== step6_3_failtest
+failure test: the fixed --chunk with a positions copy whose grid_di is 0.5 (true 0.25), date 2024-04-12, hours 26-26
+SESSION 91 --chunk test: hours 26-26; 4 cycles; 4 files; 40 expected messages; 51 airports; workers 4; budget 60000000
+first cycle 2024-04-12T00:00Z, last cycle 2024-04-12T18:00Z; valid 2024-04-13T02:00Z to 2024-04-13T20:00Z
+  4/4 files; 30,700,552 bytes; 12 s
+stage C GRIB pull, chunk test (DECISIONS D82.4, D83.5)
+run start (UTC)   : 2026-10-03T17:57:48Z
+run end (UTC)     : 2026-10-03T17:58:00Z
+seconds           : 11.8
+arguments         : --chunk --dates 2024-04-12 --hours 26-26 (failure test)
+cycles            : 4 (2024-04-12T00:00Z to 2024-04-12T18:00Z)
+files             : 4
+messages          : 40 manifest rows; ok 40; absent by design 0; idx missing 0; check failed 0
+points rows       : 204 (4 files x 51 airports)
+requests          : idx 4, message 40; retries 0; HTTP 404 0
+bytes downloaded  : idx 165,061, message 30,535,491, total 30,700,552
+gfs_points_test.csv.gz sha256 49dd179f8228f9f93b9250eb6c0e20ee38c0ae0cb6a8b797ba974d08ce0145e4 (25,297 B)
+manifest_test.csv.gz sha256 c6ffebc4404ee8a71a8d2b735b8d9caa5b509ada0c130b298af9bce5aeee8185 (1,327 B)
+script sha256     : 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e (scripts/session91_grib_pull.py)
+positions sha256  : 6ad42be4122696d644f0dfd7bb889b7a28db5c929183ce058ee3301852e3e161 (positions_bad.csv)
+packages          : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+source            : https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as in the manifest
+spot check (values read by grid index vs codes_grib_find_nearest's four values): t2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; t2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tcdc 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tcdc 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; u10 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; u10 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; v10 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; v10 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; d2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; d2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; t850 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; t850 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; dswrf 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; dswrf 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; prmsl 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; prmsl 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tmax2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tmax2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True; tmin2m 2024-04-12T18:00Z f026 EFHK: indices equal True, values equal True; tmin2m 2024-04-12T18:00Z f026 KATL: indices equal True, values equal True
+exit 0
+manifest rows 40; statuses ['ok']; first reason: ...
+points rows 204; value cells 8160; non-empty value cells 8160
+=== failure test, attempt 1 above was invalid (read_positions kept its default path) ===
+positions read by the chunk now: grid di 0.5
+failure test attempt 2: the fixed --chunk with the positions copy whose grid_di is 0.5 (true 0.25), date 2024-04-12, hours 26-26
+SESSION 91 --chunk test: hours 26-26; 4 cycles; 4 files; 40 expected messages; 51 airports; workers 4; budget 60000000
+first cycle 2024-04-12T00:00Z, last cycle 2024-04-12T18:00Z; valid 2024-04-13T02:00Z to 2024-04-13T20:00Z
+  4/4 files; 30,700,552 bytes; 11 s
+stage C GRIB pull, chunk test (DECISIONS D82.4, D83.5)
+run start (UTC)   : 2026-10-03T17:58:15Z
+run end (UTC)     : 2026-10-03T17:58:25Z
+seconds           : 10.5
+arguments         : --chunk --dates 2024-04-12 --hours 26-26 (failure test 2)
+cycles            : 4 (2024-04-12T00:00Z to 2024-04-12T18:00Z)
+files             : 4
+messages          : 40 manifest rows; ok 0; absent by design 0; idx missing 0; check failed 40
+points rows       : 204 (4 files x 51 airports)
+requests          : idx 4, message 40; retries 0; HTTP 404 0
+bytes downloaded  : idx 165,061, message 30,535,491, total 30,700,552
+gfs_points_test.csv.gz sha256 480d3e4030d305907b046f6130e6cef5bb25192447ad60e93d41e116cac9897b (1,040 B)
+manifest_test.csv.gz sha256 7a67a3f2efe417e7288a0dc87c2a44455166472a4ac49670e5a4b88be023f20e (1,502 B)
+script sha256     : 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e (scripts/session91_grib_pull.py)
+positions sha256  : 6ad42be4122696d644f0dfd7bb889b7a28db5c929183ce058ee3301852e3e161 (positions_bad.csv)
+packages          : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+source            : https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as in the manifest
+spot check (values read by grid index vs codes_grib_find_nearest's four values): 
+exit 0
+manifest rows 40; statuses ['check failed']; first reason: ValueError("grid geometry {'Ni': 1440, 'Nj': 721, 'lat_first': 90.0, 'lon_first'...
+points rows 204; value cells 8160; non-empty value cells 0
+
+===== step6_5_projection
+ESTIMATES from run 1 of the test chunk (3 dates, 12 cycles, f000-f026); not measurements of the full pull
+mean message bytes per field (run 1): t2m 644,331, tcdc 835,734, u10 972,458, v10 949,999, d2m 592,660, t850 737,484, prmsl 975,743, dswrf 852,630, tmax2m 622,098, tmin2m 654,158
+full pull f000-f024: files 195,600 (f000 7,824, f001-f024 187,776); messages 1,932,528; idx requests 195,600
+bytes downloaded: about 1.52 TB in total (messages 1.52 TB, idx 8.0 GB); per month about 23.5 GB (65 months; a full month of 3,100 files about 24.2 GB)
+kept, compressed: points about 1.21 GB (121.1 B per row x 9,975,600 rows), manifests about 50 MB (25.6 B per row x 1,956,000 rows); per full month about 19.1 MB + 0.79 MB
+time at run 1's measured rate (0.622 files/s, 8 workers, the owner's connection; 4.9 MB/s): about 83 min per full month of 3,100 files; 87.3 h for all months run one after another. Limited by the local connection (D83.5(g)); the first Actions run measures the real rate.
+run 2 (108 files, 190.7 s): 0.566 files/s, 4.3 MB/s
+
+===== cleanup
+temporary directory /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session91_test.1jgJQRIRJQ deleted: yes
+
+===== diff of the fix (pre-fix rebuilt, SHA-256 equals run 1's recorded script hash)
+--- /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/1e37932a-3b08-476d-9f5e-be47c6883455/scratchpad/session91_grib_pull_prefix.py	2026-10-03 18:54:00
++++ scripts/session91_grib_pull.py	2026-10-03 18:33:09
+@@ -689,25 +689,29 @@
+                             raise ValueError(f"missing or non-finite value at grid index {i} ({p['icao']})")
+                         out.append(v)
+                 got_vals = out
+-                if spot is not None:
+-                    for p in positions:
+-                        if p["icao"] not in spot["icao"]:
+-                            continue
+-                        lon_q = p["lon"] + 360.0 if p["lon"] < 0 else p["lon"]
+-                        nb = ec.codes_grib_find_nearest(gid, p["lat"], lon_q, npoints=4)
+-                        k = positions.index(p)
+-                        same_idx = [int(n.index) for n in nb] == p["indices"]
+-                        same_val = [float(n.value) for n in nb] == out[4 * k:4 * k + 4]
+-                        spot_out.append((name, iso(cycle), fh, p["icao"], same_idx, same_val))
+             except GuardError:
++                ec.codes_release(gid)
+                 raise
+             except Exception as e:  # noqa: BLE001
+                 status, reason = "check failed", repr(e)
++            try:
++                # The spot check (session 91, Step 6.3) sits outside the message
++                # checks, so an error in it stops the run instead of marking data.
++                if spot is not None and got_vals is not None:
++                    for k, p in enumerate(positions):
++                        if p["icao"] not in spot["icao"]:
++                            continue
++                        lat, lon = float(p["lat_used"]), float(p["lon_used"])
++                        lon_q = lon + 360.0 if lon < 0 else lon
++                        nb = ec.codes_grib_find_nearest(gid, lat, lon_q, npoints=4)
++                        same_idx = [int(n.index) for n in nb] == p["indices"]
++                        same_val = [float(n.value) for n in nb] == got_vals[4 * k:4 * k + 4]
++                        spot_out.append((name, iso(cycle), fh, p["icao"], same_idx, same_val))
+             finally:
+                 ec.codes_release(gid)
+         del data
+         man.append(base + [line, rng, exp if exp is not None else "", status, step_range, ptype, reason])
+-        if got_vals is not None:
++        if status == "ok" and got_vals is not None:
+             vals[name] = got_vals
+     return man, vals, spot_out
+ 
+
+===== SHA-256
+72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e  scripts/session91_grib_pull.py
+f3e05c9a41d4ad86c45921b66df5ca82785910bb88e2fcac2c42580b531c19a0  .github/workflows/stagec-grib-pull.yml
+6ebf1b26a61927aaef792dece6e6af5ab55ffa7ec48218b75ce4a3a211946f51  .github/grib-pull-requirements.txt
+cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08  data/processed/session91_pull_airports.csv
+
+===== Step 7 records
+F133 appended to DECISIONS.md under "## 2026-10-03: Session 91 finding: the stage C GRIB pull and its gate" (heading at line 3163).
+Final script SHA-256 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e (the script that made run 2; not edited after it).
+Workflow SHA-256 f3e05c9a41d4ad86c45921b66df5ca82785910bb88e2fcac2c42580b531c19a0.
+Session totals: GRIB requests 4,821 (survey 27, positions 2, run 1 3,528, run 2 1,176, failure tests 44 + 44), 3,410,709,377 bytes; PyPI metadata reads 5 (bytes not counted).
+PyPI check (before the workflow was written): eccodeslib 2.48.0.26 has cp312 manylinux_2_28 x86_64 and aarch64 wheels; eckitlib 2.1.1.26 has cp312 manylinux_2_27/2_28 wheels; eccodes 2.48.0 is py3-none-any.
+
+===== Consistency check (report only; nothing was fixed)
+Mechanical: no duplicated heading in SPEC.md, STATUS.md or DECISIONS.md; dated headings in DECISIONS.md in date order; D and F entry numbers in order with no duplicate; D83 and F133 appear only in DECISIONS.md; no em-dash in any new file or in STATUS.md, D83's copied text or F133.
+Findings:
+1. SPEC 6's stage C bullet cites D81 and D82 only, not D83 or F133. SPEC was outside this session's scope (no SPEC edit allowed); the owner decides whether a later session adds a citation.
+2. D82.4's planning estimates (about 1.6 to 1.8 TB downloaded, about 1.5 GB kept, 47 airports) differ from F133.8's estimates (about 1.52 TB, about 1.26 GB, 51 airports). Both are marked estimates; D83.5(c) already accepts a larger kept size. No conflict of rule.
+3. D82.6 says the 47 airports are the product's airports; D83.2 makes the product list 51. D83 is later and governs; D82.6 is not edited (append-only).
+4. STATUS's "Next" line cites D81.7 for the v17 re-check, as the session prompt fixes it; the latest planning-chat check is D83.7 (earliest go-live about 2 November 2026; D81.7 said 1 November). The carried item cites D83.7.
+5. SPEC 3.4 holds six airports; the pull uses 51 positions from data files, not SPEC. This matches D82.5 (stage C's SPEC section is written at its lock); reported for visibility only.
+6. F133.9's note on cycles 2021-03-22T00 and T06 (f025 to f048 pull) rests on SPEC 7.2's date-only v16 start; it is an open check, recorded in STATUS, not a finding.
+
+===== Archive step
+Nothing moved. D72, D73, F122, D77, F127, D78, F128, D79, F129, D80, F130, D81, F131, D82, F132, D83 and F133 stay live as the prompt directs. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71) were not newly settled this session; D47 (manifest, not bytes) governs the pull's kept files and stays live.
+
+===== Final git status --porcelain
+ M DECISIONS.md
+ M STATUS.md
+?? .github/
+?? data/processed/session91_pull_airports.csv
+?? data/processed/session91_pull_airports.csv.meta.txt
+?? docs/session-91.md
+?? notes/session-91-output.txt
+?? scripts/session91_grib_pull.py
