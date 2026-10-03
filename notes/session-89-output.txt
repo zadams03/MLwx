@@ -1,0 +1,593 @@
+SESSION 89 OUTPUT (stage C scoping probe). Run 2026-10-02. Real output, in the order it was produced.
+Script: scripts/session89_stage_c_scoping.py  SHA-256 0d65bd5ff6bdd8df74d658b89d40cf15a1e2ef4081a186fe98c9d75b1d705fab
+Packages installed in a throwaway virtual environment (deleted): dynamical-catalog 1.0.1, xarray 2026.9.0, zarr 3.4.0, icechunk 2.2.2, numpy 2.5.3, pandas 3.0.6, fsspec 2026.9.0, plus their dependencies (donfig 0.8.1.post1, google-crc32c 1.9.0, gribberish 1.8.0, msgspec 0.22.0, numcodecs 0.17.0, packaging 26.3, python-dateutil 2.9.0.post0, PyYAML 6.0.3, six 1.17.0, typing_extensions 4.16.0). Python 3.12.2.
+
+##### STEP 0: integrity checks
+$ git status --porcelain   (at start)
+?? docs/session-89.md
+Last live entries before this session: D80 (DECISIONS.md line 2414) and F130 (line 2623 onward). No D81 or F131 in DECISIONS.md or DECISIONS-archive.md (grep returned nothing).
+scripts/session89_stage_c_scoping.py and notes/session-89-output.txt did not exist (ls: No such file).
+Read: CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md in full; docs/session-89.md; archived F89, F90 (start), F97, F98, F100, F101 (start), F102, F107 (not opened beyond its header: located only), F116; session37_decode.py, session37_grib_pull.py, session76_grib_pull.py (field names), session86 SPEC parser.
+
+##### STEP 1: D81 recorded before any other edit or network call
+D81 text copied with sed from docs/session-89.md lines 102-165 to the end of DECISIONS.md, after a '---' line and the heading at DECISIONS.md line 2638. D81 occupies DECISIONS.md lines 2640-2703.
+diff of docs/session-89.md lines 102-165 against DECISIONS.md lines 2640-2703: no output (DIFF: byte-equal).
+
+##### STEP 2: SPEC 6 edit (git diff -- SPEC.md)
+diff --git a/SPEC.md b/SPEC.md
+index eba12f4..57dfa92 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -743,7 +743,10 @@ side, because both are time-critical.
+   against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
+   Its data-build script exists and passed its gate (DECISIONS D78.7,
+   F128). Its scoring script and the NBM and MAV fetch exist and passed
+-  their gates (DECISIONS D79, F129).
++  their gates (DECISIONS D79, F129). The non-US competitor probe
++  (DECISIONS D78.3) found that DWD's MOSMIX keeps only about two days of
++  issues (F130); daily saves of MOSMIX_L single-station files are chosen
++  in DECISIONS D81.
+ - **Stage C — widen the target, on GFS only.** An hourly temperature
+   curve, the daily maximum, and the 48-hour lead. Written with the
+   weather model as a setting.
+
+##### STEP 3.1.1 metadata  (--meta)
+
+==============================================================================
+3.1.1 dynamical.org GFS forecast archive: metadata   [2026-10-02T11:06:37Z]
+==============================================================================
+Access time (UTC): 2026-10-02T11:06:37Z | route: dynamical-catalog (icechunk, anonymous) | tag: verified
+dynamical-catalog 1.0.1
+catalog entry noaa-gfs-forecast: {"id": "noaa-gfs-forecast", "name": "NOAA GFS forecast", "description": "Weather forecasts from the Global Forecast System (GFS) operated by NOAA NWS NCEP.", "icechunk": {"type": "s3", "bucket": "dynamical-noaa-gfs", "prefix": "noaa-gfs-forecast/v0.2.7.icechunk/", "region": "us-west-2"}, "virtual_chunk_containers": []}
+catalog entry noaa-gfs-forecast-virtual: {"id": "noaa-gfs-forecast-virtual", "name": "NOAA GFS forecast, virtual", "description": "Weather forecasts from the Global Forecast System (GFS) operated by NOAA NWS NCEP.", "icechunk": {"type": "s3", "bucket": "dynamical-noaa-gfs", "prefix": "noaa-gfs-forecast-virtual/v0.1.0.icechunk/", "region": "us-west-2"}, "virtual_chunk_containers": [{"url_prefix": "s3://noaa-gfs-bdp-pds/", "type": "s3"}]}
+The 'virtual' dataset holds byte-range references into NOAA's own bucket (s3://noaa-gfs-bdp-pds/). It is listed here and NOT read in this session.
+
+dataset attributes (tag: verified, from the dataset's own metadata):
+  dataset_id = noaa-gfs-forecast
+  dataset_version = 0.2.7
+  name = NOAA GFS forecast
+  description = Weather forecasts from the Global Forecast System (GFS) operated by NOAA NWS NCEP.
+  attribution = NOAA NWS NCEP GFS data processed by dynamical.org from NOAA Open Data Dissemination archives.
+  license = CC-BY-4.0
+  spatial_domain = Global
+  spatial_resolution = 0.25 degrees (~20km)
+  time_domain = Forecasts initialized 2021-05-01 00:00:00 UTC to Present
+  time_resolution = Forecasts initialized every 6 hours
+  forecast_domain = Forecast lead time 0-384 hours (0-16 days) ahead
+  forecast_resolution = Forecast step 0-120 hours: hourly, 123-384 hours: 3 hourly
+dims: {'init_time': 7921, 'lead_time': 209, 'latitude': 721, 'longitude': 1440}
+grid: latitude 90.0 to -90.0 step 0.25 (north to south) | longitude -180.0 to 179.75 step 0.25 (-180..179.75; the record's GRIB uses 0..359.75, same nodes)
+chunks (1, 105, 121, 121) shards (1, 210, 726, 726) (init_time, lead_time, latitude, longitude); compressor (BloscCodec(_tunable_attrs=set(), typesize=4, cname='zstd', clevel=3, shuffle='shuffle', blocksize=0),)
+inner chunk = 1 init x 105 leads x 121 x 121 cells (30.25 deg x 30.25 deg), 5.9 MiB uncompressed
+
+--- init times (axis labels only; no forecast value is read here) ---
+first init: 2021-05-01T00:00:00.000000000 | last init in the archive (axis label): 2026-10-02T00:00:00.000000000 | total inits on the axis: 7921
+expected inits every 6 h, 2021-05-01T00 to 2026-07-29T18:00: 7664; on the axis: 7664; missing from the axis: 0
+  missing: []
+inits per day (2021-05-01 on): {4: 1916} (count of days with that many inits)
+steps between consecutive inits (hours): counts {6: 7663}
+ingested_forecast_length: NaT (empty) for 7664 of 7664 inits up to the limit, so this coordinate cannot show per-init completeness here; per-init completeness is taken from the validation report instead (--docs).
+expected_forecast_length (hours): distinct values {384.0: 7664}
+record coverage: the archive's first init is 2021-05-01T00:00:00.000000000 | the record's first target day is 2021-03-24 (init the day before). Target days whose init would fall before the archive's first init cannot be read from it:
+  EGLC: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+  LFPG: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+  DSM: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+  YSDU: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+  RNO: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+  SFO: first target day with an init in the archive: 2021-05-02; target days from 2021-03-24 before it: 39
+
+--- lead times ---
+lead steps (hours): first 5 [0, 1, 2, 3, 4] ... around 120: [119, 120, 123, 126, 129, 132] ... last [378, 381, 384] | count 209
+step sizes: hourly 0..120 (count of 1 h steps) 120 | beyond 120 h: [3] h
+every hour from 24 h to 53 h present on the lead axis: True (30 of 30)
+the lead-24 and lead-48..53 values sit in lead chunk 0 (indexes 0..104), the same chunk as every hour from 0 to 104
+
+--- variables (25), with the dataset's own attributes ---
+categorical_freezing_rain_surface: units=1 step_type=avg short_name=cfrzr
+    comment: Presence/absence over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z). 0=no; 1=yes.
+categorical_ice_pellets_surface: units=1 step_type=avg short_name=cicep
+    comment: Presence/absence over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z). 0=no; 1=yes.
+geopotential_height_cloud_ceiling: units=m step_type=instant short_name=gh
+    comment: Values near 20,000m mark no cloud ceiling. Interpolation in the source mixes the no data value with real ceiling heights, so unusable values span a range rather than one value and are not converted to NaN. Mask values above 19,000m.
+downward_long_wave_radiation_flux_surface: units=W m-2 step_type=avg short_name=sdlwrf
+    comment: Average over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z).
+downward_short_wave_radiation_flux_surface: units=W m-2 step_type=avg short_name=sdswrf
+    comment: Average over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z).
+categorical_rain_surface: units=1 step_type=avg short_name=crain
+    comment: Presence/absence over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z). 0=no; 1=yes.
+categorical_snow_surface: units=1 step_type=avg short_name=csnow
+    comment: Presence/absence over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z). 0=no; 1=yes.
+pressure_80m: units=Pa step_type=instant short_name=80sp
+minimum_temperature_2m: units=degree_Celsius step_type=min short_name=tmin
+    comment: Minimum over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z).
+precipitable_water_atmosphere: units=kg m-2 step_type=instant short_name=pwat
+precipitation_surface: units=kg m-2 s-1 step_type=avg short_name=prate
+    comment: Average precipitation rate since the previous forecast step. Units equivalent to mm/s.
+maximum_temperature_2m: units=degree_Celsius step_type=max short_name=tmax
+    comment: Maximum over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z).
+pressure_reduced_to_mean_sea_level: units=Pa step_type=instant short_name=prmsl
+percent_frozen_precipitation_surface: units=percent step_type=instant short_name=cpofp
+    comment: Negative values mark no precipitation. Interpolation in the source mixes the no data value with real percentages, so unusable values span a range rather than one value and are not converted to NaN. Mask values < -0.1.
+pressure_surface: units=Pa step_type=instant short_name=sp
+relative_humidity_2m: units=percent step_type=instant short_name=2r
+temperature_2m: units=degree_Celsius step_type=instant short_name=2t
+total_cloud_cover_atmosphere: units=percent step_type=avg short_name=tcc
+    comment: Average over the previous 1-6 hours, reset every 6-hour forecast step (00Z, 06Z, 12Z, 18Z).
+wind_u_100m: units=m s-1 step_type=instant short_name=100u
+wind_u_80m: units=m s-1 step_type=instant short_name=80u
+temperature_80m: units=degree_Celsius step_type=instant short_name=80t
+wind_u_10m: units=m s-1 step_type=instant short_name=10u
+wind_v_100m: units=m s-1 step_type=instant short_name=100v
+wind_v_10m: units=m s-1 step_type=instant short_name=10v
+wind_v_80m: units=m s-1 step_type=instant short_name=80v
+level for each variable is in its name (2m, 10m, surface, atmosphere, mean sea level, ...). There is NO pressure-level variable (no 850 hPa temperature) and NO 2 m dew point in the 25.
+variable names: ['categorical_freezing_rain_surface', 'categorical_ice_pellets_surface', 'categorical_rain_surface', 'categorical_snow_surface', 'downward_long_wave_radiation_flux_surface', 'downward_short_wave_radiation_flux_surface', 'geopotential_height_cloud_ceiling', 'maximum_temperature_2m', 'minimum_temperature_2m', 'percent_frozen_precipitation_surface', 'precipitable_water_atmosphere', 'precipitation_surface', 'pressure_80m', 'pressure_reduced_to_mean_sea_level', 'pressure_surface', 'relative_humidity_2m', 'temperature_2m', 'temperature_80m', 'total_cloud_cover_atmosphere', 'wind_u_100m', 'wind_u_10m', 'wind_u_80m', 'wind_v_100m', 'wind_v_10m', 'wind_v_80m']
+
+Probe finished. Nothing was read except metadata and axis labels.
+
+##### DOCUMENTATION PAGES  (--docs)
+
+==============================================================================
+Documentation pages read (3.1.1 and 3.4). Pages only: no data is requested.   [2026-10-02T11:06:47Z]
+==============================================================================
+--- 3.1.1: dynamical.org ---
+URL: https://stac.dynamical.org/noaa-gfs-forecast/collection.json
+  accessed 2026-10-02T11:06:47Z | HTTP 200 | 23240 bytes | 0.2s | tag: documentation only
+  version: 0.2.7 | license: CC-BY-4.0
+  Compression paragraph: ### Compression The data values in this dataset have been rounded in their binary floating point representation to improve compression. See [Klöwer et al. 2021](https://www.nature.com/articles/s43588-021-00156-2) for more information on this approach. The exact number of rounded bits can be found in our [reformatting code](https://github.com/dynamical-org/reformatters/blob/main/src/reformatters/noaa/gfs/forecast/template_config.py).
+  Source paragraph: ### Source The source grib files this archive is constructed from are provided by [NOAA Open Data Dissemination (NODD)](https://www.noaa.gov/information-technology/open-data-dissemination) and accessed from the [AWS Open Data Registry](https://registry.opendata.aws/noaa-gfs-bdp-pds/). Operational data is additionally accessed from [NOAA NOMADS](https://nomads.ncep.noaa.gov/). ### Storage Storage for this dataset i
+URL: https://dynamical.org/catalog/noaa-gfs-forecast/validation/
+  accessed 2026-10-02T11:06:47Z | HTTP 200 | 118448 bytes | 0.1s | tag: documentation only
+  ... > NOAA GFS forecast > Validation report NOAA GFS forecast validation report Summary What looks good Review notes Datasets Run parameters Availability Per-variable details categorical_freezing_rain_surface categorical_ice_pellets_surface categorical_rain_surface categorical_snow_surface downward_long_wave_radiation_flux_surface downward_short_wave_radiation_flux_surface geopotential_height_cloud_ceiling maximum_temperature_2m minimum_temperature_2m percent_frozen_precipitation_surface precipitable_water_atmosphere precipitation_surface pressure_80m pressure_reduced_to_mean_sea_level pressure_surface relative_humidity_2m temperature_2m temperature_80m total_cloud_cover_atmosphere wind_u_100m wind_u_10m wind_u_80m wind_v_100m wind_v_10m wind_v_80m This dataset validation report plots a sample of values from the NOAA GFS forecast dataset over time and across space, comparing where possible to a previously validated reference dataset. It also reports the quantity of unavailable values and their associated timestamps. These analyses are one layer of a multi-layered dataset validation process we perform at dynamical.org and also provide users a preview of the dataset contents. Report generation start time: 2026-08-15T14:34:28 UTC Summary This dataset has been reviewed and is ready for use. Two variables carry no-data markers that must be masked by range rather than found as NaN (see the first review note). What looks good Global 0.25° geometry is correct — north-up latitude, −180° to +180° longitude, and coastlines and terrain where they belong, confirmed cell-for-cell against the source data
+  ... ation process we perform at dynamical.org and also provide users a preview of the dataset contents. Report generation start time: 2026-08-15T14:34:28 UTC Summary This dataset has been reviewed and is ready for use. Two variables carry no-data markers that must be masked by range rather than found as NaN (see the first review note). What looks good Global 0.25° geometry is correct — north-up latitude, −180° to +180° longitude, and coastlines and terrain where they belong, confirmed cell-for-cell against the source data files. Values match the upstream archive to within the documented rounding precision of each variable. No unit, scale, or precision discontinuities across the five-year record. Fields are physically consistent with each other — the 80 m and 100 m variables track their 2 m and 10 m counterparts, and minimum ≤ instantaneous ≤ maximum temperature holds. Diurnal cycles are in phase with the reference archive ; divergence beyond roughly day 5 of lead time is normal forecast skill decay, not a data problem. No quantization banding and no unexplained missing values. Review notes Mask the no-data ranges in percent_frozen_precipitation_surface (values below −0.1) and geopotential_height_cloud_ceiling (values above 19,000 m). Interpolation upstream mixes each no-data marker with real values, so it spans a range instead of one value and is left as-is rather than converted to NaN. Each variable's comment attribute carries the full explanation. Data is missing across four forecast initializations on 2022-11-29 → 2022-11-30 (12Z and 18Z on the 29th, 00Z and 06Z on the 30th), affecting a scattered subs
+  availability rows (complete positions, incomplete %, first and last incomplete init) for the variables this probe uses:
+    temperature_2m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    wind_u_10m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    wind_v_10m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    relative_humidity_2m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    pressure_reduced_to_mean_sea_level: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    downward_short_wave_radiation_flux_surface: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    total_cloud_cover_atmosphere: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    maximum_temperature_2m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+    minimum_temperature_2m: 7726/7730 0.05% 2022-11-29T12:00 2022-11-30T06:00
+URL: https://dynamical.org/updates/
+  accessed 2026-10-02T11:06:47Z | HTTP 200 | 23145 bytes | 0.1s | tag: documentation only
+  ... Python library. 2026-03-10 Warmer temps, datasets heating up. A heap of updates: a live 21-variable GFS analysis, HRRR analysis extended back to 2014, more variables everywhere, experimental ASOS obs, and a DWD ICON-EU grib archive. 2026-01-23 January cornucopia: AMS | HRRR analysis | more Find Alden at AMS, dig into the new HRRR analysis, and celebrate full Ic
+  ... ions are in testing, and we hacked together a simple scorecard for 2m temp and precip. 2025-07-02 🟢 GFS is live GFS forecasts are live — four years of 16-day hourly forecasts, four times a day. Plus steering committee notes and podcast episode two on Aardvark Weather. 2025-06-14 introducing a new pod; GFS forecasts incoming We started a podcast. It's called Wea
+  ... testing, and we hacked together a simple scorecard for 2m temp and precip. 2025-07-02 🟢 GFS is live GFS forecasts are live — four years of 16-day hourly forecasts, four times a day. Plus steering committee notes and podcast episode two on Aardvark Weather. 2025-06-14 introducing a new pod; GFS forecasts incoming We started a podcast. It's called Weathering, and
+  ... ring committee notes and podcast episode two on Aardvark Weather. 2025-06-14 introducing a new pod; GFS forecasts incoming We started a podcast. It's called Weathering, and episode one dives into the limits of atmospheric predictability. Also: GFS forecasts are landing imminently. 2025-04-29 GEFS analysis is live! GEFS analysis is live: 25+ years, live-updating
+
+Storage rounding (reformatters source, GitHub; documentation only):
+URL: https://raw.githubusercontent.com/dynamical-org/reformatters/main/src/reformatters/noaa/gfs/template_config.py
+  accessed 2026-10-02T11:06:48Z | HTTP 200 | 25828 bytes
+  default_keep_mantissa_bits = 7
+  pressure_surface                              mantissa bits kept=10           step=instant  GRIB element=PRES     level=surface
+  temperature_2m                                mantissa bits kept=7            step=instant  GRIB element=TMP      level=2 m above ground
+  relative_humidity_2m                          mantissa bits kept=7            step=instant  GRIB element=RH       level=2 m above ground
+  maximum_temperature_2m                        mantissa bits kept=7            step=max      GRIB element=TMAX     level=2 m above ground
+  minimum_temperature_2m                        mantissa bits kept=7            step=min      GRIB element=TMIN     level=2 m above ground
+  wind_u_10m                                    mantissa bits kept=6            step=instant  GRIB element=UGRD     level=10 m above ground
+  wind_v_10m                                    mantissa bits kept=6            step=instant  GRIB element=VGRD     level=10 m above ground
+  wind_u_100m                                   mantissa bits kept=6            step=instant  GRIB element=UGRD     level=100 m above ground
+  wind_v_100m                                   mantissa bits kept=6            step=instant  GRIB element=VGRD     level=100 m above ground
+  temperature_80m                               mantissa bits kept=7            step=instant  GRIB element=TMP      level=80 m above ground
+  pressure_80m                                  mantissa bits kept=10           step=instant  GRIB element=PRES     level=80 m above ground
+  wind_u_80m                                    mantissa bits kept=6            step=instant  GRIB element=UGRD     level=80 m above ground
+  wind_v_80m                                    mantissa bits kept=6            step=instant  GRIB element=VGRD     level=80 m above ground
+  percent_frozen_precipitation_surface          mantissa bits kept=7            step=instant  GRIB element=CPOFP    level=surface
+  precipitation_surface                         mantissa bits kept=7            step=avg      GRIB element=APCP     level=surface
+  categorical_snow_surface                      mantissa bits kept=(not stated) step=avg      GRIB element=CSNOW    level=surface
+  categorical_ice_pellets_surface               mantissa bits kept=(not stated) step=avg      GRIB element=CICEP    level=surface
+  categorical_freezing_rain_surface             mantissa bits kept=(not stated) step=avg      GRIB element=CFRZR    level=surface
+  categorical_rain_surface                      mantissa bits kept=(not stated) step=avg      GRIB element=CRAIN    level=surface
+  precipitable_water_atmosphere                 mantissa bits kept=7            step=instant  GRIB element=PWAT     level=entire atmosphere (considered as a single layer)
+  total_cloud_cover_atmosphere                  mantissa bits kept=7            step=avg      GRIB element=TCDC     level=entire atmosphere
+  geopotential_height_cloud_ceiling             mantissa bits kept=8            step=instant  GRIB element=HGT      level=cloud ceiling
+  downward_short_wave_radiation_flux_surface    mantissa bits kept=7            step=avg      GRIB element=DSWRF    level=surface
+  downward_long_wave_radiation_flux_surface     mantissa bits kept=7            step=avg      GRIB element=DLWRF    level=surface
+  pressure_reduced_to_mean_sea_level            mantissa bits kept=10           step=instant  GRIB element=PRMSL    level=mean sea level
+  What the bits mean (arithmetic, not from the page): with m mantissa bits, a value in [2^e, 2^(e+1)) is stored on a grid of spacing 2^e / 2^m. At 7 bits, 2 m temperature 16..32 C is stored at 0.125 C and 8..16 C at 0.0625 C; PRMSL at about 101,300 Pa with 10 bits is stored at 64 Pa (0.64 hPa); DSWRF 512..1024 W/m2 with 7 bits at 4 W/m2; 10 m wind 8..16 m/s with 6 bits at 0.125 m/s.
+
+
+==============================================================================
+3.4 daily-maximum sources: documentation read   [2026-10-02T11:06:48Z]
+==============================================================================
+1) METAR max-temperature groups
+URL: https://en.wikipedia.org/wiki/METAR
+  accessed 2026-10-02T11:06:48Z | HTTP 200 | 300383 bytes | 0.1s | tag: secondary (Wikipedia)
+  ... meric codes [ edit ] Additional METAR numeric codes listed after RMK. [ 15 ] Code Description 11234 6-hour maximum temperature. Follows RMK with five digits starting with 1. Second digit is 0 for positive and 1 for negative. The last 3 digits equal the temperature in tenths. This example value equals −23.4 °C (−10 °F) . 20123 6-hour minimum temperature. Follows RMK with five digits starting with 2. Second digit is 0 for positive and 1 for negative. The last 3 digits equal the temperature in tenths. This example value equals 12.3 °C (54 °F) 
+URL: https://mesonet.agron.iastate.edu/request/download.phtml
+  accessed 2026-10-02T11:06:49Z | HTTP 200 | 70364 bytes | 0.9s | tag: documentation only (IEM)
+  ... oud Height Level 1 [ft] Cloud Height Level 2 [ft] Cloud Height Level 3 [ft] Present Weather Code(s) Ice Accretion 1 Hour Ice Accretion 3 Hour Ice Accretion 6 Hour Peak Wind Gust [knots] Peak Wind Gust [MPH] Peak Wind Direction [deg] Peak Wind Time Snow Depth (4-group) [inch] Raw METAR 3) Select Date Range: Note: These dates define timestamps starting at midnight of the selected timezone. The start date is inclusive and the end date is exclusive. Start Date: 1900 1901 1902 1903 1904 1905 1906 1907 1908 1909 1910 1911 1912 1913 1914 1915 1916 1917 1918 1919 1920 1921 1922 1923 1924 1925 1926 1927 1928 1929 1930 1931 1932 1933 1934 193
+2) SYNOP maximum temperature (Tx)
+URL: https://en.wikipedia.org/wiki/SYNOP
+  accessed 2026-10-02T11:06:49Z | HTTP 200 | 99227 bytes | 0.3s | tag: secondary (Wikipedia)
+  ...  past six hours ( 1 ). 91151: Actual time of observation 11:51 UTC. 333: Start of section 3. 10178: Maximum temperature over the past day 17.8 °C. 20106: Minimum temperature over the past day 10.6 °C. 70079: 7.9 mm precipitation over the past 24 hours. 91021: Special phenomena. Although this coded data is still available from three American universities it has now been repla
+3) Official daily climate products (NWS CLI; non-US national services)
+   The NWS directive (https://www.weather.gov/media/directives/010_pdfs/pd01010004curr.pdf) returned a PDF; no PDF text tool is installed and none may be installed here, so its day-window wording was NOT read: unknown.
+   No page was read for Meteo-France, the UK Met Office, or the Bureau of Meteorology daily climate maxima: unknown. They are named in F131 as items for the owner, not as findings.
+URL: https://mesonet.agron.iastate.edu/info/datasets/cli.html
+  accessed 2026-10-02T11:06:50Z | HTTP 200 | 31014 bytes | 0.6s | tag: documentation only (IEM)
+  no line matched (?i)climate (day|report)|local standard|midnight
+
+##### STEP 3.1.3 REPRODUCTION  (--repro --budget-gb 1.3 --date-step 5): the reduced run, whose table is used
+
+==============================================================================
+3.1.3 Reproduction check (spent years only). Differences between two copies of the same GFS forecast.   [2026-10-02T16:04:39Z]
+==============================================================================
+committed values loaded: 11732 station-days
+leads present in the committed GRIB files, per station: {'DSM': [24], 'EGLC': [24], 'LFPG': [24], 'RNO': [26], 'SFO': [26], 'YSDU': [26]}
+dates per airport: the 1st of every month, 2021-06-01 .. 2026-06-01 (13 dates); (step 5; 2021-05-01 would need an init before the archive's first init)
+byte budget for this part: 1.3 GB (of the 5 GB total)
+EGLC: cycle 12z lead 24 h, grid point 51.487137, 0.0; archive nodes lat 51.5/51.25, lon 0.0/0.25
+LFPG: cycle 12z lead 24 h, grid point 49.027008, 2.578125; archive nodes lat 49.25/49.0, lon 2.5/2.75
+DSM: cycle 18z lead 24 h, grid point 41.52945, -93.63281; archive nodes lat 41.75/41.5, lon -93.75/-93.5
+YSDU: cycle 00z lead 26 h, grid point -32.274643, 148.59375; archive nodes lat -32.25/-32.5, lon 148.5/148.75
+RNO: cycle 18z lead 26 h, grid point 39.537918, -119.765625; archive nodes lat 39.75/39.5, lon -120.0/-119.75
+SFO: cycle 18z lead 26 h, grid point 37.54637, -122.34375; archive nodes lat 37.75/37.5, lon -122.5/-122.25
+  dates done 3/13 (2022-04-01): 335 s, chunk reads 108, estimated bytes 174 MB (+0.1 MB indexes), errors 0
+  dates done 6/13 (2023-07-01): 747 s, chunk reads 216, estimated bytes 346 MB (+0.2 MB indexes), errors 0
+  dates done 9/13 (2024-10-01): 1187 s, chunk reads 324, estimated bytes 519 MB (+0.2 MB indexes), errors 0
+  dates done 12/13 (2026-01-01): 1530 s, chunk reads 432, estimated bytes 679 MB (+0.3 MB indexes), errors 0
+  dates done 13/13 (2026-06-01): 1631 s, chunk reads 468, estimated bytes 722 MB (+0.4 MB indexes), errors 0
+
+--- Reproduction table (|archive - committed|, archive formed as the record forms its value, no elevation correction; report only, no pass or fail) ---
+airport field        rows miss_arch miss_comm   mean_abs    max_abs exact_3dp   committed column
+EGLC   t2m            13         0         0     0.0178     0.0448         0   t2m_raw
+EGLC   wind_kmh       13         0         0     0.0428     0.0969         1   wind_speed_grib_kmh
+EGLC   rh2m           13         0         0     0.0660     0.1953         0   relative_humidity_2m
+EGLC   msl_hpa        13         0         0     0.1465     0.2920         0   pressure_msl_hpa
+EGLC   msl_m3_hpa     13         0         0     0.1724     0.2979         0   pressure_msl_lead_minus3_hpa
+EGLC   tend           13         0         0     0.1824     0.4410         0   pressure_tendency_3h_hpa
+EGLC   dswrf_lead     13         0         0     0.4708     1.7650         0   dswrf_ave_to_lead_wm2
+EGLC   dswrf_m2       13         0         0     0.2127     0.9550         0   dswrf_ave_to_lead_minus2_wm2
+EGLC   dswrf_2h       13         0         0     1.3183     5.4784         0   dswrf_2h_wm2
+LFPG   t2m            13         0         0     0.0169     0.0486         1   t2m_raw
+LFPG   wind_kmh       13         0         0     0.0211     0.0456         0   wind_speed_grib_kmh
+LFPG   rh2m           13         0         0     0.0493     0.1134         0   relative_humidity_2m
+LFPG   msl_hpa        13         0         0     0.1013     0.2503         0   pressure_msl_hpa
+LFPG   msl_m3_hpa     13         0         0     0.1286     0.2679         0   pressure_msl_lead_minus3_hpa
+LFPG   tend           13         0         0     0.1612     0.2715         0   pressure_tendency_3h_hpa
+LFPG   dswrf_lead     13         0         0     0.3337     1.3520         0   dswrf_ave_to_lead_wm2
+LFPG   dswrf_m2       13         0         0     0.1228     0.4110         0   dswrf_ave_to_lead_minus2_wm2
+LFPG   dswrf_2h       13         0         0     0.8425     3.2350         0   dswrf_2h_wm2
+DSM    t2m            13         0         0     0.0102     0.0308         2   t2m_raw
+DSM    wind_kmh       13         0         0     0.0252     0.0466         0   wind_speed_grib_kmh
+DSM    rh2m           13         0         0     0.0490     0.1526         0   relative_humidity_2m
+DSM    msl_hpa        13         0         0     0.1257     0.2390         0   pressure_msl_hpa
+DSM    msl_m3_hpa     13         0         0     0.0824     0.2056         0   pressure_msl_lead_minus3_hpa
+DSM    tend           13         0         0     0.1237     0.2770         0   pressure_tendency_3h_hpa
+DSM    dswrf_lead     13         0         0     0.3908     1.5092         0   dswrf_ave_to_lead_wm2
+DSM    dswrf_m2       13         0         0     0.1623     0.3828         0   dswrf_ave_to_lead_minus2_wm2
+DSM    dswrf_2h       13         0         0     1.1450     4.0290         0   dswrf_2h_wm2
+YSDU   t2m            13         0         0     0.0245     0.0546         1   t2m_raw
+YSDU   wind_kmh       13         0         0     0.0207     0.0449         0   wind_speed_grib_kmh
+YSDU   rh2m           13         0         0     0.0371     0.0832         1   relative_humidity_2m
+YSDU   msl_hpa        13         0         0     0.0899     0.2204         0   pressure_msl_hpa
+YSDU   msl_m3_hpa     13         0         0     0.0943     0.1900         0   pressure_msl_lead_minus3_hpa
+YSDU   tend           13         0         0     0.1055     0.3009         0   pressure_tendency_3h_hpa
+YSDU   dswrf_lead     13         0         0     0.6177     1.5379         0   dswrf_ave_to_lead_wm2
+YSDU   dswrf_2h       13         0         0     0.6177     1.5379         0   dswrf_2h_wm2
+RNO    t2m            13         0         0     0.0181     0.0473         1   t2m_raw
+RNO    wind_kmh       13         0         0     0.0141     0.0379         1   wind_speed_grib_kmh
+RNO    rh2m           13         0         0     0.0350     0.0875         0   relative_humidity_2m
+RNO    msl_hpa        13         0         0     0.1010     0.2439         0   pressure_msl_hpa
+RNO    msl_m3_hpa     13         0         0     0.1481     0.2471         0   pressure_msl_lead_minus3_hpa
+RNO    tend           13         0         0     0.1827     0.4320         0   pressure_tendency_3h_hpa
+RNO    dswrf_lead     13         0         0     0.6005     1.6731         0   dswrf_ave_to_lead_wm2
+RNO    dswrf_2h       13         0         0     0.6005     1.6731         0   dswrf_2h_wm2
+SFO    t2m            13         0         0     0.0119     0.0368         0   t2m_raw
+SFO    wind_kmh       13         0         0     0.0199     0.0506         0   wind_speed_grib_kmh
+SFO    rh2m           13         0         0     0.0433     0.0879         0   relative_humidity_2m
+SFO    msl_hpa        13         0         0     0.1389     0.2650         0   pressure_msl_hpa
+SFO    msl_m3_hpa     13         0         0     0.0678     0.2060         1   pressure_msl_lead_minus3_hpa
+SFO    tend           13         0         0     0.0900     0.2538         0   pressure_tendency_3h_hpa
+SFO    dswrf_lead     13         0         0     0.4075     1.1492         0   dswrf_ave_to_lead_wm2
+SFO    dswrf_2h       13         0         0     0.4075     1.1492         0   dswrf_2h_wm2
+
+Fields NOT compared, with the reason (3.1.2): total cloud cover (the archive's is a 1-6 hour average, the record's is the instantaneous field: different definition); 2 m dew point and 850 hPa temperature (absent from the archive).
+Second cycle and lead (2 m temperature, leads 48 to 53 h): committed GRIB values exist only at each airport's one cycle and lead (the leads present are printed above, one per airport). So there is nothing committed to compare at another cycle or lead: skipped, as the prompt directs.
+Totals: chunk reads 468; shard-index reads 312; estimated chunk bytes 0.722 GB; shard-index bytes 0.36 MB; read errors retried 0; wall time 1631 s
+BYTES_USED_REPRO 722760208
+
+##### FIRST REPRODUCTION RUN (all 63 dates): HUNG, KILLED, NO TABLE. Its progress lines only:
+(It was started 2026-10-02 ~11:09 UTC; the process stopped answering after the line for 48/63 dates, sat at 0% CPU for hours, and was killed. Its in-memory results were lost. A trial run on 2 dates, 116 MB, ran before it, with the same code before the loops were reordered.)
+  dates done 6/63 (2021-10-01): 230 s, chunk reads 180, estimated bytes 288 MB (+0.1 MB indexes), errors 0
+  dates done 12/63 (2022-04-01): 537 s, chunk reads 396, estimated bytes 638 MB (+0.3 MB indexes), errors 0
+  dates done 18/63 (2022-10-01): 826 s, chunk reads 612, estimated bytes 980 MB (+0.5 MB indexes), errors 0
+  dates done 24/63 (2023-04-01): 1107 s, chunk reads 828, estimated bytes 1330 MB (+0.6 MB indexes), errors 0
+  dates done 30/63 (2023-10-01): 1365 s, chunk reads 1044, estimated bytes 1673 MB (+0.8 MB indexes), errors 0
+  dates done 36/63 (2024-04-01): 1630 s, chunk reads 1260, estimated bytes 2023 MB (+1.0 MB indexes), errors 0
+  dates done 42/63 (2024-10-01): 1893 s, chunk reads 1476, estimated bytes 2365 MB (+1.1 MB indexes), errors 0
+  dates done 48/63 (2025-04-01): 2150 s, chunk reads 1692, estimated bytes 2715 MB (+1.3 MB indexes), errors 0
+
+##### STEP 3.1.4 SPEED AND SIZE  (--speed --stride 24 --spent-gb 3.65)
+
+==============================================================================
+3.1.4 Speed and size: a point time series of 2 m temperature at one airport   [2026-10-02T16:32:21Z]
+==============================================================================
+airport EGLC, grid point 51.487137, 0.0; archive nodes 51.5/51.25, 0.0/0.25
+inits from 2021-05-01T00:00:00.000000000 to 2026-07-29T18:00:00.000000000 (<= 2026-07-29T18:00): 7664; leads 24..53 h (30 leads); 4 surrounding grid points
+byte budget for this part: 1.35 GB (5 GB minus 3.65 GB already used)
+strided read: every 24th init: 320 inits (the full read would be 7664)
+compressed size of the chunk this read touches, 61 inits spread over the archive: mean 1.329 MB, min 0.919, max 1.809
+=> the full read (every init, one chunk each) would be about 10.2 GB of compressed chunks: ABOVE this part's budget
+  100/320 inits, 312 s, 136 MB
+  200/320 inits, 651 s, 275 MB
+  300/320 inits, 991 s, 408 MB
+
+strided read done: 320 inits, 38400 values (inits x 30 leads x 4 points), wall time 1031.2 s (3.222 s per init), estimated bytes 428 MB from the shard indexes (the library does not report bytes), chunk reads 320, errors retried 0
+extrapolation to the full read of this one series (x23.95): wall time about 411.6 min, bytes about 10.2 GB, rows about 919680. ESTIMATE.
+seconds per chunk read: 3.222; mean compressed bytes per chunk read: 1.336 MB
+
+--- Extrapolation: all SPEC 8 fields present in the archive, both leads, all six airports (ESTIMATE) ---
+spatial chunks (latitude chunk, longitude chunk) touched by each airport's 2 x 2 box:
+  EGLC: [(1, 5)]
+  LFPG: [(1, 6)]
+  DSM: [(1, 2)]
+  YSDU: [(4, 10)]
+  RNO: [(1, 1)]
+  SFO: [(1, 1)]
+distinct spatial chunks over the six airports: 5 (an airport whose box straddles two chunks needs both)
+mean compressed bytes of one inner chunk, per variable, over 25 inits x the 5 spatial chunks (from the shard indexes):
+  temperature_2m                               mean  1.570 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    60.2 GB   (2 m temperature)
+  wind_u_10m                                   mean  2.138 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    81.9 GB   (10 m wind u)
+  wind_v_10m                                   mean  2.172 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    83.2 GB   (10 m wind v)
+  pressure_reduced_to_mean_sea_level           mean  0.501 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    19.2 GB   (PRMSL (pressure tendency))
+  downward_short_wave_radiation_flux_surface   mean  1.279 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    49.0 GB   (DSWRF)
+  total_cloud_cover_atmosphere                 mean  1.364 MB per chunk; all 7664 inits x 5 chunks = 38320 reads,    52.3 GB   (total cloud (different definition; costed for completeness))
+  total, six variables: 229920 chunk reads, about 346 GB compressed. The archive holds every hour and both leads in the same chunk (lead chunk 0 covers hours 0..104), so the hourly curve at both leads costs the same as one hour at one lead. ESTIMATE; if the strided time per read holds, sequential wall time is about 205.8 h.
+BYTES_USED_SPEED 428286512
+
+##### STEP 3.2 GRIB ROUTE  (--grib)
+
+==============================================================================
+3.2 The GRIB route's cost (noaa-gfs-bdp-pds, byte ranges, as the record does)   [2026-10-02T16:52:16Z]
+==============================================================================
+spent-year day 2024-03-15; run day 2024-03-14; four cycles; source https://noaa-gfs-bdp-pds.s3.amazonaws.com; tag: verified
+
+--- 1. .idx listing: every forecast hour f021..f053 (f024..f053 asked; f021..f023 are the lead-3 hours the pressure tendency needs), all four cycles ---
+.idx files answered 200: 132 of 132 (73 s); bytes 5.45 MB
+
+field presence per forecast hour (count of the 4 cycles where the message is present), f024..f053 for the 8 fields; a '.' means all four present:
+  f024: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f025: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f026: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f027: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f028: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f029: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f030: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f031: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f032: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f033: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f034: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f035: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f036: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f037: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f038: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f039: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f040: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f041: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f042: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f043: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f044: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f045: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f046: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f047: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f048: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f049: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f050: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f051: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f052: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+  f053: tmp2m=. tcdc=. ugrd10m=. vgrd10m=. dpt2m=. t850=. dswrf=. prmsl=.
+forecast hours where a field is missing in some cycle: none
+PRMSL present at f021..f023 (the lead-3 hours): {21: 4, 22: 4, 23: 4}
+DSWRF at f022 (window label, per cycle): ['18-22 hour ave fcst', '18-22 hour ave fcst', '18-22 hour ave fcst', '18-22 hour ave fcst']
+
+DSWRF averaging window by forecast hour (the label, same in all four cycles?):
+  f021: 18-21 hour ave fcst   window 3 h   same in all cycles: True
+  f022: 18-22 hour ave fcst   window 4 h   same in all cycles: True
+  f023: 18-23 hour ave fcst   window 5 h   same in all cycles: True
+  f024: 18-24 hour ave fcst   window 6 h   same in all cycles: True
+  f025: 24-25 hour ave fcst   window 1 h   same in all cycles: True
+  f026: 24-26 hour ave fcst   window 2 h   same in all cycles: True
+  f027: 24-27 hour ave fcst   window 3 h   same in all cycles: True
+  f028: 24-28 hour ave fcst   window 4 h   same in all cycles: True
+  f029: 24-29 hour ave fcst   window 5 h   same in all cycles: True
+  f030: 24-30 hour ave fcst   window 6 h   same in all cycles: True
+  f031: 30-31 hour ave fcst   window 1 h   same in all cycles: True
+  f032: 30-32 hour ave fcst   window 2 h   same in all cycles: True
+  f033: 30-33 hour ave fcst   window 3 h   same in all cycles: True
+  f034: 30-34 hour ave fcst   window 4 h   same in all cycles: True
+  f035: 30-35 hour ave fcst   window 5 h   same in all cycles: True
+  f036: 30-36 hour ave fcst   window 6 h   same in all cycles: True
+  f037: 36-37 hour ave fcst   window 1 h   same in all cycles: True
+  f038: 36-38 hour ave fcst   window 2 h   same in all cycles: True
+  f039: 36-39 hour ave fcst   window 3 h   same in all cycles: True
+  f040: 36-40 hour ave fcst   window 4 h   same in all cycles: True
+  f041: 36-41 hour ave fcst   window 5 h   same in all cycles: True
+  f042: 36-42 hour ave fcst   window 6 h   same in all cycles: True
+  f043: 42-43 hour ave fcst   window 1 h   same in all cycles: True
+  f044: 42-44 hour ave fcst   window 2 h   same in all cycles: True
+  f045: 42-45 hour ave fcst   window 3 h   same in all cycles: True
+  f046: 42-46 hour ave fcst   window 4 h   same in all cycles: True
+  f047: 42-47 hour ave fcst   window 5 h   same in all cycles: True
+  f048: 42-48 hour ave fcst   window 6 h   same in all cycles: True
+  f049: 48-49 hour ave fcst   window 1 h   same in all cycles: True
+  f050: 48-50 hour ave fcst   window 2 h   same in all cycles: True
+  f051: 48-51 hour ave fcst   window 3 h   same in all cycles: True
+  f052: 48-52 hour ave fcst   window 4 h   same in all cycles: True
+  f053: 48-53 hour ave fcst   window 5 h   same in all cycles: True
+(The window resets every 6 h: a 6 h average at f024, f030, f036, f042, f048; a 2 h average at f026 and f032 ... The window is NOT constant across forecast hours, as F97 and F102 found.)
+
+--- 2. Fetch: the SPEC 8 fields for the 24-hour lead on the run day ---
+messages planned: 208 (24 files x 8 fields = 192; PRMSL at f021..f023 x 4 cycles = 12; DSWRF at f022 x 4 cycles = 4)
+  40/208 messages, 34 MB, 48 s
+  80/208 messages, 69 MB, 102 s
+  120/208 messages, 104 MB, 155 s
+  160/208 messages, 138 MB, 210 s
+  200/208 messages, 170 MB, 268 s
+fetched 208 messages in 279 s: 208 well-formed (GRIB marker, edition 2, length field equals bytes, end marker 7777); bytes 177.7 MB (limit 500 MB)
+message size: mean 854 kB, min 510 kB, max 1054 kB; seconds per message request: mean 1.338, max 8.45
+  tmp2m       n= 24 mean     636 kB
+  tcdc        n= 24 mean     816 kB
+  ugrd10m     n= 24 mean     970 kB
+  vgrd10m     n= 24 mean     947 kB
+  dpt2m       n= 24 mean     640 kB
+  t850        n= 24 mean     854 kB
+  dswrf       n= 24 mean     858 kB
+  prmsl       n= 24 mean    1027 kB
+  prmsl_m3    n= 12 mean    1023 kB
+  dswrf_f022  n=  4 mean     870 kB
+timing detail: .idx requests 132, mean 0.547 s; message requests 208, mean 1.338 s
+Per-request timing (cycle, fhour, field, seconds, bytes) in the first 12 and last 3 requests:
+  00z f024 tmp2m       0.972 s 510284 B
+  00z f024 tcdc        1.001 s 823403 B
+  00z f024 ugrd10m     0.913 s 967486 B
+  00z f024 vgrd10m     0.978 s 946032 B
+  00z f024 dpt2m       0.905 s 545480 B
+  00z f024 t850        0.983 s 852419 B
+  00z f024 dswrf       1.119 s 983082 B
+  00z f024 prmsl       4.424 s 1013982 B
+  00z f025 tmp2m       0.936 s 510210 B
+  00z f025 tcdc        1.380 s 817035 B
+  00z f025 ugrd10m     0.963 s 966089 B
+  00z f025 vgrd10m     0.937 s 949182 B
+  18z f022 prmsl_m3    1.030 s 1022168 B
+  18z f023 prmsl_m3    4.049 s 1021926 B
+  18z f022 dswrf_f022  1.030 s 859666 B
+
+--- 3. Extrapolation (ESTIMATE), one global field serves all airports ---
+days 2021-03-24 .. 2026-07-31: 1956; leads 24 h and 48..53 h: x2 (the 48 h lead has the same file structure, f048..f053 with f045..f047 and f046)
+messages per day per lead: 208; .idx files per day per lead: 36
+total message requests: 208 x 1956 x 2 = 813,696; total .idx requests: 36 x 1956 x 2 = 140,832; total requests 954,528
+total bytes: 813,696 x 854 kB = 695 GB (per lead 348 GB)
+total wall time at the measured sequential rate: 813,696 x 1.338 s + 140,832 x 0.547 s = 324 h (13.5 days). With the 48-way concurrency F90 used, divide by up to about 48 (not measured here).
+Compare D81.11's planning figure (not checked): about 470,000 byte-range requests and about 370 GB per lead, about 750 GB for both. This estimate counts every field the record's recipe fetches for each target hour, including the lead-3 pressure hours and the f022 radiation hour.
+The record's own pulls fetched 14 to 15 messages per station-day (F128.2), which includes fields the model does not use (925 and 700 hPa temperature, RH, specific humidity, surface pressure).
+deleted 208 downloaded message files from the temporary directory
+BYTES_GRIB 183116897
+
+##### STEP 3.3 and 3.4 OBSERVATION COUNTS AND DAY WINDOWS  (--obs)
+
+==============================================================================
+3.3 Hourly observations (counts only; no temperature value is printed)   [2026-10-02T11:05:56Z]
+==============================================================================
+days in 2021-03-24..2026-07-31: 1956
+column sets of every committed IEM observation file:
+  station,valid,lon,lat,elevation,tmpc,dwpc   (61 files)
+  station,valid,lon,lat,elevation,tmpc,tmpf,dwpc   (5 files)
+No committed file has a raw METAR text column or any maximum-temperature column.
+
+EGLC: files ['iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv', 'iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv', 'iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv', 'iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv', 'iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv', 'iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv']
+  rows 46919; first report 2021-03-24 00:50:00+00:00; last report 2026-07-31 23:50:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 10
+  usual minute past the hour of the routine reports (minute: rows): {50: 46911, 20: 8}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1953  01:1954  02:1956  03:1956  04:1955  05:1955  06:1954  07:1954  08:1954  09:1955  10:1955  11:1954  12:1953  13:1954  14:1954  15:1953  16:1953  17:1953  18:1954  19:1952  20:1953  21:1956  22:1956  23:1954
+  days with all 24 hours usable: 1933; days with none: 0
+
+LFPG: files ['iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv', 'iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv', 'iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv', 'iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv', 'iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv', 'iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv']
+  rows 46903; first report 2021-03-24 00:00:00+00:00; last report 2026-07-31 23:00:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 1
+  usual minute past the hour of the routine reports (minute: rows): {0: 46805, 30: 95, 49: 1, 36: 1}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1926  01:1951  02:1953  03:1953  04:1951  05:1951  06:1953  07:1951  08:1951  09:1952  10:1951  11:1951  12:1953  13:1951  14:1951  15:1948  16:1951  17:1952  18:1952  19:1950  20:1950  21:1951  22:1950  23:1951
+  days with all 24 hours usable: 1875; days with none: 1
+
+DSM: files ['iem_asos_DSM_2021-03-24_2021-12-31_routine.csv', 'iem_asos_DSM_2022-01-01_2022-12-31_routine.csv', 'iem_asos_DSM_2023-01-01_2023-12-31_routine.csv', 'iem_asos_DSM_2024-01-01_2024-12-31_routine.csv', 'iem_asos_DSM_2025-01-01_2025-12-31_routine.csv', 'iem_asos_DSM_2026-01-01_2026-07-31_routine.csv']
+  rows 46937; first report 2021-03-24 00:54:00+00:00; last report 2026-07-31 23:54:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 0
+  usual minute past the hour of the routine reports (minute: rows): {54: 46921, 53: 3, 59: 2, 38: 2}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1953  01:1956  02:1956  03:1954  04:1955  05:1956  06:1956  07:1956  08:1956  09:1955  10:1956  11:1956  12:1956  13:1955  14:1956  15:1956  16:1955  17:1956  18:1956  19:1956  20:1955  21:1955  22:1955  23:1956
+  days with all 24 hours usable: 1946; days with none: 0
+
+YSDU: files ['iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv', 'iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv', 'iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv', 'iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv', 'iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv', 'iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv']
+  rows 46734; first report 2021-03-24 00:00:00+00:00; last report 2026-07-31 23:00:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 2
+  usual minute past the hour of the routine reports (minute: rows): {0: 46466, 30: 177, 41: 10, 39: 7}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1933  01:1937  02:1930  03:1929  04:1935  05:1929  06:1928  07:1934  08:1938  09:1941  10:1942  11:1940  12:1940  13:1933  14:1933  15:1938  16:1937  17:1940  18:1940  19:1937  20:1937  21:1940  22:1940  23:1936
+  days with all 24 hours usable: 1690; days with none: 1
+
+RNO: files ['iem_asos_RNO_2021-03-24_2021-12-31_routine.csv', 'iem_asos_RNO_2022-01-01_2022-12-31_routine.csv', 'iem_asos_RNO_2023-01-01_2023-12-31_routine.csv', 'iem_asos_RNO_2024-01-01_2024-12-31_routine.csv', 'iem_asos_RNO_2025-01-01_2025-12-31_routine.csv', 'iem_asos_RNO_2026-01-01_2026-07-31_routine.csv']
+  rows 46836; first report 2021-03-24 05:55:00+00:00; last report 2026-07-31 23:55:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 1
+  usual minute past the hour of the routine reports (minute: rows): {55: 46831, 52: 2, 53: 2, 48: 1}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1952  01:1953  02:1953  03:1951  04:1953  05:1948  06:1952  07:1951  08:1950  09:1950  10:1951  11:1950  12:1951  13:1950  14:1951  15:1950  16:1951  17:1952  18:1952  19:1952  20:1953  21:1951  22:1953  23:1954
+  days with all 24 hours usable: 1930; days with none: 1
+
+SFO: files ['iem_asos_SFO_2021-03-24_2021-12-31_routine.csv', 'iem_asos_SFO_2022-01-01_2022-12-31_routine.csv', 'iem_asos_SFO_2023-01-01_2023-12-31_routine.csv', 'iem_asos_SFO_2024-01-01_2024-12-31_routine.csv', 'iem_asos_SFO_2025-01-01_2025-12-31_routine.csv', 'iem_asos_SFO_2026-01-01_2026-07-31_routine.csv']
+  rows 46916; first report 2021-03-24 00:56:00+00:00; last report 2026-07-31 23:56:00+00:00; distinct hours of the day with a report: True (24 of 24)
+  rows with no usable temperature (M, blank, T, None, non-finite): 3
+  usual minute past the hour of the routine reports (minute: rows): {56: 46907, 57: 2, 3: 1, 16: 1}
+  routine reports per day: median 24
+  days (of 1956) with a usable report within 15 min of each whole hour (hour: days):
+   00:1954  01:1955  02:1955  03:1955  04:1955  05:1953  06:1955  07:1954  08:1952  09:1956  10:1955  11:1955  12:1956  13:1956  14:1955  15:1955  16:1954  17:1953  18:1955  19:1953  20:1953  21:1955  22:1955  23:1954
+  days with all 24 hours usable: 1931; days with none: 0
+
+Query that gave these files (from each .meta.txt: the first 'exact URL requested', and the pull time):
+  EGLC: pulled at   : 2026-08-16 15:13:19 BST (2026-08-16 14:13:19 UTC)
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=EGLC&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+  LFPG: pulled at   : 2026-08-17 20:15:51 BST (2026-08-17 19:15:51 UTC)
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=LFPG&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+  DSM: pulled at   : 2026-08-18 15:23:48 BST (2026-08-18 14:23:48 UTC)
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=DSM&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+  YSDU: pulled at   : 2026-08-19 10:35:56 BST (2026-08-19 09:35:56 UTC)
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=YSDU&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+  RNO: pulled at   : 2026-08-19 18:24:39 BST (2026-08-19 17:24:39 UTC)
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=RNO&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+  SFO: pulled at   : 2026-09-25 09:42:08 UTC
+      https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=SFO&data=tmpc&data=dwpc&year1=2022&month1=1&day1=1&year2=2023&month2=1&day2=1&tz=UTC&format=onlycomma&latlon=yes&elev=yes&missing=M&trace=T&direct=no&report_type=3
+Every file is the routine report only (report_type=3), UTC, data = tmpc and dwpc: it holds every hour of the day, so hourly truth for a stage C curve is already committed. Nothing was fetched.
+
+==============================================================================
+3.4 Daily-maximum sources: counts from committed files, and the day window each airport needs   [2026-10-02T11:05:56Z]
+==============================================================================
+METAR maximum-temperature groups (US 6-hour '1xxxx' and 24-hour '4xxxxxxxx'): the committed files carry no raw METAR text, so they cannot be counted from them. To count them, the same IEM request needs the 'metar' field added (IEM's download page lists 'Raw METAR'; its variable list has no 6-hour or 24-hour maximum-temperature field). Not fetched.
+time zone from IEM's own station listing (committed): {'YSDU': 'Australia/Sydney', 'LFPG': 'Europe/Paris', 'RNO': 'America/Los_Angeles', 'SFO': 'America/Los_Angeles', 'DSM': 'America/Chicago', 'EGLC': 'Europe/London'}
+
+Day window a maximum of the hourly reports would need, by the local STANDARD-time day (no daylight saving), as a UTC window; standard offset read from the time zone database:
+  YSDU  Australia/Sydney       standard offset UTC+10; local-standard-time day = 14:00 UTC to 14:00 UTC next day; target hour 02:00 UTC; civil (daylight-saving) offsets +11 / +10
+  LFPG  Europe/Paris           standard offset UTC+1; local-standard-time day = 23:00 UTC to 23:00 UTC next day; target hour 12:00 UTC; civil (daylight-saving) offsets +1 / +2
+  RNO   America/Los_Angeles    standard offset UTC-8; local-standard-time day = 08:00 UTC to 08:00 UTC next day; target hour 20:00 UTC; civil (daylight-saving) offsets -8 / -7
+  SFO   America/Los_Angeles    standard offset UTC-8; local-standard-time day = 08:00 UTC to 08:00 UTC next day; target hour 20:00 UTC; civil (daylight-saving) offsets -8 / -7
+  DSM   America/Chicago        standard offset UTC-6; local-standard-time day = 06:00 UTC to 06:00 UTC next day; target hour 18:00 UTC; civil (daylight-saving) offsets -6 / -5
+  EGLC  Europe/London          standard offset UTC+0; local-standard-time day = 00:00 UTC to 00:00 UTC next day; target hour 12:00 UTC; civil (daylight-saving) offsets +0 / +1
+A day window is a stage C choice (not made here). The target hour is the local standard noon, so the afternoon peak falls in the second half of the window.
+
+##### END OF SESSION: consistency check (report only; nothing fixed)
+SPEC.md headings: 9 | duplicated headings: none
+STATUS.md headings: 5 | duplicated headings: none
+DECISIONS.md headings: 23 | duplicated headings: none
+live entry count: 25
+D numbers in file order: [17, 46, 47, 51, 62, 71, 72, 73, 76, 77, 78, 79, 80, 81] | out of order: none | duplicated: none
+F numbers in file order: [7, 96, 122, 123, 124, 125, 127, 128, 129, 130, 131] | out of order: none | duplicated: none
+dated headings: 22 | dates non-decreasing: True
+Findings:
+1. No duplicated heading in SPEC, STATUS or DECISIONS. Live D and F entries are in number order; dated headings are in date order.
+2. SPEC 6's Stage C bullet does not say stage C is opened (D81.9) and cites neither D81.9 nor F131. The prompt allowed only the one Stage B edit, so SPEC was not changed. The owner decides whether to add it.
+3. D80.5 (save choice "open") is answered by D81.2 to D81.5 (option B). D80.5 itself is unchanged, as an append-only log requires. STATUS carries only the answer.
+4. GFS v17: D80.6 says the earliest go-live is about 31 October 2026; D81.7 (newer) says about 1 November 2026. STATUS carries D81.7.
+5. D81.11 estimates "about 24 GRIB files a day per lead, about 10 fields each". F131.5 measured 36 files and 208 messages a day per lead for the record's recipe. Reported, not corrected (D81.11 is the owner's text).
+6. SPEC 3.2/3.3 and 4.3 are unchanged and agree with F131 where F131 cites them (the record's first target day, 2021-03-24).
+7. Writing note: the output file quotes web text that contains em-dashes (the sources' own). No new em-dash was written by this session in SPEC, STATUS, DECISIONS or the script.
+
+##### END OF SESSION: archive step
+Nothing was moved to DECISIONS-archive.md. The prompt names D72, D73, F122, D77, F127, D78, F128, D79, F129, D80, F130, D81 and F131 as staying live. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, D76, F125) did not become settled this session, and several are cited by live text, so they stay.
+
+##### END OF SESSION: clean-up
+The temporary directory (virtual environment and any downloaded bytes, 195 MB when checked) was deleted: `ls` of the path afterwards returned "No such file or directory". No __pycache__ file of the new script remains. `git status --porcelain` at the end:
+ M DECISIONS.md
+ M SPEC.md
+ M STATUS.md
+?? docs/session-89.md
+?? notes/session-89-output.txt
+?? scripts/session89_stage_c_scoping.py

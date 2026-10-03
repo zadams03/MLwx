@@ -743,7 +743,10 @@ side, because both are time-critical.
   against GFS MOS at DSM, on 2026-27 is pre-registered in DECISIONS D77.6.
   Its data-build script exists and passed its gate (DECISIONS D78.7,
   F128). Its scoring script and the NBM and MAV fetch exist and passed
-  their gates (DECISIONS D79, F129).
+  their gates (DECISIONS D79, F129). The non-US competitor probe
+  (DECISIONS D78.3) found that DWD's MOSMIX keeps only about two days of
+  issues (F130); daily saves of MOSMIX_L single-station files are chosen
+  in DECISIONS D81.
 - **Stage C — widen the target, on GFS only.** An hourly temperature
   curve, the daily maximum, and the 48-hour lead. Written with the
   weather model as a setting.

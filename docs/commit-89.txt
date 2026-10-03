@@ -1,0 +1,46 @@
+Session 89: MOSMIX saves chosen, stage C opened, and a read-only stage C scoping probe (D81, F131)
+
+D81 records the owner's decisions, written before any other edit or
+network call. The owner accepts F130.9's four readings. MOSMIX saves
+are option B: MOSMIX_L single-station files, all four daily issues,
+saved unchanged, at EGLC (P0478), LFPG, DSM, RNO and KSFO. YSDU has no
+station within 10 km and is off the list. The saver will run on GitHub
+Actions and commit to a separate private repository. It is not urgent
+and gets its own session. D81 also records an unchecked note that
+DWD's EGLC station position may have a sign error (2.5 km rather than
+7.7 km), and that GFS v17 still has no Service Change Notice as of
+2026-10-02 (earliest go-live about 1 November 2026). Stage C is opened.
+Its claim is judged on new airports only, not on 2026-27. The
+daily-maximum definition waits for F131. Bias drift (D78.2) is tested
+after the curve's baseline exists. New airports are chosen in the
+design session. The data route is left open. D81 is byte-equal to the
+session prompt.
+
+SPEC 6's stage B bullet gains one sentence citing D78.3, F130 and D81.
+
+F131 records the probe; nothing was chosen.
+- dynamical.org GFS forecast archive: first init 2021-05-01 (39 target
+  days lost), hourly leads to 120 h, values stored rounded. It holds 4
+  of the 7 SPEC 8 fields in the same form. 850 hPa temperature and 2 m
+  dew point are absent, and its cloud cover is an average. On 13 dates
+  per airport its values differ from the committed GRIB values by
+  about the stored rounding (2 m temperature 0.010 to 0.025 degC on
+  average). A full point extract would be about 346 GB.
+- GRIB route: all 8 fields are present at every hour f024 to f053 in
+  all four cycles. Estimate for both leads, 2021-03-24 to 2026-07-31:
+  954,528 requests, about 695 GB, measured at 1.34 s per request.
+- Hourly observations for all 24 hours are already committed at all
+  six airports. Official daily-maximum sources were not read.
+
+Disclosed in F131.9: the first reproduction run hung and was killed,
+so the table uses every 5th monthly date (13 of 63); the speed test
+read every 24th init and extrapolated. The owner accepts F131 and its
+readings.
+
+Nothing from 2026-27 was read. No score was computed, no observed
+value was printed, and no account was used. Packages were installed
+only in a throwaway environment, since deleted. Nothing was written
+under data/. STATUS.md is overwritten. Nothing was archived.
+
+New files: scripts/session89_stage_c_scoping.py,
+notes/session-89-output.txt, docs/session-89.md, docs/commit-89.txt.
