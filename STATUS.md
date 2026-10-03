@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 1 October 2026, after session 88._
+_Last updated: 2 October 2026, after session 89._
 
 ---
 
@@ -15,17 +15,16 @@ RESULTS.md). F109 stands. KSFO passes the selected-features method on
 both of its pre-registered looks (F119, D71).** No untouched held-out
 year remains at any of the six airports (D71.1).
 
-**The roadmap is set (D72; SPEC 6).** Stages A (benchmark and source
-probe) and B (forward test and data collection) run side by side. Then
-come stages C to H. New airports are an ongoing track, and pooling is
-conditional.
+**The roadmap is set (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C
+is now opened (D81.9). Then come stages D to H. New airports are an ongoing
+track, and pooling is conditional.
 
 **Direction decision (D78.1): option (d), neither.** The roadmap carries
 on as D72 sets it.
 
 **Stage B: the 2026-27 GFS forward test is pre-registered (D73), its
 models are frozen (F122), and all three 2026-27 scripts exist and passed
-their gates (F128, F129). They are unchanged this session.**
+their gates (F128, F129). They are unchanged and have never been run.**
 
 - **Design (D73).** SPEC 8's `B+D,L,R,T`, unchanged, at all six airports.
   The test year 2026-08-01..2027-07-31 splits at the first operational GFS
@@ -37,8 +36,7 @@ their gates (F128, F129). They are unchanged this session.**
 - **2026-27 NBM/MOS test (D77.6), pre-registered.** The frozen F122
   models against NBM at DSM, RNO and KSFO, and against GFS MOS (MAV) at
   DSM, per period. Separate from D73. D79 fixes how both tests are
-  reported. **F129.8's eight readings are accepted (D80.1)**; neither script
-  changes, and F129.7's SHA-256 values stand.
+  reported. D80.1 accepted F129.8's readings.
 - **The three scripts.** Each 2026-27 mode runs only after its period has
   ended and its observations are in, in this order: build, fetch, score.
   The first operational v17 cycle and the NBM and MAV version labels come
@@ -55,56 +53,74 @@ their gates (F128, F129). They are unchanged this session.**
   Period B needs a later build mode and D73.4's v17 entry first (D79.6).
   Its arguments and outputs are in F128.6 and F129.6.
 
+**MOSMIX (F130, D81).** DWD's MOSMIX keeps only about two days of issues on
+its server and has no public archive (F130). The owner chose option B
+(D81.2): save MOSMIX_L single-station files, all four daily issues, unchanged,
+at EGLC (P0478), LFPG (07157), DSM (72546), RNO (72488) and KSFO (72494).
+YSDU has no station within 10 km and is not on the list (D81.3). The saver
+runs on GitHub Actions and commits to a separate private repository (D81.4).
+It is not urgent, and days before it starts are lost, which is accepted
+(D81.5). **The saver session has not been run, and no saver exists.** No
+MOSMIX test is pre-registered. Stage C's new airports are added to the list
+when chosen, where a station exists.
+
+**Stage C: opened (D81.9, D81.10).** Its claim is judged on new airports only,
+chosen before its lock and not scored before it. It makes no claim on 2026-27.
+Defaults: the daily-maximum definition is decided after F131; bias drift
+(D78.2) is tested only after the curve's baseline exists, one change at a
+time; new candidate airports are chosen in stage C's design session.
+
+**F131 (session 89, read-only scoping probe): outcome in brief.** The data
+route is still open (D81.11).
+- **dynamical.org GFS forecast archive.** First init 2021-05-01 (39 of the
+  record's first target days have no init); no missing inits to 2026-07-29;
+  hourly leads to 120 h; values stored rounded (temperature 0.06 to 0.13 degC,
+  PRMSL 0.64 hPa). It holds 4 of the 7 SPEC 8 fields in the same form
+  (temperature, wind, radiation, pressure). Cloud cover is an average, not
+  the record's instantaneous field. Dew point and 850 hPa temperature are
+  absent. On a reduced sample (13 dates per airport), differences from the
+  committed GRIB values are small (temperature 0.010 to 0.025 degC on average).
+  A full point series would be about 10 GB per variable and spatial chunk;
+  all six variables for the six airports about 346 GB and 229,920 reads.
+- **GRIB route.** All 8 fields are present at every hour f024 to f053 in all
+  four cycles. Estimate for both leads, 2021-03-24 to 2026-07-31: about
+  954,528 requests and 695 GB (D81.11's planning figure: 470,000 requests and
+  750 GB). Measured about 1.34 s per request, one connection.
+- **Hourly observations** for all six airports are already committed (every
+  hourly routine report). Daily-maximum sources: the METAR maximum groups
+  cannot be counted from the committed files (no raw text); the official daily
+  climate maxima and their day windows were not read (unknown).
+- F131.9 lists the readings made where the prompt was silent. The largest:
+  the first reproduction run hung and was killed, so the reproduction table
+  uses every 5th monthly date (13 of 63).
+
 **Stage A: done.** Source probe (F123), ICON route check (F124, D76.2:
 ICON is not saved), confidence intervals (F125), NBM/MOS comparison on
 the spent years (F127, band MIXED), and the direction decision (D78.1).
-
-**Non-US competitor probe (D78.3, D80.3): done, session 88 (F130).**
-Read only; nothing was chosen.
-- **DWD MOSMIX keeps only about two days on DWD's server and has no public
-  archive: class No archive.** MOSMIX_L all-stations holds 8 issues (03,
-  09, 15, 21 UTC; span 42 h), MOSMIX_S 48 hourly issues. DWD states no
-  retention period anywhere read. The prompt's six-hour second listing was
-  not possible this session (two listings 13 minutes apart, identical).
-  PAMORE holds NWP forecasts for about 1.5 years under registration for
-  research and authorities, and does not name MOSMIX. Other holders are
-  named only by secondary sources.
-- **Stations.** LFPG 07157 (0.17 km) and the US airports DSM, RNO, KSFO have
-  main stations. EGLC's station P0478 is an interpolation station, 7.7 km
-  from IEM's position. YSDU (Dubbo) has no MOSMIX station within 10 km
-  (nearest 221.75 km).
-- **Other products.** BoM town forecasts at Dubbo: daily minimum and
-  maximum only, no archive. Met Office site-specific: blocked (account and
-  API key).
-- **The save decision (D80.5) is open.** Options A, B and C stand as D80.5
-  wrote them. Nothing is decided, and no saver exists.
 
 ---
 
 ## Open questions (live)
 
-- **D80.5, MOSMIX daily saves.** The owner chooses between no saving,
-  single-station files at a short list (EGLC, LFPG and YSDU now, stage C's
-  candidate airports later) or the whole map, and where a saver would run.
-  A saver is new code and needs its own session. Every day without one
-  is a day of MOSMIX history lost.
-- **F130.9's readings.** Four readings were made where session 88's prompt
-  was silent (the tag for the MOSMIX rows; "main" station means a `+` in the
-  TTT symbol; the timing table uses a past day; some terms read through
-  search and fetch tools). The owner confirms or changes them.
-- **F130.8, repeated download.** The helper script downloaded the same
-  MOSMIX_S file three times (about 112 MB). The owner notes it.
+- **F131.9's readings.** The owner confirms or changes them.
+- **Stage C design (D81.9 to D81.11).** The data route, the daily-maximum
+  definition and the new airports are the owner's, to be recorded in the next
+  design session, from F131.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D80.6).** Still no Service Change Notice as of 2026-10-01
-  (planning-chat search; the newest SCN listed is SCN 26-87, 2026-09-22).
-  The earliest go-live is about 31 October 2026. Re-check at each planning
-  session. The go-live date sets period A's length. PNS 26-30's statement
-  that the 0.25 degree GRIB2 files remain is to be confirmed against the
-  SCN (D73.4).
+- **GFS v17 (D81.7).** Still no Service Change Notice as of 2026-10-02
+  (planning-chat check; the newest SCN listed is SCN 26-87, 2026-09-22). With
+  30 days' notice the earliest go-live is about 1 November 2026. Re-check at
+  each planning session. The go-live date sets period A's length. PNS 26-30's
+  statement that the 0.25 degree GRIB2 files remain is to be confirmed against
+  the SCN (D73.4).
+- **EGLC position note (D81.6).** DWD's cfg places P0478 at 0 deg 03 min W;
+  the airport is at about 0 deg 03 min E. If DWD's sign is wrong, the station
+  is about 2.5 km from the airport, not 7.7 km. This matters only for a later
+  MOSMIX comparison at EGLC. F130 is unchanged. Not checked by a session.
 - **Open item D78.2 (bias drift).** A correction that adapts to recent
   bias is a candidate build choice for stage C, tested by time-ordered
   cross-validation, identically at every airport. Nothing is decided.
@@ -118,9 +134,9 @@ Read only; nothing was chosen.
     (one missing 18z run found; not scanned), and the timing at hours
     18 to 23 (F124.2; kept open for stage D by D76.2);
   - retention periods not measured (WeatherNext; ICON beyond DWD's
-    statement). MOSMIX's is now measured from listings (F130.2);
-  - model-version histories marked unknown in F123.3 (MOSMIX's is now
-    listed, F130.6);
+    statement). MOSMIX's is measured from listings (F130.2);
+  - model-version histories marked unknown in F123.3 (MOSMIX's is listed,
+    F130.6);
   - whether GFS v17 retrospective runs are public: none found as of
     2026-09-28 (F123.6; not proven absent);
   - whether MOSMIX appears in PAMORE, and whether any third party holds
@@ -130,4 +146,4 @@ Read only; nothing was chosen.
 
 ## Next
 
-**Next planning session:** Review session 88. Then decide on MOSMIX daily saves (D80.5) and, if any, plan the saver session; otherwise open stage C. Re-check GFS v17 (D80.6).
+**Next planning session:** Review session 89. Then design stage C from F131: the data route, the daily-maximum definition and the new airports, for the next session to record. Re-check GFS v17 (D81.7).

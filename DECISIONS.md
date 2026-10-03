@@ -2632,3 +2632,222 @@ downloaded. Both temporary directories were deleted.
 - No matching rule, no save decision (D80.5) and no stage C choice was made.
 - SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were
   not edited. Nothing was committed and no commit message was written.
+
+---
+
+## 2026-10-02: Session 89 decision: F130.9 accepted, MOSMIX saves, stage C opened and its scoping probe (owner, planning chat)
+
+**D81. Owner decisions, planning chat (after session 88): F130.9
+accepted, MOSMIX daily saves chosen, stage C opened, and the plan for a
+read-only stage C scoping probe.** Written at the start of session 89,
+before any other edit or network call. No 2026-27 value has been read or
+scored.
+
+- **D81.1 F130.9 accepted.** The owner accepts F130.9's four readings as
+  written. F130.8 (one MOSMIX_S file downloaded three times) is noted;
+  no action.
+- **D81.2 MOSMIX saves: option B (D80.5).** MOSMIX_L single-station
+  files, all four daily issues, saved unchanged as downloaded, at:
+  EGLC (P0478), LFPG (07157), DSM (72546), RNO (72488) and KSFO (72494)
+  (F130.4). Stage C's new airports are added when they are chosen, where
+  a MOSMIX station exists.
+- **D81.3 YSDU is not on the list.** It has no MOSMIX station within 10
+  km; the nearest is 221.75 km away (F130.4).
+- **D81.4 Where the saver runs.** GitHub Actions, committing to a
+  separate private repository, not the public project repository.
+  Because about eight MOSMIX_L issues stay on DWD's server (F130.2), the
+  saver may run several times a day and save any issue it does not yet
+  hold; a late or skipped run then loses nothing unless the gap is longer
+  than about 40 hours. The details are the saver session's.
+- **D81.5 Timing.** Not urgent. The saver is new code and gets its own
+  session when the owner chooses. Days before it starts are lost, and
+  this is accepted. No MOSMIX test is pre-registered.
+- **D81.6 EGLC position note (planning chat, not checked by this
+  session).** DWD's cfg places P0478 at 0 deg 03 min W; London City
+  airport is at about 0 deg 03 min E. If DWD's sign is wrong, the
+  station is about 2.5 km from the airport, not 7.7 km. This matters
+  only for a later MOSMIX comparison at EGLC. F130 is unchanged.
+- **D81.7 GFS v17 (planning-chat check of the NWS notices page,
+  2026-10-02, not checked by this session).** Still no Service Change
+  Notice. The newest SCN listed is SCN 26-87 (2026-09-22). With 30 days'
+  notice, the earliest go-live is about 1 November 2026.
+- **D81.8 SPEC 6.** Stage B's bullet gets one sentence citing D78.3,
+  F130 and D81 (session 89, Step 2).
+- **D81.9 Stage C is opened.** Its claim is judged on new airports only
+  (D72.8), chosen before stage C's lock and not scored before it. Stage
+  C makes no claim on 2026-27: that year stays for D73 and D77.6, and
+  once period A is scored no new test may be pre-registered on it
+  (D72.2(a)).
+- **D81.10 Stage C defaults.** (a) The daily-maximum definition is
+  decided after F131. (b) Bias drift (D78.2) is tested only after the
+  curve's baseline exists, as one change at a time (D72.2(b)), by
+  time-ordered cross-validation, identically at every airport. (c) New
+  candidate airports are chosen in stage C's design session, and added
+  to the MOSMIX list where a station exists (D81.2).
+- **D81.11 The data route is not decided.** A planning-chat estimate
+  (not checked): the hourly curve at both leads needs about 24 GRIB
+  files a day per lead, about 10 fields each, over about 1,950 days, so
+  about 470,000 byte-range requests and about 370 GB of downloads per
+  lead, about 750 GB for both. Downloads are decoded and discarded, not
+  stored. Session 89 therefore probes, read only: first, the
+  dynamical.org GFS forecast archive, which serves point time series
+  without whole global fields (planning-chat web search, 2026-10-02,
+  secondary: global, 25 variables, 0.25 deg, leads 0 to 384 h, inits
+  every 6 h, CC BY 4.0, processed from NOAA's Open Data Dissemination
+  archive), with a reproduction check against committed GRIB values on
+  spent-year dates; second, the measured cost of the GRIB route. Scope
+  cuts (fewer target hours, the 24-hour lead first, fewer years) and
+  running the GRIB pull inside AWS are options for later. Nothing is
+  chosen.
+- **D81.12 Session 89's plan.** Record this entry; the SPEC 6 edit; the
+  probe; record F131. Nothing from 2026-27 is read. Nothing is chosen.
+
+---
+
+## 2026-10-02: Session 89 finding: the stage C scoping probe
+
+**F131. Read-only stage C scoping probe (D81.11). Nothing was chosen. The dynamical.org GFS forecast archive was probed first, then the cost of the GRIB route, then hourly observations and daily-maximum sources. Main results: the archive holds only 4 of the 7 fields behind SPEC 8 in the same form (temperature, wind, radiation, pressure) (no 850 hPa temperature, no 2 m dew point, and its cloud cover is an average, not the record's instantaneous field); its first init is 2021-05-01; its values are stored rounded; a full point series would cost far more than the 5 GB limit, so some parts were run on a reduced sample. The GRIB route's cost came out close to D81.11's planning figure. Script: `scripts/session89_stage_c_scoping.py` (new; reads the network and committed files, prints, writes no data file; SHA-256 `0d65bd5ff6bdd8df74d658b89d40cf15a1e2ef4081a186fe98c9d75b1d705fab`). Full real output: `notes/session-89-output.txt`. Run 2026-10-02. Python 3.12.2.**
+
+**F131.1 Steps 0 to 2.**
+- `git status --porcelain` showed only `?? docs/session-89.md`. The last entries were D80 and F130; no D81 or F131 existed in either DECISIONS file; the script and the output file did not exist.
+- D81 was copied with `sed` from `docs/session-89.md` lines 102 to 165 to DECISIONS.md lines 2640 to 2703 (heading at 2638) and checked byte-equal with `diff`, before any other edit or network call.
+- SPEC 6's Stage B bullet gained the one sentence the prompt gives (git diff in the output file). Nothing else in SPEC changed.
+
+**F131.2 The dynamical.org archive, in brief (3.1.1; route: dynamical-catalog 1.0.1, anonymous Icechunk on S3; accessed 2026-10-02; tag verified unless stated).**
+- Dataset `noaa-gfs-forecast`, version 0.2.7, licence CC-BY-4.0, built from NOAA's open data archive (documentation only: STAC collection page). A second dataset, `noaa-gfs-forecast-virtual`, holds byte references into NOAA's own bucket; it was listed and not read.
+- **First init 2021-05-01 00:00 UTC.** Inits every 6 h; 7,664 inits from then to 2026-07-29T18 (all present, none missing). So the record's first 39 target days (2021-03-24 to 2021-05-01) have no init in the archive, at all six airports.
+- Leads: hourly 0 to 120 h, then 3-hourly to 384 h (209 steps). Every hour from 24 to 53 h is present.
+- Grid 0.25 degrees, 721 x 1440, latitude north to south, longitude -180 to 179.75 (same nodes as the record's 0 to 359.75 grid). Chunks: 1 init x 105 leads x 121 x 121 cells (30.25 degrees square), 5.9 MiB uncompressed, in shards of 1 x 210 x 726 x 726. Lead chunk 0 holds hours 0 to 104, so the 24 h lead, the 48 to 53 h lead and every target hour share a chunk.
+- 25 variables, listed in the output file. No pressure-level variable. Level 2 m, 10 m, 80 m, 100 m, surface, atmosphere and mean sea level only.
+- **Stored rounded** (documentation only: the dataset's own page and its source code on GitHub): mantissa bits kept are 7 for 2 m temperature, RH, cloud, radiation; 6 for 10 m wind; 10 for PRMSL and pressure. My arithmetic from that: 2 m temperature is stored on a 0.0625 degC grid at 8 to 16 degC and 0.125 degC at 16 to 32 degC; PRMSL on 0.64 hPa; DSWRF 4 W/m2 near 700; wind 0.125 m/s at 8 to 16 m/s.
+- Missing data: the validation report (documentation only, generated 2026-08-15) lists four incomplete inits, 2022-11-29 12Z and 18Z and 2022-11-30 00Z and 06Z, for every variable, from a NOAA index fault that also hit the record (F90, F116). The dataset's `ingested_forecast_length` coordinate is empty (NaT) for all 7,664 inits, so it cannot show completeness. Update policy: the report says missing hours "will be filled in if the index is corrected upstream"; no statement on later corrections of other values was found.
+
+**F131.3 Field match to SPEC 8 (3.1.2).**
+
+| SPEC 8 field (record) | archive variable | present | same definition? |
+|---|---|---|---|
+| 2 m temperature, instantaneous (TMP 2 m) | `temperature_2m`, degC, instant | yes | same; but stored rounded (F131.2) |
+| total cloud cover, instantaneous (TCDC, "N hour fcst", session 37) | `total_cloud_cover_atmosphere`, average over the previous 1 to 6 h, reset every 6 h | yes | **different** (average, not instantaneous). Not compared. |
+| 10 m wind, speed from u and v, km/h (u and v each interpolated) | `wind_u_10m`, `wind_v_10m`, instant | yes | same; stored at 6 bits |
+| 2 m dew point (DPT 2 m) | none | **absent** | The archive has `relative_humidity_2m` (the record also holds RH). A dew point could be derived from temperature and RH, which is a different calculation; not tested. |
+| 850 hPa temperature (TMP 850 mb) | none | **absent** | no pressure-level variable among the 25 |
+| downward shortwave at the surface (DSWRF; 6 h window at lead 24, 2 h at lead 26, de-accumulated to 2 h at lead 24) | `downward_short_wave_radiation_flux_surface`, average over the previous 1 to 6 h, reset every 6 h | yes | same windows as the GRIB message (the hourly leads give the 4 h value at f022, so the de-accumulation can be done); stored at 7 bits |
+| pressure behind `pressure_tendency_3h_hpa` (PRMSL at lead and lead minus 3 h) | `pressure_reduced_to_mean_sea_level`, Pa, instant | yes | same; stored at 10 bits (0.64 hPa) |
+| 6 h maximum and minimum 2 m temperature | `maximum_temperature_2m`, `minimum_temperature_2m`, "over the previous 1 to 6 h, reset every 6 h" | yes | A full 6 h window only at leads 24, 30, 36 and so on; at other leads the window is shorter. No committed value exists, so nothing was compared. |
+
+**F131.4 Reproduction check (3.1.3). Reduced sample; differences between two copies of the same GFS forecast; no pass or fail.** Dates: the 1st of every 5th month from 2021-06-01 to 2026-06-01, 13 dates per airport (**not** every month: see F131.9, readings 2 and 3), at each airport's own cycle and lead (EGLC and LFPG 12z lead 24; DSM 18z lead 24; YSDU 00z lead 26; RNO and KSFO 18z lead 26; each equals SPEC 3.4 and 7.2, checked in code). The archive value was formed as the record forms it (SPEC 8.8 G6, no elevation correction). Units: degC, km/h, %, hPa, W/m2. "Missing" columns: no row was missing on either side. Cloud, dew point and 850 hPa temperature were not compared (F131.3).
+
+| airport | field | rows | missing archive | missing committed | mean abs diff | largest abs diff | exact at 3 dp |
+|---|---|---|---|---|---|---|---|
+| EGLC | t2m | 13 | 0 | 0 | 0.0178 | 0.0448 | 0 |
+| EGLC | wind_kmh | 13 | 0 | 0 | 0.0428 | 0.0969 | 1 |
+| EGLC | rh2m | 13 | 0 | 0 | 0.0660 | 0.1953 | 0 |
+| EGLC | msl_hpa | 13 | 0 | 0 | 0.1465 | 0.2920 | 0 |
+| EGLC | msl_m3_hpa | 13 | 0 | 0 | 0.1724 | 0.2979 | 0 |
+| EGLC | tend | 13 | 0 | 0 | 0.1824 | 0.4410 | 0 |
+| EGLC | dswrf_lead | 13 | 0 | 0 | 0.4708 | 1.7650 | 0 |
+| EGLC | dswrf_m2 | 13 | 0 | 0 | 0.2127 | 0.9550 | 0 |
+| EGLC | dswrf_2h | 13 | 0 | 0 | 1.3183 | 5.4784 | 0 |
+| LFPG | t2m | 13 | 0 | 0 | 0.0169 | 0.0486 | 1 |
+| LFPG | wind_kmh | 13 | 0 | 0 | 0.0211 | 0.0456 | 0 |
+| LFPG | rh2m | 13 | 0 | 0 | 0.0493 | 0.1134 | 0 |
+| LFPG | msl_hpa | 13 | 0 | 0 | 0.1013 | 0.2503 | 0 |
+| LFPG | msl_m3_hpa | 13 | 0 | 0 | 0.1286 | 0.2679 | 0 |
+| LFPG | tend | 13 | 0 | 0 | 0.1612 | 0.2715 | 0 |
+| LFPG | dswrf_lead | 13 | 0 | 0 | 0.3337 | 1.3520 | 0 |
+| LFPG | dswrf_m2 | 13 | 0 | 0 | 0.1228 | 0.4110 | 0 |
+| LFPG | dswrf_2h | 13 | 0 | 0 | 0.8425 | 3.2350 | 0 |
+| DSM | t2m | 13 | 0 | 0 | 0.0102 | 0.0308 | 2 |
+| DSM | wind_kmh | 13 | 0 | 0 | 0.0252 | 0.0466 | 0 |
+| DSM | rh2m | 13 | 0 | 0 | 0.0490 | 0.1526 | 0 |
+| DSM | msl_hpa | 13 | 0 | 0 | 0.1257 | 0.2390 | 0 |
+| DSM | msl_m3_hpa | 13 | 0 | 0 | 0.0824 | 0.2056 | 0 |
+| DSM | tend | 13 | 0 | 0 | 0.1237 | 0.2770 | 0 |
+| DSM | dswrf_lead | 13 | 0 | 0 | 0.3908 | 1.5092 | 0 |
+| DSM | dswrf_m2 | 13 | 0 | 0 | 0.1623 | 0.3828 | 0 |
+| DSM | dswrf_2h | 13 | 0 | 0 | 1.1450 | 4.0290 | 0 |
+| YSDU | t2m | 13 | 0 | 0 | 0.0245 | 0.0546 | 1 |
+| YSDU | wind_kmh | 13 | 0 | 0 | 0.0207 | 0.0449 | 0 |
+| YSDU | rh2m | 13 | 0 | 0 | 0.0371 | 0.0832 | 1 |
+| YSDU | msl_hpa | 13 | 0 | 0 | 0.0899 | 0.2204 | 0 |
+| YSDU | msl_m3_hpa | 13 | 0 | 0 | 0.0943 | 0.1900 | 0 |
+| YSDU | tend | 13 | 0 | 0 | 0.1055 | 0.3009 | 0 |
+| YSDU | dswrf_lead | 13 | 0 | 0 | 0.6177 | 1.5379 | 0 |
+| YSDU | dswrf_2h | 13 | 0 | 0 | 0.6177 | 1.5379 | 0 |
+| RNO | t2m | 13 | 0 | 0 | 0.0181 | 0.0473 | 1 |
+| RNO | wind_kmh | 13 | 0 | 0 | 0.0141 | 0.0379 | 1 |
+| RNO | rh2m | 13 | 0 | 0 | 0.0350 | 0.0875 | 0 |
+| RNO | msl_hpa | 13 | 0 | 0 | 0.1010 | 0.2439 | 0 |
+| RNO | msl_m3_hpa | 13 | 0 | 0 | 0.1481 | 0.2471 | 0 |
+| RNO | tend | 13 | 0 | 0 | 0.1827 | 0.4320 | 0 |
+| RNO | dswrf_lead | 13 | 0 | 0 | 0.6005 | 1.6731 | 0 |
+| RNO | dswrf_2h | 13 | 0 | 0 | 0.6005 | 1.6731 | 0 |
+| SFO | t2m | 13 | 0 | 0 | 0.0119 | 0.0368 | 0 |
+| SFO | wind_kmh | 13 | 0 | 0 | 0.0199 | 0.0506 | 0 |
+| SFO | rh2m | 13 | 0 | 0 | 0.0433 | 0.0879 | 0 |
+| SFO | msl_hpa | 13 | 0 | 0 | 0.1389 | 0.2650 | 0 |
+| SFO | msl_m3_hpa | 13 | 0 | 0 | 0.0678 | 0.2060 | 1 |
+| SFO | tend | 13 | 0 | 0 | 0.0900 | 0.2538 | 0 |
+| SFO | dswrf_lead | 13 | 0 | 0 | 0.4075 | 1.1492 | 0 |
+| SFO | dswrf_2h | 13 | 0 | 0 | 0.4075 | 1.1492 | 0 |
+
+Reading: the 2 m temperature differences are 0.010 to 0.025 degC on average and at most 0.055, at the size the stored rounding gives. Exact matches at 3 decimals are rare (1 or 2 of 13 at most), as the rounding predicts. Pressure differs by 0.07 to 0.17 hPa on average, so the 3 h tendency differs by 0.09 to 0.18 hPa on average and up to 0.44. The de-accumulated 2 h radiation at the three lead-24 airports differs by 0.8 to 1.3 W/m2 on average (up to 5.5), larger than the lead-26 airports' 0.4 to 0.6, because the de-accumulation multiplies the rounding. **Second cycle and lead (leads 48 to 53 h):** the committed GRIB files hold one lead per airport (24 at EGLC, LFPG and DSM; 26 at YSDU, RNO and KSFO), so no committed value exists at another lead or cycle: skipped, as the prompt directs.
+
+**F131.5 Speed and size, and the two extrapolations (3.1.4, 3.2). All figures here are ESTIMATES unless marked measured.**
+
+*dynamical.org, one series (2 m temperature at EGLC, the four surrounding points, leads 24 to 53 h).* The full read is every init from 2021-05-01 to 2026-07-29T18, 7,664 inits, one inner chunk each. Its size from the shard indexes (61 inits spread over the archive): mean 1.33 MB per chunk, so about 10.2 GB for the series, **above the 5 GB limit**. So a strided read was done instead: every 24th init, 320 inits, 38,400 values. **Measured:** 1,031 s (3.22 s per chunk read), about 428 MB (from the shard indexes; the library reports no bytes), 0 errors. Extrapolated by 23.95: about 412 min and 10.2 GB for the one series.
+
+*dynamical.org, all fields present, both leads, all six airports.* The six airports' boxes touch 5 distinct spatial chunks (EGLC (1,5), LFPG (1,6), DSM (1,2), YSDU (4,10), RNO and SFO (1,1); latitude chunk, longitude chunk). Each read is one init x one spatial chunk x one variable, and serves every hour and both leads. Mean compressed chunk size over 25 inits x 5 chunks: temperature 1.57 MB, wind u 2.14, wind v 2.17, PRMSL 0.50, DSWRF 1.28, total cloud 1.36 (costed for completeness). For 7,664 inits x 5 chunks = 38,320 reads per variable: 60, 82, 83, 19, 49 and 52 GB. **Total six variables: 229,920 chunk reads, about 346 GB compressed** (about 294 GB without the cloud row). At 3.22 s per sequential read: about 206 h. Dew point and 850 hPa temperature cannot come from this archive.
+
+*GRIB route (noaa-gfs-bdp-pds, 2024-03-14 runs, byte ranges as the record does).* All 132 `.idx` files f021 to f053 for the four cycles answered 200 (f024 to f053 asked; f021 to f023 added because the pressure tendency needs the lead minus 3 h hour). **Every one of the 8 fields is present in every file at every hour, in all four cycles; no hour has a field missing.** DSWRF's window is not constant: at f024, f030, f036, f042 and f048 it is a 6 h average, at f026 a 2 h average, and so on, resetting every 6 h, the same in all four cycles (full list in the output file). **Measured fetch:** 208 messages (24 files x 8 fields = 192, PRMSL at f021 to f023 for 4 cycles = 12, DSWRF at f022 for 4 cycles = 4), all well formed (GRIB marker, edition 2, length field equal to the bytes, end marker 7777; nothing decoded), 177.7 MB (the limit is 500 MB), 279 s, mean 1.34 s per message request (max 8.45), mean 0.55 s per `.idx` request, mean message 854 kB. Extrapolation, one global field serves all airports: 208 messages and 36 `.idx` files per day per lead; 1,956 days (2021-03-24 to 2026-07-31); two leads (the 48 h lead has the same file structure but was not fetched): **813,696 message requests plus 140,832 `.idx` requests = 954,528 requests; 695 GB (348 GB per lead); 324 h of sequential time at the measured rate** (the record used 48-way concurrency, F90; not measured here).
+
+*Side by side with D81.11's planning figure (about 470,000 requests, 370 GB per lead, 750 GB for both; not checked).* GRIB: 954,528 requests (twice the planning count, because it counts the pressure and radiation extra hours and the `.idx` files), 348 GB per lead, 695 GB for both: close on bytes. dynamical.org: 229,920 chunk reads and about 346 GB for all six variables at five airports' chunks, which is about half the GRIB bytes and a quarter of the requests, but with 4 of 7 fields in the same form and rounded values (F131.2, F131.3).
+
+**F131.6 Hourly observations (3.3, counts only, committed files).** For each airport the six yearly routine files (report_type 3, UTC, columns `tmpc` and `dwpc` only; no raw METAR text) hold every hourly report, 46,734 to 46,937 rows from 2021-03-24 (RNO's first report is 05:55) to 2026-07-31. Usual minute: EGLC :50, LFPG :00 (95 rows at :30), DSM :54, YSDU :00 (177 rows at :30), RNO :55, SFO :56. Days (of 1,956) with at least one usable report within 15 minutes of every one of the 24 whole hours: EGLC 1,933, LFPG 1,875, DSM 1,946, YSDU 1,690, RNO 1,930, SFO 1,931. The 24-row count for each airport (hour, days) is in the output file; the hour counts run from 1,926 to 1,956 at EGLC, LFPG, DSM, RNO and SFO, and from 1,928 to 1,942 at YSDU. All hours are already committed; the query is each file's `.meta.txt` URL. Nothing was fetched.
+
+**F131.7 Daily-maximum sources (3.4).**
+
+| airport | METAR 6 h and 24 h maximum groups | official daily climate maximum | maximum of the hourly reports: UTC window of the local standard-time day |
+|---|---|---|---|
+| EGLC | not counted (no METAR text committed); US-style groups are a US practice (secondary: Wikipedia METAR page), so none expected: unknown | unknown (not read) | 00:00 to 24:00 UTC (standard offset +0) |
+| LFPG | as EGLC | unknown (not read); SYNOP groups carry a maximum "over the past day" in the one example read (secondary: Wikipedia SYNOP page); its exact window is unknown | 23:00 to 23:00 UTC (+1) |
+| DSM | not counted (needs the `metar` field, F131.6); the US groups exist per the secondary source | NWS climate report (CLI): day window and archive not read: unknown | 06:00 to 06:00 UTC (-6) |
+| YSDU | as EGLC | unknown (not read) | 14:00 to 14:00 UTC (+10) |
+| RNO | as DSM | as DSM | 08:00 to 08:00 UTC (-8) |
+| SFO | as DSM | as DSM | 08:00 to 08:00 UTC (-8) |
+
+IEM's download page (documentation only) lists "Raw METAR" and no 6 h or 24 h maximum field, so counting the groups needs the raw text. The NWS directive PDF could not be read here (no PDF text tool, none may be installed), and no page was read for Meteo-France, the UK Met Office or the Bureau of Meteorology: those cells are unknown, not findings. A day window is a stage C choice; none is made here.
+
+**F131.8 Notes for the owner, not decisions.**
+- L (850 hPa temperature) and D (dew point) cannot come from the dynamical.org archive, and its cloud cover is a different field; the recipe's source for them would remain NOAA's GRIB.
+- The archive's rounding (F131.2) is coarse for the pressure tendency (3 h change of a field stored at 0.64 hPa) and for the de-accumulated radiation.
+- The archive's first init, 2021-05-01, costs 39 training days at every airport.
+- A point time series from the archive is slow and large, because each chunk is one init and a 30-degree square: 7,664 reads per variable and chunk. Running it from inside AWS us-west-2 was not measured.
+- The 2022-11-29 12Z to 2022-11-30 06Z hole is in both routes.
+
+**F131.9 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. The dataset probed is `noaa-gfs-forecast`, the materialised copy. The "virtual" copy was listed and not read.
+2. **The first reproduction run hung and was killed.** It was started 2026-10-02 about 11:09 UTC for all 63 monthly dates; after its line for 48 of 63 dates (about 2.7 GB read) the process sat at 0% CPU for hours (the machine's clock also jumped, so it may have slept) and was killed. Its in-memory results were lost. With about 3.7 GB then spent of the 5 GB limit, a rerun of all dates did not fit. The rerun used **every 5th monthly date (13 of 63, 2021-06-01 to 2026-06-01), which covers all 12 calendar months over the five years but is fewer rows than the prompt asked for**, with a graceful stop added at the byte budget. The code was changed (loop order, `--date-step`, a budget stop that prints what was read) between the trial and the runs; the output file lists all runs.
+3. Because 2021-05-01 is not in the reduced set, no table row shows the archive missing an init; that is shown by the metadata (F131.2).
+4. Reproduction rows added beyond the prompt's list: 2 m relative humidity (as the archive's only moisture field), PRMSL at the lead and at the lead minus 3 h, and the DSWRF average to the lead, to lead minus 2 h and the 2 h value. The tendency is formed from the archive's full-precision values (the record rounds each pressure to 3 decimals first).
+5. Bytes are estimated from the shard indexes (the compressed size of each inner chunk touched, plus the index reads); the library reports none. The 5 GB limit is taken as 5 x 10^9 bytes. Total spent, about 4.0 to 4.1 GB: trial 0.12, killed run about 2.7 to 2.8 (its last log line, 2,715 MB, is a lower bound), reduced run 0.72, speed test 0.43.
+6. The speed test used EGLC, a strided read (every 24th init) and the extrapolation by the stride. The all-fields estimate uses mean chunk sizes from 25 inits and counts each variable's reads for all 7,664 inits and 5 chunks.
+7. The 24 h lead GRIB plan costs the record's messages: the 8 fields at f024 to f029, PRMSL at f021 to f023 and DSWRF at f022 only (the lead-24 airports' de-accumulation). How radiation would be handled at leads 25, 27, 28 and 29 is a stage C design question and was not costed. The 48 h lead was assumed to have the same structure.
+8. The xarray open reads the full init axis, so labels after 2026-07-29T18 were in memory (axis labels, not forecast values). Only the last label was printed (2026-10-02T00:00) as the archive's last init. No forecast value after 2026-07-31T23:00 was read, printed or used.
+9. The hour assignment for observations follows SPEC 8.8 G2 and G3 (nearest whole hour, :30 goes up, 15 minutes inclusive); counts are over target days 2021-03-24 to 2026-07-31 and use the six yearly routine files only.
+10. The mantissa-bit settings come from the project's source code on GitHub (documentation only); the spacing figures are my arithmetic.
+11. Some pages were read by plain download and tag-stripping (not a summarising tool). The quoted web text in the output file contains a few em-dashes; they are the sources' own.
+
+**F131.10 Records, installs, requests, bytes, clean-up.**
+- Packages, in a throwaway virtual environment inside the temporary directory: dynamical-catalog 1.0.1, xarray 2026.9.0, zarr 3.4.0, icechunk 2.2.2, numpy 2.5.3, pandas 3.0.6, fsspec 2026.9.0, and their dependencies (listed in the output file). The project's environment and `requirements.txt` were not touched.
+- dynamical.org: at least 2,550 chunk reads (trial 72, killed run at least 1,692, reduced run 468, speed test 320) and several hundred shard-index reads (312 in the reduced run; the others not all counted), about 4.0 to 4.1 GB estimated (F131.9, item 5). GRIB: 132 `.idx` and 208 byte-range requests, 183,116,897 bytes (5.45 MB of `.idx`, 177.7 MB of messages), one connection at a time. About 14 documentation pages were downloaded (a few more than once while testing). No account, key or email parameter was used.
+- **The temporary directory (with the virtual environment and the 208 downloaded GRIB messages, deleted by the script after the check) was deleted at the end; the path no longer exists.**
+
+**F131.11 What this did not do.**
+- No forecast valid after 2026-07-31T23:00 UTC and no init after 2026-07-29T18:00 was read; no observation after 2026-07-31 was read. Nothing from 2026-27 was read.
+- No score: no error, MAE or skill of any forecast against an observation, on any year. The only comparisons were between the archive and the committed copy of the same GFS forecast, on spent-year dates.
+- No observed temperature value was printed, summarised or recorded; observations were counted only.
+- No raw forecast value was printed.
+- No account, key, token, paid tier, contact or data request. Nothing written under `data/`; `data/models/` was not touched.
+- No existing script was edited. The project's environment and `requirements.txt` were not touched. RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited; SPEC was edited only as Step 2 says.
+- No choice of data route, daily-maximum definition, airport or any other stage C design. Nothing was committed and no commit message was written.
