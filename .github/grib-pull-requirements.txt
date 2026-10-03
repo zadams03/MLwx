@@ -1,0 +1,21 @@
+# Pinned packages for the stage C GRIB pull on GitHub Actions
+# (.github/workflows/stagec-grib-pull.yml; DECISIONS D83, session 91).
+# The same versions as the local run of session 91 (Python 3.12.2, macOS).
+# Installed with --no-deps, so nothing outside this list is installed.
+#
+# eccodes is the Python interface. It needs the ecCodes C library, which on
+# Linux comes from the eccodeslib wheel (manylinux_2_28 x86_64), which in turn
+# needs eckitlib. Both wheels exist on PyPI for CPython 3.12 on Linux.
+eccodes==2.48.0
+eccodeslib==2.48.0.26
+eckitlib==2.1.1.26
+findlibs==0.1.3
+attrs==26.1.0
+cffi==2.1.1
+pycparser==3.0
+numpy==2.5.2
+requests==2.34.2
+urllib3==2.7.0
+certifi==2026.7.22
+idna==3.19
+charset-normalizer==3.5.1
