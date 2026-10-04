@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 3 October 2026, after session 91._
+_Last updated: 4 October 2026, after session 92._
 
 ---
 
@@ -22,9 +22,9 @@ maximum. The horizon is 24 hours first and 48 hours later. Then a choice of
 which weather model is corrected, plus a blend, and probabilistic ranges.
 
 **The roadmap (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C is
-open: its design is set (D82, D83) and its GRIB pull is built and gated
-(F133). Then stages D to H. New airports are an ongoing track, and pooling
-is conditional.
+open: its design is set (D82, D83), its GRIB pull is built and gated (F133),
+and its first month is published and verified (F134). Then stages D to H.
+New airports are an ongoing track, and pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
 It is pre-registered, its models are frozen, and all three 2026-27 scripts
@@ -50,18 +50,31 @@ km; the saver session decides whether the list grows.
 **Stage C.**
 - **Design (D82.3 to D82.8, D83.2 to D83.5).** Every GFS cycle, forecast
   hours 0 to 24 first (25 to 48 later, by an additive pull with the same
-  script). Raw values at the four grid points around each airport, ten
-  fields, 2021-03-24T00 to 2026-07-31T23 UTC only, by monthly chunk on GitHub
+  script, starting at cycle 2021-03-22T12, the first GFS v16 run, D84.2).
+  Raw values at the four grid points around each airport, ten fields,
+  2021-03-24T00 to 2026-07-31T23 UTC only, by monthly chunk on GitHub
   Actions, published as Release files. The pull list is 51 airports (D82.6's
   47 plus LFPG, DSM, YSDU, RNO); development airports at SPEC 3.4's grid
   point, the others at IEM's position. Daily maximum: local day, 22 of 24
   usable hours.
-- **The pull: built and gated (F133).** `scripts/session91_grib_pull.py`,
+- **The pull (F133, F134).** `scripts/session91_grib_pull.py`,
   `data/processed/session91_pull_airports.csv` and
-  `.github/workflows/stagec-grib-pull.yml`. Test chunk gate: run 1, 18 of 18
-  station-days (pre-fix script); run 2, the fixed script end to end on
-  2024-04-12, 6 of 6. The workflow has not run; nothing is pushed or
-  published. Estimates: about 1.5 TB downloaded and about 1.3 GB kept.
+  `.github/workflows/stagec-grib-pull.yml`. F133's readings are accepted
+  (D84.1). **Month 2022-01 is published** on the Release
+  `stagec-grib-pull-v1` (run on Actions, 8 min 25 s, D84.3) **and verified**
+  (F134): the files equal the Release and the meta, all 13 checks pass, and
+  the extended gate passed 93 of 93 station-days at EGLC, LFPG and DSM,
+  exact equality (the first check that Actions' Linux ecCodes decodes as the
+  Mac did). The lead-26 airports are not gated by an f000 to f024 extract.
+- **The verify step (D84.4).** `scripts/session92_verify_chunk.py` now runs
+  in the workflow after each month's pull and before upload; a failing month
+  publishes nothing and is retried by starting the run again. "idx missing"
+  messages do not fail a month; their count is printed. The step has not yet
+  run on Actions.
+- **Estimates (F134.5, from 2022-01).** About 8 min a month on Actions;
+  about 2.2 h for the remaining 64 months at four at once; about 1.69 TB
+  downloaded and about 1.30 GB kept in all; 195 Release assets when
+  complete.
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
 - **Not decided (D82.5).** One model with lead time as an input or one per
@@ -81,24 +94,24 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F133.9's readings.** The owner confirms or changes them. The largest: a
-  fifth mode `--positions`; retries read as 5 after the first try; a
-  missing `.idx` line is "check failed"; a missing grid value fails the
-  whole message; Python "3.12" on Actions; the spot-check airports.
-- **The f025 to f048 pull's first cycles (F133.9 note).** Cycles
-  2021-03-22T00 and T06 would be needed; whether they are GFS v16 is to be
-  checked before that pull.
+- **F134.7's readings.** The owner confirms or changes them. The largest:
+  two checks beyond D84.4's list ("layout" and "statuses", both failing a
+  month); the extended gate as a local-only `--gate` option of the
+  verifier; the speed projection's method; the workflow's header comment
+  and publish-step name left unchanged, so they do not mention the verify
+  step.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D83.7).** Still no Service Change Notice as of 2026-10-03
-  (planning-chat check; the newest SCN listed is SCN 26-87, 2026-09-22). With
-  30 days' notice the earliest go-live is about 2 November 2026. Re-check at
-  each planning session. The go-live date sets period A's length. PNS 26-30's
-  statement that the 0.25 degree GRIB2 files remain is to be confirmed
-  against the SCN (D73.4).
+- **GFS v17 (D84.6).** As of 2026-10-04 (planning-chat check) no GFS v17
+  Service Change Notice was found. EMC's GFSv17 evaluation page (last updated
+  5 June 2026) gives the implementation as Q1 FY27 (October to December
+  2026). With 30 days' notice the earliest go-live is about 3 November 2026.
+  Re-check at each planning session. The go-live date sets period A's
+  length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
+  to be confirmed against the SCN (D73.4).
 - **EGLC position note (D81.6).** DWD's cfg places P0478 west of the
   airport; F132.5 confirms the station is 7.69 km away as listed and 2.47 km
   with the sign flipped. This matters only for a later MOSMIX comparison.
@@ -124,4 +137,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 91 and the gate. If it passed, the owner pushes and runs one month on GitHub Actions (D83.5(g)); then plan session 92: verify that month's extract, speed and size before the rest is started. Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 92 and the extended gate. If it passed, the owner commits and pushes, runs 2021-03 alone on GitHub Actions and checks its verify step passed (D84.5), then starts 2021-04..2026-07; then plan the session that downloads and checks all 65 months. Re-check GFS v17 (D81.7).

@@ -3215,3 +3215,105 @@ scored.
 **F133.10 Requests, bytes, clean-up.** GRIB requests 4,821 and 3,410,709,377 B (survey 27, positions 2, run 1 3,528, run 2 1,176, the two failure tests 44 each), under the 4.5 x 10^9 limit; plus 5 PyPI metadata reads (bytes not counted). No message was written to disk. **The temporary directory (all extracts) was deleted; the path no longer exists.**
 
 **F133.11 What this did not do.** No observation was read; no score, error, MAE, bias or skill was computed; nothing from 2026-27 was requested or read; no forecast value was printed (the gate had no mismatch); no push, workflow run, `gh` call or Release; no account or token; no committed file under `data/` was changed and `data/models/` was not touched; no existing script was edited; nothing was installed; SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md were not edited. Nothing was committed and no commit message was written.
+
+---
+
+## 2026-10-04: Session 92 decision: F133 accepted, the first Actions month, and the bad-month check (owner, planning chat)
+
+**D84. Owner decisions, planning chat (after session 91): F133
+accepted, the f025 to f048 start cycle, the first Actions month, the
+bad-month check, the next run, and GFS v17.** Written at the start of
+session 92, before any other edit or network call. No 2026-27 value
+has been read or scored.
+
+- **D84.1 F133 accepted.** The owner accepts F133 and all fourteen
+  F133.9 readings.
+- **D84.2 The f025 to f048 pull starts at cycle 2021-03-22T12.** GFS
+  v16 began with the 12z run of 2021-03-22 (NWS SCN 21-20, updated, 18
+  March 2021). Cycles 2021-03-22T00 and T06 are GFS v15 and are not
+  used. This settles F133.9's note.
+- **D84.3 The first Actions month.** After session 91 was committed
+  and pushed, the owner ran month 2022-01 on GitHub Actions. The run
+  succeeded in 8 min 25 s (the run time GitHub shows). The Release
+  "Stage C GRIB pull" holds its three files, which the owner downloaded
+  to `/Users/zacharyadams/Coding Projects/MLwx-pull/`, outside the
+  repo. Session 92 verifies them (D83.5(g)).
+- **D84.4 The bad-month check (owner's choice, option b).** Today a
+  month whose messages are mostly "check failed" would publish with
+  empty values (never filled, but not flagged). So a verifier runs in
+  the workflow after the chunk and before upload. It fails the month,
+  and nothing is published, if: any count differs from the plan
+  (cycles, files, messages, rows); any message is "check failed"; any
+  message is "absent by design" other than DSWRF, TMAX and TMIN at
+  f000, or any of those is not; any key is duplicated; an ok message
+  has an empty or non-finite value; a non-ok message has any value; or
+  the meta's SHA-256 values do not match the files. "idx missing"
+  messages do not fail the month: they are published, left empty, and
+  their count is printed in the job log. Because the pull is
+  resumable, a failed month is retried by starting the run again.
+- **D84.5 The next run.** After session 92 is reviewed and committed,
+  the owner runs month 2021-03 alone: it is the partial first month
+  (from 2021-03-23T00, 840 files) and the first live test of the
+  verify step. If it succeeds and its verify step passed, the owner
+  starts 2021-04 to 2026-07 (2022-01 is already published and is
+  skipped).
+- **D84.6 GFS v17 (planning-chat check, 2026-10-04, not checked by
+  this session).** The planning chat could not load the NWS notices
+  page; a web search found no GFS v17 Service Change Notice. EMC's
+  GFSv17 evaluation page (last updated 5 June 2026) gives the
+  implementation as Q1 FY27 (October to December 2026). With 30 days'
+  notice, the earliest go-live is about 3 November 2026.
+
+---
+
+## 2026-10-04: Session 92 finding: the 2022-01 Actions extract and the verify step
+
+**F134. The 2022-01 month pulled on GitHub Actions (D84.3) is intact and complete: its three local files equal the Release assets and the meta, and all 13 verifier checks pass (124 cycles, 3,100 files, 30,628 messages, 372 absent by design, 158,100 points rows, 0 check failed, 0 idx missing). The extended gate passed: 93 of 93 station-days at EGLC, LFPG and DSM, all seven columns equal, exact equality. This is the first check that the Linux ecCodes build on Actions decodes exactly as the owner's Mac did. A verify step now runs in the workflow before upload (D84.4). Script: `scripts/session92_verify_chunk.py` (new; the D84.4 checks, plus local-only `--ranges` and `--gate`; SHA-256 `f61136a88ec1b787d84d083d887008af669595cc62a63e920639a737686a1955`). Workflow: `.github/workflows/stagec-grib-pull.yml`, new SHA-256 `804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6`. Full real output: `notes/session-92-output.txt`. Run 2026-10-04. Python 3.12.2, eccodes 2.48.0 (ecCodes library 2.48.0), numpy 2.5.2, requests 2.34.2.**
+
+**F134.1 Steps 0 to 2.**
+- `git status --porcelain` showed only `?? docs/session-92.md`. The last entries were D83 and F133; no D84 or F134 existed in either DECISIONS file; the verifier did not exist. SHA-256 equal to F133: the pull script (`72c263b2...652e`), the workflow (`f3e05c9a...19a0`), the requirements file (`6ebf1b26...6f51`) and the positions file (`cf86c692...fd08`); and to F122.3: `session81_training_set.csv` (`ab8f25f2...8d4a`). `MLwx-pull/` held exactly the three expected files and nothing else. Read: D47, D83, F128.2, F133; SPEC 3.4, 7.2, 8.7, 8.8; the pull script and the workflow in full.
+- D84 was copied with `sed` from `docs/session-92.md` lines 102 to 144 into DECISIONS.md lines 3223 to 3265 (heading at 3221) and checked byte-equal with `diff`, before any other edit or network call.
+- Local files (SHA-256, bytes): `gfs_points_2022-01.csv.gz` `e9d9d885cc918073c0c788371dc275e5719f5369077b0d78374efd9ca8ece130`, 19,850,481; `manifest_2022-01.csv.gz` `4789354a079b59b19970da515699cd4d29e4dbe19daa8962893ebbe99b570ff1`, 786,619; `chunk_2022-01.meta.txt` `9bf877998057505812a4ea38cdf6e432716d5a7159e29c0954c815f676a1db4e`, 1,360.
+- Meta (in full in the output file): both data-file SHA-256 values equal the local files'; script SHA-256 equals F133's final (`72c263b2...652e`); positions SHA-256 equals the committed file's; arguments `--chunk --month 2022-01 --hours 0-24 --out out --workers 16` (16 workers). Recorded versions: Python 3.12.14, eccodes 2.48.0, ecCodes library 2.48.0, numpy 2.5.2, requests 2.34.2. Run 2026-10-03T18:26:55Z to 18:35:01Z, 486.5 s; retries 0; HTTP 404 0.
+- Release (GitHub REST API, unauthenticated, one request, 2026-10-04T11:33:09Z): `zadams03/MLwx`, tag `stagec-grib-pull-v1`, title "Stage C GRIB pull", not draft, not prerelease, published 2026-10-03T18:35:03Z. Three assets, each with a `digest`: all three sizes and SHA-256 digests equal the local files exactly.
+
+**F134.2 The verifier (Step 3).** `--dir DIR --month YYYY-MM --hours A-B`. It imports from `session91_grib_pull.py` (read-only; not edited): the plan (`parse_month`, `month_cycles`, `plan_chunk`, `expected_messages`, `selector`), `FIELDS`, the column lists, `STATUSES`, `read_positions`, `sha256_file`, `write_gz` (tests only) and, for `--gate`, `load_airports`, `bilinear_stored`, `derive`, `window_start`, `DEV` and `GATE_COLS`. Nothing is typed in. Thirteen named checks, each printing expected, found and PASS or FAIL: layout, cycles, files, manifest rows, messages, points rows, statuses, check failed, absent by design, duplicate keys, ok values, non-ok values, meta sha256. The two value checks read both files fully and reconcile them. It prints the "idx missing" count and exits 0 only if all 13 pass. `--ranges` and `--gate` are local-only and never fail rules.
+
+**F134.3 2022-01 (Step 4).** The plan's own output (`session91_grib_pull.py --plan`) for 2022-01 is 124 cycles, 3,100 files, 30,628 messages, as the prompt expected.
+
+| check | expected | found | result |
+|---|---|---|---|
+| cycles | 124 | 124 in each file, the plan's set | PASS |
+| files | 3,100 | 3,100 in each file, the plan's set | PASS |
+| manifest rows | 31,000 (3,100 x 10) | 31,000, the plan's keys | PASS |
+| messages (not absent by design) | 30,628 | 30,628 | PASS |
+| points rows | 158,100 (3,100 x 51) | 158,100, the plan's keys | PASS |
+| check failed | 0 | 0 | PASS |
+| absent by design | 372 (DSWRF, TMAX, TMIN at f000) | 372, none extra, none lacking | PASS |
+| duplicate keys | 0 | 0 and 0 | PASS |
+| ok values | 6,248,112 cells filled and finite | 0 bad | PASS |
+| non-ok values | 75,888 cells empty | 0 filled | PASS |
+| meta sha256, layout, statuses | equal; session 91's columns; four statuses | as expected | PASS |
+
+"idx missing": 0. Ranges (`--ranges`; units as GRIB gives them): 0 values outside the bounds in every field (632,400 values each for t2m, tcdc, u10, v10, d2m, t850, prmsl; 607,104 for dswrf, tmax2m, tmin2m); the per-field minimum and maximum are in the output file. Read-back: 6,248,112 value cells, 0 whose `repr(float(s))` differs from the stored string. Negative tests on copies in one `mktemp -d` directory (copies re-gzipped with the script's own `write_gz`; an unchanged round trip gave identical bytes): untouched copy exit 0, 13 of 13; (a) ok to "check failed": exit 1, "check failed" fails (and "non-ok values", since the message's cells stay filled); (b) a points row deleted: exit 1, "points rows"; (c) a points row duplicated: exit 1, "duplicate keys" and "points rows"; (d) a cell emptied in an ok message: exit 1, "ok values"; (e) a cell filled in an absent-by-design message: exit 1, "non-ok values"; (f) absent by design to ok: exit 1, "absent by design" (and "messages" and "ok values"); (g) the meta's points SHA-256 changed by one character: exit 1, "meta sha256" only. The originals' SHA-256 were unchanged after the tests.
+
+**F134.4 The extended gate (Step 5). PASSED.** `--gate`, session 91's arithmetic imported, F133.7's operation order (bilinear on the four stored values, then `derive`). EGLC and LFPG 12z lead 24, DSM 18z lead 24 (F128.2), target dates 2022-01-02 to 2022-02-01: 93 station-days, all rebuilt and compared. Every one of the seven columns 93 of 93; every airport 31 of 31 station-days and 217 of 217 values; mismatches 0; no committed row 0; not rebuilt 0. Exact equality, no tolerance. The training set was read with an explicit list of nine columns (station, target date, the seven compared columns). **YSDU, RNO and KSFO use lead 26, which an f000 to f024 extract does not hold, so they are not gated here.**
+
+**F134.5 Speed and size (Step 6).** Measured (meta and D84.3): the chunk took 486.5 s of the run's 8 min 25 s (505 s); 6.37 files/s, 63.0 messages/s; 26,767,295,507 B downloaded (125,901,291 `.idx`, 26,641,394,216 messages), 55.0 MB/s; kept 20,638,460 B (points 19,850,481, 125.6 B a row; manifest 786,619; meta 1,360). **ESTIMATES** for the remaining 64 months (192,500 files and 1,901,900 messages, each month's counts from the plan), at 2022-01's rates: downloads about 1.66 TB (about 1.69 TB for all 65 months); kept about 1.28 GB (about 1.30 GB for all 65); a full month's job about 8.4 min, 2021-03's (840 files) about 2.5 min; wall time at four at once, in month order, about 2.2 h (8.7 h of job time). The Release will hold 195 assets (65 x 3). Against F133.8 (local rate): downloads 1.69 TB against about 1.52 TB; kept about 1.30 GB against about 1.26 GB (1.21 GB points plus 50 MB manifests); a full month 20.6 MB against 19.9 MB; time about 8 min a month against 83 min, so about 2.2 h at four at once against 87 h in sequence locally.
+
+**F134.6 The workflow (Step 7).** One step added to the per-month job, after "Pull one month" and before "Publish": `python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours 0-24`. A non-zero exit fails the job, so the publish step is not reached. Nothing else changed (diff in the output file). PyYAML is not installed: not parsed. New SHA-256 `804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6`. Verifier SHA-256 `f61136a88ec1b787d84d083d887008af669595cc62a63e920639a737686a1955`. The step is first tested live by the owner's 2021-03 run (D84.5).
+
+**F134.7 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. "Messages" is the plan's message count, the manifest rows not absent by design (30,628); the manifest's row count (31,000, one per file and field) is a separate check.
+2. Each count check also requires the set of keys (cycles; cycle and hour; cycle, hour and field; cycle, hour and airport) to equal the plan's, not only the count.
+3. Two checks beyond D84.4's list, both failing the month: "layout" (the two headers are session 91's columns; if not, the run stops, since nothing else can be read) and "statuses" (every status is one of session 91's four). Session 91's code cannot produce either failure.
+4. "ok values" also fails if a points row's field has no manifest row; a cell that does not read as a number counts as non-finite.
+5. The Step 5 gate is a third, local-only option (`--gate`) of the verifier, so its code is committed; the prompt allows one new script.
+6. `--gate` gates the development airports whose lead lies inside `--hours`, at every cycle in the month at that airport's cycle hour (target date = cycle date plus one day), and needs every message it uses to be "ok" in the manifest, not only non-empty.
+7. Speed: MB is 10^6 bytes. The projection adds the run's 18.5 s outside the chunk to every month's job; bytes scale with messages (and `.idx` bytes with files), kept size with rows; wall time is list scheduling of the 64 months, in month order, on four runners. Rates on Actions may vary from month to month; not measured.
+8. Negative tests changed the first matching row; in (a), (c) and (f) a second or third check fails as a direct consequence of the same edit.
+9. The workflow's header comment ("uploaded only if its pull completed") and the publish step's name ("only reached if the pull succeeded") were left unchanged, as Step 7 says; both now leave out the verify step.
+
+**F134.8 Requests and clean-up.** One unauthenticated GitHub REST API request (`GET /repos/zadams03/MLwx/releases/tags/stagec-grib-pull-v1`); no other network use. **The negative tests' temporary directory was deleted; the path no longer exists.** No bytecode file of either script was written.
+
+**F134.9 What this did not do.** No GRIB request; no observation read (from `session81_training_set.csv` only the nine named columns were kept); no score, error, MAE, bias or skill; nothing from 2026-27; no forecast value printed beyond the ranges summary (no gate mismatch occurred); no push, workflow run or Release change; no token, `gh` or sign-in; nothing in `MLwx-pull/` changed (SHA-256 checked at the end); no file under `data/` changed and `data/models/` was not touched; no existing script edited; nothing installed; SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing was committed and no commit message was written.

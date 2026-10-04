@@ -97,6 +97,10 @@ jobs:
         env:
           MONTH: ${{ matrix.month }}
         run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours 0-24 --out out --workers 16
+      - name: Verify the month (D84.4; a failure stops the job, so nothing is uploaded)
+        env:
+          MONTH: ${{ matrix.month }}
+        run: python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours 0-24
       - name: Publish the three files (only reached if the pull succeeded)
         env:
           GH_TOKEN: ${{ github.token }}

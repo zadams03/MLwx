@@ -1,0 +1,50 @@
+Session 92: D84, the 2022-01 Actions extract verified (F134), and a verify step in the pull workflow
+
+D84 records the owner's decisions after session 91: F133 and its
+fourteen readings accepted; the later f025 to f048 pull starts at cycle
+2021-03-22T12 (GFS v16 began with that run, SCN 21-20), so the v15
+cycles 2021-03-22T00 and T06 are not used; the first Actions month,
+2022-01, succeeded in 8 min 25 s; the bad-month check (option b): a
+verifier runs before upload and a month that fails it is not
+published; the next run is 2021-03 alone; and the 2026-10-04 GFS v17
+check (no SCN found; EMC gives Q1 FY27; earliest go-live about 3
+November 2026).
+
+F134 records the verification. The three 2022-01 files equal the
+Release assets (size and SHA-256 digest) and their meta (script and
+positions SHA-256 as F133). New: scripts/session92_verify_chunk.py.
+On 2022-01 it passed 13 of 13 checks against the plan: 124 cycles,
+3,100 files, 31,000 manifest rows (30,628 ok, 372 absent by design, 0
+idx missing, 0 check failed), 158,100 points rows, no duplicate keys,
+6,248,112 ok value cells all filled and finite, 75,888 non-ok cells
+all empty, and every value reads back to the identical string. All
+fields are inside broad physical bounds. Seven negative tests on
+copies (a check failed status, a deleted row, a duplicated row, an
+emptied value, a filled absent value, an absent message marked ok, a
+wrong meta SHA-256) each made the verifier fail on the right check.
+
+The extended gate passed: 93 of 93 station-days (EGLC and LFPG 12z
+lead 24, DSM 18z lead 24, target dates 2022-01-02 to 2022-02-01), all
+7 columns equal exactly to session81_training_set.csv, 0 mismatches.
+This is the first check that the Linux ecCodes build on Actions
+decodes exactly as the local build did. YSDU, RNO and KSFO use lead
+26, outside an f000 to f024 extract, and are not gated here.
+
+Measured on Actions: 486.5 s for the chunk, 6.37 files/s, 55 MB/s,
+26.77 GB downloaded, 20.64 MB kept. Estimates for the remaining 64
+months at four at once: about 2.2 h wall time, about 1.66 TB
+downloaded, about 1.28 GB kept; 195 Release assets when complete.
+
+The workflow gains one step, after the chunk and before the publish
+step, that runs the verifier; nothing else in it changed. Not tested
+live yet: the owner's 2021-03 run is its first test. A failure there
+publishes nothing. Nothing from 2026-27 was read, no observation was
+read, nothing was scored, no GRIB was downloaded, and the files in
+MLwx-pull/ were not changed.
+
+Planning-chat notes, to be recorded in D85 at the start of session 93:
+- F134 accepted, and all nine F134.7 readings accepted as written.
+- The workflow's header comment and the publish step's name still
+  say only the pull's success gates the upload (F134.7 item 9).
+  Cosmetic; left as is.
+- Record the outcome of the 2021-03 run and of 2021-04..2026-07.
