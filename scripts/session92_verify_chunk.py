@@ -30,7 +30,7 @@ The D84.4 fail rules, one named check each (expected and found are printed):
   manifest rows   one row per file and field
   messages        rows that are not absent by design: the plan's message count
   points rows     one row per file and airport, airports as the positions file
-  statuses        every status is one of session 91's four
+  statuses        every status is one of session 91's statuses
   check failed    no message is "check failed"
   absent by design  exactly DSWRF, TMAX and TMIN at f000, and nothing else
   duplicate keys  no (cycle, hour, field) or (cycle, hour, airport) twice
@@ -38,8 +38,12 @@ The D84.4 fail rules, one named check each (expected and found are printed):
   non-ok values   a non-ok message has no cell filled
   meta sha256     the meta's two data-file SHA-256 values equal the files'
 "idx missing" messages do not fail the month: their count is printed.
+"ok (whole file)" (session 94, DECISIONS D86.2) is treated as ok by every
+value check and never fails a month by itself: its count is printed beside
+"idx missing".
 The two value checks together reconcile the files: a points row's cells for
-a field are filled exactly when that cycle, hour and field's status is ok.
+a field are filled exactly when that cycle, hour and field's status is ok or
+"ok (whole file)".
 
 No forecast value is printed by the checks, only counts and keys. --ranges
 prints each field's minimum and maximum; --gate prints values only for a
@@ -72,6 +76,9 @@ BOUNDS = {"t2m": (150.0, 350.0), "d2m": (150.0, 350.0), "t850": (150.0, 350.0),
 # --gate: the key columns and the seven compared columns, read by name. No
 # other column of the training set is kept (no observation or target column).
 GATE_KEY_COLS = ["station", "target_date"]
+
+# Statuses whose cells are filled (D86.2: "ok (whole file)" counts as ok).
+OK_STATUSES = ("ok", p91.STATUS_WHOLE)
 
 
 def read_gz_csv(path):
@@ -185,7 +192,7 @@ def run_checks(args, hours):
                 no_status += 1
                 continue
             cells = [r[pc[f"{f}_{j}"]] for j in (1, 2, 3, 4)]
-            if sts == ["ok"]:
+            if len(sts) == 1 and sts[0] in OK_STATUSES:
                 ok_cells += 4
                 for s in cells:
                     try:
@@ -220,7 +227,9 @@ def run_checks(args, hours):
     check("meta sha256", "both data files' SHA-256 as in the meta", "; ".join(found_sha), meta_ok)
 
     n_idx = sum(1 for r in m_rows if r[mc["status"]] == "idx missing")
-    print(f"\n\"idx missing\" messages (published, left empty, not a fail): {n_idx}")
+    n_whole = sum(1 for r in m_rows if r[mc["status"]] == p91.STATUS_WHOLE)
+    print(f"\n\"idx missing\" messages (published, left empty, not a fail): {n_idx}; "
+          f"\"{p91.STATUS_WHOLE}\" messages (published, filled from the whole file, not a fail): {n_whole}")
     for s in p91.STATUSES:
         print(f"  status {s!r}: {sum(1 for r in m_rows if r[mc['status']] == s)}")
     n_fail = sum(1 for _, ok in results if not ok)
@@ -337,7 +346,7 @@ def run_gate(args, hours):
                         continue
                     k = (p91.iso(c), a["lead"] + off)
                     s = status.get(k + (fname,))
-                    if s != "ok":
+                    if s not in OK_STATUSES:
                         raise ValueError(f"{fname} at {k[0]} f{k[1]:03d} has status {s!r}")
                     row = points[k + (p["icao"],)]
                     got[key] = p91.bilinear_stored(p, [float(row[f"{fname}_{j}"]) for j in (1, 2, 3, 4)])
@@ -367,7 +376,8 @@ def run_gate(args, hours):
     n_try = sum(days.values()) + len(no_row) + len(not_built)
     print(f"station-days in the month: {n_try}; rebuilt and compared {sum(days.values())}")
     print(f"station-days with no committed row (not a failure): {len(no_row)} {no_row or ''}")
-    print(f"station-days not rebuilt (a needed message not ok): {len(not_built)} {not_built or ''}")
+    print(f"station-days not rebuilt (a needed message not ok or ok (whole file)): {len(not_built)} "
+          f"{not_built or ''}")
     print(f"mismatches: {len(mism)}")
     for st, t, c, col, cv, rv in mism:
         print(f"  MISMATCH {st} {t} (cycle {c}) {col}: committed {cv!r}, rebuilt {rv!r}")

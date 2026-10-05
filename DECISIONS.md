@@ -3404,3 +3404,90 @@ at the start of session 93, before any other edit or network call. No
 8. An observation, not tried and not a proposal: each broken file starts with "GRIB" and ends with "7777", and its first message's header gives its true length. So the file's own message boundaries may be readable from its headers. Whether to use that is for D86.
 
 **F135.9 What this did not do.** Nothing published or pushed; no workflow run; no Release change; no asset downloaded. No existing code changed (pull script, verifier and workflow SHA-256 unchanged). No file under `data/` changed, and nothing in `MLwx-pull/` was touched. No value decoded beyond session 91's checks; no forecast value printed. Nothing from 2026-27; no observation; no score. No account, token or `gh`. Nothing installed. No bytes kept; no temporary directory made. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-05: Session 94 decision: F135 accepted and 2022-11 recovered by a whole-file fallback (owner, planning chat)
+
+**D86. Owner decisions, planning chat (after session 93): F135
+accepted, and 2022-11 recovered by a whole-file fallback.** Written at
+the start of session 94, before any other edit or network call. No
+2026-27 value has been read or scored.
+
+- **D86.1 F135 accepted.** The 27 broken files in 2022-11 have `.idx`
+  files that do not match them; the GRIB files themselves end in 7777
+  as whole files should. The Google Cloud mirror holds identical
+  copies, so option (a) of D85.4 is ruled out.
+- **D86.2 Recover, do not leave empty (option c).** When a file's
+  `.idx` ranges give a persistently broken body, the pull downloads
+  that whole file, finds its messages by walking the GRIB headers
+  (not the `.idx`), and takes all ten of the file's fields from it,
+  each selected by session 91's own per-message check. Those messages
+  get the new manifest status "ok (whole file)", so they stay
+  visible. Option (b) of D85.4 (leave them empty) is not chosen. The
+  fallback is used only for a persistently broken body; network
+  errors and "idx missing" are handled as before.
+- **D86.3 The gate.** Before use, the fallback must give byte-identical
+  messages and identical points rows to the `.idx` path on healthy
+  files, and the normal path must give identical output before and
+  after the edit.
+- **D86.4 The next run.** After session 94 is reviewed and committed,
+  the owner runs 2022-11 alone on GitHub Actions. It is published only
+  if the verify step passes. Cycle 2022-11-29T12 (flagged by
+  dynamical.org, F131.2, unchecked by session 93) is covered by that
+  run.
+- **D86.5 Laptop sleep.** Session 93's last two cycles were only partly
+  checked because the owner's laptop slept. Long local sessions run
+  with the laptop kept awake.
+
+---
+
+## 2026-10-05: Session 94 finding: the whole-file fallback and its gate
+
+**F136. The pull script now has a whole-file fallback (D86.2), the verifier accepts its new status, and the gate passed (D86.3): the normal path gives string-equal manifest and points rows before and after the edit; on two healthy files the forced fallback picks, for every planned field, exactly one walked message, byte-identical (SHA-256) to the `.idx` range's bytes, with points rows equal to the normal path's; and two broken F135 files fall back by themselves, each walk ending at the file's last byte, every field with exactly one passing message and status "ok (whole file)". Nothing was published and no workflow was run. Scripts: `scripts/session91_grib_pull.py` (edited; SHA-256 `b52ffc2ee741853079aa8cb7b63850645fb93974a6e4f39d7f20fb212a432f1f`), `scripts/session92_verify_chunk.py` (edited; `7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a`), `scripts/session94_fallback_gate.py` (new; `0aa3b713ef37f4c9614d60340fbe39f93a55d908fb84438bce362b98ee4f50c8`). The workflow is unchanged (`804b6d35...02a6`). Full real output, with both diffs: `notes/session-94-output.txt`. Run 2026-10-05. Python 3.12.2, eccodes 2.48.0 (ecCodes library 2.48.0), numpy 2.5.2, requests 2.34.2.**
+
+**F136.1 Step 0 and Step 1.**
+- `git status --porcelain` printed nothing, not `?? docs/session-94.md`: the prompt file was already committed, in 6e2eee2 (session 93's commit). The tree was clean, so the session went on (reading 1).
+- The last entries were D85 and F135; no D86 or F136 existed in either DECISIONS file. SHA-256 equal to F134 and F135: the pull script (`72c263b2...652e`), the verifier (`f61136a8...1955`), the workflow (`804b6d35...02a6`) and `session93_diagnose.py` (`fbaf73a1...9581`). Read: D83 to D85, F133 to F135, the pull script and the verifier in full.
+- **What session 91's per-message check tests** (inline in `process_file`, HEAD l.658-696): `discipline`, `parameterCategory`, `parameterNumber`, `typeOfFirstFixedSurface`, `level`, `stepType`, `startStep` and `endStep` against the field's identity in `FIELDS` plus `expected_steps` (l.665-671); `dataDate` and `dataTime` against the cycle (l.672-674); `validityDate` and `validityTime` against cycle plus forecast hour, then `check_valid` (l.675-677); the grid geometry (`Ni`, `Nj`, first and last latitude and longitude, both increments) against the positions file and `gridType` `regular_ll` (l.678-680); a finite, non-missing value at every airport's four grid indices (l.681-690). It tests the step range, so the TMAX, TMIN and DSWRF windows are told apart; the prompt's stop condition did not apply. **"Broken body"** is set in `Fetcher.get` (HEAD l.350-352, retried) and raised as the final `DownloadError` at l.357.
+- D86 was copied with `sed` from `docs/session-94.md` lines 79 to 108 into DECISIONS.md lines 3412 to 3441 (heading at 3410) and checked byte-equal with `diff`, before any other edit or network call.
+
+**F136.2 The pull script (Step 2; full diff in the output file).**
+- `Fetcher.get` raises `BrokenBody` (a subclass of `DownloadError`, same message text) when its last try failed with a broken body. `process_file` catches it and sends the file to `process_whole_file`; anywhere else it stops the chunk as before. Network errors, HTTP errors, a 404 and "idx missing" are unchanged.
+- `Fetcher.get_whole`: one GET of the whole file, session 91's retry policy; the body must equal the response's Content-Length, otherwise retried as a network error. `_whole_lock` holds at most one whole file in memory across all workers.
+- `walk_messages`: from byte 0, "GRIB", edition 2, the 8-byte total length, "7777" at the end, then the next; it must end at the file's last byte. A failed walk makes every planned field "check failed".
+- Session 91's check was moved, unchanged, into `check_message`, which `process_file` now calls. The fallback applies it to every walked message for every planned field: exactly one must pass, else "check failed". The passing message's values (the same decode and index read) get status "ok (whole file)" (`STATUS_WHOLE`, added to `STATUSES`). All planned fields of a fallen-back file come from the whole file.
+- Records: fallback files, bytes and "ok (whole file)" messages in the progress lines, the failure summary and the meta (with one line per fallback file); whole-file requests and bytes in the meta.
+
+**F136.3 The verifier (Step 3; diff in the output file).** "ok (whole file)" is valid (through session 91's `STATUSES`), is treated as ok by "ok values", "non-ok values" and the local `--gate`, and its count is printed beside "idx missing". Tests on copies of the 2022-01 files (one `mktemp -d`, deleted; re-gzip round trip identical): untouched exit 0, 13 of 13; (a) to (g) each fail exactly as in F134.3 (same checks, same counts); **(h) one ok row changed to "ok (whole file)": exit 0, 13 of 13, its count 1; (i) one ok row changed to an invented status: exit 1, "statuses" and "non-ok values" fail.** 10 of 10 as specified. `MLwx-pull/` unchanged (SHA-256 equal to F134.1).
+
+**F136.4 Step 4: the normal path is unchanged. PASSED.** HEAD (`git show`, SHA-256 equal to F133's final) and the edited script, each through `process_file` on 2022-11-29T18 f000, f001 and f010: 30 manifest rows and 153 points rows each, statuses ok 27 and absent by design 3 in both; **manifest rows and points rows string-equal; no file fell back.** Each: 3 `.idx` and 27 message requests, 22,773,312 B, 0 retries.
+
+**F136.5 Step 5.1: the fallback forced on healthy files. PASSED.** 2022-11-29T18 f000: whole file 508,028,392 B, 696 messages walked (696 `.idx` lines), walk ends at the last byte. f001: 536,786,974 B, 743 walked (743 lines), ends at the last byte. For each of the 7 and 10 planned fields: exactly 1 passing message, its range equal to the `.idx` range, SHA-256 equal to the `.idx` range's bytes (17 of 17; table in the output file); absent by design stays so. Points rows (102) string-equal to Step 4's.
+
+**F136.6 Step 5.2: the broken files fall back by themselves. PASSED.** No value printed.
+
+| file | trigger (first field, after 5 retries) | whole file | walked | ends at last byte | fields with exactly 1 passing | status |
+|---|---|---|---|---|---|---|
+| 2022-11-29T18 f002 | t2m 419336616-420214434, broken body | 539,275,914 B | 743 | yes | 10 of 10 | ok (whole file), 10 |
+| 2022-11-30T06 f024 | t2m 427454899-428323505, broken body | 553,400,757 B | 743 | yes | 10 of 10 | ok (whole file), 10 |
+
+The messages found by the walk sit at other offsets than the `.idx` gives (for example f002 t2m at 417969131-418848475), as F135.4 implies. Time per broken file on the owner's connection: 376 s and 520 s (each includes 62 s of retry waits).
+
+**F136.7 Requests and bytes.** Only `noaa-gfs-bdp-pds.s3.amazonaws.com`. Step 4: 60 requests (6 `.idx`, 54 message), 45,546,624 B. Step 5.1: 21 (2 `.idx`, 17 message, 2 whole), 1,059,159,186 B. Step 5.2: 4 counted (2 `.idx`, 2 whole), 1,092,758,440 B, plus 12 broken-body message tries that the fetcher does not count (about 10.5 MB, from the range lengths). In all 97 requests, 2,197,464,250 B counted (about 2.21 GB with the broken tries). Every byte was held in memory; the gate's one temporary directory held only the HEAD script copy and was deleted. Gate run 1,773 s, once, with the laptop kept awake.
+
+**F136.8 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. Step 0.1's empty `git status` (F136.1) was taken as passing the check's intent, not as "anything else".
+2. "Still gives a broken body after the retries" is read as: the last of the six tries failed with a broken body. A run of failures that ends with a network error stays a `DownloadError` and stops the chunk.
+3. The new status is added to session 91's `STATUSES`, so the verifier's "statuses" check accepts it through its import, and the meta's "messages" line now lists five statuses (with "ok (whole file) 0" on a normal month).
+4. An "ok (whole file)" manifest row has an empty `idx_line`; `byte_range` and `bytes` give the message's place in the whole file; `reason` gives the file size, the walk count and the trigger. `step_range` and `process_type` are read from the selected message, as on the normal path.
+5. Content-Length is read from the GET's own headers (no HEAD request, which the prompt does not list). A missing Content-Length, a 404 or another non-retried status stops the chunk; the byte budget, if set, is reserved once from Content-Length.
+6. The walk also requires a total length of at least 20 bytes that fits inside the file.
+7. One eccodes handle is made per walked message and every planned field's check is applied to it. A walked message that eccodes cannot open stops the run, as an unopenable message does on the normal path; none occurred.
+8. The test-only spot check (`--spot-check`) is not run on whole-file messages, and spot results already read by range for that file are dropped.
+9. The verifier's local `--gate` also treats "ok (whole file)" as ok ("every value check").
+10. Step 4 calls `process_file` directly per file, since `--chunk` runs whole days, and writes the rows with run_chunk's own csv code; the HEAD copy reads the committed positions file by path. Step 5.1 forces the fallback by calling `process_whole_file` directly; the pull script has no force option. Step 5.1 also checks that the walked range equals the `.idx` range (stricter than asked).
+11. The verifier's negative-test driver lived in the session scratchpad, outside the repo, as in session 92; on edited copies it updates the meta's SHA-256 so only the intended check fails, as session 92's results show it did.
+12. Docstrings of both scripts were updated to describe the new status.
+
+**F136.9 What this did not do.** No workflow run, push, Release change or `gh` call; the workflow is unchanged. No month was pulled or published, and no extract was written. No forecast value printed. No observation read; no score; nothing from 2026-27. Nothing under `data/` changed and nothing in `MLwx-pull/`; `data/models/` not touched. No bytes kept; no install; no account or token. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.

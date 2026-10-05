@@ -25,6 +25,14 @@ The chunk output has no interpolation, no derived field and no rounding:
 values are the decoded numbers, written with repr so they read back
 identically (D83.5(c)). Interpolation and derivation exist only in --gate.
 
+Whole-file fallback (session 94, DECISIONS D86.2): when a message's byte range
+still gives a broken body (no GRIB or 7777 marker) after its retries, the
+file's .idx does not describe it (F135). The whole file is then downloaded,
+its messages are found by walking the GRIB headers, and every planned field
+of that file is taken from the one walked message that passes the same
+per-message check, with status "ok (whole file)". Network errors, HTTP errors
+and a missing .idx are handled as before.
+
 Hard limits, enforced in code (D83.5(b)): no cycle after 2026-07-31T18 UTC;
 no message valid after 2026-07-31T23:00 or before 2021-03-24T00:00 UTC; no
 forecast hour outside 0 to 48.
@@ -111,7 +119,8 @@ STEP_WORD = {"avg": "ave", "max": "max", "min": "min"}
 POINT_COLS = ["cycle_utc", "fhour", "valid_utc", "icao"] + [f"{f}_{k}" for f in FIELD_NAMES for k in (1, 2, 3, 4)]
 MAN_COLS = ["cycle_utc", "fhour", "field", "idx_line", "byte_range", "bytes", "status", "step_range",
             "process_type", "reason"]
-STATUSES = ["ok", "absent by design", "idx missing", "check failed"]
+STATUS_WHOLE = "ok (whole file)"    # session 94, D86.2
+STATUSES = ["ok", "absent by design", "idx missing", "check failed", STATUS_WHOLE]
 GEOM_KEYS = [("Ni", "Ni"), ("Nj", "Nj"), ("lat_first", "latitudeOfFirstGridPointInDegrees"),
              ("lon_first", "longitudeOfFirstGridPointInDegrees"), ("lat_last", "latitudeOfLastGridPointInDegrees"),
              ("lon_last", "longitudeOfLastGridPointInDegrees"), ("di", "iDirectionIncrementInDegrees"),
@@ -127,6 +136,7 @@ IDX_RESERVE = 50_000     # bytes reserved against the budget for one .idx reques
 
 _local = threading.local()
 _ec_lock = threading.Lock()
+_whole_lock = threading.Lock()   # D86.2: at most one whole file in memory across all workers
 
 
 class GuardError(Exception):
@@ -135,6 +145,12 @@ class GuardError(Exception):
 
 class DownloadError(Exception):
     """A download failed after its retries. The chunk fails and writes nothing."""
+
+
+class BrokenBody(DownloadError):
+    """A message's byte range still gave a broken body (no GRIB or 7777 marker)
+    after its retries. process_file sends the file to the whole-file fallback
+    (D86.2); anywhere else it stops the chunk as any DownloadError does."""
 
 
 class BudgetStop(Exception):
@@ -299,10 +315,11 @@ class Fetcher:
         self.budget = budget
         self.lock = threading.Lock()
         self.reserved = 0
-        self.bytes = {"idx": 0, "message": 0}
-        self.requests = {"idx": 0, "message": 0}
+        self.bytes = {"idx": 0, "message": 0, "whole": 0}
+        self.requests = {"idx": 0, "message": 0, "whole": 0}
         self.retries = 0
         self.not_found = 0
+        self.whole = []     # D86.2: one record per file that fell back (see process_whole_file)
 
     def session(self):
         if not hasattr(_local, "s"):
@@ -324,11 +341,13 @@ class Fetcher:
         self.reserve(expected_len if expected_len is not None else IDX_RESERVE)
         headers = {"Range": f"bytes={byte_range}"} if byte_range else {}
         last = None
+        broken = False      # D86.2: whether the last failure was a broken body
         for attempt in range(RETRIES + 1):
             if attempt:
                 with self.lock:
                     self.retries += 1
                 time.sleep(2.0 * 2 ** (attempt - 1))
+            broken = False
             try:
                 r = self.session().get(url, headers=headers, timeout=(20, 180))
             except requests.RequestException as e:
@@ -349,12 +368,65 @@ class Fetcher:
                 continue
             if kind == "message" and (body[:4] != b"GRIB" or body[-4:] != b"7777"):
                 last = "broken body (no GRIB or 7777 marker)"
+                broken = True
                 continue
             with self.lock:
                 self.bytes[kind] += len(body)
                 self.requests[kind] += 1
             return body
-        raise DownloadError(f"{url} {byte_range or ''}: failed after {RETRIES} retries: {last}")
+        raise (BrokenBody if broken else DownloadError)(
+            f"{url} {byte_range or ''}: failed after {RETRIES} retries: {last}")
+
+    def get_whole(self, url):
+        """D86.2: one whole GRIB file, in memory, with get's retry policy (network
+        errors, 429 and 5xx retried; a 404 or any other status stops at once). The
+        bytes received must equal the response's Content-Length; a shorter or
+        longer body counts as a network error and is retried."""
+        last = None
+        reserved = False
+        for attempt in range(RETRIES + 1):
+            if attempt:
+                with self.lock:
+                    self.retries += 1
+                time.sleep(2.0 * 2 ** (attempt - 1))
+            try:
+                with self.session().get(url, timeout=(20, 180), stream=True) as r:
+                    if r.status_code == 404:
+                        with self.lock:
+                            self.not_found += 1
+                        raise DownloadError(f"{url} (whole file): HTTP 404 for a file whose .idx exists")
+                    if r.status_code == 429 or 500 <= r.status_code <= 599:
+                        last = f"HTTP {r.status_code}"
+                        continue
+                    if r.status_code != 200:
+                        raise DownloadError(f"{url} (whole file): HTTP {r.status_code}")
+                    if "Content-Length" not in r.headers:
+                        raise DownloadError(f"{url} (whole file): no Content-Length")
+                    n = int(r.headers["Content-Length"])
+                    if not reserved:
+                        self.reserve(n)
+                        reserved = True
+                    body = r.content
+            except requests.RequestException as e:
+                last = f"network error {e!r}"
+                continue
+            if len(body) != n:
+                last = f"body {len(body)} bytes, Content-Length {n}"
+                continue
+            with self.lock:
+                self.bytes["whole"] += len(body)
+                self.requests["whole"] += 1
+            return body
+        raise DownloadError(f"{url} (whole file): failed after {RETRIES} retries: {last}")
+
+
+def whole_stats(fetcher):
+    """D86.2: the fallback's counts, for the progress lines, the closing summary
+    and the meta."""
+    with fetcher.lock:
+        recs = list(fetcher.whole)
+    return (f"whole-file fallbacks {len(recs)} files, {sum(r['bytes'] for r in recs):,} B, "
+            f"{sum(r['ok_whole'] for r in recs)} messages ok (whole file)")
 
 
 def file_url(cycle, fh):
@@ -618,6 +690,147 @@ def run_positions(args):
 
 # ------------------------------------------------------------------ one file: .idx, messages, values
 
+def check_message(gid, ident, steps, cycle, valid, positions, geom):
+    """Session 91's per-message check, moved here unchanged from process_file so
+    the whole-file fallback (D86.2) applies the same check. Tests identity
+    (discipline, category, number, surface type, level), stepType, startStep
+    and endStep, run date and time, full validity date and hour, grid geometry,
+    and a finite value at every airport's four grid indices. Raises ValueError
+    (or an eccodes error) if the message fails, GuardError if a hard limit
+    fires. Returns the 4 values per airport, read by grid index."""
+    got = (tuple(ec.codes_get_long(gid, k) for k in ("discipline", "parameterCategory", "parameterNumber",
+                                                      "typeOfFirstFixedSurface", "level"))
+           + (ec.codes_get_string(gid, "stepType"), ec.codes_get_long(gid, "startStep"),
+              ec.codes_get_long(gid, "endStep")))
+    vd, vt = ec.codes_get_long(gid, "validityDate"), ec.codes_get_long(gid, "validityTime")
+    if got != ident + steps:
+        raise ValueError(f"identity {got} != expected {ident + steps}")
+    if (ec.codes_get_long(gid, "dataDate") != int(f"{cycle:%Y%m%d}")
+            or ec.codes_get_long(gid, "dataTime") != cycle.hour * 100):
+        raise ValueError("run date or time mismatch")
+    if vd != int(f"{valid:%Y%m%d}") or vt != valid.hour * 100:
+        raise ValueError(f"validity {vd} {vt:04d} != expected {valid:%Y%m%d %H%M}")
+    check_valid(dt.datetime(vd // 10000, (vd // 100) % 100, vd % 100, vt // 100, vt % 100))
+    g = msg_geometry(gid)
+    if g != geom or ec.codes_get_string(gid, "gridType") != "regular_ll":
+        raise ValueError(f"grid geometry {g} differs from the positions file")
+    values = ec.codes_get_values(gid)
+    missing = ec.codes_get_double(gid, "missingValue")
+    bitmap = ec.codes_get_long(gid, "bitmapPresent")
+    out = []
+    for p in positions:
+        for i in p["indices"]:
+            v = float(values[i])
+            if not math.isfinite(v) or (bitmap and v == missing):
+                raise ValueError(f"missing or non-finite value at grid index {i} ({p['icao']})")
+            out.append(v)
+    return out
+
+
+def walk_messages(data):
+    """D86.2: the file's message boundaries from its own GRIB headers, not the
+    .idx. From byte 0: "GRIB", edition 2, the 8-byte total length (section 0,
+    bytes 8 to 15), "7777" at that message's end, then the next. The walk must
+    end exactly at the file's last byte. Returns [(offset, length)]; raises
+    ValueError if any of this fails."""
+    out, pos, n = [], 0, len(data)
+    while pos < n:
+        if n - pos < 16:
+            raise ValueError(f"{n - pos} bytes left at offset {pos}, too few for a section 0")
+        if data[pos:pos + 4] != b"GRIB":
+            raise ValueError(f"no 'GRIB' at offset {pos}")
+        if data[pos + 7] != 2:
+            raise ValueError(f"edition {data[pos + 7]} at offset {pos}, not 2")
+        length = int.from_bytes(data[pos + 8:pos + 16], "big")
+        if length < 20 or pos + length > n:
+            raise ValueError(f"total length {length} at offset {pos} does not fit a file of {n} bytes")
+        if data[pos + length - 4:pos + length] != b"7777":
+            raise ValueError(f"no '7777' at the end of the message at offset {pos} (length {length})")
+        out.append((pos, length))
+        pos += length
+    if not out or pos != n:
+        raise ValueError(f"the walk ended at byte {pos}, not at the file's end ({n})")
+    return out
+
+
+def process_whole_file(fetcher, cycle, fh, positions, geom, trigger):
+    """D86.2: the whole-file fallback for one GRIB file whose .idx ranges give a
+    persistently broken body. Downloads the whole file (one at a time across all
+    workers, in memory only), walks its GRIB headers, and for each planned field
+    applies check_message to every walked message: exactly one must pass. That
+    message's values are used, with status "ok (whole file)". If the walk fails,
+    every planned field is "check failed"; so is a field with none or more than
+    one passing message. Fields absent by design stay so. Returns (manifest
+    rows, {field: values}) as process_file does, and adds one record to
+    fetcher.whole."""
+    valid = cycle + dt.timedelta(hours=fh)
+    url = file_url(cycle, fh)
+    planned = [f for f in FIELDS if selector(f[3], fh) is not None]
+    passes = {f[0]: [] for f in planned}
+    chosen = {}
+    with _whole_lock:
+        data = fetcher.get_whole(url)
+        size = len(data)
+        try:
+            walk, walk_err = walk_messages(data), None
+        except ValueError as e:
+            walk, walk_err = None, str(e)
+        for off, n in walk or []:
+            with _ec_lock:
+                gid = ec.codes_new_from_message(data[off:off + n])
+                try:
+                    for name, var, level, kind, ident in planned:
+                        try:
+                            got_vals = check_message(gid, ident, expected_steps(kind, fh), cycle, valid,
+                                                     positions, geom)
+                        except GuardError:
+                            raise
+                        except Exception:  # noqa: BLE001
+                            continue
+                        passes[name].append(off)
+                        step_range = ec.codes_get_string(gid, "stepRange")
+                        ptype = ec.codes_get_string(gid, "stepType")
+                        if ec.codes_is_defined(gid, "typeOfStatisticalProcessing"):
+                            ptype += (f" (typeOfStatisticalProcessing "
+                                      f"{ec.codes_get_long(gid, 'typeOfStatisticalProcessing')})")
+                        chosen[name] = (off, n, step_range, ptype, got_vals,
+                                        hashlib.sha256(data[off:off + n]).hexdigest())
+                finally:
+                    ec.codes_release(gid)
+        del data
+    n_walk = len(walk) if walk is not None else None
+    man, vals = [], {}
+    for name, var, level, kind, ident in FIELDS:
+        base = [iso(cycle), fh, name]
+        if selector(kind, fh) is None:
+            man.append(base + ["", "", "", "absent by design", "", "", f"GFS gives no {kind} {var} at f000"])
+            continue
+        if walk is None:
+            man.append(base + ["", "", "", "check failed", "", "",
+                               f"whole file ({size} B): the header walk failed: {walk_err}; trigger: {trigger}"])
+            continue
+        k = len(passes[name])
+        if k != 1:
+            man.append(base + ["", "", "", "check failed", "", "",
+                               f"whole file ({size} B, {n_walk} messages walked): {k} messages pass the check, "
+                               f"not exactly 1; trigger: {trigger}"])
+            continue
+        off, n, step_range, ptype, got_vals, _ = chosen[name]
+        man.append(base + ["", f"{off}-{off + n - 1}", n, STATUS_WHOLE, step_range, ptype,
+                           f"whole file ({size} B, {n_walk} messages walked; range is within the file); "
+                           f"trigger: {trigger}"])
+        vals[name] = got_vals
+    with fetcher.lock:
+        fetcher.whole.append({
+            "url": url, "cycle": iso(cycle), "fh": fh, "bytes": size, "trigger": trigger,
+            "walked": n_walk, "walk_error": walk_err, "ends_at_last_byte": walk is not None,
+            "passes": {name: len(v) for name, v in passes.items()},
+            "selected": {name: {"offset": c[0], "length": c[1], "sha256": c[5]} for name, c in chosen.items()
+                         if len(passes[name]) == 1},
+            "ok_whole": len(vals)})
+    return man, vals
+
+
 def process_file(fetcher, cycle, fh, positions, geom, spot=None):
     """Fetches the .idx and every needed message of one GRIB file, checks each
     message and reads the 4 values per airport by grid index. Returns
@@ -653,6 +866,11 @@ def process_file(fetcher, cycle, fh, positions, geom, spot=None):
             data = fetcher.get(url, "message", rng, exp)
         except NotFound:
             raise DownloadError(f"{url} {rng}: HTTP 404 for a message listed in its .idx")
+        except BrokenBody as e:
+            # D86.2: the .idx does not describe this file. Every planned field,
+            # including any already read by range, comes from the whole file.
+            man, vals = process_whole_file(fetcher, cycle, fh, positions, geom, f"{name} {rng}: {e}")
+            return man, vals, []
         stype, s0, s1 = expected_steps(kind, fh)
         status, reason, step_range, ptype, got_vals = "ok", "", "", "", None
         with _ec_lock:
@@ -662,33 +880,7 @@ def process_file(fetcher, cycle, fh, positions, geom, spot=None):
                 ptype = ec.codes_get_string(gid, "stepType")
                 if ec.codes_is_defined(gid, "typeOfStatisticalProcessing"):
                     ptype += f" (typeOfStatisticalProcessing {ec.codes_get_long(gid, 'typeOfStatisticalProcessing')})"
-                got = (tuple(ec.codes_get_long(gid, k) for k in ("discipline", "parameterCategory", "parameterNumber",
-                                                                  "typeOfFirstFixedSurface", "level"))
-                       + (ec.codes_get_string(gid, "stepType"), ec.codes_get_long(gid, "startStep"),
-                          ec.codes_get_long(gid, "endStep")))
-                vd, vt = ec.codes_get_long(gid, "validityDate"), ec.codes_get_long(gid, "validityTime")
-                if got != ident + (stype, s0, s1):
-                    raise ValueError(f"identity {got} != expected {ident + (stype, s0, s1)}")
-                if (ec.codes_get_long(gid, "dataDate") != int(f"{cycle:%Y%m%d}")
-                        or ec.codes_get_long(gid, "dataTime") != cycle.hour * 100):
-                    raise ValueError("run date or time mismatch")
-                if vd != int(f"{valid:%Y%m%d}") or vt != valid.hour * 100:
-                    raise ValueError(f"validity {vd} {vt:04d} != expected {valid:%Y%m%d %H%M}")
-                check_valid(dt.datetime(vd // 10000, (vd // 100) % 100, vd % 100, vt // 100, vt % 100))
-                g = msg_geometry(gid)
-                if g != geom or ec.codes_get_string(gid, "gridType") != "regular_ll":
-                    raise ValueError(f"grid geometry {g} differs from the positions file")
-                values = ec.codes_get_values(gid)
-                missing = ec.codes_get_double(gid, "missingValue")
-                bitmap = ec.codes_get_long(gid, "bitmapPresent")
-                out = []
-                for p in positions:
-                    for i in p["indices"]:
-                        v = float(values[i])
-                        if not math.isfinite(v) or (bitmap and v == missing):
-                            raise ValueError(f"missing or non-finite value at grid index {i} ({p['icao']})")
-                        out.append(v)
-                got_vals = out
+                got_vals = check_message(gid, ident, (stype, s0, s1), cycle, valid, positions, geom)
             except GuardError:
                 ec.codes_release(gid)
                 raise
@@ -763,13 +955,13 @@ def run_chunk(args):
             done += 1
             if done % 50 == 0 or done == len(units):
                 print(f"  {done}/{len(units)} files; {sum(fetcher.bytes.values()):,} bytes; "
-                      f"{time.time() - t0:,.0f} s", flush=True)
+                      f"{time.time() - t0:,.0f} s; {whole_stats(fetcher)}", flush=True)
     except (DownloadError, BudgetStop, GuardError) as e:
         ex.shutdown(wait=True, cancel_futures=True)
         print(f"\nCHUNK FAILED, NOTHING WRITTEN: {type(e).__name__}: {e}")
         print(f"read before the stop: files done {done} of {len(units)}; requests {fetcher.requests}; "
               f"bytes {fetcher.bytes} (total {sum(fetcher.bytes.values()):,}); retries {fetcher.retries}; "
-              f"seconds {time.time() - t0:,.0f}")
+              f"seconds {time.time() - t0:,.0f}; {whole_stats(fetcher)}")
         return 2
     ex.shutdown(wait=True)
 
@@ -808,17 +1000,22 @@ def run_chunk(args):
             f"files             : {len(units)}",
             f"messages          : {len(man_rows)} manifest rows; " + "; ".join(f"{s} {n}" for s, n in counts.items()),
             f"points rows       : {len(point_rows)} ({len(units)} files x {len(positions)} airports)",
-            f"requests          : idx {fetcher.requests['idx']}, message {fetcher.requests['message']}; "
-            f"retries {fetcher.retries}; HTTP 404 {fetcher.not_found}",
+            f"requests          : idx {fetcher.requests['idx']}, message {fetcher.requests['message']}, "
+            f"whole file {fetcher.requests['whole']}; retries {fetcher.retries}; HTTP 404 {fetcher.not_found}",
             f"bytes downloaded  : idx {fetcher.bytes['idx']:,}, message {fetcher.bytes['message']:,}, "
-            f"total {sum(fetcher.bytes.values()):,}",
-            f"{files[0].name} sha256 {sha256_file(files[0])} ({files[0].stat().st_size:,} B)",
+            f"whole file {fetcher.bytes['whole']:,}, total {sum(fetcher.bytes.values()):,}",
+            f"whole-file fallback (D86.2): {whole_stats(fetcher)}"]
+    for rec in sorted(fetcher.whole, key=lambda r: (r["cycle"], r["fh"])):
+        meta.append(f"  fallback {rec['cycle']} f{rec['fh']:03d}: {rec['bytes']:,} B; messages walked "
+                    f"{rec['walked']}; ends at last byte {rec['ends_at_last_byte']}; ok (whole file) {rec['ok_whole']}"
+                    + (f"; walk error {rec['walk_error']}" if rec["walk_error"] else ""))
+    meta += [f"{files[0].name} sha256 {sha256_file(files[0])} ({files[0].stat().st_size:,} B)",
             f"{files[1].name} sha256 {sha256_file(files[1])} ({files[1].stat().st_size:,} B)",
             f"script sha256     : {sha256_file(Path(__file__))} (scripts/session91_grib_pull.py)",
             f"positions sha256  : {sha256_file(POSITIONS)} ({POSITIONS.name})",
             f"packages          : {versions()}",
             f"source            : {BUCKET}/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as "
-            "in the manifest"]
+            "in the manifest (for \"ok (whole file)\", the range within the whole file)"]
     if spot is not None:
         meta.append("spot check (values read by grid index vs codes_grib_find_nearest's four values): "
                     + "; ".join(f"{n} {c} f{f:03d} {i}: indices equal {a}, values equal {b}" for n, c, f, i, a, b in spots))

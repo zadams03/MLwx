@@ -1,0 +1,753 @@
+SESSION 94 OUTPUT (run 2026-10-05). Real output of each step. See DECISIONS D86 and F136.
+
+=== Step 0: integrity checks ===
+$ git status --porcelain   (run at the start, before any edit)
+(no output: the tree was clean. docs/session-94.md was already committed in 6e2eee2; expected '?? docs/session-94.md'. See F136.8 reading 1.)
+$ git log --oneline -1 -- docs/session-94.md
+6e2eee2 Session 93: D85, the Release after run 2, and the 2022-11 broken files diagnosed (F135)
+$ shasum -a 256 (at the start, before any edit)
+72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e  scripts/session91_grib_pull.py
+f61136a88ec1b787d84d083d887008af669595cc62a63e920639a737686a1955  scripts/session92_verify_chunk.py
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+fbaf73a130eb071992a7c65f03c579d926a305da0a67ebb7fb7c5bf4a89a9581  scripts/session93_diagnose.py
+All four equal F134 and F135.
+Last entries before this session: D85 (line 3325) and F135 (line 3361). grep for D86/F136 in DECISIONS.md and DECISIONS-archive.md: none.
+Versions: python 3.12.2; eccodes 2.48.0 (ecCodes library 2.48.0); numpy 2.5.2; requests 2.34.2; git 2.50.1
+
+Step 0.4, session 91's per-message check (HEAD scripts/session91_grib_pull.py):
+  l.665-671 discipline, parameterCategory, parameterNumber, typeOfFirstFixedSurface, level, stepType, startStep,
+            endStep == FIELDS identity + expected_steps(kind, fh) (instant: fh,fh; avg/max/min: 6*floor((fh-1)/6), fh)
+  l.672-674 dataDate, dataTime == cycle date, cycle hour*100
+  l.675-677 validityDate, validityTime == cycle+fh; then check_valid (window guard)
+  l.678-680 grid geometry (Ni, Nj, first/last lat and lon, both increments) == positions file; gridType == regular_ll
+  l.681-690 every airport's four grid-index values finite and not the missing value
+  'broken body' set in Fetcher.get l.350-352 (retried as a network error); final DownloadError at l.357.
+  The check tests the step range, so the stop condition (TMAX, TMIN, DSWRF windows) does not apply.
+
+=== Step 1: D86 ===
+Copied with sed from docs/session-94.md lines 79-108 into DECISIONS.md lines 3412-3441 (heading at 3410).
+diff <(sed -n '79,108p' docs/session-94.md) <(sed -n '3412,3441p' DECISIONS.md): no output (byte-equal).
+re-checked at the end: byte-equal
+
+=== Step 2: full diff of scripts/session91_grib_pull.py ===
+diff --git a/scripts/session91_grib_pull.py b/scripts/session91_grib_pull.py
+index c56e75d..4f1c2a9 100644
+--- a/scripts/session91_grib_pull.py
++++ b/scripts/session91_grib_pull.py
+@@ -25,6 +25,14 @@ The chunk output has no interpolation, no derived field and no rounding:
+ values are the decoded numbers, written with repr so they read back
+ identically (D83.5(c)). Interpolation and derivation exist only in --gate.
+ 
++Whole-file fallback (session 94, DECISIONS D86.2): when a message's byte range
++still gives a broken body (no GRIB or 7777 marker) after its retries, the
++file's .idx does not describe it (F135). The whole file is then downloaded,
++its messages are found by walking the GRIB headers, and every planned field
++of that file is taken from the one walked message that passes the same
++per-message check, with status "ok (whole file)". Network errors, HTTP errors
++and a missing .idx are handled as before.
++
+ Hard limits, enforced in code (D83.5(b)): no cycle after 2026-07-31T18 UTC;
+ no message valid after 2026-07-31T23:00 or before 2021-03-24T00:00 UTC; no
+ forecast hour outside 0 to 48.
+@@ -111,7 +119,8 @@ STEP_WORD = {"avg": "ave", "max": "max", "min": "min"}
+ POINT_COLS = ["cycle_utc", "fhour", "valid_utc", "icao"] + [f"{f}_{k}" for f in FIELD_NAMES for k in (1, 2, 3, 4)]
+ MAN_COLS = ["cycle_utc", "fhour", "field", "idx_line", "byte_range", "bytes", "status", "step_range",
+             "process_type", "reason"]
+-STATUSES = ["ok", "absent by design", "idx missing", "check failed"]
++STATUS_WHOLE = "ok (whole file)"    # session 94, D86.2
++STATUSES = ["ok", "absent by design", "idx missing", "check failed", STATUS_WHOLE]
+ GEOM_KEYS = [("Ni", "Ni"), ("Nj", "Nj"), ("lat_first", "latitudeOfFirstGridPointInDegrees"),
+              ("lon_first", "longitudeOfFirstGridPointInDegrees"), ("lat_last", "latitudeOfLastGridPointInDegrees"),
+              ("lon_last", "longitudeOfLastGridPointInDegrees"), ("di", "iDirectionIncrementInDegrees"),
+@@ -127,6 +136,7 @@ IDX_RESERVE = 50_000     # bytes reserved against the budget for one .idx reques
+ 
+ _local = threading.local()
+ _ec_lock = threading.Lock()
++_whole_lock = threading.Lock()   # D86.2: at most one whole file in memory across all workers
+ 
+ 
+ class GuardError(Exception):
+@@ -137,6 +147,12 @@ class DownloadError(Exception):
+     """A download failed after its retries. The chunk fails and writes nothing."""
+ 
+ 
++class BrokenBody(DownloadError):
++    """A message's byte range still gave a broken body (no GRIB or 7777 marker)
++    after its retries. process_file sends the file to the whole-file fallback
++    (D86.2); anywhere else it stops the chunk as any DownloadError does."""
++
++
+ class BudgetStop(Exception):
+     """The byte budget would be passed. The chunk stops and writes nothing."""
+ 
+@@ -299,10 +315,11 @@ class Fetcher:
+         self.budget = budget
+         self.lock = threading.Lock()
+         self.reserved = 0
+-        self.bytes = {"idx": 0, "message": 0}
+-        self.requests = {"idx": 0, "message": 0}
++        self.bytes = {"idx": 0, "message": 0, "whole": 0}
++        self.requests = {"idx": 0, "message": 0, "whole": 0}
+         self.retries = 0
+         self.not_found = 0
++        self.whole = []     # D86.2: one record per file that fell back (see process_whole_file)
+ 
+     def session(self):
+         if not hasattr(_local, "s"):
+@@ -324,11 +341,13 @@ class Fetcher:
+         self.reserve(expected_len if expected_len is not None else IDX_RESERVE)
+         headers = {"Range": f"bytes={byte_range}"} if byte_range else {}
+         last = None
++        broken = False      # D86.2: whether the last failure was a broken body
+         for attempt in range(RETRIES + 1):
+             if attempt:
+                 with self.lock:
+                     self.retries += 1
+                 time.sleep(2.0 * 2 ** (attempt - 1))
++            broken = False
+             try:
+                 r = self.session().get(url, headers=headers, timeout=(20, 180))
+             except requests.RequestException as e:
+@@ -349,12 +368,65 @@ class Fetcher:
+                 continue
+             if kind == "message" and (body[:4] != b"GRIB" or body[-4:] != b"7777"):
+                 last = "broken body (no GRIB or 7777 marker)"
++                broken = True
+                 continue
+             with self.lock:
+                 self.bytes[kind] += len(body)
+                 self.requests[kind] += 1
+             return body
+-        raise DownloadError(f"{url} {byte_range or ''}: failed after {RETRIES} retries: {last}")
++        raise (BrokenBody if broken else DownloadError)(
++            f"{url} {byte_range or ''}: failed after {RETRIES} retries: {last}")
++
++    def get_whole(self, url):
++        """D86.2: one whole GRIB file, in memory, with get's retry policy (network
++        errors, 429 and 5xx retried; a 404 or any other status stops at once). The
++        bytes received must equal the response's Content-Length; a shorter or
++        longer body counts as a network error and is retried."""
++        last = None
++        reserved = False
++        for attempt in range(RETRIES + 1):
++            if attempt:
++                with self.lock:
++                    self.retries += 1
++                time.sleep(2.0 * 2 ** (attempt - 1))
++            try:
++                with self.session().get(url, timeout=(20, 180), stream=True) as r:
++                    if r.status_code == 404:
++                        with self.lock:
++                            self.not_found += 1
++                        raise DownloadError(f"{url} (whole file): HTTP 404 for a file whose .idx exists")
++                    if r.status_code == 429 or 500 <= r.status_code <= 599:
++                        last = f"HTTP {r.status_code}"
++                        continue
++                    if r.status_code != 200:
++                        raise DownloadError(f"{url} (whole file): HTTP {r.status_code}")
++                    if "Content-Length" not in r.headers:
++                        raise DownloadError(f"{url} (whole file): no Content-Length")
++                    n = int(r.headers["Content-Length"])
++                    if not reserved:
++                        self.reserve(n)
++                        reserved = True
++                    body = r.content
++            except requests.RequestException as e:
++                last = f"network error {e!r}"
++                continue
++            if len(body) != n:
++                last = f"body {len(body)} bytes, Content-Length {n}"
++                continue
++            with self.lock:
++                self.bytes["whole"] += len(body)
++                self.requests["whole"] += 1
++            return body
++        raise DownloadError(f"{url} (whole file): failed after {RETRIES} retries: {last}")
++
++
++def whole_stats(fetcher):
++    """D86.2: the fallback's counts, for the progress lines, the closing summary
++    and the meta."""
++    with fetcher.lock:
++        recs = list(fetcher.whole)
++    return (f"whole-file fallbacks {len(recs)} files, {sum(r['bytes'] for r in recs):,} B, "
++            f"{sum(r['ok_whole'] for r in recs)} messages ok (whole file)")
+ 
+ 
+ def file_url(cycle, fh):
+@@ -618,6 +690,147 @@ def run_positions(args):
+ 
+ # ------------------------------------------------------------------ one file: .idx, messages, values
+ 
++def check_message(gid, ident, steps, cycle, valid, positions, geom):
++    """Session 91's per-message check, moved here unchanged from process_file so
++    the whole-file fallback (D86.2) applies the same check. Tests identity
++    (discipline, category, number, surface type, level), stepType, startStep
++    and endStep, run date and time, full validity date and hour, grid geometry,
++    and a finite value at every airport's four grid indices. Raises ValueError
++    (or an eccodes error) if the message fails, GuardError if a hard limit
++    fires. Returns the 4 values per airport, read by grid index."""
++    got = (tuple(ec.codes_get_long(gid, k) for k in ("discipline", "parameterCategory", "parameterNumber",
++                                                      "typeOfFirstFixedSurface", "level"))
++           + (ec.codes_get_string(gid, "stepType"), ec.codes_get_long(gid, "startStep"),
++              ec.codes_get_long(gid, "endStep")))
++    vd, vt = ec.codes_get_long(gid, "validityDate"), ec.codes_get_long(gid, "validityTime")
++    if got != ident + steps:
++        raise ValueError(f"identity {got} != expected {ident + steps}")
++    if (ec.codes_get_long(gid, "dataDate") != int(f"{cycle:%Y%m%d}")
++            or ec.codes_get_long(gid, "dataTime") != cycle.hour * 100):
++        raise ValueError("run date or time mismatch")
++    if vd != int(f"{valid:%Y%m%d}") or vt != valid.hour * 100:
++        raise ValueError(f"validity {vd} {vt:04d} != expected {valid:%Y%m%d %H%M}")
++    check_valid(dt.datetime(vd // 10000, (vd // 100) % 100, vd % 100, vt // 100, vt % 100))
++    g = msg_geometry(gid)
++    if g != geom or ec.codes_get_string(gid, "gridType") != "regular_ll":
++        raise ValueError(f"grid geometry {g} differs from the positions file")
++    values = ec.codes_get_values(gid)
++    missing = ec.codes_get_double(gid, "missingValue")
++    bitmap = ec.codes_get_long(gid, "bitmapPresent")
++    out = []
++    for p in positions:
++        for i in p["indices"]:
++            v = float(values[i])
++            if not math.isfinite(v) or (bitmap and v == missing):
++                raise ValueError(f"missing or non-finite value at grid index {i} ({p['icao']})")
++            out.append(v)
++    return out
++
++
++def walk_messages(data):
++    """D86.2: the file's message boundaries from its own GRIB headers, not the
++    .idx. From byte 0: "GRIB", edition 2, the 8-byte total length (section 0,
++    bytes 8 to 15), "7777" at that message's end, then the next. The walk must
++    end exactly at the file's last byte. Returns [(offset, length)]; raises
++    ValueError if any of this fails."""
++    out, pos, n = [], 0, len(data)
++    while pos < n:
++        if n - pos < 16:
++            raise ValueError(f"{n - pos} bytes left at offset {pos}, too few for a section 0")
++        if data[pos:pos + 4] != b"GRIB":
++            raise ValueError(f"no 'GRIB' at offset {pos}")
++        if data[pos + 7] != 2:
++            raise ValueError(f"edition {data[pos + 7]} at offset {pos}, not 2")
++        length = int.from_bytes(data[pos + 8:pos + 16], "big")
++        if length < 20 or pos + length > n:
++            raise ValueError(f"total length {length} at offset {pos} does not fit a file of {n} bytes")
++        if data[pos + length - 4:pos + length] != b"7777":
++            raise ValueError(f"no '7777' at the end of the message at offset {pos} (length {length})")
++        out.append((pos, length))
++        pos += length
++    if not out or pos != n:
++        raise ValueError(f"the walk ended at byte {pos}, not at the file's end ({n})")
++    return out
++
++
++def process_whole_file(fetcher, cycle, fh, positions, geom, trigger):
++    """D86.2: the whole-file fallback for one GRIB file whose .idx ranges give a
++    persistently broken body. Downloads the whole file (one at a time across all
++    workers, in memory only), walks its GRIB headers, and for each planned field
++    applies check_message to every walked message: exactly one must pass. That
++    message's values are used, with status "ok (whole file)". If the walk fails,
++    every planned field is "check failed"; so is a field with none or more than
++    one passing message. Fields absent by design stay so. Returns (manifest
++    rows, {field: values}) as process_file does, and adds one record to
++    fetcher.whole."""
++    valid = cycle + dt.timedelta(hours=fh)
++    url = file_url(cycle, fh)
++    planned = [f for f in FIELDS if selector(f[3], fh) is not None]
++    passes = {f[0]: [] for f in planned}
++    chosen = {}
++    with _whole_lock:
++        data = fetcher.get_whole(url)
++        size = len(data)
++        try:
++            walk, walk_err = walk_messages(data), None
++        except ValueError as e:
++            walk, walk_err = None, str(e)
++        for off, n in walk or []:
++            with _ec_lock:
++                gid = ec.codes_new_from_message(data[off:off + n])
++                try:
++                    for name, var, level, kind, ident in planned:
++                        try:
++                            got_vals = check_message(gid, ident, expected_steps(kind, fh), cycle, valid,
++                                                     positions, geom)
++                        except GuardError:
++                            raise
++                        except Exception:  # noqa: BLE001
++                            continue
++                        passes[name].append(off)
++                        step_range = ec.codes_get_string(gid, "stepRange")
++                        ptype = ec.codes_get_string(gid, "stepType")
++                        if ec.codes_is_defined(gid, "typeOfStatisticalProcessing"):
++                            ptype += (f" (typeOfStatisticalProcessing "
++                                      f"{ec.codes_get_long(gid, 'typeOfStatisticalProcessing')})")
++                        chosen[name] = (off, n, step_range, ptype, got_vals,
++                                        hashlib.sha256(data[off:off + n]).hexdigest())
++                finally:
++                    ec.codes_release(gid)
++        del data
++    n_walk = len(walk) if walk is not None else None
++    man, vals = [], {}
++    for name, var, level, kind, ident in FIELDS:
++        base = [iso(cycle), fh, name]
++        if selector(kind, fh) is None:
++            man.append(base + ["", "", "", "absent by design", "", "", f"GFS gives no {kind} {var} at f000"])
++            continue
++        if walk is None:
++            man.append(base + ["", "", "", "check failed", "", "",
++                               f"whole file ({size} B): the header walk failed: {walk_err}; trigger: {trigger}"])
++            continue
++        k = len(passes[name])
++        if k != 1:
++            man.append(base + ["", "", "", "check failed", "", "",
++                               f"whole file ({size} B, {n_walk} messages walked): {k} messages pass the check, "
++                               f"not exactly 1; trigger: {trigger}"])
++            continue
++        off, n, step_range, ptype, got_vals, _ = chosen[name]
++        man.append(base + ["", f"{off}-{off + n - 1}", n, STATUS_WHOLE, step_range, ptype,
++                           f"whole file ({size} B, {n_walk} messages walked; range is within the file); "
++                           f"trigger: {trigger}"])
++        vals[name] = got_vals
++    with fetcher.lock:
++        fetcher.whole.append({
++            "url": url, "cycle": iso(cycle), "fh": fh, "bytes": size, "trigger": trigger,
++            "walked": n_walk, "walk_error": walk_err, "ends_at_last_byte": walk is not None,
++            "passes": {name: len(v) for name, v in passes.items()},
++            "selected": {name: {"offset": c[0], "length": c[1], "sha256": c[5]} for name, c in chosen.items()
++                         if len(passes[name]) == 1},
++            "ok_whole": len(vals)})
++    return man, vals
++
++
+ def process_file(fetcher, cycle, fh, positions, geom, spot=None):
+     """Fetches the .idx and every needed message of one GRIB file, checks each
+     message and reads the 4 values per airport by grid index. Returns
+@@ -653,6 +866,11 @@ def process_file(fetcher, cycle, fh, positions, geom, spot=None):
+             data = fetcher.get(url, "message", rng, exp)
+         except NotFound:
+             raise DownloadError(f"{url} {rng}: HTTP 404 for a message listed in its .idx")
++        except BrokenBody as e:
++            # D86.2: the .idx does not describe this file. Every planned field,
++            # including any already read by range, comes from the whole file.
++            man, vals = process_whole_file(fetcher, cycle, fh, positions, geom, f"{name} {rng}: {e}")
++            return man, vals, []
+         stype, s0, s1 = expected_steps(kind, fh)
+         status, reason, step_range, ptype, got_vals = "ok", "", "", "", None
+         with _ec_lock:
+@@ -662,33 +880,7 @@ def process_file(fetcher, cycle, fh, positions, geom, spot=None):
+                 ptype = ec.codes_get_string(gid, "stepType")
+                 if ec.codes_is_defined(gid, "typeOfStatisticalProcessing"):
+                     ptype += f" (typeOfStatisticalProcessing {ec.codes_get_long(gid, 'typeOfStatisticalProcessing')})"
+-                got = (tuple(ec.codes_get_long(gid, k) for k in ("discipline", "parameterCategory", "parameterNumber",
+-                                                                  "typeOfFirstFixedSurface", "level"))
+-                       + (ec.codes_get_string(gid, "stepType"), ec.codes_get_long(gid, "startStep"),
+-                          ec.codes_get_long(gid, "endStep")))
+-                vd, vt = ec.codes_get_long(gid, "validityDate"), ec.codes_get_long(gid, "validityTime")
+-                if got != ident + (stype, s0, s1):
+-                    raise ValueError(f"identity {got} != expected {ident + (stype, s0, s1)}")
+-                if (ec.codes_get_long(gid, "dataDate") != int(f"{cycle:%Y%m%d}")
+-                        or ec.codes_get_long(gid, "dataTime") != cycle.hour * 100):
+-                    raise ValueError("run date or time mismatch")
+-                if vd != int(f"{valid:%Y%m%d}") or vt != valid.hour * 100:
+-                    raise ValueError(f"validity {vd} {vt:04d} != expected {valid:%Y%m%d %H%M}")
+-                check_valid(dt.datetime(vd // 10000, (vd // 100) % 100, vd % 100, vt // 100, vt % 100))
+-                g = msg_geometry(gid)
+-                if g != geom or ec.codes_get_string(gid, "gridType") != "regular_ll":
+-                    raise ValueError(f"grid geometry {g} differs from the positions file")
+-                values = ec.codes_get_values(gid)
+-                missing = ec.codes_get_double(gid, "missingValue")
+-                bitmap = ec.codes_get_long(gid, "bitmapPresent")
+-                out = []
+-                for p in positions:
+-                    for i in p["indices"]:
+-                        v = float(values[i])
+-                        if not math.isfinite(v) or (bitmap and v == missing):
+-                            raise ValueError(f"missing or non-finite value at grid index {i} ({p['icao']})")
+-                        out.append(v)
+-                got_vals = out
++                got_vals = check_message(gid, ident, (stype, s0, s1), cycle, valid, positions, geom)
+             except GuardError:
+                 ec.codes_release(gid)
+                 raise
+@@ -763,13 +955,13 @@ def run_chunk(args):
+             done += 1
+             if done % 50 == 0 or done == len(units):
+                 print(f"  {done}/{len(units)} files; {sum(fetcher.bytes.values()):,} bytes; "
+-                      f"{time.time() - t0:,.0f} s", flush=True)
++                      f"{time.time() - t0:,.0f} s; {whole_stats(fetcher)}", flush=True)
+     except (DownloadError, BudgetStop, GuardError) as e:
+         ex.shutdown(wait=True, cancel_futures=True)
+         print(f"\nCHUNK FAILED, NOTHING WRITTEN: {type(e).__name__}: {e}")
+         print(f"read before the stop: files done {done} of {len(units)}; requests {fetcher.requests}; "
+               f"bytes {fetcher.bytes} (total {sum(fetcher.bytes.values()):,}); retries {fetcher.retries}; "
+-              f"seconds {time.time() - t0:,.0f}")
++              f"seconds {time.time() - t0:,.0f}; {whole_stats(fetcher)}")
+         return 2
+     ex.shutdown(wait=True)
+ 
+@@ -808,17 +1000,22 @@ def run_chunk(args):
+             f"files             : {len(units)}",
+             f"messages          : {len(man_rows)} manifest rows; " + "; ".join(f"{s} {n}" for s, n in counts.items()),
+             f"points rows       : {len(point_rows)} ({len(units)} files x {len(positions)} airports)",
+-            f"requests          : idx {fetcher.requests['idx']}, message {fetcher.requests['message']}; "
+-            f"retries {fetcher.retries}; HTTP 404 {fetcher.not_found}",
++            f"requests          : idx {fetcher.requests['idx']}, message {fetcher.requests['message']}, "
++            f"whole file {fetcher.requests['whole']}; retries {fetcher.retries}; HTTP 404 {fetcher.not_found}",
+             f"bytes downloaded  : idx {fetcher.bytes['idx']:,}, message {fetcher.bytes['message']:,}, "
+-            f"total {sum(fetcher.bytes.values()):,}",
+-            f"{files[0].name} sha256 {sha256_file(files[0])} ({files[0].stat().st_size:,} B)",
++            f"whole file {fetcher.bytes['whole']:,}, total {sum(fetcher.bytes.values()):,}",
++            f"whole-file fallback (D86.2): {whole_stats(fetcher)}"]
++    for rec in sorted(fetcher.whole, key=lambda r: (r["cycle"], r["fh"])):
++        meta.append(f"  fallback {rec['cycle']} f{rec['fh']:03d}: {rec['bytes']:,} B; messages walked "
++                    f"{rec['walked']}; ends at last byte {rec['ends_at_last_byte']}; ok (whole file) {rec['ok_whole']}"
++                    + (f"; walk error {rec['walk_error']}" if rec["walk_error"] else ""))
++    meta += [f"{files[0].name} sha256 {sha256_file(files[0])} ({files[0].stat().st_size:,} B)",
+             f"{files[1].name} sha256 {sha256_file(files[1])} ({files[1].stat().st_size:,} B)",
+             f"script sha256     : {sha256_file(Path(__file__))} (scripts/session91_grib_pull.py)",
+             f"positions sha256  : {sha256_file(POSITIONS)} ({POSITIONS.name})",
+             f"packages          : {versions()}",
+             f"source            : {BUCKET}/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as "
+-            "in the manifest"]
++            "in the manifest (for \"ok (whole file)\", the range within the whole file)"]
+     if spot is not None:
+         meta.append("spot check (values read by grid index vs codes_grib_find_nearest's four values): "
+                     + "; ".join(f"{n} {c} f{f:03d} {i}: indices equal {a}, values equal {b}" for n, c, f, i, a, b in spots))
+
+offline checks of the edited script:
+SESSION 91 --guard-check (offline: no network call, no data read)
+  [OK ] cycle 2026-07-31T18 f006 (valid 2026-08-01T00): REFUSED (valid time 2026-08-01T00:00Z is after 2026-07-31T23:00Z)
+  [OK ] cycle 2026-08-01T00 f000: REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+  [OK ] valid 2021-03-23T23 (cycle 2021-03-23T18 f005): REFUSED (valid time 2021-03-23T23:00Z is before 2021-03-24T00:00Z)
+  [OK ] --hours 0-49: REFUSED (--hours 0-49 is outside 0 to 48)
+  [OK ] writing over an existing output file: REFUSED (an output file already exists, not writing over it: <tmp>
+  [OK ] writing to an absent output file: allowed
+  [OK ] cycle 2026-07-31T18 f005 (valid 2026-07-31T23): allowed
+  [OK ] cycle 2021-03-23T00 f024 (valid 2021-03-24T00): allowed
+  [OK ] --month 2026-08: REFUSED (month 2026-08 is outside 2021-03 to 2026-07)
+  [OK ] --chunk --dates 2026-08-01 (cycles after the last): REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+temporary directory deleted: True
+all cases behaved as specified
+total                                         7828 195600  1932528 2021-03-24T00:00Z 2026-07-31T23:00Z
+valid times outside the window: 0
+
+=== Step 3: full diff of scripts/session92_verify_chunk.py ===
+diff --git a/scripts/session92_verify_chunk.py b/scripts/session92_verify_chunk.py
+index 123ab21..693651b 100644
+--- a/scripts/session92_verify_chunk.py
++++ b/scripts/session92_verify_chunk.py
+@@ -30,7 +30,7 @@ The D84.4 fail rules, one named check each (expected and found are printed):
+   manifest rows   one row per file and field
+   messages        rows that are not absent by design: the plan's message count
+   points rows     one row per file and airport, airports as the positions file
+-  statuses        every status is one of session 91's four
++  statuses        every status is one of session 91's statuses
+   check failed    no message is "check failed"
+   absent by design  exactly DSWRF, TMAX and TMIN at f000, and nothing else
+   duplicate keys  no (cycle, hour, field) or (cycle, hour, airport) twice
+@@ -38,8 +38,12 @@ The D84.4 fail rules, one named check each (expected and found are printed):
+   non-ok values   a non-ok message has no cell filled
+   meta sha256     the meta's two data-file SHA-256 values equal the files'
+ "idx missing" messages do not fail the month: their count is printed.
++"ok (whole file)" (session 94, DECISIONS D86.2) is treated as ok by every
++value check and never fails a month by itself: its count is printed beside
++"idx missing".
+ The two value checks together reconcile the files: a points row's cells for
+-a field are filled exactly when that cycle, hour and field's status is ok.
++a field are filled exactly when that cycle, hour and field's status is ok or
++"ok (whole file)".
+ 
+ No forecast value is printed by the checks, only counts and keys. --ranges
+ prints each field's minimum and maximum; --gate prints values only for a
+@@ -73,6 +77,9 @@ BOUNDS = {"t2m": (150.0, 350.0), "d2m": (150.0, 350.0), "t850": (150.0, 350.0),
+ # other column of the training set is kept (no observation or target column).
+ GATE_KEY_COLS = ["station", "target_date"]
+ 
++# Statuses whose cells are filled (D86.2: "ok (whole file)" counts as ok).
++OK_STATUSES = ("ok", p91.STATUS_WHOLE)
++
+ 
+ def read_gz_csv(path):
+     with gzip.open(path, "rt", newline="") as f:
+@@ -185,7 +192,7 @@ def run_checks(args, hours):
+                 no_status += 1
+                 continue
+             cells = [r[pc[f"{f}_{j}"]] for j in (1, 2, 3, 4)]
+-            if sts == ["ok"]:
++            if len(sts) == 1 and sts[0] in OK_STATUSES:
+                 ok_cells += 4
+                 for s in cells:
+                     try:
+@@ -220,7 +227,9 @@ def run_checks(args, hours):
+     check("meta sha256", "both data files' SHA-256 as in the meta", "; ".join(found_sha), meta_ok)
+ 
+     n_idx = sum(1 for r in m_rows if r[mc["status"]] == "idx missing")
+-    print(f"\n\"idx missing\" messages (published, left empty, not a fail): {n_idx}")
++    n_whole = sum(1 for r in m_rows if r[mc["status"]] == p91.STATUS_WHOLE)
++    print(f"\n\"idx missing\" messages (published, left empty, not a fail): {n_idx}; "
++          f"\"{p91.STATUS_WHOLE}\" messages (published, filled from the whole file, not a fail): {n_whole}")
+     for s in p91.STATUSES:
+         print(f"  status {s!r}: {sum(1 for r in m_rows if r[mc['status']] == s)}")
+     n_fail = sum(1 for _, ok in results if not ok)
+@@ -337,7 +346,7 @@ def run_gate(args, hours):
+                         continue
+                     k = (p91.iso(c), a["lead"] + off)
+                     s = status.get(k + (fname,))
+-                    if s != "ok":
++                    if s not in OK_STATUSES:
+                         raise ValueError(f"{fname} at {k[0]} f{k[1]:03d} has status {s!r}")
+                     row = points[k + (p["icao"],)]
+                     got[key] = p91.bilinear_stored(p, [float(row[f"{fname}_{j}"]) for j in (1, 2, 3, 4)])
+@@ -367,7 +376,8 @@ def run_gate(args, hours):
+     n_try = sum(days.values()) + len(no_row) + len(not_built)
+     print(f"station-days in the month: {n_try}; rebuilt and compared {sum(days.values())}")
+     print(f"station-days with no committed row (not a failure): {len(no_row)} {no_row or ''}")
+-    print(f"station-days not rebuilt (a needed message not ok): {len(not_built)} {not_built or ''}")
++    print(f"station-days not rebuilt (a needed message not ok or ok (whole file)): {len(not_built)} "
++          f"{not_built or ''}")
+     print(f"mismatches: {len(mism)}")
+     for st, t, c, col, cv, rv in mism:
+         print(f"  MISMATCH {st} {t} (cycle {c}) {col}: committed {cv!r}, rebuilt {rv!r}")
+
+--- negative tests (driver in the session scratchpad, outside the repo) ---
+temporary directory: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session94_verify_neg_pcg4u54q
+round trip (read and re-gzip unchanged): points identical True, manifest identical True
+
+(untouched copy): exit 0 (expected 0) AS SPECIFIED; checks passed 13 of 13
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(a): manifest row 1: 2022-01-01T00:00Z f0 t2m status ok -> check failed
+(a): exit 1 (expected 1) AS SPECIFIED; checks passed 11 of 13; failed: check failed, non-ok values
+      [FAIL] check failed      expected 0; found 1
+      [FAIL] non-ok values     expected 76092 cells empty; found 51 field groups with a cell filled
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30627
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 1
+      status 'ok (whole file)': 0
+
+(b): points row 1 deleted: 2022-01-01T00:00Z f0 CYYZ
+(b): exit 1 (expected 1) AS SPECIFIED; checks passed 12 of 13; failed: points rows
+      [FAIL] points rows       expected 158100; found 158099; keys the plan's False
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(c): points row 1 duplicated: 2022-01-01T00:00Z f0 CYYZ
+(c): exit 1 (expected 1) AS SPECIFIED; checks passed 11 of 13; failed: points rows, duplicate keys
+      [FAIL] points rows       expected 158100; found 158101; keys the plan's True
+      [FAIL] duplicate keys    expected 0; found manifest 0, points 1
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(d): points row 1 (2022-01-01T00:00Z f0 CYYZ) t2m_1 emptied (an ok message)
+(d): exit 1 (expected 1) AS SPECIFIED; checks passed 12 of 13; failed: ok values
+      [FAIL] ok values         expected 6248112 cells filled and finite; found 1 cells empty, non-finite or unreadable; 0 field cells with no manifest row
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(e): points row 1 (2022-01-01T00:00Z f0 CYYZ) dswrf_1 filled with '0.0' (absent by design)
+(e): exit 1 (expected 1) AS SPECIFIED; checks passed 12 of 13; failed: non-ok values
+      [FAIL] non-ok values     expected 75888 cells empty; found 1 field groups with a cell filled
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(f): manifest row 7: 2022-01-01T00:00Z f0 dswrf status absent by design -> ok
+(f): exit 1 (expected 1) AS SPECIFIED; checks passed 10 of 13; failed: messages, absent by design, ok values
+      [FAIL] messages          expected 30628; found 30629
+      [FAIL] absent by design  expected 372 (dswrf, tmax2m, tmin2m at f000 only); found 371; not expected 0, expected but not absent 1
+      [FAIL] ok values         expected 6248316 cells filled and finite; found 204 cells empty, non-finite or unreadable; 0 field cells with no manifest row
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30629
+      status 'absent by design': 371
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(g): meta points SHA-256 last character 0 -> 1
+(g): exit 1 (expected 1) AS SPECIFIED; checks passed 12 of 13; failed: meta sha256
+      [FAIL] meta sha256       expected both data files' SHA-256 as in the meta; found gfs_points_2022-01.csv.gz NOT EQUAL; manifest_2022-01.csv.gz equal
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30628
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+(h) new: manifest row 1: 2022-01-01T00:00Z f0 t2m status ok -> ok (whole file)
+(h) new: exit 0 (expected 0) AS SPECIFIED; checks passed 13 of 13
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 1
+      status 'ok': 30627
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 1
+
+(i) new: manifest row 1: 2022-01-01T00:00Z f0 t2m status ok -> ok (from elsewhere)
+(i) new: exit 1 (expected 1) AS SPECIFIED; checks passed 11 of 13; failed: statuses, non-ok values
+      [FAIL] statuses          expected only ['ok', 'absent by design', 'idx missing', 'check failed', 'ok (whole file)']; found unknown ['ok (from elsewhere)']
+      [FAIL] non-ok values     expected 76092 cells empty; found 51 field groups with a cell filled
+    "idx missing" messages (published, left empty, not a fail): 0; "ok (whole file)" messages (published, filled from the whole file, not a fail): 0
+      status 'ok': 30627
+      status 'absent by design': 372
+      status 'idx missing': 0
+      status 'check failed': 0
+      status 'ok (whole file)': 0
+
+cases as specified: 10 of 10
+source files unchanged: gfs_points_2022-01.csv.gz True, manifest_2022-01.csv.gz True, chunk_2022-01.meta.txt True
+temporary directory deleted: True
+
+=== Steps 4 and 5: scripts/session94_fallback_gate.py (run once) ===
+SESSION 94 fallback gate; started 2026-10-05T17:24:55Z
+temporary directory: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session94_gate_xu9igwlq
+HEAD script SHA-256 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e (F133/F134/F135 72c263b24b06d2e6ab8d1a9c9be3444ddc3ee1c4a8b2cf445556cbedddd1652e): equal True
+edited script SHA-256 b52ffc2ee741853079aa8cb7b63850645fb93974a6e4f39d7f20fb212a432f1f
+positions file SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+packages: python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+
+=== Step 4: the normal path is unchanged (HEAD vs edited, process_file) ===
+HEAD  : 30 manifest rows, 153 points rows; statuses {'ok': 27, 'absent by design': 3}; files fallen back 0; requests {'idx': 3, 'message': 27}; bytes {'idx': 113562, 'message': 22659750} (total 22,773,312); retries 0; HTTP 404 0
+edited: 30 manifest rows, 153 points rows; statuses {'ok': 27, 'absent by design': 3}; files fallen back 0; requests {'idx': 3, 'message': 27, 'whole': 0}; bytes {'idx': 113562, 'message': 22659750, 'whole': 0} (total 22,773,312); retries 0; HTTP 404 0
+manifest rows string-equal: True; points rows string-equal: True; no file fell back: True
+STEP 4 PASSED
+
+=== Step 5.1: the fallback forced on healthy files (gate only) ===
+
+2022-11-29T18:00Z f000: whole file 508,028,392 B; .idx lines 696; messages walked 696; walk ends at the last byte True; walk error none
+  field                .idx range         walk offset-end passing status           SHA-256 equal  SHA-256 (walk)
+  t2m         416525931-417406490     416525931-417406490       1 ok (whole file)           True  e7224e94ed8776edb1865def79446310ad4168f2f260498eb9c132eaa29d352f
+  tcdc        433509137-434332488     433509137-434332488       1 ok (whole file)           True  fadb46deac0bb3731188911c3dcf41bc4d2ead19f3d6745c90c218b2f1b1d44c
+  u10         420854891-421820642     420854891-421820642       1 ok (whole file)           True  9bca13c5f772385167e83f13058ebb3e71858bd5d354c60a7128eb6c3bfe93b5
+  v10         421820643-422764640     421820643-422764640       1 ok (whole file)           True  a3fb2124c77a58f0b2a892e1a1e01163635430c6b784900e57239896ba354b87
+  d2m         418594185-419127593     418594185-419127593       1 ok (whole file)           True  89713329d097219c4b6dfcac9672539a9a5f089c3889e4068ba5aa1d2ddd9bbb
+  t850        336525895-337378060     336525895-337378060       1 ok (whole file)           True  cc6df1de0d7331c5f51141f69b7052d29fb5df87b43f801421b6b5e250522cdb
+  dswrf                         -                       -       - absent by design
+  prmsl                  0-870118                0-870118       1 ok (whole file)           True  102ab375296d92e736b6cde4375cf2f9d3ccb9b39f606ec3a0a0fec945aad42a
+  tmax2m                        -                       -       - absent by design
+  tmin2m                        -                       -       - absent by design
+
+2022-11-29T18:00Z f001: whole file 536,786,974 B; .idx lines 743; messages walked 743; walk ends at the last byte True; walk error none
+  field                .idx range         walk offset-end passing status           SHA-256 equal  SHA-256 (walk)
+  t2m         417119786-417999651     417119786-417999651       1 ok (whole file)           True  f32991aca37f2ef2b5f25b73f7a6effd3ae79654b9e4d29c382c1baa896d0807
+  tcdc        444976720-445806424     444976720-445806424       1 ok (whole file)           True  eb4f7fca1fd08c71d8c498b6f644f09f795f8f4544d4ba129da6aa72b3f7cf10
+  u10         423196983-424162540     423196983-424162540       1 ok (whole file)           True  e315f8b44febca42b4687553a2e45e0e6c4072b153fd6cf9ddf7df5b997f970b
+  v10         424162541-425106689     424162541-425106689       1 ok (whole file)           True  f2e82c296390e7f3b46a1dfc322beaf0cd4d1c80d20d2ad8342eff47a351ad6d
+  d2m         419187792-419724748     419187792-419724748       1 ok (whole file)           True  c48a923fe690f533aeb6640084009d6a98ef9f99bc6f4fb20a50f44f3abba663
+  t850        336590757-337443350     336590757-337443350       1 ok (whole file)           True  4e681c735b9c9516c20cdf7c83adaeabbb2adc9bb8a30d66f1915961c8a06b3f
+  dswrf       460168732-460948488     460168732-460948488       1 ok (whole file)           True  6032afd1b809fd8889eac7f899be7f072177fdf7f147b27f2d7fa5f36744fde0
+  prmsl                  0-869671                0-869671       1 ok (whole file)           True  729f6ac7bf2efbe02bca49574f7667687606de4d282552b76fdb6608ec9c95d6
+  tmax2m      421453103-422319953     421453103-422319953       1 ok (whole file)           True  f808c67b587b640caca14a6aa1eba0b4302c7721ed19a9064bbac86a41c0605a
+  tmin2m      422319954-423196982     422319954-423196982       1 ok (whole file)           True  2d1696362f39e9d5c7669b8386af8328b3dc9729665d2fcb60026d32726a9f9b
+
+points rows of the forced fallback string-equal to Step 4's (same 102 rows): True
+requests {'idx': 2, 'message': 17, 'whole': 2}; bytes {'idx': 72326, 'message': 14271494, 'whole': 1044815366} (total 1,059,159,186); retries 0; HTTP 404 0
+STEP 5.1 PASSED
+
+=== Step 5.2: the broken files, through the edited pull's normal entry point (process_file) ===
+
+2022-11-29T18:00Z f002: fell back by itself True (376 s)
+  trigger: t2m 419336616-420214434: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20221129/18/atmos/gfs.t18z.pgrb2.0p25.f002 419336616-420214434: failed after 5 retries: broken body (no GRIB or 7777 marker)
+  whole file 539,275,914 B; messages walked 743; walk ends at the last byte True; walk error none
+  field   passing status                     range in file
+  t2m           1 ok (whole file)      417969131-418848475
+  tcdc          1 ok (whole file)      446145151-446980659
+  u10           1 ok (whole file)      424032991-424998863
+  v10           1 ok (whole file)      424998864-425943008
+  d2m           1 ok (whole file)      420037224-420570792
+  t850          1 ok (whole file)      337820825-338672206
+  dswrf         1 ok (whole file)      462188175-462985520
+  prmsl         1 ok (whole file)                 0-868967
+  tmax2m        1 ok (whole file)      422300643-423159689
+  tmin2m        1 ok (whole file)      423159690-424032990
+
+2022-11-30T06:00Z f024: fell back by itself True (520 s)
+  trigger: t2m 427454899-428323505: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20221130/06/atmos/gfs.t06z.pgrb2.0p25.f024 427454899-428323505: failed after 5 retries: broken body (no GRIB or 7777 marker)
+  whole file 553,400,757 B; messages walked 743; walk ends at the last byte True; walk error none
+  field   passing status                     range in file
+  t2m           1 ok (whole file)      428788558-429657447
+  tcdc          1 ok (whole file)      458647219-459455456
+  u10           1 ok (whole file)      434794050-435753803
+  v10           1 ok (whole file)      435753804-436690956
+  d2m           1 ok (whole file)      430844218-431374550
+  t850          1 ok (whole file)      348690731-349532257
+  dswrf         1 ok (whole file)      475713864-476619162
+  prmsl         1 ok (whole file)                 0-986274
+  tmax2m        1 ok (whole file)      433095300-433931497
+  tmin2m        1 ok (whole file)      433931498-434794049
+
+requests {'idx': 2, 'message': 0, 'whole': 2}; bytes {'idx': 81769, 'message': 0, 'whole': 1092676671} (total 1,092,758,440); retries 10; HTTP 404 0
+whole-file records: 2022-11-29T18:00Z f002 539,275,914 B; 2022-11-30T06:00Z f024 553,400,757 B
+STEP 5.2 PASSED
+
+ALL GATE STEPS PASSED
+temporary directory deleted: True
+seconds: 1,773
+exit 0
+
+=== Final SHA-256 ===
+b52ffc2ee741853079aa8cb7b63850645fb93974a6e4f39d7f20fb212a432f1f  scripts/session91_grib_pull.py
+7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a  scripts/session92_verify_chunk.py
+0aa3b713ef37f4c9614d60340fbe39f93a55d908fb84438bce362b98ee4f50c8  scripts/session94_fallback_gate.py
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+MLwx-pull/ (equal to F134.1, unchanged):
+9bf877998057505812a4ea38cdf6e432716d5a7159e29c0954c815f676a1db4e  MLwx-pull/chunk_2022-01.meta.txt
+e9d9d885cc918073c0c788371dc275e5719f5369077b0d78374efd9ca8ece130  MLwx-pull/gfs_points_2022-01.csv.gz
+4789354a079b59b19970da515699cd4d29e4dbe19daa8962893ebbe99b570ff1  MLwx-pull/manifest_2022-01.csv.gz
+
+=== End-of-session consistency check (SPEC.md, STATUS.md, DECISIONS.md re-read; report only, nothing fixed) ===
+- Duplicated headings: none in DECISIONS.md, SPEC.md or STATUS.md.
+- Order: dated headings are in date order; top-level entries run D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123
+  F124 F125 D76 D77 F127 D78 F128 D79 F129 D80 F130 D81 F131 D82 F132 D83 F133 D84 F134 D85 F135 D86 F136, each
+  series rising. No entry out of order.
+- SPEC 6's stage C bullet cites D81 and D82 only; it does not mention the pull or 2022-11 (D83 to D86, F133 to F136).
+  Not a contradiction (D82.5: stage C's SPEC section is written at its lock), and SPEC was out of scope this session.
+- STATUS's "Next" line (text fixed by the session prompt) cites D81.7 for the GFS v17 re-check; the newest v17 note
+  is D84.6, which STATUS's carried item cites. Minor; both point to the same re-check.
+- D86.1 accepts F135 as a whole and does not name F135.8's readings one by one. STATUS's former open question on
+  F135.8's readings was removed, as the prompt directs; read as covered by "F135 accepted".
+- The workflow's header comment and publish step's name (D85.1, cosmetic) also do not mention the fallback now; the
+  workflow was not edited (scope).
+- The verifier's docstring now says "one of session 91's statuses" (five), matching session 91's STATUSES.
+- No disagreement found between SPEC 2.2 (never fill) and the fallback: the fallback reads genuine messages from
+  the archived file and fills nothing; a field with no single passing message stays empty as "check failed".
+
+=== Archive step ===
+Nothing moved. No entry became settled this session. D72, D73, F122, D77 to D86 and F127 to F136 stay live, as the
+prompt says. The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125, D76) were not changed
+or newly settled by this session's work, so none meets the archive criterion now.
+
+=== Clean-up and git status ===
+Temporary directories: the verifier tests' (session94_verify_neg_*) and the gate's (session94_gate_*) were each
+deleted by their own run ("temporary directory deleted: True" above); none is left under the system temp folder.
+No bytecode file was written by this session (the two .pyc files in scripts/__pycache__ for sessions 86 and 91 are
+dated 2026-09-30 and 2026-10-03, git-ignored, and pre-date this session).
+$ git status --porcelain
+ M DECISIONS.md
+ M STATUS.md
+ M scripts/session91_grib_pull.py
+ M scripts/session92_verify_chunk.py
+?? notes/session-94-output.txt
+?? scripts/session94_fallback_gate.py

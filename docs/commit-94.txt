@@ -1,0 +1,46 @@
+Session 94: D86, a whole-file fallback in the pull, and its gate (F136)
+
+D86 records the owner's decisions after session 93: F135 accepted;
+2022-11 is recovered, not left empty (option c): when a file's .idx
+ranges give a persistently broken body, the pull downloads the whole
+file, walks its GRIB headers, and takes each planned field from the one
+walked message that passes session 91's own per-message check, with the
+new manifest status "ok (whole file)"; the gate; 2022-11 is the next
+run; long local sessions run with the laptop kept awake.
+
+Changed: scripts/session91_grib_pull.py (the fallback; session 91's
+per-message check moved unchanged into check_message so both paths use
+it) and scripts/session92_verify_chunk.py ("ok (whole file)" is a valid
+status, counted as ok, never a fail by itself). New:
+scripts/session94_fallback_gate.py. The workflow is unchanged.
+
+Session 91's check tests identity, stepType, startStep and endStep, run
+and validity times, grid geometry, and finite values at every airport,
+so it picks exactly one message per field (TMAX, TMIN and DSWRF
+included).
+
+The gate passed:
+- Normal path unchanged: HEAD and edited scripts give string-equal
+  manifest and points rows on 2022-11-29T18 f000, f001 and f010; no
+  file fell back.
+- Forced fallback on healthy files (2022-11-29T18 f000, f001): the
+  header walk ends at the last byte (696 and 743 messages); every
+  planned field has exactly one passing message, at the .idx's own
+  range, SHA-256 byte-identical; points rows string-equal to the
+  normal path.
+- Broken files (2022-11-29T18 f002, 2022-11-30T06 f024): each fell
+  back by itself after its retries; the walk ends at the last byte
+  (743 messages); all ten fields have exactly one passing message,
+  status "ok (whole file)".
+- Verifier: the session 92 negative tests still fail as specified; an
+  "ok (whole file)" row passes; an invented status still fails.
+
+About 2.2 GB downloaded from S3 only; no bytes kept. Nothing published
+or pushed; no workflow run; nothing from 2026-27; no observation; no
+score; nothing installed; MLwx-pull/ unchanged.
+
+Planning-chat notes, to be recorded in D87:
+- F136 accepted.
+- docs/session-94.md was committed with session 93 (written before
+  that commit), so Step 0 found a clean tree; harmless.
+- Record the outcome of the 2022-11 run on Actions.
