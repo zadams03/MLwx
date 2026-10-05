@@ -1,0 +1,37 @@
+Session 93: D85, the Release after run 2, and the 2022-11 broken files diagnosed (F135)
+
+D85 records the owner's decisions after session 92: F134 and its nine
+readings accepted; the remaining months run on GitHub Actions (2021-03
+alone, then 2021-04..2026-07); 2022-11 failed twice in the pull step
+on a broken message body in cycle 2022-11-29T18; session 93 is
+diagnosis only.
+
+F135 records the diagnosis. New: scripts/session93_diagnose.py
+(read-only; no existing code changed).
+
+- The Release holds 192 of 195 assets: every month but 2022-11.
+- S3, cycles 2022-11-29T18 to 2022-11-30T18: 27 files in three cycles
+  (11 at 2022-11-29T18, 9 at 2022-11-30T00, 7 at 2022-11-30T06) have
+  all ten of their messages broken, 270 messages in all. The .idx
+  files do not match the GRIB files: the GRIB files end in 7777 as
+  whole files should, but the .idx byte offsets point inside other
+  messages (even the first message, at byte 0, has the wrong length).
+- The Google Cloud mirror holds byte-identical copies (same .idx, same
+  sizes, same bytes), so it cannot supply good ranges.
+- The owner's laptop slept during the S3 survey: 38 network errors and
+  20 .idx fetch failures in cycles 2022-11-30T12 and T18, which are
+  therefore only partly checked (no broken message among those
+  checked). Cycle 2022-11-29T12, listed as incomplete by dynamical.org
+  (F131.2), was outside the prompt's cycles and is unchecked.
+
+Nothing was published, pushed or run; no file under data/ changed;
+nothing from 2026-27; no observation; no score; nothing installed.
+
+Planning-chat notes, to be recorded in D86 at the start of session 94:
+- F135 accepted.
+- 2022-11 handling: option (c), recover. When a file's .idx ranges
+  give persistently broken bodies, the pull downloads the whole file,
+  finds its messages from the GRIB headers, and takes the ten fields
+  from it, under a new manifest status; gated byte-identical against
+  the .idx path on healthy files before use. Option (a) (mirror) is
+  ruled out by F135; option (b) (leave empty) not chosen.

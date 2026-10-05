@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 4 October 2026, after session 92._
+_Last updated: 5 October 2026, after session 93._
 
 ---
 
@@ -23,8 +23,8 @@ which weather model is corrected, plus a blend, and probabilistic ranges.
 
 **The roadmap (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C is
 open: its design is set (D82, D83), its GRIB pull is built and gated (F133),
-and its first month is published and verified (F134). Then stages D to H.
-New airports are an ongoing track, and pooling is conditional.
+and every month but 2022-11 is published on the Release (F135). Then stages
+D to H. New airports are an ongoing track, and pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
 It is pre-registered, its models are frozen, and all three 2026-27 scripts
@@ -57,24 +57,24 @@ km; the saver session decides whether the list grows.
   47 plus LFPG, DSM, YSDU, RNO); development airports at SPEC 3.4's grid
   point, the others at IEM's position. Daily maximum: local day, 22 of 24
   usable hours.
-- **The pull (F133, F134).** `scripts/session91_grib_pull.py`,
+- **The pull (F133, F134, F135).** `scripts/session91_grib_pull.py`,
   `data/processed/session91_pull_airports.csv` and
-  `.github/workflows/stagec-grib-pull.yml`. F133's readings are accepted
-  (D84.1). **Month 2022-01 is published** on the Release
-  `stagec-grib-pull-v1` (run on Actions, 8 min 25 s, D84.3) **and verified**
-  (F134): the files equal the Release and the meta, all 13 checks pass, and
-  the extended gate passed 93 of 93 station-days at EGLC, LFPG and DSM,
-  exact equality (the first check that Actions' Linux ecCodes decodes as the
-  Mac did). The lead-26 airports are not gated by an f000 to f024 extract.
-- **The verify step (D84.4).** `scripts/session92_verify_chunk.py` now runs
-  in the workflow after each month's pull and before upload; a failing month
-  publishes nothing and is retried by starting the run again. "idx missing"
-  messages do not fail a month; their count is printed. The step has not yet
-  run on Actions.
-- **Estimates (F134.5, from 2022-01).** About 8 min a month on Actions;
-  about 2.2 h for the remaining 64 months at four at once; about 1.69 TB
-  downloaded and about 1.30 GB kept in all; 195 Release assets when
-  complete.
+  `.github/workflows/stagec-grib-pull.yml`, with the verify step
+  (`scripts/session92_verify_chunk.py`, D84.4). F134 and its readings are
+  accepted (D85.1). The owner ran 2021-03 alone and then 2021-04..2026-07 on
+  Actions (D85.2). **The Release `stagec-grib-pull-v1` holds 192 assets: all
+  64 months but 2022-11, three files each, all "uploaded"** (F135.2). Only
+  2022-01 has been downloaded and checked locally (F134); the other months
+  are not yet downloaded or checked.
+- **The 2022-11 fault (D85.3, F135).** 2022-11 failed twice, publishing
+  nothing. On NOAA's S3 bucket, 27 GRIB files in cycles 2022-11-29T18,
+  2022-11-30T00 and 2022-11-30T06 have `.idx` files that do not match them:
+  all ten messages the pull asks for in each file fail the body checks (270
+  messages). The files themselves start with "GRIB" and end with "7777". The
+  Google Cloud mirror holds byte-identical `.idx` files, equal file sizes and
+  the same 270 broken messages. 58 messages in 2022-11-30T06 to T18 were not
+  read, because of this session's connection (F135.3); 2022-11-29T12 was not
+  checked. Nothing is fixed.
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
 - **Not decided (D82.5).** One model with lead time as an input or one per
@@ -94,12 +94,17 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F134.7's readings.** The owner confirms or changes them. The largest:
-  two checks beyond D84.4's list ("layout" and "statuses", both failing a
-  month); the extended gate as a local-only `--gate` option of the
-  verifier; the speed projection's method; the workflow's header comment
-  and publish-step name left unchanged, so they do not mention the verify
-  step.
+- **How 2022-11 is handled (D85.4, D86).** The owner decides after
+  reviewing F135. Options the planning chat raised: (a) take the broken
+  messages from a mirror; F135.5 finds the Google Cloud mirror holds the
+  same broken files, so it has no good bytes; (b) a new status, "broken in
+  archive", left empty and published with its count, as "idx missing" is.
+  F135.8 item 8 records, untried, that each file's own message headers give
+  its true message lengths.
+- **F135.8's readings.** The owner confirms or changes them. The largest:
+  the 58 messages with a request error were not requested again; the
+  script's table labels the two failed `.idx` reads "idx missing", although
+  they were network errors.
 
 ---
 
@@ -121,6 +126,8 @@ direction decision (D78.1, option (d)).
 - **Open item D78.2 (bias drift).** A correction that adapts to recent bias
   is a candidate build choice for stage C, tested by time-ordered
   cross-validation, identically at every airport. Nothing is decided.
+- **Workflow wording (D85.1).** The workflow's header comment and the
+  publish step's name still describe the old gating; cosmetic, left as is.
 - **Stage A/B uncertainties still open.**
   - the v17 go-live date;
   - how complete Open-Meteo's Single Runs archive is for `icon_global`, and
@@ -137,4 +144,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 92 and the extended gate. If it passed, the owner commits and pushes, runs 2021-03 alone on GitHub Actions and checks its verify step passed (D84.5), then starts 2021-04..2026-07; then plan the session that downloads and checks all 65 months. Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 93 and decide how 2022-11 is handled (D86). Re-check GFS v17 (D81.7).

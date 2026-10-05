@@ -3317,3 +3317,90 @@ has been read or scored.
 **F134.8 Requests and clean-up.** One unauthenticated GitHub REST API request (`GET /repos/zadams03/MLwx/releases/tags/stagec-grib-pull-v1`); no other network use. **The negative tests' temporary directory was deleted; the path no longer exists.** No bytecode file of either script was written.
 
 **F134.9 What this did not do.** No GRIB request; no observation read (from `session81_training_set.csv` only the nine named columns were kept); no score, error, MAE, bias or skill; nothing from 2026-27; no forecast value printed beyond the ranges summary (no gate mismatch occurred); no push, workflow run or Release change; no token, `gh` or sign-in; nothing in `MLwx-pull/` changed (SHA-256 checked at the end); no file under `data/` changed and `data/models/` was not touched; no existing script edited; nothing installed; SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing was committed and no commit message was written.
+
+---
+
+## 2026-10-05: Session 93 decision: F134 accepted, run 2, and the 2022-11 failure (owner, planning chat)
+
+**D85. Owner decisions, planning chat (after session 92): F134
+accepted, the remaining months run, and the 2022-11 failure.** Written
+at the start of session 93, before any other edit or network call. No
+2026-27 value has been read or scored.
+
+- **D85.1 F134 accepted.** The owner accepts F134 and all nine F134.7
+  readings. The workflow's header comment and the publish step's name
+  still describe the old gating (F134.7 item 9); cosmetic, left as is.
+- **D85.2 The remaining months.** After session 92 was committed and
+  pushed, the owner ran 2021-03 alone on GitHub Actions, then
+  2021-04..2026-07. The owner reports every month succeeded except
+  2022-11. Session 93 checks the Release (Step 2).
+- **D85.3 The 2022-11 failure.** Month 2022-11 failed in the pull
+  step, twice, with "CHUNK FAILED, NOTHING WRITTEN", so nothing was
+  published for it. First run: DownloadError on
+  gfs.20221129/18/atmos/gfs.t18z.pgrb2.0p25.f003, bytes
+  417821939-418699246, "failed after 5 retries: broken body (no GRIB
+  or 7777 marker)"; files done 2895 of 3000; requests idx 2912,
+  message 28599; retries 85; 463 s. Second run (the owner's rerun of
+  2022-11 alone): the same error on the same cycle's f002, bytes
+  419336616-420214434; files done, requests and retries identical
+  (2895, 2912, 28599, 85); 534 s. Identical counts on a different
+  file point to a persistent fault in that cycle rather than a
+  transient network error.
+- **D85.4 Session 93 is diagnosis only.** It finds which messages are
+  broken and how, and whether a second NOAA mirror holds them intact.
+  The handling of 2022-11 is decided after review (D86). Options the
+  planning chat raised: (a) take only the broken messages from the
+  mirror, if its bytes are good; (b) a new status, "broken in
+  archive", for those messages, left empty and published with their
+  count, as "idx missing" is.
+
+---
+
+## 2026-10-05: Session 93 finding: the Release after run 2 and the 2022-11 broken cycle
+
+**F135. Diagnosis only. The Release holds every planned month except 2022-11: 192 assets, all "uploaded". On `noaa-gfs-bdp-pds`, 27 GRIB files in three cycles (2022-11-29T18, 2022-11-30T00 and 2022-11-30T06) are broken: in each, all ten messages the pull asks for fail session 91's body checks, 270 messages in all. Each file looks whole (it starts with "GRIB" and ends with "7777"), but its `.idx` does not match it: the byte ranges point to the wrong places. The Google Cloud mirror holds the same `.idx` files and the same file sizes, and the same 270 messages are broken there. Nothing was fixed or published. Script: `scripts/session93_diagnose.py` (new; modes `--release`, `--diagnose`; SHA-256 `fbaf73a130eb071992a7c65f03c579d926a305da0a67ebb7fb7c5bf4a89a9581`). Full real output, with every file, message, range and hex dump: `notes/session-93-output.txt`. Run 2026-10-05. Python 3.12.2, numpy 2.5.2, requests 2.34.2, eccodes 2.48.0 (ecCodes library 2.48.0).**
+
+**F135.1 Steps 0 and 1.** `git status --porcelain` showed only `?? docs/session-93.md`. The last entries were D84 and F134; no D85 or F135 existed in either DECISIONS file. SHA-256 equal to F134: the pull script (`72c263b2...652e`), the verifier (`f61136a8...1955`) and the workflow (`804b6d35...02a6`). Read: D83, D84, F133, F134 and the pull script in full. D85 was copied with `sed` from `docs/session-93.md` lines 82 to 112 into DECISIONS.md lines 3325 to 3355 (heading at 3323) and checked byte-equal with `diff`, before any other edit or network call.
+
+**F135.2 The Release (Step 2; GitHub REST API, unauthenticated, 4 requests, 2026-10-05T15:11Z).** Release `stagec-grib-pull-v1` ("Stage C GRIB pull"), not draft, not prerelease. **192 assets** (expected 192). Every plan month 2021-03 to 2026-07 has all three files except **2022-11, which has none**. No month is partial; no asset is named for a month outside the plan; every asset's state is "uploaded". Total 1,238,178,639 B (points 1,189,134,875; manifests 48,956,737; meta 87,027). Names, sizes, digests and dates are in the output file. No asset was downloaded.
+
+**F135.3 Which messages are broken (Step 3, S3).** Five cycles, f000 to f024, 125 files. Every `.idx` and HEAD answered except two `.idx` reads (below). Every `.idx` that was read has 743 lines (696 at f000). No range of the ten fields ends beyond its file's Content-Length. Each message was fetched once and given session 91's body checks (length, "GRIB" at the start, "7777" at the end), then its message checks (identity, step, run, validity, grid, finite values at the grid indices).
+
+| cycle | ok | broken | check failed | request error | absent by design | `.idx` not read |
+|---|---|---|---|---|---|---|
+| 2022-11-29T18 | 137 | 110 | 0 | 0 | 3 | 0 |
+| 2022-11-30T00 | 157 | 90 | 0 | 0 | 3 | 0 |
+| 2022-11-30T06 | 176 | 70 | 0 | 1 | 3 | 0 |
+| 2022-11-30T12 | 231 | 0 | 0 | 16 | 3 | 0 |
+| 2022-11-30T18 | 206 | 0 | 0 | 21 | 3 | 20 |
+| all | 907 | 270 | 0 | 38 | 15 | 20 |
+
+- **The broken files** (all ten requested messages broken in each; no other file has a broken message): 2022-11-29T18 f002, f003, f009, f011, f012, f013, f017, f018, f022, f023, f024 (11); 2022-11-30T00 f002, f005, f007, f008, f010, f011, f013, f016, f020 (9); 2022-11-30T06 f002, f003, f004, f005, f007, f020, f024 (7). f000 and f001 are never broken.
+- **How.** Every broken message has exactly the expected length. 243 have no "GRIB" at the start and no "7777" at the end. 27 (PRMSL, the first message in each broken file, at offset 0) start with "GRIB" but do not end with "7777". In those 27, the length in the GRIB header differs from the `.idx` range, and a second "GRIB" sits exactly at the header's length: for example, 2022-11-29T18 f002 has range 0-870924 (870,925 B), the header gives edition 2 and total length 868,968, and the next "GRIB" is at offset 868,968. 248 of the 270 bodies contain "GRIB" at some offset; 22 contain none. First and last 16 bytes of each are in the output file.
+- **D85.3's two ranges** are the t2m messages of 2022-11-29T18 f003 (417821939-418699246) and f002 (419336616-420214434), both broken here.
+- **Retries.** 270 broken messages at 5 retries each would be 1,350, not D85.3's 85. The pull stops at the first message that fails after its retries, so it reached only some of them. 85 is 17 x 5, which fits 17 messages retried to the end, but D85.3's figures cannot show which.
+- **Request errors are this session's connection, not the archive** (reading 3): 37 network errors (connection reset or closed, read timeout, incomplete read) and one HTTP 503 (2022-11-30T06 f014 t2m). All are in the last three cycles surveyed, and every file with an error also had 4 to 9 messages read ok. The two `.idx` reads that failed (2022-11-30T18 f007, f013; connection closed, read timeout) leave those two files' 20 messages unread. These 58 messages were not requested again (reading 2). So 2022-11-30T12 and T18 show no broken message among the 437 read, but they are not fully checked.
+
+**F135.4 The broken files in more detail (Step 4, all 27).**
+- `.idx` line count: 743 in every broken file, the same as every other hour f001 to f024 of its cycle.
+- `.idx` offsets: start at 0 and strictly increase in all 27. **In 15 of the 27 the last `.idx` offset is beyond the file's Content-Length** (a request there gives HTTP 416). In the other 12 the 4 bytes at the last offset are not "GRIB". On each cycle's healthy f001, the 4 bytes at the last offset are "GRIB". All 27 broken files, and each healthy f001, end with "7777".
+- A 4,096-byte window around each file's t2m `.idx` offset (2,048 bytes before it): no "GRIB" anywhere in the window in all 27, and no "7777" in 26; in 2022-11-29T18 f012 one "7777" at 1,219 bytes before the offset. On a healthy boundary, "7777" sits 4 bytes before the offset and "GRIB" at it.
+- Reading: the `.idx` files do not describe these GRIB files. The offsets are not shifted by one fixed amount: the first message's length already differs (F135.3), and the gap grows or shrinks differently from file to file. Nothing was repaired or reinterpreted.
+
+**F135.5 The second mirror (Step 5).** `https://storage.googleapis.com/global-forecast-system/` with S3's paths answered (HTTP 200). For all 27 broken files: **the mirror's `.idx` is byte-identical to S3's (27 of 27), and its Content-Length is equal (27 of 27).** All 270 messages, fetched with the mirror's own `.idx` ranges, are **broken in the same way** (243 with no "GRIB" or "7777", 27 PRMSL with no "7777"). Three messages ok on S3 in each cycle, at the same ranges on the mirror: **81 of 81 SHA-256 identical** (9 distinct messages; reading 6). So the mirror holds the same files as S3, and D85.4's option (a) has no good bytes to take.
+
+**F135.6 Context from the record (read only; not checked further).** F131.2 reports that dynamical.org's validation lists 2022-11-29T12 and T18 and 2022-11-30T00 and T06 as incomplete, "from a NOAA index fault". This session found 2022-11-29T18, 2022-11-30T00 and 2022-11-30T06 broken. 2022-11-29T12 was outside this session's cycles and was not checked. F122.3 records no GRIB row for 2022-11-30 at DSM, RNO and KSFO, whose files come from cycle 2022-11-29T18. DSM's file (f024) is one of the broken files here.
+
+**F135.7 Requests and bytes.** S3: 1,600 requests, 1,002,151,039 B. Google Cloud: 406 requests, 300,658,800 B. GitHub API: 4 requests, 635,183 B. No other host. No whole GRIB file was downloaded. Every byte was held in memory only; nothing was written to disk, so no temporary directory was needed or made. The S3 survey took 5,680 s (8 threads), the whole run 6,089 s.
+
+**F135.8 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. "Session 91's checks" are read as both its body checks (`Fetcher.get`, length then markers, all three reported) and its message checks (`process_file` l.656-690, copied into the script with the line numbers, because they are inline there). A body that passes but fails a message check would be "check failed"; none did.
+2. "GET once" is kept strictly: the 38 messages with a request error and the two failed `.idx` reads were not requested again. Their state is unknown.
+3. The script labels the two failed `.idx` reads "idx missing" in its table (20 messages). They were network errors, not HTTP 404. In session 91 they would have been retried. The script was not edited after the run, so its SHA-256 is the one that ran; the correct reading is given here and in F135.3.
+4. Step 3.2 checks the ten fields' ranges only. Step 4.2 adds two 4-byte GETs per file: the file's last 4 bytes, and the 4 bytes at its last `.idx` offset. The same was done on one healthy file of the same cycle, the first hour after f000 that is not broken (f001 in all three cycles).
+5. Step 4.3's window is 2,048 bytes before and 2,047 after the `.idx` offset of the file's first broken message in field order (t2m in all 27).
+6. Step 5.3's three messages are the first three ok on S3 in hour, then field, order within the cycle, preferring the broken file itself. No broken file had an ok message, so the three were f000 t2m, tcdc and u10 of the cycle every time: 81 comparisons of 9 distinct messages. S3's ranges were used on the mirror (the `.idx` files are identical, so the mirror's own ranges are the same).
+7. Step 3.4's marker search covers "GRIB" only, as the prompt says; Step 4.3 searches both markers.
+8. An observation, not tried and not a proposal: each broken file starts with "GRIB" and ends with "7777", and its first message's header gives its true length. So the file's own message boundaries may be readable from its headers. Whether to use that is for D86.
+
+**F135.9 What this did not do.** Nothing published or pushed; no workflow run; no Release change; no asset downloaded. No existing code changed (pull script, verifier and workflow SHA-256 unchanged). No file under `data/` changed, and nothing in `MLwx-pull/` was touched. No value decoded beyond session 91's checks; no forecast value printed. Nothing from 2026-27; no observation; no score. No account, token or `gh`. Nothing installed. No bytes kept; no temporary directory made. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
