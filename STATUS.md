@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 5 October 2026, after session 95._
+_Last updated: 6 October 2026, after session 96._
 
 ---
 
@@ -22,11 +22,11 @@ maximum. The horizon is 24 hours first and 48 hours later. Then a choice of
 which weather model is corrected, plus a blend, and probabilistic ranges.
 
 **The roadmap (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C is
-open: its design is set (D82, D83), and its f000 to f024 GRIB pull is
-complete: all 65 months are on the Release, downloaded and checked, and the
-extended gate passed on every month (D87, F137). Its open build choices
-(D82.5) come next. Then stages D to H. New airports are an ongoing track, and
-pooling is conditional.
+open: its design is set (D82, D83), its f000 to f024 GRIB pull is complete
+and checked (D87, F137), and its development table is built and gated (D88,
+F138). Its open build choices (D82.5) come next, after D88.9's
+cross-validation entry. Then stages D to H. New airports are an ongoing
+track, and pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
 It is pre-registered, its models are frozen, and all three 2026-27 scripts
@@ -72,19 +72,37 @@ km; the saver session decides whether the list grows.
   the bounds; the union equals the full plan (195,600 files, 1,932,528
   messages, 9,975,600 points rows); check failed 0, idx missing 0; "ok (whole
   file)" 270, exactly the 27 broken files of 2022-11 (F135.3), and
-  2022-11-29T12 is whole. **The extended gate passed on every month:**
-  5,861 station-days at EGLC, LFPG and DSM, all seven columns equal, exact
-  equality. YSDU, RNO and KSFO (lead 26) are not gated by an f000 to f024
-  extract. Committed inventory: `data/processed/session95_pull_inventory.csv`
-  (`7177b661...b70a`). Script: `scripts/session95_check_release.py`
-  (`32c3ed77...2af0`).
+  2022-11-29T12 is whole. The extended gate passed on every month (5,861
+  station-days at EGLC, LFPG and DSM). Committed inventory:
+  `data/processed/session95_pull_inventory.csv` (`7177b661...b70a`).
+- **The development table (D88.3, F138).** Six development airports, every
+  cycle, forecast hours 0 to 24: 195,600 rows per airport, 1,173,600 in all,
+  in `MLwx-stagec/` beside the repo (not tracked, D88.8), one
+  `stagec_dev_<ICAO>.csv.gz` per airport. The record's features rebuilt from
+  the stored grid values (D88.5: instantaneous fields at every lead; R from
+  the GFS radiation averages; T from the pressure 3 hours earlier; season
+  from the valid date; TMAX and TMIN kept raw) and the nearest observation
+  within 15 minutes (D88.7). Leads 0 to 2 stay in, incomplete (no T; no R at
+  0 and 1), counted (D88.6). **The gate passed:** 5,861 station-days at EGLC,
+  LFPG and DSM lead 24, all ten shared columns and the observation equal,
+  exact equality. YSDU, RNO and KSFO (lead 26) are not gated. Repeatable
+  byte for byte. Script `scripts/session96_stagec_table.py`
+  (`40b63d00...6eee`); counts `data/processed/session96_stagec_dev_counts.csv`;
+  meta `data/processed/session96_stagec_dev_table.meta.txt` (every table
+  file's SHA-256).
+- **The curve's baseline (D88.4), recorded, not fitted.** SPEC 8's
+  `B+D,L,R,T` with the record's settings, column order and complete-case
+  rule, one model per airport, cycle hour and lead (100 per airport). D82.5's
+  alternatives are compared against it by time-ordered cross-validation.
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
 - **Not decided (D82.5).** One model with lead time as an input or one per
   lead; the daily maximum read off the curve or its own model; stage C's
   claim design (bar, looks, lead bands). Fixed by time-ordered
-  cross-validation on the development airports, or at the lock. Bias drift
-  follows D81.10(b).
+  cross-validation on the development airports, or at the lock. Before any
+  cross-validation score, a DECISIONS entry fixes the folds, the metric and
+  the keep-the-simpler rule with its margin (D88.9). Bias drift follows
+  D81.10(b).
 - **Open item: MMMX (D83.4).** It reports at scattered minutes, so it has
   almost no usable observations under the 15-minute rule. It needs its own
   handling or to be dropped (a later decision). It stays in the pull.
@@ -97,21 +115,22 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F137.11's readings.** The owner confirms or changes them. The largest:
-  the download step's change after an HTTP 500 (check held files, download
-  only the missing, 3 retries at 10, 30, 90 s), made on the owner's terms;
-  and the 2026-08-01 target dates, which the gate reports as "no committed
-  row" (outside the window), not "not rebuilt".
+- **F138.8's readings.** The owner confirms or changes them. The largest:
+  both `temp` and `temperature_grib_c` kept as columns; the instantaneous
+  columns taken from session 91's `derive` with placeholders for the R and T
+  inputs it does not use there; and a fourth empty reason, "outside pull
+  window" (7 R and 10 T cells per airport in the first cycles).
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D87.6).** As of 2026-10-05 (planning-chat check) the NWS
-  notices page lists SCN 26-88 (2 October 2026) as the newest Service Change
-  Notice; none is for GFS v17. EMC's GFSv17 evaluation page gives the
+- **GFS v17 (D88.2).** As of 2026-10-06 (planning-chat check) there is
+  still no Service Change Notice for GFS v17; the newest SCN listed is SCN
+  26-89 (2 October 2026, RRFS). EMC's GFSv17 evaluation page gives the
   implementation as Q1 FY27 (October to December 2026; D84.6). With 30 days'
-  notice the earliest go-live is about 4 November 2026. Re-check at each
+  notice the earliest go-live is about 5 November 2026; PNS 26-29's proposed
+  October 2026 date can no longer be met. Re-check at each
   planning session. The go-live date sets period A's
   length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
   to be confirmed against the SCN (D73.4).
@@ -144,4 +163,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 95. If it passed, the owner commits and pushes; then plan stage C's next step (the open build choices of D82.5 and what they need first). Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 96. If it passed, the owner commits and pushes; then plan session 97: D88.9's cross-validation entry (folds, metric, decision rule) written before any score, then the baseline fit and raw GFS per lead. Re-check GFS v17 (D81.7).

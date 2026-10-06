@@ -1,0 +1,45 @@
+Session 96: D88, the stage C development table and its gate (F138)
+
+D88 records the owner's decisions after session 95: F137 and its nine
+readings accepted; GFS v17 re-checked (no SCN; newest is SCN 26-89,
+correcting D87.6; earliest go-live about 5 November 2026); the stage C
+development table comes first; the curve's baseline is SPEC 8's
+B+D,L,R,T fitted per airport, cycle hour and lead (100 models per
+airport, recorded, not fitted); the record's features extended to every
+lead (R from GFS's radiation averages, including across the 6-hour
+reset; T from the pressure 3 hours earlier); leads 0 to 2 stay
+complete-case; the nearest observation within 15 minutes; the table
+kept outside the repo; and a cross-validation entry (folds, metric,
+decision rule) before any build-choice score.
+
+SPEC 6: the stage C bullet now records that the f000 to f024 pull is
+complete and checked (D87, F137) and points to D88.
+
+New: scripts/session96_stagec_table.py (builds, gates and counts the
+table, importing session 86's and session 91/92's arithmetic and
+pairing; only R and T at new leads written new);
+data/processed/session96_stagec_dev_counts.csv (150 rows, per airport
+and lead); data/processed/session96_stagec_dev_table.meta.txt (every
+table file's SHA-256 and every input's). The table itself, six
+stagec_dev_<ICAO>.csv.gz files, 195,600 rows each, 1,173,600 in all,
+is in MLwx-stagec/ beside the repo, not tracked.
+
+All checks passed:
+- R and T tests: equal to the record's derive at leads 24 and 26; exact
+  recovery of the true 2-hour mean at all 23 leads 2 to 24.
+- Gate at EGLC and LFPG (12z lead 24) and DSM (18z lead 24): 5,861 of
+  5,861 station-days equal on all ten shared columns and the
+  observation, exact equality, 0 mismatches. The nearest report equals
+  the record's choice on every gated day. YSDU, RNO and KSFO (lead 26)
+  are not gated.
+- Counts: R empty at leads 0 and 1, T at leads 0 to 2, TMAX/TMIN at
+  lead 0, as designed; 7 R and 10 T cells per airport empty because
+  their inputs fall before the pull window; no message not ok.
+  Complete-case rows at leads 3 to 24: 170,379 (YSDU) to 172,076 (DSM)
+  of 172,128.
+- Repeatable: EGLC rebuilt byte-equal; all six rebuilt in memory
+  byte-equal. 2026-27 guards refuse as required.
+
+No network call; no model fit; no score or statistic; nothing from
+2026-27; no non-development airport's data used; MLwx-pull/ unchanged;
+no existing script edited; nothing installed.

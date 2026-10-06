@@ -3573,3 +3573,158 @@ network call. No 2026-27 value has been read or scored.
 9. 2022-11's 135 retries equal 27 x 5, one broken-body run of retries per fallen-back file (arithmetic only; the meta does not split them).
 
 **F137.12 What this did not do.** No GRIB request; no observation read beyond the gate's columns (the verifier's own nine-column read); no score, error, MAE, bias or skill; nothing from 2026-27; no forecast value printed beyond the ranges and Step 5.4's minimum and maximum (no gate mismatch occurred); no push, workflow run or Release change; no token, `gh` or sign-in; nothing in `MLwx-pull/` changed except the 192 added assets; no file under `data/` changed except the two new inventory files, and `data/models/` was not touched; no existing script edited; nothing installed. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C development table (owner, planning chat)
+
+**D88. Owner decisions, planning chat (after session 95): F137
+accepted, GFS v17, and the first step on stage C's build choices: the
+development table, the curve's baseline, and the rules for features at
+every lead.** Written at the start of session 96, before any other
+edit. No 2026-27 value has been read or scored.
+
+- **D88.1 F137 accepted.** The owner accepts F137 and all nine F137.11
+  readings, including the change to the download step (F137.3).
+  Reading 9 (2022-11's 135 retries equal 27 x 5) is the script's
+  arithmetic inference; the meta does not record it.
+- **D88.2 GFS v17 (planning-chat check of the NWS notices page,
+  2026-10-06, not checked by this session).** Still no Service Change
+  Notice for GFS v17. The newest SCN listed is SCN 26-89 (2 October
+  2026, model changes for the RRFS implementation). Correction to
+  D87.6: SCN 26-89 was posted on the same day as SCN 26-88, so 26-88
+  was not the newest. With 30 days' notice, the earliest go-live is
+  about 5 November 2026. PNS 26-29's proposed October 2026 date can no
+  longer be met.
+- **D88.3 What comes first.** D82.5's build choices need a development
+  table: for each development airport (EGLC, LFPG, DSM, YSDU, RNO,
+  KSFO), every GFS cycle in the pull and every forecast hour 0 to 24,
+  the record's features rebuilt from the stored grid values, and the
+  hourly observation at the valid time. Session 96 builds it and gates
+  it against the committed record. It fits no model and computes no
+  score.
+- **D88.4 The curve's baseline.** SPEC 8's recipe `B+D,L,R,T`, applied
+  unchanged at each cycle hour and lead: one model per airport, cycle
+  hour (00, 06, 12, 18 UTC) and lead, so 100 models per airport, with
+  the record's settings, column order and complete-case rule. This is
+  the proven method applied at every hour, one well-understood input
+  first (D72.2(b)). It is recorded now and fitted later. D82.5's
+  alternatives (one model per lead with the cycle hour as an input; one
+  model with lead and hour as inputs) are each compared against it by
+  time-ordered cross-validation.
+- **D88.5 Features at every lead.** The record's definitions, extended:
+  (a) Instantaneous fields (temperature, cloud cover, 10 m wind, dew
+  point, 850 hPa temperature, sea level pressure) at every lead,
+  including f000 (the analysis), by the record's arithmetic
+  (bilinear, elevation constant on temperature only, rounding as SPEC
+  8.8 G4 and G7).
+  (b) R is the mean downward shortwave radiation over the 2 hours
+  ending at the valid time. GFS gives A(N), the average over (W, N],
+  W = 6 x floor((N-1)/6). If N - W >= 2: R = ((N - W) x A(N) -
+  (N - 2 - W) x A(N - 2)) / 2, where the second term is zero when
+  N - 2 = W (so R = A(N) at leads 2, 8, 14, 20). This is the record's
+  de-accumulation at lead 24. If N - W = 1 (leads 7, 13, 19): R =
+  (A(N) + 6 x A(W) - 5 x A(W - 1)) / 2, adding the last hour of the
+  previous 6-hour window. R does not exist at leads 0 and 1.
+  (c) T is the sea level pressure at lead N minus that at lead N - 3,
+  same cycle, in hPa, from the two rounded pressures as the record
+  does. At lead 3 it uses the f000 analysis. T does not exist at
+  leads 0 to 2.
+  (d) Season terms from the valid date, by the record's
+  `year_fraction`.
+  (e) GFS's 6-hour maximum and minimum 2 m temperature are kept as
+  raw columns (bilinear, degrees C, rounded to 3 decimals, no
+  elevation constant) for the later daily maximum work. They are not
+  features of the baseline.
+- **D88.6 Leads 0 to 2.** The complete-case rule stands. Rows at leads
+  0 to 2 stay in the table, marked incomplete and counted, never
+  filled. A GFS run arrives about 3.5 to 4 hours after its start time,
+  so these leads are already in the past when it lands.
+- **D88.7 The observation.** At every valid whole hour: the nearest
+  usable report within 15 minutes, inclusive (SPEC 4.5, 8.8 G2 and G3,
+  the record's `pair_nearest`; a tie keeps the earlier report). The
+  same at every airport.
+- **D88.8 Where the table lives.** About 1.17 million rows, so it is
+  kept outside the repository, in `MLwx-stagec/` beside `MLwx-pull/`.
+  The repository holds the script, a meta file with every table file's
+  SHA-256, and a counts file. The table is rebuilt exactly from the
+  Release and the committed observation files.
+- **D88.9 Rules for build choices.** Before any cross-validation score
+  is computed, a DECISIONS entry fixes the folds, the metric, and a
+  rule of the form "keep the simpler option unless the other wins by
+  more than a stated margin". Build choices are never quoted as
+  results (SPEC 2.5).
+- **D88.10 SPEC 6.** The stage C bullet records that the pull is
+  complete and checked (D87, F137), and points to this entry (session
+  96, Step 2).
+- **D88.11 Sequence.** Session 96: this entry, the SPEC edit, the
+  table and its gate. Then, planned: session 97 writes D88.9's entry
+  before any score, then fits the baseline and scores raw GFS and the
+  baseline per lead by cross-validation. D82.5's comparisons, the daily
+  maximum, and bias drift (D81.10(b)) follow, one change at a time.
+  Stage C's claim design is fixed at its lock.
+
+---
+
+## 2026-10-06: Session 96 finding: the stage C development table and its gate
+
+**F138. The stage C development table exists and passed its gate. For the six development airports, every cycle in the pull's plan and every forecast hour 0 to 24, it holds the record's features rebuilt from the stored grid values (D88.5) and the nearest hourly observation (D88.7): 195,600 rows per airport, 1,173,600 in all, in `MLwx-stagec/` beside the repo (D88.8). At EGLC and LFPG 12z lead 24 and DSM 18z lead 24, all 5,861 committed station-days are equal in all ten shared columns and the observation (the record's pairing), exact equality, 0 mismatches. The new R and T arithmetic passed its own tests first. No model was fit and no score computed. Script: `scripts/session96_stagec_table.py` (new; modes `--inputs`, `--test-rt`, `--build`, `--gate`, `--records`, `--guard-check`; SHA-256 `40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee`). Counts: `data/processed/session96_stagec_dev_counts.csv` (150 rows, SHA-256 `304d25a6689b1442ca0b184244a93bc031e9a9157e313cb4b96a04ce22383dfb`). Meta: `data/processed/session96_stagec_dev_table.meta.txt` (`eace666a0f1ab2b65614c340899b849eb0e97c25cf49eaaa45eb83747ce89463`). Full real output: `notes/session-96-output.txt`. Run 2026-10-06, offline. Python 3.12.2, numpy 2.5.2, eccodes 2.48.0 (ecCodes library 2.48.0).**
+
+**F138.1 Steps 0 to 2.** `git status --porcelain` showed only `?? docs/session-96.md`. The last entries were D87 and F137; no D88 or F138 existed in either DECISIONS file; the script, both new `data/processed/` files and `MLwx-stagec/` did not exist. SHA-256 equal to the record: verifier `7b59a5c2...af6a` (F136), `session95_check_release.py` `32c3ed77...2af0` and the inventory `7177b661...b70a` (F137), positions `cf86c692...fd08` (F133), training set `ab8f25f2...8d4a` (F122.3), `session86_forward_build.py` `da2ff50c...4125` (F128, F129.1). Read: D82, D83, D87, F128, F133, F134, F137; SPEC 3.4, 4.5, 6, 7.2, 8.1 to 8.3, 8.7, 8.8; `session86_forward_build.py` and `session92_verify_chunk.py` in full. Observation files: the six yearly routine files per airport (the files F131.6 counted), 36, all tracked, SHA-256 in the output file; their recorded queries run without a gap from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive end) at all six airports, so they cover the window. Free disk 16 GiB. D88 was copied with `sed` from `docs/session-96.md` lines 114 to 198 into DECISIONS.md lines 3581 to 3665 (heading at 3579) and checked byte-equal with `diff` and `cmp`, before any other edit (my first `diff` used a range one line off and failed; on the right range both are equal). SPEC 6: the old text was found once and replaced as Step 2 says; nothing else in SPEC changed.
+
+**F138.2 Inputs (Step 3).** All 195 files in `MLwx-pull/` equal the inventory (names, bytes, SHA-256). **None of the 36 observation `.meta.txt` files records a SHA-256** (they record the pull time and exact query); their SHA-256 are now in the output file and the table's meta. The six airports' four grid points and weights were read with session 91's `read_positions`, as the verifier's `--gate` does; at all six the position used equals SPEC 3.4's grid point, and session 86's and session 91's parsing of SPEC 3.4 and the params CSVs agree.
+
+**F138.3 R and T on their own (Step 4). All passed.** Lead 24, five made-up input sets: the new R and T are the identical float to session 86's `derive`. Lead 26 (native window), three sets: R is A(26) rounded, equal to `derive`. Exact fractions on a made-up hourly series: D88.5(b) recovers the true 2-hour mean at 23 of 23 leads 2 to 24 (A(N) alone at 2, 8, 14, 20; three terms at 7, 13, 19; two terms elsewhere). R is missing at leads 0 and 1; T at leads 0 to 2; T at lead 3 uses f000.
+
+**F138.4 The table (Step 5).** Rows from session 91's plan (`all_months`, `month_cycles`, `plan_chunk`, hours 0 to 24), cycle then lead: 195,600 per airport. 24 columns: `station`, `cycle_utc`, `cycle_hour`, `lead`, `valid_utc`, `temp`, `temperature_grib_c`, `t2m_raw`, `cloud_cover`, `wind_speed_10m`, `dew_point_2m`, `t850`, `dewpoint_depression_t2m_floored`, `lapse_rate_t2_t850`, `dswrf_2h_wm2`, `pressure_tendency_3h_hpa`, `season_sin`, `season_cos`, `tmax2m_c`, `tmin2m_c`, `obs_tmpc`, `obs_time_utc`, `uses_whole_file`, `complete_case`. Record names (from `session81_training_set.csv`): the ten from `temp` to `season_cos` except `t2m_raw`, `dew_point_2m` and `t850` (SPEC 8.8 G4, G7 names). Imported: from session 86 `load_airports`, `year_fraction`, `window_start`, `parse_reports`, `pair_nearest`, `pair_historical` (and `derive` as the Step 4 reference); through session 92, session 91's plan, `read_positions`, `bilinear_stored` and `derive`. Written new: R and T (D88.5(b), (c)) and the one-line roundings of `t2m_raw`, `dew_point_2m`, `t850`, `tmax2m_c`, `tmin2m_c`. Build run time 180.0 s.
+
+| file | rows | bytes | SHA-256 |
+|---|---|---|---|
+| `stagec_dev_EGLC.csv.gz` | 195,600 | 8,315,375 | `af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126` |
+| `stagec_dev_LFPG.csv.gz` | 195,600 | 8,377,218 | `5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f` |
+| `stagec_dev_KDSM.csv.gz` | 195,600 | 8,507,654 | `17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32` |
+| `stagec_dev_YSDU.csv.gz` | 195,600 | 8,431,107 | `57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829` |
+| `stagec_dev_KRNO.csv.gz` | 195,600 | 8,692,141 | `6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3` |
+| `stagec_dev_KSFO.csv.gz` | 195,600 | 8,637,256 | `11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8` |
+
+Observation files: reports read 46,734 (YSDU) to 46,938 (DSM); no usable `tmpc` 1 to 10 per airport, none non-finite; one repeated timestamp (DSM, first kept, counted); tie hours 0.
+
+**F138.5 The gate (Step 6). PASSED.** From the written table, exact equality, no tolerance. Columns compared (held by both): `temp`, `season_sin`, `season_cos`, `cloud_cover`, `wind_speed_10m`, `dewpoint_depression_t2m_floored`, `lapse_rate_t2_t850`, `dswrf_2h_wm2`, `pressure_tendency_3h_hpa`, `temperature_grib_c`; and `obs_c` against the record's pairing (`pair_historical`) of the same reports.
+
+| airport | committed rows | compared | each of the 10 columns equal | `obs_c` equal | committed, no table row | table, no committed row | nearest is not the record's report |
+|---|---|---|---|---|---|---|---|
+| EGLC 12z lead 24 | 1,953 | 1,953 | 1,953 | 1,953 | 0 | 3 (2023-06-11, 2024-08-14, 2025-11-21) | 0 |
+| LFPG 12z lead 24 | 1,953 | 1,953 | 1,953 | 1,953 | 0 | 3 (2022-07-23, 2022-07-25, 2026-07-08) | 0 |
+| DSM 18z lead 24 | 1,955 | 1,955 | 1,955 | 1,955 | 0 | 1 (2022-11-30) | 0 |
+
+5,861 station-days, equal to F137.8's; mismatches 0. The seven table-only days are F122.3's days with no row. **Not gated:** YSDU, RNO and KSFO (record lead 26, not in this table; their rows come from the same code); every other cycle hour and lead (R and T there are tested only by Step 4); `t2m_raw`, `dew_point_2m`, `t850`, `tmax2m_c`, `tmin2m_c` (no committed column); the whole-file values (DSM 2022-11-30 has no committed row).
+
+**F138.6 Counts (Step 7.1).** Identical at all six airports: R empty, lead too short 15,648 (leads 0 and 1) and input outside the pull window 7; T empty, lead too short 23,472 (leads 0 to 2) and outside the pull window 10; `tmax2m_c` and `tmin2m_c` empty, absent by design 7,824 each (lead 0); message not ok 0 everywhere; the other GRIB-derived columns never empty; rows using a whole-file message 51. Leads 0 to 2 have 0 complete-case rows (D88.6).
+
+| airport | rows with no observation | complete-case rows, leads 3 to 24 (of 172,128) |
+|---|---|---|
+| EGLC | 186 | 171,963 |
+| LFPG | 600 | 171,598 |
+| DSM | 51 | 172,076 |
+| YSDU | 1,991 | 170,379 |
+| RNO | 457 | 171,723 |
+| KSFO | 148 | 171,993 |
+
+**F138.7 Repeatability and guards (Step 7.3, 7.4).** EGLC rebuilt into a `mktemp -d` directory is byte-equal to `MLwx-stagec/`'s (`af8848e0...9126`); the directory was deleted. `--records` also rebuilt all six in memory, byte-equal to the files, before writing the counts and meta. The guards refuse a valid time of 2026-08-01T00:00 and an observation at 2026-08-01T00:00, and allow 2026-07-31T23:00 and 23:59 (4 of 4).
+
+**F138.8 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. **Both `temp` and `temperature_grib_c` are columns** (equal values): the record holds both, G15 names `temp`, and the prompt says "temperature".
+2. `dew_point_2m` and `t850` take SPEC 8.8 G7's stored names and rounding (degC, 3 decimals); `t2m_raw` is `round(temp - constant, 3)` (G4).
+3. **The instantaneous columns come from session 91's `derive`** (the code of F137.8's gate), called with the row's own values; its R and T inputs get a placeholder 0.0 and its R and T outputs are discarded, since R and T come from the new functions at every lead, lead 24 included (Step 4 shows they agree there). A placeholder never reaches the table: a column whose input is not ok is left empty (none occurred).
+4. **A fourth empty reason, "outside pull window":** in the first cycles (2021-03-23T00 to T18) some R and T inputs are valid before 2021-03-24T00, so the pull does not hold them (7 R and 10 T cells per airport). Left empty, never filled; the prompt's three reasons do not cover it.
+5. Season terms: `sin` and `cos` of `2 * math.pi * year_fraction(valid date)`, session 86's `derive` expression, with `year_fraction` imported.
+6. Observations: a repeated timestamp keeps the first report, as session 86's `build_rows` does (DSM, 1). `pair_nearest` is given only the reports within 15 minutes (same result: it keeps only those and sorts them). The gate's `pair_historical` is given the file-order reports within 30 minutes of the hour, repeats included, as the record reads the file; file order was checked sorted.
+7. `station` holds SPEC 3.4's code (DSM, RNO, SFO), as the training set does; file names use the ICAO code (KDSM, KRNO, KSFO).
+8. Other airports' lines in the points files are decompressed (gzip cannot skip them) but skipped on the `icao` field; none of their values is converted or kept.
+9. `uses_whole_file` counts a message as used only if it fed a non-empty column of the row. Booleans are written `true`/`false`; times as `YYYY-MM-DDTHH:MMZ`, as the pull files.
+10. The gate's "nearest differs from the record's choice" compares report times (and counts value differences among them).
+11. Before the real build, one trial build of EGLC alone went to the session scratchpad, to check run time and structure (counts only, no value printed); it was deleted, and its SHA-256 equals the real file's.
+12. The counts file has, per airport and lead, four reason counts for each of the 15 GRIB-derived columns (season columns included), then no observation, whole file and complete case: 67 columns.
+13. Archive step: nothing moved, for session 95's reasons (F137's output file).
+
+**F138.9 What this did not do.** No network call. No model fit. No error, MAE, bias, skill, mean, spread or other statistic of any forecast or observation value: counts only. Nothing from 2026-27: no valid time after 2026-07-31T23:00 built and no observation after 2026-07-31T23:59 read. No value printed beyond the synthetic Step 4 numbers (the gate had no mismatch). No non-development airport's observation file opened, and none of its points values used. Nothing in `MLwx-pull/` changed (195 files, SHA-256 as the inventory). No file under `data/` changed except the two new files; `data/models/` not touched. No existing script edited. Nothing installed. SPEC edited only as Step 2 says; RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.

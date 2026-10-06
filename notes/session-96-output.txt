@@ -1,0 +1,684 @@
+SESSION 96 OUTPUT: the stage C development table and its gate (D88, F138). Run 2026-10-06, offline.
+Real output of each step, as printed. Python 3.12.2, numpy 2.5.2, eccodes 2.48.0 (ecCodes library 2.48.0), requests 2.34.2 (installed, not used).
+
+================================================================ STEP 0
+== git status --porcelain
+?? docs/session-96.md
+== D88/F138 search (count of lines naming D88 or F138)
+DECISIONS.md:0
+DECISIONS-archive.md:0
+== last entries in DECISIONS.md: D86 (l.3412), F136 (l.3447), D87 (l.3499), F137 (l.3538)
+== new paths
+ls: ../MLwx-stagec: No such file or directory
+ls: data/processed/session96_stagec_dev_counts.csv: No such file or directory
+ls: data/processed/session96_stagec_dev_table.meta.txt: No such file or directory
+ls: scripts/session96_stagec_table.py: No such file or directory
+== sha256
+7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a  scripts/session92_verify_chunk.py          (F136: equal)
+32c3ed772745b930fa00f06cd9dd300decb45c743e173bec725004c8c24f2af0  scripts/session95_check_release.py        (F137: equal)
+7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a  data/processed/session95_pull_inventory.csv (F137: equal)
+cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08  data/processed/session91_pull_airports.csv  (F133: equal)
+ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a  data/processed/session81_training_set.csv  (F122.3: equal)
+da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125  scripts/session86_forward_build.py         (notes/session-86-output.txt l.149, F129.1: equal)
+== read: D82, D83, D87, F128, F133, F134, F137 (DECISIONS.md); SPEC 3.4, 4.5, 6, 7.2, 8.1 to 8.3, 8.7, 8.8;
+   scripts/session86_forward_build.py (1,130 lines) and scripts/session92_verify_chunk.py (410 lines) in full.
+== observation files (the six yearly routine files per airport, the files F131.6 counted), located, not read;
+   SHA-256, tracked in git, and the query each .meta.txt records:
+iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv 361977 4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19 tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv 465091 30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv 464877 92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv 466847 20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv 465271 8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv 269839 0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233 tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=EGLC tz=UTC report_type=3
+  EGLC: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv 374006 4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23 tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv 482306 5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv 483395 d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223 tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv 484879 648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24 tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv 483428 ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv 280297 580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=LFPG tz=UTC report_type=3
+  LFPG: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+iem_asos_DSM_2021-03-24_2021-12-31_routine.csv 383887 8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7 tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+iem_asos_DSM_2022-01-01_2022-12-31_routine.csv 497317 94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+iem_asos_DSM_2023-01-01_2023-12-31_routine.csv 495798 0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649 tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+iem_asos_DSM_2024-01-01_2024-12-31_routine.csv 496764 ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+iem_asos_DSM_2025-01-01_2025-12-31_routine.csv 496548 82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6 tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+iem_asos_DSM_2026-01-01_2026-07-31_routine.csv 288679 0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=DSM tz=UTC report_type=3
+  DSM: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv 393037 af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv 502273 01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv 509565 948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv 511194 1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv 510206 cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv 297050 db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1 tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=YSDU tz=UTC report_type=3
+  YSDU: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+iem_asos_RNO_2021-03-24_2021-12-31_routine.csv 391841 0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+iem_asos_RNO_2022-01-01_2022-12-31_routine.csv 511399 3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+iem_asos_RNO_2023-01-01_2023-12-31_routine.csv 510662 fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+iem_asos_RNO_2024-01-01_2024-12-31_routine.csv 512018 88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+iem_asos_RNO_2025-01-01_2025-12-31_routine.csv 510311 4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+iem_asos_RNO_2026-01-01_2026-07-31_routine.csv 296830 9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515 tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=RNO tz=UTC report_type=3
+  RNO: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+iem_asos_SFO_2021-03-24_2021-12-31_routine.csv 377018 8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003 tracked=True meta_tracked=True query 2021-03-24T00:00 to 2022-01-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+iem_asos_SFO_2022-01-01_2022-12-31_routine.csv 484350 7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618 tracked=True meta_tracked=True query 2022-01-01T00:00 to 2023-01-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+iem_asos_SFO_2023-01-01_2023-12-31_routine.csv 485802 06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221 tracked=True meta_tracked=True query 2023-01-01T00:00 to 2024-01-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+iem_asos_SFO_2024-01-01_2024-12-31_routine.csv 487271 dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9 tracked=True meta_tracked=True query 2024-01-01T00:00 to 2025-01-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+iem_asos_SFO_2025-01-01_2025-12-31_routine.csv 485219 c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307 tracked=True meta_tracked=True query 2025-01-01T00:00 to 2026-01-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+iem_asos_SFO_2026-01-01_2026-07-31_routine.csv 282087 cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382 tracked=True meta_tracked=True query 2026-01-01T00:00 to 2026-08-01T00:00 (exclusive) station=SFO tz=UTC report_type=3
+  SFO: queries contiguous from 2021-03-24T00:00 to 2026-08-01T00:00 (exclusive); covers 2021-03-24T00:00 to 2026-07-31T23:59: True
+== free disk on the volume holding MLwx-pull/
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s5   228Gi   175Gi    16Gi    92%    1.9M  167M    1%   /System/Volumes/Data
+== versions
+/Users/zacharyadams/Coding Projects/MLwx/.venv/bin/python
+Python 3.12.2
+numpy 2.5.2
+eccodes 2.48.0 library 2.48.0
+requests 2.34.2
+
+================================================================ STEP 1: D88
+Appended under '## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C development table
+(owner, planning chat)' (DECISIONS.md l.3579), after a '---' separator. Copied with
+  sed -n '114,198p' docs/session-96.md >> DECISIONS.md
+Check: diff <(sed -n '114,198p' docs/session-96.md) <(sed -n '3581,3665p' DECISIONS.md)
+  diff: byte-equal (docs/session-96.md l.114-198 = DECISIONS.md l.3581-3665)
+  cmp: equal
+(The first diff command I ran compared l.3580-3664, one line off, and reported the expected one-line
+shift; the correct range above is equal.)
+
+================================================================ STEP 2: SPEC 6
+old text found 1 time(s)
+diff --git a/SPEC.md b/SPEC.md
+index 90d704b..bac5ecc 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -753,7 +753,9 @@ side, because both are time-critical.
+   into an hourly temperature curve, plus the daily maximum, for
+   forecast hours 0 to 24 first and to 48 later. Written with the
+   weather model as a setting. Opened in DECISIONS D81; its design is in
+-  DECISIONS D82. Its claim is judged on new airports only, drawn by the
++  DECISIONS D82 and D83. Its GRIB pull for forecast hours 0 to 24 is
++  complete and checked (DECISIONS D87, F137). Its next steps are in
++  DECISIONS D88. Its claim is judged on new airports only, drawn by the
+   rule in DECISIONS D82.7.
+ - **Stage D — correct each other weather model on its own,** on the
+   full curve, screening each at a few hours first.
+
+================================================================ STEP 3: inputs
+SESSION 96 --inputs (offline), 2026-10-06T13:17:58Z
+
+3.1 pull files against data/processed/session95_pull_inventory.csv (SHA-256 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a)
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+
+3.2 observation files (only the six development airports' files are opened):
+  iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv: SHA-256 4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19; its .meta.txt records a SHA-256: False
+  iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv: SHA-256 30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16; its .meta.txt records a SHA-256: False
+  iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv: SHA-256 92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e; its .meta.txt records a SHA-256: False
+  iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv: SHA-256 20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f; its .meta.txt records a SHA-256: False
+  iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv: SHA-256 8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb; its .meta.txt records a SHA-256: False
+  iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv: SHA-256 0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv: SHA-256 4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv: SHA-256 5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv: SHA-256 d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv: SHA-256 648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv: SHA-256 ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df; its .meta.txt records a SHA-256: False
+  iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv: SHA-256 580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2021-03-24_2021-12-31_routine.csv: SHA-256 8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2022-01-01_2022-12-31_routine.csv: SHA-256 94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2023-01-01_2023-12-31_routine.csv: SHA-256 0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2024-01-01_2024-12-31_routine.csv: SHA-256 ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2025-01-01_2025-12-31_routine.csv: SHA-256 82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6; its .meta.txt records a SHA-256: False
+  iem_asos_DSM_2026-01-01_2026-07-31_routine.csv: SHA-256 0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv: SHA-256 af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv: SHA-256 01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv: SHA-256 948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv: SHA-256 1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv: SHA-256 cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff; its .meta.txt records a SHA-256: False
+  iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv: SHA-256 db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2021-03-24_2021-12-31_routine.csv: SHA-256 0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2022-01-01_2022-12-31_routine.csv: SHA-256 3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2023-01-01_2023-12-31_routine.csv: SHA-256 fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2024-01-01_2024-12-31_routine.csv: SHA-256 88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2025-01-01_2025-12-31_routine.csv: SHA-256 4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b; its .meta.txt records a SHA-256: False
+  iem_asos_RNO_2026-01-01_2026-07-31_routine.csv: SHA-256 9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2021-03-24_2021-12-31_routine.csv: SHA-256 8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2022-01-01_2022-12-31_routine.csv: SHA-256 7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2023-01-01_2023-12-31_routine.csv: SHA-256 06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2024-01-01_2024-12-31_routine.csv: SHA-256 dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2025-01-01_2025-12-31_routine.csv: SHA-256 c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307; its .meta.txt records a SHA-256: False
+  iem_asos_SFO_2026-01-01_2026-07-31_routine.csv: SHA-256 cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382; its .meta.txt records a SHA-256: False
+observation files whose .meta.txt records no SHA-256: 36 of 36
+
+3.3 grid points and weights (positions file session91_pull_airports.csv, SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08):
+  grid geometry: {'Ni': 1440, 'Nj': 721, 'lat_first': 90.0, 'lon_first': 0.0, 'lat_last': -90.0, 'lon_last': 359.75, 'di': 0.25, 'dj': 0.25}
+  EGLC (EGLC): position used 51.487137, 0.0 = SPEC 3.4 grid point; elevation constant +0.2486 degC; record lead 24
+      index 223201 (51.25, 0.25) weight 0.0; index 223200 (51.25, 0.0) weight 0.05145200000001182; index 221761 (51.5, 0.25) weight 0.0; index 221760 (51.5, 0.0) weight 0.9485479999999882
+  LFPG (LFPG): position used 49.027008, 2.578125 = SPEC 3.4 grid point; elevation constant -0.1697 degC; record lead 24
+      index 236171 (49.0, 2.75) weight 0.2787399999999973; index 236170 (49.0, 2.5) weight 0.6132279999999941; index 234731 (49.25, 2.75) weight 0.03376000000000268; index 234730 (49.25, 2.5) weight 0.07427200000000589
+  DSM (KDSM): position used 41.52945, -93.63281 = SPEC 3.4 grid point; elevation constant -0.1106 degC; record lead 24
+      index 280426 (41.5, 266.5) weight 0.41354007199998316; index 280425 (41.5, 266.25) weight 0.4686599280000285; index 278986 (41.75, 266.5) weight 0.05521992799999157; index 278985 (41.75, 266.25) weight 0.0625800719999968
+  YSDU (YSDU): position used -32.274643, 148.59375 = SPEC 3.4 grid point; elevation constant +0.2461 degC; record lead 26
+      index 706195 (-32.5, 148.75) weight 0.03696449999999629; index 706194 (-32.5, 148.5) weight 0.06160749999999382; index 704755 (-32.25, 148.75) weight 0.3380355000000037; index 704754 (-32.25, 148.5) weight 0.5633925000000062
+  RNO (KRNO): position used 39.537918, -119.765625 = SPEC 3.4 grid point; elevation constant +2.0436 degC; record lead 26
+      index 291841 (39.5, 240.25) weight 0.7953075000000087; index 291840 (39.5, 240.0) weight 0.05302050000000058; index 290401 (39.75, 240.25) weight 0.14219249999999128; index 290400 (39.75, 240.0) weight 0.009479499999999419
+  SFO (KSFO): position used 37.54637, -122.34375 = SPEC 3.4 grid point; elevation constant +0.6944 degC; record lead 26
+      index 303351 (37.5, 237.75) weight 0.5090749999999922; index 303350 (37.5, 237.5) weight 0.3054449999999953; index 301911 (37.75, 237.75) weight 0.11592500000000783; index 301910 (37.75, 237.5) weight 0.0695550000000047
+
+================================================================ STEP 4: R and T on their own
+SESSION 96 --test-rt (offline, made-up numbers only), 2026-10-06T13:18:04Z
+
+4.1 record leads: the new R against session 86's derive (F128.3), same made-up inputs
+  r_inputs(24) = [24, 22] (W = 18); r_inputs(26) = [26] (W = 24)
+  lead 24 (EGLC's derive): A(24) 612.375, A(22) 488.1640625, PRMSL(24) 101325.5 Pa, PRMSL(21) 101412.75 Pa
+  [PASS] R: new 860.797, derive 860.797, identical float True
+  [PASS] T (4.3): new -0.873, derive -0.873
+  lead 24 (EGLC's derive): A(24) 0.0, A(22) 0.0, PRMSL(24) 99876.0 Pa, PRMSL(21) 99912.25 Pa
+  [PASS] R: new 0.0, derive 0.0, identical float True
+  [PASS] T (4.3): new -0.362, derive -0.362
+  lead 24 (EGLC's derive): A(24) 35.5, A(22) 120.8125, PRMSL(24) 102003.875 Pa, PRMSL(21) 101998.5 Pa
+  [PASS] R: new -135.125, derive -135.125, identical float True
+  [PASS] T (4.3): new 0.054, derive 0.054
+  lead 24 (EGLC's derive): A(24) 803.44, A(22) 790.2, PRMSL(24) 100512.0 Pa, PRMSL(21) 100649.6875 Pa
+  [PASS] R: new 829.92, derive 829.92, identical float True
+  [PASS] T (4.3): new -1.377, derive -1.377
+  lead 24 (EGLC's derive): A(24) 5.0625, A(22) 0.25, PRMSL(24) 98765.4321 Pa, PRMSL(21) 98760.0 Pa
+  [PASS] R: new 14.688, derive 14.688, identical float True
+  [PASS] T (4.3): new 0.054, derive 0.054
+  [PASS] lead 26 (native window, YSDU's derive): A(26) 612.375; new R 612.375 = A(26) rounded True; derive 612.375
+  [PASS] lead 26 (native window, YSDU's derive): A(26) 0.0; new R 0.0 = A(26) rounded True; derive 0.0
+  [PASS] lead 26 (native window, YSDU's derive): A(26) 803.44; new R 803.44 = A(26) rounded True; derive 803.44
+  [PASS] lead 26: r_raw returns A(26) itself (no arithmetic)
+
+4.2 exact algebra (fractions): a made-up hourly radiation series h(1..24) for one cycle
+  h = 1:151/21, 2:524/21, 3:373/7, 4:1936/21, 5:425/3, 6:415/7, 7:2728/21, 8:206/3, 9:18, 10:361/3, 11:1907/21, 12:503/7, 13:1333/21, 14:197/3, 15:549/7, 16:2137/21, 17:407/3, 18:264/7, 19:1948/21, 20:335/21, 21:645/7, 22:766/21, 23:2810/21, 24:695/7
+  [PASS] R recovers the true 2-hour mean (h(N-1) + h(N)) / 2 exactly at every lead 2 to 24: 23 of 23
+  leads by form: N-2=W (A(N)): [2, 8, 14, 20]; N-W>=3 (2 terms): [3, 4, 5, 6, 9, 10, 11, 12, 15, 16, 17, 18, 21, 22, 23, 24]; N-W=1 (3 terms): [7, 13, 19]
+  [PASS] R missing at leads 0 and 1: r_inputs(0) None, r_inputs(1) None
+  [PASS] T missing at leads 0 to 2: [None, None, None]; t_inputs(3) [3, 0] (uses f000)
+
+ALL STEP 4 TESTS PASSED
+
+================================================================ TRIAL BUILD (before Step 5; EGLC only, into the session scratchpad, deleted after)
+SESSION 96 --build (offline), start 2026-10-06T13:18:13Z; out /private/tmp/claude-501/-Users-zacharyadams-Coding-Projects-MLwx/2371ea68-c7f8-4fee-8177-a1ff970ce430/scratchpad/trial_eglc
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+  2021-03: 36 cycles, 840 rows per airport (2026-10-06T13:18:15Z)
+  2021-04: 120 cycles, 3000 rows per airport (2026-10-06T13:18:16Z)
+  2021-05: 124 cycles, 3100 rows per airport (2026-10-06T13:18:17Z)
+  2021-06: 120 cycles, 3000 rows per airport (2026-10-06T13:18:18Z)
+  2021-07: 124 cycles, 3100 rows per airport (2026-10-06T13:18:19Z)
+  2021-08: 124 cycles, 3100 rows per airport (2026-10-06T13:18:20Z)
+  2021-09: 120 cycles, 3000 rows per airport (2026-10-06T13:18:21Z)
+  2021-10: 124 cycles, 3100 rows per airport (2026-10-06T13:18:22Z)
+  2021-11: 120 cycles, 3000 rows per airport (2026-10-06T13:18:23Z)
+  2021-12: 124 cycles, 3100 rows per airport (2026-10-06T13:18:24Z)
+  2022-01: 124 cycles, 3100 rows per airport (2026-10-06T13:18:25Z)
+  2022-02: 112 cycles, 2800 rows per airport (2026-10-06T13:18:26Z)
+  2022-03: 124 cycles, 3100 rows per airport (2026-10-06T13:18:27Z)
+  2022-04: 120 cycles, 3000 rows per airport (2026-10-06T13:18:28Z)
+  2022-05: 124 cycles, 3100 rows per airport (2026-10-06T13:18:29Z)
+  2022-06: 120 cycles, 3000 rows per airport (2026-10-06T13:18:30Z)
+  2022-07: 124 cycles, 3100 rows per airport (2026-10-06T13:18:31Z)
+  2022-08: 124 cycles, 3100 rows per airport (2026-10-06T13:18:32Z)
+  2022-09: 120 cycles, 3000 rows per airport (2026-10-06T13:18:33Z)
+  2022-10: 124 cycles, 3100 rows per airport (2026-10-06T13:18:34Z)
+  2022-11: 120 cycles, 3000 rows per airport (2026-10-06T13:18:35Z)
+  2022-12: 124 cycles, 3100 rows per airport (2026-10-06T13:18:36Z)
+  2023-01: 124 cycles, 3100 rows per airport (2026-10-06T13:18:37Z)
+  2023-02: 112 cycles, 2800 rows per airport (2026-10-06T13:18:38Z)
+  2023-03: 124 cycles, 3100 rows per airport (2026-10-06T13:18:39Z)
+  2023-04: 120 cycles, 3000 rows per airport (2026-10-06T13:18:40Z)
+  2023-05: 124 cycles, 3100 rows per airport (2026-10-06T13:18:41Z)
+  2023-06: 120 cycles, 3000 rows per airport (2026-10-06T13:18:42Z)
+  2023-07: 124 cycles, 3100 rows per airport (2026-10-06T13:18:43Z)
+  2023-08: 124 cycles, 3100 rows per airport (2026-10-06T13:18:44Z)
+  2023-09: 120 cycles, 3000 rows per airport (2026-10-06T13:18:45Z)
+  2023-10: 124 cycles, 3100 rows per airport (2026-10-06T13:18:46Z)
+  2023-11: 120 cycles, 3000 rows per airport (2026-10-06T13:18:47Z)
+  2023-12: 124 cycles, 3100 rows per airport (2026-10-06T13:18:48Z)
+  2024-01: 124 cycles, 3100 rows per airport (2026-10-06T13:18:49Z)
+  2024-02: 116 cycles, 2900 rows per airport (2026-10-06T13:18:50Z)
+  2024-03: 124 cycles, 3100 rows per airport (2026-10-06T13:18:51Z)
+  2024-04: 120 cycles, 3000 rows per airport (2026-10-06T13:18:52Z)
+  2024-05: 124 cycles, 3100 rows per airport (2026-10-06T13:18:53Z)
+  2024-06: 120 cycles, 3000 rows per airport (2026-10-06T13:18:55Z)
+  2024-07: 124 cycles, 3100 rows per airport (2026-10-06T13:18:56Z)
+  2024-08: 124 cycles, 3100 rows per airport (2026-10-06T13:18:57Z)
+  2024-09: 120 cycles, 3000 rows per airport (2026-10-06T13:18:58Z)
+  2024-10: 124 cycles, 3100 rows per airport (2026-10-06T13:18:59Z)
+  2024-11: 120 cycles, 3000 rows per airport (2026-10-06T13:19:00Z)
+  2024-12: 124 cycles, 3100 rows per airport (2026-10-06T13:19:01Z)
+  2025-01: 124 cycles, 3100 rows per airport (2026-10-06T13:19:02Z)
+  2025-02: 112 cycles, 2800 rows per airport (2026-10-06T13:19:03Z)
+  2025-03: 124 cycles, 3100 rows per airport (2026-10-06T13:19:04Z)
+  2025-04: 120 cycles, 3000 rows per airport (2026-10-06T13:19:05Z)
+  2025-05: 124 cycles, 3100 rows per airport (2026-10-06T13:19:06Z)
+  2025-06: 120 cycles, 3000 rows per airport (2026-10-06T13:19:07Z)
+  2025-07: 124 cycles, 3100 rows per airport (2026-10-06T13:19:08Z)
+  2025-08: 124 cycles, 3100 rows per airport (2026-10-06T13:19:09Z)
+  2025-09: 120 cycles, 3000 rows per airport (2026-10-06T13:19:10Z)
+  2025-10: 124 cycles, 3100 rows per airport (2026-10-06T13:19:11Z)
+  2025-11: 120 cycles, 3000 rows per airport (2026-10-06T13:19:12Z)
+  2025-12: 124 cycles, 3100 rows per airport (2026-10-06T13:19:13Z)
+  2026-01: 124 cycles, 3100 rows per airport (2026-10-06T13:19:14Z)
+  2026-02: 112 cycles, 2800 rows per airport (2026-10-06T13:19:15Z)
+  2026-03: 124 cycles, 3100 rows per airport (2026-10-06T13:19:16Z)
+  2026-04: 120 cycles, 3000 rows per airport (2026-10-06T13:19:17Z)
+  2026-05: 124 cycles, 3100 rows per airport (2026-10-06T13:19:19Z)
+  2026-06: 120 cycles, 3000 rows per airport (2026-10-06T13:19:20Z)
+  2026-07: 124 cycles, 3060 rows per airport (2026-10-06T13:19:21Z)
+
+plan rows per airport: 195600; airports 1; all rows 195600
+columns (24): station, cycle_utc, cycle_hour, lead, valid_utc, temp, temperature_grib_c, t2m_raw, cloud_cover, wind_speed_10m, dew_point_2m, t850, dewpoint_depression_t2m_floored, lapse_rate_t2_t850, dswrf_2h_wm2, pressure_tendency_3h_hpa, season_sin, season_cos, tmax2m_c, tmin2m_c, obs_tmpc, obs_time_utc, uses_whole_file, complete_case
+  stagec_dev_EGLC.csv.gz: rows 195600, bytes 8,315,375, SHA-256 af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+      observations: reports read 46919, no usable tmpc 10 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+leftover partial files: none
+end 2026-10-06T13:19:22Z; run time 69.3 s
+(The trial's empty-cell counts were then printed, counts only: dswrf_2h_wm2 15655, pressure_tendency_3h_hpa 23482,
+ obs_tmpc 186, obs_time_utc 186, tmax2m_c 7824, tmin2m_c 7824; whole-file rows 51; complete-case rows 171963. Deleted.)
+
+================================================================ STEP 5: the build
+SESSION 96 --build (offline), start 2026-10-06T13:19:45Z; out /Users/zacharyadams/Coding Projects/MLwx-stagec
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+  2021-03: 36 cycles, 840 rows per airport (2026-10-06T13:19:48Z)
+  2021-04: 120 cycles, 3000 rows per airport (2026-10-06T13:19:51Z)
+  2021-05: 124 cycles, 3100 rows per airport (2026-10-06T13:19:54Z)
+  2021-06: 120 cycles, 3000 rows per airport (2026-10-06T13:19:56Z)
+  2021-07: 124 cycles, 3100 rows per airport (2026-10-06T13:19:59Z)
+  2021-08: 124 cycles, 3100 rows per airport (2026-10-06T13:20:01Z)
+  2021-09: 120 cycles, 3000 rows per airport (2026-10-06T13:20:04Z)
+  2021-10: 124 cycles, 3100 rows per airport (2026-10-06T13:20:06Z)
+  2021-11: 120 cycles, 3000 rows per airport (2026-10-06T13:20:09Z)
+  2021-12: 124 cycles, 3100 rows per airport (2026-10-06T13:20:12Z)
+  2022-01: 124 cycles, 3100 rows per airport (2026-10-06T13:20:14Z)
+  2022-02: 112 cycles, 2800 rows per airport (2026-10-06T13:20:17Z)
+  2022-03: 124 cycles, 3100 rows per airport (2026-10-06T13:20:19Z)
+  2022-04: 120 cycles, 3000 rows per airport (2026-10-06T13:20:22Z)
+  2022-05: 124 cycles, 3100 rows per airport (2026-10-06T13:20:24Z)
+  2022-06: 120 cycles, 3000 rows per airport (2026-10-06T13:20:27Z)
+  2022-07: 124 cycles, 3100 rows per airport (2026-10-06T13:20:30Z)
+  2022-08: 124 cycles, 3100 rows per airport (2026-10-06T13:20:32Z)
+  2022-09: 120 cycles, 3000 rows per airport (2026-10-06T13:20:35Z)
+  2022-10: 124 cycles, 3100 rows per airport (2026-10-06T13:20:37Z)
+  2022-11: 120 cycles, 3000 rows per airport (2026-10-06T13:20:40Z)
+  2022-12: 124 cycles, 3100 rows per airport (2026-10-06T13:20:42Z)
+  2023-01: 124 cycles, 3100 rows per airport (2026-10-06T13:20:45Z)
+  2023-02: 112 cycles, 2800 rows per airport (2026-10-06T13:20:47Z)
+  2023-03: 124 cycles, 3100 rows per airport (2026-10-06T13:20:50Z)
+  2023-04: 120 cycles, 3000 rows per airport (2026-10-06T13:20:53Z)
+  2023-05: 124 cycles, 3100 rows per airport (2026-10-06T13:20:55Z)
+  2023-06: 120 cycles, 3000 rows per airport (2026-10-06T13:20:58Z)
+  2023-07: 124 cycles, 3100 rows per airport (2026-10-06T13:21:00Z)
+  2023-08: 124 cycles, 3100 rows per airport (2026-10-06T13:21:03Z)
+  2023-09: 120 cycles, 3000 rows per airport (2026-10-06T13:21:06Z)
+  2023-10: 124 cycles, 3100 rows per airport (2026-10-06T13:21:08Z)
+  2023-11: 120 cycles, 3000 rows per airport (2026-10-06T13:21:11Z)
+  2023-12: 124 cycles, 3100 rows per airport (2026-10-06T13:21:13Z)
+  2024-01: 124 cycles, 3100 rows per airport (2026-10-06T13:21:16Z)
+  2024-02: 116 cycles, 2900 rows per airport (2026-10-06T13:21:19Z)
+  2024-03: 124 cycles, 3100 rows per airport (2026-10-06T13:21:21Z)
+  2024-04: 120 cycles, 3000 rows per airport (2026-10-06T13:21:24Z)
+  2024-05: 124 cycles, 3100 rows per airport (2026-10-06T13:21:26Z)
+  2024-06: 120 cycles, 3000 rows per airport (2026-10-06T13:21:29Z)
+  2024-07: 124 cycles, 3100 rows per airport (2026-10-06T13:21:32Z)
+  2024-08: 124 cycles, 3100 rows per airport (2026-10-06T13:21:34Z)
+  2024-09: 120 cycles, 3000 rows per airport (2026-10-06T13:21:37Z)
+  2024-10: 124 cycles, 3100 rows per airport (2026-10-06T13:21:40Z)
+  2024-11: 120 cycles, 3000 rows per airport (2026-10-06T13:21:42Z)
+  2024-12: 124 cycles, 3100 rows per airport (2026-10-06T13:21:45Z)
+  2025-01: 124 cycles, 3100 rows per airport (2026-10-06T13:21:47Z)
+  2025-02: 112 cycles, 2800 rows per airport (2026-10-06T13:21:50Z)
+  2025-03: 124 cycles, 3100 rows per airport (2026-10-06T13:21:52Z)
+  2025-04: 120 cycles, 3000 rows per airport (2026-10-06T13:21:55Z)
+  2025-05: 124 cycles, 3100 rows per airport (2026-10-06T13:21:58Z)
+  2025-06: 120 cycles, 3000 rows per airport (2026-10-06T13:22:00Z)
+  2025-07: 124 cycles, 3100 rows per airport (2026-10-06T13:22:03Z)
+  2025-08: 124 cycles, 3100 rows per airport (2026-10-06T13:22:06Z)
+  2025-09: 120 cycles, 3000 rows per airport (2026-10-06T13:22:08Z)
+  2025-10: 124 cycles, 3100 rows per airport (2026-10-06T13:22:11Z)
+  2025-11: 120 cycles, 3000 rows per airport (2026-10-06T13:22:13Z)
+  2025-12: 124 cycles, 3100 rows per airport (2026-10-06T13:22:16Z)
+  2026-01: 124 cycles, 3100 rows per airport (2026-10-06T13:22:19Z)
+  2026-02: 112 cycles, 2800 rows per airport (2026-10-06T13:22:21Z)
+  2026-03: 124 cycles, 3100 rows per airport (2026-10-06T13:22:24Z)
+  2026-04: 120 cycles, 3000 rows per airport (2026-10-06T13:22:26Z)
+  2026-05: 124 cycles, 3100 rows per airport (2026-10-06T13:22:29Z)
+  2026-06: 120 cycles, 3000 rows per airport (2026-10-06T13:22:32Z)
+  2026-07: 124 cycles, 3060 rows per airport (2026-10-06T13:22:34Z)
+
+plan rows per airport: 195600; airports 6; all rows 1173600
+columns (24): station, cycle_utc, cycle_hour, lead, valid_utc, temp, temperature_grib_c, t2m_raw, cloud_cover, wind_speed_10m, dew_point_2m, t850, dewpoint_depression_t2m_floored, lapse_rate_t2_t850, dswrf_2h_wm2, pressure_tendency_3h_hpa, season_sin, season_cos, tmax2m_c, tmin2m_c, obs_tmpc, obs_time_utc, uses_whole_file, complete_case
+  stagec_dev_EGLC.csv.gz: rows 195600, bytes 8,315,375, SHA-256 af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+      observations: reports read 46919, no usable tmpc 10 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+  stagec_dev_LFPG.csv.gz: rows 195600, bytes 8,377,218, SHA-256 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+      observations: reports read 46903, no usable tmpc 1 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+  stagec_dev_KDSM.csv.gz: rows 195600, bytes 8,507,654, SHA-256 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+      observations: reports read 46938, no usable tmpc 1 (non-finite 0), repeated timestamps skipped 1, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+  stagec_dev_YSDU.csv.gz: rows 195600, bytes 8,431,107, SHA-256 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+      observations: reports read 46734, no usable tmpc 2 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+  stagec_dev_KRNO.csv.gz: rows 195600, bytes 8,692,141, SHA-256 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+      observations: reports read 46836, no usable tmpc 1 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+  stagec_dev_KSFO.csv.gz: rows 195600, bytes 8,637,256, SHA-256 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+      observations: reports read 46916, no usable tmpc 3 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+leftover partial files: none
+end 2026-10-06T13:22:45Z; run time 180.0 s
+
+================================================================ STEP 6: the gate
+SESSION 96 --gate (offline), 2026-10-06T13:22:51Z
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal True
+gated: EGLC 12z lead 24, LFPG 12z lead 24, DSM 18z lead 24; not gated: YSDU (record lead 26, not in this table), RNO (record lead 26, not in this table), SFO (record lead 26, not in this table)
+columns compared (held by both): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa', 'temperature_grib_c']; plus the observation: committed obs_c against the record's pairing (pair_historical) of the same reports
+
+EGLC (EGLC): committed rows 1953; table rows at 12z lead 24 1956; compared 1953
+  committed rows with no table row: 0 
+  table rows with no committed row: 3 ['2023-06-11', '2024-08-14', '2025-11-21']
+  column                             compared    equal mismatched
+  temp                                   1953     1953          0
+  season_sin                             1953     1953          0
+  season_cos                             1953     1953          0
+  cloud_cover                            1953     1953          0
+  wind_speed_10m                         1953     1953          0
+  dewpoint_depression_t2m_floored        1953     1953          0
+  lapse_rate_t2_t850                     1953     1953          0
+  dswrf_2h_wm2                           1953     1953          0
+  pressure_tendency_3h_hpa               1953     1953          0
+  temperature_grib_c                     1953     1953          0
+  obs_c                                  1953     1953          0
+  station-days where the nearest report (the table's) is not the record's choice: 0 (of which with a different value 0); count only
+
+LFPG (LFPG): committed rows 1953; table rows at 12z lead 24 1956; compared 1953
+  committed rows with no table row: 0 
+  table rows with no committed row: 3 ['2022-07-23', '2022-07-25', '2026-07-08']
+  column                             compared    equal mismatched
+  temp                                   1953     1953          0
+  season_sin                             1953     1953          0
+  season_cos                             1953     1953          0
+  cloud_cover                            1953     1953          0
+  wind_speed_10m                         1953     1953          0
+  dewpoint_depression_t2m_floored        1953     1953          0
+  lapse_rate_t2_t850                     1953     1953          0
+  dswrf_2h_wm2                           1953     1953          0
+  pressure_tendency_3h_hpa               1953     1953          0
+  temperature_grib_c                     1953     1953          0
+  obs_c                                  1953     1953          0
+  station-days where the nearest report (the table's) is not the record's choice: 0 (of which with a different value 0); count only
+
+DSM (KDSM): committed rows 1955; table rows at 18z lead 24 1956; compared 1955
+  committed rows with no table row: 0 
+  table rows with no committed row: 1 ['2022-11-30']
+  column                             compared    equal mismatched
+  temp                                   1955     1955          0
+  season_sin                             1955     1955          0
+  season_cos                             1955     1955          0
+  cloud_cover                            1955     1955          0
+  wind_speed_10m                         1955     1955          0
+  dewpoint_depression_t2m_floored        1955     1955          0
+  lapse_rate_t2_t850                     1955     1955          0
+  dswrf_2h_wm2                           1955     1955          0
+  pressure_tendency_3h_hpa               1955     1955          0
+  temperature_grib_c                     1955     1955          0
+  obs_c                                  1955     1955          0
+  station-days where the nearest report (the table's) is not the record's choice: 0 (of which with a different value 0); count only
+
+station-days compared: 5861 (F137.8: 5,861 at lead 24); failures (mismatches plus committed rows with no table row): 0
+GATE PASSED
+
+================================================================ STEP 7.1, 7.2: counts and meta
+SESSION 96 --records (offline), start 2026-10-06T13:23:01Z
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+in-memory rebuild of stagec_dev_EGLC.csv.gz byte-equal to the file in MLwx-stagec/: True
+in-memory rebuild of stagec_dev_LFPG.csv.gz byte-equal to the file in MLwx-stagec/: True
+in-memory rebuild of stagec_dev_KDSM.csv.gz byte-equal to the file in MLwx-stagec/: True
+in-memory rebuild of stagec_dev_YSDU.csv.gz byte-equal to the file in MLwx-stagec/: True
+in-memory rebuild of stagec_dev_KRNO.csv.gz byte-equal to the file in MLwx-stagec/: True
+in-memory rebuild of stagec_dev_KSFO.csv.gz byte-equal to the file in MLwx-stagec/: True
+wrote data/processed/session96_stagec_dev_counts.csv: 150 rows, 67 columns, SHA-256 304d25a6689b1442ca0b184244a93bc031e9a9157e313cb4b96a04ce22383dfb
+
+counts summary (rows; empty cells by reason, summed over leads; no observation; whole file; complete case)
+  EGLC: rows 195600; no observation 186; uses whole file 51; complete case all leads 171963, leads 3 to 24 171963 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+  LFPG: rows 195600; no observation 600; uses whole file 51; complete case all leads 171598, leads 3 to 24 171598 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+  DSM: rows 195600; no observation 51; uses whole file 51; complete case all leads 172076, leads 3 to 24 172076 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+  YSDU: rows 195600; no observation 1991; uses whole file 51; complete case all leads 170379, leads 3 to 24 170379 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+  RNO: rows 195600; no observation 457; uses whole file 51; complete case all leads 171723, leads 3 to 24 171723 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+  SFO: rows 195600; no observation 148; uses whole file 51; complete case all leads 171993, leads 3 to 24 171993 of 172128
+      dswrf_2h_wm2 empty, lead too short: 15648
+      dswrf_2h_wm2 empty, outside pull window: 7
+      pressure_tendency_3h_hpa empty, lead too short: 23472
+      pressure_tendency_3h_hpa empty, outside pull window: 10
+      tmax2m_c empty, absent by design: 7824
+      tmin2m_c empty, absent by design: 7824
+
+complete-case rows per lead (EGLC, LFPG, DSM, YSDU, RNO, SFO):
+  lead  0: 0/7824, 0/7824, 0/7824, 0/7824, 0/7824, 0/7824; no observation: 10, 40, 3, 83, 17, 4
+  lead  1: 0/7824, 0/7824, 0/7824, 0/7824, 0/7824, 0/7824; no observation: 10, 21, 1, 83, 18, 6
+  lead  2: 0/7824, 0/7824, 0/7824, 0/7824, 0/7824, 0/7824; no observation: 7, 19, 1, 86, 17, 9
+  lead  3: 7820/7824, 7804/7824, 7820/7824, 7748/7824, 7802/7824, 7821/7824; no observation: 4, 20, 4, 76, 22, 3
+  lead  4: 7819/7824, 7803/7824, 7821/7824, 7754/7824, 7808/7824, 7819/7824; no observation: 5, 21, 3, 70, 16, 5
+  lead  5: 7816/7824, 7805/7824, 7824/7824, 7745/7824, 7804/7824, 7815/7824; no observation: 8, 19, 0, 79, 20, 9
+  lead  6: 7814/7824, 7783/7824, 7821/7824, 7740/7824, 7807/7824, 7820/7824; no observation: 10, 40, 3, 83, 17, 4
+  lead  7: 7813/7824, 7802/7824, 7822/7824, 7740/7824, 7806/7824, 7817/7824; no observation: 10, 21, 1, 83, 18, 6
+  lead  8: 7816/7824, 7804/7824, 7822/7824, 7737/7824, 7807/7824, 7814/7824; no observation: 7, 19, 1, 86, 17, 9
+  lead  9: 7820/7824, 7804/7824, 7820/7824, 7748/7824, 7802/7824, 7821/7824; no observation: 4, 20, 4, 76, 22, 3
+  lead 10: 7819/7824, 7803/7824, 7821/7824, 7754/7824, 7808/7824, 7819/7824; no observation: 5, 21, 3, 70, 16, 5
+  lead 11: 7816/7824, 7805/7824, 7824/7824, 7745/7824, 7804/7824, 7815/7824; no observation: 8, 19, 0, 79, 20, 9
+  lead 12: 7814/7824, 7783/7824, 7821/7824, 7740/7824, 7807/7824, 7820/7824; no observation: 10, 40, 3, 83, 17, 4
+  lead 13: 7813/7824, 7802/7824, 7822/7824, 7740/7824, 7806/7824, 7817/7824; no observation: 10, 21, 1, 83, 18, 6
+  lead 14: 7816/7824, 7804/7824, 7822/7824, 7737/7824, 7807/7824, 7814/7824; no observation: 7, 19, 1, 86, 17, 9
+  lead 15: 7820/7824, 7804/7824, 7820/7824, 7748/7824, 7802/7824, 7821/7824; no observation: 4, 20, 4, 76, 22, 3
+  lead 16: 7819/7824, 7803/7824, 7821/7824, 7754/7824, 7808/7824, 7819/7824; no observation: 5, 21, 3, 70, 16, 5
+  lead 17: 7816/7824, 7805/7824, 7824/7824, 7745/7824, 7804/7824, 7815/7824; no observation: 8, 19, 0, 79, 20, 9
+  lead 18: 7814/7824, 7783/7824, 7821/7824, 7740/7824, 7807/7824, 7820/7824; no observation: 10, 40, 3, 83, 17, 4
+  lead 19: 7813/7824, 7802/7824, 7822/7824, 7740/7824, 7806/7824, 7817/7824; no observation: 10, 21, 1, 83, 18, 6
+  lead 20: 7816/7824, 7804/7824, 7822/7824, 7737/7824, 7807/7824, 7814/7824; no observation: 7, 19, 1, 86, 17, 9
+  lead 21: 7820/7824, 7804/7824, 7820/7824, 7748/7824, 7802/7824, 7821/7824; no observation: 4, 20, 4, 76, 22, 3
+  lead 22: 7819/7824, 7803/7824, 7821/7824, 7754/7824, 7808/7824, 7819/7824; no observation: 5, 21, 3, 70, 16, 5
+  lead 23: 7816/7824, 7805/7824, 7824/7824, 7745/7824, 7804/7824, 7815/7824; no observation: 8, 19, 0, 79, 20, 9
+  lead 24: 7814/7824, 7783/7824, 7821/7824, 7740/7824, 7807/7824, 7820/7824; no observation: 10, 40, 3, 83, 17, 4
+wrote data/processed/session96_stagec_dev_table.meta.txt: SHA-256 eace666a0f1ab2b65614c340899b849eb0e97c25cf49eaaa45eb83747ce89463
+end 2026-10-06T13:26:02Z; run time 180.7 s
+
+--- data/processed/session96_stagec_dev_table.meta.txt
+Provenance (SPEC 2.3). Do not edit the data files.
+
+files       : stagec_dev_<ICAO>.csv.gz, one per development airport
+purpose     : session 96, Step 5 - the stage C development table (DECISIONS D88.3): for each development
+              airport (EGLC, LFPG, DSM, YSDU, RNO, KSFO), every GFS cycle in the pull's plan and every
+              forecast hour 0 to 24, the record's features rebuilt from the stored grid values (D88.5)
+              and the hourly observation at the valid time (D88.7). No model, no score.
+where       : MLwx-stagec/ beside the repository (not tracked, D88.8). Rebuilt exactly from the
+              Release (MLwx-pull/, F137) and the committed observation files by
+              scripts/session96_stagec_table.py --build.
+written by  : scripts/session96_stagec_table.py --build; this meta by --records at 2026-10-06T13:26:02Z
+script sha256: 40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee
+
+table files :
+  stagec_dev_EGLC.csv.gz  rows 195,600  bytes 8,315,375  sha256 af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  stagec_dev_LFPG.csv.gz  rows 195,600  bytes 8,377,218  sha256 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  stagec_dev_KDSM.csv.gz  rows 195,600  bytes 8,507,654  sha256 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  stagec_dev_YSDU.csv.gz  rows 195,600  bytes 8,431,107  sha256 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  stagec_dev_KRNO.csv.gz  rows 195,600  bytes 8,692,141  sha256 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  stagec_dev_KSFO.csv.gz  rows 195,600  bytes 8,637,256  sha256 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  rows per airport 195,600 (the plan of session91_grib_pull.py, hours 0 to 24); all 1,173,600
+  row order: cycle, then lead. gzip with no file name and a zero timestamp, so equal content gives
+  equal bytes. Floats written with repr, so they read back to the identical number. Empty = no value
+  (never filled, SPEC 2.2).
+
+columns     : station, cycle_utc, cycle_hour, lead, valid_utc, temp, temperature_grib_c, t2m_raw, cloud_cover, wind_speed_10m, dew_point_2m, t850, dewpoint_depression_t2m_floored, lapse_rate_t2_t850, dswrf_2h_wm2, pressure_tendency_3h_hpa, season_sin, season_cos, tmax2m_c, tmin2m_c, obs_tmpc, obs_time_utc, uses_whole_file, complete_case
+  station is SPEC 3.4's station code (DSM, RNO, SFO for KDSM, KRNO, KSFO); cycle_utc, valid_utc and
+  obs_time_utc as YYYY-MM-DDTHH:MMZ. Names from session81_training_set.csv: temp,
+  temperature_grib_c, cloud_cover, wind_speed_10m, dewpoint_depression_t2m_floored, lapse_rate_t2_t850,
+  dswrf_2h_wm2, pressure_tendency_3h_hpa, season_sin, season_cos. From SPEC 8.8 G4 and G7: t2m_raw,
+  dew_point_2m, t850 (degC, 3 decimals). From D88.5(e): tmax2m_c, tmin2m_c (degC, 3 decimals, no
+  elevation constant). obs_tmpc is float(tmpc) of the nearest usable report within 15 minutes
+  (inclusive; a tie keeps the earlier). uses_whole_file: a message used has status 'ok (whole file)'.
+  complete_case: the nine SPEC 8.8 G15 columns and the observation are all present.
+
+inputs      :
+  data/processed/session95_pull_inventory.csv sha256 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a (the 195 pull files, each
+  checked against it by name, bytes and SHA-256 before the build)
+  data/processed/session91_pull_airports.csv sha256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+  SPEC.md section 3.4 and the params CSVs, parsed by session86_forward_build.load_airports:
+  data/raw/diagnostics/session37/session37_elevation_correction_params.csv sha256 a0d44319606be14b511009d4abb968fb29cafbac6e7bb028bf987138cc6af841
+  data/raw/diagnostics/session76/session76_elevation_correction_params.csv sha256 a2750f6b254e3503ea88f8b7cc99578304fac06cf89c0a9cd96dad9249abf211
+  observation files (the six yearly routine files per airport; their .meta.txt record no SHA-256):
+              iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv sha256 4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19
+              iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv sha256 30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16
+              iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv sha256 92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e
+              iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv sha256 20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f
+              iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv sha256 8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb
+              iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv sha256 0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233
+              iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv sha256 4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23
+              iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv sha256 5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5
+              iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv sha256 d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223
+              iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv sha256 648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24
+              iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv sha256 ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df
+              iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv sha256 580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c
+              iem_asos_DSM_2021-03-24_2021-12-31_routine.csv sha256 8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7
+              iem_asos_DSM_2022-01-01_2022-12-31_routine.csv sha256 94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407
+              iem_asos_DSM_2023-01-01_2023-12-31_routine.csv sha256 0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649
+              iem_asos_DSM_2024-01-01_2024-12-31_routine.csv sha256 ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be
+              iem_asos_DSM_2025-01-01_2025-12-31_routine.csv sha256 82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6
+              iem_asos_DSM_2026-01-01_2026-07-31_routine.csv sha256 0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de
+              iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv sha256 af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f
+              iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv sha256 01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352
+              iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv sha256 948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d
+              iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv sha256 1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a
+              iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv sha256 cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff
+              iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv sha256 db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1
+              iem_asos_RNO_2021-03-24_2021-12-31_routine.csv sha256 0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c
+              iem_asos_RNO_2022-01-01_2022-12-31_routine.csv sha256 3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155
+              iem_asos_RNO_2023-01-01_2023-12-31_routine.csv sha256 fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a
+              iem_asos_RNO_2024-01-01_2024-12-31_routine.csv sha256 88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a
+              iem_asos_RNO_2025-01-01_2025-12-31_routine.csv sha256 4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b
+              iem_asos_RNO_2026-01-01_2026-07-31_routine.csv sha256 9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515
+              iem_asos_SFO_2021-03-24_2021-12-31_routine.csv sha256 8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003
+              iem_asos_SFO_2022-01-01_2022-12-31_routine.csv sha256 7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618
+              iem_asos_SFO_2023-01-01_2023-12-31_routine.csv sha256 06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221
+              iem_asos_SFO_2024-01-01_2024-12-31_routine.csv sha256 dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9
+              iem_asos_SFO_2025-01-01_2025-12-31_routine.csv sha256 c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307
+              iem_asos_SFO_2026-01-01_2026-07-31_routine.csv sha256 cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382
+imported code:
+  scripts/session86_forward_build.py sha256 da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125
+  scripts/session92_verify_chunk.py sha256 7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a
+  scripts/session91_grib_pull.py sha256 b52ffc2ee741853079aa8cb7b63850645fb93974a6e4f39d7f20fb212a432f1f
+versions    : python 3.12.2; numpy 2.5.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0
+
+================================================================ STEP 7.3, 7.4: repeatability and guards
+temporary directory: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.rkqrr8BykM
+SESSION 96 --build (offline), start 2026-10-06T13:26:13Z; out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.rkqrr8BykM/rebuild
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+
+plan rows per airport: 195600; airports 1; all rows 195600
+columns (24): station, cycle_utc, cycle_hour, lead, valid_utc, temp, temperature_grib_c, t2m_raw, cloud_cover, wind_speed_10m, dew_point_2m, t850, dewpoint_depression_t2m_floored, lapse_rate_t2_t850, dswrf_2h_wm2, pressure_tendency_3h_hpa, season_sin, season_cos, tmax2m_c, tmin2m_c, obs_tmpc, obs_time_utc, uses_whole_file, complete_case
+  stagec_dev_EGLC.csv.gz: rows 195600, bytes 8,315,375, SHA-256 af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+      observations: reports read 46919, no usable tmpc 10 (non-finite 0), repeated timestamps skipped 0, file order sorted True, tie hours (two equally near usable reports, earlier kept) 0
+leftover partial files: none
+end 2026-10-06T13:27:23Z; run time 70.0 s
+--- compare
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.rkqrr8BykM/rebuild/stagec_dev_EGLC.csv.gz
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  ../MLwx-stagec/stagec_dev_EGLC.csv.gz
+cmp: byte-equal
+ls: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.rkqrr8BykM: No such file or directory
+temporary directory deleted: True
+
+SESSION 96 --guard-check (offline, no data read), 2026-10-06T13:27:24Z
+  [OK ] valid time 2026-07-31T23:00: allowed 
+  [OK ] valid time 2026-08-01T00:00: REFUSED valid time 2026-08-01T00:00 is after 2026-07-31T23:00 UTC
+  [OK ] observation 2026-07-31T23:59: allowed 
+  [OK ] observation 2026-08-01T00:00: REFUSED observation at 2026-08-01T00:00 is after 2026-07-31T23:59 UTC
+all guard cases behaved as required
+exit 0
+
+================================================================ FINAL SCRIPT
+40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee  scripts/session96_stagec_table.py
+(unchanged since before Step 3; every run above, the trial included, used this file)
+
+================================================================ END OF SESSION: CONSISTENCY CHECK (report only)
+Re-read SPEC.md, STATUS.md and DECISIONS.md after this session's edits.
+
+Mechanical checks:
+- Duplicated headings: none in SPEC.md, STATUS.md or DECISIONS.md.
+- DECISIONS.md: 36 dated headings, in date order; D and F numbers each ascending in file order, no
+  duplicate number; no live entry number also present in DECISIONS-archive.md.
+- No em-dash in any new text (git diff added lines, the new script, the meta). This file holds one, in the
+  Step 2 git diff's context line, which is existing SPEC text.
+
+Disagreements and notes found (nothing was changed for them):
+1. The session prompt's end step 2 says "the SPEC 6 carried note is done". STATUS.md (session 95's) has no
+   SPEC 6 carried note: its "Carried items" never listed one, and the only "SPEC 6" in it is the roadmap
+   heading. So nothing was removed for it. SPEC 6 itself is edited (Step 2).
+2. D87.6 (append-only) still names SCN 26-88 as the newest notice; D88.2 corrects this (SCN 26-89, same
+   day). STATUS now cites D88.2. Not an error in the files, a recorded correction.
+3. SPEC 8.2 describes R only at the record's leads (native window at lead 26, de-accumulation at lead 24).
+   D88.5(b) extends it to every lead for stage C. SPEC is not changed: stage C's SPEC section is written at
+   its lock (D82.5). Not a contradiction, but a reader of SPEC alone sees only the record's R.
+4. SPEC 4.5's paragraph on the historical code (last report) and SPEC 8.7 item 1 (new code pairs the
+   nearest) agree with what this session did: the table uses the nearest, the gate uses the record's
+   pairing; 0 station-days differ at the gated hours (F138.5).
+5. STATUS's stage C "Design" bullet and SPEC 6 agree with D88 (forecast hours 0 to 24, 25 to 48 later).
+   SPEC 6's stage C bullet now cites D83, D87, F137 and D88; all four are live.
+6. F138.8 lists 13 readings for the owner; STATUS's open question names the three largest.
+No other disagreement, duplicate or out-of-order entry was found.
+
+================================================================ END OF SESSION: ARCHIVE STEP
+Nothing moved. D72, D73, F122, D77 to D88 and F127 to F138 stay live (the prompt). The other live entries
+(D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125, D76) did not become settled this session; F123,
+F124 and D76.2 are cited by STATUS's open uncertainties, and the rest were kept live by earlier sessions'
+judgement (session 95's archive step), which this session did not change.
+
+================================================================ END OF SESSION: FINAL CHECKS
+--- temporary directory of Step 7.3 (mktemp -d): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.rkqrr8BykM exists: no
+--- trial directory in the scratchpad exists: no
+--- MLwx-pull/ against the inventory:
+files 195; inventory rows 195; same names True; not equal []
+--- MLwx-stagec/:
+total 99568
+-rw-r--r--@ 1 zacharyadams  staff  8315375 Oct  6 14:22 stagec_dev_EGLC.csv.gz
+-rw-r--r--@ 1 zacharyadams  staff  8507654 Oct  6 14:22 stagec_dev_KDSM.csv.gz
+-rw-r--r--@ 1 zacharyadams  staff  8692141 Oct  6 14:22 stagec_dev_KRNO.csv.gz
+-rw-r--r--@ 1 zacharyadams  staff  8637256 Oct  6 14:22 stagec_dev_KSFO.csv.gz
+-rw-r--r--@ 1 zacharyadams  staff  8377218 Oct  6 14:22 stagec_dev_LFPG.csv.gz
+-rw-r--r--@ 1 zacharyadams  staff  8431107 Oct  6 14:22 stagec_dev_YSDU.csv.gz
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  ../MLwx-stagec/stagec_dev_EGLC.csv.gz
+17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32  ../MLwx-stagec/stagec_dev_KDSM.csv.gz
+6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3  ../MLwx-stagec/stagec_dev_KRNO.csv.gz
+11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8  ../MLwx-stagec/stagec_dev_KSFO.csv.gz
+5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f  ../MLwx-stagec/stagec_dev_LFPG.csv.gz
+57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829  ../MLwx-stagec/stagec_dev_YSDU.csv.gz
+--- git status --porcelain
+ M DECISIONS.md
+ M SPEC.md
+ M STATUS.md
+?? data/processed/session96_stagec_dev_counts.csv
+?? data/processed/session96_stagec_dev_table.meta.txt
+?? docs/session-96.md
+?? scripts/session96_stagec_table.py
