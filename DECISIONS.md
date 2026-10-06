@@ -3491,3 +3491,85 @@ The messages found by the walk sit at other offsets than the `.idx` gives (for e
 12. Docstrings of both scripts were updated to describe the new status.
 
 **F136.9 What this did not do.** No workflow run, push, Release change or `gh` call; the workflow is unchanged. No month was pulled or published, and no extract was written. No forecast value printed. No observation read; no score; nothing from 2026-27. Nothing under `data/` changed and nothing in `MLwx-pull/`; `data/models/` not touched. No bytes kept; no install; no account or token. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-05: Session 95 decision: F136 accepted, the 2022-11 run, and the all-months check (owner, planning chat)
+
+**D87. Owner decisions, planning chat (after session 94): F136
+accepted, the 2022-11 run, the pull complete, and the all-months
+check.** Written at the start of session 95, before any other edit or
+network call. No 2026-27 value has been read or scored.
+
+- **D87.1 F136 accepted.** The owner accepts F136 and all twelve
+  F136.8 readings.
+- **D87.2 A note on session 94's Step 0.** `docs/session-94.md` was
+  written before session 93 was committed, so it was committed with
+  session 93 and session 94's Step 0 found a clean tree (F136.1).
+  Harmless; nothing else was affected.
+- **D87.3 The 2022-11 run.** After session 94 was committed and
+  pushed, the owner ran 2022-11 alone on GitHub Actions with the
+  whole-file fallback. The verify step passed 13 of 13 checks and the
+  month was published. Statuses (owner's report from the job log): ok
+  29,370; absent by design 360; ok (whole file) 270; idx missing 0;
+  check failed 0. The owner reports the 270 messages are exactly
+  F135's 27 broken files, so 2022-11-29T12 (flagged by dynamical.org,
+  F131.2) was not affected. Session 95 confirms this from the files.
+- **D87.4 The pull is complete.** The Release "Stage C GRIB pull"
+  (`stagec-grib-pull-v1`) holds all 195 assets (65 months x 3). Its web
+  page shows 197 because GitHub adds two "Source code" archives. The
+  stage C f000 to f024 pull is complete.
+- **D87.5 Session 95 checks all 65 months.** It downloads every asset
+  not held locally into `MLwx-pull/` (outside the repo), checks each
+  against the Release digest and its meta, runs the verifier on every
+  month, checks the totals against the full plan, and runs the
+  extended gate on every month at EGLC, LFPG and DSM (lead 24). It
+  writes a committed inventory of the Release,
+  `data/processed/session95_pull_inventory.csv`.
+- **D87.6 GFS v17 (planning-chat check, 2026-10-05, not checked by
+  this session).** The NWS notices page lists SCN 26-88 (2 October
+  2026) as the newest Service Change Notice; none is for GFS v17. With
+  30 days' notice, the earliest go-live is about 4 November 2026.
+
+---
+
+## 2026-10-05: Session 95 finding: all 65 months downloaded and checked
+
+**F137. All 195 Release assets are now held in `MLwx-pull/`, each equal to its Release digest, and every check passed: every meta as expected; the verifier 13 of 13 on all 65 months; no value outside the bounds and no read-back mismatch; the union of all months equals the full plan (7,828 cycles, 195,600 files, 1,956,000 manifest rows, 1,932,528 messages, 9,975,600 points rows), with no key in two months; "ok (whole file)" exactly 270, exactly F135.3's 27 files; check failed 0, idx missing 0. The extended gate passed on every month: 5,861 station-days at EGLC, LFPG and DSM, all seven columns equal, exact equality, 0 mismatches, 0 not rebuilt. The first download attempt stopped on an HTTP 500 and the script was changed on the owner's terms (F137.3). Script: `scripts/session95_check_release.py` (new; modes `--release`, `--download`, `--months`, `--totals`, `--negative`, `--gate`, `--inventory`; final SHA-256 `32c3ed772745b930fa00f06cd9dd300decb45c743e173bec725004c8c24f2af0`). Inventory: `data/processed/session95_pull_inventory.csv` (195 rows, SHA-256 `7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a`) and its `.meta.txt` (`de7bdbd6a57eb55276167c8c7da0e19f7f032de979480a481ac2a9324106be8a`). Full real output: `notes/session-95-output.txt`. Run 2026-10-05. Python 3.12.2, eccodes 2.48.0 (ecCodes library 2.48.0), numpy 2.5.2, requests 2.34.2.**
+
+**F137.1 Step 0 and Step 1.** `git status --porcelain` showed only `?? docs/session-95.md`. The last entries were D86 and F136; no D87 or F137 existed in either DECISIONS file; the new script and inventory did not exist. SHA-256 equal to the record: pull script `b52ffc2e...2f1f` and verifier `7b59a5c2...af6a` (F136), workflow `804b6d35...02a6` (F134, F136), positions file `cf86c692...fd08` (F133), `session81_training_set.csv` `ab8f25f2...8d4a` (F122.3). `MLwx-pull/` held exactly the three 2022-01 files, SHA-256 equal to F134.1. Free disk: 25 GiB. Read: D83, D84, D86, F133 to F136, SPEC 3.4 and 8.7, both scripts in full. D87 was copied with `sed` from `docs/session-95.md` lines 115 to 148 into DECISIONS.md lines 3499 to 3532 (heading at 3497) and checked byte-equal with `diff` and `cmp`, before any other edit or network call.
+
+**F137.2 The Release (Step 2; 2026-10-05T20:28:49Z).** "Stage C GRIB pull", tag `stagec-grib-pull-v1`, not draft, not prerelease, published 2026-10-03T18:35:03Z. **195 assets**: every plan month 2021-03 to 2026-07 has its three files; none outside the plan, no other asset; all "uploaded", all with a SHA-256 digest. The 2022-01 assets equal F134.1 and the local files (sizes and SHA-256). Total 1,257,990,242 B (points 1,208,179,680; manifests 49,718,867; meta 91,695), against F135.2's 192 assets 1,238,178,639 B (1,189,134,875; 48,956,737; 87,027): the difference, 19,811,603 B, is exactly 2022-11's three assets (19,044,805; 762,130; 4,668).
+
+**F137.3 The download (Step 3), two attempts.**
+- **Attempt 1 (20:28:57Z):** 36 of 192 downloaded (the meta files 2021-03 to 2024-03 except 2022-01, 52,255 B, each checked against its digest), then `chunk_2024-04.meta.txt` answered HTTP 500 on its first try and both retries (waits 2 s and 4 s). The script stopped as the prompt says; no temporary file was left; the 39 files then held all equalled their digests (checked offline against the Step 2 listing). Reported to the owner.
+- **The change (owner's terms, after review):** the download step now first checks every file already in `MLwx-pull/` against its Release size and SHA-256 (a mismatch or a file not in the Release stops), then downloads only the assets not held. This is its normal behaviour, not a resume mode. Retries: at most 3 after the first try, waits 10, 30 and 90 s, on a network error, HTTP 5xx or a digest mismatch; any other HTTP status stops at once. The Step 2 listing is re-used if under an hour old, else the Release is listed again and must give the same 195 names, sizes and digests. Unchanged: temporary name then rename (by `os.link`, which never overwrites), no overwrite or deletion of a held file, no other host.
+- **Attempt 2 (20:34:13Z):** the Step 2 listing was 325 s old and was re-used (0 API requests). 39 held files checked, all equal. 156 downloaded, 1,237,299,527 B, 484.7 s, 156 requests, 0 retries. Hosts: `github.com` and its redirect `release-assets.githubusercontent.com`.
+- In all: 192 files, 1,237,351,782 B (equal to the Release's sizes). At the end `MLwx-pull/` holds exactly 195 files, each SHA-256 equal to its Release digest, and no temporary file.
+
+**F137.4 The metas (Step 4.1).** All 65: both data-file SHA-256 equal the local files'; positions SHA-256 equals the committed file's; arguments `--chunk --month <m> --hours 0-24 --out out --workers 16` (16 workers everywhere). Script SHA-256: 2022-11 F136's `b52ffc2e...2f1f`; the other 64 F133's `72c263b2...652e`. Versions in every meta: Python 3.12.14, eccodes 2.48.0, ecCodes library 2.48.0. HTTP 404: 0 in every month. Retries: 135 in 2022-11, 1 in 2023-01, 0 elsewhere. 2022-11's meta records 27 whole-file fallbacks, 14,713,332,129 B, 270 messages "ok (whole file)", each walk of 743 messages ending at the file's last byte; chunk 1,022.4 s. Sums over the 65 metas: 1,563,543,208,326 B downloaded on Actions, 26,365.7 chunk seconds. The per-month table (start, end, seconds, workers, retries, 404, bytes, whole-file requests and bytes) is in the output file.
+
+**F137.5 The verifier and the ranges (Step 4.2, 4.3).** All 65 months: exit 0, 13 of 13. "idx missing" 0 in every month; "ok (whole file)" 270 in 2022-11, 0 elsewhere. `--ranges`: 0 values outside the bounds and 0 read-back mismatches in every month (394,235,712 value cells). Per field over all months (units as GRIB gives them): t2m 242.75171875 to 322.44296875000003; tcdc 0.0 to 100.0; u10 -33.96760498046875 to 27.934453125; v10 -30.71757568359375 to 29.15512939453125; d2m 236.704052734375 to 302.3; t850 240.08433593750001 to 312.0498046875; dswrf 0.0 to 1164.42; prmsl 95075.65000000001 to 105505.4375; tmax2m 243.53779296875 to 322.62939453125; tmin2m 242.72767578125 to 320.51044921875.
+
+**F137.6 Totals and the whole-file check (Step 5.1 to 5.4).** The full plan from session 91's own functions gives 7,828 cycles, 195,600 files, 1,956,000 manifest rows, 1,932,528 messages and 9,975,600 points rows, equal to F133.5 and the prompt. The union over all 65 months equals it by key set and count for cycles and files (each from both the manifests and the points files), manifest rows, messages and points rows; no key in more than one row; no key outside its cycle's month. Status totals: ok 1,932,258; absent by design 23,472; idx missing 0; check failed 0; ok (whole file) 270. **The (cycle, hour) files with any "ok (whole file)" message are exactly F135.3's 27** (read from DECISIONS.md and equal to the prompt's list), each with all ten fields so; no other message has that status. Every 2022-11-29T12 message is ok (247 ok, 3 absent by design), so that cycle, flagged by dynamical.org (F131.2), is whole, as the owner reported (D87.3). Whole-file values per field, against 2022-11's normal ok values, 0 outside the bounds; minimum and maximum in the output file.
+
+**F137.7 Negative tests (Step 5.5; one `mktemp -d` directory, deleted).** (a) A copy of `chunk_2021-03.meta.txt` passes the digest check; with byte 100 changed (same size) it fails. (b) The totals check on copies of all 65 points files and 64 manifests (`manifest_2023-06.csv.gz` left out) fails on the missing keys: 120 cycles, 3,000 files, 30,000 manifest rows and 29,640 messages missing from the manifests (2023-06's plan exactly); the points checks pass. `MLwx-pull/` unchanged (SHA-256 of all 195 files equal before and after).
+
+**F137.8 The extended gate (Step 6). PASSED on every month.** The verifier's own `--gate`, EGLC and LFPG 12z lead 24, DSM 18z lead 24. 5,871 station-days in the 65 months; **5,861 rebuilt and compared, all 5,861 with all seven columns equal (exact equality); 0 mismatches; 0 not rebuilt**. By airport: EGLC 1,953, LFPG 1,953, DSM 1,955 station-days (every committed row, F122.3), 13,671, 13,671 and 13,685 values equal. Every column 5,861 of 5,861. **No committed row: 10**, not a failure: EGLC 2023-06-11, 2024-08-14, 2025-11-21; LFPG 2022-07-23, 2022-07-25, 2026-07-08; DSM 2022-11-30 (F122.3's days with no row); and 2026-08-01 at all three (outside the window, reading 7). One gated station-day uses "ok (whole file)" messages: DSM 2022-11-30 (cycle 2022-11-29T18, its f024 and f022 messages); it has no committed row (F122.3), so the whole-file values are not gate-checked against the record. **Not gated:** YSDU, RNO and KSFO use lead 26, which an f000 to f024 extract does not hold; the 45 other airports have no committed record.
+
+**F137.9 The inventory (Step 7).** 195 rows sorted by month then asset name; columns `month`, `asset`, `bytes`, `sha256`, `script_sha256`, `run_start_utc`; `\n` line ends; each `sha256` equals the Release digest (from a listing at 2026-10-05T20:56:33Z) and the local file. SHA-256 in the heading above. The meta follows the positions file's meta style and names the Release, the read time, the script and its SHA-256, and the row count.
+
+**F137.10 Requests and bytes.** GitHub REST API, unauthenticated: 12 requests (four listings of 3: Step 2 twice, download attempt 1, the inventory; attempt 2 re-used the listing), about 645 kB each listing. Release downloads: 195 requests (attempt 1: 36 ok and 3 HTTP 500; attempt 2: 156), 1,237,351,782 B written. No other host; no GRIB request.
+
+**F137.11 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. **The download change (F137.3), on the owner's terms:** the first attempt (36 of 192, then `chunk_2024-04.meta.txt` HTTP 500 on all three tries), the change (check held files, download only the missing, 3 retries at 10, 30, 90 s on network errors, 5xx and digest mismatches), why (a transient server error, and the first version refused to run unless exactly 192 files were missing), and the final script SHA-256 `32c3ed77...2af0`. The script keeps no listing between runs, so the re-use reads the saved Step 2 output (`--listing`, a file in the session scratchpad, read only); when re-used, each download link is built in GitHub's standard form `https://github.com/zadams03/MLwx/releases/download/stagec-grib-pull-v1/<name>`, and a fresh listing must give links of that form.
+2. Step 2 was run twice: the first run's saved log was cut short by my own `head` in the shell; the second is the one recorded.
+3. Steps 4.2 and 4.3 ran the verifier twice per month, once plain and once with `--ranges`, as the prompt words them.
+4. "Arguments are `--chunk --month <m> --hours 0-24`" is read as those first, then the workflow's own `--out out --workers 16`, reported.
+5. Cycles and files are checked from both the manifests and the points files; keys are compared as integers built from cycle, hour and field or airport.
+6. Negative test (b) leaves out 2023-06, and copies all points files too, so the check runs exactly as on the real files.
+7. **The 2026-08-01 target dates** (2026-07's last 12z and 18z cycles) are reported by the verifier's `--gate` as "no committed row", not "not rebuilt", because it looks for the committed row first, and the training set ends 2026-07-31. They are recorded as outside the window. Nothing was "not rebuilt".
+8. Which gated station-days use a whole-file message is found from the manifests with a copy of the verifier's field map (`session92_verify_chunk.py` l.328-330, 345-346).
+9. 2022-11's 135 retries equal 27 x 5, one broken-body run of retries per fallen-back file (arithmetic only; the meta does not split them).
+
+**F137.12 What this did not do.** No GRIB request; no observation read beyond the gate's columns (the verifier's own nine-column read); no score, error, MAE, bias or skill; nothing from 2026-27; no forecast value printed beyond the ranges and Step 5.4's minimum and maximum (no gate mismatch occurred); no push, workflow run or Release change; no token, `gh` or sign-in; nothing in `MLwx-pull/` changed except the 192 added assets; no file under `data/` changed except the two new inventory files, and `data/models/` was not touched; no existing script edited; nothing installed. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.

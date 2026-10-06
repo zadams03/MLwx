@@ -1,0 +1,20 @@
+Provenance (SPEC 2.3). Do not edit the data file.
+
+file        : session95_pull_inventory.csv
+purpose     : session 95, Step 7 - an inventory of the stage C GRIB pull's GitHub Release (DECISIONS
+              D87.5): one row per Release asset (65 months x 3 files), with its size, its SHA-256 (equal
+              to the Release digest and to the local copy), and, from that month's meta, the pull
+              script's SHA-256 and the run start.
+written at  : 2026-10-05T20:56:35Z
+written by  : scripts/session95_check_release.py --inventory
+script sha256: 32c3ed772745b930fa00f06cd9dd300decb45c743e173bec725004c8c24f2af0
+rows        : 195
+sha256      : 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a
+
+release     : zadams03/MLwx, tag stagec-grib-pull-v1, title 'Stage C GRIB pull', published 2026-10-03T18:35:03Z
+release read: 2026-10-05T20:56:33Z (GitHub REST API, unauthenticated, 3 requests)
+columns     : month (YYYY-MM, by cycle initialisation date); asset (file name); bytes; sha256 (hex);
+              script_sha256 and run_start_utc (from chunk_<month>.meta.txt)
+sort        : by month, then asset name. Written with '\n' line ends and no timestamp, so equal
+              content gives equal bytes.
+local copy  : MLwx-pull/ beside the repository (not tracked); every file's SHA-256 equals its row.

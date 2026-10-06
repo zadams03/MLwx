@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 5 October 2026, after session 94._
+_Last updated: 5 October 2026, after session 95._
 
 ---
 
@@ -22,10 +22,11 @@ maximum. The horizon is 24 hours first and 48 hours later. Then a choice of
 which weather model is corrected, plus a blend, and probabilistic ranges.
 
 **The roadmap (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C is
-open: its design is set (D82, D83), its GRIB pull is built and gated (F133),
-every month but 2022-11 is published on the Release (F135), and the pull has a
-whole-file fallback for 2022-11's broken files (D86, F136). Then stages D to
-H. New airports are an ongoing track, and pooling is conditional.
+open: its design is set (D82, D83), and its f000 to f024 GRIB pull is
+complete: all 65 months are on the Release, downloaded and checked, and the
+extended gate passed on every month (D87, F137). Its open build choices
+(D82.5) come next. Then stages D to H. New airports are an ongoing track, and
+pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
 It is pre-registered, its models are frozen, and all three 2026-27 scripts
@@ -58,26 +59,25 @@ km; the saver session decides whether the list grows.
   47 plus LFPG, DSM, YSDU, RNO); development airports at SPEC 3.4's grid
   point, the others at IEM's position. Daily maximum: local day, 22 of 24
   usable hours.
-- **The pull (F133, F134, F135, F136).** `scripts/session91_grib_pull.py`,
+- **The pull (F133 to F137).** `scripts/session91_grib_pull.py` (SHA-256
+  `b52ffc2e...2f1f`, with the whole-file fallback, F136),
   `data/processed/session91_pull_airports.csv` and
-  `.github/workflows/stagec-grib-pull.yml`, with the verify step
-  (`scripts/session92_verify_chunk.py`, D84.4). **The Release
-  `stagec-grib-pull-v1` holds 192 assets: three files for each of the 65
-  planned months except 2022-11** (F135.2). Only 2022-01 has been downloaded and checked locally
-  (F134); the other months are not yet downloaded or checked.
-- **2022-11 (D86, F136).** 27 GRIB files in cycles 2022-11-29T18,
-  2022-11-30T00 and 2022-11-30T06 have `.idx` files that do not match them
-  (F135); the Google Cloud mirror holds the same files. The owner chose to
-  recover them (D86.2). The pull script now has a whole-file fallback: when a
-  byte range still gives a broken body after its retries, it downloads the
-  whole file, walks its GRIB headers, and takes every planned field from the
-  one message that passes session 91's own check, with the status "ok (whole
-  file)". The verifier accepts that status and prints its count. The gate
-  passed (F136): the normal path is unchanged; on healthy files the fallback
-  picks byte-identical messages; two broken files fall back by themselves with
-  exactly one passing message per field. **2022-11 has not been run with the
-  fallback.** New SHA-256: pull script `b52ffc2e...2f1f`, verifier
-  `7b59a5c2...af6a`; the workflow is unchanged (`804b6d35...02a6`).
+  `.github/workflows/stagec-grib-pull.yml` (`804b6d35...02a6`), with the
+  verify step (`scripts/session92_verify_chunk.py`, `7b59a5c2...af6a`).
+  **The f000 to f024 pull is complete (D87.4).** The Release
+  `stagec-grib-pull-v1` holds all 195 assets (65 months x 3, 1.26 GB).
+- **All 65 months downloaded and checked (F137).** The 195 files are in
+  `MLwx-pull/` (outside the repo), each equal to its Release digest. Every
+  meta as expected; the verifier 13 of 13 on every month; no value outside
+  the bounds; the union equals the full plan (195,600 files, 1,932,528
+  messages, 9,975,600 points rows); check failed 0, idx missing 0; "ok (whole
+  file)" 270, exactly the 27 broken files of 2022-11 (F135.3), and
+  2022-11-29T12 is whole. **The extended gate passed on every month:**
+  5,861 station-days at EGLC, LFPG and DSM, all seven columns equal, exact
+  equality. YSDU, RNO and KSFO (lead 26) are not gated by an f000 to f024
+  extract. Committed inventory: `data/processed/session95_pull_inventory.csv`
+  (`7177b661...b70a`). Script: `scripts/session95_check_release.py`
+  (`32c3ed77...2af0`).
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
 - **Not decided (D82.5).** One model with lead time as an input or one per
@@ -97,22 +97,22 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F136.8's readings.** The owner confirms or changes them. The largest: a
-  broken body triggers the fallback only if the last of the six tries was a
-  broken body; an "ok (whole file)" manifest row has an empty `idx_line` and
-  gives the message's range within the whole file; the new status is added
-  to session 91's status list, so the meta's "messages" line now lists five
-  statuses.
+- **F137.11's readings.** The owner confirms or changes them. The largest:
+  the download step's change after an HTTP 500 (check held files, download
+  only the missing, 3 retries at 10, 30, 90 s), made on the owner's terms;
+  and the 2026-08-01 target dates, which the gate reports as "no committed
+  row" (outside the window), not "not rebuilt".
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D84.6).** As of 2026-10-04 (planning-chat check) no GFS v17
-  Service Change Notice was found. EMC's GFSv17 evaluation page (last updated
-  5 June 2026) gives the implementation as Q1 FY27 (October to December
-  2026). With 30 days' notice the earliest go-live is about 3 November 2026.
-  Re-check at each planning session. The go-live date sets period A's
+- **GFS v17 (D87.6).** As of 2026-10-05 (planning-chat check) the NWS
+  notices page lists SCN 26-88 (2 October 2026) as the newest Service Change
+  Notice; none is for GFS v17. EMC's GFSv17 evaluation page gives the
+  implementation as Q1 FY27 (October to December 2026; D84.6). With 30 days'
+  notice the earliest go-live is about 4 November 2026. Re-check at each
+  planning session. The go-live date sets period A's
   length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
   to be confirmed against the SCN (D73.4).
 - **EGLC position note (D81.6).** DWD's cfg places P0478 west of the
@@ -144,4 +144,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 94. If it passed, the owner commits and pushes, runs 2022-11 alone on GitHub Actions and checks its verify step passed (D86.4); then plan the session that downloads and checks all 65 months. Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 95. If it passed, the owner commits and pushes; then plan stage C's next step (the open build choices of D82.5 and what they need first). Re-check GFS v17 (D81.7).

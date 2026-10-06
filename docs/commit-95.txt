@@ -1,0 +1,56 @@
+Session 95: D87, download and check all 65 months of the stage C pull (F137)
+
+D87 records the owner's decisions after session 94: F136 accepted; the
+2022-11 run on GitHub Actions passed its verify step (13 of 13) and was
+published, recovering 270 messages by the whole-file fallback; the
+Release "Stage C GRIB pull" now holds all 195 assets (65 months x 3),
+so the stage C f000 to f024 pull is complete; session 95 downloads and
+checks every month.
+
+New: scripts/session95_check_release.py (lists the Release, downloads
+the missing assets, and runs the meta, verifier, totals, gate and
+inventory checks, reusing session 91's plan and session 92's verifier);
+data/processed/session95_pull_inventory.csv (195 rows: month, asset,
+bytes, sha256, script_sha256, run_start_utc) and its .meta.txt. No
+existing script, SPEC, RESULTS, CLAUDE, README or workflow changed.
+
+The download. A first attempt stopped after 36 of 192 files when
+chunk_2024-04.meta.txt got HTTP 500 on all three tries. On the owner's
+terms the script was changed to check every held file against its
+Release digest and download only the missing ones, with three retries
+at 10, 30 and 90 s on network errors, 5xx and digest mismatches. The
+second attempt downloaded the remaining 156 files, 1.24 GB, in 485 s
+with 0 retries. MLwx-pull/ now holds exactly the 195 assets, each
+SHA-256 equal to its Release digest, the three 2022-01 files untouched.
+
+All checks passed:
+- Release: 195 assets, every plan month with its three files, all
+  "uploaded", each with a digest; the three 2022-01 assets still equal
+  F134.1. Total size up 19,811,603 B over F135.2, exactly the three
+  2022-11 assets.
+- Meta and verifier, all 65 months: 13 of 13. 2022-11 carries the
+  fallback script (b52ffc2e...2f1f); the other 64 carry F133's
+  (72c263b2...652e). Positions SHA and arguments as expected
+  throughout. idx missing 0; ok (whole file) 270, all in 2022-11.
+- Totals against the full plan, by key: 7,828 cycles, 195,600 files,
+  1,932,528 messages, 9,975,600 points rows; absent by design 23,472;
+  check failed 0; no key in two months.
+- Whole-file messages are exactly F135.3's 27 broken files, ten fields
+  each; every 2022-11-29T12 message is ok. Ranges: 394,235,712 value
+  cells, 0 outside bounds, 0 read-back mismatches.
+- Extended gate, every month at EGLC and LFPG (12z lead 24) and DSM
+  (18z lead 24): 5,861 of 5,861 station-days equal on all seven
+  columns, 0 mismatched, 0 not rebuilt. 10 station-days have no
+  committed row (3 are the out-of-window 2026-08-01; DSM 2022-11-30 is
+  the one gated day that uses whole-file messages, as expected). YSDU,
+  RNO and KSFO (lead 26) are not gated; the other 45 airports have no
+  committed record.
+- Negative tests: a one-byte change fails the digest check; a missing
+  month fails the totals check.
+
+Nothing published or pushed; no workflow run; no Release change; no
+GRIB request; no observation beyond the gate's columns; no score;
+nothing from 2026-27; no forecast value printed beyond the ranges and
+the gate; no token; nothing installed. The only change to MLwx-pull/ is
+the 192 added assets; the only new files under data/ are the two
+inventory files.
