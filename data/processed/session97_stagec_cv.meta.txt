@@ -1,0 +1,35 @@
+session97_stagec_cv.meta.txt
+written 2026-10-06T17:40:41Z by scripts/session97_stagec_cv.py --meta
+
+What the files are (BUILD-CHOICE SCORES, NOT RESULTS, SPEC 2.5):
+  session97_stagec_cv_folds.csv: per airport, fold, cycle hour (0, 6, 12, 18) and lead (3 to 24),
+    training rows (complete case), test rows (complete case), test rows dropped as not complete case,
+    and rows in neither (the boundary rule), under DECISIONS D89.3. No fit.
+  session97_stagec_cv_scores.csv: per airport, fold, cycle hour, lead and method (raw_gfs, baseline),
+    n, MAE and mean error (obs_tmpc minus forecast), full precision. raw_gfs is temp, the
+    elevation-adjusted GRIB temperature; baseline is temp plus D88.4's model, one model per airport,
+    fold, cycle hour and lead (1,584 fits).
+
+Folds, metric and rule: DECISIONS D89.3 (folds), D89.5 (metric), D89.6 (rule; not applied here, no
+  build choice is made), D89.9 (the gate, F139).
+
+Inputs and their SHA-256:
+  MLwx-stagec/stagec_dev_EGLC.csv.gz af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_LFPG.csv.gz 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_KDSM.csv.gz 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_YSDU.csv.gz 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_KRNO.csv.gz 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_KSFO.csv.gz 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  data/processed/session81_training_set.csv ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+  data/processed/session63_reserved_confirm_grid.csv 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3
+  scripts/session62_reserved_confirm.py 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4
+
+Script: scripts/session97_stagec_cv.py 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91
+
+Outputs and their SHA-256:
+  data/processed/session97_stagec_cv_folds.csv 77fce6c7c288f37a9d63f4e9b9b8675cad26f0e9b8a2ba4b657084496fb01b66
+  data/processed/session97_stagec_cv_scores.csv 5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76
+
+LGB_PARAMS as passed (imported from scripts/session62_reserved_confirm.py): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+G15 column order (imported from the same script): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+Versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0

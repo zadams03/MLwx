@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 6 October 2026, after session 96._
+_Last updated: 6 October 2026, after session 97._
 
 ---
 
@@ -23,9 +23,10 @@ which weather model is corrected, plus a blend, and probabilistic ranges.
 
 **The roadmap (D72; SPEC 6).** Stage A is done. Stage B runs. Stage C is
 open: its design is set (D82, D83), its f000 to f024 GRIB pull is complete
-and checked (D87, F137), and its development table is built and gated (D88,
-F138). Its open build choices (D82.5) come next, after D88.9's
-cross-validation entry. Then stages D to H. New airports are an ongoing
+and checked (D87, F137), its development table is built and gated (D88,
+F138), D89 fixes the cross-validation rules, and the curve's baseline is
+fit and scored by cross-validation (F139). Its open build choices (D82.5)
+come next, under D89.6. Then stages D to H. New airports are an ongoing
 track, and pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
@@ -90,19 +91,35 @@ km; the saver session decides whether the list grows.
   (`40b63d00...6eee`); counts `data/processed/session96_stagec_dev_counts.csv`;
   meta `data/processed/session96_stagec_dev_table.meta.txt` (every table
   file's SHA-256).
-- **The curve's baseline (D88.4), recorded, not fitted.** SPEC 8's
+- **The rules for build choices (D89).** Three time-ordered folds with
+  expanding training windows, test years 2023-24, 2024-25 and 2025-26 (1
+  August to 31 July; training rows valid before the test year starts;
+  boundary rows in neither, counted) (D89.3). Metric: MAE of the hourly
+  temperature on leads 3 to 24, on the common row set; headline is the
+  unweighted mean of the six airport MAEs (D89.5). A challenger replaces the
+  incumbent only if the headline is lower by more than 1 percent, the airport
+  MAE is lower at 4 or more of 6, and the fold-level MAE is lower in 2 or more
+  of 3 (D89.6). For D82.5's model-structure comparisons the incumbent is
+  D88.4's baseline (D89.7). One choice for the whole curve and every airport
+  (D89.8).
+- **The curve's baseline (D88.4), fit and scored (F139).** SPEC 8's
   `B+D,L,R,T` with the record's settings, column order and complete-case
-  rule, one model per airport, cycle hour and lead (100 per airport). D82.5's
-  alternatives are compared against it by time-ordered cross-validation.
+  rule, one model per airport, fold, cycle hour and lead 3 to 24 (1,584
+  fits). **The gate passed** (D89.9): the new fitting code reproduced F109's
+  raw GFS and `B+D,L,R,T` MAEs at EGLC, LFPG and DSM exactly, 6 of 6.
+  Build-choice scores, not results (SPEC 2.5): headline MAE raw GFS 1.4617,
+  baseline 1.0498 degrees C; the baseline is below raw GFS at every airport,
+  in every fold and at every airport-lead. Repeatable byte for byte (EGLC).
+  Script `scripts/session97_stagec_cv.py` (`987ab6ba...1f91`); folds, scores
+  and meta in `data/processed/session97_stagec_cv_*`. No model is saved.
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
-- **Not decided (D82.5).** One model with lead time as an input or one per
-  lead; the daily maximum read off the curve or its own model; stage C's
-  claim design (bar, looks, lead bands). Fixed by time-ordered
-  cross-validation on the development airports, or at the lock. Before any
-  cross-validation score, a DECISIONS entry fixes the folds, the metric and
-  the keep-the-simpler rule with its margin (D88.9). Bias drift follows
-  D81.10(b).
+- **Not decided (D82.5).** One model per lead with the cycle hour as an
+  input, or one model with lead and hour as inputs, each against the
+  baseline under D89.6, one at a time (D89.10); the daily maximum read off
+  the curve or its own model (its metric is fixed in its own entry first,
+  D89.8); stage C's claim design (bar, looks, lead bands), at the lock. Bias
+  drift follows D81.10(b).
 - **Open item: MMMX (D83.4).** It reports at scattered minutes, so it has
   almost no usable observations under the 15-minute rule. It needs its own
   handling or to be dropped (a later decision). It stays in the pull.
@@ -115,19 +132,19 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F138.8's readings.** The owner confirms or changes them. The largest:
-  both `temp` and `temperature_grib_c` kept as columns; the instantaneous
-  columns taken from session 91's `derive` with placeholders for the R and T
-  inputs it does not use there; and a fourth empty reason, "outside pull
-  window" (7 R and 10 T cells per airport in the first cycles).
+- **F139.6's readings.** The owner confirms or changes them. The largest:
+  the record script imports the session-48 module for its own use, and this
+  script never calls its guard (read as D89.4's "not imported here"); pooled
+  MAEs are the mean of the concatenated errors in a stated order; boundary
+  rows are counted whatever their completeness.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D88.2).** As of 2026-10-06 (planning-chat check) there is
+- **GFS v17 (D89.2).** As of 2026-10-06 (planning-chat check) there is
   still no Service Change Notice for GFS v17; the newest SCN listed is SCN
-  26-89 (2 October 2026, RRFS). EMC's GFSv17 evaluation page gives the
+  26-89 (2 October 2026). EMC's GFSv17 evaluation page gives the
   implementation as Q1 FY27 (October to December 2026; D84.6). With 30 days'
   notice the earliest go-live is about 5 November 2026; PNS 26-29's proposed
   October 2026 date can no longer be met. Re-check at each
@@ -163,4 +180,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 96. If it passed, the owner commits and pushes; then plan session 97: D88.9's cross-validation entry (folds, metric, decision rule) written before any score, then the baseline fit and raw GFS per lead. Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 97. If it passed, the owner commits and pushes; then plan session 98: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17 (D81.7).

@@ -1,0 +1,348 @@
+SESSION 97 OUTPUT: D89, the cross-validation folds, the gate, and the baseline scored
+Run 2026-10-06, offline. Every score here is a build-choice score, not a result (SPEC 2.5).
+
+==========================================================================================
+STEP 0: integrity checks (output as printed at the start of the session)
+==========================================================================================
+git status --porcelain:
+?? docs/session-97.md
+DECISIONS.md last entries: D88 (line 3581) and F138 (line 3671). grep for D89/F139 in
+DECISIONS.md and DECISIONS-archive.md: 0 and 0.
+New script and data/processed/session97_* files: none existed ("no matches found").
+SHA-256:
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  stagec_dev_EGLC.csv.gz   (F138.4: equal)
+17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32  stagec_dev_KDSM.csv.gz   (equal)
+6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3  stagec_dev_KRNO.csv.gz   (equal)
+11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8  stagec_dev_KSFO.csv.gz   (equal)
+5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f  stagec_dev_LFPG.csv.gz   (equal)
+57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829  stagec_dev_YSDU.csv.gz   (equal)
+eace666a0f1ab2b65614c340899b849eb0e97c25cf49eaaa45eb83747ce89463  data/processed/session96_stagec_dev_table.meta.txt (equal)
+304d25a6689b1442ca0b184244a93bc031e9a9157e313cb4b96a04ce22383dfb  data/processed/session96_stagec_dev_counts.csv (equal)
+40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee  scripts/session96_stagec_table.py (equal)
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py (D70.2: equal)
+ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a  data/processed/session81_training_set.csv (F122.3: equal)
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+  recorded in notes/session-85-output.txt lines 21 and 167; not in DECISIONS.md or DECISIONS-archive.md.
+Read: D70 (archive), D71, D72, D82, D88, F109 (archive), F122, F138; SPEC 2.5, 5, 8.1 to 8.3, 8.5,
+8.8; scripts/session62_reserved_confirm.py in full (752 lines).
+Versions (as printed by every mode): python 3.12.2; numpy 2.5.2; lightgbm 4.7.0 (requirements.txt
+pins lightgbm==4.7.0: equal). A direct `import lightgbm` without the record script's libomp shim fails
+on this machine; the script imports the record script first, as session 81 did.
+
+==========================================================================================
+STEP 1: D89
+==========================================================================================
+Appended under "## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for
+stage C's build choices (owner, planning chat)" (DECISIONS.md line 3734), after a --- separator.
+sed -n '105,177p' docs/session-97.md >> DECISIONS.md; D89 is DECISIONS.md lines 3736 to 3808.
+diff <(sed -n '105,177p' docs/session-97.md) <(sed -n '3736,3808p' DECISIONS.md): no output;
+cmp: equal. BYTE-EQUAL.
+
+==========================================================================================
+STEP 5.2: --guard-check
+==========================================================================================
+SESSION 97 --guard-check (no data read), 2026-10-06T17:37:29Z
+  valid 2026-08-01T00:00: refused (valid time 2026-08-01T00:00 is after 2026-07-31T23:00 UTC); expected refused: as expected
+  valid 2026-07-31T23:00: allowed; expected allowed: as expected
+2 of 2 as expected
+
+==========================================================================================
+STEP 2: --folds
+==========================================================================================
+SESSION 97 --folds (offline, no fit), start 2026-10-06T17:37:29Z
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+D89.3: train = complete-case rows with valid < T0; test = rows with T0 <= cycle < T1; boundary = rows with cycle < T0 <= valid (in neither, counted).
+  fold 2023-24: T0 2023-08-01T00:00Z, T1 2024-08-01T00:00Z
+  fold 2024-25: T0 2024-08-01T00:00Z, T1 2025-08-01T00:00Z
+  fold 2025-26: T0 2025-08-01T00:00Z, T1 2026-08-01T00:00Z
+  EGLC: test-row overlap between folds: 0
+  LFPG: test-row overlap between folds: 0
+  DSM: test-row overlap between folds: 0
+  YSDU: test-row overlap between folds: 0
+  RNO: test-row overlap between folds: 0
+  SFO: test-row overlap between folds: 0
+
+per airport and fold (complete-case rows, leads 3 to 24, all four cycle hours):
+  airport fold        train    test  test dropped  boundary  smallest model train  (cycle hour, lead)
+  EGLC    2023-24    75,555  32,205             3        40                   856  (0, 19)
+  EGLC    2024-25   107,760  32,104            16        40                 1,222  (0, 19)
+  EGLC    2025-26   139,864  32,059            21        40                 1,587  (0, 19)
+  LFPG    2023-24    75,370  32,171            37        40                   844  (0, 24)
+  LFPG    2024-25   107,541  32,059            61        40                 1,209  (0, 24)
+  LFPG    2025-26   139,600  31,958           122        40                 1,566  (0, 24)
+  DSM     2023-24    75,647  32,200             8        40                   858  (0, 24)
+  DSM     2024-25   107,847  32,117             3        40                 1,223  (0, 24)
+  DSM     2025-26   139,964  32,072             8        40                 1,588  (0, 24)
+  YSDU    2023-24    74,694  31,958           250        40                   845  (0, 3)
+  YSDU    2024-25   106,652  31,924           196        40                 1,207  (0, 3)
+  YSDU    2025-26   138,576  31,763           317        40                 1,568  (0, 3)
+  RNO     2023-24    75,341  32,193            15        40                   854  (0, 15)
+  RNO     2024-25   107,534  32,109            11        40                 1,220  (0, 15)
+  RNO     2025-26   139,643  32,040            40        40                 1,585  (0, 5)
+  SFO     2023-24    75,623  32,199             9        40                   858  (0, 17)
+  SFO     2024-25   107,822  32,091            29        40                 1,223  (0, 19)
+  SFO     2025-26   139,913  32,040            40        40                 1,588  (0, 17)
+
+checks: every training row's valid time is before its fold's T0 (violations 0); test rows of the three folds never overlap (see per-airport lines)
+
+wrote data/processed/session97_stagec_cv_folds.csv: 1584 rows, 48166 bytes, SHA-256 77fce6c7c288f37a9d63f4e9b9b8675cad26f0e9b8a2ba4b657084496fb01b66
+end 2026-10-06T17:37:43Z; run time 14.0 s
+
+==========================================================================================
+STEP 3: --gate (D89.9)
+==========================================================================================
+SESSION 97 --gate (D89.9; offline), start 2026-10-06T17:37:53Z
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+record script SHA-256 checked before import: 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4 (D70.2)
+data/processed/session81_training_set.csv SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a (equal to the record)
+data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3 (equal to the record)
+G15 (from the record script): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+LGB_PARAMS (from the record script): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+
+EGLC (cycle hour 12z, lead 24): table rows on the training set's dates 1953 (not complete case 0); train 1225 (F122.4 1225); test 364 (F109 n_test 364; grid no_obs 1)
+  B+D,L,R,T  this fit 1.0007550363323212  grid final_mae 1.0007550363323212  equal: yes
+  raw GFS    this fit 1.23621978021978  grid raw_mae   1.23621978021978  equal: yes
+  at 4 decimals: B+D,L,R,T 1.0008, raw GFS 1.2362
+
+LFPG (cycle hour 12z, lead 24): table rows on the training set's dates 1953 (not complete case 0); train 1224 (F122.4 1224); test 365 (F109 n_test 365; grid no_obs 0)
+  B+D,L,R,T  this fit 1.2368626165917669  grid final_mae 1.2368626165917669  equal: yes
+  raw GFS    this fit 1.4091397260273972  grid raw_mae   1.4091397260273972  equal: yes
+  at 4 decimals: B+D,L,R,T 1.2369, raw GFS 1.4091
+
+DSM (cycle hour 18z, lead 24): table rows on the training set's dates 1955 (not complete case 0); train 1225 (F122.4 1225); test 365 (F109 n_test 365; grid no_obs 0)
+  B+D,L,R,T  this fit 1.4122847644111458  grid final_mae 1.4122847644111458  equal: yes
+  raw GFS    this fit 1.7043452054794521  grid raw_mae   1.7043452054794521  equal: yes
+  at 4 decimals: B+D,L,R,T 1.4123, raw GFS 1.7043
+
+GATE PASSED: all six values equal, exact equality
+end 2026-10-06T17:37:57Z; run time 4.4 s
+
+==========================================================================================
+STEP 4: --score (BUILD-CHOICE SCORES, NOT RESULTS)
+==========================================================================================
+SESSION 97 --score (offline), start 2026-10-06T17:38:04Z; airports EGLC,LFPG,DSM,YSDU,RNO,SFO; out /Users/zacharyadams/Coding Projects/MLwx/data/processed/session97_stagec_cv_scores.csv
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+G15: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+  EGLC: 264 models fit, 20.1 s
+  LFPG: 264 models fit, 19.8 s
+  DSM: 264 models fit, 19.8 s
+  YSDU: 264 models fit, 19.4 s
+  RNO: 264 models fit, 19.7 s
+  SFO: 264 models fit, 19.6 s
+
+fits: 1584; cells where the two methods' n differ: 0
+wrote /Users/zacharyadams/Coding Projects/MLwx/data/processed/session97_stagec_cv_scores.csv: 3168 rows, 218181 bytes, SHA-256 5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76
+
+==========================================================================================
+SUMMARY. BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C, 4 decimals.
+Common row set: complete-case test rows (D89.5). raw_gfs = temp; baseline = temp + model.
+==========================================================================================
+
+Per airport, pooled over the three folds, four cycle hours and leads 3 to 24 (D89.5):
+  airport        n  raw_gfs  baseline
+  EGLC      96,368   0.9725    0.7742
+  LFPG      96,188   1.1596    0.8937
+  DSM       96,389   1.7582    1.2034
+  YSDU      95,645   1.4633    1.2149
+  RNO       96,342   2.1717    1.1735
+  SFO       96,330   1.2449    1.0390
+  HEADLINE (unweighted mean of the six airport MAEs): raw_gfs 1.4617  baseline 1.0498
+  (full precision: raw_gfs 1.4616990883475995, baseline 1.049777501605027)
+
+Per fold: each airport's MAE over that fold's rows, and the fold-level MAE (unweighted mean of six):
+  fold     method       EGLC    LFPG     DSM    YSDU     RNO     SFO  fold-level
+  2023-24  raw_gfs    0.9614  1.1477  1.9144  1.4724  2.0114  1.2514      1.4598
+  2023-24  baseline   0.7491  0.8653  1.2463  1.2457  1.2148  1.0297      1.0585
+  2024-25  raw_gfs    0.9891  1.1739  1.6502  1.5053  2.2890  1.2237      1.4719
+  2024-25  baseline   0.8010  0.9434  1.1430  1.1976  1.1860  1.1095      1.0634
+  2025-26  raw_gfs    0.9672  1.1571  1.7095  1.4120  2.2152  1.2595      1.4534
+  2025-26  baseline   0.7725  0.8726  1.2208  1.2013  1.1193  0.9777      1.0274
+  rows per airport and fold: EGLC 32,205/32,104/32,059; LFPG 32,171/32,059/31,958; DSM 32,200/32,117/32,072; YSDU 31,958/31,924/31,763; RNO 32,193/32,109/32,040; SFO 32,199/32,091/32,040
+
+Six-airport mean MAE per lead (each airport pooled over folds and cycle hours; unweighted mean of six):
+  lead  raw_gfs  baseline
+     3   1.3606    0.9648
+     4   1.3773    0.9748
+     5   1.3914    0.9826
+     6   1.4056    0.9967
+     7   1.4234    1.0107
+     8   1.4332    1.0218
+     9   1.4501    1.0409
+    10   1.4533    1.0371
+    11   1.4537    1.0407
+    12   1.4592    1.0496
+    13   1.4689    1.0536
+    14   1.4691    1.0611
+    15   1.4827    1.0736
+    16   1.4816    1.0677
+    17   1.4799    1.0651
+    18   1.4883    1.0754
+    19   1.5002    1.0824
+    20   1.5020    1.0891
+    21   1.5187    1.1048
+    22   1.5199    1.1000
+    23   1.5163    1.0945
+    24   1.5223    1.1083
+
+Six-airport mean MAE per cycle hour (each airport pooled over folds and leads 3 to 24):
+  hour  raw_gfs  baseline
+   0z    1.4686    1.0633
+   6z    1.4760    1.0614
+  12z    1.4380    1.0328
+  18z    1.4642    1.0417
+
+Per airport, the leads where the baseline's MAE is not below raw GFS's (pooled over folds and cycle hours):
+  EGLC: none
+  LFPG: none
+  DSM: none
+  YSDU: none
+  RNO: none
+  SFO: none
+
+Per airport and lead (pooled over folds and cycle hours), raw_gfs / baseline:
+  lead            EGLC            LFPG             DSM            YSDU             RNO             SFO
+     3   0.8668/0.6856   1.0489/0.8128   1.5652/1.0415   1.4153/1.1960   2.1583/1.0971   1.1092/0.9555
+     4   0.8748/0.6958   1.0757/0.8360   1.5926/1.0622   1.3823/1.1694   2.1785/1.1059   1.1598/0.9797
+     5   0.8785/0.6946   1.0965/0.8353   1.6382/1.0960   1.4086/1.1661   2.1358/1.1074   1.1908/0.9964
+     6   0.8857/0.7054   1.1082/0.8513   1.6970/1.1312   1.3999/1.1720   2.1135/1.1195   1.2296/1.0007
+     7   0.9214/0.7288   1.1133/0.8393   1.7131/1.1367   1.4613/1.1876   2.1039/1.1590   1.2272/1.0130
+     8   0.9539/0.7504   1.1327/0.8548   1.7353/1.1409   1.4688/1.2255   2.1353/1.1578   1.1730/1.0014
+     9   0.9736/0.7639   1.1400/0.8803   1.7304/1.1729   1.4482/1.2320   2.2276/1.1839   1.1805/1.0125
+    10   0.9731/0.7675   1.1365/0.8887   1.7293/1.1715   1.4241/1.1945   2.2239/1.1683   1.2330/1.0320
+    11   0.9582/0.7647   1.1537/0.8869   1.7383/1.1819   1.4446/1.1950   2.1619/1.1748   1.2656/1.0406
+    12   0.9501/0.7585   1.1592/0.8932   1.7762/1.2187   1.4485/1.2073   2.1277/1.1812   1.2935/1.0384
+    13   0.9796/0.7799   1.1512/0.8771   1.7713/1.2102   1.5063/1.2117   2.1149/1.1869   1.2904/1.0555
+    14   0.9942/0.7921   1.1701/0.8989   1.7861/1.2185   1.4986/1.2302   2.1402/1.1863   1.2252/1.0409
+    15   1.0132/0.8073   1.1775/0.9147   1.7770/1.2260   1.4742/1.2524   2.2344/1.1934   1.2199/1.0478
+    16   1.0177/0.8089   1.1733/0.9214   1.7643/1.2189   1.4425/1.2166   2.2293/1.1885   1.2622/1.0519
+    17   0.9954/0.7953   1.1814/0.9024   1.7745/1.2443   1.4700/1.2058   2.1685/1.1869   1.2899/1.0556
+    18   0.9882/0.7877   1.1953/0.9206   1.8109/1.2639   1.4739/1.2249   2.1447/1.1878   1.3167/1.0675
+    19   1.0117/0.8089   1.1869/0.9126   1.8281/1.2710   1.5285/1.2183   2.1312/1.2060   1.3145/1.0777
+    20   1.0295/0.8268   1.2133/0.9306   1.8417/1.2654   1.5173/1.2492   2.1624/1.1911   1.2480/1.0712
+    21   1.0377/0.8259   1.2216/0.9535   1.8427/1.2923   1.5051/1.2730   2.2631/1.2201   1.2417/1.0643
+    22   1.0434/0.8399   1.2205/0.9611   1.8409/1.2845   1.4811/1.2364   2.2556/1.2035   1.2781/1.0746
+    23   1.0268/0.8205   1.2219/0.9382   1.8452/1.3027   1.4969/1.2282   2.1996/1.1872   1.3072/1.0904
+    24   1.0221/0.8238   1.2333/0.9523   1.8829/1.3238   1.4972/1.2358   2.1671/1.2238   1.3314/1.0906
+
+end 2026-10-06T17:40:03Z; run time 118.8 s
+
+==========================================================================================
+STEP 5.1: repeatability (EGLC alone into mktemp -d)
+==========================================================================================
+temp dir /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.GCIDroopA6
+SESSION 97 --score (offline), start 2026-10-06T17:40:15Z; airports EGLC; out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.GCIDroopA6/session97_stagec_cv_scores.csv
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+G15: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+  EGLC: 264 models fit, 20.0 s
+
+fits: 264; cells where the two methods' n differ: 0
+wrote /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.GCIDroopA6/session97_stagec_cv_scores.csv: 528 rows, 36888 bytes, SHA-256 38e8295dc422c429c14d0ecb09692032855356deee5ff4c5d71cdfbb1aa0cb65
+
+end 2026-10-06T17:40:35Z; run time 20.0 s
+--- compare EGLC rows (header plus EGLC lines) with the full file:
+BYTE-EQUAL
+cmp equal
+EGLC rows:      528
+ls: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.GCIDroopA6: No such file or directory
+
+==========================================================================================
+STEP 5.3: --meta
+==========================================================================================
+session97_stagec_cv.meta.txt
+written 2026-10-06T17:40:41Z by scripts/session97_stagec_cv.py --meta
+
+What the files are (BUILD-CHOICE SCORES, NOT RESULTS, SPEC 2.5):
+  session97_stagec_cv_folds.csv: per airport, fold, cycle hour (0, 6, 12, 18) and lead (3 to 24),
+    training rows (complete case), test rows (complete case), test rows dropped as not complete case,
+    and rows in neither (the boundary rule), under DECISIONS D89.3. No fit.
+  session97_stagec_cv_scores.csv: per airport, fold, cycle hour, lead and method (raw_gfs, baseline),
+    n, MAE and mean error (obs_tmpc minus forecast), full precision. raw_gfs is temp, the
+    elevation-adjusted GRIB temperature; baseline is temp plus D88.4's model, one model per airport,
+    fold, cycle hour and lead (1,584 fits).
+
+Folds, metric and rule: DECISIONS D89.3 (folds), D89.5 (metric), D89.6 (rule; not applied here, no
+  build choice is made), D89.9 (the gate, F139).
+
+Inputs and their SHA-256:
+  MLwx-stagec/stagec_dev_EGLC.csv.gz af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_LFPG.csv.gz 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_KDSM.csv.gz 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_YSDU.csv.gz 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_KRNO.csv.gz 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_KSFO.csv.gz 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  data/processed/session81_training_set.csv ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+  data/processed/session63_reserved_confirm_grid.csv 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3
+  scripts/session62_reserved_confirm.py 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4
+
+Script: scripts/session97_stagec_cv.py 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91
+
+Outputs and their SHA-256:
+  data/processed/session97_stagec_cv_folds.csv 77fce6c7c288f37a9d63f4e9b9b8675cad26f0e9b8a2ba4b657084496fb01b66
+  data/processed/session97_stagec_cv_scores.csv 5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76
+
+LGB_PARAMS as passed (imported from scripts/session62_reserved_confirm.py): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+G15 column order (imported from the same script): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+Versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+
+wrote data/processed/session97_stagec_cv.meta.txt, SHA-256 95223b4fbc519c5cc1811d1682e0b0e94c5976c54511dedaf58c4777671b313a
+
+==========================================================================================
+STEP 6: F139 appended to DECISIONS.md (separator at 3810, heading at 3812, F139 lines 3814 to 3867).
+STATUS.md overwritten as a current-only snapshot (session 96's structure kept).
+==========================================================================================
+
+==========================================================================================
+END OF SESSION: consistency check (SPEC, STATUS, DECISIONS re-read). Report only.
+==========================================================================================
+1. SPEC 6's stage C bullet says "Its next steps are in DECISIONS D88." D89 now fixes the rules
+   for stage C's build choices and the sequence (D89.10), and F139 records the baseline scored.
+   SPEC was not edited (out of scope). A later SPEC edit could point to D89.
+2. D88.9 asked for a rule "of the form keep the simpler option unless the other wins by more
+   than a stated margin". D89.6 and D89.7 instead keep the incumbent, and D89.7 names D88.4's
+   baseline (the option with more models) as incumbent "even though the alternatives use fewer
+   models". D89 is later and states this on purpose; the two entries' wording differs.
+3. D89.4 says the session-48 guard "is not imported here". The prompt directs importing
+   LGB_PARAMS and G15 from session62_reserved_confirm.py, which itself imports the session-48
+   module at load (D70.7, F118.9). The new script never imports or calls the guard directly
+   (F139.6 reading 1).
+4. The grid file's SHA-256 (0138ba03...4ed3) is on record only in notes/session-85-output.txt,
+   not in DECISIONS (now in F139.1 and the session 97 meta).
+5. STATUS, SPEC 6 and DECISIONS otherwise agree on stage C's state (pull complete, table gated,
+   D89, baseline scored). No figure in STATUS disagrees with F139.
+6. Duplicated headings: none in DECISIONS.md, SPEC.md or STATUS.md.
+7. Entry order (live DECISIONS): D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 F124 F125 D76
+   D77 F127 D78 F128 D79 F129 D80 F130 D81 F131 D82 F132 D83 F133 D84 F134 D85 F135 D86 F136
+   D87 F137 D88 F138 D89 F139. Dated headings are in date order. D17 and F7 sit before D46 as
+   earlier sessions kept them (D46). Nothing new out of order.
+
+Archive step: nothing moved. D72, D73, F122, D77 to D89 and F127 to F139 stay live (the prompt).
+The other live entries (D17, F7, D46, D47, F96, D51, D62, D71, F123, F124, F125, D76) did not
+become settled this session; F123, F124 and D76.2 are cited by STATUS's open uncertainties, and
+the rest were kept live by earlier sessions' judgement, which this session did not change.
+
+==========================================================================================
+END OF SESSION: final checks
+==========================================================================================
+Temporary directory of Step 5.1 deleted ("No such file or directory" above).
+--- MLwx-stagec/ against F138.4:
+       6
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  stagec_dev_EGLC.csv.gz
+17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32  stagec_dev_KDSM.csv.gz
+6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3  stagec_dev_KRNO.csv.gz
+11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8  stagec_dev_KSFO.csv.gz
+5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f  stagec_dev_LFPG.csv.gz
+57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829  stagec_dev_YSDU.csv.gz
+--- MLwx-pull/ against the inventory:
+files 195; inventory rows 195; same names True; not equal []
+--- git status --porcelain
+ M DECISIONS.md
+?? data/processed/session97_stagec_cv.meta.txt
+?? data/processed/session97_stagec_cv_folds.csv
+?? data/processed/session97_stagec_cv_scores.csv
+?? docs/session-97.md
+?? scripts/session97_stagec_cv.py
+--- pycache:

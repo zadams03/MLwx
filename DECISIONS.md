@@ -3728,3 +3728,140 @@ Observation files: reports read 46,734 (YSDU) to 46,938 (DSM); no usable `tmpc` 
 13. Archive step: nothing moved, for session 95's reasons (F137's output file).
 
 **F138.9 What this did not do.** No network call. No model fit. No error, MAE, bias, skill, mean, spread or other statistic of any forecast or observation value: counts only. Nothing from 2026-27: no valid time after 2026-07-31T23:00 built and no observation after 2026-07-31T23:59 read. No value printed beyond the synthetic Step 4 numbers (the gate had no mismatch). No non-development airport's observation file opened, and none of its points values used. Nothing in `MLwx-pull/` changed (195 files, SHA-256 as the inventory). No file under `data/` changed except the two new files; `data/models/` not touched. No existing script edited. Nothing installed. SPEC edited only as Step 2 says; RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for stage C's build choices (owner, planning chat)
+
+**D89. Owner decisions, planning chat (after session 96): F138
+accepted, GFS v17, and the rules for stage C's build choices: folds,
+metric and decision rule (D88.9).** Written at the start of session 97,
+before any other edit and before any cross-validation score. No
+2026-27 value has been read or scored.
+
+- **D89.1 F138 accepted.** The owner accepts F138 and all thirteen
+  F138.8 readings, including: both `temp` and `temperature_grib_c`
+  kept as columns; the instantaneous columns taken from session 91's
+  `derive` with placeholder R and T inputs that never reach the table;
+  and the fourth empty reason, "outside pull window" (7 R and 10 T
+  cells per airport in the first cycles).
+- **D89.2 GFS v17 (planning-chat check of the NWS notices page,
+  2026-10-06, not checked by this session).** Still no Service Change
+  Notice for GFS v17. The newest SCN listed is still SCN 26-89 (2
+  October 2026). The earliest go-live stays about 5 November 2026.
+- **D89.3 Folds.** Three time-ordered folds, each with an expanding
+  training window. A test year runs 1 August to 31 July:
+  fold 2023-24: test cycles 2023-08-01T00 to 2024-07-31T18;
+  fold 2024-25: test cycles 2024-08-01T00 to 2025-07-31T18;
+  fold 2025-26: test cycles 2025-08-01T00 to 2026-07-31T18.
+  With T0 the test year's start (1 August, 00:00 UTC): training rows
+  are those with valid time before T0; test rows are those whose cycle
+  starts on or after T0 and before the next 1 August. A row whose cycle
+  is before T0 and whose valid time is on or after T0 is in neither,
+  and is counted. Training thus uses only observations already known
+  when the first test cycle starts. The 2022-23 fold is not used: its
+  training window (about 1.4 years) is far shorter than the product's
+  or the claim airports' (about 3.4 years, D82.7(e)), and would
+  unfairly penalise options that fit many small models.
+- **D89.4 The spent years.** 2024-25 and 2025-26 are spent at every
+  development airport (F94, F109, F119; D71.1), so they may be used
+  for build choices (D72.2(a), SPEC 2.5). The session-48 reserved-year
+  guard stays unchanged in its own script and is not imported here.
+  Nothing from 2026-27 is used.
+- **D89.5 Metric.** Mean absolute error (MAE) of the hourly
+  temperature, degrees C, full precision (SPEC 8.8 G24), on leads 3 to
+  24. Rows: the common row set, meaning test rows that have an
+  observation and are complete for every option compared (for the
+  baseline, the table's `complete_case`). Per airport: one MAE over all
+  its test rows, pooled across the three folds, four cycle hours and
+  leads 3 to 24. Headline: the unweighted mean of the six airport
+  MAEs. Fold level: per fold, the unweighted mean of the six airports'
+  MAEs over that fold's rows.
+- **D89.6 Decision rule.** The challenger replaces the incumbent only
+  if all three hold: (a) the headline MAE is lower by more than 1
+  percent of the incumbent's headline, that is (incumbent - challenger)
+  / incumbent > 0.01; (b) the airport MAE is lower at 4 or more of the
+  6 airports; (c) the fold-level MAE is lower in at least 2 of the 3
+  folds. Otherwise the incumbent stays. A tie keeps the incumbent.
+- **D89.7 The incumbent.** For D82.5's model-structure comparisons, the
+  incumbent is D88.4's baseline (the proven recipe, unchanged, D72.2(b)),
+  even though the alternatives use fewer models. Every later
+  comparison names its incumbent in its own DECISIONS entry before it
+  is scored.
+- **D89.8 Scope of the rule.** It applies to every stage C build choice
+  on the hourly curve. A choice is applied to the whole curve and to
+  every airport identically: never per airport, cycle hour or lead.
+  The daily maximum's metric is fixed in its own entry before any
+  daily-maximum score. Changing these rules needs a new DECISIONS entry
+  written before the affected score. Build-choice scores are never
+  quoted as results (SPEC 2.5).
+- **D89.9 The fitting code's gate.** Before any fold is scored, the new
+  fitting code reproduces F109's recorded raw GFS and `B+D,L,R,T` MAEs
+  at EGLC and LFPG (12z, lead 24) and DSM (18z, lead 24), exactly, from
+  the table's rows on the record's days. This is a code check against
+  numbers already on record. It is not a new look and decides nothing.
+- **D89.10 Sequence.** Session 97: this entry, the fold counts, the gate,
+  then the baseline and raw GFS scored per airport, fold, cycle hour
+  and lead. No build choice is made. Then, planned: D82.5's
+  alternatives, each against the baseline under D89.6, one at a time;
+  then the daily maximum and bias drift (D81.10(b)). Stage C's claim
+  design is fixed at its lock.
+
+---
+
+## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the baseline scored
+
+**F139. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim, a pass or a fail. Offline. D89 was recorded first. The fold rows were counted under D89.3 with no fit. The new fitting code passed D89.9's gate: it reproduced F109's raw GFS and `B+D,L,R,T` MAEs at EGLC, LFPG and DSM exactly, 6 of 6. D88.4's baseline was then fit (1,584 models) and scored with raw GFS on the same rows, per airport, fold, cycle hour and lead 3 to 24. Headline (D89.5): raw GFS 1.4617, baseline 1.0498 degrees C. No build choice was made. Script: `scripts/session97_stagec_cv.py` (new; modes `--folds`, `--gate`, `--score`, `--guard-check`, `--meta`; SHA-256 `987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91`). Full real output: `notes/session-97-output.txt`. Run 2026-10-06. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+**F139.1 Step 0 and Step 1.** `git status --porcelain` showed only `?? docs/session-97.md`. The last entries were D88 and F138; no D89 or F139 existed in either DECISIONS file; the new script and the three new `data/processed/` files did not exist. SHA-256 equal to the record: the six table files (F138.4), the table meta `eace666a...9463` and counts `304d25a6...3dfb`, `session96_stagec_table.py` `40b63d00...6eee`, `session62_reserved_confirm.py` `9f8af9af...80b4` (D70.2), `session81_training_set.csv` `ab8f25f2...8d4a` (F122.3). `session63_reserved_confirm_grid.csv` is `0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3`; that value is recorded in `notes/session-85-output.txt` (lines 21 and 167), not in either DECISIONS file. Read: D70, D71, D72, D82, D88, F109, F122, F138; SPEC 2.5, 5, 8.1 to 8.3, 8.5, 8.8; the record script in full. D89 was copied with `sed` from `docs/session-97.md` lines 105 to 177 into DECISIONS.md lines 3736 to 3808 (heading at 3734) and checked byte-equal with `diff` and `cmp`, before any other edit.
+
+**F139.2 The folds (Step 2, `--folds`, no fit).** Complete-case rows, leads 3 to 24, four cycle hours. Every airport and fold has 40 boundary rows (cycles of 31 July with valid times on 1 August: 1 + 7 + 13 + 19). Test rows of the three folds never overlap (0 at every airport); every training row's valid time is before its T0 (0 violations).
+
+| airport | train 23-24 / 24-25 / 25-26 | test 23-24 / 24-25 / 25-26 | test dropped (not complete) | smallest model train |
+|---|---|---|---|---|
+| EGLC | 75,555 / 107,760 / 139,864 | 32,205 / 32,104 / 32,059 | 3 / 16 / 21 | 856 / 1,222 / 1,587 |
+| LFPG | 75,370 / 107,541 / 139,600 | 32,171 / 32,059 / 31,958 | 37 / 61 / 122 | 844 / 1,209 / 1,566 |
+| DSM | 75,647 / 107,847 / 139,964 | 32,200 / 32,117 / 32,072 | 8 / 3 / 8 | 858 / 1,223 / 1,588 |
+| YSDU | 74,694 / 106,652 / 138,576 | 31,958 / 31,924 / 31,763 | 250 / 196 / 317 | 845 / 1,207 / 1,568 |
+| RNO | 75,341 / 107,534 / 139,643 | 32,193 / 32,109 / 32,040 | 15 / 11 / 40 | 854 / 1,220 / 1,585 |
+| KSFO (SFO) | 75,623 / 107,822 / 139,913 | 32,199 / 32,091 / 32,040 | 9 / 29 / 40 | 858 / 1,223 / 1,588 |
+
+`data/processed/session97_stagec_cv_folds.csv`: 1,584 rows, SHA-256 `77fce6c7c288f37a9d63f4e9b9b8675cad26f0e9b8a2ba4b657084496fb01b66`.
+
+**F139.3 The gate (Step 3, `--gate`, D89.9). PASSED, 6 of 6, exact equality.** Table rows on the training set's (station, valid date) keys, F109's fold by valid date; every selected row was complete case.
+
+| airport | train (F122.4) | test (F109) | B+D,L,R,T: this fit = grid `final_mae` | raw GFS: this fit = grid `raw_mae` |
+|---|---|---|---|---|
+| EGLC 12z, lead 24 | 1,225 (1,225) | 364 (364; grid no_obs 1) | 1.0007550363323212 | 1.23621978021978 |
+| LFPG 12z, lead 24 | 1,224 (1,224) | 365 (365) | 1.2368626165917669 | 1.4091397260273972 |
+| DSM 18z, lead 24 | 1,225 (1,225) | 365 (365) | 1.4122847644111458 | 1.7043452054794521 |
+
+**F139.4 The scores (Step 4, `--score`; build-choice scores, not results).** 1,584 fits, 118.8 s. The two methods' n are equal in every cell. MAE in degrees C, common row set (D89.5).
+
+| airport | n | raw GFS | baseline | raw GFS by fold 23-24 / 24-25 / 25-26 | baseline by fold |
+|---|---|---|---|---|---|
+| EGLC | 96,368 | 0.9725 | 0.7742 | 0.9614 / 0.9891 / 0.9672 | 0.7491 / 0.8010 / 0.7725 |
+| LFPG | 96,188 | 1.1596 | 0.8937 | 1.1477 / 1.1739 / 1.1571 | 0.8653 / 0.9434 / 0.8726 |
+| DSM | 96,389 | 1.7582 | 1.2034 | 1.9144 / 1.6502 / 1.7095 | 1.2463 / 1.1430 / 1.2208 |
+| YSDU | 95,645 | 1.4633 | 1.2149 | 1.4724 / 1.5053 / 1.4120 | 1.2457 / 1.1976 / 1.2013 |
+| RNO | 96,342 | 2.1717 | 1.1735 | 2.0114 / 2.2890 / 2.2152 | 1.2148 / 1.1860 / 1.1193 |
+| KSFO (SFO) | 96,330 | 1.2449 | 1.0390 | 1.2514 / 1.2237 / 1.2595 | 1.0297 / 1.1095 / 0.9777 |
+| **headline / fold-level** | | **1.4617** | **1.0498** | 1.4598 / 1.4719 / 1.4534 | 1.0585 / 1.0634 / 1.0274 |
+
+Headline at full precision: raw GFS 1.4616990883475995, baseline 1.049777501605027. **No airport-lead where the baseline is not below raw GFS** (pooled over folds and cycle hours; 0 of 132). The six-airport mean per lead runs from 1.3606 / 0.9648 (lead 3) to 1.5223 / 1.1083 (lead 24); per cycle hour, 12z is lowest for both (1.4380 / 1.0328). Full tables in the output file. `data/processed/session97_stagec_cv_scores.csv`: 3,168 rows, SHA-256 `5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76`.
+
+**F139.5 Repeatability and meta (Step 5).** `--score --airports EGLC` into a `mktemp -d` directory: its 528 rows (with the header) are byte-equal to EGLC's rows in the scores file (`diff` and `cmp`); the directory was deleted. The 2026-27 guard refuses a valid time of 2026-08-01T00:00 and allows 2026-07-31T23:00 (2 of 2). `data/processed/session97_stagec_cv.meta.txt`, SHA-256 `95223b4fbc519c5cc1811d1682e0b0e94c5976c54511dedaf58c4777671b313a`, lists the inputs, script and outputs with SHA-256, `LGB_PARAMS` as passed and the versions.
+
+**F139.6 Readings made where the prompt is silent (for the owner to confirm or change).**
+1. **The session-48 module.** As the prompt says, `LGB_PARAMS` and the G15 order are imported from `session62_reserved_confirm.py` (after its SHA-256 check), as session 81 did. That script imports the session-48 reserved-year module at load, for its own use (D70.7, F118.9). This script never imports or calls the guard itself; D89.4's "not imported here" is read that way.
+2. The G15 order imported is also checked in code against D70.1's written list.
+3. Boundary rows (D89.3, "in neither") are counted whatever their completeness; test rows "dropped as not complete case" are those with no observation (leads 0 to 2 are outside the files' lead range).
+4. Error is `obs_tmpc` minus forecast (Step 4.2); the record computes forecast minus observation. Their absolute values are equal bit for bit, so MAEs are unaffected; the sign matters only for the mean error column.
+5. A pooled MAE (per airport, per fold, per lead or per cycle hour) is the NumPy mean of the concatenated errors, in fold, cycle hour, lead, then cycle-time order. It is not rebuilt from the per-cell MAEs.
+6. Training rows within a model are in ascending cycle time (G19); test rows the same.
+7. On load, each table file's SHA-256 is checked against F138.4, `complete_case` is checked against the nine columns and the observation (no disagreement), `temp` is checked equal to `temperature_grib_c`, and every valid and observation time passes the 2026-27 guard.
+8. "Smallest training count of any single model": where several models tie, the lowest (cycle hour, lead) is named.
+9. The output file adds one table not asked for: each airport's raw GFS and baseline MAE per lead (pooled over folds and cycle hours), from which Step 4.4's last item is read.
+10. Output files are written once and refused if present (SPEC 8.7 item 5). Bytecode writing was turned off for every run, so no `__pycache__` was written.
+
+**F139.7 What this did not do.** No network. No build choice: D89.6's rule was not applied, and no setting, feature, parameter or structure was changed, tuned or selected; only D88.4's baseline was fit, with the record's settings. No model was saved, and `data/models/` was not touched. Nothing from 2026-27: no row valid after 2026-07-31T23:00 was read or scored. No non-development airport's data was read. `MLwx-stagec/` and `MLwx-pull/` unchanged (SHA-256 checked at the end). No existing script edited. Nothing installed. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
