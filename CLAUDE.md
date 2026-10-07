@@ -47,7 +47,7 @@ read **on demand only**, never routinely:
   to DECISIONS.md. Open it only when a session needs that summary; it is
   never a source of truth (SPEC beats it, same as code).
 
-**PROJECT-INSTRUCTIONS.md** (repo root) is the operating guide for the
+**PROJECT-INSTRUCTIONS.md** (in `docs/`) is the operating guide for the
 claude.ai planning chat. Claude Code does not follow it and does not read
 it routinely. Claude Code follows this file. It edits
 PROJECT-INSTRUCTIONS.md only when a session prompt says exactly what to

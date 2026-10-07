@@ -1,0 +1,717 @@
+Session 98b output: repository cleanup for outside readers (D91)
+Run 2026-10-07. Claude Code. Offline. Nothing installed. Nothing committed.
+No model experiment was run and no build choice was made.
+
+RESULT IN ONE LINE
+D91 recorded; PROJECT-INSTRUCTIONS.md moved into docs/ byte for byte; the
+three path and pointer edits made; the libomp gate passed with the shim
+bypassed (6 of 6, and EGLC's scores byte-equal); both figures drawn and
+repeatable; five README files written; F140 recorded; STATUS overwritten.
+
+======================================================================
+STEP 0: start checks (read only)
+======================================================================
+0.1 git status --porcelain
+?? docs/session-98b.md
+
+0.2 Last entries: D89, D90 / F139 (last F heading F139). D91/F140 entry
+headings in either DECISIONS file: none. `grep -cE 'D91|F140'`:
+DECISIONS.md:1 (line 3942, D90.11's text "... D90, F140, STATUS ..."; not
+an entry), DECISIONS-archive.md:0.
+
+0.3 SHA-256 (each equal to session 98's Step 0.3 value):
+987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+
+0.4 Paths that must not exist yet:
+absent figures
+absent scripts/README.md
+absent data/README.md
+absent docs/README.md
+absent notes/README.md
+absent docs/PROJECT-INSTRUCTIONS.md
+absent scripts/session98b_figures.py
+
+0.5 Read in full: CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md (live),
+README.md, RESULTS.md, PROJECT-INSTRUCTIONS.md, requirements.txt,
+.gitignore, notes/session-98-output.txt. Cited entries in the live file
+were read as part of it; from DECISIONS-archive.md the headings and
+opening text of F92, F94, D64, D65, D70.6, F112 to F119, and the line
+numbers of their data/rebuild citations.
+
+======================================================================
+STEP 1: D91 recorded (before any other edit)
+======================================================================
+Markers in docs/session-98b.md: BEGIN D91 at line 83, END D91 at line 140.
+Extract: lines 84 to 139 (56 lines), copied with sed.
+Appended after the usual separator ("", "---", ""). DECISIONS.md went from
+3,946 to 4,005 lines. D91 occupies DECISIONS.md lines 3950 to 4005
+(heading at 3950; separator "---" at 3948).
+diff (extract vs lines 3950-4005): equal (no output)
+cmp  (extract vs lines 3950-4005): equal (no output)
+Em-dashes (U+2014) in D91: 0
+(Re-checked after F140 was appended and edited: lines 3950-4005 still
+cmp-equal to the extract.)
+
+======================================================================
+STEP 2: reference re-check (before the move)
+======================================================================
+$ grep -rnI "PROJECT-INSTRUCTIONS" scripts .github requirements.txt .gitignore
+(no output; exit 1)
+$ grep -rnI "README" scripts .github requirements.txt .gitignore
+requirements.txt:37:# also in README.md). It changes nothing about the model - it only lets the
+  -> (b) text: a comment.
+$ grep -rnIE "[\"']figures[\"']" scripts .github requirements.txt .gitignore
+(no output; exit 1)
+Bare word "figures" (58 lines): all printed strings or comments using the
+word in its plain sense, for example:
+scripts/session29_test.py:768:    print("    which is on the screen anyway, and in which published figures")
+scripts/session54_e3_experiment.py:621:    print("    vs. B, printed above under 'Fold-averaged per airport', are the figures")
+scripts/session38_sanity.py:199:         "Open-Meteo figures")
+No path "figures/" and no quoted "figures" component anywhere -> (b).
+Class (a) hits: 0. The move goes ahead.
+
+======================================================================
+STEP 3: the move (D91.3)
+======================================================================
+bb4166e925f6638a21c74d75ab5dd1edae34a03c1db378bd9676a5aa4f0cb196  PROJECT-INSTRUCTIONS.md
+$ mv PROJECT-INSTRUCTIONS.md docs/PROJECT-INSTRUCTIONS.md
+bb4166e925f6638a21c74d75ab5dd1edae34a03c1db378bd9676a5aa4f0cb196  docs/PROJECT-INSTRUCTIONS.md
+$ ls PROJECT-INSTRUCTIONS.md
+ls: PROJECT-INSTRUCTIONS.md: No such file or directory
+$ git status --porcelain
+ M DECISIONS.md
+ D PROJECT-INSTRUCTIONS.md
+?? docs/PROJECT-INSTRUCTIONS.md
+?? docs/session-98b.md
+
+======================================================================
+STEP 4: path and pointer edits (every changed line, before and after)
+======================================================================
+Lines that place the file at the root, searched first:
+CLAUDE.md:50 only ("(repo root)"). CLAUDE.md:53 and :85 name the file
+without a place. docs/PROJECT-INSTRUCTIONS.md:50 only ("Kept in the repo
+root"); line 101 names the file without a place.
+
+4.1 CLAUDE.md
+@@ -50 +50 @@
+-**PROJECT-INSTRUCTIONS.md** (repo root) is the operating guide for the
++**PROJECT-INSTRUCTIONS.md** (in `docs/`) is the operating guide for the
+
+4.2 docs/PROJECT-INSTRUCTIONS.md (against HEAD's root copy)
+@@ -50 +50 @@
+-| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in the repo root | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
++| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
+
+4.3 SPEC.md (D90.8), section 6, stage C bullet
+@@ -757,3 +757,4 @@
+-  complete and checked (DECISIONS D87, F137). Its next steps are in
+-  DECISIONS D88. Its claim is judged on new airports only, drawn by the
+-  rule in DECISIONS D82.7.
++  complete and checked (DECISIONS D87, F137). Its development table and
++  baseline are set in DECISIONS D88, and the rules for its build choices
++  in DECISIONS D89. Its claim is judged on new airports only, drawn by
++  the rule in DECISIONS D82.7.
+(The sentence after the replaced one was rewrapped; its words are unchanged.)
+
+======================================================================
+STEP 5: libomp (D90.9)
+======================================================================
+5.1
+$ brew --version
+(eval):1: command not found: brew
+$ brew list --versions libomp
+(eval):1: command not found: brew
+The session shell's PATH does not include /opt/homebrew/bin. Homebrew's
+standard Apple Silicon path was checked:
+$ ls -l /opt/homebrew/bin/brew /usr/local/bin/brew
+ls: /usr/local/bin/brew: No such file or directory
+-rwxr-xr-x@ 1 zacharyadams  admin  9158 Oct  7 11:09 /opt/homebrew/bin/brew
+$ /opt/homebrew/bin/brew --version
+Homebrew 7.0.8
+$ /opt/homebrew/bin/brew list --versions libomp
+libomp 23.1.3
+(exit 0)
+$ ls -l /opt/homebrew/opt/libomp/lib/
+-r--r--r--@ 1 zacharyadams  admin  919000 Oct  6 08:38 libomp.a
+-r--r--r--@ 1 zacharyadams  admin  725984 Oct  7 11:11 libomp.dylib
+libomp is listed, so items 2 to 5 ran.
+
+5.2
+$ find .venv -name 'lib_lightgbm*'
+.venv/lib/python3.12/site-packages/lightgbm/lib/lib_lightgbm.dylib
+$ otool -L .venv/lib/python3.12/site-packages/lightgbm/lib/lib_lightgbm.dylib | grep -i omp
+	@rpath/lib_lightgbm.dylib (compatibility version 0.0.0, current version 0.0.0)
+	@rpath/libomp.dylib (compatibility version 5.0.0, current version 5.0.0)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1600.151.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1336.0.0)
+(`grep -i omp` also matches "compatibility" on every line; the libomp line
+is the second.)
+$ otool -l ... | grep -A2 LC_RPATH | grep path
+         path /opt/homebrew/opt/libomp/lib (offset 12)
+         path /opt/local/lib/libomp (offset 12)
+
+5.3
+$ env -u DYLD_LIBRARY_PATH MLWX_LIBOMP_PATH_SET=1 DYLD_PRINT_LIBRARIES=1 .venv/bin/python -B -c "import lightgbm; print(lightgbm.__version__)" 2>&1 | grep -i -E 'omp|^4\.'
+The filter prints 46 lines; most match "Compression"/"Compiler" in system
+library names. The lines naming a libomp, and the version, in full:
+dyld[65156]: <D0CAF578-FA67-33EB-81F6-0DF51F67F071> /opt/homebrew/Cellar/libomp/23.1.3/lib/libomp.dylib
+dyld[65156]: <E3A31AB3-3AE5-3371-87D0-7FD870A41A0D> /Users/zacharyadams/Coding Projects/MLwx/.venv/lib/python3.12/site-packages/sklearn/.dylibs/libomp.dylib
+4.7.0
+(Run again later for this file, process 66697: the same two libomp lines
+and 4.7.0.) Homebrew's libomp is loaded first, through LightGBM's rpath.
+scikit-learn's copy is also loaded, because the import loads scikit-learn
+modules (sklearn/metrics/... appear in the same listing).
+
+5.4 The gate, shim bypassed
+$ env -u DYLD_LIBRARY_PATH MLWX_LIBOMP_PATH_SET=1 .venv/bin/python -B scripts/session97_stagec_cv.py --gate
+SESSION 97 --gate (D89.9; offline), start 2026-10-07T11:08:55Z
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+record script SHA-256 checked before import: 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4 (D70.2)
+data/processed/session81_training_set.csv SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a (equal to the record)
+data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3 (equal to the record)
+G15 (from the record script): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+LGB_PARAMS (from the record script): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+
+EGLC (cycle hour 12z, lead 24): table rows on the training set's dates 1953 (not complete case 0); train 1225 (F122.4 1225); test 364 (F109 n_test 364; grid no_obs 1)
+  B+D,L,R,T  this fit 1.0007550363323212  grid final_mae 1.0007550363323212  equal: yes
+  raw GFS    this fit 1.23621978021978  grid raw_mae   1.23621978021978  equal: yes
+  at 4 decimals: B+D,L,R,T 1.0008, raw GFS 1.2362
+
+LFPG (cycle hour 12z, lead 24): table rows on the training set's dates 1953 (not complete case 0); train 1224 (F122.4 1224); test 365 (F109 n_test 365; grid no_obs 0)
+  B+D,L,R,T  this fit 1.2368626165917669  grid final_mae 1.2368626165917669  equal: yes
+  raw GFS    this fit 1.4091397260273972  grid raw_mae   1.4091397260273972  equal: yes
+  at 4 decimals: B+D,L,R,T 1.2369, raw GFS 1.4091
+
+DSM (cycle hour 18z, lead 24): table rows on the training set's dates 1955 (not complete case 0); train 1225 (F122.4 1225); test 365 (F109 n_test 365; grid no_obs 0)
+  B+D,L,R,T  this fit 1.4122847644111458  grid final_mae 1.4122847644111458  equal: yes
+  raw GFS    this fit 1.7043452054794521  grid raw_mae   1.7043452054794521  equal: yes
+  at 4 decimals: B+D,L,R,T 1.4123, raw GFS 1.7043
+
+GATE PASSED: all six values equal, exact equality
+end 2026-10-07T11:08:59Z; run time 4.3 s
+(exit 0)
+
+5.5 EGLC --score, shim bypassed
+TMP=/var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.4rFSSvQJRX
+$ env -u DYLD_LIBRARY_PATH MLWX_LIBOMP_PATH_SET=1 .venv/bin/python -B scripts/session97_stagec_cv.py --score --airports EGLC --out-dir "$TMP"
+(exit 0) Its printed log (no score is printed by this mode):
+SESSION 97 --score (offline), start 2026-10-07T11:09:08Z; airports EGLC; out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.4rFSSvQJRX/session97_stagec_cv_scores.csv
+versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+G15: ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+  EGLC: 264 models fit, 19.8 s
+
+fits: 264; cells where the two methods' n differ: 0
+wrote /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.4rFSSvQJRX/session97_stagec_cv_scores.csv: 528 rows, 36888 bytes, SHA-256 38e8295dc422c429c14d0ecb09692032855356deee5ff4c5d71cdfbb1aa0cb65
+
+end 2026-10-07T11:09:28Z; run time 19.8 s
+
+Committed side: the header plus the rows whose first field is EGLC, taken
+from data/processed/session97_stagec_cv_scores.csv:
+     529 committed_eglc.csv
+     529 session97_stagec_cv_scores.csv
+diff: equal
+cmp: equal
+38e8295dc422c429c14d0ecb09692032855356deee5ff4c5d71cdfbb1aa0cb65  (new file)
+38e8295dc422c429c14d0ecb09692032855356deee5ff4c5d71cdfbb1aa0cb65  (committed EGLC rows)
+The temporary folder was deleted:
+ls: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.4rFSSvQJRX: No such file or directory
+
+5.6 requirements.txt (comment text only)
+Non-comment lines (29) saved before the edit and compared after:
+non-comment lines: no diff
+Changed lines that are not comments: none.
+Full diff (git diff -U0 -- requirements.txt):
+@@ -27,3 +27,3 @@
+-# LightGBM's macOS build will not import without the OpenMP runtime library
+-# libomp.dylib. It is not part of macOS and pip cannot install it, because it
+-# is a system library rather than a Python package. The normal fix is Homebrew:
++# LightGBM on macOS needs the OpenMP library libomp.dylib. It is a system
++# library, not a Python package, so pip cannot install it. The standard fix
++# is Homebrew:
+@@ -33,6 +33,7 @@
+-# This machine has no Homebrew, so a workaround is used instead: scikit-learn's
+-# macOS wheel ships its own copy of libomp.dylib, and the model scripts point
+-# the dynamic loader at that copy and restart the interpreter once. That block
+-# sits at the top of the modelling scripts, clearly commented (setup steps are
+-# also in README.md). It changes nothing about the model - it only lets the
+-# library load - and repeat runs were byte-identical (DECISIONS F14, F15, Q16).
++# Older scripts keep a loader workaround from before Homebrew was installed:
++# they point the dynamic loader at the copy of libomp.dylib inside
++# scikit-learn's macOS wheel, then restart the interpreter once. Those
++# scripts are part of the record, so they cannot be edited. The workaround
++# only lets the library load and changes nothing about the model (repeat
++# runs were byte-identical, DECISIONS F14, F15, Q16). It is harmless when
++# Homebrew's libomp is present. Setup steps are also in README.md.
+@@ -40,4 +41,8 @@
+-# So: scikit-learn is pinned here because it is currently the source of
+-# libomp.dylib on this machine. If libomp is installed properly, scikit-learn
+-# is no longer needed and the workaround block becomes a no-op (it checks
+-# whether the file exists before doing anything).
++# What session 98b found (DECISIONS F140): Homebrew 7.0.8 with libomp
++# 23.1.3. With the workaround switched off, the session 97 cross-validation
++# script still reproduced F109's six recorded MAEs exactly (6 of 6), and its
++# EGLC scores were byte-equal to the committed file. So scripts from session
++# 99 on may import lightgbm directly (DECISIONS D90.9).
++#
++# scikit-learn stays pinned for one reason: the older scripts' workaround
++# uses its copy of libomp.dylib.
+@@ -64 +69,2 @@ narwhals==2.24.0
+-# This machine has no Homebrew and no system eccodes/GRIB library, so the
++# When this was set up (session 36), the machine had no Homebrew and no
++# system eccodes/GRIB library, so the
+(My first edit of the eccodes line joined it with the next comment line
+into one 111-character line; it was split again at once. Comment text
+only; the final diff is the one above.)
+
+======================================================================
+STEP 6: figures
+======================================================================
+Script: scripts/session98b_figures.py (standard library only; offline).
+Final SHA-256: 8afc584abe5b0b538a703e2911d2fc8a14fec8889a30504aa85d4a6d42a47305
+
+History (reading 5 in F140.11): the first version drew the skill figure
+880 pixels wide. A Quick Look preview (rendered in the session scratchpad)
+cut off its right panel at about 770 pixels, so the figure was narrowed to
+760 to suit narrow screens. Then a check found the script's own em-dash
+guard held the literal U+2014 character (the writing tool had turned the
+escape into the character); it was replaced with chr(0x2014). Each time the
+SVGs this session had just written (untracked) were deleted and redrawn.
+The checks below are on the final script.
+
+6.1 Run 1 (final script):
+session 98b figures (offline, standard library only)
+python 3.12.2
+headline_mae.svg values (F109):
+input data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3 (as expected)
+  EGLC: raw GFS 1.23621978021978 drawn as 1.2362; selected-features 1.0007550363323212 drawn as 1.0008
+  LFPG: raw GFS 1.4091397260273972 drawn as 1.4091; selected-features 1.2368626165917669 drawn as 1.2369
+  DSM: raw GFS 1.7043452054794521 drawn as 1.7043; selected-features 1.4122847644111458 drawn as 1.4123
+  YSDU: raw GFS 1.4896583333333335 drawn as 1.4897; selected-features 1.2642703316294652 drawn as 1.2643
+  RNO: raw GFS 1.6134575342465751 drawn as 1.6135; selected-features 1.2741517803385958 drawn as 1.2742
+skill_intervals.svg values (F125.6):
+input notes/session-83-output.txt SHA-256 d87afdac94582fb598b97518a0b8004575bb140892f386daf1c934cc1c50fb65 (as expected)
+  EGLC vs raw GFS: skill +19.0% [+12.6, +24.2], n 364 (equal to F125.6)
+  EGLC vs persistence: skill +55.0% [+48.5, +61.2], n 363 (equal to F125.6)
+  LFPG vs raw GFS: skill +12.2% [+6.8, +17.6], n 365 (equal to F125.6)
+  LFPG vs persistence: skill +51.0% [+43.0, +57.5], n 365 (equal to F125.6)
+  DSM vs raw GFS: skill +17.1% [+7.4, +27.0], n 365 (equal to F125.6)
+  DSM vs persistence: skill +65.6% [+60.8, +70.3], n 365 (equal to F125.6)
+  YSDU vs raw GFS: skill +15.1% [+7.9, +22.3], n 360 (equal to F125.6)
+  YSDU vs persistence: skill +51.7% [+44.9, +57.9], n 355 (equal to F125.6)
+  RNO vs raw GFS: skill +21.0% [+13.2, +28.5], n 365 (equal to F125.6)
+  RNO vs persistence: skill +53.8% [+46.3, +60.4], n 365 (equal to F125.6)
+wrote figures/headline_mae.svg: 5927 bytes, SHA-256 2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c
+wrote figures/skill_intervals.svg: 7764 bytes, SHA-256 4075f6c66867606b45caa3e7acc06df8ac7ea9fa0261b4222c01a2fe1ee40982
+(exit 0)
+
+6.2 Optional figure: made. Every value is read by the script from a
+committed file (the summary table of notes/session-83-output.txt, the
+output F125 cites; no data file holds F125's intervals), and every value
+equals F125.6 at F125.6's precision (checked in code, above). The record
+holds no SHA-256 for that file; the script pins the committed file's
+value, checked equal to HEAD's copy:
+$ git diff --quiet HEAD -- notes/session-83-output.txt data/processed/session63_reserved_confirm_grid.csv && echo "both equal to HEAD"
+both equal to HEAD
+$ git show HEAD:notes/session-83-output.txt | shasum -a 256
+d87afdac94582fb598b97518a0b8004575bb140892f386daf1c934cc1c50fb65  -
+
+6.3 Repeat check: figures/ copied to a mktemp -d folder, originals
+deleted, script run again:
+== run 2
+(exit 0)
+wrote figures/headline_mae.svg: 5927 bytes, SHA-256 2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c
+wrote figures/skill_intervals.svg: 7764 bytes, SHA-256 4075f6c66867606b45caa3e7acc06df8ac7ea9fa0261b4222c01a2fe1ee40982
+cmp headline_mae.svg: equal
+cmp skill_intervals.svg: equal
+temp copy deleted
+== refuse check (a third run with the files present)
+STOP: figures/headline_mae.svg exists; figures are written once
+SHA-256:
+2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c  figures/headline_mae.svg
+4075f6c66867606b45caa3e7acc06df8ac7ea9fa0261b4222c01a2fe1ee40982  figures/skill_intervals.svg
+8afc584abe5b0b538a703e2911d2fc8a14fec8889a30504aa85d4a6d42a47305  scripts/session98b_figures.py
+
+Headline figure's ten printed values against the grid file and the README:
+svg printed values : ['1.2362', '1.0008', '1.4091', '1.2369', '1.7043', '1.4123', '1.4897', '1.2643', '1.6135', '1.2742']
+grid at 4 dp       : ['1.2362', '1.0008', '1.4091', '1.2369', '1.7043', '1.4123', '1.4897', '1.2643', '1.6135', '1.2742']
+README table       : ['1.2362', '1.0008', '1.4091', '1.2369', '1.7043', '1.4123', '1.4897', '1.2643', '1.6135', '1.2742']
+svg == grid 4dp: True | svg == README: True
+
+======================================================================
+STEP 7: the README files
+======================================================================
+Written: README.md (full rewrite, 10 sections: In 30 seconds; Headline
+result with both figures, the table and its four caveats; What this
+project demonstrates; How it works with a Mermaid diagram; Status and
+roadmap; Repository map; Reproducing; How this was built; Data credits and
+terms; Licence, ending "Author: Zachary Adams."), scripts/README.md,
+data/README.md, docs/README.md, notes/README.md.
+Facts were taken from SPEC, STATUS, DECISIONS (live and archive headings),
+RESULTS and the scripts' own docstrings. Corrections made while writing
+(each from the record): F94's look ran in session 42 (not 40) and the
+sealed pull is F92; data/raw/ also holds short samples from two candidate
+stations, YSCB (session 19) and BZN (session 25); not every processed file
+is named by session (grib_features_*).
+
+======================================================================
+STEP 8: final checks
+======================================================================
+8.1 Relative links in the five README files:
+ok   README.md: DECISIONS.md -> DECISIONS.md
+ok   README.md: DECISIONS-archive.md -> DECISIONS-archive.md
+ok   README.md: SPEC.md -> SPEC.md
+ok   README.md: figures/headline_mae.svg -> figures/headline_mae.svg
+ok   README.md: figures/skill_intervals.svg -> figures/skill_intervals.svg
+ok   README.md: RESULTS.md -> RESULTS.md
+ok   README.md: RESULTS.md -> RESULTS.md
+ok   README.md: figures/ -> figures
+ok   README.md: SPEC.md -> SPEC.md
+ok   README.md: DECISIONS.md -> DECISIONS.md
+ok   README.md: DECISIONS-archive.md -> DECISIONS-archive.md
+ok   README.md: STATUS.md -> STATUS.md
+ok   README.md: scripts/README.md -> scripts/README.md
+ok   README.md: data/README.md -> data/README.md
+ok   README.md: requirements.txt -> requirements.txt
+ok   README.md: .github/ -> .github
+ok   README.md: docs/README.md -> docs/README.md
+ok   README.md: notes/README.md -> notes/README.md
+ok   README.md: CLAUDE.md -> CLAUDE.md
+ok   README.md: LICENSE -> LICENSE
+ok   README.md: data/README.md -> data/README.md
+ok   README.md: scripts/README.md -> scripts/README.md
+ok   README.md: scripts/README.md -> scripts/README.md
+ok   README.md: CLAUDE.md -> CLAUDE.md
+ok   README.md: docs/README.md -> docs/README.md
+ok   README.md: notes/README.md -> notes/README.md
+ok   README.md: LICENSE -> LICENSE
+ok   scripts/README.md: ../docs/README.md -> docs/README.md
+ok   scripts/README.md: ../notes/README.md -> notes/README.md
+ok   data/README.md: ../README.md#9-data-credits-and-terms -> README.md (anchor #9-data-credits-and-terms)
+ok   docs/README.md: ../CLAUDE.md -> CLAUDE.md
+ok   docs/README.md: ../notes/README.md -> notes/README.md
+ok   docs/README.md: PROJECT-INSTRUCTIONS.md -> docs/PROJECT-INSTRUCTIONS.md
+ok   docs/README.md: HANDOVER-richer-features.md -> docs/HANDOVER-richer-features.md
+ok   notes/README.md: ../docs/README.md -> docs/README.md
+relative links checked: 35, failures: 0
+
+8.2 U+2014 counts:
+New files: README.md 0, scripts/README.md 0, data/README.md 0,
+docs/README.md 0, notes/README.md 0, scripts/session98b_figures.py 0,
+figures/headline_mae.svg 0, figures/skill_intervals.svg 0.
+Added lines of edited files: CLAUDE.md 0, SPEC.md 0, DECISIONS.md 0,
+requirements.txt 0, README.md 0, docs/PROJECT-INSTRUCTIONS.md (against
+HEAD's root copy) 0.
+F140 as first appended held one U+2014 (the writing tool had turned an
+escape in reading 5 into the character); that line of F140 was reworded
+before anything else, and DECISIONS.md from line 3946 to the end now has 0.
+STATUS.md: 0.
+
+8.3 git status and diff: see the FINAL STATE section at the end (taken
+after F140, STATUS and this file were written). Before F140 and STATUS:
+$ git diff --stat
+ CLAUDE.md               |   2 +-
+ DECISIONS.md            |  59 ++++++++
+ PROJECT-INSTRUCTIONS.md | 204 --------------------------
+ README.md               | 374 +++++++++++++++++++++++++++++++-----------------
+ SPEC.md                 |   7 +-
+ requirements.txt        |  34 +++--
+ 6 files changed, 326 insertions(+), 354 deletions(-)
+$ git diff --name-status -- scripts data docs notes .github
+(no output: no tracked file under these folders changed)
+
+8.4 SHA-256 of the Step 0 files: unchanged (see FINAL STATE).
+MLwx-stagec/ (read by the gate only), equal to F138.4:
+af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126  ../MLwx-stagec/stagec_dev_EGLC.csv.gz
+17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32  ../MLwx-stagec/stagec_dev_KDSM.csv.gz
+6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3  ../MLwx-stagec/stagec_dev_KRNO.csv.gz
+11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8  ../MLwx-stagec/stagec_dev_KSFO.csv.gz
+5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f  ../MLwx-stagec/stagec_dev_LFPG.csv.gz
+57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829  ../MLwx-stagec/stagec_dev_YSDU.csv.gz
+
+8.5 __pycache__: every Python run used -B. The only __pycache__ outside
+.venv is the existing, ignored scripts/__pycache__ (last changed Oct 3
+18:57); `find scripts/__pycache__ -newer docs/session-98b.md -type f`
+lists nothing (see FINAL STATE).
+
+8.6 Root listing: see FINAL STATE.
+
+======================================================================
+END OF SESSION
+======================================================================
+9.1 F140 appended to DECISIONS.md (heading at line 4009, after the usual
+separator), with session 98's item, Steps 0 to 8, readings and "what this
+did not do".
+
+9.2 STATUS.md overwritten as a current-only snapshot. Session 98's open
+questions settled by D91 were cleared (restructure: D91.3; session 98's
+readings: D91.1; README section 8: D91.5; the D84.3 path: D91.6). Its last
+line is the prompt's "Next planning session" text, word for word.
+
+9.3 CONSISTENCY CHECK (report only, nothing fixed)
+Re-read CLAUDE.md, SPEC.md, STATUS.md and DECISIONS.md.
+- Duplicated headings: none in any of the four files.
+- Entry order in DECISIONS.md: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122
+  F123 F124 F125 D76 D77 F127 D78 F128 D79 F129 D80 F130 D81 F131 D82 F132
+  D83 F133 D84 F134 D85 F135 D86 F136 D87 F137 D88 F138 D89 F139 D90 D91
+  F140. Dated headings in date order; nothing out of order.
+- Live files placing PROJECT-INSTRUCTIONS.md at the root: none of
+  CLAUDE.md, SPEC.md, STATUS.md, README.md, RESULTS.md or
+  docs/PROJECT-INSTRUCTIONS.md. In DECISIONS.md, record entries written
+  before session 98b do: D72.12 (line 866-868, "tracked in the repo
+  root"), and D90.5 and D90.6 (lines 3904, 3913, which place it under
+  audit/). They are not edited; D91.4 resolves them.
+- Disagreements found:
+  1. RESULTS.md section 7's roadmap paragraph still describes stage C as
+     later work and stops at stage B's pre-registration (F128, F129 and
+     stage C's progress are not in it). Out of scope; reported only.
+  2. requirements.txt lines 17-22 (unchanged) say scikit-learn "is NOT
+     imported by any script". Step 5.3 shows that importing lightgbm loads
+     scikit-learn modules. No script imports it directly, so the line is
+     not wrong as written, but a reader could take it to mean scikit-learn
+     never loads. Reported only.
+  3. The session prompt's README item "each month checked before it was
+     published as a Release file (F137, D87)" does not hold for 2022-01
+     (published before the verify step existed, D84.3, D84.4; checked
+     afterwards, F134). The README states the accurate version (F140.11
+     reading 6).
+  4. CLAUDE.md, SPEC.md and STATUS.md otherwise agree with D91 and F140.
+
+9.4 ARCHIVE STEP
+Nothing moved. D91 and F140 are new. D90 stays live: D91.4 resolves its
+items and STATUS carries D90.2, D90.9 and D90.12. D89 and F139 are needed
+by session 99 (D89.6, D89.10). F133 to F138 are cited by STATUS's stage C
+section. Older live entries were kept by earlier sessions for the same
+reasons, and nothing this session changed that.
+
+READINGS MADE WHERE THE PROMPT IS SILENT: see F140.11 (12 readings).
+
+WHAT THIS SESSION DID NOT DO
+No model experiment was run and no build choice was made. No F139 score
+was read, printed or quoted in any README, figure or STATUS. No network
+call. Nothing installed. No existing DECISIONS or archive entry edited
+(D91 and F140 appended only). No script, data file or the workflow file
+edited, moved or renamed. No existing file in docs/ or notes/ edited,
+except docs/PROJECT-INSTRUCTIONS.md after its move (Step 4.2). RESULTS.md
+and .gitignore not edited. MLwx-stagec/ only read (by the gate);
+MLwx-pull/ not touched. The git index not touched. Nothing committed; no
+commit message written.
+
+======================================================================
+FINAL STATE (commands run after this file's text above was written)
+======================================================================
+$ git status --porcelain --untracked-files=all
+ M CLAUDE.md
+ M DECISIONS.md
+ D PROJECT-INSTRUCTIONS.md
+ M README.md
+ M SPEC.md
+ M STATUS.md
+ M requirements.txt
+?? data/README.md
+?? docs/PROJECT-INSTRUCTIONS.md
+?? docs/README.md
+?? docs/session-98b.md
+?? figures/headline_mae.svg
+?? figures/skill_intervals.svg
+?? notes/README.md
+?? notes/session-98b-output.txt
+?? scripts/README.md
+?? scripts/session98b_figures.py
+
+$ git diff --stat
+ CLAUDE.md               |   2 +-
+ DECISIONS.md            | 116 +++++++++++++++
+ PROJECT-INSTRUCTIONS.md | 204 --------------------------
+ README.md               | 374 +++++++++++++++++++++++++++++++-----------------
+ SPEC.md                 |   7 +-
+ STATUS.md               | 182 +++++++++++------------
+ requirements.txt        |  34 +++--
+ 7 files changed, 466 insertions(+), 453 deletions(-)
+
+$ git diff --name-status -- scripts data docs notes .github
+(end of list)
+
+$ shasum -a 256 (Step 0 files)
+987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+
+$ find . -name __pycache__ -not -path ./.venv/*
+./scripts/__pycache__
+$ find scripts/__pycache__ -newer docs/session-98b.md -type f
+(end of list)
+
+$ ls -A
+.DS_Store
+.claude
+.git
+.github
+.gitignore
+.venv
+CLAUDE.md
+DECISIONS-archive.md
+DECISIONS.md
+LICENSE
+README.md
+RESULTS.md
+SPEC.md
+STATUS.md
+data
+docs
+figures
+notes
+requirements.txt
+scripts
+
+U+2014 in DECISIONS.md lines 3946 to end: 0; in STATUS.md: 0
+
+======================================================================
+CORRECTION AFTER REVIEW (docs/session-98b-correction.md, 2026-10-07)
+======================================================================
+1. The skill figure's title (scripts/session98b_figures.py line 225)
+-    title = "Selected-features method: skill with 95% intervals, reserved year 2024-25 (F125.6)"
++    title = "Skill with 95% intervals, reserved year 2024-25 (F125.6)"
+Nothing else in the script changed. The script computes no text width.
+Before: script 8afc584abe5b0b538a703e2911d2fc8a14fec8889a30504aa85d4a6d42a47305; skill_intervals.svg 4075f6c66867606b45caa3e7acc06df8ac7ea9fa0261b4222c01a2fe1ee40982
+Both SVGs deleted; script run once:
+session 98b figures (offline, standard library only)
+python 3.12.2
+headline_mae.svg values (F109):
+input data/processed/session63_reserved_confirm_grid.csv SHA-256 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3 (as expected)
+  EGLC: raw GFS 1.23621978021978 drawn as 1.2362; selected-features 1.0007550363323212 drawn as 1.0008
+  LFPG: raw GFS 1.4091397260273972 drawn as 1.4091; selected-features 1.2368626165917669 drawn as 1.2369
+  DSM: raw GFS 1.7043452054794521 drawn as 1.7043; selected-features 1.4122847644111458 drawn as 1.4123
+  YSDU: raw GFS 1.4896583333333335 drawn as 1.4897; selected-features 1.2642703316294652 drawn as 1.2643
+  RNO: raw GFS 1.6134575342465751 drawn as 1.6135; selected-features 1.2741517803385958 drawn as 1.2742
+skill_intervals.svg values (F125.6):
+input notes/session-83-output.txt SHA-256 d87afdac94582fb598b97518a0b8004575bb140892f386daf1c934cc1c50fb65 (as expected)
+  EGLC vs raw GFS: skill +19.0% [+12.6, +24.2], n 364 (equal to F125.6)
+  EGLC vs persistence: skill +55.0% [+48.5, +61.2], n 363 (equal to F125.6)
+  LFPG vs raw GFS: skill +12.2% [+6.8, +17.6], n 365 (equal to F125.6)
+  LFPG vs persistence: skill +51.0% [+43.0, +57.5], n 365 (equal to F125.6)
+  DSM vs raw GFS: skill +17.1% [+7.4, +27.0], n 365 (equal to F125.6)
+  DSM vs persistence: skill +65.6% [+60.8, +70.3], n 365 (equal to F125.6)
+  YSDU vs raw GFS: skill +15.1% [+7.9, +22.3], n 360 (equal to F125.6)
+  YSDU vs persistence: skill +51.7% [+44.9, +57.9], n 355 (equal to F125.6)
+  RNO vs raw GFS: skill +21.0% [+13.2, +28.5], n 365 (equal to F125.6)
+  RNO vs persistence: skill +53.8% [+46.3, +60.4], n 365 (equal to F125.6)
+wrote figures/headline_mae.svg: 5927 bytes, SHA-256 2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c
+wrote figures/skill_intervals.svg: 7712 bytes, SHA-256 bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe
+headline_mae.svg equal to previous SHA-256 (2bb18ab1...1d5c): yes
+Repeat check: figures/ copied to mktemp -d, originals deleted, run again:
+wrote figures/headline_mae.svg: 5927 bytes, SHA-256 2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c
+wrote figures/skill_intervals.svg: 7712 bytes, SHA-256 bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe
+cmp headline_mae.svg: equal
+cmp skill_intervals.svg: equal
+temp copy deleted
+2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c  figures/headline_mae.svg
+bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe  figures/skill_intervals.svg
+49a31e717950a6dfbf3e6c0d5b7aa6858ee7694b40fdff696d277782c32d5ddf  scripts/session98b_figures.py
+<title id="title">Skill with 95% intervals, reserved year 2024-25 (F125.6)
+
+2. README.md (diff, before < after >)
+13,14c13,14
+< interval lies above zero (F109, F125.6). Each claim came from a held-out
+< year that was opened once, with the pass rule fixed in writing first. The
+---
+> interval lies above zero (F109, F125.6). Each claim came from a single
+> look at held-out data, with the pass rule fixed in writing first. The
+85,86c85,86
+<   writing before a held-out year is opened, and each held-out year gets
+<   one look (SPEC 2.4, 5.0). The richer and selected methods were each
+---
+>   writing before a held-out year is opened, and each method looks at each
+>   held-out year only once (SPEC 2.4, 5.0). The richer and selected methods were each
+165c165
+<   each held-out year gets one look (SPEC 2.4, 5.0).
+---
+>   each method looks at each held-out year only once (SPEC 2.4, 5.0).
+(Line 86 is now 84 characters wide; the words are as listed, not rewrapped.)
+Other lines in the five READMEs that speak of one look or using data once (not changed):
+README.md:33:The method is `B+D,L,R,T` (SPEC 8). Each airport was judged once on the
+README.md:84:- **Pre-registered, one-look evaluation.** The pass bar is fixed in
+README.md:169:- A result is a **claim** only if it comes from held-out data used once.
+scripts/README.md:43:| `session07_test.py`, `session13_test.py`, `session18_test.py`, `session24_test.py`, `session29_test.py` | each airport's one-look sealed test | F16, F30, F47, F64, F82 |
+scripts/README.md:49:| `session39_sealed_test.py` | the sealed test (frozen; written in session 39, its one look run in session 42) | F94 |
+scripts/README.md:56:| `session62_reserved_confirm.py` | the one look at the reserved year (frozen) | F109 |
+
+3. requirements.txt (diff, before < after >)
+21,22c21,23
+< # scikit-learn is NOT imported by any script. It is here for one reason only:
+< # the OpenMP note below.
+---
+> # No script imports scikit-learn directly, though importing lightgbm loads
+> # parts of it (DECISIONS F140.7). It is here for one reason only: the OpenMP
+> # note below.
+non-comment lines: no diff
+
+4. F140.13 appended to DECISIONS.md at line 4064 (after F140.12). Lines
+removed or changed elsewhere in DECISIONS.md by this correction: 0
+
+Step 8.1 links:
+relative links checked: 35, failures: 0
+Step 8.2 U+2014:
+  README.md: 0
+  scripts/README.md: 0
+  data/README.md: 0
+  docs/README.md: 0
+  notes/README.md: 0
+  scripts/session98b_figures.py: 0
+  figures/headline_mae.svg: 0
+  figures/skill_intervals.svg: 0
+  STATUS.md: 0
+  added lines of CLAUDE.md: 0
+  added lines of SPEC.md: 0
+  added lines of DECISIONS.md: 0
+  added lines of requirements.txt: 0
+  added lines of README.md: 0
+Step 8.6 root listing:
+$ ls -A
+.DS_Store
+.claude
+.git
+.github
+.gitignore
+.venv
+CLAUDE.md
+DECISIONS-archive.md
+DECISIONS.md
+LICENSE
+README.md
+RESULTS.md
+SPEC.md
+STATUS.md
+data
+docs
+figures
+notes
+requirements.txt
+scripts
+
+$ git status --porcelain --untracked-files=all
+ M CLAUDE.md
+ M DECISIONS.md
+ D PROJECT-INSTRUCTIONS.md
+ M README.md
+ M SPEC.md
+ M STATUS.md
+ M requirements.txt
+?? data/README.md
+?? docs/PROJECT-INSTRUCTIONS.md
+?? docs/README.md
+?? docs/session-98b-correction.md
+?? docs/session-98b.md
+?? figures/headline_mae.svg
+?? figures/skill_intervals.svg
+?? notes/README.md
+?? notes/session-98b-output.txt
+?? scripts/README.md
+?? scripts/session98b_figures.py

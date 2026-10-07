@@ -3,32 +3,31 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 7 October 2026, after session 98 (stopped at its Step 3)._
+_Last updated: 7 October 2026, after session 98b._
 
 ---
 
-## Session 98 stopped before any file was moved
+## Session 98b: repository cleanup for outside readers (D91, F140)
 
-Session 98 (repository restructure, D90) recorded D90 (DECISIONS.md lines
-3871 to 3946, byte-equal to the prompt), ran its read-only audit, then
-**stopped at Step 3, the reference gate**, as its prompt directs when code
-references a path that would move. Nothing was moved and no other file was
-edited. Full output: `notes/session-98-output.txt`.
+Session 98 stopped at its reference gate (F140.1); D91 accepted the stop
+and replaced its layout. Session 98b recorded D91 and F140. No model
+experiment was run and no build choice was made. Full output:
+`notes/session-98b-output.txt`.
 
-- **Why.** Scripts open `SPEC.md` and `DECISIONS.md` at the repo root: 8
-  literal code hits, in `session86_forward_build.py`,
-  `session87_forward_competitors.py`, `session87_forward_score.py`,
-  `session89_stage_c_scoping.py` and `session91_grib_pull.py` (plus
-  `session95_check_release.py` and `session96_stagec_table.py` through
-  imported constants). 36 more write or read files under `notes/` (built as
-  `ROOT / "notes" / ...`), including the frozen `session39_sealed_test.py`
-  and `session62_reserved_confirm.py` and stage B's scoring gate.
-- **Why it matters.** Stage B's 2026-27 scripts must run unchanged (D80.1,
-  F129.7). `session87_forward_score.py` reads DECISIONS.md at the root to
-  check the frozen models before it scores (F129.6); after D90.5's move
-  that check would fail. Frozen scripts are never edited (D62.3(a)).
-- **Not run:** Steps 4 to 9 (moves, path edits, the libomp gate, figures,
-  README files). F140 was not written. No Python was run.
+- **One move (D91.3):** `PROJECT-INSTRUCTIONS.md` is now
+  `docs/PROJECT-INSTRUCTIONS.md`, byte for byte. Every other file stays
+  where it is, because scripts read the record files and `notes/` there
+  (D91.2). CLAUDE.md and the guide's own table now say `docs/`.
+- **SPEC 6 (D90.8):** the stage C bullet points to D88 and D89.
+- **libomp (D90.9): passed.** Homebrew 7.0.8, libomp 23.1.3. With the
+  loader shim bypassed, `session97_stagec_cv.py --gate` gave F109's six
+  values 6 of 6, and EGLC's `--score` was byte-equal to the committed
+  rows. So scripts from session 99 on may import lightgbm directly.
+  `requirements.txt` comments updated; package lines unchanged.
+- **Figures:** `figures/headline_mae.svg` and `figures/skill_intervals.svg`,
+  drawn by `scripts/session98b_figures.py`, repeatable byte for byte.
+- **README files:** the root README rewritten; new READMEs in `scripts/`,
+  `data/`, `docs/` and `notes/`.
 
 ---
 
@@ -51,9 +50,9 @@ open: its design is set (D82, D83), its f000 to f024 GRIB pull is complete
 and checked (D87, F137), its development table is built and gated (D88,
 F138), D89 fixes the cross-validation rules, and the curve's baseline is
 fit and scored by cross-validation (F139, accepted in D90.1). Its open
-build choices (D82.5) come next, under D89.6; the first moved to session 99
-(D90.3). Then stages D to H. New airports are an ongoing
-track, and pooling is conditional.
+build choices (D82.5) come next, under D89.6, starting in session 99
+(D90.3). Then stages D to H. New airports are an ongoing track, and
+pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
 It is pre-registered, its models are frozen, and all three 2026-27 scripts
@@ -91,61 +90,43 @@ km; the saver session decides whether the list grows.
   `data/processed/session91_pull_airports.csv` and
   `.github/workflows/stagec-grib-pull.yml` (`804b6d35...02a6`), with the
   verify step (`scripts/session92_verify_chunk.py`, `7b59a5c2...af6a`).
-  **The f000 to f024 pull is complete (D87.4).** The Release
-  `stagec-grib-pull-v1` holds all 195 assets (65 months x 3, 1.26 GB).
-- **All 65 months downloaded and checked (F137).** The 195 files are in
-  `MLwx-pull/` (outside the repo), each equal to its Release digest. Every
-  meta as expected; the verifier 13 of 13 on every month; no value outside
-  the bounds; the union equals the full plan (195,600 files, 1,932,528
-  messages, 9,975,600 points rows); check failed 0, idx missing 0; "ok (whole
-  file)" 270, exactly the 27 broken files of 2022-11 (F135.3), and
-  2022-11-29T12 is whole. The extended gate passed on every month (5,861
-  station-days at EGLC, LFPG and DSM). Committed inventory:
+  The Release `stagec-grib-pull-v1` holds all 195 assets (65 months x 3,
+  1.26 GB); all 195 are in `MLwx-pull/` (outside the repo), each equal to
+  its Release digest, and every check passed (F137). Committed inventory:
   `data/processed/session95_pull_inventory.csv` (`7177b661...b70a`).
 - **The development table (D88.3, F138).** Six development airports, every
-  cycle, forecast hours 0 to 24: 195,600 rows per airport, 1,173,600 in all,
-  in `MLwx-stagec/` beside the repo (not tracked, D88.8), one
-  `stagec_dev_<ICAO>.csv.gz` per airport. The record's features rebuilt from
-  the stored grid values (D88.5: instantaneous fields at every lead; R from
-  the GFS radiation averages; T from the pressure 3 hours earlier; season
-  from the valid date; TMAX and TMIN kept raw) and the nearest observation
-  within 15 minutes (D88.7). Leads 0 to 2 stay in, incomplete (no T; no R at
-  0 and 1), counted (D88.6). **The gate passed:** 5,861 station-days at EGLC,
-  LFPG and DSM lead 24, all ten shared columns and the observation equal,
-  exact equality. YSDU, RNO and KSFO (lead 26) are not gated. Repeatable
-  byte for byte. Script `scripts/session96_stagec_table.py`
-  (`40b63d00...6eee`); counts `data/processed/session96_stagec_dev_counts.csv`;
-  meta `data/processed/session96_stagec_dev_table.meta.txt` (every table
-  file's SHA-256).
+  cycle, forecast hours 0 to 24: 195,600 rows per airport, in
+  `MLwx-stagec/` beside the repo (not tracked, D88.8). Leads 0 to 2 stay
+  in, incomplete, counted (D88.6). The gate passed at EGLC, LFPG and DSM
+  lead 24 (5,861 station-days, exact equality). Script
+  `scripts/session96_stagec_table.py` (`40b63d00...6eee`); meta
+  `data/processed/session96_stagec_dev_table.meta.txt` (every table file's
+  SHA-256; unchanged at session 98b, F140.10).
 - **The rules for build choices (D89).** Three time-ordered folds with
-  expanding training windows, test years 2023-24, 2024-25 and 2025-26 (1
-  August to 31 July; training rows valid before the test year starts;
-  boundary rows in neither, counted) (D89.3). Metric: MAE of the hourly
-  temperature on leads 3 to 24, on the common row set; headline is the
-  unweighted mean of the six airport MAEs (D89.5). A challenger replaces the
-  incumbent only if the headline is lower by more than 1 percent, the airport
-  MAE is lower at 4 or more of 6, and the fold-level MAE is lower in 2 or more
-  of 3 (D89.6). For D82.5's model-structure comparisons the incumbent is
-  D88.4's baseline (D89.7). One choice for the whole curve and every airport
-  (D89.8).
+  expanding training windows, test years 2023-24, 2024-25 and 2025-26
+  (D89.3). Metric: MAE of the hourly temperature on leads 3 to 24, on the
+  common row set; headline is the unweighted mean of the six airport MAEs
+  (D89.5). A challenger replaces the incumbent only if the headline is
+  lower by more than 1 percent, the airport MAE is lower at 4 or more of 6,
+  and the fold-level MAE is lower in 2 or more of 3 (D89.6). For D82.5's
+  model-structure comparisons the incumbent is D88.4's baseline (D89.7).
+  One choice for the whole curve and every airport (D89.8).
 - **The curve's baseline (D88.4), fit and scored (F139).** SPEC 8's
-  `B+D,L,R,T` with the record's settings, column order and complete-case
-  rule, one model per airport, fold, cycle hour and lead 3 to 24 (1,584
-  fits). **The gate passed** (D89.9): the new fitting code reproduced F109's
-  raw GFS and `B+D,L,R,T` MAEs at EGLC, LFPG and DSM exactly, 6 of 6.
-  Build-choice scores, not results (SPEC 2.5): headline MAE raw GFS 1.4617,
-  baseline 1.0498 degrees C; the baseline is below raw GFS at every airport,
-  in every fold and at every airport-lead. Repeatable byte for byte (EGLC).
-  Script `scripts/session97_stagec_cv.py` (`987ab6ba...1f91`); folds, scores
-  and meta in `data/processed/session97_stagec_cv_*`. No model is saved.
+  `B+D,L,R,T` with the record's settings, one model per airport, fold,
+  cycle hour and lead 3 to 24 (1,584 fits). The fitting-code gate passed
+  (D89.9), again at session 98b without the shim (F140.7). Its scores are
+  build-choice scores, not results (SPEC 2.5), and are in F139 only.
+  Script `scripts/session97_stagec_cv.py`
+  (`987ab6ba...1f91`); folds, scores and meta in
+  `data/processed/session97_stagec_cv_*`. No model is saved.
 - **Claim batch (D82.7, F132): EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN.**
   Held-out window 2024-08-01..2026-07-31; looks fixed at stage C's lock.
 - **Not decided (D82.5).** One model per lead with the cycle hour as an
   input, or one model with lead and hour as inputs, each against the
   baseline under D89.6, one at a time (D89.10); the daily maximum read off
   the curve or its own model (its metric is fixed in its own entry first,
-  D89.8); stage C's claim design (bar, looks, lead bands), at the lock. Bias
-  drift follows D81.10(b).
+  D89.8); stage C's claim design (bar, looks, lead bands), at the lock.
+  Bias drift follows D81.10(b).
 - **Open item: MMMX (D83.4).** It reports at scattered minutes, so it has
   almost no usable observations under the 15-minute rule. It needs its own
   handling or to be dropped (a later decision). It stays in the pull.
@@ -158,36 +139,41 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **How to restructure the repository (D90.5) given Step 3's code hits.**
-  The owner decides. Options listed for the review, none chosen: keep
-  SPEC.md, DECISIONS.md, DECISIONS-archive.md and `notes/` where the code
-  reads them and move only the rest; leave copies or links at the old
-  paths (needs its own rule); or edit scripts (ruled out by D80.1, D62.3(a)
-  and D90.4). D90 is in the record and describes the full move.
-- **Session 98's readings** (`notes/session-98-output.txt`): a supplementary
-  search for `"notes"` path components; two indirect hits (session95,
-  session96); D90 appended with the usual `---` separator; "new since F126"
-  measured against commit f10446e; no F140 and no archive move on the stop.
-- **README.md section 8 is stale** on NBM and MOS data (F127.3 committed
-  NBM values and raw MAV responses), yet session 98's prompt carries it
-  over word for word. The owner decides.
-- **A personal path in a live entry.** D84.3 (DECISIONS.md line 3239) holds
-  an absolute path from the owner's machine. It is new since F126. The
-  record is not edited (D76.5, D90.4); reported only.
+- **Session 98b's readings (F140.11), for the owner to confirm.** In
+  brief: `brew` was run by full path (not on the session shell's PATH);
+  two libomp copies load without the shim (Homebrew's and scikit-learn's),
+  and the gate still passed; the session 83 output's SHA-256 is pinned
+  from the committed file, since the record holds none; the figure script
+  was changed twice after its first run (width; its own em-dash check);
+  2022-01 was checked after it was published, so the README does not say
+  every month was checked first; the frozen-script list includes
+  `session77_ksfo_looks.py` and the three stage B scripts; the data credits
+  as written (MAV's own terms not fetched).
+- **RESULTS.md section 7's roadmap paragraph is out of date** (it lists
+  stage C as later work and ends at stage B's pre-registration). Not in
+  this session's scope; reported only.
+- **D72.12 and D90.5 to D90.6** place `PROJECT-INSTRUCTIONS.md` at the
+  root or under `audit/`. They are record entries, not edited; they
+  resolve through D91.4.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D90.2).** As of 2026-10-07 (planning-chat check) there is
-  still no Service Change Notice for GFS v17; the newest SCN listed is SCN
-  26-89 (2 October 2026). EMC's GFSv17 evaluation page gives the
-  implementation as Q1 FY27 (October to December 2026; D84.6). With 30 days'
-  notice the earliest go-live is about 6 November 2026; PNS 26-29's proposed
-  October 2026 date can no longer be met. Re-check at each
-  planning session. The go-live date sets period A's
-  length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
-  to be confirmed against the SCN (D73.4).
+- **GFS v17 (D90.2, D91.7).** As of 2026-10-07 (planning-chat check) there
+  is still no Service Change Notice for GFS v17; the newest SCN listed is
+  SCN 26-89 (2 October 2026). EMC's GFSv17 evaluation page gives the
+  implementation as Q1 FY27 (October to December 2026; D84.6). With 30
+  days' notice the earliest go-live is about 6 November 2026. Re-check at
+  each planning session. The go-live date sets period A's length. PNS
+  26-30's statement that the 0.25 degree GRIB2 files remain is to be
+  confirmed against the SCN (D73.4).
+- **libomp (D90.9, F140.7).** The gate passed, so scripts from session 99
+  on may import lightgbm directly, without the shim. Scripts that import a
+  record script still run its shim, which is harmless. scikit-learn stays
+  pinned.
+- **Later work (D90.12).** A `tests/` folder after stage C's first D82.5
+  comparison; a `src/` package only at stage G. Neither is created empty.
 - **EGLC position note (D81.6).** DWD's cfg places P0478 west of the
   airport; F132.5 confirms the station is 7.69 km away as listed and 2.47 km
   with the sign flipped. This matters only for a later MOSMIX comparison.
@@ -201,8 +187,6 @@ direction decision (D78.1, option (d)).
   publish step's name still describe the old gating; cosmetic, left as is.
 - **Laptop sleep (D86.5).** Long local sessions run with the laptop kept
   awake.
-- **libomp (D90.9).** Not yet checked: session 98 stopped before Step 6.
-  Until it is gated, the loader shim stays the rule.
 - **Stage A/B uncertainties still open.**
   - the v17 go-live date;
   - how complete Open-Meteo's Single Runs archive is for `icon_global`, and
@@ -219,4 +203,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 98's stop at Step 3 (`notes/session-98-output.txt`). The owner decides how the restructure (D90.5) should treat the files the code reads at their current paths (SPEC.md, DECISIONS.md, DECISIONS-archive.md, `notes/`), records that in a new DECISIONS entry, and re-plans session 98 or moves to session 99 (the first of D82.5's alternatives against the baseline, under D89.6). Re-check GFS v17.
+**Next planning session:** Review session 98b. If it passed, the owner commits and pushes and sets the GitHub About box; then plan session 99: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17.

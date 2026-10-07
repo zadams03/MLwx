@@ -47,7 +47,7 @@ except what is written down. So the governing principle is:
 | `DECISIONS-archive.md` | Settled entries moved out to keep the live file slim | Read on demand, by number. |
 | `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; **not** routinely read. |
 | `CLAUDE.md` | Claude Code's execution discipline | Governs sessions, not planning. |
-| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in the repo root | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
+| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
 | Project **memory** | Durable reasoning and preferences (the roadmap itself is SPEC 6 and DECISIONS D72) | Inherited automatically by every chat. |
 
 The **routine read** each session is CLAUDE + SPEC + STATUS + live DECISIONS. Archive and RESULTS

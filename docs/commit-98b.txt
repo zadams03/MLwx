@@ -1,0 +1,31 @@
+Session 98b: repository cleanup for outside readers (D91, F140)
+
+Replaces session 98's stopped restructure. SPEC.md, DECISIONS.md,
+DECISIONS-archive.md and notes/ stay at the root because scripts read
+them there, including stage B's 2026-27 scripts (D91.2). The layout is
+now README-led (D91.3).
+
+- D91 recorded: session 98's stop and readings accepted; D90's layout
+  replaced; the invocation unchanged; README data credits updated, with
+  NBM's terms (D91.5).
+- PROJECT-INSTRUCTIONS.md moved into docs/, byte for byte. CLAUDE.md and
+  the guide's own table updated to the new path.
+- SPEC 6's stage C bullet now points to D88 and D89 (D90.8).
+- libomp: Homebrew 7.0.8, libomp 23.1.3. With the old loader workaround
+  bypassed, session 97's gate reproduced F109's six values exactly and
+  EGLC's scores were byte-equal to the committed file (D90.9, F140).
+  requirements.txt comments updated; package lines unchanged.
+- Root README rewritten: summary, headline figure and table, what the
+  project demonstrates, a Mermaid diagram, status, a repository map,
+  reproducing, data credits. Author line added.
+- New READMEs in scripts/, data/, docs/ and notes/.
+- New figures/ folder: headline MAE chart (F109) and skill with 95%
+  intervals (F125.6), drawn by scripts/session98b_figures.py from
+  committed files, repeatable byte for byte.
+- After review: the skill figure's title shortened to fit, the README's
+  "one look per year" corrected to one look per method per year, and one
+  requirements.txt comment clarified (F140.13).
+
+No model experiment was run and no build choice was made. No script,
+data file or workflow file was edited, moved or renamed. No existing
+DECISIONS entry was edited.

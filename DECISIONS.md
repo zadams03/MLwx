@@ -3944,3 +3944,124 @@ read or scored.
   test suite (the leakage guards and a reproduction of the headline from
   committed data) after stage C's first D82.5 comparison; a `src/` package
   only at stage G. Neither folder is created empty.
+
+---
+
+## 2026-10-07: Session 98b decision: session 98's stop accepted, and the restructure replaced (owner, planning chat)
+
+**D91. Owner decisions, planning chat (after session 98's stop): the stop
+and its readings accepted, the restructure replaced, README section 8, and
+session 98b.** Written at the start of session 98b, before any other edit.
+No 2026-27 value has been read or scored.
+
+- **D91.1 Session 98's stop accepted.** Its reference gate worked as
+  intended. The planning chat had not checked the scripts' own path
+  constants (for example `ROOT / "SPEC.md"` and `ROOT / "notes"`) before
+  proposing D90.5. The owner accepts session 98's five readings
+  (`notes/session-98-output.txt`).
+- **D91.2 What stays at the root, and why.** `SPEC.md`, `DECISIONS.md`,
+  `DECISIONS-archive.md` and `notes/` stay where they are. Scripts read or
+  write them there, including stage B's 2026-27 scripts, which must run
+  unchanged (D80.1, F129.6), and the frozen `session39_sealed_test.py` and
+  `session62_reserved_confirm.py` (D62.3(a)). No copies or links are left
+  at old paths.
+- **D91.3 The layout (replaces D90.5).** One move:
+  `PROJECT-INSTRUCTIONS.md` to `docs/PROJECT-INSTRUCTIONS.md`. No code
+  reads it (session 98, Step 3). Every other file and folder stays where it
+  is. New: a `README.md` in `scripts/`, `data/`, `docs/` and `notes/` (new
+  files only; no existing file there is edited), and a `figures/` folder at
+  the root for the README's figures, drawn by
+  `scripts/session98b_figures.py`. The root README is rewritten.
+- **D91.4 What D91 replaces in D90.** D90.5 (the layout) is replaced by
+  D91.3. D90.6 now applies to one file only: entries written before
+  session 98b that place `PROJECT-INSTRUCTIONS.md` at the root resolve to
+  `docs/PROJECT-INSTRUCTIONS.md`. D90.7 is withdrawn: the invocation keeps
+  its current form, written without a dash: "Read CLAUDE.md, then SPEC.md,
+  STATUS.md, and DECISIONS.md in full. Then carry out the session defined
+  in docs/session-NN.md, staying strictly within its scope. Stop at the
+  end-of-session steps and wait for my review. Do not commit anything."
+  In D90.10, the figures go in `figures/` and the script is
+  `scripts/session98b_figures.py`. D90.1 to D90.4, D90.8, D90.9, D90.10's
+  other rules, D90.11 and D90.12 stand.
+- **D91.5 README section 8 (data credits) is updated, not carried over
+  word for word.** It adds what was committed or published after it was
+  written: the NBM values (F127.3; read from NOAA's NBM archive on AWS,
+  bucket `noaa-nbm-grib2-pds`), the raw GFS MOS (MAV) responses from the
+  IEM archive (F127.3), the IEM observations for 45 further airports
+  (F132.4), and stage C's point values published as Release files (F137,
+  derived from NOAA GFS). NBM's terms (planning-chat check of
+  https://registry.opendata.aws/noaa-nbm, 2026-10-07, not checked by this
+  session): NOAA requests attribution for unaltered NOAA data; it is not
+  permitted to state or imply endorsement by or affiliation with NOAA; and
+  modified NOAA data may not be presented as original, unaltered NOAA data.
+  NBM and NWS MOS leave the "probed only, no data committed" list.
+- **D91.6 The personal path in D84.3** (session 98, Step 2.4) is accepted
+  as it is. The record is not edited (D90.4). It shows only the owner's
+  user name, which the saved outputs already show (F126.2).
+- **D91.7 GFS v17.** Unchanged since D90.2 (same day).
+- **D91.8 Session 98b** records D91, makes D91.3's move, carries out D90.8
+  (the SPEC 6 pointer) and D90.9 (the libomp gate), draws the figures and
+  writes the README files under D90.10, D90.11 and D91.5. F140 records
+  sessions 98 and 98b.
+
+---
+
+## 2026-10-07: Session 98b finding: the planning guide moved, the libomp gate, the figures and the README files
+
+**F140. Sessions 98 and 98b. No model experiment was run and no build choice was made. Session 98b recorded D91, moved `PROJECT-INSTRUCTIONS.md` into `docs/` byte for byte, made the D90.8 pointer edit in SPEC 6, passed the libomp gate with the loader shim bypassed (F109's six values 6 of 6, and EGLC's scores byte-equal), drew two figures, and wrote the root README and a README in `scripts/`, `data/`, `docs/` and `notes/`. Figure script: `scripts/session98b_figures.py` (new; SHA-256 `8afc584abe5b0b538a703e2911d2fc8a14fec8889a30504aa85d4a6d42a47305`). Full real output: `notes/session-98b-output.txt`. Run 2026-10-07. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+**F140.1 Session 98.** It recorded D90, ran its read-only audit, and stopped at Step 3, the reference gate, because scripts read `SPEC.md`, `DECISIONS.md` and files under `notes/` at their current paths. Nothing was moved. Full output: `notes/session-98-output.txt`. No F entry was written then.
+
+**F140.2 Step 0.** `git status --porcelain` showed only `?? docs/session-98b.md`. The last entries were D90 and F139; no D91 or F140 entry existed in either DECISIONS file (the one text match was D90.11 naming F140). SHA-256 equal to session 98's Step 0.3: `scripts/session97_stagec_cv.py` `987ab6ba...1f91`, `scripts/session62_reserved_confirm.py` `9f8af9af...80b4`, `data/processed/session63_reserved_confirm_grid.csv` `0138ba03...4ed3`, `data/processed/session97_stagec_cv_scores.csv` `5604ccd1...9d76`, `.github/workflows/stagec-grib-pull.yml` `804b6d35...02a6`. None of the seven new paths existed. Read: CLAUDE.md, SPEC, STATUS, DECISIONS, README.md, RESULTS.md, PROJECT-INSTRUCTIONS.md, `requirements.txt`, `.gitignore`, `notes/session-98-output.txt`, and the archived F92, F94, D64, D65, D70.6 and F112 to F119 headings where the README files cite them.
+
+**F140.3 Step 1.** D91 was copied with `sed` from `docs/session-98b.md` lines 84 to 139 (between the markers at 83 and 140) into DECISIONS.md lines 3950 to 4005 (separator at 3948), and checked byte-equal with `diff` and `cmp`, before any other edit. Em-dashes in D91: 0.
+
+**F140.4 Step 2.** `grep -rnI "PROJECT-INSTRUCTIONS"` over `scripts/`, `.github/`, `requirements.txt` and `.gitignore`: no hit, as session 98 found. `README`: one hit, `requirements.txt` line 37, a comment, class (b). The quoted component `"figures"` (either quote): no hit. The bare word "figures" appears only in printed text and comments (for example "published figures"), class (b). No (a) hit, so the move went ahead.
+
+**F140.5 Step 3.** `PROJECT-INSTRUCTIONS.md` SHA-256 `bb4166e925f6638a21c74d75ab5dd1edae34a03c1db378bd9676a5aa4f0cb196` before; moved with plain `mv`; `docs/PROJECT-INSTRUCTIONS.md` has the same SHA-256; nothing left at the old path; `git status` shows ` D PROJECT-INSTRUCTIONS.md` and `?? docs/PROJECT-INSTRUCTIONS.md`.
+
+**F140.6 Step 4.** Three lines changed, before and after in the output file. CLAUDE.md line 50: "(repo root)" became "(in `docs/`)"; no other CLAUDE.md line places the file at the root. `docs/PROJECT-INSTRUCTIONS.md` line 50: "Kept in the repo root" became "Kept in docs/"; no other line places it at the root. SPEC 6, stage C bullet: "Its next steps are in DECISIONS D88." became "Its development table and baseline are set in DECISIONS D88, and the rules for its build choices in DECISIONS D89." The next sentence was rewrapped, not changed.
+
+**F140.7 Step 5: libomp (D90.9). The gate passed and the byte check passed.**
+- `brew` was not on the session shell's PATH. Homebrew is at `/opt/homebrew/bin/brew`: `Homebrew 7.0.8`; `brew list --versions libomp`: `libomp 23.1.3`.
+- LightGBM's library: `.venv/lib/python3.12/site-packages/lightgbm/lib/lib_lightgbm.dylib`. `otool -L` lists `@rpath/libomp.dylib` (compatibility version 5.0.0); its rpaths are `/opt/homebrew/opt/libomp/lib` and `/opt/local/lib/libomp`.
+- Without the shim (`env -u DYLD_LIBRARY_PATH MLWX_LIBOMP_PATH_SET=1`, `DYLD_PRINT_LIBRARIES=1`), `import lightgbm` printed `4.7.0` and loaded two copies of libomp: `/opt/homebrew/Cellar/libomp/23.1.3/lib/libomp.dylib` first, then `.venv/.../sklearn/.dylibs/libomp.dylib` (scikit-learn modules were loaded by the import).
+- The gate, shim bypassed (`session97_stagec_cv.py --gate`, 2026-10-07T11:08:55Z, 4.3 s): **6 of 6 equal, exact equality**: EGLC `B+D,L,R,T` 1.0007550363323212 and raw GFS 1.23621978021978; LFPG 1.2368626165917669 and 1.4091397260273972; DSM 1.4122847644111458 and 1.7043452054794521. "GATE PASSED".
+- EGLC `--score`, shim bypassed, into a `mktemp -d` folder (264 fits, 19.8 s): its file (529 lines: the header and 528 rows; 36,888 bytes) is byte-equal to the header plus EGLC's rows of `data/processed/session97_stagec_cv_scores.csv` (`diff` and `cmp` silent; both SHA-256 `38e8295dc422c429c14d0ecb09692032855356deee5ff4c5d71cdfbb1aa0cb65`). The folder was deleted. No score was printed or read.
+- `requirements.txt`: the OpenMP block was rewritten as Step 5.6 says, and the eccodes sentence changed as asked (one comment line rewrapped). Its 29 non-comment lines are byte-identical before and after (`diff` silent).
+
+**F140.8 Step 6: figures. Both made.**
+- `figures/headline_mae.svg` (5,927 bytes, SHA-256 `2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c`): grouped bars, raw GFS and `B+D,L,R,T` MAE at EGLC, LFPG, DSM, YSDU, RNO from the grid file (`raw_mae`, `final_mae`), after its SHA-256 check. The ten printed values equal the grid file's at 4 decimals and the README table's: 1.2362, 1.0008; 1.4091, 1.2369; 1.7043, 1.4123; 1.4897, 1.2643; 1.6135, 1.2742.
+- `figures/skill_intervals.svg` (7,764 bytes, SHA-256 `4075f6c66867606b45caa3e7acc06df8ac7ea9fa0261b4222c01a2fe1ee40982`): made, because every value can be read by the script from a committed file and equals F125.6 at its precision. No data file holds F125's intervals, so the source is the summary table of `notes/session-83-output.txt`, the output F125 cites (reading 4). All ten (skill, lower, upper) triples equal F125.6.
+- Checks: the script ran once; `figures/` was copied to a temporary folder, the originals deleted, the script run again; both SVGs `cmp`-equal to their copies; the copy deleted. A third run into the existing files stopped: "figures/headline_mae.svg exists; figures are written once". Em-dashes in both SVGs and the script: 0.
+
+**F140.9 Step 7: the README files.** Written new: `README.md` (full rewrite, 10 sections), `scripts/README.md`, `data/README.md`, `docs/README.md`, `notes/README.md`. Every number is copied from SPEC, DECISIONS or a committed file and cited. No F139 score appears in any README or figure.
+
+**F140.10 Step 8: final checks.**
+- Relative links in the five README files: 35 checked (one with an anchor), 0 failures.
+- U+2014: 0 in every new file; 0 in the added lines of CLAUDE.md, SPEC.md, DECISIONS.md, requirements.txt, README.md and `docs/PROJECT-INSTRUCTIONS.md` (against HEAD's root copy).
+- `git diff --stat` (before F140 and STATUS): CLAUDE.md 2, DECISIONS.md 59, PROJECT-INSTRUCTIONS.md 204 (deleted), README.md 374, SPEC.md 7, requirements.txt 34; 6 files, 326 insertions, 354 deletions. No tracked file under `scripts/`, `data/`, `docs/`, `notes/` or `.github/` changed.
+- The five Step 0 files: SHA-256 unchanged. `MLwx-stagec/`: the six table files' SHA-256 equal F138.4. `MLwx-pull/` not touched.
+- No new `__pycache__`: every run used `-B`; the existing ignored `scripts/__pycache__` (last changed 2026-10-03) holds no file newer than the session prompt.
+- Root listing (`ls -A`): .DS_Store, .claude, .git, .github, .gitignore, .venv, CLAUDE.md, DECISIONS-archive.md, DECISIONS.md, LICENSE, README.md, RESULTS.md, SPEC.md, STATUS.md, data, docs, figures, notes, requirements.txt, scripts.
+
+**F140.11 Readings made where the prompt is silent (for the owner to confirm).**
+1. `brew` was run by its full path, `/opt/homebrew/bin/brew`, because the session shell's PATH lacks `/opt/homebrew/bin`. libomp was listed, so items 2 to 5 ran.
+2. **Two libomp copies load without the shim** (F140.7): Homebrew's through LightGBM's rpath, and scikit-learn's because the import loads scikit-learn. The gate and the byte check passed with both loaded. Recorded, not acted on. `requirements.txt` says the workaround is harmless when Homebrew's libomp is present, as D90.9 and the prompt word it.
+3. The EGLC file is 529 lines, the header plus 528 rows. F139.5 says "528 rows (with the header)"; the script's own line says "528 rows". Byte-equal either way.
+4. **No SHA-256 of `notes/session-83-output.txt` is in the record.** The figure script pins the committed file's value, `d87afdac94582fb598b97518a0b8004575bb140892f386daf1c934cc1c50fb65` (checked equal to HEAD's copy). The grid file's value `0138ba03...4ed3` is the one F139.1 notes is recorded in `notes/session-85-output.txt`. F109's 4-decimal MAEs and F125.6's values are copied into the script only as check constants.
+5. **The figure script changed twice after its first run.** (a) After viewing a preview, the skill figure was narrowed from 880 to 760 pixels so it reads on narrow screens and matches the headline figure; the SVGs from the first runs (untracked, this session's own output) were deleted and redrawn. (b) The tool that wrote the script turned the escape for U+2014 (backslash, u, 2014) in its own em-dash check into the literal character; it is now `chr(0x2014)`. Step 6.3's checks, reported above, were run on the final script. No drawn value changed.
+6. **The prompt's "each month checked before it was published" does not hold for 2022-01**, which was published before the verify step existed (D84.3, D84.4) and checked afterwards (F134). The README says so.
+7. "A richer method ... passed on a fresh look": F94's look was on the same sealed year the minimal method used. The README says the richer method got "its own single look".
+8. The benchmark bullet adds F127.6's count (the model's MAE lower at 1 of 4 airport-looks) so the word MIXED has its meaning beside it.
+9. The frozen list in `scripts/README.md` adds `session77_ksfo_looks.py` (D70.6) and the three stage B scripts: D80.1 names the two session 87 scripts, and D91.2 names "stage B's 2026-27 scripts", read as including `session86_forward_build.py`.
+10. README section 9: the IEM entry gains one sentence on the 45 further airports; the stage C Release values and NBM are new entries; MAV is a new entry whose own terms "were not fetched" (none are in the record); NBM and NWS MOS leave the "probed only" list (D91.5).
+11. The root README keeps the old disclaimer and adds one line on how to read Dxx, Fxx and "SPEC 8". It has 10 sections; the skill figure sits after the caveats. The Mermaid diagram was not drawn locally (no renderer is installed); GitHub draws it.
+12. `data/README.md` names the two candidate-station samples (YSCB, session 19; BZN, session 25) found among the IEM files.
+
+**F140.12 What this did not do.** No model experiment was run and no build choice was made. No F139 score was read, printed or quoted. Nothing was installed and no network call was made. No existing DECISIONS or archive entry was edited (D91 and F140 appended only). No script, data file or the workflow file was edited, moved or renamed; no existing file in `docs/` or `notes/` was edited except `docs/PROJECT-INSTRUCTIONS.md` after its move, as Step 4 says. `MLwx-stagec/` was only read, by the gate; `MLwx-pull/` was not touched. RESULTS.md, STATUS.md (until the end-of-session overwrite) and `.gitignore` were not edited. The git index was not touched. Nothing was committed and no commit message was written.
+
+**F140.13 Corrections after the owner's review** (`docs/session-98b-correction.md`). Three changes, each reported before and after in `notes/session-98b-output.txt` under "CORRECTION AFTER REVIEW".
+- **The skill figure's title.** In `scripts/session98b_figures.py` the title "Selected-features method: skill with 95% intervals, reserved year 2024-25 (F125.6)" (81 characters, cut off at 760 pixels) became "Skill with 95% intervals, reserved year 2024-25 (F125.6)". Nothing else in the script changed; it computes no text width. Both SVGs were deleted and the script run once: `figures/headline_mae.svg` is again `2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c`, equal to before. Step 6.3's repeat check (copy, delete, run again, `cmp`): both SVGs equal. **New SHA-256, replacing the values given earlier in F140:** script `49a31e717950a6dfbf3e6c0d5b7aa6858ee7694b40fdff696d277782c32d5ddf`; `figures/skill_intervals.svg` `bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe` (7,712 bytes).
+- **"One look per year" in README.md.** The rule is one look per method at each held-out year (the sealed year 2025-26 was looked at once by the minimal method and once by the richer method, F94). Section 1 now says "Each claim came from a single look at held-out data"; section 3's first bullet and section 4's "Discipline" bullet now say "each method looks at each held-out year only once (SPEC 2.4, 5.0)". Other README lines found and left unchanged: README.md line 33 ("Each airport was judged once on the reserved year"), line 169 ("held-out data used once"), and `scripts/README.md` lines 43, 49 and 56 ("one-look sealed test", "its one look", "the one look at the reserved year"); each describes one method's look.
+- **`requirements.txt`.** "scikit-learn is NOT imported by any script." became "No script imports scikit-learn directly, though importing lightgbm loads parts of it (DECISIONS F140.7)." Comment text only; the non-comment lines are byte-identical (`diff` silent).

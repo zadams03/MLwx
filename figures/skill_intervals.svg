@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="440" viewBox="0 0 760 440" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title id="title">Skill with 95% intervals, reserved year 2024-25 (F125.6)</title>
+<desc id="desc">Two dot plots with horizontal 95% interval bars and a line at zero. EGLC: over raw GFS +19.0% [+12.6, +24.2], over persistence +55.0% [+48.5, +61.2]; LFPG: over raw GFS +12.2% [+6.8, +17.6], over persistence +51.0% [+43.0, +57.5]; DSM: over raw GFS +17.1% [+7.4, +27.0], over persistence +65.6% [+60.8, +70.3]; YSDU: over raw GFS +15.1% [+7.9, +22.3], over persistence +51.7% [+44.9, +57.9]; RNO: over raw GFS +21.0% [+13.2, +28.5], over persistence +53.8% [+46.3, +60.4]. Every interval lies above zero. Source DECISIONS F125.6.</desc>
+<rect x="0" y="0" width="760" height="440" fill="#ffffff"/>
+<text x="20.00" y="30.00" font-size="16" text-anchor="start" fill="#1a1a1a" font-weight="bold">Skill with 95% intervals, reserved year 2024-25 (F125.6)</text>
+<text x="20.00" y="52.00" font-size="12" text-anchor="start" fill="#555555" font-weight="normal">Skill = 1 - model MAE / reference MAE. Point: the estimate. Bar: 95% moving-block bootstrap interval (F125.3).</text>
+<text x="255.00" y="78.00" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="bold">Skill over raw GFS (%)</text>
+<line x1="146.25" y1="92.00" x2="146.25" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="146.25" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">0</text>
+<line x1="218.75" y1="92.00" x2="218.75" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="218.75" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">10</text>
+<line x1="291.25" y1="92.00" x2="291.25" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="291.25" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">20</text>
+<line x1="363.75" y1="92.00" x2="363.75" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="363.75" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">30</text>
+<line x1="146.25" y1="92.00" x2="146.25" y2="370.00" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="585.00" y="78.00" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="bold">Skill over persistence (%)</text>
+<line x1="472.22" y1="92.00" x2="472.22" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="472.22" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">0</text>
+<line x1="536.67" y1="92.00" x2="536.67" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="536.67" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">20</text>
+<line x1="601.11" y1="92.00" x2="601.11" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="601.11" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">40</text>
+<line x1="665.56" y1="92.00" x2="665.56" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="665.56" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">60</text>
+<line x1="730.00" y1="92.00" x2="730.00" y2="370.00" stroke="#dddddd" stroke-width="1"/>
+<text x="730.00" y="388.00" font-size="11" text-anchor="middle" fill="#555555" font-weight="normal">80</text>
+<line x1="472.22" y1="92.00" x2="472.22" y2="370.00" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="20.00" y="127.00" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">EGLC</text>
+<text x="20.00" y="142.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">London City</text>
+<line x1="237.60" y1="127.00" x2="321.70" y2="127.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="284.00" cy="127.00" r="5" fill="#1f6fb2"/>
+<text x="284.00" y="117.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+19.0 [+12.6, +24.2]</text>
+<line x1="628.50" y1="127.00" x2="669.42" y2="127.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="649.44" cy="127.00" r="5" fill="#1f6fb2"/>
+<text x="649.44" y="117.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+55.0 [+48.5, +61.2]</text>
+<text x="20.00" y="181.00" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">LFPG</text>
+<text x="20.00" y="196.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">Paris CDG</text>
+<line x1="195.55" y1="181.00" x2="273.85" y2="181.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="234.70" cy="181.00" r="5" fill="#1f6fb2"/>
+<text x="234.70" y="171.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+12.2 [+6.8, +17.6]</text>
+<line x1="610.78" y1="181.00" x2="657.50" y2="181.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="636.56" cy="181.00" r="5" fill="#1f6fb2"/>
+<text x="636.56" y="171.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+51.0 [+43.0, +57.5]</text>
+<text x="20.00" y="235.00" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">DSM</text>
+<text x="20.00" y="250.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">Des Moines</text>
+<line x1="199.90" y1="235.00" x2="342.00" y2="235.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="270.23" cy="235.00" r="5" fill="#1f6fb2"/>
+<text x="270.23" y="225.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+17.1 [+7.4, +27.0]</text>
+<line x1="668.13" y1="235.00" x2="698.74" y2="235.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="683.60" cy="235.00" r="5" fill="#1f6fb2"/>
+<text x="683.60" y="225.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+65.6 [+60.8, +70.3]</text>
+<text x="20.00" y="289.00" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">YSDU</text>
+<text x="20.00" y="304.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">Dubbo</text>
+<line x1="203.53" y1="289.00" x2="307.93" y2="289.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="255.72" cy="289.00" r="5" fill="#1f6fb2"/>
+<text x="255.72" y="279.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+15.1 [+7.9, +22.3]</text>
+<line x1="616.90" y1="289.00" x2="658.79" y2="289.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="638.81" cy="289.00" r="5" fill="#1f6fb2"/>
+<text x="638.81" y="279.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+51.7 [+44.9, +57.9]</text>
+<text x="20.00" y="343.00" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">RNO</text>
+<text x="20.00" y="358.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">Reno</text>
+<line x1="241.95" y1="343.00" x2="352.88" y2="343.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="298.50" cy="343.00" r="5" fill="#1f6fb2"/>
+<text x="298.50" y="333.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+21.0 [+13.2, +28.5]</text>
+<line x1="621.41" y1="343.00" x2="666.84" y2="343.00" stroke="#1f6fb2" stroke-width="3"/>
+<circle cx="645.58" cy="343.00" r="5" fill="#1f6fb2"/>
+<text x="645.58" y="333.00" font-size="11" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+53.8 [+46.3, +60.4]</text>
+<text x="20.00" y="410.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">The intervals describe day-to-day sampling within one year only, and the airports share that year's weather (F125.9).</text>
+<text x="20.00" y="426.00" font-size="11" text-anchor="start" fill="#555555" font-weight="normal">KSFO is not shown (D71.5).</text>
+</svg>

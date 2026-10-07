@@ -754,9 +754,10 @@ side, because both are time-critical.
   forecast hours 0 to 24 first and to 48 later. Written with the
   weather model as a setting. Opened in DECISIONS D81; its design is in
   DECISIONS D82 and D83. Its GRIB pull for forecast hours 0 to 24 is
-  complete and checked (DECISIONS D87, F137). Its next steps are in
-  DECISIONS D88. Its claim is judged on new airports only, drawn by the
-  rule in DECISIONS D82.7.
+  complete and checked (DECISIONS D87, F137). Its development table and
+  baseline are set in DECISIONS D88, and the rules for its build choices
+  in DECISIONS D89. Its claim is judged on new airports only, drawn by
+  the rule in DECISIONS D82.7.
 - **Stage D — correct each other weather model on its own,** on the
   full curve, screening each at a few hours first.
 - **Stage E — blend and stack.** Combine the corrected models, with NBM

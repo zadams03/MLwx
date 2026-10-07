@@ -18,29 +18,35 @@
 # scikit-learn. They are pinned as well so the environment is reproducible
 # exactly, not approximately.
 #
-# scikit-learn is NOT imported by any script. It is here for one reason only:
-# the OpenMP note below.
+# No script imports scikit-learn directly, though importing lightgbm loads
+# parts of it (DECISIONS F140.7). It is here for one reason only: the OpenMP
+# note below.
 #
 # ---------------------------------------------------------------------------
 # OpenMP note (the thing that will trip up anyone setting this up fresh)
 # ---------------------------------------------------------------------------
-# LightGBM's macOS build will not import without the OpenMP runtime library
-# libomp.dylib. It is not part of macOS and pip cannot install it, because it
-# is a system library rather than a Python package. The normal fix is Homebrew:
+# LightGBM on macOS needs the OpenMP library libomp.dylib. It is a system
+# library, not a Python package, so pip cannot install it. The standard fix
+# is Homebrew:
 #
 #     brew install libomp
 #
-# This machine has no Homebrew, so a workaround is used instead: scikit-learn's
-# macOS wheel ships its own copy of libomp.dylib, and the model scripts point
-# the dynamic loader at that copy and restart the interpreter once. That block
-# sits at the top of the modelling scripts, clearly commented (setup steps are
-# also in README.md). It changes nothing about the model - it only lets the
-# library load - and repeat runs were byte-identical (DECISIONS F14, F15, Q16).
+# Older scripts keep a loader workaround from before Homebrew was installed:
+# they point the dynamic loader at the copy of libomp.dylib inside
+# scikit-learn's macOS wheel, then restart the interpreter once. Those
+# scripts are part of the record, so they cannot be edited. The workaround
+# only lets the library load and changes nothing about the model (repeat
+# runs were byte-identical, DECISIONS F14, F15, Q16). It is harmless when
+# Homebrew's libomp is present. Setup steps are also in README.md.
 #
-# So: scikit-learn is pinned here because it is currently the source of
-# libomp.dylib on this machine. If libomp is installed properly, scikit-learn
-# is no longer needed and the workaround block becomes a no-op (it checks
-# whether the file exists before doing anything).
+# What session 98b found (DECISIONS F140): Homebrew 7.0.8 with libomp
+# 23.1.3. With the workaround switched off, the session 97 cross-validation
+# script still reproduced F109's six recorded MAEs exactly (6 of 6), and its
+# EGLC scores were byte-equal to the committed file. So scripts from session
+# 99 on may import lightgbm directly (DECISIONS D90.9).
+#
+# scikit-learn stays pinned for one reason: the older scripts' workaround
+# uses its copy of libomp.dylib.
 
 # --- directly imported ---
 numpy==2.5.2
@@ -61,7 +67,8 @@ narwhals==2.24.0
 # eccodes (added session 36, GRIB build sub-project step 1)
 # ---------------------------------------------------------------------------
 # GRIB2 decoder for the GFS raw-archive feature source (DECISIONS F88/F89).
-# This machine has no Homebrew and no system eccodes/GRIB library, so the
+# When this was set up (session 36), the machine had no Homebrew and no
+# system eccodes/GRIB library, so the
 # usual `pygrib`/`cfgrib` route (which needs a separately-installed eccodes
 # or grib_api C library) was not used. Instead: the official `eccodes` PyPI
 # package now ships a self-contained binary wheel (`eccodeslib`) with the
