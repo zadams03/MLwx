@@ -3,7 +3,32 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 6 October 2026, after session 97._
+_Last updated: 7 October 2026, after session 98 (stopped at its Step 3)._
+
+---
+
+## Session 98 stopped before any file was moved
+
+Session 98 (repository restructure, D90) recorded D90 (DECISIONS.md lines
+3871 to 3946, byte-equal to the prompt), ran its read-only audit, then
+**stopped at Step 3, the reference gate**, as its prompt directs when code
+references a path that would move. Nothing was moved and no other file was
+edited. Full output: `notes/session-98-output.txt`.
+
+- **Why.** Scripts open `SPEC.md` and `DECISIONS.md` at the repo root: 8
+  literal code hits, in `session86_forward_build.py`,
+  `session87_forward_competitors.py`, `session87_forward_score.py`,
+  `session89_stage_c_scoping.py` and `session91_grib_pull.py` (plus
+  `session95_check_release.py` and `session96_stagec_table.py` through
+  imported constants). 36 more write or read files under `notes/` (built as
+  `ROOT / "notes" / ...`), including the frozen `session39_sealed_test.py`
+  and `session62_reserved_confirm.py` and stage B's scoring gate.
+- **Why it matters.** Stage B's 2026-27 scripts must run unchanged (D80.1,
+  F129.7). `session87_forward_score.py` reads DECISIONS.md at the root to
+  check the frozen models before it scores (F129.6); after D90.5's move
+  that check would fail. Frozen scripts are never edited (D62.3(a)).
+- **Not run:** Steps 4 to 9 (moves, path edits, the libomp gate, figures,
+  README files). F140 was not written. No Python was run.
 
 ---
 
@@ -25,8 +50,9 @@ which weather model is corrected, plus a blend, and probabilistic ranges.
 open: its design is set (D82, D83), its f000 to f024 GRIB pull is complete
 and checked (D87, F137), its development table is built and gated (D88,
 F138), D89 fixes the cross-validation rules, and the curve's baseline is
-fit and scored by cross-validation (F139). Its open build choices (D82.5)
-come next, under D89.6. Then stages D to H. New airports are an ongoing
+fit and scored by cross-validation (F139, accepted in D90.1). Its open
+build choices (D82.5) come next, under D89.6; the first moved to session 99
+(D90.3). Then stages D to H. New airports are an ongoing
 track, and pooling is conditional.
 
 **Stage B: the 2026-27 GFS forward test (D73, F122, D77.6, D79), unchanged.**
@@ -132,21 +158,32 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **F139.6's readings.** The owner confirms or changes them. The largest:
-  the record script imports the session-48 module for its own use, and this
-  script never calls its guard (read as D89.4's "not imported here"); pooled
-  MAEs are the mean of the concatenated errors in a stated order; boundary
-  rows are counted whatever their completeness.
+- **How to restructure the repository (D90.5) given Step 3's code hits.**
+  The owner decides. Options listed for the review, none chosen: keep
+  SPEC.md, DECISIONS.md, DECISIONS-archive.md and `notes/` where the code
+  reads them and move only the rest; leave copies or links at the old
+  paths (needs its own rule); or edit scripts (ruled out by D80.1, D62.3(a)
+  and D90.4). D90 is in the record and describes the full move.
+- **Session 98's readings** (`notes/session-98-output.txt`): a supplementary
+  search for `"notes"` path components; two indirect hits (session95,
+  session96); D90 appended with the usual `---` separator; "new since F126"
+  measured against commit f10446e; no F140 and no archive move on the stop.
+- **README.md section 8 is stale** on NBM and MOS data (F127.3 committed
+  NBM values and raw MAV responses), yet session 98's prompt carries it
+  over word for word. The owner decides.
+- **A personal path in a live entry.** D84.3 (DECISIONS.md line 3239) holds
+  an absolute path from the owner's machine. It is new since F126. The
+  record is not edited (D76.5, D90.4); reported only.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D89.2).** As of 2026-10-06 (planning-chat check) there is
+- **GFS v17 (D90.2).** As of 2026-10-07 (planning-chat check) there is
   still no Service Change Notice for GFS v17; the newest SCN listed is SCN
   26-89 (2 October 2026). EMC's GFSv17 evaluation page gives the
   implementation as Q1 FY27 (October to December 2026; D84.6). With 30 days'
-  notice the earliest go-live is about 5 November 2026; PNS 26-29's proposed
+  notice the earliest go-live is about 6 November 2026; PNS 26-29's proposed
   October 2026 date can no longer be met. Re-check at each
   planning session. The go-live date sets period A's
   length. PNS 26-30's statement that the 0.25 degree GRIB2 files remain is
@@ -164,6 +201,8 @@ direction decision (D78.1, option (d)).
   publish step's name still describe the old gating; cosmetic, left as is.
 - **Laptop sleep (D86.5).** Long local sessions run with the laptop kept
   awake.
+- **libomp (D90.9).** Not yet checked: session 98 stopped before Step 6.
+  Until it is gated, the loader shim stays the rule.
 - **Stage A/B uncertainties still open.**
   - the v17 go-live date;
   - how complete Open-Meteo's Single Runs archive is for `icon_global`, and
@@ -180,4 +219,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 97. If it passed, the owner commits and pushes; then plan session 98: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17 (D81.7).
+**Next planning session:** Review session 98's stop at Step 3 (`notes/session-98-output.txt`). The owner decides how the restructure (D90.5) should treat the files the code reads at their current paths (SPEC.md, DECISIONS.md, DECISIONS-archive.md, `notes/`), records that in a new DECISIONS entry, and re-plans session 98 or moves to session 99 (the first of D82.5's alternatives against the baseline, under D89.6). Re-check GFS v17.

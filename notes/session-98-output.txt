@@ -1,0 +1,518 @@
+Session 98 output: repository restructure and cleanup (STOPPED at Step 3)
+Run 2026-10-07 (Europe/London clock 11:46 BST at the final checks). Claude Code.
+No Python was run. No network call. Nothing installed. Nothing committed.
+
+RESULT IN ONE LINE
+Step 3's reference gate found code hits (class (a)): scripts open SPEC.md and
+DECISIONS.md at the repo root, and many scripts read or write files under
+notes/. As the prompt directs, the session stopped before moving anything.
+This file is written to the old location, notes/session-98-output.txt, and
+STATUS.md is overwritten with the stop reason. Steps 4 to 9 were not run.
+
+======================================================================
+STEP 0: start checks (read only)
+======================================================================
+0.1 git status --porcelain
+?? docs/session-98.md
+
+0.2 Last entries D89 and F139. `grep -cE '\*\*(D90|F140)[ .]'`:
+DECISIONS.md:0
+DECISIONS-archive.md:0
+Last entry headings in DECISIONS.md: F139.5, F139.6, F139.7 (F139 last).
+
+0.3 SHA-256 (all equal to the record):
+987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py            (F139: 987ab6ba...1f91, equal)
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py     (D70.2, archive l.15879: equal)
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv (prompt value: equal)
+5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv (F139.4: equal)
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml   (F134 heading and F134.6, full value: equal)
+
+0.4 Paths that must not exist yet:
+absent research
+absent audit
+absent data/README.md
+absent scripts/README.md
+absent scripts/session98_figures.py
+
+0.5 Read in full: CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md (live), README.md,
+RESULTS.md, PROJECT-INSTRUCTIONS.md, requirements.txt, .gitignore. Read from
+DECISIONS-archive.md: F126 (in full), D70 (D70.2, D70.6), and the line that
+records session62_reserved_confirm.py's SHA-256. Cited live entries (D47,
+D48.13 via SPEC, D62, D71.5, D72, D73, F122, F125, D76, F127, D78, D79, F129,
+D80, D82, D83, F137, D88, D89, F139) were read as part of the live file.
+
+======================================================================
+STEP 1: D90 recorded (before any other edit)
+======================================================================
+Extract: docs/session-98.md lines 106 to 181 (between "BEGIN D90" at line 105
+and "END D90" at line 182, markers excluded), copied with sed.
+Appended to DECISIONS.md after a separator ("", "---", "") as earlier entries
+are. DECISIONS.md went from 3,867 to 3,946 lines.
+D90 occupies DECISIONS.md lines 3871 to 3946 (heading at 3871; separator
+"---" at 3869).
+diff (extract vs lines 3871-3946): equal (no output)
+cmp  (extract vs lines 3871-3946): equal (no output)
+Em-dashes (U+2014) in lines 3871-3946: 0
+
+======================================================================
+STEP 2: read-only audit (report only, nothing fixed)
+======================================================================
+== 2.1 git ls-files | wc -l
+    2054
+== git count-objects -vH
+count: 2923
+size: 96.41 MiB
+in-pack: 0
+packs: 0
+size-pack: 0 bytes
+prune-packable: 0
+garbage: 0
+size-garbage: 0 bytes
+== 2.2 clutter
+(clutter matches: 0)
+== 2.3 15 largest tracked files (bytes)
+11771181 data/raw/diagnostics/session76/session76_pull_manifest.csv
+8689302 data/raw/diagnostics/session37/session37_pull_manifest.csv
+7315821 data/raw/diagnostics/session72/session72_pull_manifest.csv
+2315708 data/raw/diagnostics/session40/session40_pull_manifest.csv
+2169066 data/raw/diagnostics/session53/session53_pull_manifest.csv
+2035592 data/raw/diagnostics/session51/session51_pull_manifest.csv
+1582048 data/raw/diagnostics/session76/session76_decoded_point_values.csv
+1545795 data/raw/diagnostics/session49/session49_pull_manifest.csv
+1371759 data/processed/session81_training_set.csv
+989624 data/rebuild/session76b/check_a_rno_decoded_values.csv
+984341 data/raw/diagnostics/session35/ugrd10m_sample.grib2
+982727 DECISIONS-archive.md
+961389 data/raw/diagnostics/session35/vgrd10m_sample.grib2
+954267 data/raw/diagnostics/session55/session55_pull_manifest.csv
+884710 data/raw/diagnostics/session36/gfs_20210326_t12z_f024_tmp2m.grib2
+
+(Above: items 2.1 to 2.3, real output. 2.2's pattern matched .DS_Store,
+__pycache__, *.pyc, .venv, .claude and *.log anywhere in a tracked path.)
+
+2.4 Tracked files outside docs/ and notes/ (1,824 files) with "/Users/" or a
+secret-looking pattern (case-insensitive `token|api_key|password|BEGIN .*
+PRIVATE KEY`). Baseline: F126.2 (session 84, commit f10446e) found "/Users/"
+in 31 files, 30 under notes/ and 1 under docs/, so none outside them.
+
+"/Users/" outside docs/ and notes/:
+  DECISIONS-archive.md:17018  F126.2's own text naming the pattern ("`/Users/`
+      paths: 92 occurrences ..."). Not a path. It entered the archive when F126
+      was moved; it is not a new personal path.
+  DECISIONS.md:3239  D84.3: "to `/Users/zacharyadams/Coding Projects/MLwx-pull/`,
+      outside the repo". NEW since F126 (added by commit 9cdc261, session 92).
+      A real absolute path from the owner's machine, in a live DECISIONS entry.
+      Not edited (the record is not edited, D90.4). Logged as an open question.
+
+Secret-looking patterns outside docs/ and notes/ (per-file counts, then lines):
+  .github/workflows/stagec-grib-pull.yml: 2   NEW since F126 (the file did not
+      exist at f10446e). Lines 35 and 106: `GH_TOKEN: ${{ github.token }}`.
+      This names GitHub's built-in per-job token; no value is in the file.
+  DECISIONS.md: 8   NEW since F126 (at f10446e the live file had 1, F126's own
+      text, now archived). All are prose: l.2851 (F131.11), l.3080 (F132.10),
+      l.3180 (F133.4, "the job token"), l.3217 (F133.11), l.3319 (F134.9),
+      l.3406 (F135.9), l.3493 (F136.9), l.3575 (F137.12): each says no token
+      was used or names the workflow's job token. No value.
+  DECISIONS-archive.md: 3   2 existed at f10446e (l.4 and l.5815, "token
+      cost"); 1 is F126.2's own text (l.17012), moved in with F126. Not new
+      content.
+  scripts/session82_source_probe.py: 5   Same 5 lines as at f10446e (l.79, 84,
+      85, 92, 95: an S3 pagination continuation token). Not new; F126.2's
+      "assignment" hits are three of these lines.
+No "api_key", "password" or "BEGIN ... PRIVATE KEY" hit anywhere outside
+docs/ and notes/. Nothing is classed as a real credential.
+
+2.5 Statements in the current README.md that STATUS or DECISIONS have made
+stale (README not edited; Step 8 would have replaced it):
+  a. Section 7, stage A: lists "a comparison with NWS MOS and the National
+     Blend of Models" without marking it done. F127 recorded it (band MIXED)
+     and D78.1 recorded the direction decision (option (d)).
+  b. Section 7, stage B: says only "pre-registered (D73) and its models are
+     frozen (F122)". The three 2026-27 scripts now exist and passed their
+     gates (F128, F129), and MOSMIX saves were chosen (D81.2), not yet run.
+  c. Section 7, stage C: describes stage C as future work ("an hourly curve,
+     the daily maximum and a 48-hour lead"). It is open (D81.9): design D82
+     and D83, the f000 to f024 pull complete (D87, F137), the development
+     table built and gated (F138), the build-choice rules fixed (D89) and the
+     baseline fitted (F139).
+  d. Section 8, "Probed only, no data committed (F123, F124.4)": it names
+     NOAA NBM and NWS MOS among sources with no committed data. Since then
+     F127.3 committed NBM values (data/processed/session85_competitor_points.csv)
+     and 365 raw MAV responses (data/raw/iem_mos/session85/). Section 8 also
+     says nothing of the stage C GRIB values published as Release files
+     (F137) or the 270 IEM files for 45 new airports (F132.4), though IEM and
+     NOAA GFS are already credited there. NOTE: the prompt's Step 8.1 item 10
+     says to carry section 8 over word for word. Logged as an open question.
+  e. Section 5, "DECISIONS.md ... with numbers such as D76 and F126": both
+     entries are now in DECISIONS-archive.md (minor; the citation still
+     resolves, D46).
+  f. Section 5's layout paths (docs/, notes/, STATUS.md and the others at the
+     root) would only become stale after the D90.5 move, which did not happen.
+
+======================================================================
+STEP 3: the reference gate (before any move). RESULT: STOP.
+======================================================================
+Searched: every tracked file under scripts/ and .github/, plus
+requirements.txt and .gitignore, for the literal strings docs/, notes/,
+SPEC.md, STATUS.md, DECISIONS.md, DECISIONS-archive.md, RESULTS.md,
+PROJECT-INSTRUCTIONS.md (`grep -nIE`).
+  Literal hits: 88, all under scripts/. .github/, requirements.txt and
+  .gitignore: 0 hits.
+
+Because many scripts build their paths as ROOT / "notes" / "..." (no slash
+inside the string), the literal "notes/" search misses them. So a second,
+supplementary search was run for the quoted path components "notes" and
+"docs" (`[\"'](notes|docs)[\"']`): 36 hits, all "notes", all under scripts/.
+Each was traced to its use (Tee(...) for writing output, read_text() or
+open() for reading). This is a reading, made where the prompt is silent
+(reading 1 below).
+
+Classification. (a) code: the path is opened, read, written, hashed, listed
+or passed to a command when the script runs. (b) text: a comment, docstring
+or printed string.
+
+Per-file counts (50 files with any hit):
+scripts/session04_model.py                     literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session05_model.py                     literal (a) 0, literal (b) 3, path-component (a) 1
+scripts/session07_test.py                      literal (a) 0, literal (b) 3, path-component (a) 1
+scripts/session11_model.py                     literal (a) 0, literal (b) 2, path-component (a) 1
+scripts/session13_test.py                      literal (a) 0, literal (b) 5, path-component (a) 1
+scripts/session16_model.py                     literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session18_test.py                      literal (a) 0, literal (b) 3, path-component (a) 1
+scripts/session22_model.py                     literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session24_test.py                      literal (a) 0, literal (b) 4, path-component (a) 1
+scripts/session27_model.py                     literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session29_test.py                      literal (a) 0, literal (b) 4, path-component (a) 1
+scripts/session32_scout.py                     literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session33_cv.py                        literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session38_cloud_diagnostic.py          literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session38_cv.py                        literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session38_join.py                      literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session38_sanity.py                    literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session39_sealed_test.py               literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session41_verify.py                    literal (a) 0, literal (b) 2, path-component (a) 1
+scripts/session46_backtest.py                  literal (a) 0, literal (b) 2, path-component (a) 1
+scripts/session50_e1_experiment.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session52_e2_experiment.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session54_e3_experiment.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session56_e4_experiment.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session58_e5_experiment.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session61_combine_sweep.py             literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session62_reserved_confirm.py          literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session63_join_equivalence_check.py    literal (a) 0, literal (b) 0, path-component (a) 1
+scripts/session63_reserved_year_build.py       literal (a) 0, literal (b) 0, path-component (a) 1
+scripts/session63_wiring_scratch_check.py      literal (a) 0, literal (b) 0, path-component (a) 1
+scripts/session70_grib_manifests.py            literal (a) 0, literal (b) 1, path-component (a) 0
+scripts/session71_ldtr_rebuild.py              literal (a) 0, literal (b) 1, path-component (a) 0
+scripts/session71_sample.py                    literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session72_build.py                     literal (a) 0, literal (b) 2, path-component (a) 0
+scripts/session72_ldtr_pull.py                 literal (a) 0, literal (b) 3, path-component (a) 0
+scripts/session73_compare.py                   literal (a) 0, literal (b) 4, path-component (a) 2
+scripts/session73_fit_score.py                 literal (a) 0, literal (b) 3, path-component (a) 0
+scripts/session75_order_spread.py              literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session76_verify.py                    literal (a) 0, literal (b) 1, path-component (a) 0
+scripts/session76b_cache.py                    literal (a) 0, literal (b) 1, path-component (a) 0
+scripts/session77_ksfo_rehearsal.py            literal (a) 0, literal (b) 1, path-component (a) 1
+scripts/session86_forward_build.py             literal (a) 2, literal (b) 2, path-component (a) 0
+scripts/session87_forward_competitors.py       literal (a) 1, literal (b) 0, path-component (a) 0
+scripts/session87_forward_score.py             literal (a) 2, literal (b) 1, path-component (a) 1
+scripts/session89_stage_c_scoping.py           literal (a) 1, literal (b) 0, path-component (a) 0
+scripts/session90_airport_check.py             literal (a) 0, literal (b) 2, path-component (a) 0
+scripts/session91_grib_pull.py                 literal (a) 2, literal (b) 1, path-component (a) 0
+scripts/session95_check_release.py             literal (a) 0, literal (b) 6, path-component (a) 0
+scripts/session96_stagec_table.py              literal (a) 0, literal (b) 1, path-component (a) 0
+scripts/session97_stagec_cv.py                 literal (a) 0, literal (b) 2, path-component (a) 0
+
+Totals: literal hits (a) 8, literal hits (b) 80, path-component hits (a) 36.
+
+EVERY (a) HIT IN FULL.
+
+(a1) The 8 literal hits: constants naming root files that the script reads.
+scripts/session86_forward_build.py:91:SPEC_FILE = ROOT / "SPEC.md"
+      read at l.229 (load_airports, parses SPEC 3.4), called by --gate (l.884)
+      and --build (l.832).
+scripts/session86_forward_build.py:92:DECISIONS_FILE = ROOT / "DECISIONS.md"
+      read at l.862 (expected_hash_from_decisions) and l.1067 (plumbing: the
+      F122.5 table), both in --gate.
+scripts/session87_forward_competitors.py:68:SPEC_FILE = ROOT / "SPEC.md"
+      read at l.178 (load_spec_airports), called by --gate (l.617) and
+      --fetch (l.683).
+scripts/session87_forward_score.py:74:SPEC_FILE = ROOT / "SPEC.md"
+      read at l.142 (load_spec_cycles), called at l.646.
+scripts/session87_forward_score.py:75:DECISIONS_FILES = [ROOT / "DECISIONS.md", ROOT / "DECISIONS-archive.md"]
+      read at l.351 (read_decisions_text, skips a file that does not exist),
+      used at l.360 to check the frozen F122 model files against F122.5
+      before --gate and --score compute anything (F129.6).
+scripts/session89_stage_c_scoping.py:44:SPEC_FILE = ROOT / "SPEC.md"
+      read at l.87 (load_airports), called at l.319, 533, 664, 979.
+scripts/session91_grib_pull.py:75:SPEC_FILE = ROOT / "SPEC.md"
+      read at l.485 (load_airports, used by --positions, l.573) and hashed as
+      a listed source at l.663.
+scripts/session91_grib_pull.py:76:DECISIONS_FILE = ROOT / "DECISIONS.md"
+      read at l.1169 (--gate: F122.3's training-set SHA-256).
+
+(a2) Indirect code use that the literal search does not show (the path
+constant is defined in another script and imported):
+scripts/session95_check_release.py:73:DECISIONS = p91.DECISIONS_FILE   (read at l.131; F133, F134.1, F135.2, F135.3 values read from DECISIONS.md)
+scripts/session96_stagec_table.py:221, 271, 620: s86.load_airports()   (reads SPEC.md through session86's SPEC_FILE; also p91.load_airports() at l.222)
+  These two files' literal hits are all (b), but both read a moving file
+  when they run.
+
+(a3) The 36 path-component hits: files under notes/ written or read.
+scripts/session04_model.py:105:OUT = ROOT / "notes" / "session-04-check-output.txt"      written by Tee(OUT) l.633
+scripts/session05_model.py:149:OUT = ROOT / "notes" / "session-05-check-output.txt"      Tee l.864
+scripts/session07_test.py:194:OUT = ROOT / "notes" / "session-07-check-output.txt"       Tee l.982
+scripts/session11_model.py:180:OUT = ROOT / "notes" / "session-11-check-output.txt"      Tee l.996
+scripts/session13_test.py:257:OUT = ROOT / "notes" / "session-13-check-output.txt"       Tee l.1312
+scripts/session16_model.py:250:OUT = ROOT / "notes" / "session-16-check-output.txt"      Tee l.1356
+scripts/session18_test.py:306:OUT = ROOT / "notes" / "session-18-check-output.txt"       Tee l.1573
+scripts/session22_model.py:304:OUT = ROOT / "notes" / "session-22-check-output.txt"      Tee l.1395
+scripts/session24_test.py:365:OUT = ROOT / "notes" / "session-24-check-output.txt"       Tee l.1665
+scripts/session27_model.py:364:OUT = ROOT / "notes" / "session-27-check-output.txt"      Tee l.1526
+scripts/session29_test.py:401:OUT = ROOT / "notes" / "session-29-check-output.txt"       Tee l.1734
+scripts/session32_scout.py:140:OUT = ROOT / "notes" / "session-32-check-output.txt"      Tee l.538
+scripts/session33_cv.py:153:OUT = ROOT / "notes" / "session-33-check-output.txt"         Tee l.583
+scripts/session38_cloud_diagnostic.py:47:OUT = ROOT / "notes" / "session-38-cloud-diagnostic-output.txt"  Tee l.119
+scripts/session38_cv.py:147:OUT = ROOT / "notes" / "session-38-cv-output.txt"            Tee l.490
+scripts/session38_join.py:52:OUT = ROOT / "notes" / "session-38-join-output.txt"         Tee l.141
+scripts/session38_sanity.py:81:OUT = ROOT / "notes" / "session-38-sanity-output.txt"     Tee l.150
+scripts/session39_sealed_test.py:153:OUT = ROOT / "notes" / "session40-sealed-test-output.txt"  Tee l.443 (FROZEN script, D62.3(a))
+scripts/session41_verify.py:52:OUT = ROOT / "notes" / "session-41-verify-output.txt"     Tee l.284
+scripts/session46_backtest.py:155:OUT = ROOT / "notes" / "session-46-backtest-output.txt"  Tee l.427
+scripts/session50_e1_experiment.py:129:OUT = ROOT / "notes" / "session-50-e1-experiment-output.txt"  Tee l.421
+scripts/session52_e2_experiment.py:146:OUT = ROOT / "notes" / "session-52-e2-experiment-output.txt"  Tee l.479
+scripts/session54_e3_experiment.py:144:OUT = ROOT / "notes" / "session-54-e3-experiment-output.txt"  Tee l.432
+scripts/session56_e4_experiment.py:160:OUT = ROOT / "notes" / "session-56-e4-experiment-output.txt"  Tee l.472
+scripts/session58_e5_experiment.py:132:OUT = ROOT / "notes" / "session-58-e5-experiment-output.txt"  Tee l.415
+scripts/session61_combine_sweep.py:142:OUT = ROOT / "notes" / "session-61-combine-sweep-output.txt"  Tee l.305
+scripts/session62_reserved_confirm.py:186:OUT_PREFLIGHT = ROOT / "notes" / "session-62-preflight-output.txt"  Tee l.410 (FROZEN script, D62.3(a))
+scripts/session63_join_equivalence_check.py:45:NOTES = ROOT / "notes"                   OUT_LOG = NOTES / ... l.57
+scripts/session63_reserved_year_build.py:76:OUT_LOG = ROOT / "notes" / "session-63-reserved-build-output.txt"  Tee l.416
+scripts/session63_wiring_scratch_check.py:39:NOTES = ROOT / "notes"                     OUT_LOG = NOTES / ... l.72
+scripts/session71_sample.py:23:AUDIT_68A = ROOT / "notes" / "audit-session-68a.md"     read_text l.120
+scripts/session73_compare.py:56:    "confirm_out": os.path.join(ROOT, "notes", "session-64-confirm-output.txt"),  open l.282
+scripts/session73_compare.py:57:    "s72_out": os.path.join(ROOT, "notes", "session-72-output.txt"),              open l.585
+scripts/session75_order_spread.py:70:LOG_PATH = os.path.join(ROOT, "notes", "session-75-output.txt")   exists check l.531
+scripts/session77_ksfo_rehearsal.py:70:LOG_PATH = os.path.join(ROOT, "notes", "session-77-output.txt")  Tee l.651
+scripts/session87_forward_score.py:88:S85_NOTES = ROOT / "notes" / "session-85-output.txt"  read_text l.865 (its --gate)
+
+The 80 literal (b) hits are listed in full in the appendix at the end of
+this file (printed strings such as "This output is saved at notes/...",
+comments and docstrings). Of note: scripts/session73_compare.py:587 holds the
+regex r"(scripts/|data/processed/|notes/)", used to scan text, not to open a
+path; classed (b).
+
+WHY THIS STOPS THE SESSION (facts only; no choice is made here)
+- The prompt: "If any (a) hit exists, stop before moving anything." 8 literal
+  (a) hits exist (44 with the indirect and path-component ones).
+- Under D90.5's layout, SPEC.md and DECISIONS.md (and DECISIONS-archive.md)
+  move into research/ and notes/ becomes audit/outputs/. The scripts above
+  would then read a missing file or write to a new notes/ folder at the root.
+- Several of these scripts are ones the record says must not be edited, or
+  will run later as they are:
+  * session87_forward_competitors.py and session87_forward_score.py: stage B's
+    2026-27 fetch and scoring scripts. D80.1: "Neither script changes;
+    F129.7's SHA-256 values stand." Both read SPEC.md at the root, and the
+    scoring script reads DECISIONS.md (and the archive) at the root to check
+    the frozen models before it scores (F129.6). After the move its
+    read_decisions_text() would return an empty string, so the F122.5 check
+    would fail and --score would not run.
+  * session86_forward_build.py: stage B's 2026-27 build script (`--build`,
+    D78.7, F128.6). It reads SPEC.md at the root (load_airports) and, in
+    --gate, DECISIONS.md.
+  * session39_sealed_test.py and session62_reserved_confirm.py: frozen
+    (D62.3(a)); they write their output under notes/.
+  * session91_grib_pull.py: run by the GitHub Actions workflow (and its
+    `--positions` and `--gate` modes read SPEC.md and DECISIONS.md).
+- The libomp gate in Step 6 (session97_stagec_cv.py --gate and --score) does
+  not read any moving path, so it was not the reason to stop. It was not run,
+  because the prompt stops the session at Step 3.
+
+Options the owner may weigh (listed for the review, not chosen):
+  (i)   keep SPEC.md, DECISIONS.md and DECISIONS-archive.md at the root (and
+        notes/), and move only what no code reads;
+  (ii)  move the files and leave something at the old paths for the code
+        (copies or symbolic links), which changes what "moved byte for
+        byte" means and needs its own rule;
+  (iii) edit the scripts, which D80.1, D62.3(a) and D90.4 rule out.
+  The planning chat may know others.
+
+======================================================================
+STEPS 4 TO 9: NOT RUN (the session stopped at Step 3)
+======================================================================
+No move, no path map, no edit to CLAUDE.md, SPEC.md or
+PROJECT-INSTRUCTIONS.md, no libomp check, no requirements.txt edit, no
+figure script or figure, no README file. F140 was not written (the stop
+instruction names only this output file and STATUS).
+
+======================================================================
+END-OF-SESSION CHECKS (as far as they apply)
+======================================================================
+git status --porcelain (before writing this file and STATUS):
+ M DECISIONS.md
+?? docs/session-98.md
+
+git diff --stat (same moment):
+ DECISIONS.md | 79 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+(79 = the 3 separator lines plus D90's 76 lines.)
+
+SHA-256 of the Step 0 files, re-checked at the end (all unchanged):
+987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+
+__pycache__: `find . -name __pycache__ -not -path './.venv/*'` lists
+scripts/__pycache__. It predates this session (folder last changed
+2026-10-03 18:57; newest file inside from earlier sessions) and is ignored
+(.gitignore:18). No Python was run this session, so none was written.
+
+CONSISTENCY CHECK (CLAUDE.md step 3; report only, nothing fixed)
+Re-read CLAUDE.md, SPEC.md, STATUS.md and DECISIONS.md.
+- Duplicated headings: none in any of the four files.
+- Entry order in DECISIONS.md: D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122
+  F123 F124 F125 D76 D77 F127 D78 F128 D79 F129 D80 F130 D81 F131 D82 F132
+  D83 F133 D84 F134 D85 F135 D86 F136 D87 F137 D88 F138 D89 F139 D90. 39
+  dated headings, all in date order. Nothing out of order.
+- Disagreements found:
+  1. D90.5 to D90.8 and D90.10 describe a restructure that did not happen
+     this session, and D90.5's layout conflicts with code that reads
+     SPEC.md, DECISIONS.md and notes/ at their current paths (Step 3). D90
+     is now in the record (Step 1 ran before the gate, as ordered).
+  2. SPEC 6's stage C bullet still says "Its next steps are in DECISIONS
+     D88." D90.8 asks that it point to D88 and D89. Not edited (Step 5 not
+     reached).
+  3. STATUS.md (before this session's overwrite) listed F139.6's readings as
+     an open question; D90.1 accepts them. STATUS gave GFS v17's earliest
+     go-live as about 5 November 2026; D90.2 now says about 6 November.
+     Both are carried into the new STATUS.
+  4. README.md section 8 is stale on NBM and MOS data (Step 2.5 item d),
+     while the prompt asks for it to be carried word for word.
+  5. A live DECISIONS entry (D84.3) holds an absolute path from the owner's
+     machine (Step 2.4).
+- Live files naming an old path: not applicable; nothing moved.
+
+ARCHIVE STEP (CLAUDE.md step 4)
+Nothing moved. D90 is new and live. F139 is now accepted (D90.1), but D89
+and F139 are needed by the next comparison (D89.6, D89.10) and STATUS cites
+them. F137 and F138 are cited by STATUS. The session stopped, so no further
+judgement was made.
+
+READINGS MADE WHERE THE PROMPT IS SILENT (for the owner to confirm)
+1. Step 3's literal strings miss paths built as ROOT / "notes" / "...". A
+   supplementary search for the quoted components "notes" and "docs" was
+   added and its hits classed (a). The stop does not depend on it: the 8
+   literal (a) hits already stop the session.
+2. Two scripts (session95, session96) read moving files only through
+   another script's constant. They are reported as indirect (a) hits; their
+   literal hits are (b).
+3. D90 was appended with the usual separator ("", "---", "") before its
+   heading, as earlier entries are; the byte check covers the 76 D90 lines.
+4. Step 2.4 counts "new since F126" by comparing with commit f10446e
+   (session 84's commit), since F126 used other patterns.
+5. On the stop, F140 was not written and no archive move was made; only
+   this file and STATUS were written, as Step 3 says.
+
+WHAT THIS SESSION DID NOT DO
+No model experiment was run and no build choice was made. No Python was
+run. No network call. Nothing installed. No file moved or renamed. No
+script, data file or the workflow edited. No existing DECISIONS or archive
+entry edited (D90 appended only). SPEC.md, RESULTS.md, README.md,
+CLAUDE.md, PROJECT-INSTRUCTIONS.md, requirements.txt and .gitignore not
+edited. No file in docs/ edited; the only new file in notes/ is this one.
+MLwx-stagec/ and MLwx-pull/ not touched. Nothing committed, added or
+pushed; no commit message written.
+
+======================================================================
+APPENDIX: every literal hit from Step 3 (88 lines, cut at 240 characters)
+======================================================================
+scripts/session04_model.py:653:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session05_model.py:126:# Session 04's published results, copied from notes/session-04-check-output.txt
+scripts/session05_model.py:778:    print("Session 04's figures are quoted from notes/session-04-check-output.txt")
+scripts/session05_model.py:890:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session07_test.py:166:# Session 05's published validation figures, from notes/session-05-check-output
+scripts/session07_test.py:905:    print("notes/session-05-check-output.txt and DECISIONS F15.")
+scripts/session07_test.py:1016:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session11_model.py:917:    print("quoted from notes/session-05-check-output.txt. The two airports are")
+scripts/session11_model.py:1032:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session13_test.py:199:# notes/session-11-check-output.txt and DECISIONS F29. Quoted for the
+scripts/session13_test.py:225:# notes/session-07-check-output.txt. Quoted for PART F. It is a different
+scripts/session13_test.py:1127:    print("notes/session-11-check-output.txt and DECISIONS F29.")
+scripts/session13_test.py:1207:    print("from notes/session-07-check-output.txt.")
+scripts/session13_test.py:1359:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session16_model.py:1396:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session18_test.py:210:# notes/session-16-check-output.txt and DECISIONS F45. Quoted for the
+scripts/session18_test.py:1280:    print("notes/session-16-check-output.txt and DECISIONS F45.")
+scripts/session18_test.py:1626:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session22_model.py:1434:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session24_test.py:236:# notes/session-22-check-output.txt and DECISIONS F62. Quoted for the
+scripts/session24_test.py:1355:    print("notes/session-22-check-output.txt and DECISIONS F62.")
+scripts/session24_test.py:1428:    print("    scale, are in notes/session-22-check-output.txt.")
+scripts/session24_test.py:1719:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session27_model.py:1566:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session29_test.py:243:# notes/session-27-check-output.txt and DECISIONS F78-F81. Quoted for the
+scripts/session29_test.py:1389:    print("notes/session-27-check-output.txt and DECISIONS F80.")
+scripts/session29_test.py:1469:    print("    scale, are in notes/session-27-check-output.txt.")
+scripts/session29_test.py:1790:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session32_scout.py:565:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session33_cv.py:610:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session38_cloud_diagnostic.py:277:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session38_cv.py:536:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session38_join.py:226:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session38_sanity.py:255:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session39_sealed_test.py:494:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session41_verify.py:55:# files (notes/session-07/13/24-check-output.txt), quoted here so this
+scripts/session41_verify.py:331:    print(f"\nThis output is saved at notes/{OUT.name}")
+scripts/session46_backtest.py:21:(sessions 36-38, F90/F91, now DECISIONS-archive.md; SPEC 7.2) pulled cloud
+scripts/session46_backtest.py:564:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session50_e1_experiment.py:579:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session52_e2_experiment.py:687:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session54_e3_experiment.py:643:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session56_e4_experiment.py:703:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session58_e5_experiment.py:634:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session61_combine_sweep.py:865:    print(f"This output is saved at notes/{OUT.name}")
+scripts/session62_reserved_confirm.py:638:    print(f"This output is saved at notes/{OUT_PREFLIGHT.name}")
+scripts/session70_grib_manifests.py:46:# Counts recorded in the archive. Copied from DECISIONS-archive.md only.
+scripts/session71_ldtr_rebuild.py:50:# notes/session-71-output.txt.
+scripts/session71_sample.py:6:The sample is audit 68a's own pre-registered rule (notes/audit-session-68a.md
+scripts/session72_build.py:4:Offline. Written from SPEC.md, DECISIONS.md and DECISIONS-archive.md only,
+scripts/session72_build.py:23:notes/session-72-output.txt (Step 1). Gap numbers (G1..G13) refer to it.
+scripts/session72_ldtr_pull.py:3:Clean-room build (DECISIONS D64.3). Written from SPEC.md, DECISIONS.md and
+scripts/session72_ldtr_pull.py:4:DECISIONS-archive.md only. It imports no other project script.
+scripts/session72_ldtr_pull.py:6:What it pulls (DECISIONS D64.6; recipe in notes/session-72-output.txt):
+scripts/session73_compare.py:3:session 73 code that opens scripts/, data/processed/ or notes/.
+scripts/session73_compare.py:583:          "notes/session-72-output.txt)")
+scripts/session73_compare.py:587:            if re.search(r"(scripts/|data/processed/|notes/)", ln)]
+scripts/session73_compare.py:590:    print("  lines naming scripts/, data/processed/ or notes/: %d" % len(hits))
+scripts/session73_fit_score.py:3:Written from the docs alone (CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md,
+scripts/session73_fit_score.py:4:DECISIONS-archive.md) and the session 72 rebuild tables. It imports no other
+scripts/session73_fit_score.py:5:project script and reads nothing under scripts/, data/processed/ or notes/.
+scripts/session75_order_spread.py:40:item 5). Printed output is appended to notes/session-75-output.txt.
+scripts/session76_verify.py:7:What it does (docs/session-76.md, Step 2; F66 is the pattern):
+scripts/session76b_cache.py:2:for session 76's discarded raw messages (docs/session-76b.md amendment,
+scripts/session77_ksfo_rehearsal.py:40:to notes/session-77-output.txt.
+scripts/session86_forward_build.py:91:SPEC_FILE = ROOT / "SPEC.md"
+scripts/session86_forward_build.py:92:DECISIONS_FILE = ROOT / "DECISIONS.md"
+scripts/session86_forward_build.py:864:        raise SystemExit(f"STOP: could not find {pattern} in DECISIONS.md")
+scripts/session86_forward_build.py:1064:    table in DECISIONS.md) and against manifest.json first. No error is computed
+scripts/session87_forward_competitors.py:68:SPEC_FILE = ROOT / "SPEC.md"
+scripts/session87_forward_score.py:74:SPEC_FILE = ROOT / "SPEC.md"
+scripts/session87_forward_score.py:75:DECISIONS_FILES = [ROOT / "DECISIONS.md", ROOT / "DECISIONS-archive.md"]
+scripts/session87_forward_score.py:356:    DECISIONS.md) and against manifest.json, then loads the boosters. Returns
+scripts/session89_stage_c_scoping.py:44:SPEC_FILE = ROOT / "SPEC.md"
+scripts/session90_airport_check.py:4:This is DECISIONS D82's Step 3 and Step 4 (docs/session-90.md). It has two
+scripts/session90_airport_check.py:16:Hard limits (docs/session-90.md):
+scripts/session91_grib_pull.py:75:SPEC_FILE = ROOT / "SPEC.md"
+scripts/session91_grib_pull.py:76:DECISIONS_FILE = ROOT / "DECISIONS.md"
+scripts/session91_grib_pull.py:674:            "              longitude, read from SPEC.md by station code; the other 45: IEM's latitude and longitude",
+scripts/session95_check_release.py:135:    """F133's final pull-script SHA-256 and F136's, read from DECISIONS.md."""
+scripts/session95_check_release.py:140:        raise Stop("F133's or F136's pull-script SHA-256 not found in DECISIONS.md")
+scripts/session95_check_release.py:151:        raise Stop(f"F134.1's three files not found in DECISIONS.md: {sorted(out)}")
+scripts/session95_check_release.py:159:        raise Stop("F135.2's totals not found in DECISIONS.md")
+scripts/session95_check_release.py:165:    """F135.3's broken files, read from DECISIONS.md: {cycle: [fh, ...]}."""
+scripts/session95_check_release.py:771:    print(f"F135.3's broken files (read from DECISIONS.md): "
+scripts/session96_stagec_table.py:781:        f"  SPEC.md section 3.4 and the params CSVs, parsed by session86_forward_build.load_airports:",
+scripts/session97_stagec_cv.py:79:GRID_SHA256 = "0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3"   # notes/session-85-output.txt
+scripts/session97_stagec_cv.py:130:# F109 (DECISIONS-archive.md): n_test per airport, and F122.4's training rows.

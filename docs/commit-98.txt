@@ -1,0 +1,28 @@
+Session 98: D90 recorded; restructure stopped at the reference gate
+
+Session 98 was planned as a repository restructure for outside readers
+(D90): move the record files into research/ and audit/, rewrite the
+README, add folder READMEs and figures, and gate the libomp question.
+
+D90 was recorded first, byte-equal to the prompt. The read-only audit
+ran (no tracked clutter; 2,054 tracked files; one new personal path,
+in D84.3; no credential anywhere). Then Step 3, the reference gate,
+found code that reads paths the move would change: 8 direct reads of
+SPEC.md and DECISIONS.md at the root (stage B's 2026-27 build, fetch
+and scoring scripts among them, which must run unchanged, D80.1), two
+indirect ones, and 36 reads or writes under notes/, including the
+frozen session39 and session62 scripts. As its prompt directs, the
+session stopped before moving anything.
+
+Nothing was moved, and no script, data file, README, SPEC or CLAUDE.md
+was edited. The libomp gate, figures and README work were not run.
+Stage B is unaffected.
+
+The gate worked as intended: the planning chat had not checked the
+scripts' own path constants before proposing the layout. D90.5 to
+D90.8 and D90.10 describe that layout; a later entry records what
+replaces them. D90.1 to D90.4, D90.9, D90.11 and D90.12 stand.
+
+Changed: DECISIONS.md (D90 appended), STATUS.md (overwritten with the
+stop), notes/session-98-output.txt (new), docs/session-98.md (the
+prompt), docs/commit-98.txt (this message).

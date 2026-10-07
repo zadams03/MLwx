@@ -3865,3 +3865,82 @@ Headline at full precision: raw GFS 1.4616990883475995, baseline 1.0497775016050
 10. Output files are written once and refused if present (SPEC 8.7 item 5). Bytecode writing was turned off for every run, so no `__pycache__` was written.
 
 **F139.7 What this did not do.** No network. No build choice: D89.6's rule was not applied, and no setting, feature, parameter or structure was changed, tuned or selected; only D88.4's baseline was fit, with the record's settings. No model was saved, and `data/models/` was not touched. Nothing from 2026-27: no row valid after 2026-07-31T23:00 was read or scored. No non-development airport's data was read. `MLwx-stagec/` and `MLwx-pull/` unchanged (SHA-256 checked at the end). No existing script edited. Nothing installed. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-07: Session 98 decision: F139 accepted, GFS v17, and the repository restructure (owner, planning chat)
+
+**D90. Owner decisions, planning chat (after session 97): F139 accepted,
+GFS v17, the session order, and the repository restructure.** Written at
+the start of session 98, before any other edit. No 2026-27 value has been
+read or scored.
+
+- **D90.1 F139 accepted.** The owner accepts F139 and all ten F139.6
+  readings. D89.4 is clarified: "not imported here" means that
+  `scripts/session97_stagec_cv.py` never imports or calls the session-48
+  reserved-year guard itself. The record script it imports,
+  `scripts/session62_reserved_confirm.py`, loads the session-48 module at
+  load time for its own use, as F139.6.1 reads.
+- **D90.2 GFS v17 (planning-chat check of the NWS notices page,
+  2026-10-07, not checked by this session).** Still no Service Change
+  Notice for GFS v17. The newest SCN listed is still SCN 26-89 (2 October
+  2026). With 30 days' notice the earliest go-live is now about 6 November
+  2026.
+- **D90.3 Session order.** Session 98 is a repository restructure and
+  cleanup for outside readers. The first of D82.5's alternatives against
+  the baseline (D89.10) moves to session 99. Nothing else in D89 changes.
+  The hold rule (D73.8) is unchanged.
+- **D90.4 Purpose and limits.** The public repository should read well to
+  an outside reviewer without changing the work or the record. No existing
+  DECISIONS or archive entry is edited. No file of the working record
+  (session prompts, commit messages, saved outputs, audits) is edited. No
+  script, data file or the workflow file is edited, moved or renamed. Git
+  history is not rewritten. Files that move are moved byte for byte.
+- **D90.5 The layout.** The root keeps `README.md`, `LICENSE`,
+  `requirements.txt`, `CLAUDE.md` (Claude Code reads it from the root),
+  `.gitignore`, `.github/`, `scripts/` and `data/`. `scripts/` and `data/`
+  stay because the code depends on their paths. `research/` holds
+  `SPEC.md`, `RESULTS.md`, `DECISIONS.md`, `archive/DECISIONS-archive.md`
+  and `figures/`. `audit/` holds `STATUS.md`, `PROJECT-INSTRUCTIONS.md`,
+  `sessions/` (formerly `docs/`) and `outputs/` (formerly `notes/`).
+  `audit/session98_path_map.csv` lists every moved tracked file's old path,
+  new path and SHA-256. Each of `research/`, `audit/`, `scripts/` and
+  `data/` gets a short `README.md` that explains the folder.
+- **D90.6 Citations.** Entries written before session 98 cite the old
+  paths (for example `notes/session-85-output.txt`, `docs/session-97.md`,
+  or a bare `STATUS.md`). They are not edited; they resolve through D90.5's
+  path map. From session 98 on, new text cites the new paths. The live
+  files `CLAUDE.md`, `PROJECT-INSTRUCTIONS.md`, `SPEC.md` and `STATUS.md`
+  have their path references updated in session 98, with no other change
+  except D90.8.
+- **D90.7 The session invocation from session 99:** "Read CLAUDE.md, then
+  research/SPEC.md, audit/STATUS.md, and research/DECISIONS.md in full.
+  Then carry out the session defined in audit/sessions/session-NN.md,
+  staying strictly within its scope. Stop at the end-of-session steps and
+  wait for my review. Do not commit anything."
+- **D90.8 SPEC 6.** Stage C's bullet points to D88 for the development
+  table and baseline and to D89 for the rules for its build choices.
+- **D90.9 libomp.** The owner installed Homebrew (version 7.0.8) and found
+  that lightgbm 4.7.0 imports in a fresh interpreter with no loader shim
+  (owner's terminal, 2026-10-07). Session 98 records which libomp library
+  is loaded and gates it: with the shim bypassed, `session97_stagec_cv.py
+  --gate` must reproduce F109's six values exactly, and its EGLC `--score`
+  must be byte-equal to EGLC's committed rows. If both pass, scripts from
+  session 99 on may import lightgbm directly, without the shim. Scripts
+  that import a record script still run that script's shim, which is
+  harmless. scikit-learn stays pinned, because the frozen scripts' shim
+  uses its copy of libomp. If Homebrew's libomp is absent or the gate fails,
+  the shim stays the rule and the README and `requirements.txt` only
+  document it. The session installs nothing.
+- **D90.10 Reader-facing files.** `README.md` is rewritten for outside
+  readers. Figures in `research/figures/` are drawn by
+  `scripts/session98_figures.py` (Python standard library only) from
+  committed files only. Every number in a README or figure is copied from
+  the record and cited. No build-choice score is quoted (SPEC 2.5). The
+  README ends with the author's name, Zachary Adams.
+- **D90.11 Writing rule.** No em-dash in any new text (D76.6), including
+  the README files, figure text, D90, F140, STATUS and commit messages.
+- **D90.12 Later work, not this session.** A `tests/` folder with a real
+  test suite (the leakage guards and a reproduction of the headline from
+  committed data) after stage C's first D82.5 comparison; a `src/` package
+  only at stage G. Neither folder is created empty.
