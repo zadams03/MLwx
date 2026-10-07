@@ -1,0 +1,25 @@
+Session 98c: docs/ split into sessions/ and commits/ (D92, F141)
+
+docs/ held about 150 files in one flat list. Session prompts now live in
+docs/sessions/ and commit messages in docs/commits/. README.md,
+PROJECT-INSTRUCTIONS.md and HANDOVER-richer-features.md stay at the top
+of docs/ (D92.2).
+
+- D92 recorded: F140 accepted with its readings and corrections; the new
+  docs/ layout; old citations of docs/session-NN.md and
+  docs/commit-NN.txt resolve to the same file name in the new folders
+  (D92.3); from session 99 the invocation points to
+  docs/sessions/session-NN.md and commits use
+  docs/commits/commit-NN.txt (D92.4); notes/ stays flat (D92.5).
+- Reference re-check: no script's code reads docs/ (5 docstring
+  mentions only).
+- 105 session prompts and 25 commit messages moved byte for byte,
+  SHA-256 equal before and after for all 130 files.
+- Paths updated in CLAUDE.md, docs/PROJECT-INSTRUCTIONS.md (which now
+  also states the invocation), and the docs/, notes/ and scripts/
+  READMEs. 39 relative links checked, 0 failures.
+
+No model experiment was run and no build choice was made. No script,
+data file or workflow file was edited, moved or renamed. No existing
+DECISIONS entry, session prompt, commit message or saved output was
+edited.

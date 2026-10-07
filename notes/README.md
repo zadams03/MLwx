@@ -7,7 +7,7 @@ in the record can be traced to what a script printed.
   example `session-07-check-output.txt` or
   `session-50-e1-experiment-output.txt`). Each DECISIONS finding names the
   file that holds its full output. The prompt for session NN is
-  `session-NN.md` in [../docs/](../docs/README.md).
+  `session-NN.md` in [../docs/sessions/](../docs/sessions/).
 - **Audit reports:** `audit-session-*.md`, the four audit reports written
   in sessions 66 to 68b and triaged in DECISIONS D62.
 - **Other records** that DECISIONS names, such as

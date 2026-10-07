@@ -4065,3 +4065,78 @@ No 2026-27 value has been read or scored.
 - **The skill figure's title.** In `scripts/session98b_figures.py` the title "Selected-features method: skill with 95% intervals, reserved year 2024-25 (F125.6)" (81 characters, cut off at 760 pixels) became "Skill with 95% intervals, reserved year 2024-25 (F125.6)". Nothing else in the script changed; it computes no text width. Both SVGs were deleted and the script run once: `figures/headline_mae.svg` is again `2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c`, equal to before. Step 6.3's repeat check (copy, delete, run again, `cmp`): both SVGs equal. **New SHA-256, replacing the values given earlier in F140:** script `49a31e717950a6dfbf3e6c0d5b7aa6858ee7694b40fdff696d277782c32d5ddf`; `figures/skill_intervals.svg` `bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe` (7,712 bytes).
 - **"One look per year" in README.md.** The rule is one look per method at each held-out year (the sealed year 2025-26 was looked at once by the minimal method and once by the richer method, F94). Section 1 now says "Each claim came from a single look at held-out data"; section 3's first bullet and section 4's "Discipline" bullet now say "each method looks at each held-out year only once (SPEC 2.4, 5.0)". Other README lines found and left unchanged: README.md line 33 ("Each airport was judged once on the reserved year"), line 169 ("held-out data used once"), and `scripts/README.md` lines 43, 49 and 56 ("one-look sealed test", "its one look", "the one look at the reserved year"); each describes one method's look.
 - **`requirements.txt`.** "scikit-learn is NOT imported by any script." became "No script imports scikit-learn directly, though importing lightgbm loads parts of it (DECISIONS F140.7)." Comment text only; the non-comment lines are byte-identical (`diff` silent).
+
+---
+
+## 2026-10-07: Session 98c decision: F140 accepted, and docs/ split into sessions/ and commits/ (owner, planning chat)
+
+**D92. Owner decisions, planning chat (after session 98b): F140 accepted,
+and docs/ split into sessions/ and commits/.** Written at the start of
+session 98c, before any other edit. No 2026-27 value has been read or
+scored.
+
+- **D92.1 F140 accepted,** with its twelve readings (F140.11) and the
+  corrections after review (F140.13).
+- **D92.2 The layout of docs/.** Session prompts, including correction
+  files (`session-*.md`), go in `docs/sessions/`. Commit messages
+  (`commit-*.txt`) go in `docs/commits/`. `README.md`,
+  `PROJECT-INSTRUCTIONS.md` and `HANDOVER-richer-features.md` stay at the
+  top of `docs/`. File names do not change. No code reads `docs/`
+  (session 98, Step 3; re-checked in session 98c).
+- **D92.3 Citations.** Entries written before session 98c that cite
+  `docs/session-NN.md` or `docs/commit-NN.txt` resolve to the same file
+  name under `docs/sessions/` or `docs/commits/`. They are not edited.
+  Script docstrings that name a prompt under `docs/` resolve the same way.
+- **D92.4 The invocation and commit command from session 99.** The
+  invocation: "Read CLAUDE.md, then SPEC.md, STATUS.md, and DECISIONS.md
+  in full. Then carry out the session defined in
+  docs/sessions/session-NN.md, staying strictly within its scope. Stop at
+  the end-of-session steps and wait for my review. Do not commit
+  anything." The commit command: `git commit -F
+  docs/commits/commit-NN.txt`. This replaces D91.4's invocation. The
+  planning chat writes session prompts to `docs/sessions/` and commit
+  messages to `docs/commits/`.
+- **D92.5 notes/ stays flat,** because scripts write there by fixed names
+  (D91.2).
+- **D92.6 GFS v17.** Unchanged since D90.2 (same day).
+
+---
+
+## 2026-10-07: Session 98c finding: docs/ split into sessions/ and commits/
+
+**F141. Session 98c. No model experiment was run and no build choice was made. D92 was recorded first. The reference re-check found no code that reads `docs/`. Every session prompt (105 files) moved to `docs/sessions/` and every commit message (25 files) to `docs/commits/`, with plain `mv`, byte for byte (130 of 130 SHA-256 equal, 0 mismatches). The paths that live files give for them were updated in `CLAUDE.md`, `docs/PROJECT-INSTRUCTIONS.md`, `docs/README.md`, `notes/README.md` and `scripts/README.md`. No script was written or run. Full real output, with every move listed: `notes/session-98c-output.txt`. Run 2026-10-07.**
+
+**F141.1 Step 0.** `git status --porcelain` showed only `?? docs/session-98c.md`. The last decision entry was D91 and the last finding F140 (with F140.13); no D92 or F141 entry existed in either DECISIONS file (the archive's highest are D75 and F126). `docs/sessions/` and `docs/commits/` did not exist. SHA-256 equal to F140.2: `scripts/session97_stagec_cv.py` `987ab6ba...1f91`, `scripts/session62_reserved_confirm.py` `9f8af9af...80b4`, `data/processed/session63_reserved_confirm_grid.csv` `0138ba03...4ed3`, `data/processed/session97_stagec_cv_scores.csv` `5604ccd1...9d76`, `.github/workflows/stagec-grib-pull.yml` `804b6d35...02a6`. `docs/` held 134 entries: 104 tracked `session-*.md`, 25 tracked `commit-*.txt`, the untracked `session-98c.md`, `README.md`, `PROJECT-INSTRUCTIONS.md`, `HANDOVER-richer-features.md` and `.DS_Store` (ignored by git); no other file and no subfolder. Read: CLAUDE.md, SPEC, STATUS, DECISIONS, `docs/PROJECT-INSTRUCTIONS.md`, `README.md`, `docs/README.md`, `notes/README.md`, `scripts/README.md` and `data/README.md`.
+
+**F141.2 Step 1.** D92 was copied with `sed` from `docs/session-98c.md` lines 74 to 104 (between the markers at 73 and 105) into DECISIONS.md lines 4071 to 4101 (separator at 4069), and checked byte-equal with `diff` and `cmp`, before any other edit. Em-dashes in D92: 0.
+
+**F141.3 Step 2.** `grep -rnI "docs/"` over `scripts/`, `.github/`, `requirements.txt` and `.gitignore`: five hits, all class (b), text. Four are in module docstrings: `session76_verify.py` line 7 (docstring closes at line 22), `session76b_cache.py` line 2 (closes at 13), `session90_airport_check.py` lines 4 and 16 (closes at 27). The fifth is `scripts/README.md` line 6, a reader file. The quoted component `"docs"` or `'docs'`: no hit. No (a) hit, so the moves went ahead.
+
+**F141.4 Step 3.** SHA-256 recorded before the move: 105 `docs/session-*.md` (104 tracked and `session-98c.md`) and 25 `docs/commit-*.txt`. After `mkdir` and plain `mv`: 105 of 105 and 25 of 25 equal at the new paths, 0 mismatches; 0 files left at any old path. `ls -A docs`: `.DS_Store`, `HANDOVER-richer-features.md`, `PROJECT-INSTRUCTIONS.md`, `README.md`, `commits`, `sessions`. `git status --porcelain`: 129 tracked old paths ` D` (104 plus 25), `?? docs/commits/` and `?? docs/sessions/`, ` M DECISIONS.md` (D92), and nothing under `scripts/`, `data/`, `notes/` or `.github/`. Every move is listed as old path, new path and SHA-256 in the output file.
+
+**F141.5 Step 4.** Eleven lines changed and one paragraph added; every before and after pair is in the output file.
+- `CLAUDE.md`: lines 104 and 105, `docs/commit-NN.txt` became `docs/commits/commit-NN.txt` (both places); line 132, "the `docs/` folder" became "the `docs/sessions/` folder".
+- `docs/PROJECT-INSTRUCTIONS.md`: section 1 (line 33), section 4 item 1 (line 76), and section 8 (lines 158 and 161 after the edit), as the prompt gives them; the Filesystem sentence (line 78) is unchanged. The D92.4 invocation paragraph was added at the end of section 4 (lines 90 to 93).
+- `docs/README.md`: one line above the loop naming the two subfolders, with "(D92.2)"; loop item 1 now gives `sessions/session-NN.md` and item 3 `commits/commit-NN.txt`, each linked to its folder. The rest is unchanged.
+- `notes/README.md` line 10 and `scripts/README.md` line 6: the link `[../docs/](../docs/README.md)` became `[../docs/sessions/](../docs/sessions/)`.
+- Step 4.6 search for `docs/session-` and `docs/commit-` in `README.md`, `SPEC.md`, `RESULTS.md`, `data/README.md`, `STATUS.md` and the five files above, after the edits: no hit. Two other `docs/` mentions in the root README name the folder as a whole, not a file in it: line 219 (the map row, kept as the prompt says) and line 286 ("[docs/](docs/README.md) (what each session was asked to do)"). Both are still true; neither was changed.
+
+**F141.6 Step 5.**
+- Relative links in `README.md`, `docs/README.md`, `notes/README.md`, `scripts/README.md` and `data/README.md`: 39 checked (one with an anchor), 0 failures. F140.10 counted 35; the four new ones are in `docs/README.md`.
+- U+2014 in added lines: 0 in `CLAUDE.md`, `docs/README.md`, `notes/README.md`, `scripts/README.md` and `DECISIONS.md`. In `docs/PROJECT-INSTRUCTIONS.md` one added line holds one: line 76, where only the path changed and the dash was already in the line (reading 2). D92: 0.
+- `git status --porcelain --untracked-files=all` (before F141, STATUS and the output file): 265 lines, 129 ` D` (the old paths), 130 `??` (the 105 and 25 moved files), and ` M` on exactly `CLAUDE.md`, `DECISIONS.md`, `docs/PROJECT-INSTRUCTIONS.md`, `docs/README.md`, `notes/README.md`, `scripts/README.md`. `git diff --stat` on those six: 54 insertions, 11 deletions (CLAUDE.md 6, DECISIONS.md 34, PROJECT-INSTRUCTIONS 13, docs/README 8, notes/README 2, scripts/README 2 changed lines). The final status, with STATUS.md, F141 and the output file, is in the output file.
+- The five Step 0 files: SHA-256 unchanged.
+- `ls -A` of the root: .DS_Store, .claude, .git, .github, .gitignore, .venv, CLAUDE.md, DECISIONS-archive.md, DECISIONS.md, LICENSE, README.md, RESULTS.md, SPEC.md, STATUS.md, data, docs, figures, notes, requirements.txt, scripts (as F140.10). Of `docs/`: as F141.4.
+
+**F141.7 Readings made where the prompt is silent (for the owner to confirm).**
+1. `docs/.DS_Store` is a macOS folder file, ignored by git; it was left where it is, as the prompt's layout allows.
+2. **The one em-dash on an added line** of `docs/PROJECT-INSTRUCTIONS.md` (line 76, the line that starts "1. **Draft the next session as a file**") is the line's existing dash. Only the path changed, so the dash stays (D76.6: existing text keeps its dashes).
+3. Lines whose path grew were not rewrapped (`CLAUDE.md` line 132, and lines 33, 76, 158 and 161 of the guide), so each change stays on its own line. The D92.4 paragraph is wrapped to the guide's own width (about 100 characters) and its text is the prompt's, word for word.
+4. "Add one short line under the heading for the loop or above it": the line was put directly under the heading "The loop", above the list.
+5. This session's own prompt moved with the others, so it is now `docs/sessions/session-98c.md`. It was read in full before the move, and D92's extract was taken from it before the move.
+6. Step 4.6 also searched `STATUS.md` (before its overwrite): no hit.
+7. The commit message for this session will be `docs/commits/commit-98c.txt`, as STATUS's last line gives it; this session wrote no commit message.
+8. **Archive step: nothing moved.** F140 was accepted this session (D92.1), but STATUS still carries F140.7 and D90.9 (libomp) and D90.12 (later work). D91.2 is cited by D92.5 and by the README files. D91.4's invocation is replaced by D92.4, but D91.4 also resolves D90.5 to D90.7, which stay cited. D89 and F139 are needed by session 99. The reasons session 98b gave for the older live entries still hold.
+9. D92.6's GFS v17 note was not checked by this session (no network).
+
+**F141.8 What this did not do.** No model experiment was run and no build choice was made. No script was run; only shell commands (`grep`, `shasum`, `mv`, `mkdir`, `sed`, `diff`, `cmp`, `ls`, `awk`, `git status`, `git diff`, `git ls-files`). One stray call started `python3` with an empty script (no code, no file read or written), by my mistake while preparing STATUS; nothing else ran in Python. No network call; nothing installed. No existing DECISIONS or archive entry was edited (D92 and F141 appended only). No session prompt, commit message or file in `notes/` was edited; the prompts and messages were only moved, and the one new file in `notes/` is this session's output file. No script, data file or the workflow file was edited, moved or renamed. SPEC.md, RESULTS.md, README.md, data/README.md and `.gitignore` were not edited. `MLwx-pull/` and `MLwx-stagec/` were not touched. Git history and the git index were not touched (no `git mv`, `git add` or `git rm`). Nothing was committed and no commit message was written.

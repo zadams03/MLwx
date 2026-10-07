@@ -3,31 +3,30 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 7 October 2026, after session 98b._
+_Last updated: 7 October 2026, after session 98c._
 
 ---
 
-## Session 98b: repository cleanup for outside readers (D91, F140)
+## Session 98c: docs/ split into sessions/ and commits/ (D92, F141)
 
-Session 98 stopped at its reference gate (F140.1); D91 accepted the stop
-and replaced its layout. Session 98b recorded D91 and F140. No model
-experiment was run and no build choice was made. Full output:
-`notes/session-98b-output.txt`.
+D92 accepted F140 and set the new layout of `docs/`. Session 98c recorded
+D92 and F141. No model experiment was run and no build choice was made.
+Full output: `notes/session-98c-output.txt`.
 
-- **One move (D91.3):** `PROJECT-INSTRUCTIONS.md` is now
-  `docs/PROJECT-INSTRUCTIONS.md`, byte for byte. Every other file stays
-  where it is, because scripts read the record files and `notes/` there
-  (D91.2). CLAUDE.md and the guide's own table now say `docs/`.
-- **SPEC 6 (D90.8):** the stage C bullet points to D88 and D89.
-- **libomp (D90.9): passed.** Homebrew 7.0.8, libomp 23.1.3. With the
-  loader shim bypassed, `session97_stagec_cv.py --gate` gave F109's six
-  values 6 of 6, and EGLC's `--score` was byte-equal to the committed
-  rows. So scripts from session 99 on may import lightgbm directly.
-  `requirements.txt` comments updated; package lines unchanged.
-- **Figures:** `figures/headline_mae.svg` and `figures/skill_intervals.svg`,
-  drawn by `scripts/session98b_figures.py`, repeatable byte for byte.
-- **README files:** the root README rewritten; new READMEs in `scripts/`,
-  `data/`, `docs/` and `notes/`.
+- **The moves (D92.2):** 105 session prompts to `docs/sessions/` and 25
+  commit messages to `docs/commits/`, with plain `mv`, byte for byte (130
+  of 130 SHA-256 equal). File names are unchanged. `README.md`,
+  `PROJECT-INSTRUCTIONS.md` and `HANDOVER-richer-features.md` stay at the
+  top of `docs/`. No code reads `docs/` (F141.3).
+- **Paths updated** in `CLAUDE.md`, `docs/PROJECT-INSTRUCTIONS.md` (with
+  the D92.4 invocation added to its section 4), `docs/README.md`,
+  `notes/README.md` and `scripts/README.md`. Older entries that cite
+  `docs/session-NN.md` or `docs/commit-NN.txt` are not edited; they
+  resolve to the same name under `docs/sessions/` or `docs/commits/`
+  (D92.3).
+- **From session 99 (D92.4):** prompts are `docs/sessions/session-NN.md`,
+  commit messages `docs/commits/commit-NN.txt`, committed with
+  `git commit -F docs/commits/commit-NN.txt`.
 
 ---
 
@@ -101,7 +100,7 @@ km; the saver session decides whether the list grows.
   lead 24 (5,861 station-days, exact equality). Script
   `scripts/session96_stagec_table.py` (`40b63d00...6eee`); meta
   `data/processed/session96_stagec_dev_table.meta.txt` (every table file's
-  SHA-256; unchanged at session 98b, F140.10).
+  SHA-256).
 - **The rules for build choices (D89).** Three time-ordered folds with
   expanding training windows, test years 2023-24, 2024-25 and 2025-26
   (D89.3). Metric: MAE of the hourly temperature on leads 3 to 24, on the
@@ -114,8 +113,8 @@ km; the saver session decides whether the list grows.
 - **The curve's baseline (D88.4), fit and scored (F139).** SPEC 8's
   `B+D,L,R,T` with the record's settings, one model per airport, fold,
   cycle hour and lead 3 to 24 (1,584 fits). The fitting-code gate passed
-  (D89.9), again at session 98b without the shim (F140.7). Its scores are
-  build-choice scores, not results (SPEC 2.5), and are in F139 only.
+  (D89.9), and again at session 98b without the shim (F140.7). Its scores
+  are build-choice scores, not results (SPEC 2.5), and are in F139 only.
   Script `scripts/session97_stagec_cv.py`
   (`987ab6ba...1f91`); folds, scores and meta in
   `data/processed/session97_stagec_cv_*`. No model is saved.
@@ -139,31 +138,30 @@ direction decision (D78.1, option (d)).
 
 ## Open questions (live)
 
-- **Session 98b's readings (F140.11), for the owner to confirm.** In
-  brief: `brew` was run by full path (not on the session shell's PATH);
-  two libomp copies load without the shim (Homebrew's and scikit-learn's),
-  and the gate still passed; the session 83 output's SHA-256 is pinned
-  from the committed file, since the record holds none; the figure script
-  was changed twice after its first run (width; its own em-dash check);
-  2022-01 was checked after it was published, so the README does not say
-  every month was checked first; the frozen-script list includes
-  `session77_ksfo_looks.py` and the three stage B scripts; the data credits
-  as written (MAV's own terms not fetched).
+- **Session 98c's readings (F141.7), for the owner to confirm.** In
+  brief: `docs/.DS_Store` left in place; one added line of the planning
+  guide keeps its existing em-dash (only its path changed); lines whose
+  path grew were not rewrapped; the new `docs/README.md` line sits under
+  the loop heading; this session's own prompt moved with the others; the
+  archive step moved nothing. F141.8 also records one stray empty
+  `python3` call (no code ran).
 - **RESULTS.md section 7's roadmap paragraph is out of date** (it lists
   stage C as later work and ends at stage B's pre-registration). Not in
   this session's scope; reported only.
-- **D72.12 and D90.5 to D90.6** place `PROJECT-INSTRUCTIONS.md` at the
-  root or under `audit/`. They are record entries, not edited; they
-  resolve through D91.4.
+- **Older path citations.** D72.12 and D90.5 to D90.6 place
+  `PROJECT-INSTRUCTIONS.md` at the root or under `audit/`; they resolve
+  through D91.4. Entries before session 98c that cite
+  `docs/session-NN.md` or `docs/commit-NN.txt` resolve through D92.3.
+  Record entries are not edited.
 
 ---
 
 ## Carried items
 
-- **GFS v17 (D90.2, D91.7).** As of 2026-10-07 (planning-chat check) there
-  is still no Service Change Notice for GFS v17; the newest SCN listed is
-  SCN 26-89 (2 October 2026). EMC's GFSv17 evaluation page gives the
-  implementation as Q1 FY27 (October to December 2026; D84.6). With 30
+- **GFS v17 (D90.2, D91.7, D92.6).** As of 2026-10-07 (planning-chat check)
+  there is still no Service Change Notice for GFS v17; the newest SCN
+  listed is SCN 26-89 (2 October 2026). EMC's GFSv17 evaluation page gives
+  the implementation as Q1 FY27 (October to December 2026; D84.6). With 30
   days' notice the earliest go-live is about 6 November 2026. Re-check at
   each planning session. The go-live date sets period A's length. PNS
   26-30's statement that the 0.25 degree GRIB2 files remain is to be
@@ -203,4 +201,4 @@ direction decision (D78.1, option (d)).
 
 ## Next
 
-**Next planning session:** Review session 98b. If it passed, the owner commits and pushes and sets the GitHub About box; then plan session 99: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17.
+**Next planning session:** Review session 98c. If it passed, the owner commits and pushes (with `git commit -F docs/commits/commit-98c.txt`) and sets the GitHub About box; then plan session 99: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17.

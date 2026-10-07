@@ -1,0 +1,491 @@
+SESSION 98c OUTPUT: docs/ split into sessions/ and commits/ (D92, F141)
+Run 2026-10-07. Claude Code. No model experiment run, no build choice made.
+All text below is real command output unless marked as a note.
+
+================================================================
+STEP 0: START CHECKS
+================================================================
+0.1 git status --porcelain (at start):
+?? docs/session-98c.md
+
+0.2 Last entries: D91 and F140 (with F140.13) in DECISIONS.md; archive max D75, F126.
+    grep -nE 'D92|F141' DECISIONS.md DECISIONS-archive.md (at start): no output.
+
+0.3 ls -d docs/sessions docs/commits (at start):
+ls: docs/commits: No such file or directory
+ls: docs/sessions: No such file or directory
+
+0.4 SHA-256 (at start; equal to F140.2):
+987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py
+9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv
+804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+
+0.5 docs/ counts (at start): ls -A docs | wc -l = 134
+    tracked session-*.md: 104; tracked commit-*.txt: 25
+    untracked: docs/session-98c.md; ignored: docs/.DS_Store
+    other files: .DS_Store, HANDOVER-richer-features.md, PROJECT-INSTRUCTIONS.md, README.md
+    subfolders: none. Nothing outside the allowed list: no stop.
+
+0.6 Read in full: CLAUDE.md, SPEC.md, STATUS.md, DECISIONS.md, docs/PROJECT-INSTRUCTIONS.md,
+    README.md, docs/README.md, notes/README.md, scripts/README.md (and data/README.md).
+
+================================================================
+STEP 1: D92
+================================================================
+Source: docs/session-98c.md lines 74 to 104 (markers at 73 and 105), copied with sed.
+DECISIONS.md before: 4067 lines. Separator at 4069; D92 at lines 4071 to 4101.
+diff and cmp: equal. Em-dashes in D92: 0.
+
+================================================================
+STEP 2: REFERENCE RE-CHECK
+================================================================
+$ grep -rnI 'docs/' scripts .github requirements.txt .gitignore
+scripts/session76_verify.py:7:What it does (docs/session-76.md, Step 2; F66 is the pattern):
+scripts/session76b_cache.py:2:for session 76's discarded raw messages (docs/session-76b.md amendment,
+scripts/README.md:6:prompt is `session-NN.md` in [../docs/](../docs/README.md), and its saved
+scripts/session90_airport_check.py:4:This is DECISIONS D82's Step 3 and Step 4 (docs/session-90.md). It has two
+scripts/session90_airport_check.py:16:Hard limits (docs/session-90.md):
+$ grep -rnI -e '"docs"' -e "'docs'" ... : no hit (exit 1)
+Module docstrings close at: session76_verify.py line 22; session76b_cache.py line 13;
+session90_airport_check.py line 27 (opens at line 2). All four script hits are inside them.
+Classification: 5 hits, all (b) text. 0 (a) code. Moves went ahead.
+
+================================================================
+STEP 3: THE MOVES
+================================================================
+Files recorded before: session-*.md 105 (104 tracked + session-98c.md), commit-*.txt 25.
+mkdir docs/sessions docs/commits; mv docs/session-*.md docs/sessions/; mv docs/commit-*.txt docs/commits/
+
+Check after the move (shasum -a 256 -c against the before lists):
+  sessions: 105 OK, 0 mismatches; commits: 25 OK, 0 mismatches
+  files left at old paths: 0
+  ls -A docs: .DS_Store HANDOVER-richer-features.md PROJECT-INSTRUCTIONS.md README.md commits sessions
+  git status --porcelain (right after the move):
+       2 ??
+     129 D
+       1 M
+     M DECISIONS.md
+    ?? docs/commits/
+    ?? docs/sessions/
+    D lines under docs/: 129; changes under scripts/ data/ notes/ .github/: 0
+
+Every move: old path -> new path, SHA-256
+docs/session-01.md -> docs/sessions/session-01.md, a6d6a7d1b650963b97d42ba7bc299b2e00c2d0558eced19567a60cd0b5f85ac6
+docs/session-02.md -> docs/sessions/session-02.md, bdf1cb52fd464c9f6eba3d62048cb6866ee03d7189d3e1e18428c177cccbfa7d
+docs/session-03.md -> docs/sessions/session-03.md, 57c96ae538ced07154f4879f37cae8086eb5bf2ae933c66f1bcbd2694471721b
+docs/session-03b.md -> docs/sessions/session-03b.md, fe44c42e7f1f2f04b2b4e1746444e514f0ade615678f31d5620b240ee74438ff
+docs/session-04.md -> docs/sessions/session-04.md, 27f80b3e8d9dc824d4f64913abf405e78a5feb150443b5e7487f3f82a79a377f
+docs/session-05.md -> docs/sessions/session-05.md, b1b752f0dddfe136e7cf018cdd73dfad34ca7ab6b4d4235d5cb61acc88cf9f6a
+docs/session-06.md -> docs/sessions/session-06.md, 1ce23ce035e450d50e7ca5dd25c0ece3cdf609534446a239839395662e952c06
+docs/session-07.md -> docs/sessions/session-07.md, c9b1b602ab60a45604ad47ba4d37f41baf39ec0dc43559979cfaf7ba2be0361a
+docs/session-08.md -> docs/sessions/session-08.md, df7bf64bce5e0b3103db6b650368538225e85bc48fadb16e7a3d2b6c6d938e81
+docs/session-09.md -> docs/sessions/session-09.md, eb1d31fbfc48bfbd75a480432d6effe7c8f346191c61a3b2bc2404b694b80552
+docs/session-10.md -> docs/sessions/session-10.md, e9056ab8cde71791b66d03b8c3c2df8df030dbb4164e53dd575468d64756bc71
+docs/session-11.md -> docs/sessions/session-11.md, 2a4846b2d16a6c57e65ad62654aa56084031c061b053b3da91d10c5b7a8d95ca
+docs/session-12.md -> docs/sessions/session-12.md, 64cd4aa159d1026bf48e12952720e24b99f712cd9e363aaf0bce9ff3991b2e09
+docs/session-13.md -> docs/sessions/session-13.md, 01523a29e74dd0a4611f182b8445d0a0cdc964d6d424e57080148e6ab967c4bf
+docs/session-14.md -> docs/sessions/session-14.md, b1e4e052dbbf3b4e416cb67bf4306df7509cf4fd4b536da608354aded444b7ad
+docs/session-15.md -> docs/sessions/session-15.md, a8deb7f10522498cab21b5ab8e374c4840770c131fe395b55c47a827bf76ca78
+docs/session-16.md -> docs/sessions/session-16.md, 90726f505f9589108602716517ddd884d7c33ccce59e018fe0cf038a4c2e62f2
+docs/session-17.md -> docs/sessions/session-17.md, a213cf084f38239e10faae9dedecdc9bbcd4fc9417a5e68b8eb0ee1855d82175
+docs/session-18.md -> docs/sessions/session-18.md, 3e06e21742f23601713df8b40425d7684e958a8b81c701ae4dc6d195c4aaac6b
+docs/session-19.md -> docs/sessions/session-19.md, 392012bc10bc4cb486308538452c1551c4ff17c12958f72d1d7efd85693818f6
+docs/session-20.md -> docs/sessions/session-20.md, d7b29f435f223183c2058a9d1d1b146e432c8a83395ed6d5a121528b0c18886a
+docs/session-21.md -> docs/sessions/session-21.md, 0672aa7201a4d7c27a11ff8a0bfd60dfb1f20f6ebacc4507630c06f68445ef73
+docs/session-22.md -> docs/sessions/session-22.md, 41edf42df9020177a963399e84f0f39e30befaf20009f67d2928e439847b9e1e
+docs/session-23.md -> docs/sessions/session-23.md, 1b78af7917d8149ed3e9e584e574e3d93e6e78cbd839250f24e5448595524cc7
+docs/session-24.md -> docs/sessions/session-24.md, c926350bb0ae5c283734387fea27fb1d7fb868fcb5a100c9db5a7983ea202c30
+docs/session-25.md -> docs/sessions/session-25.md, a59fe30e3854802f0b018142cbb7bfc50575cce151aaa0708311167efa59b9cf
+docs/session-26.md -> docs/sessions/session-26.md, 2f4bd38c6047cbac283204dc3aeeb5f9cde29109edc60879172d4d96e85926df
+docs/session-27.md -> docs/sessions/session-27.md, 285b49c57bb7d429d313b827724d4751c9ea29f1b05d9e8551ce8cb7486d1ff0
+docs/session-28.md -> docs/sessions/session-28.md, 5d8b7e7858da4fed8d52837be47d4e2aa1b4a2304630076e0c6a2a94cd41d9e1
+docs/session-29.md -> docs/sessions/session-29.md, 2e943821a27cf740ca3a916b04c816535eec885d004a757434b4c4f2ba9ae6cd
+docs/session-30.md -> docs/sessions/session-30.md, 7593aa2d621306f4a9d68c7219d071ce3d06971c0f16a31c9de23174663e1dae
+docs/session-31.md -> docs/sessions/session-31.md, 463c2dadc54ca1514913461cd840b153a6f7b4c6b7a9be75a90b2bc8f2e6e887
+docs/session-32.md -> docs/sessions/session-32.md, 3fae24a3e3d31cef4043a9817685035b8b3e0c4f65afa57dbb24273eafc2bbf3
+docs/session-33.md -> docs/sessions/session-33.md, 47c309cfc8faeb12a5ccf173b55a5a408df9501a6764b557189d8b2e4c134e15
+docs/session-34a.md -> docs/sessions/session-34a.md, 69d3d6ac9ce4cd22475ee643fe56e9bd4518af6173af0d7670691e8d25628eb2
+docs/session-34b.md -> docs/sessions/session-34b.md, 1085aa3410144ab0e2f68760bec316f22ce86a0d9068c74168594d1d27cc79ec
+docs/session-35.md -> docs/sessions/session-35.md, d9d78580d94e90ea4059150fb883fe84d8f6cd4317ea14bf30b6ccd59926e48a
+docs/session-36.md -> docs/sessions/session-36.md, 0e86fccd519591bb7e1a4069e42060558a3889d0d400c177cf2de183ee2b4135
+docs/session-37.md -> docs/sessions/session-37.md, 7144390b65f993e6b592410b6ed96eb74eb99b90b36fa51e0edf1e546a56eb8d
+docs/session-38.md -> docs/sessions/session-38.md, 8510e2c8c2ab323ee6707901b52c9e4adf98d1aec52434dc099760a2fa144fc0
+docs/session-39.md -> docs/sessions/session-39.md, 73fcd39ea4a44ea0d56cfe7fed80ff557dc3d3044878fcb98573f296e111db7c
+docs/session-40.md -> docs/sessions/session-40.md, 3fe855c7dd11f346fbb88365f5de4cd6a0ecd20b67309a25a2c11d52530d69f2
+docs/session-41.md -> docs/sessions/session-41.md, 2092e282a96415d98d9a538298f921e6eb8062842d16960f89808261ac186512
+docs/session-42.md -> docs/sessions/session-42.md, 1169abe8e9f16ad45e122073438a2a21bb3b31b265bb2dfdffe9fb9b23de8500
+docs/session-43.md -> docs/sessions/session-43.md, 091249cad92dd32112b6546050af40283eca15b66b0b44c0db3c440a19c43d2a
+docs/session-44.md -> docs/sessions/session-44.md, 101b697389c182ad1a4ddd786e843dada3fada59a4ea44d8007af5840eeae273
+docs/session-45.md -> docs/sessions/session-45.md, 8229bb7288b2ad67d424c38e206e173b0a791be45a4995673a08291cb391c893
+docs/session-46.md -> docs/sessions/session-46.md, 7cc7d69fc95d1a8a2b7851c5ff116cb9dd3f4ce1f9bdf560da9ca304297fcbf5
+docs/session-47.md -> docs/sessions/session-47.md, 87e4727dc851cf1e5df652c2f2d5f86365497eaba18c67a0dd8ae8fbed75a547
+docs/session-48.md -> docs/sessions/session-48.md, ad2c182f72be8c2ec4d352411f7125ac1073ed14a9621334b15a8f3ace5196f0
+docs/session-49.md -> docs/sessions/session-49.md, ce6ddc08c32f902ac1472a0f027ee886427e19b384863e13d7c35f715d2f0c1a
+docs/session-50.md -> docs/sessions/session-50.md, c3d0dedd0e21cec8d88a4db1f7f789659be47346c3d88b544c69bf4d8c07680a
+docs/session-51.md -> docs/sessions/session-51.md, 685e6ec4ad6373544054608cfde644d33739c6dac25231b0ce7d68791c5efd2c
+docs/session-52.md -> docs/sessions/session-52.md, 105d8149cd2e41b33811dcdf36c94360901e6299787ca0d504f84eb77ee3c4a9
+docs/session-53.md -> docs/sessions/session-53.md, fc14d801001c3a3fb8da93ecac52c3c89db85ef77759eec154d29536701e79f4
+docs/session-54.md -> docs/sessions/session-54.md, 4ff27ea18fe529a462e6c486303e64469900f6a909fa805a1eb4437a632482ea
+docs/session-55.md -> docs/sessions/session-55.md, d947bf72b3aa6812d934b2500ca439e0ca45e980d539a53786b402833b816b2d
+docs/session-56.md -> docs/sessions/session-56.md, 5125ca67189a8ee7aafc0ce32ce3778c853a51ef9474695a77828f66a28aa257
+docs/session-57.md -> docs/sessions/session-57.md, 6d8057d99238bb5bce315e8dd2b66672df4277e42f72516d040faf867458ba61
+docs/session-58.md -> docs/sessions/session-58.md, 8c6ebf01a133fd74b39c917f8f8bf439e2cff99fe13b4e9b34fb5c93e0e0afcb
+docs/session-59.md -> docs/sessions/session-59.md, 18278fab355527775d0c35ba0593d6014f1442d8472b0aab5a05e4d28be18b7d
+docs/session-60.md -> docs/sessions/session-60.md, ceb44c7cafbb0f8660d135fd7f15a759d84f919d449ff5d2855e43bc36bf3dc7
+docs/session-61.md -> docs/sessions/session-61.md, 74c88e577a6c6b56c5b670aa1f0e8b91df54d082e205351a87724d906f8e47a1
+docs/session-62.md -> docs/sessions/session-62.md, 21187f3341a5f48521384ae905b8bf79b2cdaf1bd6a534140922992da7c1a242
+docs/session-63.md -> docs/sessions/session-63.md, 7d2e7508a7b18353385fe58a028784e14d46b55ce4e3e108d9e76c1663e1f38e
+docs/session-64.md -> docs/sessions/session-64.md, e6453db3aeac8eae0603f4b602a68a72466109fcfbc7f2f1729bebdf08802210
+docs/session-65.md -> docs/sessions/session-65.md, 1efe06ef7d19074f112909190603813ea306cf2d79ef1a04070d5b9b4dacc277
+docs/session-66.md -> docs/sessions/session-66.md, e08f66645afa6837fb36db9959d090cb6360f2a03c1044d4c02e5df26400f7aa
+docs/session-67.md -> docs/sessions/session-67.md, b3512c14974d3898e5e65ddd201669ea7313bad2ffb78987d1d720c664d830fe
+docs/session-68a.md -> docs/sessions/session-68a.md, 562b666c5daa6d18baad54bfeabe5efd67057daceb707021ba04e006fae8f75a
+docs/session-68b.md -> docs/sessions/session-68b.md, 73f337da7255e797bdd63b7b7500602cc3ace27bdea56f1b761b80cd506e06e8
+docs/session-69.md -> docs/sessions/session-69.md, 3c6fdc93bad10fce40221d6392ec438b0553cb84148f27e0eacbed852683fe1d
+docs/session-70.md -> docs/sessions/session-70.md, b26c5e1ca8efa2a0505ce0fb7da39435033dd269bdab540fdd017dc6431bdad6
+docs/session-71.md -> docs/sessions/session-71.md, edbc4287b67f68c869f4931f7c05744fd282665c3964c4f8e9d16fae03ed2e2a
+docs/session-72.md -> docs/sessions/session-72.md, 85b3f663ab8874b8005127cabbf48a4bcd1309c2b461a15194f97e1dc914bf2a
+docs/session-73.md -> docs/sessions/session-73.md, 4df7bf7b744b307f44bba7b9636312150ef816bfe1fb0b5233dbb231aea6317e
+docs/session-74.md -> docs/sessions/session-74.md, abd594e92322ad6404c87cdde04fcf660232d407fabd7df7d65bf65939e60dc4
+docs/session-75.md -> docs/sessions/session-75.md, f8dd78b9f3fdf04c8c757fc860bbd7c2d27a910af6c9811ffd896ed3a9917b06
+docs/session-76.md -> docs/sessions/session-76.md, 006bd84c2781141f4e9516dada2d703c7bc0252b2ddf59b7895b2c2fe0226044
+docs/session-76b.md -> docs/sessions/session-76b.md, 1493fd5e2370a090249528047668dbf2fd1b05c158a5dc715a5e1d459afc05ef
+docs/session-77.md -> docs/sessions/session-77.md, 660a6db28e5bab1a7a30f283138715ab594f51a6804bbdd185c5ed482f325187
+docs/session-78.md -> docs/sessions/session-78.md, 64955497305c4403c3518d4f6c4b04d233f1430af2826dd7c5292e07578061c3
+docs/session-79.md -> docs/sessions/session-79.md, b829e4ff2d4de38083809c2fa1366ad68d7ac135ef24eb9c963e920b54d89195
+docs/session-80.md -> docs/sessions/session-80.md, 3c8eff0318687990d716cd422637763b1c57d5c56243818551fa019a6b902ed7
+docs/session-81.md -> docs/sessions/session-81.md, 7524da2590d9307345a4a3d4e9d52666315ed4a52061ebf777865d50fe8bb4a4
+docs/session-82.md -> docs/sessions/session-82.md, c72be716d9a5a147ae8b4a24ba6ab32d67f67aee9a1aa00ea7cfcd868e9e8350
+docs/session-83.md -> docs/sessions/session-83.md, 8ade93d377fac2f55cb96ee5145992daf52bd1c1d89c0c013a68e57b8ab35211
+docs/session-84.md -> docs/sessions/session-84.md, db41debccc295d2601e5af007d31354d2525877c759c5cdeaf9db21710e2fd3f
+docs/session-85.md -> docs/sessions/session-85.md, 59ecafd65d3cf6043f63be11f4ba87d31a8b9bd853d8ba3e16ce46dfdf16cef5
+docs/session-86.md -> docs/sessions/session-86.md, 40f4de9aadbf1cf955e8dcf967017852ba404566f38dcdfa33b4ee913ec66abe
+docs/session-87.md -> docs/sessions/session-87.md, aa3673fdbe74cf651b8de7e465f2d1b1c208f88ff6db3ca452a34ddd2d28c125
+docs/session-88.md -> docs/sessions/session-88.md, 563c44418722191f0b821fab8f490460c23930c7564496ae817f5814af23f77d
+docs/session-89.md -> docs/sessions/session-89.md, ee0653184b14a88e0028012af79e74a84b4fdabb4262642ee15039aa6e4204f7
+docs/session-90.md -> docs/sessions/session-90.md, f588af9aa3f5337326fdfe06bf7dfa2d3079f0eb8fc8b9c698db009fa2d5cf1c
+docs/session-91.md -> docs/sessions/session-91.md, 3f07bec8cce76f77ca8604c4c9b6b42669d383125d5cb73943f8f0156487996c
+docs/session-92.md -> docs/sessions/session-92.md, 80b084b1fe65a134f86985e8e5d9ee8aaa1101694584658d2ab57e1501a43bcf
+docs/session-93.md -> docs/sessions/session-93.md, 9286ffab146c82fd746b8f1cecb41a2b48e5c5688b987095548e11a00e970db6
+docs/session-94.md -> docs/sessions/session-94.md, 8c31274eb59a8b707897787330a4822ccb3fa1789636b8b916ea6223eb131447
+docs/session-95.md -> docs/sessions/session-95.md, 2e97ed0676ea79e7721ca076bb2ea7f79ca65661503826ed4e9017c42dff1e32
+docs/session-96.md -> docs/sessions/session-96.md, e2e762c1dd733084ab0c46db89030ae4d8b11c612e3f72cbcf345f1c0bd151e2
+docs/session-97.md -> docs/sessions/session-97.md, d732ee5b3be644b8eb1a2fcc9091efcddde0b48c2cb94205bd3cbd8bfb9da92e
+docs/session-98.md -> docs/sessions/session-98.md, b517a624da035ea029f0d391f090b3e32e71d6d005a8729c0f8efed2dbc08f8e
+docs/session-98b-correction.md -> docs/sessions/session-98b-correction.md, dd25d76777956c0dd25da7cc895cf9595e4753fd31d9772c09c71dc6f2d36207
+docs/session-98b.md -> docs/sessions/session-98b.md, c36ba30fcc1a223ea07d160d6866119dfa8167049a168a06c689e19f5440b9ed
+docs/session-98c.md -> docs/sessions/session-98c.md, 94c575a345f20e00cd9e9b3701ddf4380d1a1581d112768adc53b3ed4e12e60f
+docs/commit-76.txt -> docs/commits/commit-76.txt, ead0b8c6e1ecff9793a6527feb7033b33001c9b3ff142473dffa789c181717d2
+docs/commit-76b.txt -> docs/commits/commit-76b.txt, 65dfb8f50e7f7fe64958b86dd3de6b6c3839fb2f3f8ac5c3170cebbc05157aff
+docs/commit-77.txt -> docs/commits/commit-77.txt, 59997b6a9b884b60700bbab156a57fb9469863ef2b558d2e7eb9f994182822c8
+docs/commit-78.txt -> docs/commits/commit-78.txt, 35442d72645c35b678cbb653d286c8ec53f970e32cafdeaab3220573de767502
+docs/commit-79.txt -> docs/commits/commit-79.txt, eaf31e43df60a4490f38825c2c6ea45038de882f6d695dbefa3fa0d9d7ba84dc
+docs/commit-80.txt -> docs/commits/commit-80.txt, ba00c07876747c960820319e389dd8028fd24f05caadde825c0f82c26fda901f
+docs/commit-81.txt -> docs/commits/commit-81.txt, 93833cca563e84f179a3c3360b8e469a73896bd53beb5241307deab5450cee1e
+docs/commit-82.txt -> docs/commits/commit-82.txt, cfa9f8437917e618c2fe31d1f66cca44631161679df57fa704162a85472cfdef
+docs/commit-83.txt -> docs/commits/commit-83.txt, a1950328beda1f5b1a9639c14c592993692aa75f773453d74ed4d56236d200d6
+docs/commit-84.txt -> docs/commits/commit-84.txt, 0ebd91ae3eea3a6a637ebef1e9cb51f2ca40a2054aaaa944d67a1978716c1267
+docs/commit-85.txt -> docs/commits/commit-85.txt, a4682584f65d5ebdbe8fedce9efaec51d09d5060ef2bba10bf5cb49a91cdb7af
+docs/commit-86.txt -> docs/commits/commit-86.txt, 676eddcf5dd0fbe8c9563f2577cc9ce607200c1849bb537c1181b3363d6b5846
+docs/commit-87.txt -> docs/commits/commit-87.txt, 2b6da62af4157d925624570dbcb89606e93832af5291629d89d59ac313a71d08
+docs/commit-88.txt -> docs/commits/commit-88.txt, 3674b854030d21474abcf4029adf3e8ded252e92ccaed6c1b9565f790fc60bc6
+docs/commit-89.txt -> docs/commits/commit-89.txt, 8f3d8102e36de76bbd6c736a8a908cfbec49fb2e467f4dba81cd9c93a22120e8
+docs/commit-90.txt -> docs/commits/commit-90.txt, 34c9bb435c9ff45464d09963de05611e95337c69390dd81a867f350035fe0dc0
+docs/commit-91.txt -> docs/commits/commit-91.txt, 01a5f0cd64a292c38bae4d1527bc8914a5bcd0c346f31b26cf7fb4319c961ce6
+docs/commit-92.txt -> docs/commits/commit-92.txt, 5f8621585a5ec4f1cbf44a6e92090fcbb90c07eb8e7c5dfe4c4db85c49773ae0
+docs/commit-93.txt -> docs/commits/commit-93.txt, bd6345e1858829776bfe9cadc79b45bf4c844f346688e56e0fa93b421000fed5
+docs/commit-94.txt -> docs/commits/commit-94.txt, 57a14a9ee822593fd8e1c48e03f0ebe30e08880e17fc90e0aa6f44794551baba
+docs/commit-95.txt -> docs/commits/commit-95.txt, e0bd935154b12375a0b29505bbcaf074119bab764fccce19bd640db320ec265c
+docs/commit-96.txt -> docs/commits/commit-96.txt, 06c09891ef1ab5db86fb92889d9d4f734b8512aee67f4d131035813144ee4c01
+docs/commit-97.txt -> docs/commits/commit-97.txt, ebdf44136cff185fabca4c233198182ee709c9b5131f1fc153d92078bf02ab6c
+docs/commit-98.txt -> docs/commits/commit-98.txt, 28312241e5247f0e35bfc9549000142079f21f30da43b35ca76d023fa40b13a9
+docs/commit-98b.txt -> docs/commits/commit-98b.txt, 3ca4fb5c9f0fc81dc6c834515a8161221110a17397b471c3ed585c4104de71d8
+
+================================================================
+STEP 4: PATH EDITS (before and after: git diff)
+================================================================
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 89e7c2d..46c8940 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -101,8 +101,8 @@ stale copy.
+ Claude Code **never** commits, adds, or pushes to version control. It
+ prepares all changes, then stops. It does not write a commit message:
+ after reviewing the session, the planning chat writes it to
+-`docs/commit-NN.txt`, and the owner commits by hand with
+-`git commit -F docs/commit-NN.txt`. Nothing enters the project's history
++`docs/commits/commit-NN.txt`, and the owner commits by hand with
++`git commit -F docs/commits/commit-NN.txt`. Nothing enters the project's history
+ without a person looking first.
+ 
+ ## End of every session
+@@ -129,5 +129,5 @@ without a person looking first.
+ ## Session prompts
+ 
+ Work happens in sessions. Each has a short **session prompt** file the owner
+-writes, kept together in the `docs/` folder, giving a clear record of what was
++writes, kept together in the `docs/sessions/` folder, giving a clear record of what was
+ asked each time.
+diff --git a/docs/PROJECT-INSTRUCTIONS.md b/docs/PROJECT-INSTRUCTIONS.md
+index f9bee78..71d4465 100644
+--- a/docs/PROJECT-INSTRUCTIONS.md
++++ b/docs/PROJECT-INSTRUCTIONS.md
+@@ -30,7 +30,7 @@ except what is written down. So the governing principle is:
+ 
+ ## 1. The two-loop architecture
+ 
+-- **Planning chat (you):** decide what to do next, draft the session prompt, review the result, and write the commit message. **You never change the repo yourself**, apart from writing session docs and commit-message files into docs/ (§4, §8). Never write to notes/ or anywhere else. You may read notes/ during a review.
++- **Planning chat (you):** decide what to do next, draft the session prompt, review the result, and write the commit message. **You never change the repo yourself**, apart from writing session docs into docs/sessions/ and commit-message files into docs/commits/ (§4, §8). Never write to notes/ or anywhere else. You may read notes/ during a review.
+ - **Claude Code (separate):** executes one session against the repo, then stops for review.
+ - **The shared state** is the repo's markdown docs. Claude Code does **not** share this chat's
+   memory, so every session prompt you write must be **self-contained**.
+@@ -73,7 +73,7 @@ are read only when needed.
+ 
+ For each planning session:
+ 
+-1. **Draft the next session as a file** — `docs/session-NN.md`, a self-contained prompt for Claude
++1. **Draft the next session as a file** — `docs/sessions/session-NN.md`, a self-contained prompt for Claude
+    Code — **plus** a one-line invocation Zac pastes into a fresh Claude Code terminal. Never dump raw
+    instructions into chat for Zac to relay. **Deliver it straight into the repo:** the Filesystem desktop extension gives planning chats access to docs/ and notes/ by default. Load its tools with tool_search, confirm the allowed folders with list_allowed_directories, check that no file of that name already exists, then write it. If the tools aren't available, fall back to a downloadable file.
+ 2. **Zac runs it** in a fresh Claude Code terminal; the session stops at its end-of-session steps
+@@ -87,6 +87,11 @@ For each planning session:
+ documented step leaves nothing in-flight to lose; a half-finished one does. If a session is
+ mid-review or mid-draft, finish and commit it before switching chats.
+ 
++The invocation Zac pastes into Claude Code takes this form (DECISIONS D92.4): Read CLAUDE.md, then
++SPEC.md, STATUS.md, and DECISIONS.md in full. Then carry out the session defined in
++docs/sessions/session-NN.md, staying strictly within its scope. Stop at the end-of-session steps and
++wait for my review. Do not commit anything.
++
+ ---
+ 
+ ## 5. The re-upload rule (anti-staleness — you own this)
+@@ -150,10 +155,10 @@ The review is where quality is enforced. For every session output:
+ Give commit commands only after a session has run and been reviewed — never bundled into the session
+ prompt beforehand. House style:
+ 
+-- After the review, the planning chat writes the commit message to `docs/commit-NN.txt`: a title
++- After the review, the planning chat writes the commit message to `docs/commits/commit-NN.txt`: a title
+   line, a blank line, then a full multi-paragraph body. Any punctuation is fine.
+ - Zac runs `git add .`, then `git status` (to eyeball what's staged), then
+-  `git commit -F docs/commit-NN.txt`. The message file is committed with the session, as part of
++  `git commit -F docs/commits/commit-NN.txt`. The message file is committed with the session, as part of
+   the record.
+ - Raw GRIB (large, re-fetchable) is **gitignored** (D47) — commit processed data + manifests, never
+   the ~GB raw. Watch that `git status` never stages raw GRIB.
+diff --git a/docs/README.md b/docs/README.md
+index 2dd732d..a7d94d7 100644
+--- a/docs/README.md
++++ b/docs/README.md
+@@ -5,13 +5,17 @@ at a time. Nothing here is needed to run the code.
+ 
+ ## The loop
+ 
++Session prompts are in [sessions/](sessions/) and commit messages in
++[commits/](commits/) (D92.2).
++
+ 1. The owner plans each session in a planning chat and writes its prompt,
+-   `session-NN.md`. The prompt says exactly what the session may do.
++   `sessions/session-NN.md` in [sessions/](sessions/). The prompt says
++   exactly what the session may do.
+ 2. Claude Code (Anthropic's AI coding tool) carries out that one session,
+    under the standing rules in [../CLAUDE.md](../CLAUDE.md), and saves its
+    real printed output in [../notes/](../notes/README.md).
+ 3. The owner reviews the result and commits it by hand. The commit message
+-   is saved here as `commit-NN.txt`.
++   is saved as `commits/commit-NN.txt` in [commits/](commits/).
+ 
+ A suffix such as `03b`, `34a` or `98b` marks a session that was split or
+ re-run.
+diff --git a/notes/README.md b/notes/README.md
+index d12b59f..a57b95d 100644
+--- a/notes/README.md
++++ b/notes/README.md
+@@ -7,7 +7,7 @@ in the record can be traced to what a script printed.
+   example `session-07-check-output.txt` or
+   `session-50-e1-experiment-output.txt`). Each DECISIONS finding names the
+   file that holds its full output. The prompt for session NN is
+-  `session-NN.md` in [../docs/](../docs/README.md).
++  `session-NN.md` in [../docs/sessions/](../docs/sessions/).
+ - **Audit reports:** `audit-session-*.md`, the four audit reports written
+   in sessions 66 to 68b and triaged in DECISIONS D62.
+ - **Other records** that DECISIONS names, such as
+diff --git a/scripts/README.md b/scripts/README.md
+index eef9239..f85800d 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -3,7 +3,7 @@
+ ## How the scripts are named and run
+ 
+ A script named `sessionNN_*.py` was written in session NN. That session's
+-prompt is `session-NN.md` in [../docs/](../docs/README.md), and its saved
++prompt is `session-NN.md` in [../docs/sessions/](../docs/sessions/), and its saved
+ output is in [../notes/](../notes/README.md). Run a script from the repo
+ root with the project's own Python:
+ 
+
+4.6 search: grep -nE 'docs/(session-|commit-)' over README.md SPEC.md RESULTS.md data/README.md
+    STATUS.md (before overwrite) and the five edited files, after the edits: no hit (exit 1).
+    Other docs/ mentions, left unchanged:
+    README.md:219:| How the work was run | [docs/](docs/README.md) | Session prompts, commit messages and the planning guide. |
+    README.md:286:[docs/](docs/README.md) (what each session was asked to do) and
+
+================================================================
+STEP 5: FINAL CHECKS
+================================================================
+5.1 Relative links (README.md docs/README.md notes/README.md scripts/README.md data/README.md):
+ok   README.md -> DECISIONS.md
+ok   README.md -> DECISIONS-archive.md
+ok   README.md -> SPEC.md
+ok   README.md -> figures/headline_mae.svg
+ok   README.md -> figures/skill_intervals.svg
+ok   README.md -> RESULTS.md
+ok   README.md -> RESULTS.md
+ok   README.md -> figures/
+ok   README.md -> SPEC.md
+ok   README.md -> DECISIONS.md
+ok   README.md -> DECISIONS-archive.md
+ok   README.md -> STATUS.md
+ok   README.md -> scripts/README.md
+ok   README.md -> data/README.md
+ok   README.md -> requirements.txt
+ok   README.md -> .github/
+ok   README.md -> docs/README.md
+ok   README.md -> notes/README.md
+ok   README.md -> CLAUDE.md
+ok   README.md -> LICENSE
+ok   README.md -> data/README.md
+ok   README.md -> scripts/README.md
+ok   README.md -> scripts/README.md
+ok   README.md -> CLAUDE.md
+ok   README.md -> docs/README.md
+ok   README.md -> notes/README.md
+ok   README.md -> LICENSE
+ok   docs/README.md -> sessions/
+ok   docs/README.md -> commits/
+ok   docs/README.md -> sessions/
+ok   docs/README.md -> ../CLAUDE.md
+ok   docs/README.md -> ../notes/README.md
+ok   docs/README.md -> commits/
+ok   docs/README.md -> PROJECT-INSTRUCTIONS.md
+ok   docs/README.md -> HANDOVER-richer-features.md
+ok   notes/README.md -> ../docs/sessions/
+ok   scripts/README.md -> ../docs/sessions/
+ok   scripts/README.md -> ../notes/README.md
+ok   data/README.md -> ../README.md#9-data-credits-and-terms
+links checked: 39, failures: 0
+
+5.2 U+2014 in added lines (git diff -U0, '+' lines):
+  CLAUDE.md: 0
+  docs/PROJECT-INSTRUCTIONS.md: 1
+  docs/README.md: 0
+  notes/README.md: 0
+  scripts/README.md: 0
+  DECISIONS.md: 0
+  STATUS.md: 0
+  The one in docs/PROJECT-INSTRUCTIONS.md is line 76's existing dash (only the path changed):
+    -1. **Draft the next session as a file** — `docs/session-NN.md`, a self-contained prompt for Claude
+    +1. **Draft the next session as a file** — `docs/sessions/session-NN.md`, a self-contained prompt for Claude
+  D92: 0. F141: 0. New file notes/session-98c-output.txt: see note at end.
+
+5.3 git status --porcelain --untracked-files=all (final, with STATUS, F141 and this file):
+  lines:      267
+   131 ??
+   129 D
+     7 M
+  Lines other than the moved files:
+   M CLAUDE.md
+   M DECISIONS.md
+   M STATUS.md
+   M docs/PROJECT-INSTRUCTIONS.md
+   M docs/README.md
+   M notes/README.md
+   M scripts/README.md
+  ?? notes/session-98c-output.txt
+  git diff --stat (edited files):
+   CLAUDE.md                    |  6 ++--
+   DECISIONS.md                 | 75 +++++++++++++++++++++++++++++++++++++++
+   STATUS.md                    | 84 +++++++++++++++++++++-----------------------
+   docs/PROJECT-INSTRUCTIONS.md | 13 ++++---
+   docs/README.md               |  8 +++--
+   notes/README.md              |  2 +-
+   scripts/README.md            |  2 +-
+   7 files changed, 136 insertions(+), 54 deletions(-)
+  git diff --stat (all tracked, summary line):
+   136 files changed, 136 insertions(+), 21927 deletions(-)
+
+5.4 SHA-256 of the five Step 0 files (end):
+  987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91  scripts/session97_stagec_cv.py
+  9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4  scripts/session62_reserved_confirm.py
+  0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3  data/processed/session63_reserved_confirm_grid.csv
+  5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76  data/processed/session97_stagec_cv_scores.csv
+  804b6d35b863e07f2da1a559958cb2710e889d4439438c68c9c6109544ce02a6  .github/workflows/stagec-grib-pull.yml
+
+5.5 ls -A (root):
+  .DS_Store
+  .claude
+  .git
+  .github
+  .gitignore
+  .venv
+  CLAUDE.md
+  DECISIONS-archive.md
+  DECISIONS.md
+  LICENSE
+  README.md
+  RESULTS.md
+  SPEC.md
+  STATUS.md
+  data
+  docs
+  figures
+  notes
+  requirements.txt
+  scripts
+    ls -A docs:
+  .DS_Store
+  HANDOVER-richer-features.md
+  PROJECT-INSTRUCTIONS.md
+  README.md
+  commits
+  sessions
+
+================================================================
+STEP 6: END OF SESSION
+================================================================
+6.1 F141 appended: DECISIONS.md heading at line 4105, file ends at line 4142.
+6.2 STATUS.md overwritten as a current-only snapshot; last line:
+    **Next planning session:** Review session 98c. If it passed, the owner commits and pushes (with `git commit -F docs/commits/commit-98c.txt`) and sets the GitHub About box; then plan session 99: the first of D82.5's alternatives against the baseline, under D89.6. Re-check GFS v17.
+
+6.3 CONSISTENCY CHECK (report only)
+  Duplicated headings (SPEC, STATUS, DECISIONS, CLAUDE): none.
+  Top-level entry order in DECISIONS.md:
+    D17 F7 D46 D47 F96 D51 D62 D71 D72 D73 F122 F123 F124 F125 D76 D77 F127 D78 F128 D79 F129 D80 F130 D81 F131 D82 F132 D83 F133 D84 F134 D85 F135 D86 F136 D87 F137 D88 F138 D89 F139 D90 D91 F140 D92 F141 
+    D92 and F141 come last, in order. The older order (for example F96 before D51) is as earlier sessions left it.
+  Live files placing a prompt or commit message directly under docs/:
+    STATUS.md:24:  `docs/session-NN.md` or `docs/commit-NN.txt` are not edited; they
+    STATUS.md:154:  `docs/session-NN.md` or `docs/commit-NN.txt` resolve through D92.3.
+    Both STATUS hits describe old citations (D92.3); neither places a file there. Otherwise none.
+  Record files with old-form citations (not edited; resolve through D92.3):
+    DECISIONS.md: 40 lines (entries before 98c, plus D92/F141 text naming the old form)
+    DECISIONS-archive.md: 18 lines
+    script docstrings: session76_verify.py, session76b_cache.py, session90_airport_check.py
+  Other observations:
+    - RESULTS.md section 7's roadmap paragraph is out of date (carried; not in scope).
+    - D91.4's invocation is replaced by D92.4; D91.4 itself is not edited (record).
+    - docs/README.md's closing line ('These files are part of the record and are not edited
+      after the fact.') now sits under a section about the files at the top of docs/ and in
+      its subfolders; README.md itself was edited this session as Step 4.3 allows.
+    - No disagreement found between SPEC, STATUS, DECISIONS and CLAUDE.md on the new paths.
+
+6.4 ARCHIVE STEP: nothing moved (F141.7 item 8). DECISIONS-archive.md not edited.
+
+6.5 Readings: see F141.7. Correction to my own process: one stray call started python3 with an
+    empty script while preparing STATUS (no code ran; nothing read or written). Recorded in F141.8.
+
+Note: em-dashes in this output file: the only ones are in the git diff lines above, which quote
+existing text of docs/PROJECT-INSTRUCTIONS.md (and lines quoted from earlier files).
+
+Nothing was committed, added or pushed. No commit message was written.

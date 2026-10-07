@@ -30,7 +30,7 @@ except what is written down. So the governing principle is:
 
 ## 1. The two-loop architecture
 
-- **Planning chat (you):** decide what to do next, draft the session prompt, review the result, and write the commit message. **You never change the repo yourself**, apart from writing session docs and commit-message files into docs/ (§4, §8). Never write to notes/ or anywhere else. You may read notes/ during a review.
+- **Planning chat (you):** decide what to do next, draft the session prompt, review the result, and write the commit message. **You never change the repo yourself**, apart from writing session docs into docs/sessions/ and commit-message files into docs/commits/ (§4, §8). Never write to notes/ or anywhere else. You may read notes/ during a review.
 - **Claude Code (separate):** executes one session against the repo, then stops for review.
 - **The shared state** is the repo's markdown docs. Claude Code does **not** share this chat's
   memory, so every session prompt you write must be **self-contained**.
@@ -73,7 +73,7 @@ are read only when needed.
 
 For each planning session:
 
-1. **Draft the next session as a file** — `docs/session-NN.md`, a self-contained prompt for Claude
+1. **Draft the next session as a file** — `docs/sessions/session-NN.md`, a self-contained prompt for Claude
    Code — **plus** a one-line invocation Zac pastes into a fresh Claude Code terminal. Never dump raw
    instructions into chat for Zac to relay. **Deliver it straight into the repo:** the Filesystem desktop extension gives planning chats access to docs/ and notes/ by default. Load its tools with tool_search, confirm the allowed folders with list_allowed_directories, check that no file of that name already exists, then write it. If the tools aren't available, fall back to a downloadable file.
 2. **Zac runs it** in a fresh Claude Code terminal; the session stops at its end-of-session steps
@@ -86,6 +86,11 @@ For each planning session:
 **Never break mid-session.** Only start a new chat *between* committed steps — a committed,
 documented step leaves nothing in-flight to lose; a half-finished one does. If a session is
 mid-review or mid-draft, finish and commit it before switching chats.
+
+The invocation Zac pastes into Claude Code takes this form (DECISIONS D92.4): Read CLAUDE.md, then
+SPEC.md, STATUS.md, and DECISIONS.md in full. Then carry out the session defined in
+docs/sessions/session-NN.md, staying strictly within its scope. Stop at the end-of-session steps and
+wait for my review. Do not commit anything.
 
 ---
 
@@ -150,10 +155,10 @@ The review is where quality is enforced. For every session output:
 Give commit commands only after a session has run and been reviewed — never bundled into the session
 prompt beforehand. House style:
 
-- After the review, the planning chat writes the commit message to `docs/commit-NN.txt`: a title
+- After the review, the planning chat writes the commit message to `docs/commits/commit-NN.txt`: a title
   line, a blank line, then a full multi-paragraph body. Any punctuation is fine.
 - Zac runs `git add .`, then `git status` (to eyeball what's staged), then
-  `git commit -F docs/commit-NN.txt`. The message file is committed with the session, as part of
+  `git commit -F docs/commits/commit-NN.txt`. The message file is committed with the session, as part of
   the record.
 - Raw GRIB (large, re-fetchable) is **gitignored** (D47) — commit processed data + manifests, never
   the ~GB raw. Watch that `git status` never stages raw GRIB.

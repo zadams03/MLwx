@@ -5,13 +5,17 @@ at a time. Nothing here is needed to run the code.
 
 ## The loop
 
+Session prompts are in [sessions/](sessions/) and commit messages in
+[commits/](commits/) (D92.2).
+
 1. The owner plans each session in a planning chat and writes its prompt,
-   `session-NN.md`. The prompt says exactly what the session may do.
+   `sessions/session-NN.md` in [sessions/](sessions/). The prompt says
+   exactly what the session may do.
 2. Claude Code (Anthropic's AI coding tool) carries out that one session,
    under the standing rules in [../CLAUDE.md](../CLAUDE.md), and saves its
    real printed output in [../notes/](../notes/README.md).
 3. The owner reviews the result and commits it by hand. The commit message
-   is saved here as `commit-NN.txt`.
+   is saved as `commits/commit-NN.txt` in [commits/](commits/).
 
 A suffix such as `03b`, `34a` or `98b` marks a session that was split or
 re-run.

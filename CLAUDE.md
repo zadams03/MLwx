@@ -101,8 +101,8 @@ stale copy.
 Claude Code **never** commits, adds, or pushes to version control. It
 prepares all changes, then stops. It does not write a commit message:
 after reviewing the session, the planning chat writes it to
-`docs/commit-NN.txt`, and the owner commits by hand with
-`git commit -F docs/commit-NN.txt`. Nothing enters the project's history
+`docs/commits/commit-NN.txt`, and the owner commits by hand with
+`git commit -F docs/commits/commit-NN.txt`. Nothing enters the project's history
 without a person looking first.
 
 ## End of every session
@@ -129,5 +129,5 @@ without a person looking first.
 ## Session prompts
 
 Work happens in sessions. Each has a short **session prompt** file the owner
-writes, kept together in the `docs/` folder, giving a clear record of what was
+writes, kept together in the `docs/sessions/` folder, giving a clear record of what was
 asked each time.

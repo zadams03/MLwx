@@ -3,7 +3,7 @@
 ## How the scripts are named and run
 
 A script named `sessionNN_*.py` was written in session NN. That session's
-prompt is `session-NN.md` in [../docs/](../docs/README.md), and its saved
+prompt is `session-NN.md` in [../docs/sessions/](../docs/sessions/), and its saved
 output is in [../notes/](../notes/README.md). Run a script from the repo
 root with the project's own Python:
 
