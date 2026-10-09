@@ -1,11 +1,15 @@
-# Stage C GRIB pull (DECISIONS D82.4, D83.5; session 91).
+# Stage C GRIB pull (DECISIONS D82.4, D83.5; session 91; hours input D95.6,
+# session 101).
 #
 # Runs only when started by hand. Input `months`: one month (2021-03) or a
-# range (2021-03..2021-08). Months already published on the Release
-# `stagec-grib-pull-v1` (all three files present) are skipped, so a rerun
-# resumes. Each remaining month is one job, at most four at once. A month's
-# three files are uploaded only if its pull completed. Nothing else is kept:
-# no GRIB message is written to disk, and there is no cache.
+# range (2021-03..2021-08). Input `hours`: `0-24` (the default) publishes to
+# the Release `stagec-grib-pull-v1`; `25-48` publishes to the separate Release
+# `stagec-grib-pull-f025-048`, with the same file names per month. Months
+# already published on the chosen Release (all three files present) are
+# skipped, so a rerun resumes. Each remaining month is one job, at most four
+# at once. A month's three files are uploaded only if its pull completed and
+# the verify step (D84.4) passed. Nothing else is kept: no GRIB message is
+# written to disk, and there is no cache.
 
 name: stagec-grib-pull
 
@@ -16,12 +20,22 @@ on:
         description: "One month (2021-03) or a range (2021-03..2021-08), from 2021-03 to 2026-07"
         required: true
         type: string
+      hours:
+        description: "Forecast hours: 0-24 (Release stagec-grib-pull-v1) or 25-48 (Release stagec-grib-pull-f025-048)"
+        required: true
+        default: "0-24"
+        type: choice
+        options:
+          - "0-24"
+          - "25-48"
 
 permissions:
   contents: read
 
 env:
-  RELEASE_TAG: stagec-grib-pull-v1
+  HOURS: ${{ inputs.hours == '25-48' && '25-48' || '0-24' }}
+  RELEASE_TAG: ${{ inputs.hours == '25-48' && 'stagec-grib-pull-f025-048' || 'stagec-grib-pull-v1' }}
+  RELEASE_TITLE: ${{ inputs.hours == '25-48' && 'Stage C GRIB pull, forecast hours 25 to 48' || 'Stage C GRIB pull' }}
 
 jobs:
   plan:
@@ -96,19 +110,19 @@ jobs:
       - name: Pull one month
         env:
           MONTH: ${{ matrix.month }}
-        run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours 0-24 --out out --workers 16
+        run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours "$HOURS" --out out --workers 16
       - name: Verify the month (D84.4; a failure stops the job, so nothing is uploaded)
         env:
           MONTH: ${{ matrix.month }}
-        run: python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours 0-24
-      - name: Publish the three files (only reached if the pull succeeded)
+        run: python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours "$HOURS"
+      - name: Publish the three files (only reached if the pull and the verify step passed)
         env:
           GH_TOKEN: ${{ github.token }}
           MONTH: ${{ matrix.month }}
         run: |
           if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-              --title "Stage C GRIB pull" \
+              --title "$RELEASE_TITLE" \
               --notes "Raw GFS values at the four grid points around each pull airport (DECISIONS D82.4, D83). One month per set of three files." \
               || gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null
           fi

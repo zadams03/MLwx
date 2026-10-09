@@ -20602,3 +20602,126 @@ scored.
 9. D92.6's GFS v17 note was not checked by this session (no network).
 
 **F141.8 What this did not do.** No model experiment was run and no build choice was made. No script was run; only shell commands (`grep`, `shasum`, `mv`, `mkdir`, `sed`, `diff`, `cmp`, `ls`, `awk`, `git status`, `git diff`, `git ls-files`). One stray call started `python3` with an empty script (no code, no file read or written), by my mistake while preparing STATUS; nothing else ran in Python. No network call; nothing installed. No existing DECISIONS or archive entry was edited (D92 and F141 appended only). No session prompt, commit message or file in `notes/` was edited; the prompts and messages were only moved, and the one new file in `notes/` is this session's output file. No script, data file or the workflow file was edited, moved or renamed. SPEC.md, RESULTS.md, README.md, data/README.md and `.gitignore` were not edited. `MLwx-pull/` and `MLwx-stagec/` were not touched. Git history and the git index were not touched (no `git mv`, `git add` or `git rm`). Nothing was committed and no commit message was written.
+
+---
+
+## Moved by session 101 (D93.8)
+---
+
+## 2026-10-09: Session 99 finding: the workflow overhaul, the Live index and the first move
+
+**F142. Session 99. No model experiment was run and no build choice was made. D93 was recorded first. CLAUDE.md was replaced, eight edits were made to `docs/PROJECT-INSTRUCTIONS.md`, a Live index was added to DECISIONS.md, and every entry outside it moved verbatim to DECISIONS-archive.md with a new, checked script. Script: `scripts/archive_decisions.py` (new; SHA-256 `25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8`). Full real output: `notes/session-99-output.txt`. Run 2026-10-09.**
+
+- **F142.1 D93.** Copied with `sed`; `diff` and `cmp` equal; 0 em-dashes.
+- **F142.2 CLAUDE.md** replaced by the prompt's block (`diff`, `cmp` equal):
+  6,539 to 8,234 bytes, 0 em-dashes. **PROJECT-INSTRUCTIONS.md:** edits
+  (a) to (h), each target found exactly once: 13,070 to 15,195 bytes.
+- **F142.3 The script.** Standard library only: `--plan`, `--apply
+  --session NN`, `--citations`. Tested first on a temporary copy with a
+  made-up two-entry index: all four checks passed, the copy rebuilt byte
+  for byte, a second `--apply` moved nothing. The copy was deleted.
+- **F142.4 The move.** 49 spans: 9 kept (one per index ID), 40 moved
+  (299,631 bytes, 2 of them pointer spans). All four checks passed (live
+  769 + moved 3,511 = original 4,280 lines; the old archive is an exact
+  prefix of the new). DECISIONS.md 343,813 bytes at the start, 352,074
+  with D93 and the index, 52,283 after the move. DECISIONS-archive.md
+  982,727 to 1,282,554 bytes.
+- **F142.5 Citations** (after the move, before this entry): 166 distinct
+  entry numbers cited, 165 resolved, 1 unresolved (F142, cited by D93), 0
+  in both files, 0 doubled entries, 0 dated headings out of order. The
+  end-of-session counts are in the output file.
+- **F142.6 Readings for the owner.**
+  1. The prompt's CLAUDE.md block itself uses colons in the title and the
+     carried passages, so the new file has no em-dashes at all.
+  2. The old archive already ended with `---` and a blank line, so the new
+     section starts after two `---` lines with nothing between them. The
+     heading is followed directly by `---`. Both follow the prompt's format.
+  3. The pointer spans for D1 to D12 and F88 moved, as they are not in the
+     index. The entries still resolve in the archive.
+  4. Left unedited (outside the eight edits): `PROJECT-INSTRUCTIONS.md`'s
+     closing line still says "re-upload it"; section 3 step 2 still says
+     re-upload when docs are stale; the archive's own header still
+     describes D46's criterion; DECISIONS.md's header still says
+     "append-only ... Never delete".
+  5. The first `--apply` call was blocked by Claude Code's auto-mode
+     permission check. Both DECISIONS files were copied to the session's
+     scratch folder, then the same command ran unchanged.
+  6. `scripts/README.md` has no list of standing scripts, so the new line
+     ends the "Everything else" list.
+- **F142.7 What this did not do.** No model, score or data read; no network
+  call; nothing installed; no existing script, data or workflow file edited;
+  no entry retyped or renumbered; SPEC.md, RESULTS.md, README.md and
+  data/README.md not edited. Nothing committed; no commit message written.
+
+---
+
+## 2026-10-09: Session 100 decision: the model-structure comparisons (owner, planning chat)
+
+**D94. Owner decisions, planning chat (after session 99): F142 accepted,
+and the rules for D82.5's two model-structure alternatives, fixed before
+any score.** Written at the start of session 100, before any other edit. No
+2026-27 value has been read or scored.
+
+- **D94.1 F142 accepted,** with its six readings. The wording it found out
+  of date is fixed in session 100 (Step 2).
+- **D94.2 Both alternatives in one session.** D89.10's "one at a time"
+  means each alternative is compared with the baseline on its own, under
+  D89.6. Both are run in session 100, because every rule for choosing
+  between them is fixed here first.
+- **D94.3 The alternatives.** The baseline is D88.4's (one model per
+  airport, fold, cycle hour and lead; F139); it is the incumbent for both
+  (D89.7). Alternative A: one model per airport, fold and lead (3 to 24),
+  trained on all four cycle hours' rows at that lead, with the cycle hour
+  as an extra input. Alternative B: one model per airport and fold, trained
+  on all cycle hours and leads 3 to 24, with the lead and the cycle hour as
+  extra inputs. Same folds and training windows (D89.3), same complete-case
+  rule, same metric and common row set (D89.5).
+- **D94.4 Inputs.** The cycle hour is a plain number (0, 6, 12 or 18) and
+  the lead a plain number (3 to 24), added after the 15 recipe columns in
+  G15's order: A uses G15 plus `cycle_hour`; B uses G15 plus `cycle_hour`
+  then `lead`. Neither is a categorical feature.
+- **D94.5 Settings.** The record's LightGBM settings, unchanged (`LGB_PARAMS`,
+  D21.4/D48.6), so that only the structure changes. Pooled models see more
+  and more varied rows with the same model size, which may handicap them,
+  most of all B. If B does not beat the baseline, whether a later session
+  tests larger settings for pooled models is the owner's decision after
+  review; any such test is its own build choice, fixed in its own entry
+  before its score.
+- **D94.6 The choice.** A is compared with the baseline under D89.6, and B
+  with the baseline under D89.6. If neither passes, the baseline stays. If
+  exactly one passes, it replaces the baseline. If both pass, B (fewer
+  models) becomes the incumbent, and A replaces it only if A passes D89.6
+  against B. Whatever the outcome, the A-against-B figures are reported,
+  labelled descriptive when this rule does not use them.
+- **D94.7 What is not decided here.** The daily maximum, bias drift
+  (D81.10(b)) and stage C's claim design stay as D89.10 and D82.5 set them.
+  RESULTS.md section 7 stays an open item (D93.4).
+- **D94.8 Live index.** D94 and F143 are added. Nothing else changes.
+
+---
+
+## 2026-10-09: Session 100 finding: the model-structure comparisons, A and B against the baseline
+
+**F143. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. Offline. D94 was recorded first. The baseline refit reproduced F139 exactly; alternatives A and B were then fit and scored against it under D89.6, and D94.6 was applied. Neither passed: the baseline (D88.4) stays the curve's structure. Script: `scripts/session100_structure_cv.py` (new; modes `--gate`, `--score`, `--meta`; SHA-256 `67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957`). Full real output: `notes/session-100-output.txt`. Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+- **F143.1 Steps 0 to 2.** Preflight passed (SHA-256 of `session97_stagec_cv.py`, its scores file and the six table files equal to the record; importing session 97's script runs no mode). D94 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes. The five F142.6 wording fixes were each found once and made; the archive's bytes after its inserted note are unchanged (`cmp`).
+- **F143.2 The gate (`--gate`). PASS.** 1,584 baseline fits, 124.4 s. Cells equal to `session97_stagec_cv_scores.csv` (n and MAE, raw GFS and baseline, full precision): 3,168 of 3,168. Headline equal to F139: 2 of 2 (1.4616990883475995, 1.049777501605027). Per-airport n equal to F139.4: 6 of 6.
+- **F143.3 The scores (`--score`).** Fits: baseline 1,584, A 396, B 18 (fit time 107.1, 50.0 and 25.3 s; run 212.4 s). A's and B's test rows equal the baseline's in every cell (count and cycle times). MAE in degrees C:
+
+| | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | fold 23-24 / 24-25 / 25-26 |
+|---|---|---|---|---|---|---|---|---|
+| baseline | 0.7742 | 0.8937 | 1.2034 | 1.2149 | 1.1735 | 1.0390 | 1.0498 | 1.0585 / 1.0634 / 1.0274 |
+| A | 0.7647 | 0.8864 | 1.1964 | 1.2098 | 1.1830 | 1.0478 | 1.0480 | 1.0499 / 1.0639 / 1.0302 |
+| B | 0.7737 | 0.9042 | 1.2566 | 1.2385 | 1.2848 | 1.0872 | 1.0908 | 1.0825 / 1.1093 / 1.0806 |
+
+  Headlines at full precision: A 1.0480057889970193, B 1.0908190929029657. Smallest training count of one model: baseline 844, A 3,391, B 74,694.
+- **F143.4 D89.6 tests.** A against the baseline: (a) reduction 0.001688, not above 0.01; (b) 4 of 6 airports; (c) 1 of 3 folds. Not passed. B against the baseline: (a) -0.039096; (b) 1 of 6 (EGLC); (c) 0 of 3. Not passed. A against B (descriptive, since not both passed): (a) 0.039249; (b) 6 of 6; (c) 3 of 3.
+- **F143.5 The choice (D94.6).** Neither passed, so the baseline stays: one model per airport, cycle hour and lead.
+- **F143.6 Outputs.** `data/processed/session100_structure_cv_scores.csv` (4,752 rows, SHA-256 `aecc31691153331abe7964c1931e6dbb96c2b7de92dbbf4edc14b1ec687f0323`); its 1,584 baseline rows (first eight columns) are byte-equal to session 97's baseline rows. Meta: `data/processed/session100_structure_cv.meta.txt` (`bb0d1f5bc306352085d9340dafb503946a8671ffd1107c806aebce3defefe3c3`).
+- **F143.7 Readings for the owner.**
+  1. The gate and `--score` refit the baseline with this script's own fold loop. It repeats session 97's `score_airport` selection and calls its `fit_predict`. The gate's exact match checks that loop.
+  2. The scores file keeps session 97's columns and adds `model`. `method` repeats the model's name (baseline, A or B), so the baseline rows match session 97's.
+  3. The script's A-against-B line ends "PASS: the challenger replaces the incumbent" even though it is labelled descriptive. Under D94.6 it changes nothing.
+  4. A is close to the baseline: lower at 4 airports and in fold 2023-24, but its headline gain is about 0.17 percent. B is worse at 5 of 6 airports and in every fold. D94.5's question (larger settings for pooled models) is the owner's.
+  5. `--meta` records run times passed by hand from the printed output (`--run-times`).
+- **F143.8 What this did not do.** No other structure, setting or feature tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.

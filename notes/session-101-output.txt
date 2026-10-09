@@ -1,0 +1,382 @@
+SESSION 101 OUTPUT (D95, F144). Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.
+
+SUMMARY
+- Done: D95 recorded; RESULTS section 7 roadmap updated; tests/ added (21 tests); pull script cycle floor (D95.5);
+  workflow hours input (D95.6); F144; archive step; STATUS overwritten.
+- NOT done: Step 6 (test chunk and D95.7's gate). Session 91's --gate reads F122.3's SHA-256 from DECISIONS.md,
+  but F122 is archived since session 99, so it stops with AttributeError (l.1182). Owner chose to stop (no download).
+- Step 0 preflight PASS. Step 1 D95 diff/cmp equal, 0 em-dashes PASS. Step 2 RESULTS PASS.
+- Step 3 tests: at Step 3, 17 of 18 (only F144 unresolved, not yet written). Final run: 21 of 21 OK, 0 skipped, ~2 s.
+- Step 4 PASS: 0-24 --plan output and key list byte-equal before/after (7,828 cycles, 195,600 files, 1,932,528 messages).
+  25-48: 7,826 cycles, 187,768 files, 1,877,680 messages, first cycle 2021-03-22T12, 0 valid outside, 0 absent.
+  --guard-check 12 of 12. Verifier plan counts equal. New SHA-256 9e7439d7cdb5bcde5ab54d8280199de2490654b5977f41f68c07a1e54f3aaa22.
+- Step 5 PASS (local parts): 0-24 commands unchanged; expansion 12 of 12. Workflow SHA-256 4c452428051469f20561670efb2bb895c2fb74e9d220a6464a7442053e01e4dd.
+  Untested: YAML parse, GitHub expressions, gh, Actions.
+- Step 6 FAIL: gate cannot run (see above). No network call in the whole session.
+- Archive: moved F142, D94, F143 (3 spans, 10,206 bytes); 4 of 4 checks PASS. DECISIONS.md 59,882 bytes (< 80,000).
+- Citations: 169 cited, 169 resolved, 0 unresolved, 0 in both, 0 doubled, 0 out of order.
+- Scope: git status shows only listed files (workflow, DECISIONS, archive, README, RESULTS, STATUS, pull script,
+  notes/session-101-output.txt, tests/, the prompt). No .pyc written. Temp folders deleted (/var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/s101plan.3JyRKhyuuH and others).
+- Readings for the owner (F144.6): the gate's DECISIONS.md lookup (other scripts not surveyed); tests set the libomp
+  shim's variable; archive test drops one index ID in its copy; six expansion inputs chosen (F133.4's not recorded);
+  25-48 Release notes text same as v1's; pull script docstring names the floor.
+- Housekeeping: a stray empty file verify_plan.py was made in the system temp folder by a typo in a command; removed.
+- Re-read of changes: STATUS, F144 and D95.4 agree that the 25-48 Actions run waits on the gate; D95.4's session
+  order (102 = bias drift) may need the owner's revision.
+
+== FINAL TEST RUN ==
+test_passes_experiment_folds (test_guards.Session48ReservedYear.test_passes_experiment_folds) ... ok
+test_refuses_testing_inside_reserved_year (test_guards.Session48ReservedYear.test_refuses_testing_inside_reserved_year) ... ok
+test_refuses_training_inside_reserved_year (test_guards.Session48ReservedYear.test_refuses_training_inside_reserved_year) ... ok
+test_allows_2026_07_31 (test_guards.Session86GateDate.test_allows_2026_07_31) ... ok
+test_refuses_2026_08_01 (test_guards.Session86GateDate.test_refuses_2026_08_01) ... ok
+test_allows_first_v16_run (test_guards.Session91PullGuards.test_allows_first_v16_run) ... ok
+test_allows_last_cycle_and_valid_time (test_guards.Session91PullGuards.test_allows_last_cycle_and_valid_time) ... ok
+test_plan_leaves_out_cycles_before_first_v16_run (test_guards.Session91PullGuards.test_plan_leaves_out_cycles_before_first_v16_run) ... ok
+test_refuses_cycle_after_last (test_guards.Session91PullGuards.test_refuses_cycle_after_last) ... ok
+test_refuses_cycles_before_first_v16_run (test_guards.Session91PullGuards.test_refuses_cycles_before_first_v16_run) ... ok
+test_refuses_valid_after_last (test_guards.Session91PullGuards.test_refuses_valid_after_last) ... ok
+test_allows_2026_07_31_23 (test_guards.Session97Guard.test_allows_2026_07_31_23) ... ok
+test_refuses_2026_08_01 (test_guards.Session97Guard.test_refuses_2026_08_01) ... ok
+test_apply_rebuilds_original (test_record.ArchiveTool.test_apply_rebuilds_original) ... ok
+test_citations_real_files_resolve (test_record.ArchiveTool.test_citations_real_files_resolve) ... ok
+test_decisions_size (test_record.ArchiveTool.test_decisions_size) ... ok
+test_plan_passes (test_record.ArchiveTool.test_plan_passes) ... ok
+test_eglc_mae (test_record.F122EglcGate.test_eglc_mae) ... ok
+test_baseline_headline (test_record.F139Headline.test_baseline_headline) ... ok
+test_raw_gfs_headline (test_record.F139Headline.test_raw_gfs_headline) ... ok
+test_baseline_rows_equal (test_record.F143BaselineRows.test_baseline_rows_equal) ... ok
+----------------------------------------------------------------------
+Ran 21 tests in 0.363s
+OK
+
+== CHECKPOINTS ==
+Step 0: preflight. git status showed only "?? docs/sessions/session-101.md". Last entries D94 and F143; no D95 or F144 in either file; tests/ absent. SHA-256 equal to the record: session91_grib_pull.py b52ffc2e...1f1f, session92_verify_chunk.py 7b59a5c2...af6a, workflow 804b6d35...02a6, session81_training_set.csv ab8f25f2...8d4a. Files changed: none. Check: PASS.
+Step 1: D95 copied with sed from docs/sessions/session-101.md lines 69 to 120 into DECISIONS.md lines 896 to 947 (after "---" and a blank line); diff and cmp equal; em-dashes 0. Live index: F142, D94, F143 removed; D95 added (F144 added at the end). Files changed: DECISIONS.md. Check: PASS.
+Step 2: RESULTS.md section 7: the '- **The roadmap' bullet (found once, old lines 850 to 864) replaced by the prompt's R7 block; footer gained 'and after session 101 (DECISIONS D95)'. 0 em-dashes in added lines. Files changed: RESULTS.md. Check: PASS. git diff -- RESULTS.md:
+diff --git a/RESULTS.md b/RESULTS.md
+index 8494c82..97bd669 100644
+--- a/RESULTS.md
++++ b/RESULTS.md
+@@ -847,27 +847,30 @@ They now apply to a project with three proven methods, not one.
+   selected-features method's own margins (section 6) add a second reason
+   for care: they are measured on a different year from sections 3 and 5's
+   own margins (section 6.4(c)).
+-- **The roadmap.** The owner has set a roadmap to a private, live daily
+-  tool (DECISIONS D72; SPEC 6). In stage A, the confidence intervals
+-  (F125, section 6.6) and the probe of other weather models' data (F123,
+-  F124) are done. The comparison against operational post-processed
+-  forecasts is done (F127). On the spent years, at one hour a day, the
+-  selected recipe's MAE was lower than the National Blend of Models'
+-  only at Reno; NBM's was lower at Des Moines and at San Francisco in
+-  both years. The recipe's MAE was lower than GFS MOS's at Des Moines.
+-  The comparison is descriptive and changes no verdict; the direction
+-  decision it leads to is the owner's (D77.4). In stage B, the forward test of the selected-features recipe
+-  on 2026-27, split at the GFS v17 go-live date, is pre-registered and
+-  its models are frozen (D73, F122). It is not yet scored (D73.8). Widening the target to a full daily curve and the
+-  48-hour lead, correcting and blending other weather models, and the
+-  live product itself are later stages (C–G). Probabilistic forecasts
+-  follow (H). Pooling is conditional.
++- **The roadmap** (DECISIONS D72, D82; SPEC 6). Stage A is done: a source
++  probe, confidence intervals for the results on record, and a comparison
++  with the National Blend of Models and NWS MOS (DECISIONS F127, D78.1).
++  Stage B runs: the 2026-27 GFS forward test is pre-registered, its models
++  are frozen, and its scripts are written and gated; it is scored only
++  after each of its periods ends (DECISIONS D73, D77.6, D79). Stage C is
++  open: it widens the target from one hour a day to an hourly curve from
++  every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
++  pull to 24 hours ahead is complete, and its build choices are made by
++  time-ordered cross-validation on the six development airports, never
++  quoted as results (SPEC 2.5). So far the curve keeps the proven recipe
++  as one model per airport, run time and lead; two pooled structures were
++  tested and not adopted (DECISIONS D94, F143). Next come forecast hours
++  25 to 48, a correction for drifting bias, and the daily maximum. Stage
++  C's claim will be judged on six new airports (EDDM, KORD, CYYZ, ZGSZ,
++  ZUCK, NZWN), fixed before any of their held-out data is read. Stages D
++  to H (other weather models, blending, upgrade policy, the live tool and
++  probabilistic ranges) follow; pooling is conditional.
+ 
+ ---
+ 
+ *All figures in this file are cited to their DECISIONS.md/SPEC.md source
+ and were checked against it when this file was written (session 30),
+ revised (session 44, DECISIONS F95), revised again (session 65,
+-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121). SPEC.md remains the source of truth for how the project
++DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95). SPEC.md remains the source of truth for how the project
+ works; this file is a read-only summary of results already on record
+ there.*
+Step 3: tests/ created: README.md, test_guards.py (10 tests), test_record.py (8 tests); root README.md repository map gained one tests/ line. Import checks: session48 (pure), session86, session91, session97 and session81 run no mode on import; session62 (imported by 97 and 81) and session86 re-exec Python through the libomp shim unless MLWX_LIBOMP_PATH_SET is set, so the tests set it first (lightgbm imports without the shim, D93.3). F122.4's EGLC gate uses session 81's load_training_set, fit, matrix and GATE_FOLDS["F109"] (the inner loop of its gate(), which itself runs all 12 fits and exits on failure). Run: "python3 -m unittest discover -s tests -v", PYTHONDONTWRITEBYTECODE=1: Ran 18 tests in 0.394 s; 17 ok, 1 FAIL: test_citations_real_files_resolve, "unresolved 1": F144 (DECISIONS.md:944, 945, cited by D95.9). F144 is written in the end-of-session step, so this is the prompt's own order, as F142.5 in session 99. Not worked around; the final run must pass. No .pyc written (find -newer: none). Files changed: tests/README.md, tests/test_guards.py, tests/test_record.py, README.md. Check: PASS except the expected F144 citation (re-checked at the end).
+Step 4: cycle floor added to scripts/session91_grib_pull.py: FIRST_CYCLE = 2021-03-22T12; check_cycle refuses an earlier cycle; plan_chunk leaves such cycles out (like a cycle with no in-window hour); two --guard-check cases; docstring hard-limits line extended. Before the edit, --plan and the full (cycle, hour) key list were saved for 0-24 and 25-48 in a mktemp -d folder. Files changed: scripts/session91_grib_pull.py. Check: PASS.
+  0-24 unchanged: --plan output byte-equal before and after (cmp); key list byte-equal; 65 months, 7,828 cycles, 195,600 files, 1,932,528 messages (F133.5); key list SHA-256 17eeb3cf7135408e051de1931b94538d54eb0d37d76ea89c6244aa733f919443 before and after.
+  25-48 before the edit: 7,828 cycles, 187,776 files, 1,877,760 messages, first cycle 2021-03-22T00 (v15). After: 7,826 cycles, 187,768 files, 1,877,680 messages; keys removed exactly 8 (2021-03-22T00 f048; 2021-03-22T06 f042 to f048); key list SHA-256 5b91a41ef11d5a6b7912d7fd78e015386a8079be131f65b9e9e8527630254489.
+  25-48 plan: first cycle 2021-03-22T12, last cycle 2026-07-30T18 (2026-07-31's cycles have no hour 25+ inside the window); valid 2021-03-24T00 to 2026-07-31T23; 0 valid times outside; 0 cycles after 2026-07-31T18; absent by design 0 (messages = 10 x files).
+  --guard-check: 12 of 12 as specified, incl. REFUSED cycle 2021-03-22T06 f042 and allowed 2021-03-22T12 f036; exit 0.
+  Verifier (session92 expected(), imported, all months): 25-48 cycles 7,826, files 187,768, messages 1,877,680, absent 0, manifest rows 1,877,680, points rows 9,576,168, first cycle 2021-03-22T12 = the plan. 0-24: 7,828 / 195,600 / 1,932,528, absent 23,472 = F133.5.
+  New SHA-256: 9e7439d7cdb5bcde5ab54d8280199de2490654b5977f41f68c07a1e54f3aaa22
+  --plan --hours 25-48 after the edit (full):
+    SESSION 91 --plan (offline): forecast hours 25-48; window 2021-03-24T00:00Z to 2026-07-31T23:00Z; last cycle 2026-07-31T18:00Z
+    absent by design (Step 2): dswrf, tmax2m, tmin2m at f000; every other field at every hour
+    month   first cycle       last cycle        cycles  files messages earliest valid    latest valid     
+    2021-03 2021-03-22T12:00Z 2021-03-31T18:00Z     38    896     8960 2021-03-24T00:00Z 2021-04-02T18:00Z
+    2021-04 2021-04-01T00:00Z 2021-04-30T18:00Z    120   2880    28800 2021-04-02T01:00Z 2021-05-02T18:00Z
+    2021-05 2021-05-01T00:00Z 2021-05-31T18:00Z    124   2976    29760 2021-05-02T01:00Z 2021-06-02T18:00Z
+    2021-06 2021-06-01T00:00Z 2021-06-30T18:00Z    120   2880    28800 2021-06-02T01:00Z 2021-07-02T18:00Z
+    2021-07 2021-07-01T00:00Z 2021-07-31T18:00Z    124   2976    29760 2021-07-02T01:00Z 2021-08-02T18:00Z
+    2021-08 2021-08-01T00:00Z 2021-08-31T18:00Z    124   2976    29760 2021-08-02T01:00Z 2021-09-02T18:00Z
+    2021-09 2021-09-01T00:00Z 2021-09-30T18:00Z    120   2880    28800 2021-09-02T01:00Z 2021-10-02T18:00Z
+    2021-10 2021-10-01T00:00Z 2021-10-31T18:00Z    124   2976    29760 2021-10-02T01:00Z 2021-11-02T18:00Z
+    2021-11 2021-11-01T00:00Z 2021-11-30T18:00Z    120   2880    28800 2021-11-02T01:00Z 2021-12-02T18:00Z
+    2021-12 2021-12-01T00:00Z 2021-12-31T18:00Z    124   2976    29760 2021-12-02T01:00Z 2022-01-02T18:00Z
+    2022-01 2022-01-01T00:00Z 2022-01-31T18:00Z    124   2976    29760 2022-01-02T01:00Z 2022-02-02T18:00Z
+    2022-02 2022-02-01T00:00Z 2022-02-28T18:00Z    112   2688    26880 2022-02-02T01:00Z 2022-03-02T18:00Z
+    2022-03 2022-03-01T00:00Z 2022-03-31T18:00Z    124   2976    29760 2022-03-02T01:00Z 2022-04-02T18:00Z
+    2022-04 2022-04-01T00:00Z 2022-04-30T18:00Z    120   2880    28800 2022-04-02T01:00Z 2022-05-02T18:00Z
+    2022-05 2022-05-01T00:00Z 2022-05-31T18:00Z    124   2976    29760 2022-05-02T01:00Z 2022-06-02T18:00Z
+    2022-06 2022-06-01T00:00Z 2022-06-30T18:00Z    120   2880    28800 2022-06-02T01:00Z 2022-07-02T18:00Z
+    2022-07 2022-07-01T00:00Z 2022-07-31T18:00Z    124   2976    29760 2022-07-02T01:00Z 2022-08-02T18:00Z
+    2022-08 2022-08-01T00:00Z 2022-08-31T18:00Z    124   2976    29760 2022-08-02T01:00Z 2022-09-02T18:00Z
+    2022-09 2022-09-01T00:00Z 2022-09-30T18:00Z    120   2880    28800 2022-09-02T01:00Z 2022-10-02T18:00Z
+    2022-10 2022-10-01T00:00Z 2022-10-31T18:00Z    124   2976    29760 2022-10-02T01:00Z 2022-11-02T18:00Z
+    2022-11 2022-11-01T00:00Z 2022-11-30T18:00Z    120   2880    28800 2022-11-02T01:00Z 2022-12-02T18:00Z
+    2022-12 2022-12-01T00:00Z 2022-12-31T18:00Z    124   2976    29760 2022-12-02T01:00Z 2023-01-02T18:00Z
+    2023-01 2023-01-01T00:00Z 2023-01-31T18:00Z    124   2976    29760 2023-01-02T01:00Z 2023-02-02T18:00Z
+    2023-02 2023-02-01T00:00Z 2023-02-28T18:00Z    112   2688    26880 2023-02-02T01:00Z 2023-03-02T18:00Z
+    2023-03 2023-03-01T00:00Z 2023-03-31T18:00Z    124   2976    29760 2023-03-02T01:00Z 2023-04-02T18:00Z
+    2023-04 2023-04-01T00:00Z 2023-04-30T18:00Z    120   2880    28800 2023-04-02T01:00Z 2023-05-02T18:00Z
+    2023-05 2023-05-01T00:00Z 2023-05-31T18:00Z    124   2976    29760 2023-05-02T01:00Z 2023-06-02T18:00Z
+    2023-06 2023-06-01T00:00Z 2023-06-30T18:00Z    120   2880    28800 2023-06-02T01:00Z 2023-07-02T18:00Z
+    2023-07 2023-07-01T00:00Z 2023-07-31T18:00Z    124   2976    29760 2023-07-02T01:00Z 2023-08-02T18:00Z
+    2023-08 2023-08-01T00:00Z 2023-08-31T18:00Z    124   2976    29760 2023-08-02T01:00Z 2023-09-02T18:00Z
+    2023-09 2023-09-01T00:00Z 2023-09-30T18:00Z    120   2880    28800 2023-09-02T01:00Z 2023-10-02T18:00Z
+    2023-10 2023-10-01T00:00Z 2023-10-31T18:00Z    124   2976    29760 2023-10-02T01:00Z 2023-11-02T18:00Z
+    2023-11 2023-11-01T00:00Z 2023-11-30T18:00Z    120   2880    28800 2023-11-02T01:00Z 2023-12-02T18:00Z
+    2023-12 2023-12-01T00:00Z 2023-12-31T18:00Z    124   2976    29760 2023-12-02T01:00Z 2024-01-02T18:00Z
+    2024-01 2024-01-01T00:00Z 2024-01-31T18:00Z    124   2976    29760 2024-01-02T01:00Z 2024-02-02T18:00Z
+    2024-02 2024-02-01T00:00Z 2024-02-29T18:00Z    116   2784    27840 2024-02-02T01:00Z 2024-03-02T18:00Z
+    2024-03 2024-03-01T00:00Z 2024-03-31T18:00Z    124   2976    29760 2024-03-02T01:00Z 2024-04-02T18:00Z
+    2024-04 2024-04-01T00:00Z 2024-04-30T18:00Z    120   2880    28800 2024-04-02T01:00Z 2024-05-02T18:00Z
+    2024-05 2024-05-01T00:00Z 2024-05-31T18:00Z    124   2976    29760 2024-05-02T01:00Z 2024-06-02T18:00Z
+    2024-06 2024-06-01T00:00Z 2024-06-30T18:00Z    120   2880    28800 2024-06-02T01:00Z 2024-07-02T18:00Z
+    2024-07 2024-07-01T00:00Z 2024-07-31T18:00Z    124   2976    29760 2024-07-02T01:00Z 2024-08-02T18:00Z
+    2024-08 2024-08-01T00:00Z 2024-08-31T18:00Z    124   2976    29760 2024-08-02T01:00Z 2024-09-02T18:00Z
+    2024-09 2024-09-01T00:00Z 2024-09-30T18:00Z    120   2880    28800 2024-09-02T01:00Z 2024-10-02T18:00Z
+    2024-10 2024-10-01T00:00Z 2024-10-31T18:00Z    124   2976    29760 2024-10-02T01:00Z 2024-11-02T18:00Z
+    2024-11 2024-11-01T00:00Z 2024-11-30T18:00Z    120   2880    28800 2024-11-02T01:00Z 2024-12-02T18:00Z
+    2024-12 2024-12-01T00:00Z 2024-12-31T18:00Z    124   2976    29760 2024-12-02T01:00Z 2025-01-02T18:00Z
+    2025-01 2025-01-01T00:00Z 2025-01-31T18:00Z    124   2976    29760 2025-01-02T01:00Z 2025-02-02T18:00Z
+    2025-02 2025-02-01T00:00Z 2025-02-28T18:00Z    112   2688    26880 2025-02-02T01:00Z 2025-03-02T18:00Z
+    2025-03 2025-03-01T00:00Z 2025-03-31T18:00Z    124   2976    29760 2025-03-02T01:00Z 2025-04-02T18:00Z
+    2025-04 2025-04-01T00:00Z 2025-04-30T18:00Z    120   2880    28800 2025-04-02T01:00Z 2025-05-02T18:00Z
+    2025-05 2025-05-01T00:00Z 2025-05-31T18:00Z    124   2976    29760 2025-05-02T01:00Z 2025-06-02T18:00Z
+    2025-06 2025-06-01T00:00Z 2025-06-30T18:00Z    120   2880    28800 2025-06-02T01:00Z 2025-07-02T18:00Z
+    2025-07 2025-07-01T00:00Z 2025-07-31T18:00Z    124   2976    29760 2025-07-02T01:00Z 2025-08-02T18:00Z
+    2025-08 2025-08-01T00:00Z 2025-08-31T18:00Z    124   2976    29760 2025-08-02T01:00Z 2025-09-02T18:00Z
+    2025-09 2025-09-01T00:00Z 2025-09-30T18:00Z    120   2880    28800 2025-09-02T01:00Z 2025-10-02T18:00Z
+    2025-10 2025-10-01T00:00Z 2025-10-31T18:00Z    124   2976    29760 2025-10-02T01:00Z 2025-11-02T18:00Z
+    2025-11 2025-11-01T00:00Z 2025-11-30T18:00Z    120   2880    28800 2025-11-02T01:00Z 2025-12-02T18:00Z
+    2025-12 2025-12-01T00:00Z 2025-12-31T18:00Z    124   2976    29760 2025-12-02T01:00Z 2026-01-02T18:00Z
+    2026-01 2026-01-01T00:00Z 2026-01-31T18:00Z    124   2976    29760 2026-01-02T01:00Z 2026-02-02T18:00Z
+    2026-02 2026-02-01T00:00Z 2026-02-28T18:00Z    112   2688    26880 2026-02-02T01:00Z 2026-03-02T18:00Z
+    2026-03 2026-03-01T00:00Z 2026-03-31T18:00Z    124   2976    29760 2026-03-02T01:00Z 2026-04-02T18:00Z
+    2026-04 2026-04-01T00:00Z 2026-04-30T18:00Z    120   2880    28800 2026-04-02T01:00Z 2026-05-02T18:00Z
+    2026-05 2026-05-01T00:00Z 2026-05-31T18:00Z    124   2976    29760 2026-05-02T01:00Z 2026-06-02T18:00Z
+    2026-06 2026-06-01T00:00Z 2026-06-30T18:00Z    120   2880    28800 2026-06-02T01:00Z 2026-07-02T18:00Z
+    2026-07 2026-07-01T00:00Z 2026-07-30T18:00Z    120   2840    28400 2026-07-02T01:00Z 2026-07-31T23:00Z
+    total                                         7826 187768  1877680 2021-03-24T00:00Z 2026-07-31T23:00Z
+    valid times outside the window: 0
+  --guard-check output:
+    SESSION 91 --guard-check (offline: no network call, no data read)
+      [OK ] cycle 2026-07-31T18 f006 (valid 2026-08-01T00): REFUSED (valid time 2026-08-01T00:00Z is after 2026-07-31T23:00Z)
+      [OK ] cycle 2026-08-01T00 f000: REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+      [OK ] valid 2021-03-23T23 (cycle 2021-03-23T18 f005): REFUSED (valid time 2021-03-23T23:00Z is before 2021-03-24T00:00Z)
+      [OK ] --hours 0-49: REFUSED (--hours 0-49 is outside 0 to 48)
+      [OK ] writing over an existing output file: REFUSED (an output file already exists, not writing over it: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session91_guard_re4gdsuk/gfs_points_test.csv.gz)
+      [OK ] writing to an absent output file: allowed
+      [OK ] cycle 2026-07-31T18 f005 (valid 2026-07-31T23): allowed
+      [OK ] cycle 2021-03-23T00 f024 (valid 2021-03-24T00): allowed
+      [OK ] cycle 2021-03-22T06 f042 (valid 2021-03-24T00; before the first v16 cycle): REFUSED (cycle 2021-03-22T06:00Z is before 2021-03-22T12:00Z, the first GFS v16 run)
+      [OK ] cycle 2021-03-22T12 f036 (valid 2021-03-24T00; the first v16 cycle): allowed
+      [OK ] --month 2026-08: REFUSED (month 2026-08 is outside 2021-03 to 2026-07)
+      [OK ] --chunk --dates 2026-08-01 (cycles after the last): REFUSED (cycle 2026-08-01T00:00Z is after 2026-07-31T18:00Z)
+    temporary directory deleted: True
+    all cases behaved as specified
+  git diff -- scripts/session91_grib_pull.py:
+diff --git a/scripts/session91_grib_pull.py b/scripts/session91_grib_pull.py
+index 4f1c2a9..e8a560b 100644
+--- a/scripts/session91_grib_pull.py
++++ b/scripts/session91_grib_pull.py
+@@ -35,7 +35,8 @@ and a missing .idx are handled as before.
+ 
+ Hard limits, enforced in code (D83.5(b)): no cycle after 2026-07-31T18 UTC;
+ no message valid after 2026-07-31T23:00 or before 2021-03-24T00:00 UTC; no
+-forecast hour outside 0 to 48.
++forecast hour outside 0 to 48. No cycle before 2021-03-22T12 UTC, the first
++GFS v16 run, at any forecast hours (session 101, DECISIONS D84.2, D95.5).
+ 
+ Copied from record scripts (cited at each copy; nothing is imported from
+ them): `find_range`, `bilinear_from_gid`, the checks in `decode`,
+@@ -89,6 +90,7 @@ BUCKET = "https://noaa-gfs-bdp-pds.s3.amazonaws.com"
+ FIRST_VALID = dt.datetime(2021, 3, 24, 0)
+ LAST_VALID = dt.datetime(2026, 7, 31, 23)
+ LAST_CYCLE = dt.datetime(2026, 7, 31, 18)
++FIRST_CYCLE = dt.datetime(2021, 3, 22, 12)   # the first GFS v16 run (D84.2, D95.5)
+ FIRST_MONTH, LAST_MONTH = (2021, 3), (2026, 7)
+ MAX_HOUR = 48
+ CYCLES = (0, 6, 12, 18)
+@@ -209,6 +211,8 @@ def check_cycle(cycle):
+         raise GuardError(f"cycle {iso(cycle)} is not a 00, 06, 12 or 18 UTC cycle")
+     if cycle > LAST_CYCLE:
+         raise GuardError(f"cycle {iso(cycle)} is after {iso(LAST_CYCLE)}")
++    if cycle < FIRST_CYCLE:
++        raise GuardError(f"cycle {iso(cycle)} is before {iso(FIRST_CYCLE)}, the first GFS v16 run")
+ 
+ 
+ def check_valid(valid):
+@@ -272,11 +276,14 @@ def month_cycles(year, month):
+ def plan_chunk(cycles, hours):
+     """[(cycle, [fh, ...])] for the given cycles. A forecast hour whose valid
+     time lies outside the window is not requested (D83.5(b)); a cycle with no
+-    such hour is left out. Every kept request passes check_request."""
++    such hour is left out, and so is a cycle before FIRST_CYCLE (D95.5). Every
++    kept request passes check_request."""
+     a, b = hours
+     check_hours(a, b)
+     plan = []
+     for c in cycles:
++        if c < FIRST_CYCLE:
++            continue
+         check_cycle(c)
+         fhs = [fh for fh in range(a, b + 1) if FIRST_VALID <= c + dt.timedelta(hours=fh) <= LAST_VALID]
+         for fh in fhs:
+@@ -1091,6 +1098,10 @@ def run_guard_check(args):
+          lambda: check_request(dt.datetime(2026, 7, 31, 18), 5), False)
+     case("cycle 2021-03-23T00 f024 (valid 2021-03-24T00)",
+          lambda: check_request(dt.datetime(2021, 3, 23, 0), 24), False)
++    case("cycle 2021-03-22T06 f042 (valid 2021-03-24T00; before the first v16 cycle)",
++         lambda: check_request(dt.datetime(2021, 3, 22, 6), 42), True)
++    case("cycle 2021-03-22T12 f036 (valid 2021-03-24T00; the first v16 cycle)",
++         lambda: check_request(dt.datetime(2021, 3, 22, 12), 36), False)
+     case("--month 2026-08", lambda: parse_month("2026-08"), True)
+     case("--chunk --dates 2026-08-01 (cycles after the last)",
+          lambda: plan_chunk([dt.datetime(2026, 8, 1, h) for h in CYCLES], (0, 24)), True)
+Step 5: workflow edited. Files changed: .github/workflows/stagec-grib-pull.yml (SHA-256 4c452428051469f20561670efb2bb895c2fb74e9d220a6464a7442053e01e4dd; was 804b6d35...02a6). Check: PASS for what can be checked locally.
+  Line by line, for hours = 0-24 (the default):
+  - header comment (lines 1 to 12): comment only; now names the hours input, both Releases and the verify step (D85.1's cosmetic note).
+  - new input `hours` (choice, options "0-24" and "25-48", default "0-24", required): adds a field to the run form only.
+  - env HOURS: '0-24' for any input other than '25-48' (so also if the input were empty). Was the literal "0-24" in two steps.
+  - env RELEASE_TAG: 'stagec-grib-pull-v1' unless hours is '25-48'. Was the literal stagec-grib-pull-v1. The plan job's asset listing and the publish step read the same variable, as before.
+  - env RELEASE_TITLE: 'Stage C GRIB pull' unless '25-48'; the create step's --title "Stage C GRIB pull" became --title "$RELEASE_TITLE": the same string for 0-24. (Only used if the Release does not exist; v1 exists.)
+  - pull step: --hours 0-24 became --hours "$HOURS" = 0-24. Same command.
+  - verify step: --hours 0-24 became --hours "$HOURS" = 0-24. Same command.
+  - publish step: name changed (now "only reached if the pull and the verify step passed"); a step name is a label, it does not change what runs.
+  - unchanged: months input, permissions, plan job code, matrix, max-parallel 4, timeouts, install step, --notes text, upload command.
+  For 25-48: HOURS 25-48, RELEASE_TAG stagec-grib-pull-f025-048, title "Stage C GRIB pull, forecast hours 25 to 48"; same notes text and file names.
+  Month-expansion code (unchanged lines, extracted from the edited file, run with python -I in a mktemp -d folder, deleted): F133.4's six inputs are not recorded in notes/session-91-output.txt, so six were chosen, each run against two asset lists (a Release with 2022-01 published and 2021-04 partial; an empty Release, as the new f025-048 one will be): "2022-01" -> [] / ["2022-01"]; "2021-03..2021-05" -> all three (partial 2021-04 is re-run) / all three; "2021-12..2022-02" -> ["2021-12","2022-02"] / all three; "2026-07" -> ["2026-07"]; "2026-07..2026-08" -> refused (exit 1); "2021-02" -> refused (exit 1). 12 of 12 as intended.
+  Not tested locally: YAML parsing (PyYAML is not installed); the GitHub expressions in env (inputs.hours && || ) and the choice input; the gh release listing, creation (with the new title) and upload; the matrix; the Linux install; speed and size on Actions.
+  git diff -- .github/workflows/stagec-grib-pull.yml:
+diff --git a/.github/workflows/stagec-grib-pull.yml b/.github/workflows/stagec-grib-pull.yml
+index 656e613..1068663 100644
+--- a/.github/workflows/stagec-grib-pull.yml
++++ b/.github/workflows/stagec-grib-pull.yml
+@@ -1,11 +1,15 @@
+-# Stage C GRIB pull (DECISIONS D82.4, D83.5; session 91).
++# Stage C GRIB pull (DECISIONS D82.4, D83.5; session 91; hours input D95.6,
++# session 101).
+ #
+ # Runs only when started by hand. Input `months`: one month (2021-03) or a
+-# range (2021-03..2021-08). Months already published on the Release
+-# `stagec-grib-pull-v1` (all three files present) are skipped, so a rerun
+-# resumes. Each remaining month is one job, at most four at once. A month's
+-# three files are uploaded only if its pull completed. Nothing else is kept:
+-# no GRIB message is written to disk, and there is no cache.
++# range (2021-03..2021-08). Input `hours`: `0-24` (the default) publishes to
++# the Release `stagec-grib-pull-v1`; `25-48` publishes to the separate Release
++# `stagec-grib-pull-f025-048`, with the same file names per month. Months
++# already published on the chosen Release (all three files present) are
++# skipped, so a rerun resumes. Each remaining month is one job, at most four
++# at once. A month's three files are uploaded only if its pull completed and
++# the verify step (D84.4) passed. Nothing else is kept: no GRIB message is
++# written to disk, and there is no cache.
+ 
+ name: stagec-grib-pull
+ 
+@@ -16,12 +20,22 @@ on:
+         description: "One month (2021-03) or a range (2021-03..2021-08), from 2021-03 to 2026-07"
+         required: true
+         type: string
++      hours:
++        description: "Forecast hours: 0-24 (Release stagec-grib-pull-v1) or 25-48 (Release stagec-grib-pull-f025-048)"
++        required: true
++        default: "0-24"
++        type: choice
++        options:
++          - "0-24"
++          - "25-48"
+ 
+ permissions:
+   contents: read
+ 
+ env:
+-  RELEASE_TAG: stagec-grib-pull-v1
++  HOURS: ${{ inputs.hours == '25-48' && '25-48' || '0-24' }}
++  RELEASE_TAG: ${{ inputs.hours == '25-48' && 'stagec-grib-pull-f025-048' || 'stagec-grib-pull-v1' }}
++  RELEASE_TITLE: ${{ inputs.hours == '25-48' && 'Stage C GRIB pull, forecast hours 25 to 48' || 'Stage C GRIB pull' }}
+ 
+ jobs:
+   plan:
+@@ -96,19 +110,19 @@ jobs:
+       - name: Pull one month
+         env:
+           MONTH: ${{ matrix.month }}
+-        run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours 0-24 --out out --workers 16
++        run: python scripts/session91_grib_pull.py --chunk --month "$MONTH" --hours "$HOURS" --out out --workers 16
+       - name: Verify the month (D84.4; a failure stops the job, so nothing is uploaded)
+         env:
+           MONTH: ${{ matrix.month }}
+-        run: python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours 0-24
+-      - name: Publish the three files (only reached if the pull succeeded)
++        run: python scripts/session92_verify_chunk.py --dir out --month "$MONTH" --hours "$HOURS"
++      - name: Publish the three files (only reached if the pull and the verify step passed)
+         env:
+           GH_TOKEN: ${{ github.token }}
+           MONTH: ${{ matrix.month }}
+         run: |
+           if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+             gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+-              --title "Stage C GRIB pull" \
++              --title "$RELEASE_TITLE" \
+               --notes "Raw GFS values at the four grid points around each pull airport (DECISIONS D82.4, D83). One month per set of three files." \
+               || gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null
+           fi
+Step 6: STOPPED before the test chunk (no network call made). Session 91's --gate reads F122.3's training-set SHA-256 from DECISIONS.md by regex (run_gate, scripts/session91_grib_pull.py l.1180-1182, DECISIONS_FILE = ROOT / "DECISIONS.md"). F122 was moved to DECISIONS-archive.md by session 99 (D93.8), so the regex finds nothing in DECISIONS.md (0 matches; 1 match in the archive, ab8f25f2...8d4a, equal to the file). Confirmed offline with a dummy extract folder (an empty points file and a meta holding only the positions SHA-256; mktemp -d, deleted): --gate ends with "AttributeError: 'NoneType' object has no attribute 'group'" at l.1182, before any comparison. Making it run needs an edit to the pull script beyond the cycle floor, which D95.5 and the prompt forbid. Stop on failure (CLAUDE.md); the owner decides. The verifier's checks need --month, so none apply to a dates chunk ("test"). Files changed: none. Check: FAIL (gate cannot run).
+
+archive_decisions.py --apply --session 101: span table
+
+Header: lines 1 to 29.
+
+index | first line | lines | bytes | ID | first line of span (80 chars) | action
+1 | 31 | 3 | 639 | D47 | **D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D1 | KEEP
+2 | 35 | 106 | 7002 | D73 | ## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward | KEEP
+3 | 142 | 108 | 6696 | D77 | ## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and | KEEP
+4 | 251 | 60 | 3724 | D79 | ## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the  | KEEP
+5 | 312 | 116 | 7126 | D82 | ## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and st | KEEP
+6 | 429 | 89 | 5259 | D88 | ## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C deve | KEEP
+7 | 519 | 77 | 4756 | D89 | ## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for st | KEEP
+8 | 597 | 58 | 8541 | F139 | ## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the | KEEP
+9 | 656 | 117 | 7416 | D93 | ## 2026-10-09: Session 99 decision: F141 accepted, the session order, and a work | KEEP
+10 | 774 | 46 | 3280 | F142 | ## 2026-10-09: Session 99 finding: the workflow overhaul, the Live index and the | MOVE
+11 | 821 | 44 | 2720 | D94 | ## 2026-10-09: Session 100 decision: the model-structure comparisons (owner, pla | MOVE
+12 | 866 | 27 | 4206 | F143 | ## 2026-10-09: Session 100 finding: the model-structure comparisons, A and B aga | MOVE
+13 | 894 | 54 | 3400 | D95 | ## 2026-10-09: Session 101 decision: the structure question closed, the order of | KEEP
+14 | 949 | 19 | 3995 | F144 | ## 2026-10-09: Session 101 finding: RESULTS section 7, the tests folder, and the | KEEP
+
+IDs in more than one span: none
+
+archive_decisions.py --citations
+
+Distinct entry numbers cited: 169. Resolved 169, unresolved 0, in both files 0.
+
+Unresolved (number: where cited):
+Found in both files (number: where cited):
+First opening line appearing more than once:
+Dated headings out of order in DECISIONS.md:

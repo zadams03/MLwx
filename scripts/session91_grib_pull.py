@@ -35,7 +35,8 @@ and a missing .idx are handled as before.
 
 Hard limits, enforced in code (D83.5(b)): no cycle after 2026-07-31T18 UTC;
 no message valid after 2026-07-31T23:00 or before 2021-03-24T00:00 UTC; no
-forecast hour outside 0 to 48.
+forecast hour outside 0 to 48. No cycle before 2021-03-22T12 UTC, the first
+GFS v16 run, at any forecast hours (session 101, DECISIONS D84.2, D95.5).
 
 Copied from record scripts (cited at each copy; nothing is imported from
 them): `find_range`, `bilinear_from_gid`, the checks in `decode`,
@@ -89,6 +90,7 @@ BUCKET = "https://noaa-gfs-bdp-pds.s3.amazonaws.com"
 FIRST_VALID = dt.datetime(2021, 3, 24, 0)
 LAST_VALID = dt.datetime(2026, 7, 31, 23)
 LAST_CYCLE = dt.datetime(2026, 7, 31, 18)
+FIRST_CYCLE = dt.datetime(2021, 3, 22, 12)   # the first GFS v16 run (D84.2, D95.5)
 FIRST_MONTH, LAST_MONTH = (2021, 3), (2026, 7)
 MAX_HOUR = 48
 CYCLES = (0, 6, 12, 18)
@@ -209,6 +211,8 @@ def check_cycle(cycle):
         raise GuardError(f"cycle {iso(cycle)} is not a 00, 06, 12 or 18 UTC cycle")
     if cycle > LAST_CYCLE:
         raise GuardError(f"cycle {iso(cycle)} is after {iso(LAST_CYCLE)}")
+    if cycle < FIRST_CYCLE:
+        raise GuardError(f"cycle {iso(cycle)} is before {iso(FIRST_CYCLE)}, the first GFS v16 run")
 
 
 def check_valid(valid):
@@ -272,11 +276,14 @@ def month_cycles(year, month):
 def plan_chunk(cycles, hours):
     """[(cycle, [fh, ...])] for the given cycles. A forecast hour whose valid
     time lies outside the window is not requested (D83.5(b)); a cycle with no
-    such hour is left out. Every kept request passes check_request."""
+    such hour is left out, and so is a cycle before FIRST_CYCLE (D95.5). Every
+    kept request passes check_request."""
     a, b = hours
     check_hours(a, b)
     plan = []
     for c in cycles:
+        if c < FIRST_CYCLE:
+            continue
         check_cycle(c)
         fhs = [fh for fh in range(a, b + 1) if FIRST_VALID <= c + dt.timedelta(hours=fh) <= LAST_VALID]
         for fh in fhs:
@@ -1091,6 +1098,10 @@ def run_guard_check(args):
          lambda: check_request(dt.datetime(2026, 7, 31, 18), 5), False)
     case("cycle 2021-03-23T00 f024 (valid 2021-03-24T00)",
          lambda: check_request(dt.datetime(2021, 3, 23, 0), 24), False)
+    case("cycle 2021-03-22T06 f042 (valid 2021-03-24T00; before the first v16 cycle)",
+         lambda: check_request(dt.datetime(2021, 3, 22, 6), 42), True)
+    case("cycle 2021-03-22T12 f036 (valid 2021-03-24T00; the first v16 cycle)",
+         lambda: check_request(dt.datetime(2021, 3, 22, 12), 36), False)
     case("--month 2026-08", lambda: parse_month("2026-08"), True)
     case("--chunk --dates 2026-08-01 (cycles after the last)",
          lambda: plan_chunk([dt.datetime(2026, 8, 1, h) for h in CYCLES], (0, 24)), True)

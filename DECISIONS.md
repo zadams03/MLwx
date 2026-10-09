@@ -18,9 +18,8 @@ It records choices made, why they were made, open questions, and findings.
 - D89: the rules for stage C's build choices.
 - F139: the baseline's cross-validation scores (the incumbent, D89.7).
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
-- F142: session 99's finding.
-- D94: the model-structure comparison rules (A, B and the baseline).
-- F143: session 100's finding.
+- D95: the structure question closed, the next steps, tests, and the f025 to f048 pull.
+- F144: session 101's finding.
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -773,120 +772,75 @@ scored.
 
 ---
 
-## 2026-10-09: Session 99 finding: the workflow overhaul, the Live index and the first move
+## 2026-10-09: Session 101 decision: the structure question closed, the order of the next steps, tests, and the f025 to f048 pull (owner, planning chat)
 
-**F142. Session 99. No model experiment was run and no build choice was made. D93 was recorded first. CLAUDE.md was replaced, eight edits were made to `docs/PROJECT-INSTRUCTIONS.md`, a Live index was added to DECISIONS.md, and every entry outside it moved verbatim to DECISIONS-archive.md with a new, checked script. Script: `scripts/archive_decisions.py` (new; SHA-256 `25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8`). Full real output: `notes/session-99-output.txt`. Run 2026-10-09.**
+**D95. Owner decisions, planning chat (after session 100): F143 accepted,
+the model-structure question closed, the order of the next steps, the
+tests folder, and the design of the f025 to f048 pull.** Written at the
+start of session 101, before any other edit. No 2026-27 value has been
+read or scored.
 
-- **F142.1 D93.** Copied with `sed`; `diff` and `cmp` equal; 0 em-dashes.
-- **F142.2 CLAUDE.md** replaced by the prompt's block (`diff`, `cmp` equal):
-  6,539 to 8,234 bytes, 0 em-dashes. **PROJECT-INSTRUCTIONS.md:** edits
-  (a) to (h), each target found exactly once: 13,070 to 15,195 bytes.
-- **F142.3 The script.** Standard library only: `--plan`, `--apply
-  --session NN`, `--citations`. Tested first on a temporary copy with a
-  made-up two-entry index: all four checks passed, the copy rebuilt byte
-  for byte, a second `--apply` moved nothing. The copy was deleted.
-- **F142.4 The move.** 49 spans: 9 kept (one per index ID), 40 moved
-  (299,631 bytes, 2 of them pointer spans). All four checks passed (live
-  769 + moved 3,511 = original 4,280 lines; the old archive is an exact
-  prefix of the new). DECISIONS.md 343,813 bytes at the start, 352,074
-  with D93 and the index, 52,283 after the move. DECISIONS-archive.md
-  982,727 to 1,282,554 bytes.
-- **F142.5 Citations** (after the move, before this entry): 166 distinct
-  entry numbers cited, 165 resolved, 1 unresolved (F142, cited by D93), 0
-  in both files, 0 doubled entries, 0 dated headings out of order. The
-  end-of-session counts are in the output file.
-- **F142.6 Readings for the owner.**
-  1. The prompt's CLAUDE.md block itself uses colons in the title and the
-     carried passages, so the new file has no em-dashes at all.
-  2. The old archive already ended with `---` and a blank line, so the new
-     section starts after two `---` lines with nothing between them. The
-     heading is followed directly by `---`. Both follow the prompt's format.
-  3. The pointer spans for D1 to D12 and F88 moved, as they are not in the
-     index. The entries still resolve in the archive.
-  4. Left unedited (outside the eight edits): `PROJECT-INSTRUCTIONS.md`'s
-     closing line still says "re-upload it"; section 3 step 2 still says
-     re-upload when docs are stale; the archive's own header still
-     describes D46's criterion; DECISIONS.md's header still says
-     "append-only ... Never delete".
-  5. The first `--apply` call was blocked by Claude Code's auto-mode
-     permission check. Both DECISIONS files were copied to the session's
-     scratch folder, then the same command ran unchanged.
-  6. `scripts/README.md` has no list of standing scripts, so the new line
-     ends the "Everything else" list.
-- **F142.7 What this did not do.** No model, score or data read; no network
-  call; nothing installed; no existing script, data or workflow file edited;
-  no entry retyped or renumbered; SPEC.md, RESULTS.md, README.md and
-  data/README.md not edited. Nothing committed; no commit message written.
-
----
-
-## 2026-10-09: Session 100 decision: the model-structure comparisons (owner, planning chat)
-
-**D94. Owner decisions, planning chat (after session 99): F142 accepted,
-and the rules for D82.5's two model-structure alternatives, fixed before
-any score.** Written at the start of session 100, before any other edit. No
-2026-27 value has been read or scored.
-
-- **D94.1 F142 accepted,** with its six readings. The wording it found out
-  of date is fixed in session 100 (Step 2).
-- **D94.2 Both alternatives in one session.** D89.10's "one at a time"
-  means each alternative is compared with the baseline on its own, under
-  D89.6. Both are run in session 100, because every rule for choosing
-  between them is fixed here first.
-- **D94.3 The alternatives.** The baseline is D88.4's (one model per
-  airport, fold, cycle hour and lead; F139); it is the incumbent for both
-  (D89.7). Alternative A: one model per airport, fold and lead (3 to 24),
-  trained on all four cycle hours' rows at that lead, with the cycle hour
-  as an extra input. Alternative B: one model per airport and fold, trained
-  on all cycle hours and leads 3 to 24, with the lead and the cycle hour as
-  extra inputs. Same folds and training windows (D89.3), same complete-case
-  rule, same metric and common row set (D89.5).
-- **D94.4 Inputs.** The cycle hour is a plain number (0, 6, 12 or 18) and
-  the lead a plain number (3 to 24), added after the 15 recipe columns in
-  G15's order: A uses G15 plus `cycle_hour`; B uses G15 plus `cycle_hour`
-  then `lead`. Neither is a categorical feature.
-- **D94.5 Settings.** The record's LightGBM settings, unchanged (`LGB_PARAMS`,
-  D21.4/D48.6), so that only the structure changes. Pooled models see more
-  and more varied rows with the same model size, which may handicap them,
-  most of all B. If B does not beat the baseline, whether a later session
-  tests larger settings for pooled models is the owner's decision after
-  review; any such test is its own build choice, fixed in its own entry
-  before its score.
-- **D94.6 The choice.** A is compared with the baseline under D89.6, and B
-  with the baseline under D89.6. If neither passes, the baseline stays. If
-  exactly one passes, it replaces the baseline. If both pass, B (fewer
-  models) becomes the incumbent, and A replaces it only if A passes D89.6
-  against B. Whatever the outcome, the A-against-B figures are reported,
-  labelled descriptive when this rule does not use them.
-- **D94.7 What is not decided here.** The daily maximum, bias drift
-  (D81.10(b)) and stage C's claim design stay as D89.10 and D82.5 set them.
-  RESULTS.md section 7 stays an open item (D93.4).
-- **D94.8 Live index.** D94 and F143 are added. Nothing else changes.
+- **D95.1 F143 accepted,** with its five readings. Reading 3 (the
+  descriptive A-against-B line prints "PASS") changes nothing.
+- **D95.2 The structure question is closed.** No larger-settings test for
+  pooled models is run (D94.5). The curve's structure is the baseline
+  (D88.4): one model per airport, cycle hour and lead. This closes D82.5's
+  model-structure comparisons, so RESULTS.md section 7 is updated now
+  (D93.4).
+- **D95.3 Why the daily maximum waits.** One GFS run's usable leads (3 to
+  24) cover at most 22 hours, so no single run made the day before covers
+  a whole local day. The forecast daily maximum needs leads beyond 24
+  hours. So the f025 to f048 pull (D82.3) comes first.
+- **D95.4 Order of the next steps.** Session 101: this entry, RESULTS
+  section 7, the tests folder, and the f025 to f048 pull prepared and
+  gated locally. The owner then runs the pull on GitHub Actions: one month
+  first (2022-01), then the rest. Session 102: bias drift (D78.2,
+  D81.10(b)), as a build choice against the baseline, needing no new
+  data. Session 103: verify the f025 to f048 pull, extend the development
+  table and the baseline to leads 25 to 48, fix the daily maximum's metric
+  in its own entry (D89.8), and score it.
+- **D95.5 The f025 to f048 pull.** Same script, same fields, same grid
+  points, same checks as the f000 to f024 pull (D83.5, D84.4, F136).
+  Cycles from 2021-03-22T12 (D84.2), the first GFS v16 run; earlier cycles
+  are never requested, whatever their valid time. Valid times stay within
+  2021-03-24T00 to 2026-07-31T23. The pull script gains this cycle floor,
+  and nothing else; the f000 to f024 plan must be unchanged by it.
+- **D95.6 Its Release.** Published to a separate Release,
+  `stagec-grib-pull-f025-048`, with the same file names per month. The
+  f000 to f024 Release `stagec-grib-pull-v1` is never touched. The
+  workflow gains an `hours` input, `0-24` (the default, which keeps the
+  current behaviour exactly) or `25-48`, which sets the pull's and the
+  verifier's hours and the Release. Locally, its files go to a separate
+  folder, `MLwx-pull-f025-048/`, beside the repo.
+- **D95.7 Its gate.** A local test chunk on D83.6's three dates
+  (2022-01-12, 2023-07-12, 2024-04-12), all four cycles, forecast hours 21
+  to 48 (so that the lead-24 airports' R and T inputs, at f021 and f022,
+  are inside it), through session 91's `--gate`: 18 station-days, exact
+  equality with `session81_training_set.csv`, as F133.7.
+- **D95.8 The tests folder (D90.12).** Python's standard `unittest`, no new
+  package. Tests run offline, write only to temporary folders, and finish
+  in a few minutes. They cover the leakage guards, the archive tool, and
+  reproductions of recorded figures from committed files.
+- **D95.9 Live index.** Removed (archived): F142, D94 and F143, which are
+  settled. Added: D95 and F144. After session 101: D47, D73, D77, D79,
+  D82, D88, D89, F139, D93, D95, F144.
 
 ---
 
-## 2026-10-09: Session 100 finding: the model-structure comparisons, A and B against the baseline
+## 2026-10-09: Session 101 finding: RESULTS section 7, the tests folder, and the f025 to f048 pull prepared; its gate not run
 
-**F143. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. Offline. D94 was recorded first. The baseline refit reproduced F139 exactly; alternatives A and B were then fit and scored against it under D89.6, and D94.6 was applied. Neither passed: the baseline (D88.4) stays the curve's structure. Script: `scripts/session100_structure_cv.py` (new; modes `--gate`, `--score`, `--meta`; SHA-256 `67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957`). Full real output: `notes/session-100-output.txt`. Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+**F144. Session 101. No model was fit for a build choice and no score was computed; nothing from 2026-27; no network call. D95 was recorded first. RESULTS.md section 7 was updated, `tests/` was added, the pull script gained D95.5's cycle floor and the workflow D95.6's `hours` input. D95.7's gate was not run: session 91's `--gate` cannot find F122.3 in DECISIONS.md since session 99's move, and the owner chose to stop there. So the f025 to f048 pull is not yet ready (D95.7). Pull script SHA-256 `9e7439d7cdb5bcde5ab54d8280199de2490654b5977f41f68c07a1e54f3aaa22`; workflow `4c452428051469f20561670efb2bb895c2fb74e9d220a6464a7442053e01e4dd`. Full real output: `notes/session-101-output.txt`. Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
 
-- **F143.1 Steps 0 to 2.** Preflight passed (SHA-256 of `session97_stagec_cv.py`, its scores file and the six table files equal to the record; importing session 97's script runs no mode). D94 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes. The five F142.6 wording fixes were each found once and made; the archive's bytes after its inserted note are unchanged (`cmp`).
-- **F143.2 The gate (`--gate`). PASS.** 1,584 baseline fits, 124.4 s. Cells equal to `session97_stagec_cv_scores.csv` (n and MAE, raw GFS and baseline, full precision): 3,168 of 3,168. Headline equal to F139: 2 of 2 (1.4616990883475995, 1.049777501605027). Per-airport n equal to F139.4: 6 of 6.
-- **F143.3 The scores (`--score`).** Fits: baseline 1,584, A 396, B 18 (fit time 107.1, 50.0 and 25.3 s; run 212.4 s). A's and B's test rows equal the baseline's in every cell (count and cycle times). MAE in degrees C:
-
-| | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | fold 23-24 / 24-25 / 25-26 |
-|---|---|---|---|---|---|---|---|---|
-| baseline | 0.7742 | 0.8937 | 1.2034 | 1.2149 | 1.1735 | 1.0390 | 1.0498 | 1.0585 / 1.0634 / 1.0274 |
-| A | 0.7647 | 0.8864 | 1.1964 | 1.2098 | 1.1830 | 1.0478 | 1.0480 | 1.0499 / 1.0639 / 1.0302 |
-| B | 0.7737 | 0.9042 | 1.2566 | 1.2385 | 1.2848 | 1.0872 | 1.0908 | 1.0825 / 1.1093 / 1.0806 |
-
-  Headlines at full precision: A 1.0480057889970193, B 1.0908190929029657. Smallest training count of one model: baseline 844, A 3,391, B 74,694.
-- **F143.4 D89.6 tests.** A against the baseline: (a) reduction 0.001688, not above 0.01; (b) 4 of 6 airports; (c) 1 of 3 folds. Not passed. B against the baseline: (a) -0.039096; (b) 1 of 6 (EGLC); (c) 0 of 3. Not passed. A against B (descriptive, since not both passed): (a) 0.039249; (b) 6 of 6; (c) 3 of 3.
-- **F143.5 The choice (D94.6).** Neither passed, so the baseline stays: one model per airport, cycle hour and lead.
-- **F143.6 Outputs.** `data/processed/session100_structure_cv_scores.csv` (4,752 rows, SHA-256 `aecc31691153331abe7964c1931e6dbb96c2b7de92dbbf4edc14b1ec687f0323`); its 1,584 baseline rows (first eight columns) are byte-equal to session 97's baseline rows. Meta: `data/processed/session100_structure_cv.meta.txt` (`bb0d1f5bc306352085d9340dafb503946a8671ffd1107c806aebce3defefe3c3`).
-- **F143.7 Readings for the owner.**
-  1. The gate and `--score` refit the baseline with this script's own fold loop. It repeats session 97's `score_airport` selection and calls its `fit_predict`. The gate's exact match checks that loop.
-  2. The scores file keeps session 97's columns and adds `model`. `method` repeats the model's name (baseline, A or B), so the baseline rows match session 97's.
-  3. The script's A-against-B line ends "PASS: the challenger replaces the incumbent" even though it is labelled descriptive. Under D94.6 it changes nothing.
-  4. A is close to the baseline: lower at 4 airports and in fold 2023-24, but its headline gain is about 0.17 percent. B is worse at 5 of 6 airports and in every fold. D94.5's question (larger settings for pooled models) is the owner's.
-  5. `--meta` records run times passed by hand from the printed output (`--run-times`).
-- **F143.8 What this did not do.** No other structure, setting or feature tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.
+- **F144.1 D95 and RESULTS.** D95 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes; Live index changed as D95.9. RESULTS section 7's roadmap bullet replaced by the prompt's block (found once); footer gained "and after session 101 (DECISIONS D95)". Root README gained one `tests/` line.
+- **F144.2 The tests** (`unittest`, standard library plus installed packages): `tests/test_guards.py` 13 tests, `tests/test_record.py` 8 tests, `tests/README.md`. The end-of-session run: 21 of 21 passed, 0 skipped. No test is skipped: F122.4's EGLC gate calls session 81's `load_training_set`, `fit` and `matrix` (importing it runs no mode) and gives 1.0007550363323212 exactly. At Step 3, 17 of 18 passed; the one failure was `--citations` finding F144 unresolved before this entry existed (as F142.5).
+- **F144.3 The cycle floor (D95.5).** `FIRST_CYCLE` 2021-03-22T12: `check_cycle` refuses an earlier cycle and `plan_chunk` leaves such cycles out. Hours 0-24: `--plan` output and the full (cycle, hour) key list byte-equal before and after (65 months, 7,828 cycles, 195,600 files, 1,932,528 messages, as F133.5). `--guard-check` 12 of 12, including the two new cases.
+- **F144.4 The 25-48 plan.** 65 months, 7,826 cycles, 187,768 files, 1,877,680 messages (0 absent by design); first cycle 2021-03-22T12, last 2026-07-30T18; valid 2021-03-24T00 to 2026-07-31T23, 0 outside. The floor removed 8 files (2021-03-22T00 f048, 2021-03-22T06 f042 to f048). The verifier's imported plan gives the same counts.
+- **F144.5 The workflow (D95.6).** Input `hours` (choice, default `0-24`) sets `HOURS`, `RELEASE_TAG` and `RELEASE_TITLE`; for `0-24` every command is unchanged and the title is the same string. Header comment and publish step name now mention the verify step (D85.1). Month expansion: 12 of 12 cases as intended. Not tested locally: YAML parsing, GitHub expressions, `gh`, Actions.
+- **F144.6 Readings for the owner.**
+  1. Session 91's `--gate` (l.1180-1182) and possibly other scripts look for entries in DECISIONS.md by text. Since D93.8 moves entries to the archive, such lookups fail. Fixing the gate needs an edit beyond D95.5's "nothing else". Other scripts were not surveyed.
+  2. The tests set `MLWX_LIBOMP_PATH_SET` before importing scripts that carry the libomp shim, which would otherwise restart Python (D93.3 says lightgbm needs no shim).
+  3. The archive tool test removes one ID from a temporary copy's Live index, so that `--apply` always has something to move and its four checks run.
+  4. F133.4's six month-expansion inputs are not recorded in session 91's output; six were chosen.
+  5. For `25-48` the Release notes text is the same as v1's.
+  6. The pull script's docstring hard-limits line names the floor.
+- **F144.7 What this did not do.** No test chunk, no gate, no network call. No push, workflow run, Release change or `gh` call. No build choice or score; nothing from 2026-27; no non-development airport's observation. No other script edited; no frozen script edited; SPEC.md and CLAUDE.md not edited; nothing installed. Nothing committed and no commit message written.

@@ -1,0 +1,36 @@
+Session 101: D95, RESULTS section 7, tests/, and the f025 to f048 pull prepared (gate not run)
+
+Records D95 (owner decisions after session 100): F143 accepted, the
+model-structure question closed with the baseline kept (one model per
+airport, cycle hour and lead), the order of the next steps, the tests
+folder, and the design of the f025 to f048 pull.
+
+RESULTS.md section 7's roadmap bullet is rewritten to the current stage
+A to C position (D93.4), and its footer notes the revision.
+
+Adds tests/ (D90.12, D95.8): 21 offline unittest checks of the leakage
+guards (2026-27, session 86's gate date, the reserved year, the pull
+script's cycle and valid-time limits), the archive tool, and recorded
+figures (F139's headline, F143.6's baseline rows, F122.4's EGLC gate).
+All 21 pass. The root README gains a tests/ line.
+
+The pull script gains D95.5's cycle floor (no cycle before
+2021-03-22T12, the first GFS v16 run). The 0-24 plan and its full key
+list are byte-identical before and after. The 25-48 plan: 7,826 cycles,
+187,768 files, 1,877,680 messages. New SHA-256 9e7439d7...aa22.
+
+The workflow gains an hours input (D95.6): 0-24, the default, behaves
+exactly as before; 25-48 publishes to the separate Release
+stagec-grib-pull-f025-048. Not run.
+
+D95.7's local gate was not run. Session 91's --gate looks up F122.3's
+training-set SHA-256 in DECISIONS.md, but F122 has been in the archive
+since session 99, so the gate stops before any comparison. The fix
+needs a script edit outside this session's scope. The f025 to f048
+pull must not be run until the gate passes (F144.6).
+
+Archive step moved F142, D94 and F143. DECISIONS.md 59,869 bytes (after a one-line wording fix to F144.2);
+169 citations, 0 unresolved. STATUS.md overwritten.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01HpXoAC1ACtZjTPDUYp3QQW

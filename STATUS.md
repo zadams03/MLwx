@@ -3,32 +3,31 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 9 October 2026, after session 100._
+_Last updated: 9 October 2026, after session 101._
 
 ---
 
-## Session 100: the curve's model structure, A and B (D94, F143)
+## Session 101: tests, RESULTS section 7, and the f025 to f048 pull prepared (D95, F144)
 
-D94 fixed the rules for D82.5's two model-structure alternatives before
-any score. Session 100 checked the baseline, scored both alternatives
-against it by cross-validation, and applied D94.6. These are build-choice
-scores, never results (SPEC 2.5). Full output:
-`notes/session-100-output.txt`.
+Full output: `notes/session-101-output.txt`.
 
-- **Gate.** The baseline refit reproduced F139 exactly: 3,168 of 3,168
-  cells, the headline and the six airport counts.
-- **Scores (headline MAE, degrees C).** Baseline 1.0498; A (one model
-  per lead, cycle hour as an input) 1.0480; B (one model per airport,
-  lead and cycle hour as inputs) 1.0908.
-- **D89.6.** A against the baseline: not passed (headline 0.17 percent
-  lower, under the 1 percent bar; 4 of 6 airports; 1 of 3 folds). B
-  against the baseline: not passed (worse at 5 of 6 airports and in all
-  3 folds).
-- **Chosen structure (D94.6): the baseline stays.** One model per
-  airport, cycle hour and lead (D88.4). This is a build choice, not a
-  result.
-- **Wording fixes (F142.6)** made in PROJECT-INSTRUCTIONS.md, the
-  DECISIONS.md header and the archive header.
+- **D95** recorded: the model-structure question is closed (the baseline
+  stays), and the order of the next steps is set.
+- **RESULTS.md section 7**'s roadmap bullet updated (D93.4 done).
+- **`tests/`** added (D90.12, D95.8): offline `unittest` checks of the
+  leakage guards, the archive tool and recorded figures (F139, F143.6,
+  F122.4 at EGLC). Run: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest
+  discover -s tests -v`.
+- **The pull script's cycle floor (D95.5):** no cycle before 2021-03-22T12
+  is planned or requested. The 0-24 plan is byte-for-byte unchanged. The
+  25-48 plan: 7,826 cycles, 187,768 files, 1,877,680 messages.
+- **The workflow's `hours` input (D95.6):** `0-24` (default, unchanged
+  behaviour) or `25-48` (Release `stagec-grib-pull-f025-048`). Not run.
+- **D95.7's gate was not run.** Session 91's `--gate` looks for F122.3's
+  training-set SHA-256 in DECISIONS.md, but F122 is in the archive since
+  session 99, so the gate stops with an error before any comparison. The
+  fix needs a script edit this session did not allow; the owner chose to
+  stop. **The f025 to f048 pull is not ready until the gate passes.**
 
 ---
 
@@ -46,11 +45,12 @@ curve plus the daily maximum (D82.2).
   **None has been run.** Per period, after it ends: build, fetch, score.
   The hold rule (D73.8) stands.
 - **Stage C.** Design (D82), development table (D88, F138), build-choice
-  rules (D89), the baseline scored (F139), and D82.5's model-structure
-  comparisons done (D94, F143): the baseline stays. Still open: D94.5's
-  follow-up (larger settings for pooled models, the owner's decision),
-  the daily maximum (its metric fixed first, D89.8), bias drift
-  (D81.10(b)), and the claim design at stage C's lock.
+  rules (D89), the baseline scored (F139); the structure question closed,
+  the baseline stays (D94, F143, D95.2). The f025 to f048 pull is prepared
+  (F144) but its local gate has not run (D95.7). Then, per D95.4: bias
+  drift (session 102), then leads 25 to 48 and the daily maximum (its
+  metric fixed first, D89.8). The claim batch (D82.7: EDDM, KORD, CYYZ,
+  ZGSZ, ZUCK, NZWN) is judged at stage C's lock.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
 - **Open item MMMX (D83.4).** Almost no usable observations under the
@@ -60,18 +60,15 @@ curve plus the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **F143.7's readings, for the owner to confirm.** In brief: the gate
-  checks this script's own fold loop (built on session 97's functions);
-  the scores file's `method` column repeats the model name; the
-  descriptive A-against-B line prints "PASS"; run times in the meta were
-  passed by hand.
-- **D94.5's follow-up.** B did not beat the baseline. Whether a later
-  session tests larger settings for pooled models is the owner's
-  decision; any such test is its own build choice, in its own entry.
-- **RESULTS.md section 7's roadmap paragraph is out of date** (D93.4).
-  D93.4 ties its fix to the session that closes D82.5's model-structure
-  comparisons; whether that is now, or after D94.5's follow-up, is the
-  owner's call.
+- **The gate's lookup (F144.6, reading 1).** How session 91's `--gate`
+  should find F122.3's SHA-256 now that F122 is archived (for example,
+  read both DECISIONS files, or check the file against a fixed value). Any
+  script that finds an entry by text in DECISIONS.md may have the same
+  problem; no other script was surveyed.
+- **D95.4's order.** The owner's Actions run of 2022-01 at `25-48` waited on
+  the gate. Whether session 102 fixes the gate and runs it before bias
+  drift is the owner's call.
+- **F144.6's other readings**, for the owner to confirm.
 
 ---
 
@@ -83,16 +80,13 @@ curve plus the daily maximum (D82.2).
 - **lightgbm (D93.3).** New scripts may import lightgbm directly, with no
   libomp shim. scikit-learn stays pinned.
 - **Frozen scripts (D62.3(a), restated in D93.8)** are never edited.
-- **Later work (D90.12).** A `tests/` folder after stage C's first D82.5
-  comparison (now done); a `src/` package only at stage G.
+- **Later work (D90.12).** A `src/` package only at stage G.
 - **MOSMIX notes (D80.4, D81.6, F130.5, F132.5).** Matching rule is the
   owner's later decision; EGLC station position note.
-- **Bias drift (D78.2, D81.10(b)).** A candidate build choice for stage C;
-  nothing decided.
-- **Workflow wording (D85.1)** and **laptop sleep (D86.5)**: unchanged.
+- **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 100. If it passed, the owner commits and pushes (`git commit -F docs/commits/commit-100.txt`) and the planning chat syncs Project knowledge. Then plan the next stage C step: the owner decides D94.5's follow-up (B did not pass); then the daily maximum (its metric fixed in its own entry first, D89.8) and the `tests/` folder (D90.12).
+**Next planning session:** Review session 101. Step 6 (the local test chunk and D95.7's gate) did not run: session 91's `--gate` cannot find F122.3 in DECISIONS.md. If the rest passed, the owner commits and pushes (`git commit -F docs/commits/commit-101.txt`) and the planning chat syncs Project knowledge. Then decide how the gate finds F122.3 and plan a session that makes that fix and runs the test chunk through the gate. Only after it passes does the owner run the workflow with `hours` = `25-48` for month 2022-01 alone, then for 2021-03..2026-07 once that month's verify step has passed. Plan session 102: bias drift (D95.4), or the gate fix first, as the owner decides.

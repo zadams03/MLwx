@@ -212,6 +212,7 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
 | | [DECISIONS-archive.md](DECISIONS-archive.md) | Settled entries moved out of DECISIONS.md word for word. |
 | | [STATUS.md](STATUS.md) | A snapshot of where the project is now. |
 | Code and data | [scripts/](scripts/README.md) | The code, named by the session that wrote it. |
+| | [tests/](tests/README.md) | Offline checks of the leakage guards, the archive tool and recorded figures. |
 | | [data/](data/README.md) | Raw pulls, built tables, frozen models and rebuild checks. |
 | | [requirements.txt](requirements.txt) | The pinned Python packages, with setup notes. |
 | | [.github/](.github/) | The GitHub Actions workflow for stage C's GRIB pull. |

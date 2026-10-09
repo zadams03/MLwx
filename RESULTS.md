@@ -847,27 +847,30 @@ They now apply to a project with three proven methods, not one.
   selected-features method's own margins (section 6) add a second reason
   for care: they are measured on a different year from sections 3 and 5's
   own margins (section 6.4(c)).
-- **The roadmap.** The owner has set a roadmap to a private, live daily
-  tool (DECISIONS D72; SPEC 6). In stage A, the confidence intervals
-  (F125, section 6.6) and the probe of other weather models' data (F123,
-  F124) are done. The comparison against operational post-processed
-  forecasts is done (F127). On the spent years, at one hour a day, the
-  selected recipe's MAE was lower than the National Blend of Models'
-  only at Reno; NBM's was lower at Des Moines and at San Francisco in
-  both years. The recipe's MAE was lower than GFS MOS's at Des Moines.
-  The comparison is descriptive and changes no verdict; the direction
-  decision it leads to is the owner's (D77.4). In stage B, the forward test of the selected-features recipe
-  on 2026-27, split at the GFS v17 go-live date, is pre-registered and
-  its models are frozen (D73, F122). It is not yet scored (D73.8). Widening the target to a full daily curve and the
-  48-hour lead, correcting and blending other weather models, and the
-  live product itself are later stages (C–G). Probabilistic forecasts
-  follow (H). Pooling is conditional.
+- **The roadmap** (DECISIONS D72, D82; SPEC 6). Stage A is done: a source
+  probe, confidence intervals for the results on record, and a comparison
+  with the National Blend of Models and NWS MOS (DECISIONS F127, D78.1).
+  Stage B runs: the 2026-27 GFS forward test is pre-registered, its models
+  are frozen, and its scripts are written and gated; it is scored only
+  after each of its periods ends (DECISIONS D73, D77.6, D79). Stage C is
+  open: it widens the target from one hour a day to an hourly curve from
+  every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
+  pull to 24 hours ahead is complete, and its build choices are made by
+  time-ordered cross-validation on the six development airports, never
+  quoted as results (SPEC 2.5). So far the curve keeps the proven recipe
+  as one model per airport, run time and lead; two pooled structures were
+  tested and not adopted (DECISIONS D94, F143). Next come forecast hours
+  25 to 48, a correction for drifting bias, and the daily maximum. Stage
+  C's claim will be judged on six new airports (EDDM, KORD, CYYZ, ZGSZ,
+  ZUCK, NZWN), fixed before any of their held-out data is read. Stages D
+  to H (other weather models, blending, upgrade policy, the live tool and
+  probabilistic ranges) follow; pooling is conditional.
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*
