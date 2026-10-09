@@ -1,0 +1,217 @@
+SESSION 100 OUTPUT: the curve's model structure, A and B (D94, F143). Run 2026-10-09.
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+
+SUMMARY
+- Done: D94 recorded; F142.6 wording fixes (a) to (e); script written; gate; A and B scored; D94.6 applied; F143; STATUS.
+- Step 0 preflight: PASS (hashes equal; importing session 97's script runs no mode).
+- Step 1 D94: PASS (sed copy, diff and cmp equal, 0 em-dashes; index line added).
+- Step 2 wording fixes: PASS (5 of 5 targets found once; archive bytes after the note unchanged).
+- Step 3 gate: PASS (3,168 of 3,168 cells; headline 2 of 2; airport n 6 of 6; 124.4 s).
+- Step 4 score: PASS (common row set equal in every cell; baseline refit equal again; fits 1,584 / 396 / 18; 212.4 s).
+- Headline MAE (degC): raw GFS 1.4617, baseline 1.0498, A 1.0480, B 1.0908.
+- D89.6, A vs baseline: (a) 0.001688 no; (b) 4 of 6 yes; (c) 1 of 3 no. NOT PASSED.
+- D89.6, B vs baseline: (a) -0.039096 no; (b) 1 of 6 no; (c) 0 of 3 no. NOT PASSED.
+- A vs B (descriptive): (a) 0.039249; (b) 6 of 6; (c) 3 of 3.
+- CHOSEN STRUCTURE (D94.6): the baseline (D88.4) stays. A build choice, not a result.
+- Outputs: scores 4,752 rows aecc3169...0323; meta bb0d1f5b...e3c3; script 67e709ea...6957.
+- Readings for the owner (F143.7): (1) the gate checks this script's own fold loop, built on
+  session 97's functions; (2) `method` repeats the model name, so baseline rows match session 97's;
+  (3) the descriptive A-vs-B line prints "PASS" though D94.6 does not use it; (4) A is close to
+  the baseline (0.17 percent); B is worse in every fold, so D94.5's follow-up is the owner's call;
+  (5) meta run times passed by hand.
+- Archive: nothing moved (12 spans kept, 0 moved). Index: D47 D73 D77 D79 D82 D88 D89 F139 D93 F142 D94 F143.
+- Citations: 167 cited, 167 resolved, 0 unresolved, 0 in both, 0 doubled, 0 out of order. PASS.
+- Size: DECISIONS.md 62,708 bytes (under 80,000). PASS. Archive 1,282,712 bytes.
+- Scope: git status matches the scope list exactly; no breach. MLwx-stagec hashes unchanged. PASS.
+- Re-read of this session's changes: no conflict found with the record. Open: RESULTS.md section 7
+  (D93.4) is still open; whether D82.5's comparisons are now closed, or wait for D94.5's
+  follow-up, is the owner's call.
+- Not done: no commit, no commit message, no other structure or setting tried, no model saved.
+
+CHECKPOINTS
+
+Step 0 (preflight): git status showed only "?? docs/sessions/session-100.md"; last entries D93 and F142; D94 and F143 counts 0 in both DECISIONS files; none of the four new files existed. SHA-256 equal to the record: session97_stagec_cv.py 987ab6ba...1f91, session97_stagec_cv_scores.csv 5604ccd1...8d76, and the six MLwx-stagec table files (F138.4 and session96 meta). session97_stagec_cv.py read in full: importing it runs only module-level checks (the record script's SHA-256, importing session62_reserved_confirm.py, the G15 check against D70.1), no mode; work sits behind if __name__ == "__main__" (import tested: 2.3 s, git status unchanged). Names: load_table (table loader, SHA-256, guard, complete_case checks), fold_role (fold builder, with FOLDS), fit_predict (baseline fit), score_airport (baseline per cell), mae and pooled (scoring), write_new. LGB_PARAMS and G15 come from session62_reserved_confirm.py (rec.LGB_PARAMS, rec.FINAL_FEATURE_KEYS). Also read D90.1 (archive) for Step 3's guard wording. Check: PASS. Files changed: notes/session-100-output.txt (new).
+Step 1 (record D94): D94 copied with sed from docs/sessions/session-100.md lines 72 to 113 (markers at 71 and 114 excluded) to DECISIONS.md after a '---' line and a blank line (D94 heading at line 820 before the index edit); diff and cmp equal; em-dashes in D94: 0. Live index line '- D94: the model-structure comparison rules (A, B and the baseline).' added after F142. Check: PASS. Files changed: DECISIONS.md.
+Step 2 (wording fixes, F142.6): each target found exactly once: (a) PROJECT-INSTRUCTIONS.md line 63, (b) line 252, (c) lines 108-109, (d) DECISIONS.md lines 3-4, (e) DECISIONS-archive.md first '---' at line 37 (line 36 blank). All five replaced as written. (e): the note plus a blank line inserted before line 37; the archive's 1,280,304 bytes after the insertion point and its 2,250 bytes before it are unchanged (tail -c / head -c, cmp); archive 1,282,554 to 1,282,712 bytes. Check: PASS. Files changed: docs/PROJECT-INSTRUCTIONS.md, DECISIONS.md, DECISIONS-archive.md. git diffs:
+
+diff --git a/docs/PROJECT-INSTRUCTIONS.md b/docs/PROJECT-INSTRUCTIONS.md
+index 01ed8ac..482f90a 100644
+--- a/docs/PROJECT-INSTRUCTIONS.md
++++ b/docs/PROJECT-INSTRUCTIONS.md
+@@ -60,7 +60,7 @@ Claude Code reads what each session prompt's Read first section lists
+ 1. **Read this guide and STATUS.md in full.**
+ 2. **Staleness check: the critical guard.** Cross-check STATUS against
+    memory. If memory reflects a more recent session than STATUS shows, the
+-   uploaded docs are stale. Stop and tell Zac to re-upload the current files
++   uploaded docs are stale. Stop and sync Project knowledge (section 5), or ask Zac to upload the current files if the sync fails,
+    before doing any work. Stale docs look authoritative but are not.
+ 3. **Read STATUS's "Next planning session" line** (section 6) and start there,
+    not from a blank slate.
+@@ -106,7 +106,8 @@ sync before the commit: Project knowledge must match the committed repo.
+   `DECISIONS-archive.md` whenever they changed (almost every session);
+   `SPEC.md`, `RESULTS.md`, `CLAUDE.md` and `docs/PROJECT-INSTRUCTIONS.md`
+   (kept in Project knowledge as `PROJECT-INSTRUCTIONS.md`) only when the
+-  session edited them.
++  session edited them. `DECISIONS-archive.md` is kept in Project knowledge
++  as `claude/DECISIONS-archive.md`.
+ - **How:** stage each file from the linked computer into the workspace,
+   copy it into the working directory, and write it with project_write's
+   `local_path` to the same Project-knowledge path, so its contents never
+@@ -249,5 +250,5 @@ notice something important that exists only in the current chat, say so and get
+ 
+ ---
+ 
+-*This guide is itself a file: if the workflow changes, update it and re-upload it. Everything here
++*This guide is itself a file: if the workflow changes, update it; the planning chat syncs it to Project knowledge. Everything here
+ serves one rule — if it matters, it lives in a file, not in chat.*
+diff --git a/DECISIONS.md b/DECISIONS.md
+index 724069e..af0c124 100644
+--- a/DECISIONS.md
++++ b/DECISIONS.md
+@@ -2,4 +2,5 @@
+ 
+-This is an **append-only** log. Add new entries at the bottom. Never delete
+-or rewrite old entries. Each entry is dated.
++This is the live log. New entries are added at the bottom, and no entry is
++ever edited or deleted. Entries outside the Live index move verbatim to
++DECISIONS-archive.md (D93.8). Each entry is dated.
+ 
+@@ -20,2 +21,3 @@ It records choices made, why they were made, open questions, and findings.
+ - F142: session 99's finding.
++- D94: the model-structure comparison rules (A, B and the baseline).
+ <!-- live-index-end -->
+@@ -816 +818,46 @@ scored.
+   data/README.md not edited. Nothing committed; no commit message written.
++
++---
+diff --git a/DECISIONS-archive.md b/DECISIONS-archive.md
+index 903a935..eab37ad 100644
+--- a/DECISIONS-archive.md
++++ b/DECISIONS-archive.md
+@@ -34,6 +34,8 @@ restructure record — the meta-record of the *first* move — has itself since
+ been moved here (by session 34b), immediately below the founding D1–D12/F1–F4
+ material it describes moving.
+ 
++**Note added by session 100 (D94.1):** since session 99, entries move here by DECISIONS.md's Live index (D93.8), not by the criterion described above (D46).
++
+ ---
+ 
+ ## From "2026-08-16 — Initial decisions from planning" (D1–D12)
+(DECISIONS.md diff shown up to the header; the rest of its diff is D94 and the index line from Step 1.)
+
+
+Step 3 (script and baseline gate): scripts/session100_structure_cv.py written (modes --gate, --score, --meta; imports session97_stagec_cv.py after its SHA-256 check, and lightgbm directly; bytecode off). --gate refit the baseline with this script's own fold loop, which repeats session 97's score_airport selection and calls its fit_predict. Result: GATE PASS. Check: PASS. Files changed: scripts/session100_structure_cv.py (new). Full --gate output:
+  SESSION 100 --gate (offline), start 2026-10-09T15:24:23Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+  session97_stagec_cv.py SHA-256 checked before import: 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91
+    EGLC: baseline 264 fits, 20.3 s
+    LFPG: baseline 264 fits, 20.4 s
+    DSM: baseline 264 fits, 20.7 s
+    YSDU: baseline 264 fits, 21.4 s
+    RNO: baseline 264 fits, 21.0 s
+    SFO: baseline 264 fits, 20.5 s
+  baseline fits: 1584
+  cells equal to session97_stagec_cv_scores.csv (n and MAE, raw_gfs and baseline): 3168 of 3168
+  headline equal to F139 at full precision: 2 of 2 (raw_gfs 1.4616990883475995, baseline 1.049777501605027)
+  per-airport n equal to F139.4: 6 of 6
+  GATE PASS; end 2026-10-09T15:26:28Z; run time 124.4 s
+
+Step 4 (score A and B, then --meta): --score fit baseline 1,584, A 396, B 18 (no model saved). Common row set: A's and B's test rows equal the baseline's in every cell (count and cycle times). The baseline refit again reproduced session 97 (3,168 of 3,168 cells; headline 2 of 2; n 6 of 6), and the scores file's 1,584 baseline rows (first eight columns) are byte-equal to session 97's baseline rows (cmp). D94.6: A against the baseline not passed ((a) no, (b) yes, (c) no); B against the baseline not passed ((a), (b) and (c) all no); A against B descriptive. Chosen: baseline. --meta written. Check: PASS. Files changed: data/processed/session100_structure_cv_scores.csv (4,752 rows, aecc3169...0323), data/processed/session100_structure_cv.meta.txt (bb0d1f5b...e3c3). Full --score output:
+  SESSION 100 --score (offline), start 2026-10-09T15:26:36Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+  G15 + extras (D94.4): A ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa', 'cycle_hour']; B ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa', 'cycle_hour', 'lead']
+  LGB_PARAMS (D94.5): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+  BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+    EGLC: baseline 264, A 66, B 3 fits, 34.9 s
+    LFPG: baseline 264, A 66, B 3 fits, 34.1 s
+    DSM: baseline 264, A 66, B 3 fits, 34.6 s
+    YSDU: baseline 264, A 66, B 3 fits, 35.6 s
+    RNO: baseline 264, A 66, B 3 fits, 36.7 s
+    SFO: baseline 264, A 66, B 3 fits, 35.1 s
+  common row set: every cell's A and B test rows equal the baseline's (count and cycle times): yes
+  baseline refit against session 97: cells equal 3168 of 3168; headline 2 of 2; n 6 of 6
+  fits: baseline 1584, A 396, B 18; fit time: baseline 107.1 s, A 50.0 s, B 25.3 s
+  wrote data/processed/session100_structure_cv_scores.csv: 4752 rows, SHA-256 aecc31691153331abe7964c1931e6dbb96c2b7de92dbbf4edc14b1ec687f0323
+  
+  ==========================================================================================
+  SUMMARY. BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C. Common row set (D89.5).
+  ==========================================================================================
+  
+  Per airport, pooled over folds, cycle hours and leads 3 to 24:
+    airport        n   raw_gfs  baseline         A         B
+    EGLC      96,368    0.9725    0.7742    0.7647    0.7737
+    LFPG      96,188    1.1596    0.8937    0.8864    0.9042
+    DSM       96,389    1.7582    1.2034    1.1964    1.2566
+    YSDU      95,645    1.4633    1.2149    1.2098    1.2385
+    RNO       96,342    2.1717    1.1735    1.1830    1.2848
+    SFO       96,330    1.2449    1.0390    1.0478    1.0872
+    HEADLINE            1.4617    1.0498    1.0480    1.0908
+    full precision: raw_gfs 1.4616990883475995, baseline 1.049777501605027, A 1.0480057889970193, B 1.0908190929029657
+  
+  Per fold: each airport's MAE over the fold's rows, and the fold-level MAE (unweighted mean of six):
+    fold     method       EGLC    LFPG     DSM    YSDU     RNO     SFO  fold-level
+    2023-24  raw_gfs    0.9614  1.1477  1.9144  1.4724  2.0114  1.2514      1.4598
+    2023-24  baseline   0.7491  0.8653  1.2463  1.2457  1.2148  1.0297      1.0585
+    2023-24  A          0.7353  0.8486  1.2254  1.2364  1.2126  1.0410      1.0499
+    2023-24  B          0.7409  0.8619  1.2665  1.2751  1.2780  1.0726      1.0825
+    2024-25  raw_gfs    0.9891  1.1739  1.6502  1.5053  2.2890  1.2237      1.4719
+    2024-25  baseline   0.8010  0.9434  1.1430  1.1976  1.1860  1.1095      1.0634
+    2024-25  A          0.7899  0.9367  1.1431  1.1925  1.2004  1.1211      1.0639
+    2024-25  B          0.7997  0.9524  1.2156  1.2126  1.3170  1.1587      1.1093
+    2025-26  raw_gfs    0.9672  1.1571  1.7095  1.4120  2.2152  1.2595      1.4534
+    2025-26  baseline   0.7725  0.8726  1.2208  1.2013  1.1193  0.9777      1.0274
+    2025-26  A          0.7690  0.8739  1.2208  1.2004  1.1358  0.9811      1.0302
+    2025-26  B          0.7807  0.8986  1.2875  1.2276  1.2593  1.0301      1.0806
+  
+  Six-airport mean MAE per lead (each airport pooled over folds and cycle hours):
+    lead   raw_gfs  baseline         A         B
+       3    1.3606    0.9648    0.9626    1.0205
+       4    1.3773    0.9748    0.9744    1.0180
+       5    1.3914    0.9826    0.9831    1.0269
+       6    1.4056    0.9967    0.9957    1.0456
+       7    1.4234    1.0107    1.0112    1.0631
+       8    1.4332    1.0218    1.0218    1.0789
+       9    1.4501    1.0409    1.0387    1.0812
+      10    1.4533    1.0371    1.0358    1.0743
+      11    1.4537    1.0407    1.0335    1.0716
+      12    1.4592    1.0496    1.0455    1.0913
+      13    1.4689    1.0536    1.0506    1.1002
+      14    1.4691    1.0611    1.0600    1.1092
+      15    1.4827    1.0736    1.0757    1.1091
+      16    1.4816    1.0677    1.0670    1.1027
+      17    1.4799    1.0651    1.0615    1.0942
+      18    1.4883    1.0754    1.0732    1.1142
+      19    1.5002    1.0824    1.0808    1.1265
+      20    1.5020    1.0891    1.0879    1.1352
+      21    1.5187    1.1048    1.1040    1.1356
+      22    1.5199    1.1000    1.0975    1.1292
+      23    1.5163    1.0945    1.0899    1.1244
+      24    1.5223    1.1083    1.1061    1.1465
+  
+  Smallest training count of any single model (ties: first in airport, fold, key order):
+    baseline     844  (LFPG, fold 2023-24, (cycle hour, lead) (0, 24))
+    A          3,391  (YSDU, fold 2023-24, lead 6)
+    B         74,694  (YSDU, fold 2023-24, all cells)
+  
+  D89.6 tests (incumbent minus challenger, over incumbent; ties keep the incumbent):
+    A against the baseline:
+      (a) headline reduction 0.001688 (0.169 %), above 0.01: no
+      (b) airports where the challenger is lower: 4 of 6, 4 or more: yes
+      (c) folds where the challenger is lower: 1 of 3, 2 or more: no
+      => not passed: the incumbent stays
+    B against the baseline:
+      (a) headline reduction -0.039096 (-3.910 %), above 0.01: no
+      (b) airports where the challenger is lower: 1 of 6, 4 or more: no
+      (c) folds where the challenger is lower: 0 of 3, 2 or more: no
+      => not passed: the incumbent stays
+    A against B (incumbent B) [DESCRIPTIVE: D94.6 does not use it]:
+      (a) headline reduction 0.039249 (3.925 %), above 0.01: yes
+      (b) airports where the challenger is lower: 6 of 6, 4 or more: yes
+      (c) folds where the challenger is lower: 3 of 3, 2 or more: yes
+      => PASS: the challenger replaces the incumbent
+  
+  D94.6 CHOSEN STRUCTURE: baseline (a build choice, not a result)
+  
+  end 2026-10-09T15:30:08Z; run time 212.4 s
+  exit 0
+  --meta: wrote data/processed/session100_structure_cv.meta.txt: 36 lines, SHA-256 bb0d1f5bc306352085d9340dafb503946a8671ffd1107c806aebce3defefe3c3
+
+End of session: F143 appended (0 em-dashes), index line added; archive --apply moved nothing (spans 12, keep 12, move 0; both files cmp-equal before and after); --citations 167/167 resolved, 0 doubled, 0 out of order; DECISIONS.md 62,708 bytes; STATUS.md overwritten; git status matches the scope list (4 modified, 5 untracked, including the session prompt); MLwx-stagec SHA-256 unchanged; no __pycache__ written. Check: PASS.

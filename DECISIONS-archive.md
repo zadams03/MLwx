@@ -34,6 +34,8 @@ restructure record — the meta-record of the *first* move — has itself since
 been moved here (by session 34b), immediately below the founding D1–D12/F1–F4
 material it describes moving.
 
+**Note added by session 100 (D94.1):** since session 99, entries move here by DECISIONS.md's Live index (D93.8), not by the criterion described above (D46).
+
 ---
 
 ## From "2026-08-16 — Initial decisions from planning" (D1–D12)

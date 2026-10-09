@@ -1,0 +1,33 @@
+Session 100: model-structure comparisons, A and B against the baseline (D94, F143)
+
+Record D94 and F143. Every score is a build-choice score, not a result
+(SPEC 2.5). Offline; nothing from 2026-27; development airports only.
+
+D94 accepts F142 and fixes, before any score, the rules for D82.5's two
+model-structure alternatives: A (one model per airport, fold and lead, with
+the cycle hour as an input) and B (one model per airport and fold, with lead
+and cycle hour as inputs), each against the baseline (D88.4) under D89.6,
+with the record's LightGBM settings unchanged. If both passed, B would be
+preferred unless A also beat B.
+
+New script scripts/session100_structure_cv.py imports session 97's loader,
+folds and fit. Gate: the baseline refit reproduced F139 exactly (3,168 of
+3,168 cells, headline 1.049777501605027). Then 1,584 baseline, 396 A and
+18 B fits on identical test rows.
+
+Headline MAE (degC): raw GFS 1.4617, baseline 1.0498, A 1.0480, B 1.0908.
+A against baseline: 0.17 percent lower headline (rule needs over 1
+percent), lower at 4 of 6 airports, 1 of 3 folds: not passed. B against
+baseline: 3.9 percent higher, 1 of 6 airports, 0 of 3 folds: not passed.
+Under D94.6 the baseline stays: one model per airport, cycle hour and lead.
+Scores in data/processed/session100_structure_cv_scores.csv (4,752 rows)
+with a meta file.
+
+Also the F142.6 wording fixes: PROJECT-INSTRUCTIONS sections 3 and 5 and
+its closing line now describe the planning chat's sync, and name the
+archive's Project-knowledge path; the DECISIONS.md header describes the
+Live index; the archive header gains one note (D93.8), with every other
+archive byte unchanged.
+
+Archive step: nothing moved. Citations 167 of 167 resolve. DECISIONS.md
+62,708 bytes. Scope check clean.

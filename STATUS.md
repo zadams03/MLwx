@@ -3,34 +3,32 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 9 October 2026, after session 99._
+_Last updated: 9 October 2026, after session 100._
 
 ---
 
-## Session 99: workflow overhaul (D93, F142)
+## Session 100: the curve's model structure, A and B (D94, F143)
 
-D93 accepted F141 and set a new workflow. Session 99 recorded D93 and F142.
-No model experiment was run and no build choice was made. Full output:
-`notes/session-99-output.txt`.
+D94 fixed the rules for D82.5's two model-structure alternatives before
+any score. Session 100 checked the baseline, scored both alternatives
+against it by cross-validation, and applied D94.6. These are build-choice
+scores, never results (SPEC 2.5). Full output:
+`notes/session-100-output.txt`.
 
-- **Live index (D93.8).** DECISIONS.md now opens with a Live index: D47,
-  D73, D77, D79, D82, D88, D89, F139, D93 and F142. Every other entry is in
-  DECISIONS-archive.md, verbatim and still binding. 40 spans moved; all
-  four checks of the move passed (F142.4).
-- **Size limit (D93.9).** DECISIONS.md is 55,597 bytes after the archive
-  step (it was 343,813). Above 80,000 bytes is a finding.
-- **The archive script.** `scripts/archive_decisions.py` (new, SHA-256
-  `25813993...11e8`) runs at the end of every session: `--apply --session
-  NN`, then `--citations`. Every citation resolves (169 of 169).
-- **CLAUDE.md** replaced: Read first sections (D93.16), guardrails
-  (D93.11), small context (D93.12), finding length (D93.10).
-  **PROJECT-INSTRUCTIONS.md** edited: read by need, Project-knowledge sync
-  by the planning chat (D93.15), review from the output summary, session
-  design (new section 11).
-- **The invocation (D93.16)** is fixed: "Carry out the session defined in
-  docs/sessions/session-NN.md: first read what its Read first section
-  lists, then do its steps, staying strictly within its scope. Stop at the
-  end-of-session steps and wait for my review. Do not commit anything."
+- **Gate.** The baseline refit reproduced F139 exactly: 3,168 of 3,168
+  cells, the headline and the six airport counts.
+- **Scores (headline MAE, degrees C).** Baseline 1.0498; A (one model
+  per lead, cycle hour as an input) 1.0480; B (one model per airport,
+  lead and cycle hour as inputs) 1.0908.
+- **D89.6.** A against the baseline: not passed (headline 0.17 percent
+  lower, under the 1 percent bar; 4 of 6 airports; 1 of 3 folds). B
+  against the baseline: not passed (worse at 5 of 6 airports and in all
+  3 folds).
+- **Chosen structure (D94.6): the baseline stays.** One model per
+  airport, cycle hour and lead (D88.4). This is a build choice, not a
+  result.
+- **Wording fixes (F142.6)** made in PROJECT-INSTRUCTIONS.md, the
+  DECISIONS.md header and the archive header.
 
 ---
 
@@ -48,10 +46,11 @@ curve plus the daily maximum (D82.2).
   **None has been run.** Per period, after it ends: build, fetch, score.
   The hold rule (D73.8) stands.
 - **Stage C.** Design (D82), development table (D88, F138), build-choice
-  rules (D89), and the curve's baseline scored by cross-validation (F139,
-  the incumbent, D89.7). Next: D82.5's model-structure alternatives against
-  the baseline under D89.6, one at a time (D89.10). Session order: session
-  100 runs the first (D93.6).
+  rules (D89), the baseline scored (F139), and D82.5's model-structure
+  comparisons done (D94, F143): the baseline stays. Still open: D94.5's
+  follow-up (larger settings for pooled models, the owner's decision),
+  the daily maximum (its metric fixed first, D89.8), bias drift
+  (D81.10(b)), and the claim design at stage C's lock.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
 - **Open item MMMX (D83.4).** Almost no usable observations under the
@@ -61,28 +60,31 @@ curve plus the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **Session 99's readings (F142.6), for the owner to confirm.** In brief:
-  the new CLAUDE.md has no em-dashes; the archive's new section starts
-  after two `---` lines; the D1 to D12 and F88 pointer spans moved; some
-  older wording was left (the planning guide's "re-upload" lines, the
-  archive header's D46 criterion, DECISIONS.md's "append-only" header);
-  the first `--apply` call was blocked by the auto-mode permission check
-  and run again after a backup.
-- **RESULTS.md section 7's roadmap paragraph is out of date** (D93.4). It
-  is fixed in the session that closes D82.5's model-structure comparisons.
+- **F143.7's readings, for the owner to confirm.** In brief: the gate
+  checks this script's own fold loop (built on session 97's functions);
+  the scores file's `method` column repeats the model name; the
+  descriptive A-against-B line prints "PASS"; run times in the meta were
+  passed by hand.
+- **D94.5's follow-up.** B did not beat the baseline. Whether a later
+  session tests larger settings for pooled models is the owner's
+  decision; any such test is its own build choice, in its own entry.
+- **RESULTS.md section 7's roadmap paragraph is out of date** (D93.4).
+  D93.4 ties its fix to the session that closes D82.5's model-structure
+  comparisons; whether that is now, or after D94.5's follow-up, is the
+  owner's call.
 
 ---
 
 ## Carried items
 
 - **GFS v17 (D93.5, D93.15).** A weekly scheduled task checks for the
-  Service Change Notice and alerts the owner. Planning chats do not
-  re-check. The go-live date sets period A's length.
+  Service Change Notice and alerts the owner. The go-live date sets
+  period A's length.
 - **lightgbm (D93.3).** New scripts may import lightgbm directly, with no
   libomp shim. scikit-learn stays pinned.
 - **Frozen scripts (D62.3(a), restated in D93.8)** are never edited.
 - **Later work (D90.12).** A `tests/` folder after stage C's first D82.5
-  comparison; a `src/` package only at stage G.
+  comparison (now done); a `src/` package only at stage G.
 - **MOSMIX notes (D80.4, D81.6, F130.5, F132.5).** Matching rule is the
   owner's later decision; EGLC station position note.
 - **Bias drift (D78.2, D81.10(b)).** A candidate build choice for stage C;
@@ -93,4 +95,4 @@ curve plus the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 99. If it passed, the owner commits and pushes (`git commit -F docs/commits/commit-99.txt`) and the planning chat syncs Project knowledge (PROJECT-INSTRUCTIONS section 5: STATUS, DECISIONS, CLAUDE, PROJECT-INSTRUCTIONS, and DECISIONS-archive, which is new there). Then plan session 100: fix D93.6's four choices in its D entry, then run the first of D82.5's alternatives against the baseline under D89.6.
+**Next planning session:** Review session 100. If it passed, the owner commits and pushes (`git commit -F docs/commits/commit-100.txt`) and the planning chat syncs Project knowledge. Then plan the next stage C step: the owner decides D94.5's follow-up (B did not pass); then the daily maximum (its metric fixed in its own entry first, D89.8) and the `tests/` folder (D90.12).

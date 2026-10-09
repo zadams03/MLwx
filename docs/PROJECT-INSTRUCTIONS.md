@@ -60,7 +60,7 @@ Claude Code reads what each session prompt's Read first section lists
 1. **Read this guide and STATUS.md in full.**
 2. **Staleness check: the critical guard.** Cross-check STATUS against
    memory. If memory reflects a more recent session than STATUS shows, the
-   uploaded docs are stale. Stop and tell Zac to re-upload the current files
+   uploaded docs are stale. Stop and sync Project knowledge (section 5), or ask Zac to upload the current files if the sync fails,
    before doing any work. Stale docs look authoritative but are not.
 3. **Read STATUS's "Next planning session" line** (section 6) and start there,
    not from a blank slate.
@@ -106,7 +106,8 @@ sync before the commit: Project knowledge must match the committed repo.
   `DECISIONS-archive.md` whenever they changed (almost every session);
   `SPEC.md`, `RESULTS.md`, `CLAUDE.md` and `docs/PROJECT-INSTRUCTIONS.md`
   (kept in Project knowledge as `PROJECT-INSTRUCTIONS.md`) only when the
-  session edited them.
+  session edited them. `DECISIONS-archive.md` is kept in Project knowledge
+  as `claude/DECISIONS-archive.md`.
 - **How:** stage each file from the linked computer into the workspace,
   copy it into the working directory, and write it with project_write's
   `local_path` to the same Project-knowledge path, so its contents never
@@ -249,5 +250,5 @@ notice something important that exists only in the current chat, say so and get 
 
 ---
 
-*This guide is itself a file: if the workflow changes, update it and re-upload it. Everything here
+*This guide is itself a file: if the workflow changes, update it; the planning chat syncs it to Project knowledge. Everything here
 serves one rule — if it matters, it lives in a file, not in chat.*

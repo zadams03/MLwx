@@ -1,0 +1,36 @@
+session100_structure_cv.meta.txt
+written 2026-10-09T15:30:21Z by scripts/session100_structure_cv.py --meta
+
+What the file is (BUILD-CHOICE SCORES, NOT RESULTS, SPEC 2.5):
+  session100_structure_cv_scores.csv: per model (baseline, A, B), airport, fold, cycle hour and
+    lead 3 to 24: n, MAE and mean error (obs_tmpc minus forecast), full precision. Columns are
+    session 97's plus model; method repeats the model's name, so the baseline rows' first eight
+    columns match session 97's baseline rows. Common row set (D89.5).
+  baseline: D88.4, one model per airport, fold, cycle hour and lead (1,584 fits).
+  A: one model per airport, fold and lead; G15 then cycle_hour (396 fits).
+  B: one model per airport and fold; G15, cycle_hour, then lead (18 fits).
+
+Rules: DECISIONS D94 (structures, inputs, settings, choice), D89.3 (folds), D89.5 (metric),
+  D89.6 (rule).
+
+Inputs and their SHA-256:
+  MLwx-stagec/stagec_dev_EGLC.csv.gz af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_LFPG.csv.gz 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_KDSM.csv.gz 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_YSDU.csv.gz 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_KRNO.csv.gz 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_KSFO.csv.gz 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  data/processed/session97_stagec_cv_scores.csv 5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76
+  scripts/session97_stagec_cv.py 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91
+  scripts/session62_reserved_confirm.py 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4
+
+Script: scripts/session100_structure_cv.py 67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957
+
+Outputs and their SHA-256:
+  data/processed/session100_structure_cv_scores.csv aecc31691153331abe7964c1931e6dbb96c2b7de92dbbf4edc14b1ec687f0323
+
+LGB_PARAMS as passed (from session 97, which takes them from scripts/session62_reserved_confirm.py): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+G15 column order (same source): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+Fit counts: --gate baseline 1,584; --score baseline 1,584, A 396, B 18. No model saved.
+Run times (as printed by the runs): --gate 124.4 s (1,584 baseline fits); --score 212.4 s in all, fit time baseline 107.1 s, A 50.0 s, B 25.3 s
+Versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
