@@ -1,12 +1,14 @@
-"""The archive tool and figures already on record (DECISIONS D95.8).
+"""The archive tool, figures and lookups already on record (DECISIONS D95.8, D96).
 Offline; writes only to temporary folders.
 
 Run from the repo root: python3 -m unittest discover -s tests -v
 """
 
 import csv
+import hashlib
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -158,6 +160,49 @@ class F122EglcGate(unittest.TestCase):
         pred = m.predict(s81.matrix(test, s81.G15))
         errs = [(r["temperature_grib_c"] + float(pred[i])) - r["obs_c"] for i, r in enumerate(test)]
         self.assertEqual(s81.rec.mae(errs), F122_EGLC)
+
+
+def sha256_of(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+class RecordLookups(unittest.TestCase):
+    """The record lookups that the stage C pull and stage B depend on (D96.2,
+    D96.3). F122 is in DECISIONS-archive.md, so both files are read together.
+    Importing these scripts runs no mode and writes nothing."""
+
+    @classmethod
+    def setUpClass(cls):
+        # See test_guards.py: skip the libomp shim's process restart (D93.3).
+        os.environ.setdefault("MLWX_LIBOMP_PATH_SET", "1")
+        sys.path.insert(0, str(SCRIPTS))
+        import session87_forward_score as s87
+        import session91_grib_pull as s91
+        cls.s87, cls.s91 = s87, s91
+
+    def test_s91_training_set_sha_matches_f122_3(self):
+        text = self.s87.read_decisions_text()
+        found = re.findall(r"session81_training_set\.csv`,\s+[\d,]+ data rows,\s+SHA-256 `([0-9a-f]{64})`", text)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(self.s91.TRAINING_SET_SHA256, found[0])
+        self.assertEqual(self.s91.TRAINING_SET_SHA256, sha256_of(PROCESSED / "session81_training_set.csv"))
+
+    def test_s87_manifest_pattern_finds_f122_5_value(self):
+        # The pattern in session87_forward_score.load_frozen_models.
+        text = self.s87.read_decisions_text()
+        found = re.findall(r"manifest\.json`, SHA-256\s+`([0-9a-f]{64})`", text)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0], sha256_of(ROOT / "data" / "models" / "session81" / "manifest.json"))
+
+    def test_s87_f122_5_table_has_all_six_airports(self):
+        # The slice and row pattern in session87_forward_score.load_frozen_models.
+        text = self.s87.read_decisions_text()
+        self.assertEqual(text.count("**F122.5"), 1)
+        self.assertEqual(text.count("**F122.6"), 1)
+        block = text[text.index("**F122.5"):text.index("**F122.6")]
+        rows = re.findall(r"^\| (EGLC|LFPG|DSM|YSDU|RNO|KSFO \(SFO\)) \| \d+ \| `[0-9a-f]{64}` \| "
+                          r"`[0-9a-f]{64}` \| -?[0-9.]+ \|", block, re.M)
+        self.assertEqual(sorted(rows), sorted(["EGLC", "LFPG", "DSM", "YSDU", "RNO", "KSFO (SFO)"]))
 
 
 if __name__ == "__main__":

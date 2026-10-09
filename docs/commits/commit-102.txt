@@ -1,0 +1,37 @@
+Session 102: D96, session 91's gate fixed, and the f025 to f048 test chunk passed it (F145)
+
+Records D96 (owner decisions after session 101): F144 accepted, how
+session 91's gate finds F122.3, what session 86's gate can still do,
+the 25-48 Release notes, and the order of the next steps (session 103
+bias drift, session 104 leads 25 to 48 and the daily maximum).
+
+Session 91's --gate now compares the training set with a fixed F122.3
+SHA-256 (TRAINING_SET_SHA256) instead of searching DECISIONS.md, so it
+no longer depends on where F122 lives. The 0-24 and 25-48 plans and
+both full (cycle, hour) key lists are byte-identical before and after
+(hashes equal F144's). DECISIONS_FILE is kept: sessions 92 and 95 use
+it. New SHA-256 557e8832...1b75.
+
+The workflow gains RELEASE_NOTES (D96.4): 25-48 has its own text, 0-24
+is unchanged character for character. YAML and Actions untested
+locally. New SHA-256 4e0e73cb...f5d0.
+
+tests/test_record.py gains three record-lookup tests: session 91's
+fixed value against F122.3 and the committed training set, and session
+87's two F122.5 lookups that stage B depends on. 24 of 24 pass.
+
+D95.7's test chunk (hours 21 to 48, 2022-01-12, 2023-07-12,
+2024-04-12, all four cycles): 336 files, 3,360 of 3,360 messages ok,
+2.62 GB, 865 s. The gate: GATE PASSED, 18 of 18 station-days, all 7
+columns exact. The f025 to f048 pull may now be run.
+
+Open (F145.6): session 92's local --gate and session 95's checker still
+look up F122.3 and F133 to F136 in DECISIONS.md by text. Neither is
+used by the workflow's verify step. To be handled when session 104
+plans the 25-48 download and checks.
+
+Archive step moved F144. DECISIONS.md 62,160 bytes; 170 citations, 0
+unresolved. STATUS.md overwritten.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01KAj4WniZNMq9vssYwAyvQy

@@ -36,6 +36,7 @@ env:
   HOURS: ${{ inputs.hours == '25-48' && '25-48' || '0-24' }}
   RELEASE_TAG: ${{ inputs.hours == '25-48' && 'stagec-grib-pull-f025-048' || 'stagec-grib-pull-v1' }}
   RELEASE_TITLE: ${{ inputs.hours == '25-48' && 'Stage C GRIB pull, forecast hours 25 to 48' || 'Stage C GRIB pull' }}
+  RELEASE_NOTES: ${{ inputs.hours == '25-48' && 'Raw GFS values at forecast hours 25 to 48, at the four grid points around each pull airport (DECISIONS D82.4, D83, D95). One month per set of three files.' || 'Raw GFS values at the four grid points around each pull airport (DECISIONS D82.4, D83). One month per set of three files.' }}
 
 jobs:
   plan:
@@ -123,7 +124,7 @@ jobs:
           if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
               --title "$RELEASE_TITLE" \
-              --notes "Raw GFS values at the four grid points around each pull airport (DECISIONS D82.4, D83). One month per set of three files." \
+              --notes "$RELEASE_NOTES" \
               || gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null
           fi
           gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \

@@ -3,31 +3,25 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 9 October 2026, after session 101._
+_Last updated: 9 October 2026, after session 102._
 
 ---
 
-## Session 101: tests, RESULTS section 7, and the f025 to f048 pull prepared (D95, F144)
+## Session 102: the gate fixed and passed (D96, F145)
 
-Full output: `notes/session-101-output.txt`.
+Full output: `notes/session-102-output.txt`.
 
-- **D95** recorded: the model-structure question is closed (the baseline
-  stays), and the order of the next steps is set.
-- **RESULTS.md section 7**'s roadmap bullet updated (D93.4 done).
-- **`tests/`** added (D90.12, D95.8): offline `unittest` checks of the
-  leakage guards, the archive tool and recorded figures (F139, F143.6,
-  F122.4 at EGLC). Run: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest
-  discover -s tests -v`.
-- **The pull script's cycle floor (D95.5):** no cycle before 2021-03-22T12
-  is planned or requested. The 0-24 plan is byte-for-byte unchanged. The
-  25-48 plan: 7,826 cycles, 187,768 files, 1,877,680 messages.
-- **The workflow's `hours` input (D95.6):** `0-24` (default, unchanged
-  behaviour) or `25-48` (Release `stagec-grib-pull-f025-048`). Not run.
-- **D95.7's gate was not run.** Session 91's `--gate` looks for F122.3's
-  training-set SHA-256 in DECISIONS.md, but F122 is in the archive since
-  session 99, so the gate stops with an error before any comparison. The
-  fix needs a script edit this session did not allow; the owner chose to
-  stop. **The f025 to f048 pull is not ready until the gate passes.**
+- **D96** recorded. **Session 91's `--gate`** now checks the training set
+  against a fixed F122.3 value (`TRAINING_SET_SHA256`); a test checks that
+  value against the record. The plans for hours 0-24 and 25-48 are unchanged.
+- **The workflow** has its own Release notes text for `25-48` (D96.4). Not
+  run; YAML and GitHub expressions untested.
+- **Tests:** 3 added (record lookups for sessions 91 and 87); 24 in all.
+- **D95.7's test chunk and gate:** hours 21-48, three dates, 3,360 of 3,360
+  messages ok. **GATE PASSED**, 18 of 18 station-days, exact equality. The
+  f025 to f048 pull is ready to run.
+- **D96.3:** session 86's `--gate` can no longer be re-run (it reads
+  DECISIONS.md only); its `--build` mode, which stage B uses, is unaffected.
 
 ---
 
@@ -43,13 +37,14 @@ curve plus the daily maximum (D82.2).
 - **Stage B: the 2026-27 GFS forward test (D73, D77.6, D79).**
   Pre-registered, models frozen, all three scripts gated (F128, F129).
   **None has been run.** Per period, after it ends: build, fetch, score.
-  The hold rule (D73.8) stands.
+  The hold rule (D73.8) stands. Session 86's `--gate` cannot be re-run
+  (D96.3); `--build` is unaffected.
 - **Stage C.** Design (D82), development table (D88, F138), build-choice
   rules (D89), the baseline scored (F139); the structure question closed,
-  the baseline stays (D94, F143, D95.2). The f025 to f048 pull is prepared
-  (F144) but its local gate has not run (D95.7). Then, per D95.4: bias
-  drift (session 102), then leads 25 to 48 and the daily maximum (its
-  metric fixed first, D89.8). The claim batch (D82.7: EDDM, KORD, CYYZ,
+  the baseline stays (D94, F143, D95.2). The f025 to f048 pull passed its
+  local gate (F145). Next, per D96.5: the owner runs it, then bias drift
+  (session 103), then leads 25 to 48 and the daily maximum (session 104,
+  its metric fixed first, D89.8). The claim batch (D82.7: EDDM, KORD, CYYZ,
   ZGSZ, ZUCK, NZWN) is judged at stage C's lock.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
@@ -60,15 +55,12 @@ curve plus the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **The gate's lookup (F144.6, reading 1).** How session 91's `--gate`
-  should find F122.3's SHA-256 now that F122 is archived (for example,
-  read both DECISIONS files, or check the file against a fixed value). Any
-  script that finds an entry by text in DECISIONS.md may have the same
-  problem; no other script was surveyed.
-- **D95.4's order.** The owner's Actions run of 2022-01 at `25-48` waited on
-  the gate. Whether session 102 fixes the gate and runs it before bias
-  drift is the owner's call.
-- **F144.6's other readings**, for the owner to confirm.
+- **Other scripts that find entries in DECISIONS.md by text (F145.6).**
+  `session92_verify_chunk.py` (`--gate`, local only) and
+  `session95_check_release.py` read F122 and F133 to F136 values from
+  DECISIONS.md, so they fail or may fail since the archive move. Not fixed.
+  Whether `session95_check_release.py` still runs is unchecked.
+- **F145.6's other readings**, for the owner to confirm.
 
 ---
 
@@ -89,4 +81,4 @@ curve plus the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 101. Step 6 (the local test chunk and D95.7's gate) did not run: session 91's `--gate` cannot find F122.3 in DECISIONS.md. If the rest passed, the owner commits and pushes (`git commit -F docs/commits/commit-101.txt`) and the planning chat syncs Project knowledge. Then decide how the gate finds F122.3 and plan a session that makes that fix and runs the test chunk through the gate. Only after it passes does the owner run the workflow with `hours` = `25-48` for month 2022-01 alone, then for 2021-03..2026-07 once that month's verify step has passed. Plan session 102: bias drift (D95.4), or the gate fix first, as the owner decides.
+**Next planning session:** Review session 102 (the gate passed). The owner commits and pushes (`git commit -F docs/commits/commit-102.txt`), the planning chat syncs Project knowledge, and the owner runs the workflow with `hours` = `25-48` for 2022-01 alone, then 2021-03..2026-07 once that month's verify step has passed. Then plan session 103, bias drift (D96.5).

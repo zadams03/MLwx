@@ -36,6 +36,10 @@ folders, deleted after), and finish in seconds.
 - F139's headline MAEs (baseline and raw GFS), rebuilt from the committed
   cell scores, within 1e-12.
 - Session 100's baseline score rows equal session 97's (F143.6).
+- Record lookups (D96.2, D96.3): session 91's fixed `TRAINING_SET_SHA256`
+  equals F122.3 in the two DECISIONS files and the committed training set;
+  session 87's `manifest.json` pattern finds F122.5's one value, which equals
+  the committed file, and F122.5's table has all six airports.
 - F122.4's gate at EGLC: the `B+D,L,R,T` model refit on F109's training
   rows gives the recorded MAE exactly, using the functions in
   `scripts/session81_freeze_forward_models.py`.

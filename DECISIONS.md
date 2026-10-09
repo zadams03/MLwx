@@ -19,7 +19,8 @@ It records choices made, why they were made, open questions, and findings.
 - F139: the baseline's cross-validation scores (the incumbent, D89.7).
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
 - D95: the structure question closed, the next steps, tests, and the f025 to f048 pull.
-- F144: session 101's finding.
+- D96: the gate's lookup, session 86's gate, the 25-48 Release notes, and the order of the next steps.
+- F145: session 102's finding.
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -827,20 +828,65 @@ read or scored.
 
 ---
 
-## 2026-10-09: Session 101 finding: RESULTS section 7, the tests folder, and the f025 to f048 pull prepared; its gate not run
+## 2026-10-09: Session 102 decision: F144 accepted, the gate's lookup, session 86's gate, and the order of the next steps (owner, planning chat)
 
-**F144. Session 101. No model was fit for a build choice and no score was computed; nothing from 2026-27; no network call. D95 was recorded first. RESULTS.md section 7 was updated, `tests/` was added, the pull script gained D95.5's cycle floor and the workflow D95.6's `hours` input. D95.7's gate was not run: session 91's `--gate` cannot find F122.3 in DECISIONS.md since session 99's move, and the owner chose to stop there. So the f025 to f048 pull is not yet ready (D95.7). Pull script SHA-256 `9e7439d7cdb5bcde5ab54d8280199de2490654b5977f41f68c07a1e54f3aaa22`; workflow `4c452428051469f20561670efb2bb895c2fb74e9d220a6464a7442053e01e4dd`. Full real output: `notes/session-101-output.txt`. Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+**D96. Owner decisions, planning chat (after session 101): F144 accepted,
+how session 91's gate finds F122.3, what session 86's gate can still do,
+the 25-48 Release notes, and the order of the next steps.** Written at the
+start of session 102, before any other edit. No 2026-27 value has been
+read or scored.
 
-- **F144.1 D95 and RESULTS.** D95 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes; Live index changed as D95.9. RESULTS section 7's roadmap bullet replaced by the prompt's block (found once); footer gained "and after session 101 (DECISIONS D95)". Root README gained one `tests/` line.
-- **F144.2 The tests** (`unittest`, standard library plus installed packages): `tests/test_guards.py` 13 tests, `tests/test_record.py` 8 tests, `tests/README.md`. The end-of-session run: 21 of 21 passed, 0 skipped. No test is skipped: F122.4's EGLC gate calls session 81's `load_training_set`, `fit` and `matrix` (importing it runs no mode) and gives 1.0007550363323212 exactly. At Step 3, 17 of 18 passed; the one failure was `--citations` finding F144 unresolved before this entry existed (as F142.5).
-- **F144.3 The cycle floor (D95.5).** `FIRST_CYCLE` 2021-03-22T12: `check_cycle` refuses an earlier cycle and `plan_chunk` leaves such cycles out. Hours 0-24: `--plan` output and the full (cycle, hour) key list byte-equal before and after (65 months, 7,828 cycles, 195,600 files, 1,932,528 messages, as F133.5). `--guard-check` 12 of 12, including the two new cases.
-- **F144.4 The 25-48 plan.** 65 months, 7,826 cycles, 187,768 files, 1,877,680 messages (0 absent by design); first cycle 2021-03-22T12, last 2026-07-30T18; valid 2021-03-24T00 to 2026-07-31T23, 0 outside. The floor removed 8 files (2021-03-22T00 f048, 2021-03-22T06 f042 to f048). The verifier's imported plan gives the same counts.
-- **F144.5 The workflow (D95.6).** Input `hours` (choice, default `0-24`) sets `HOURS`, `RELEASE_TAG` and `RELEASE_TITLE`; for `0-24` every command is unchanged and the title is the same string. Header comment and publish step name now mention the verify step (D85.1). Month expansion: 12 of 12 cases as intended. Not tested locally: YAML parsing, GitHub expressions, `gh`, Actions.
-- **F144.6 Readings for the owner.**
-  1. Session 91's `--gate` (l.1180-1182) and possibly other scripts look for entries in DECISIONS.md by text. Since D93.8 moves entries to the archive, such lookups fail. Fixing the gate needs an edit beyond D95.5's "nothing else". Other scripts were not surveyed.
-  2. The tests set `MLWX_LIBOMP_PATH_SET` before importing scripts that carry the libomp shim, which would otherwise restart Python (D93.3 says lightgbm needs no shim).
-  3. The archive tool test removes one ID from a temporary copy's Live index, so that `--apply` always has something to move and its four checks run.
-  4. F133.4's six month-expansion inputs are not recorded in session 91's output; six were chosen.
-  5. For `25-48` the Release notes text is the same as v1's.
-  6. The pull script's docstring hard-limits line names the floor.
-- **F144.7 What this did not do.** No test chunk, no gate, no network call. No push, workflow run, Release change or `gh` call. No build choice or score; nothing from 2026-27; no non-development airport's observation. No other script edited; no frozen script edited; SPEC.md and CLAUDE.md not edited; nothing installed. Nothing committed and no commit message written.
+- **D96.1 F144 accepted,** with its six readings. Reading 1 is handled by
+  D96.2 and D96.3. Reading 5 is handled by D96.4. Readings 2, 3, 4 and 6
+  change nothing.
+- **D96.2 Session 91's gate.** It stops looking for F122.3 in
+  DECISIONS.md. It holds F122.3's training-set SHA-256 as a fixed value
+  in the script (as `session87_forward_score.py` already does), and a test
+  checks that value against the record in both DECISIONS files. So the
+  script no longer depends on where an entry lives, and a disagreement
+  between script and record fails the test suite. Nothing else in the
+  script changes; its plans for hours 0-24 and 25-48 stay byte-for-byte
+  as F144 recorded.
+- **D96.3 Session 86's gate.** A survey at session 101's review found
+  three scripts that read a DECISIONS file: `session87_forward_score.py`
+  reads both files (unaffected); `session91_grib_pull.py` (D96.2); and
+  `session86_forward_build.py`, which reads DECISIONS.md alone, for
+  F122.3 and F122.5, only inside its `--gate` mode (`run_gate` and
+  `plumbing`). Its `--build` mode, the one stage B uses, reads neither
+  file. Session 86 is frozen (D62.3(a)) and is not edited. So its
+  `--gate`, which passed once (F128), can no longer be re-run as it
+  stands. This loses no check stage B needs. A test guards the lookups
+  stage B does use (session 87's).
+- **D96.4 The 25-48 Release notes.** For `hours` = `25-48` the Release
+  notes say "Raw GFS values at forecast hours 25 to 48, at the four grid
+  points around each pull airport (DECISIONS D82.4, D83, D95). One month
+  per set of three files." For `0-24` nothing changes.
+- **D96.5 Order of the next steps (replaces D95.4's session numbers).**
+  Session 102: this entry, the gate fix, and D95.7's test chunk and gate.
+  If the gate passes, the owner runs the workflow with `hours` = `25-48`
+  for 2022-01 alone, then for 2021-03..2026-07 once that month's verify
+  step has passed. Session 103: bias drift (D78.2, D81.10(b)), as a build
+  choice against the baseline. Session 104: download and verify the 25-48
+  pull, extend the development table and the baseline to leads 25 to 48,
+  fix the daily maximum's metric in its own entry (D89.8), and score it.
+- **D96.6 Unchanged:** D95.5 to D95.8.
+- **D96.7 Live index.** Removed (archived): F144, which is settled. Added:
+  D96 and F145. D95 stays (D95.5 to D95.8 are in force). After session
+  102: D47, D73, D77, D79, D82, D88, D89, F139, D93, D95, D96, F145.
+
+---
+
+## 2026-10-09: Session 102 finding: the gate fixed, and the f025 to f048 test chunk passed it
+
+**F145. Session 102. D96 was recorded first. Session 91's `--gate` now compares the training set with a fixed F122.3 value; the 25-48 Release has its own notes text; three record-lookup tests were added; and D95.7's test chunk (hours 21 to 48, three dates, all four cycles) passed the gate: GATE PASSED, 18 of 18 station-days, every column 18 of 18, exact equality. No model fit, no score, nothing from 2026-27, no non-development observation. Pull script SHA-256 `557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675`; workflow `4e0e73cbb410c995d9d0ffed00cf87414ddb114749bd25330b07e1d8c89ef5d0`. Full output: `notes/session-102-output.txt`. Run 2026-10-09. Python 3.12.2.**
+
+- **F145.1 The gate (D96.2).** Added `TRAINING_SET_SHA256` (`# F122.3`) to `session91_grib_pull.py`; `run_gate` compares with it; the regex is gone. `--plan` for 0-24 and 25-48 and both (cycle, hour) key lists are byte-equal before and after (195,600 and 187,768 keys; hashes equal F144's; the list format is "ISO cycle,hour" per line). `--guard-check` 12 of 12. A dummy extract now passes the training-set check and stops for "no rows" (18 not rebuilt), with no AttributeError.
+- **F145.2 `DECISIONS_FILE` kept.** The prompt allowed removing it only if unused. `session92_verify_chunk.py` (l.286, its local `--gate`) and `session95_check_release.py` (l.73) use `p91.DECISIONS_FILE`, so it stays.
+- **F145.3 The workflow (D96.4).** New env `RELEASE_NOTES` and `--notes "$RELEASE_NOTES"`. The 0-24 string is identical to the old one (checked by script); only 3 lines changed. Not tested: YAML parsing, GitHub expressions, `gh`, Actions.
+- **F145.4 Tests.** 3 added to `tests/test_record.py` (s91's fixed value against F122.3 and the file; s87's manifest pattern finds F122.5's one value, equal to the file; F122.5's table has six airports). Session 87 imports with no side effect. The suite has 24 tests; at the Step 4 run 23 passed and the citations test failed only because D96 cited F145 before it existed. Final run: see the output file.
+- **F145.5 The test chunk.** 12 cycles, 336 files, 3,360 messages: ok 3,360, ok (whole file) 0, absent by design 0, idx missing 0, check failed 0. Requests: 336 `.idx`, 3,360 message; 1 retry; 0 HTTP 404. 2,623,485,001 bytes; 865 s (about 14.4 min). Temporary folder deleted.
+- **F145.6 Readings for the owner.**
+  1. `session92_verify_chunk.py` (`--gate`, local only) and `session95_check_release.py` read F122.3 and F133 to F136 values from DECISIONS.md by text, so they have the same archive problem. The workflow's verify step does not use `--gate`. Not fixed (out of scope); whether `session95_check_release.py` still runs is unchecked.
+  2. The key-list format was not recorded in F144; it was recovered by trying formats, and both hashes then matched F144's.
+  3. The gate covers leads 24 to 29 only; the 25-48 pull's own checks are the verifier's (D84.4) in the workflow.
+- **F145.7 Not done.** No push, workflow run, Release change or `gh` call. No script edited except `session91_grib_pull.py`; no frozen script edited. SPEC.md, RESULTS.md, README.md, CLAUDE.md not edited. Nothing committed and no commit message written.

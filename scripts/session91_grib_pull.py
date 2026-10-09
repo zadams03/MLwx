@@ -79,6 +79,7 @@ AIRPORTS_90 = ROOT / "data" / "processed" / "session90_airports.csv"
 POSITIONS = ROOT / "data" / "processed" / "session91_pull_airports.csv"
 POSITIONS_META = ROOT / "data" / "processed" / "session91_pull_airports.csv.meta.txt"
 TRAINING_SET = ROOT / "data" / "processed" / "session81_training_set.csv"
+TRAINING_SET_SHA256 = "ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a"   # F122.3
 PARAMS_CSVS = [
     ROOT / "data" / "raw" / "diagnostics" / "session37" / "session37_elevation_correction_params.csv",
     ROOT / "data" / "raw" / "diagnostics" / "session76" / "session76_elevation_correction_params.csv",
@@ -1176,11 +1177,9 @@ def run_gate(args):
     print(f"chunk {name}; positions file SHA-256 {pos_sha}; recorded in the chunk's meta: {pos_sha in meta_txt}")
     if pos_sha not in meta_txt:
         raise SystemExit("STOP: the chunk was not made with this positions file")
-    m = re.search(r"session81_training_set\.csv`,\s+[\d,]+ data rows,\s+SHA-256 `([0-9a-f]{64})`",
-                  DECISIONS_FILE.read_text())
     have = sha256_file(TRAINING_SET)
-    print(f"training set SHA-256 {have}; F122.3 {m.group(1)}; equal: {have == m.group(1)}")
-    if have != m.group(1):
+    print(f"training set SHA-256 {have}; F122.3 {TRAINING_SET_SHA256}; equal: {have == TRAINING_SET_SHA256}")
+    if have != TRAINING_SET_SHA256:
         raise SystemExit("STOP: the training set differs from F122.3")
     airports = load_airports()
     positions, _ = read_positions()

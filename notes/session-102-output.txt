@@ -1,0 +1,102 @@
+SESSION 102 SUMMARY
+Done: D96 recorded; session 91's gate fixed (fixed F122.3 value); 25-48 Release notes; 3 tests; test chunk and gate run; F145 recorded; archive step; STATUS.
+Checks:
+ Step 0 preflight ........................ PASS (21 of 21 tests)
+ Step 1 D96 copy (diff, cmp, 0 em-dashes) . PASS
+ Step 2 plans + key lists byte-equal ...... PASS (hashes equal F144); --guard-check 12 of 12; dummy gate no AttributeError
+ Step 3 workflow notes (0-24 unchanged) ... PASS (YAML/Actions untested)
+ Step 4 tests ............................. PASS, 24 of 24 at the end (23 of 24 mid-session: F145 not yet written)
+ Step 5 test chunk + gate ................. PASS: GATE PASSED, 18 of 18, all 7 columns 18 of 18, 0 mismatches
+Numbers: chunk 336 files, 3,360 messages all ok; 2,623,485,001 B; 865 s; 1 retry. Script SHA-256 557e8832...1b75; workflow 4e0e73cb...5d0.
+Archive: F144 moved to DECISIONS-archive.md. DECISIONS.md 62,160 bytes (limit 80,000). Citations: 170 resolved, 0 unresolved.
+Scope: git status shows only the scope-list files (plus the prompt and this file). No breach.
+Readings: (1) DECISIONS_FILE kept because session92 and session95 scripts use it. (2) Those two scripts also look up values in DECISIONS.md and may fail (not fixed). (3) Key-list format recovered by trial.
+Open: see F145.6. Nothing committed.
+
+SESSION 102 OUTPUT (summary is added at the end of the session; checkpoints follow)
+
+CHECKPOINTS
+Step 0: preflight. git status only the prompt file; last entries D95, F144, no D96/F145; SHA-256 of session91 script, workflow and training set equal F144; 21 of 21 tests pass. PASS. Files changed: none.
+Step 1: D96 copied from the prompt (lines 73-117) to the end of DECISIONS.md (lines 850-894) after '---' and a blank line; diff and cmp equal; em-dashes 0. Live index: F144 line replaced by D96 line (F145 added at end of session). PASS. Files: DECISIONS.md.
+Step 2: session 91's gate (D96.2). Before the edit, --plan and the (cycle,hour) key lists saved to a mktemp -d folder; key-list format "ISO cycle,hour" per line (recovered by trying formats; F144 does not record it): 0-24 195,600 keys SHA-256 17eeb3cf...9443, 25-48 187,768 keys 5b91a41e...4489, both equal F144. Edited scripts/session91_grib_pull.py: added TRAINING_SET_SHA256 (# F122.3); run_gate compares the file's SHA-256 with it (printed line and STOP kept); regex removed.
+  DECISIONS_FILE KEPT: grep shows scripts/session92_verify_chunk.py l.286 (its local --gate) and scripts/session95_check_release.py l.73 use p91.DECISIONS_FILE. (I first removed it, saw that, and restored it.) Open question for the owner: those two scripts also look up F122.3/F133/F134/F135/F136 values in DECISIONS.md and have the same archive problem (session92 --gate is local-only; the workflow's verify step does not use --gate). Not fixed (scope).
+  Checks: --plan 0-24 and 25-48 byte-equal (cmp) before/after; key lists byte-equal, same hashes; --guard-check 12 of 12 OK; dummy extract (empty points file, meta with positions SHA-256 only) gate: training-set line printed with equal: True, then 18 station-days "NOT REBUILT" (KeyError, no rows), "GATE NOT PASSED", rc 1, no AttributeError. Temp dummy deleted.
+  New SHA-256 scripts/session91_grib_pull.py: 557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675. Diff: 3 lines added (constant, printed line, comparison), 4 removed (regex search over 2 lines, old printed line, old comparison), nothing else. PASS.
+Step 3: workflow Release notes (D96.4). .github/workflows/stagec-grib-pull.yml: added top-level env RELEASE_NOTES (same inputs.hours == '25-48' && ... || ... form as RELEASE_TITLE); 25-48 text is D96.4's; 0-24 text is the old --notes string, checked identical by script against git HEAD; the publish step now has --notes "$RELEASE_NOTES". Diff is 3 lines (1 added env line, 1 line replaced); every other line and command unchanged for 0-24. New SHA-256 4e0e73cbb410c995d9d0ffed00cf87414ddb114749bd25330b07e1d8c89ef5d0. Not tested locally: YAML parsing, GitHub expressions, gh, Actions. PASS (local parts).
+Step 4: tests/test_record.py gained class RecordLookups (3 tests): (1) session91_grib_pull.TRAINING_SET_SHA256 equals the one F122.3 value found by text in both DECISIONS files read together (session87's read_decisions_text) and the committed training set's SHA-256; (2) session 87's manifest.json pattern (from load_frozen_models) finds exactly one value, F122.5's, equal to data/models/session81/manifest.json's SHA-256; (3) text between **F122.5 and **F122.6 exists once each and its table has all six airports. Session 87 imports with no side effect (checked first: import runs no mode, MLWX_LIBOMP_PATH_SET set before import), so its own read_decisions_text is used; its two patterns are copied into the test (they are inside load_frozen_models, which also loads models, so they cannot be called alone). tests/README.md: one 4-line bullet added. File docstring line updated.
+  Suite: 24 tests, 0.37 s. 23 pass, 1 fails: test_citations_real_files_resolve, because D96 cites F145, which is written at the end of the session (unresolved: F145 at DECISIONS.md lines 893-894), as F144.2 saw for F144. The 3 new tests pass. Expected to pass once F145 exists; re-checked at the end. Files: tests/test_record.py, tests/README.md.
+Step 5: test chunk and gate (D95.7). PASS: GATE PASSED.
+  chunk command: --chunk --dates 2022-01-12,2023-07-12,2024-04-12 --hours 21-48 --workers 8 (script SHA-256 557e8832...1b75)
+  chunk meta (full):
+    stage C GRIB pull, chunk test (DECISIONS D82.4, D83.5)
+    run start (UTC)   : 2026-10-09T19:32:23Z
+    run end (UTC)     : 2026-10-09T19:46:48Z
+    seconds           : 865.1
+    arguments         : --chunk --dates 2022-01-12,2023-07-12,2024-04-12 --hours 21-48 --out /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/tmp.RQoqse3Imk --workers 8
+    cycles            : 12 (2022-01-12T00:00Z to 2024-04-12T18:00Z)
+    files             : 336
+    messages          : 3360 manifest rows; ok 3360; absent by design 0; idx missing 0; check failed 0; ok (whole file) 0
+    points rows       : 17136 (336 files x 51 airports)
+    requests          : idx 336, message 3360, whole file 0; retries 1; HTTP 404 0
+    bytes downloaded  : idx 13,866,046, message 2,609,618,955, whole file 0, total 2,623,485,001
+    whole-file fallback (D86.2): whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+    gfs_points_test.csv.gz sha256 46bf6c52899458b488f70d842735eeae2fe94353c11ac8f916c945e72f3d57d1 (2,083,638 B)
+    manifest_test.csv.gz sha256 f48d02fcb0eff46d713487906200c57885e636d31845783857fce4cc54f5b80d (85,533 B)
+    script sha256     : 557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675 (scripts/session91_grib_pull.py)
+    positions sha256  : cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08 (session91_pull_airports.csv)
+    packages          : python 3.12.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2
+    source            : https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF (+ .idx), byte ranges as in the manifest (for "ok (whole file)", the range within the whole file)
+  chunk progress log:
+    SESSION 91 --chunk test: hours 21-48; 12 cycles; 336 files; 3360 expected messages; 51 airports; workers 8; budget none
+      50/336 files; 453,703,488 bytes; 112 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      100/336 files; 892,935,984 bytes; 228 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      150/336 files; 1,279,826,152 bytes; 381 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      200/336 files; 1,623,836,669 bytes; 540 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      250/336 files; 1,986,064,165 bytes; 712 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      300/336 files; 2,379,727,380 bytes; 806 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+      336/336 files; 2,623,485,001 bytes; 864 s; whole-file fallbacks 0 files, 0 B, 0 messages ok (whole file)
+  gate output (full):
+    SESSION 91 --gate (offline; reads a finished chunk's files and committed files only)
+    chunk test; positions file SHA-256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08; recorded in the chunk's meta: True
+    training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+    
+    station target date cycle             lead  result
+    EGLC    2022-01-13  2022-01-12T12:00Z f024  all 7 columns equal
+    EGLC    2023-07-13  2023-07-12T12:00Z f024  all 7 columns equal
+    EGLC    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+    LFPG    2022-01-13  2022-01-12T12:00Z f024  all 7 columns equal
+    LFPG    2023-07-13  2023-07-12T12:00Z f024  all 7 columns equal
+    LFPG    2024-04-13  2024-04-12T12:00Z f024  all 7 columns equal
+    DSM     2022-01-13  2022-01-12T18:00Z f024  all 7 columns equal
+    DSM     2023-07-13  2023-07-12T18:00Z f024  all 7 columns equal
+    DSM     2024-04-13  2024-04-12T18:00Z f024  all 7 columns equal
+    YSDU    2022-01-13  2022-01-12T00:00Z f026  all 7 columns equal
+    YSDU    2023-07-13  2023-07-12T00:00Z f026  all 7 columns equal
+    YSDU    2024-04-13  2024-04-12T00:00Z f026  all 7 columns equal
+    RNO     2022-01-13  2022-01-12T18:00Z f026  all 7 columns equal
+    RNO     2023-07-13  2023-07-12T18:00Z f026  all 7 columns equal
+    RNO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+    SFO     2022-01-13  2022-01-12T18:00Z f026  all 7 columns equal
+    SFO     2023-07-13  2023-07-12T18:00Z f026  all 7 columns equal
+    SFO     2024-04-13  2024-04-12T18:00Z f026  all 7 columns equal
+    
+    pass table by column (exact equality, no tolerance):
+      temperature_grib_c                 18 of 18
+      cloud_cover                        18 of 18
+      wind_speed_10m                     18 of 18
+      dewpoint_depression_t2m_floored    18 of 18
+      lapse_rate_t2_t850                 18 of 18
+      pressure_tendency_3h_hpa           18 of 18
+      dswrf_2h_wm2                       18 of 18
+    pass table by airport (station-days with all 7 columns equal, and values equal):
+      EGLC  (EGLC): station-days 3 of 3; values 21 of 21
+      LFPG  (LFPG): station-days 3 of 3; values 21 of 21
+      DSM   (KDSM): station-days 3 of 3; values 21 of 21
+      YSDU  (YSDU): station-days 3 of 3; values 21 of 21
+      RNO   (KRNO): station-days 3 of 3; values 21 of 21
+      SFO   (KSFO): station-days 3 of 3; values 21 of 21
+    station-days with no committed row: 0 
+    station-days not rebuilt: 0 
+    mismatches: 0
+    GATE PASSED
+  Temporary chunk folder and logs deleted: yes; first temp folder deleted: yes

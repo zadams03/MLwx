@@ -20725,3 +20725,26 @@ any score.** Written at the start of session 100, before any other edit. No
   4. A is close to the baseline: lower at 4 airports and in fold 2023-24, but its headline gain is about 0.17 percent. B is worse at 5 of 6 airports and in every fold. D94.5's question (larger settings for pooled models) is the owner's.
   5. `--meta` records run times passed by hand from the printed output (`--run-times`).
 - **F143.8 What this did not do.** No other structure, setting or feature tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.
+
+---
+
+## Moved by session 102 (D93.8)
+---
+
+## 2026-10-09: Session 101 finding: RESULTS section 7, the tests folder, and the f025 to f048 pull prepared; its gate not run
+
+**F144. Session 101. No model was fit for a build choice and no score was computed; nothing from 2026-27; no network call. D95 was recorded first. RESULTS.md section 7 was updated, `tests/` was added, the pull script gained D95.5's cycle floor and the workflow D95.6's `hours` input. D95.7's gate was not run: session 91's `--gate` cannot find F122.3 in DECISIONS.md since session 99's move, and the owner chose to stop there. So the f025 to f048 pull is not yet ready (D95.7). Pull script SHA-256 `9e7439d7cdb5bcde5ab54d8280199de2490654b5977f41f68c07a1e54f3aaa22`; workflow `4c452428051469f20561670efb2bb895c2fb74e9d220a6464a7442053e01e4dd`. Full real output: `notes/session-101-output.txt`. Run 2026-10-09. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+- **F144.1 D95 and RESULTS.** D95 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes; Live index changed as D95.9. RESULTS section 7's roadmap bullet replaced by the prompt's block (found once); footer gained "and after session 101 (DECISIONS D95)". Root README gained one `tests/` line.
+- **F144.2 The tests** (`unittest`, standard library plus installed packages): `tests/test_guards.py` 13 tests, `tests/test_record.py` 8 tests, `tests/README.md`. The end-of-session run: 21 of 21 passed, 0 skipped. No test is skipped: F122.4's EGLC gate calls session 81's `load_training_set`, `fit` and `matrix` (importing it runs no mode) and gives 1.0007550363323212 exactly. At Step 3, 17 of 18 passed; the one failure was `--citations` finding F144 unresolved before this entry existed (as F142.5).
+- **F144.3 The cycle floor (D95.5).** `FIRST_CYCLE` 2021-03-22T12: `check_cycle` refuses an earlier cycle and `plan_chunk` leaves such cycles out. Hours 0-24: `--plan` output and the full (cycle, hour) key list byte-equal before and after (65 months, 7,828 cycles, 195,600 files, 1,932,528 messages, as F133.5). `--guard-check` 12 of 12, including the two new cases.
+- **F144.4 The 25-48 plan.** 65 months, 7,826 cycles, 187,768 files, 1,877,680 messages (0 absent by design); first cycle 2021-03-22T12, last 2026-07-30T18; valid 2021-03-24T00 to 2026-07-31T23, 0 outside. The floor removed 8 files (2021-03-22T00 f048, 2021-03-22T06 f042 to f048). The verifier's imported plan gives the same counts.
+- **F144.5 The workflow (D95.6).** Input `hours` (choice, default `0-24`) sets `HOURS`, `RELEASE_TAG` and `RELEASE_TITLE`; for `0-24` every command is unchanged and the title is the same string. Header comment and publish step name now mention the verify step (D85.1). Month expansion: 12 of 12 cases as intended. Not tested locally: YAML parsing, GitHub expressions, `gh`, Actions.
+- **F144.6 Readings for the owner.**
+  1. Session 91's `--gate` (l.1180-1182) and possibly other scripts look for entries in DECISIONS.md by text. Since D93.8 moves entries to the archive, such lookups fail. Fixing the gate needs an edit beyond D95.5's "nothing else". Other scripts were not surveyed.
+  2. The tests set `MLWX_LIBOMP_PATH_SET` before importing scripts that carry the libomp shim, which would otherwise restart Python (D93.3 says lightgbm needs no shim).
+  3. The archive tool test removes one ID from a temporary copy's Live index, so that `--apply` always has something to move and its four checks run.
+  4. F133.4's six month-expansion inputs are not recorded in session 91's output; six were chosen.
+  5. For `25-48` the Release notes text is the same as v1's.
+  6. The pull script's docstring hard-limits line names the floor.
+- **F144.7 What this did not do.** No test chunk, no gate, no network call. No push, workflow run, Release change or `gh` call. No build choice or score; nothing from 2026-27; no non-development airport's observation. No other script edited; no frozen script edited; SPEC.md and CLAUDE.md not edited; nothing installed. Nothing committed and no commit message written.
