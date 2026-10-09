@@ -93,6 +93,7 @@ re-run must happen in a clean clone (D62.3, D62.6).
   (F123, F124, F130) and stage C's scoping and airport check (F131, F132).
 - **Sessions 91 to 98b:** stage C's pull, checks, table and
   cross-validation (F133 to F139), and this README's figures (F140).
+- `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.
 
 The GitHub Actions workflow (`../.github/workflows/stagec-grib-pull.yml`)
 runs `session91_grib_pull.py` and `session92_verify_chunk.py`.

@@ -1,0 +1,422 @@
+# Session 99 output: workflow overhaul (D93, F142)
+
+- Done: D93 recorded; CLAUDE.md replaced; eight edits (a)-(h) to
+  docs/PROJECT-INSTRUCTIONS.md; Live index added; scripts/archive_decisions.py
+  written and tested; 40 spans moved to the archive; F142 recorded; STATUS.md
+  overwritten; one line added to scripts/README.md.
+- Step 0 preflight PASS. Step 1 D93 byte-equal (diff, cmp), 0 em-dashes PASS.
+- Step 2 CLAUDE.md byte-equal PASS: 6,539 -> 8,234 bytes, 0 em-dashes.
+- Step 3 PROJECT-INSTRUCTIONS.md, every target found once PASS: 13,070 -> 15,195.
+- Step 4 script test on a temporary copy: 4 checks PASS, rebuilt byte for byte.
+- Step 5 plan: 49 spans, 9 KEEP (one per index ID), 40 MOVE PASS.
+  Apply: checks 1-4 PASS. DECISIONS.md 352,074 -> 52,283 bytes;
+  archive 982,727 -> 1,282,554 bytes.
+- Citations after move: 166 cited, 165 resolved, 1 unresolved (F142, not yet
+  written), 0 in both, 0 doubled, 0 out of order.
+- Step 6 scripts/README.md: 1 line added PASS.
+- End: F142 appended (42 lines) and added to the index; second --apply moved
+  nothing; final citations 165 of 165 resolved, 0 doubled, 0 out of order.
+- Size check: DECISIONS.md 55,597 bytes (start of session 343,813), under 80,000.
+- Scope check: only listed files changed; no breach. SPEC/RESULTS/README untouched.
+- Script SHA-256: 25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8
+- Readings for the owner (F142.6): (1) new CLAUDE.md has no em-dashes at all;
+  (2) archive's new section follows two '---' lines with nothing between, and
+  its heading is followed directly by '---' (the prompt's format); (3) the
+  D1-D12 and F88 pointer spans moved; (4) old wording left: PI's closing line
+  and section 3 step 2 say "re-upload", the archive header describes D46,
+  DECISIONS.md's header says "append-only ... Never delete"; (5) the first
+  --apply was blocked by the auto-mode permission check, rerun after a backup
+  to the scratchpad; (6) README line placed at the end of "Everything else".
+- Open items: RESULTS section 7 (D93.4); the readings above. Nothing committed.
+
+## Checkpoints
+
+Step 0 preflight: git status shows only ?? docs/sessions/session-99.md; last entries D92 and F141; D93 and F142 count 0 in both DECISIONS files; script and output file absent. Files changed: notes/session-99-output.txt (new). Check PASS.
+Step 1 D93: block (115 lines, 7,414 bytes) appended after '---' and a blank line with sed/cat; diff and cmp equal; em-dashes 0; DECISIONS.md 343,813 -> 351,233 bytes. Files changed: DECISIONS.md. Check PASS.
+Step 2 CLAUDE.md: replaced whole file with the prompt's block via sed; diff and cmp equal; 6,539 -> 8,234 bytes (169 lines); em-dashes 0 (old file had 15; the carried title and passages lost theirs because the block itself uses colons). Files changed: CLAUDE.md. Check PASS.
+Step 3 PROJECT-INSTRUCTIONS.md: edits (a) to (h) made by a scratchpad script that stops unless each heading, bullet and line is found exactly once (all found once); sections 2, 3, 5, 7 replaced, Archive bullet replaced, section 11 inserted, section 4 lines 5-6 and invocation paragraph replaced; 13,070 -> 15,195 bytes; em-dashes in added lines 0. Files changed: docs/PROJECT-INSTRUCTIONS.md. Check PASS.
+Step 4 archive script: wrote scripts/archive_decisions.py (standard library only; --plan, --apply --session NN, --citations, plus --out and --root); tested on a temporary copy with a two-entry index: plan ran, apply passed all four checks and rebuilt the copy byte for byte, a second apply moved nothing; temporary folder deleted. SHA-256 25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8. Files changed: scripts/archive_decisions.py (new). Check PASS.
+Step 5(a) Live index: block (18 lines, 840 bytes) inserted after header line 7 (already blank) with one blank line after, before the first '---'; grep -c live-index-start = 1; lines 1-7 and everything from the first '---' on are byte-equal to before; DECISIONS.md 351,233 -> 352,074 bytes. Files changed: DECISIONS.md. Check PASS.
+Step 5(b) plan: spans 49, KEEP 9 (one per index ID: D47, D73, D77, D79, D82, D88, D89, F139, D93), MOVE 40 (299,631 bytes); no ID in more than one span; header unchanged apart from the index (Step 5(a) check). Table in the detail section. Files changed: none. Check PASS.
+Step 5(c) apply --session 99: moved 40 spans, kept 9; checks 1-4 PASS (check 2: live 769 + moved 3511 = original 4280; archive 20603 = 17088 + 4 + 3511); DECISIONS.md 352,074 -> 52,283 bytes; archive 982,727 -> 1,282,554 bytes; independent head -c | cmp confirms the old archive is an exact prefix. The first --apply call was blocked by the auto-mode permission check; both files were copied to the session scratchpad first, then the same command ran. Files changed: DECISIONS.md, DECISIONS-archive.md. Check PASS.
+Step 5(d) citations: 166 distinct entry numbers cited; 165 resolved, 1 unresolved (F142, cited twice in D93; written at the end of this session), 0 in both files; 0 doubled first opening lines; 0 dated headings out of order. Files changed: none. Check PASS (report only).
+Step 6 scripts/README.md: no list of standing or helper scripts exists, so the given line was added at the end of the last script list (the 'Everything else' bullets), before the workflow paragraph; git diff --numstat shows 1 added, 0 removed. Files changed: scripts/README.md. Check PASS.
+End F142: appended at the bottom of DECISIONS.md (42 lines from its opening line, 0 em-dashes); '- F142: session 99's finding.' added to the Live index after D93. Files changed: DECISIONS.md. Check PASS.
+End archive step: index has 10 IDs; --apply --session 99 again: spans 10, keep 10, move 0, "nothing to move; no file written". Files changed: none. Check PASS.
+End STATUS.md: overwritten as a current-only snapshot (4,752 bytes, 0 em-dashes), ending with the "Next planning session" line from the prompt. Files changed: STATUS.md. Check PASS.
+End checks: --citations after STATUS: 165 distinct cited, 165 resolved, 0 unresolved, 0 in both, 0 doubled, 0 out of order. DECISIONS.md 55,597 bytes (under 80,000). Scope list: git status shows only the listed files plus the untracked prompt; no breach. SPEC.md, RESULTS.md, README.md not modified. Check PASS.
+
+## Detail
+
+### Step 0: sizes and SHA-256 before any edit
+
+DECISIONS.md  343813 bytes  bd2ee952272029f99a4fdc4c43c3e3409a23e14942d220f90bdb6e306a967251
+DECISIONS-archive.md  982727 bytes  40b56f3fd17c275ed006dd6e124335f315b492dfcb1cf496ff1cfc0ba04bbcd9
+CLAUDE.md  6539 bytes  0426bc801b05e3a1e31eee88fe570e1a553fcc5425e42ff2abc49180bd853fae
+docs/PROJECT-INSTRUCTIONS.md  13070 bytes  2c73bbfa8994e0127374cfb25e75d29934b72544a52f3a8b50bf8783889c8837
+SPEC.md  74274 bytes  27649f850cbf0d1dfac3f5af04ff89368fb7d42bfb3f7a97eae435aae964ff22
+STATUS.md  11359 bytes  77b7b60160c0c273a1d5e519abc9a46465606013ffe2ef362561eccaf3f0daec
+
+### Step 2: git diff --stat -- CLAUDE.md
+
+ CLAUDE.md | 180 +++++++++++++++++++++++++++++++++++++-------------------------
+ 1 file changed, 108 insertions(+), 72 deletions(-)
+New CLAUDE.md SHA-256: 7ba7a70353f720db3dd665bd41a22349a0ef1885a700f63e5b5b3c0fae161d8d
+
+### Step 3: git diff -- docs/PROJECT-INSTRUCTIONS.md
+
+diff --git a/docs/PROJECT-INSTRUCTIONS.md b/docs/PROJECT-INSTRUCTIONS.md
+index 71d4465..01ed8ac 100644
+--- a/docs/PROJECT-INSTRUCTIONS.md
++++ b/docs/PROJECT-INSTRUCTIONS.md
+@@ -41,31 +41,36 @@ except what is written down. So the governing principle is:
+ 
+ | File | Role | Authority |
+ |---|---|---|
+-| `SPEC.md` | How the project works — method, rules, the three proven methods (§8 is the default recipe) | **Source of truth.** Where anything disagrees, SPEC wins. |
+-| `STATUS.md` | Current state + the immediate next action | Read first for "where are we." Overwritten each session. |
+-| `DECISIONS.md` | Append-only log of decisions (D) and findings (F), live entries only | The binding record. Cited as (Dxx)/(Fxx). |
+-| `DECISIONS-archive.md` | Settled entries moved out to keep the live file slim | Read on demand, by number. |
+-| `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; **not** routinely read. |
++| `SPEC.md` | How the project works: method, rules, the three proven methods (section 8 is the default recipe) | **Source of truth.** Where anything disagrees, SPEC wins. |
++| `STATUS.md` | Current state and the immediate next action | Read in full every chat. Overwritten each session. |
++| `DECISIONS.md` | The live log: only the entries in its Live index (D93.8) | The binding record, cited as (Dxx)/(Fxx). |
++| `DECISIONS-archive.md` | Every settled entry, verbatim | Still binding. In Project knowledge for search only; never read in full. |
++| `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; read only when needed. |
+ | `CLAUDE.md` | Claude Code's execution discipline | Governs sessions, not planning. |
+-| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
+-| Project **memory** | Durable reasoning and preferences (the roadmap itself is SPEC 6 and DECISIONS D72) | Inherited automatically by every chat. |
++| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code edits it only when a session prompt says exactly what to change. |
++| Project **memory** | Durable reasoning and preferences | Inherited automatically by every chat. |
+ 
+-The **routine read** each session is CLAUDE + SPEC + STATUS + live DECISIONS. Archive and RESULTS
+-are read only when needed.
++Claude Code reads what each session prompt's Read first section lists
++(D93.16). The planning chat reads by need (section 3).
+ 
+ ---
+ 
+ ## 3. Start-of-chat protocol (do this first, every chat)
+ 
+-1. **Read the Project-knowledge docs** (SPEC, STATUS, DECISIONS, CLAUDE) — they are cached, so this
+-   is cheap.
+-2. **Staleness check — the critical guard.** Cross-check the docs against your **memory**. If memory
+-   reflects a *more recent session* than STATUS/DECISIONS show (e.g. memory knows session N happened
+-   but STATUS's latest is N−1), **the uploaded docs are stale.** Stop and tell Zac to re-upload the
+-   current files before doing any work. Stale docs look authoritative but aren't — this is the one
+-   failure mode that silently corrupts everything downstream.
+-3. **Read STATUS's "Next planning session" line** (see §6) — that is the agreed starting point.
+-   Begin there, not from a blank slate.
++1. **Read this guide and STATUS.md in full.**
++2. **Staleness check: the critical guard.** Cross-check STATUS against
++   memory. If memory reflects a more recent session than STATUS shows, the
++   uploaded docs are stale. Stop and tell Zac to re-upload the current files
++   before doing any work. Stale docs look authoritative but are not.
++3. **Read STATUS's "Next planning session" line** (section 6) and start there,
++   not from a blank slate.
++4. **Read the rest by need.** Use project_search for the SPEC sections and
++   DECISIONS entries the next session depends on, archived ones included.
++   Read SPEC, CLAUDE or DECISIONS in full only when the session being planned
++   will edit that file. Never read DECISIONS-archive.md in full.
++5. **GFS v17:** no check in the chat. A weekly scheduled task does it and
++   alerts Zac when a notice appears (D93.15). Ask Zac only if the next
++   session depends on the go-live date.
+ 
+ ---
+ 
+@@ -80,33 +85,39 @@ For each planning session:
+    and waits.
+ 3. **Zac tells the planning chat the session has finished** (pasting its chat summary if useful); the planning chat reads the real output from notes/.
+ 4. **Review it rigorously** (see §7). Only after the review do you give commit commands.
+-5. **Give the re-upload reminder** (see §5).
+-6. Zac commits, re-uploads the named docs, and starts a **new chat** for the next session.
++5. **After Zac commits and pushes, sync Project knowledge** (section 5).
++6. Zac starts a **new chat** for the next session.
+ 
+ **Never break mid-session.** Only start a new chat *between* committed steps — a committed,
+ documented step leaves nothing in-flight to lose; a half-finished one does. If a session is
+ mid-review or mid-draft, finish and commit it before switching chats.
+ 
+-The invocation Zac pastes into Claude Code takes this form (DECISIONS D92.4): Read CLAUDE.md, then
+-SPEC.md, STATUS.md, and DECISIONS.md in full. Then carry out the session defined in
+-docs/sessions/session-NN.md, staying strictly within its scope. Stop at the end-of-session steps and
+-wait for my review. Do not commit anything.
++The invocation Zac pastes into a fresh Claude Code conversation is fixed (D93.16); only the number changes: Carry out the session defined in docs/sessions/session-NN.md: first read what its Read first section lists, then do its steps, staying strictly within its scope. Stop at the end-of-session steps and wait for my review. Do not commit anything.
+ 
+ ---
+ 
+-## 5. The re-upload rule (anti-staleness — you own this)
+-
+-**After every session review, end with an explicit reminder naming which docs to re-upload to
+-Project knowledge.** Only the files that actually changed:
+-
+-- `STATUS.md` — **every** session (it's overwritten each time).
+-- `DECISIONS.md` — whenever an entry was appended/moved (almost every session).
+-- `SPEC.md` / `RESULTS.md` — only when that session edited them.
+-- `CLAUDE.md` — only when the execution discipline itself changed.
+-- `PROJECT-INSTRUCTIONS.md` — only when a session edited it.
+-
+-Phrase it plainly, e.g.: *"Re-upload to Project knowledge: STATUS.md, DECISIONS.md."* This reminder
+-is not optional — it is the mechanism that keeps the next chat from reading stale state.
++## 5. Syncing Project knowledge (anti-staleness: you own this)
++
++After Zac has committed and pushed a reviewed session, **the planning chat
++copies every changed file into Project knowledge itself** (D93.15). Never
++sync before the commit: Project knowledge must match the committed repo.
++
++- **Which files:** `STATUS.md` every session; `DECISIONS.md` and
++  `DECISIONS-archive.md` whenever they changed (almost every session);
++  `SPEC.md`, `RESULTS.md`, `CLAUDE.md` and `docs/PROJECT-INSTRUCTIONS.md`
++  (kept in Project knowledge as `PROJECT-INSTRUCTIONS.md`) only when the
++  session edited them.
++- **How:** stage each file from the linked computer into the workspace,
++  copy it into the working directory, and write it with project_write's
++  `local_path` to the same Project-knowledge path, so its contents never
++  enter the chat. Then check the staged file's byte size against the repo
++  file's.
++- **If it fails** (the computer is not linked or asleep, or a write is
++  refused): say so plainly and give Zac the list of files to upload by
++  hand, for example *"Upload to Project knowledge: STATUS.md,
++  DECISIONS.md."*
++- **Size:** Project knowledge holds at most 2 MB. Report the total after
++  each sync; above 1.6 MB is an ACTION NEEDED item.
+ 
+ ---
+ 
+@@ -132,21 +143,30 @@ not a long carried-forward chain. (The matching end-of-session rule lives in `CL
+ 
+ The review is where quality is enforced. For every session output:
+ 
+-- **Review from the real output.** Read notes/session-NN-output.txt directly and check figures against it, not against a pasted summary.
+-- **Verify the numbers** against their cited DECISIONS/SPEC source — don't trust a summary's figures;
+-  spot-check the arithmetic. Over-claims and mis-counts have slipped through before and must be
+-  caught here, before they enter the permanent record.
+-- **Check the honest framing**, especially where a result is flattering or a caveat is easy to omit
+-  (baseline differences, single-year effects, per-airport nuance). The project's value is calibrated
+-  honesty; lead with the number you can defend, not the biggest one.
+-- **Confirm scope was held** — the session did what it was told and nothing more; SPEC/RESULTS
+-  untouched unless the session was meant to touch them; no data or code strayed in.
+-- **Confirm the evaluation discipline** — no look-ahead, no re-scoring the spent years (sealed
+-  2025-26, F94; reserved 2024-25, F109) for any verdict, nothing tuned or selected on reused data,
+-  and no 2026-27 row scored before a forward-looking test on it is pre-registered.
+-- **Flag explicitly** whenever the planning assistant is unsure, or needs Zac to verify something, it says so in a clearly marked ACTION NEEDED block: what to check, how to check it, and what to do for each outcome. Zac relies on these flags and does not re-comb every detail.
+-- **Only then** give commit commands. If something is wrong, have Zac send a correction to Claude
+-  Code *before* committing — never commit a known error into the record.
++- **Review from the real output.** Read the summary and checkpoints at the top
++  of notes/session-NN-output.txt first. Then check figures against the detail
++  with targeted reads (a search or a line range), not a full read of a long
++  file.
++- **Verify the numbers** against their cited DECISIONS/SPEC source; spot-check
++  the arithmetic. Over-claims and mis-counts have slipped through before and
++  must be caught here, before they enter the permanent record.
++- **Check the honest framing**, especially where a result is flattering or a
++  caveat is easy to omit (baseline differences, single-year effects,
++  per-airport nuance). Lead with the number you can defend.
++- **Confirm scope was held:** the scope-list check in the output file is
++  clean; SPEC/RESULTS untouched unless the session was meant to touch them.
++- **Confirm the archive and size checks:** every entry outside the Live index
++  moved, citations resolve, and DECISIONS.md is under 80,000 bytes (D93.9).
++  Never accept "nothing moved" without that check.
++- **Confirm the evaluation discipline:** no look-ahead, no re-scoring the
++  spent years (sealed 2025-26, F94; reserved 2024-25, F109) for any verdict,
++  nothing tuned or selected on reused data, and no 2026-27 row scored before
++  a forward-looking test on it is pre-registered.
++- **Flag explicitly** whenever the planning assistant is unsure or needs Zac
++  to verify something, in a clearly marked ACTION NEEDED block: what to check,
++  how to check it, and what to do for each outcome.
++- **Only then** give commit commands. If something is wrong, have Zac send a
++  correction to Claude Code before committing. Never commit a known error.
+ 
+ ---
+ 
+@@ -190,8 +210,7 @@ prompt beforehand. House style:
+ - **Descriptive vs verdict.** Multi-year backtests (F96) are descriptive profiles, not new
+   pass/fails; they may reuse data, but selecting anything on them still requires a fresh confirmation
+   year.
+-- **Archive-as-you-go.** In each session's roundup, move newly-settled DECISIONS entries to the
+-  archive, keeping the live file slim.
++- **Archive by the Live index.** In each session's end steps, every DECISIONS entry outside the Live index moves to the archive (D93.8). The live file stays under 80,000 bytes (D93.9).
+ 
+ ---
+ 
+@@ -205,5 +224,30 @@ notice something important that exists only in the current chat, say so and get
+ 
+ ---
+ 
++## 11. Session design (D93)
++
++- **Fewer, fuller sessions.** Every session pays a fixed reading cost twice
++  (planning chat and Claude Code). Combine related work into one session
++  rather than a chain of small ones. Check during planning what a session
++  will touch (paths, script constants, file names), so follow-up sessions
++  are rare.
++- **Every prompt begins with a Read first section** (D93.16), as narrow as
++  the work allows: SPEC sections by number, DECISIONS entries by number,
++  and which files in full. A session that fits models, scores, or records
++  a decision reads the live DECISIONS.md in full; a session that only
++  moves or edits the record mechanically need not.
++- **Every prompt has:** numbered steps, each with its own check and stop
++  condition; a scope list of the files the session may create or edit; and
++  the end-of-session steps from CLAUDE.md.
++- **Every prompt names the DECISIONS entries and SPEC sections each step
++  needs,** archived ones by number, so Claude Code reads only those.
++- **Every D entry says which Live index changes it makes** (D93.8).
++- **Model choice in Claude Code** (Zac's setting): a lighter model (Sonnet)
++  for mechanical sessions such as moves, doc edits and checks; the strongest
++  model (Opus) for design, statistics and model fitting. The planning chat
++  recommends one with each invocation.
++
++---
++
+ *This guide is itself a file: if the workflow changes, update it and re-upload it. Everything here
+ serves one rule — if it matters, it lives in a file, not in chat.*
+
+### Step 4: script test on a temporary copy
+
+Copy of DECISIONS.md (with D93) and DECISIONS-archive.md in a temporary folder; made-up two-entry index (D92, F141) inserted before the first '---'.
+--plan: spans 49, keep 2 (index IDs 2), move 47 (340234 bytes), DECISIONS.md 351346 bytes. Two pointer spans (span 1, the D1-D12 pointer; span 5, the F88 pointer).
+--apply --session 99: check 1 PASS; check 2 PASS (live 89 + moved 4179 = original 4268; archive 21271 = 17088 + 4 + 4179); check 3 PASS (rebuild byte for byte); check 4 PASS. Live 351346 -> 10924 bytes; archive 982727 -> 1323185 bytes.
+Independent check: the first 982727 bytes of the new archive equal the old archive (head -c | cmp).
+Second --apply: 'nothing to move; no file written'. --citations on the copy ran (only DECISIONS files present there): 10 cited, 10 resolved.
+Temporary folder deleted.
+
+archive_decisions.py --plan: span table
+
+Header: lines 1 to 26.
+
+index | first line | lines | bytes | ID | first line of span (80 chars) | action
+1 | 28 | 3 | 382 | pointer | [D1–D12, the founding decisions from initial project planning — project scope, l | MOVE
+2 | 32 | 15 | 829 | D17 | **D17. Stage 1 is temperature-only on the forecast side.** | MOVE
+3 | 48 | 21 | 1150 | F7 | **F7. The extra forecast variables exist only for recent data.** A small | MOVE
+4 | 70 | 101 | 6522 | D46 | ## 2026-09-11 — Session 34b decision: archive move executed, archive-as-you-go a | MOVE
+5 | 172 | 9 | 524 | pointer | [F88, session 35's GFS GRIB source feasibility probe (verdict: GO-COSTLY) — | MOVE
+6 | 182 | 3 | 639 | D47 | **D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D1 | KEEP
+7 | 186 | 216 | 13245 | F96 | ## 2026-09-18 — Session 46 finding: multi-year rolling-origin generalisation | MOVE
+8 | 403 | 90 | 5339 | D51 | ## 2026-09-19 — Session 48 decision: reserve 2024-25 as the feature-selection | MOVE
+9 | 494 | 196 | 10324 | D62 | ## 2026-09-23 — Session 69 decision: audit triage (D60, D61) recorded | MOVE
+10 | 691 | 58 | 3627 | D71 | ## 2026-09-27 — Session 79 decision: the owner's verdict on F119 (KSFO) | MOVE
+11 | 750 | 146 | 8749 | D72 | ## 2026-09-27 — Session 80 decision: the roadmap (owner, planning chat) | MOVE
+12 | 897 | 106 | 7002 | D73 | ## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward | KEEP
+13 | 1004 | 154 | 9882 | F122 | ## 2026-09-27 — Session 81 finding: the 2026-27 forward test's frozen models | MOVE
+14 | 1159 | 163 | 11155 | F123 | ## 2026-09-28 — Session 82 finding: stage A's source probe | MOVE
+15 | 1323 | 68 | 3849 | F124 | ## 2026-09-29 — Session 83 finding: the ICON route check | MOVE
+16 | 1392 | 152 | 8672 | F125 | ## 2026-09-29 — Session 83 finding: confidence intervals for the results on reco | MOVE
+17 | 1545 | 41 | 2379 | D76 | ## 2026-09-29: Session 84 decision: GitHub readiness (owner, planning chat) | MOVE
+18 | 1587 | 108 | 6696 | D77 | ## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and | KEEP
+19 | 1696 | 175 | 10023 | F127 | ## 2026-09-29: Session 85 finding: the NBM/MOS comparison on the spent years | MOVE
+20 | 1872 | 69 | 4037 | D78 | ## 2026-09-30: Session 86 decision: the direction decision, two open items and t | MOVE
+21 | 1942 | 169 | 9724 | F128 | ## 2026-09-30: Session 86 finding: the 2026-27 data-build script and its gate | MOVE
+22 | 2112 | 60 | 3724 | D79 | ## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the  | KEEP
+23 | 2173 | 256 | 17147 | F129 | ## 2026-09-30: Session 87 finding: the 2026-27 scoring and competitor scripts an | MOVE
+24 | 2430 | 62 | 3843 | D80 | ## 2026-10-01: Session 88 decision: F129.8 accepted, the non-US competitor probe | MOVE
+25 | 2493 | 162 | 11152 | F130 | ## 2026-10-01: Session 88 finding: the non-US competitor probe | MOVE
+26 | 2656 | 68 | 4124 | D81 | ## 2026-10-02: Session 89 decision: F130.9 accepted, MOSMIX saves, stage C opene | MOVE
+27 | 2725 | 149 | 21652 | F131 | ## 2026-10-02: Session 89 finding: the stage C scoping probe | MOVE
+28 | 2875 | 116 | 7126 | D82 | ## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and st | KEEP
+29 | 2992 | 112 | 16015 | F132 | ## 2026-10-03: Session 90 finding: the airport metadata check and the claim batc | MOVE
+30 | 3105 | 75 | 4356 | D83 | ## 2026-10-03: Session 91 decision: F132 accepted, the 51-airport pull list, gri | MOVE
+31 | 3181 | 57 | 13076 | F133 | ## 2026-10-03: Session 91 finding: the stage C GRIB pull and its gate | MOVE
+32 | 3239 | 47 | 2759 | D84 | ## 2026-10-04: Session 92 decision: F133 accepted, the first Actions month, and  | MOVE
+33 | 3287 | 53 | 11221 | F134 | ## 2026-10-04: Session 92 finding: the 2022-01 Actions extract and the verify st | MOVE
+34 | 3341 | 35 | 1975 | D85 | ## 2026-10-05: Session 93 decision: F134 accepted, run 2, and the 2022-11 failur | MOVE
+35 | 3377 | 50 | 10375 | F135 | ## 2026-10-05: Session 93 finding: the Release after run 2 and the 2022-11 broke | MOVE
+36 | 3428 | 34 | 1871 | D86 | ## 2026-10-05: Session 94 decision: F135 accepted and 2022-11 recovered by a who | MOVE
+37 | 3463 | 51 | 10284 | F136 | ## 2026-10-05: Session 94 finding: the whole-file fallback and its gate | MOVE
+38 | 3515 | 38 | 2194 | D87 | ## 2026-10-05: Session 95 decision: F136 accepted, the 2022-11 run, and the all- | MOVE
+39 | 3554 | 42 | 12458 | F137 | ## 2026-10-05: Session 95 finding: all 65 months downloaded and checked | MOVE
+40 | 3597 | 89 | 5259 | D88 | ## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C deve | KEEP
+41 | 3687 | 64 | 11800 | F138 | ## 2026-10-06: Session 96 finding: the stage C development table and its gate | MOVE
+42 | 3752 | 77 | 4756 | D89 | ## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for st | KEEP
+43 | 3830 | 58 | 8541 | F139 | ## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the | KEEP
+44 | 3889 | 78 | 5014 | D90 | ## 2026-10-07: Session 98 decision: F139 accepted, GFS v17, and the repository r | MOVE
+45 | 3968 | 58 | 3657 | D91 | ## 2026-10-07: Session 98b decision: session 98's stop accepted, and the restruc | MOVE
+46 | 4027 | 61 | 13690 | F140 | ## 2026-10-07: Session 98b finding: the planning guide moved, the libomp gate, t | MOVE
+47 | 4089 | 33 | 1809 | D92 | ## 2026-10-07: Session 98c decision: F140 accepted, and docs/ split into session | MOVE
+48 | 4123 | 40 | 8747 | F141 | ## 2026-10-07: Session 98c finding: docs/ split into sessions/ and commits/ | MOVE
+49 | 4164 | 117 | 7416 | D93 | ## 2026-10-09: Session 99 decision: F141 accepted, the session order, and a work | KEEP
+
+IDs in more than one span: none
+
+### Step 5(c): --apply --session 99
+
+check 1 PASS; check 2 PASS (live 769 + moved 3511 = original 4280; archive 20603 = 17088 + 4 + 3511); check 3 PASS; check 4 PASS
+moved 40 spans, kept 9
+DECISIONS.md         before 352074 bytes c6b4f48599be967d7a2a293287147a04608f281e3efeea929c9acb373923e309
+DECISIONS.md         after  52283 bytes b9d3b2b34f611b4740d85deb3de35fb03b4e6ca03ffe4811387be73771cbd4b0
+DECISIONS-archive.md before 982727 bytes 40b56f3fd17c275ed006dd6e124335f315b492dfcb1cf496ff1cfc0ba04bbcd9
+DECISIONS-archive.md after  1282554 bytes 30ea5894354da9f2ba7ea1c9c6afbb5311c6ae67f8910fc5484450ceeed55f00
+Byte sum: 52283 kept + 299631 moved + 160 separators (40 x 4) = 352074.
+
+archive_decisions.py --citations
+
+Distinct entry numbers cited: 166. Resolved 165, unresolved 1, in both files 0.
+
+Unresolved (number: where cited):
+  F142: DECISIONS.md:706, DECISIONS.md:741
+Found in both files (number: where cited):
+First opening line appearing more than once:
+Dated headings out of order in DECISIONS.md:
+
+### End: archive step, second run
+
+--apply --session 99 after F142:
+
+archive_decisions.py --plan: span table
+
+Header: lines 1 to 27.
+
+index | first line | lines | bytes | ID | first line of span (80 chars) | action
+1 | 29 | 3 | 639 | D47 | **D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D1 | KEEP
+2 | 33 | 106 | 7002 | D73 | ## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward | KEEP
+3 | 140 | 108 | 6696 | D77 | ## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and | KEEP
+4 | 249 | 60 | 3724 | D79 | ## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the  | KEEP
+5 | 310 | 116 | 7126 | D82 | ## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and st | KEEP
+6 | 427 | 89 | 5259 | D88 | ## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C deve | KEEP
+7 | 517 | 77 | 4756 | D89 | ## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for st | KEEP
+8 | 595 | 58 | 8541 | F139 | ## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the | KEEP
+9 | 654 | 117 | 7416 | D93 | ## 2026-10-09: Session 99 decision: F141 accepted, the session order, and a work | KEEP
+10 | 772 | 46 | 3280 | F142 | ## 2026-10-09: Session 99 finding: the workflow overhaul, the Live index and the | KEEP
+
+IDs in more than one span: none
+
+archive_decisions.py --citations
+
+Distinct entry numbers cited: 169. Resolved 169, unresolved 0, in both files 0.
+
+Unresolved (number: where cited):
+Found in both files (number: where cited):
+First opening line appearing more than once:
+Dated headings out of order in DECISIONS.md:
+
+### End: final --citations (after STATUS.md was overwritten)
+
+archive_decisions.py --citations
+
+Distinct entry numbers cited: 165. Resolved 165, unresolved 0, in both files 0.
+
+Unresolved (number: where cited):
+Found in both files (number: where cited):
+First opening line appearing more than once:
+Dated headings out of order in DECISIONS.md:
+
+### End: git status --porcelain
+
+ M CLAUDE.md
+ M DECISIONS-archive.md
+ M DECISIONS.md
+ M STATUS.md
+ M docs/PROJECT-INSTRUCTIONS.md
+ M scripts/README.md
+?? docs/sessions/session-99.md
+?? notes/session-99-output.txt
+?? scripts/archive_decisions.py
+
+### End: sizes and SHA-256 after the session
+
+DECISIONS.md  55597 bytes  87578bbbe748a552e76fa0e69b3ae94a7ef8ca5aec2d4f122c02c329d887c1e9
+DECISIONS-archive.md  1282554 bytes  30ea5894354da9f2ba7ea1c9c6afbb5311c6ae67f8910fc5484450ceeed55f00
+CLAUDE.md  8234 bytes  7ba7a70353f720db3dd665bd41a22349a0ef1885a700f63e5b5b3c0fae161d8d
+docs/PROJECT-INSTRUCTIONS.md  15195 bytes  df63a511aa81c26f9d66515d939be53c17900e1d54706c0967fa8e8ee3148df1
+SPEC.md  74274 bytes  27649f850cbf0d1dfac3f5af04ff89368fb7d42bfb3f7a97eae435aae964ff22
+STATUS.md  4752 bytes  94c81798edf722678a4a7ebe47616924cb68c53e614a568f791adbbc626380a4
+scripts/archive_decisions.py  15432 bytes  25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8

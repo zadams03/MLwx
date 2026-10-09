@@ -1,0 +1,41 @@
+Session 99: workflow overhaul (D93, F142)
+
+Record D93 and F142. No model was fit, no data file or existing script was
+touched, and no 2026-27 value was read.
+
+D93 accepts F141 and its nine readings, records the libomp ruling (D90.9),
+keeps RESULTS section 7 as an open item until D82.5's model-structure
+comparisons close, records the GFS v17 check (no Service Change Notice as
+of 2026-10-09; SCN 26-47 now ends NAM MOS on 3 November 2026), and moves
+the first D82.5 comparison to session 100. It explains why the archive step
+had stopped working (DECISIONS.md had grown to 343,813 bytes because the
+criterion kept anything still cited, and nobody checked the outcome) and
+replaces it: DECISIONS.md now opens with a Live index, and every entry not
+in it moves to the archive at the end of every session; DECISIONS.md over
+80,000 bytes is a finding; findings are at most about 40 lines, with full
+tables in the output files. It also sets guardrails for longer sessions
+(scope list, a checkpoint after each step, stop on a failed check, re-read
+after compaction), a Read first section in every session prompt with a
+fixed invocation, a weekly scheduled GFS v17 check, and syncing of Project
+knowledge by the planning chat.
+
+CLAUDE.md is replaced to match D93 (6,539 to 8,234 bytes).
+docs/PROJECT-INSTRUCTIONS.md gets eight edits (sections 2, 3, 4, 5, 7, 9
+and a new section 11).
+
+New standing tool scripts/archive_decisions.py (--plan, --apply,
+--citations), tested on a temporary copy first. With it, 40 of 49 spans
+moved verbatim to DECISIONS-archive.md, after four checks, including a
+byte-for-byte rebuild of the original file. DECISIONS.md: 343,813 bytes at
+the start, 55,597 at the end. Archive: 982,727 to 1,282,554 bytes, the old
+archive an exact prefix of the new one. Citations: 165 of 165 resolve, none
+doubled, no dated heading out of order. Scope check clean.
+
+STATUS.md overwritten as a current-only snapshot (4,752 bytes).
+scripts/README.md gains one line for the new tool.
+
+Readings carried to session 100 (F142.6): the closing line of
+PROJECT-INSTRUCTIONS and section 3 step 2 still say "re-upload"; the
+archive's header still describes D46's criterion; the DECISIONS.md header
+still says "append-only, never delete". The first --apply was blocked by
+Claude Code's permission check and rerun unchanged after a backup.

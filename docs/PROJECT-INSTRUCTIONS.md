@@ -41,31 +41,36 @@ except what is written down. So the governing principle is:
 
 | File | Role | Authority |
 |---|---|---|
-| `SPEC.md` | How the project works — method, rules, the three proven methods (§8 is the default recipe) | **Source of truth.** Where anything disagrees, SPEC wins. |
-| `STATUS.md` | Current state + the immediate next action | Read first for "where are we." Overwritten each session. |
-| `DECISIONS.md` | Append-only log of decisions (D) and findings (F), live entries only | The binding record. Cited as (Dxx)/(Fxx). |
-| `DECISIONS-archive.md` | Settled entries moved out to keep the live file slim | Read on demand, by number. |
-| `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; **not** routinely read. |
+| `SPEC.md` | How the project works: method, rules, the three proven methods (section 8 is the default recipe) | **Source of truth.** Where anything disagrees, SPEC wins. |
+| `STATUS.md` | Current state and the immediate next action | Read in full every chat. Overwritten each session. |
+| `DECISIONS.md` | The live log: only the entries in its Live index (D93.8) | The binding record, cited as (Dxx)/(Fxx). |
+| `DECISIONS-archive.md` | Every settled entry, verbatim | Still binding. In Project knowledge for search only; never read in full. |
+| `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; read only when needed. |
 | `CLAUDE.md` | Claude Code's execution discipline | Governs sessions, not planning. |
-| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code does not follow it; it edits it only when a session prompt says exactly what to change |
-| Project **memory** | Durable reasoning and preferences (the roadmap itself is SPEC 6 and DECISIONS D72) | Inherited automatically by every chat. |
+| `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code edits it only when a session prompt says exactly what to change. |
+| Project **memory** | Durable reasoning and preferences | Inherited automatically by every chat. |
 
-The **routine read** each session is CLAUDE + SPEC + STATUS + live DECISIONS. Archive and RESULTS
-are read only when needed.
+Claude Code reads what each session prompt's Read first section lists
+(D93.16). The planning chat reads by need (section 3).
 
 ---
 
 ## 3. Start-of-chat protocol (do this first, every chat)
 
-1. **Read the Project-knowledge docs** (SPEC, STATUS, DECISIONS, CLAUDE) — they are cached, so this
-   is cheap.
-2. **Staleness check — the critical guard.** Cross-check the docs against your **memory**. If memory
-   reflects a *more recent session* than STATUS/DECISIONS show (e.g. memory knows session N happened
-   but STATUS's latest is N−1), **the uploaded docs are stale.** Stop and tell Zac to re-upload the
-   current files before doing any work. Stale docs look authoritative but aren't — this is the one
-   failure mode that silently corrupts everything downstream.
-3. **Read STATUS's "Next planning session" line** (see §6) — that is the agreed starting point.
-   Begin there, not from a blank slate.
+1. **Read this guide and STATUS.md in full.**
+2. **Staleness check: the critical guard.** Cross-check STATUS against
+   memory. If memory reflects a more recent session than STATUS shows, the
+   uploaded docs are stale. Stop and tell Zac to re-upload the current files
+   before doing any work. Stale docs look authoritative but are not.
+3. **Read STATUS's "Next planning session" line** (section 6) and start there,
+   not from a blank slate.
+4. **Read the rest by need.** Use project_search for the SPEC sections and
+   DECISIONS entries the next session depends on, archived ones included.
+   Read SPEC, CLAUDE or DECISIONS in full only when the session being planned
+   will edit that file. Never read DECISIONS-archive.md in full.
+5. **GFS v17:** no check in the chat. A weekly scheduled task does it and
+   alerts Zac when a notice appears (D93.15). Ask Zac only if the next
+   session depends on the go-live date.
 
 ---
 
@@ -80,33 +85,39 @@ For each planning session:
    and waits.
 3. **Zac tells the planning chat the session has finished** (pasting its chat summary if useful); the planning chat reads the real output from notes/.
 4. **Review it rigorously** (see §7). Only after the review do you give commit commands.
-5. **Give the re-upload reminder** (see §5).
-6. Zac commits, re-uploads the named docs, and starts a **new chat** for the next session.
+5. **After Zac commits and pushes, sync Project knowledge** (section 5).
+6. Zac starts a **new chat** for the next session.
 
 **Never break mid-session.** Only start a new chat *between* committed steps — a committed,
 documented step leaves nothing in-flight to lose; a half-finished one does. If a session is
 mid-review or mid-draft, finish and commit it before switching chats.
 
-The invocation Zac pastes into Claude Code takes this form (DECISIONS D92.4): Read CLAUDE.md, then
-SPEC.md, STATUS.md, and DECISIONS.md in full. Then carry out the session defined in
-docs/sessions/session-NN.md, staying strictly within its scope. Stop at the end-of-session steps and
-wait for my review. Do not commit anything.
+The invocation Zac pastes into a fresh Claude Code conversation is fixed (D93.16); only the number changes: Carry out the session defined in docs/sessions/session-NN.md: first read what its Read first section lists, then do its steps, staying strictly within its scope. Stop at the end-of-session steps and wait for my review. Do not commit anything.
 
 ---
 
-## 5. The re-upload rule (anti-staleness — you own this)
+## 5. Syncing Project knowledge (anti-staleness: you own this)
 
-**After every session review, end with an explicit reminder naming which docs to re-upload to
-Project knowledge.** Only the files that actually changed:
+After Zac has committed and pushed a reviewed session, **the planning chat
+copies every changed file into Project knowledge itself** (D93.15). Never
+sync before the commit: Project knowledge must match the committed repo.
 
-- `STATUS.md` — **every** session (it's overwritten each time).
-- `DECISIONS.md` — whenever an entry was appended/moved (almost every session).
-- `SPEC.md` / `RESULTS.md` — only when that session edited them.
-- `CLAUDE.md` — only when the execution discipline itself changed.
-- `PROJECT-INSTRUCTIONS.md` — only when a session edited it.
-
-Phrase it plainly, e.g.: *"Re-upload to Project knowledge: STATUS.md, DECISIONS.md."* This reminder
-is not optional — it is the mechanism that keeps the next chat from reading stale state.
+- **Which files:** `STATUS.md` every session; `DECISIONS.md` and
+  `DECISIONS-archive.md` whenever they changed (almost every session);
+  `SPEC.md`, `RESULTS.md`, `CLAUDE.md` and `docs/PROJECT-INSTRUCTIONS.md`
+  (kept in Project knowledge as `PROJECT-INSTRUCTIONS.md`) only when the
+  session edited them.
+- **How:** stage each file from the linked computer into the workspace,
+  copy it into the working directory, and write it with project_write's
+  `local_path` to the same Project-knowledge path, so its contents never
+  enter the chat. Then check the staged file's byte size against the repo
+  file's.
+- **If it fails** (the computer is not linked or asleep, or a write is
+  refused): say so plainly and give Zac the list of files to upload by
+  hand, for example *"Upload to Project knowledge: STATUS.md,
+  DECISIONS.md."*
+- **Size:** Project knowledge holds at most 2 MB. Report the total after
+  each sync; above 1.6 MB is an ACTION NEEDED item.
 
 ---
 
@@ -132,21 +143,30 @@ not a long carried-forward chain. (The matching end-of-session rule lives in `CL
 
 The review is where quality is enforced. For every session output:
 
-- **Review from the real output.** Read notes/session-NN-output.txt directly and check figures against it, not against a pasted summary.
-- **Verify the numbers** against their cited DECISIONS/SPEC source — don't trust a summary's figures;
-  spot-check the arithmetic. Over-claims and mis-counts have slipped through before and must be
-  caught here, before they enter the permanent record.
-- **Check the honest framing**, especially where a result is flattering or a caveat is easy to omit
-  (baseline differences, single-year effects, per-airport nuance). The project's value is calibrated
-  honesty; lead with the number you can defend, not the biggest one.
-- **Confirm scope was held** — the session did what it was told and nothing more; SPEC/RESULTS
-  untouched unless the session was meant to touch them; no data or code strayed in.
-- **Confirm the evaluation discipline** — no look-ahead, no re-scoring the spent years (sealed
-  2025-26, F94; reserved 2024-25, F109) for any verdict, nothing tuned or selected on reused data,
-  and no 2026-27 row scored before a forward-looking test on it is pre-registered.
-- **Flag explicitly** whenever the planning assistant is unsure, or needs Zac to verify something, it says so in a clearly marked ACTION NEEDED block: what to check, how to check it, and what to do for each outcome. Zac relies on these flags and does not re-comb every detail.
-- **Only then** give commit commands. If something is wrong, have Zac send a correction to Claude
-  Code *before* committing — never commit a known error into the record.
+- **Review from the real output.** Read the summary and checkpoints at the top
+  of notes/session-NN-output.txt first. Then check figures against the detail
+  with targeted reads (a search or a line range), not a full read of a long
+  file.
+- **Verify the numbers** against their cited DECISIONS/SPEC source; spot-check
+  the arithmetic. Over-claims and mis-counts have slipped through before and
+  must be caught here, before they enter the permanent record.
+- **Check the honest framing**, especially where a result is flattering or a
+  caveat is easy to omit (baseline differences, single-year effects,
+  per-airport nuance). Lead with the number you can defend.
+- **Confirm scope was held:** the scope-list check in the output file is
+  clean; SPEC/RESULTS untouched unless the session was meant to touch them.
+- **Confirm the archive and size checks:** every entry outside the Live index
+  moved, citations resolve, and DECISIONS.md is under 80,000 bytes (D93.9).
+  Never accept "nothing moved" without that check.
+- **Confirm the evaluation discipline:** no look-ahead, no re-scoring the
+  spent years (sealed 2025-26, F94; reserved 2024-25, F109) for any verdict,
+  nothing tuned or selected on reused data, and no 2026-27 row scored before
+  a forward-looking test on it is pre-registered.
+- **Flag explicitly** whenever the planning assistant is unsure or needs Zac
+  to verify something, in a clearly marked ACTION NEEDED block: what to check,
+  how to check it, and what to do for each outcome.
+- **Only then** give commit commands. If something is wrong, have Zac send a
+  correction to Claude Code before committing. Never commit a known error.
 
 ---
 
@@ -190,8 +210,7 @@ prompt beforehand. House style:
 - **Descriptive vs verdict.** Multi-year backtests (F96) are descriptive profiles, not new
   pass/fails; they may reuse data, but selecting anything on them still requires a fresh confirmation
   year.
-- **Archive-as-you-go.** In each session's roundup, move newly-settled DECISIONS entries to the
-  archive, keeping the live file slim.
+- **Archive by the Live index.** In each session's end steps, every DECISIONS entry outside the Live index moves to the archive (D93.8). The live file stays under 80,000 bytes (D93.9).
 
 ---
 
@@ -202,6 +221,31 @@ That lives only in the chat you leave. The rule that makes this safe: **break on
 documented steps.** If a decision or plan matters and the session isn't done, write it into STATUS,
 DECISIONS, or memory before ending the chat — otherwise it is lost. When you (the planning assistant)
 notice something important that exists only in the current chat, say so and get it into a file.
+
+---
+
+## 11. Session design (D93)
+
+- **Fewer, fuller sessions.** Every session pays a fixed reading cost twice
+  (planning chat and Claude Code). Combine related work into one session
+  rather than a chain of small ones. Check during planning what a session
+  will touch (paths, script constants, file names), so follow-up sessions
+  are rare.
+- **Every prompt begins with a Read first section** (D93.16), as narrow as
+  the work allows: SPEC sections by number, DECISIONS entries by number,
+  and which files in full. A session that fits models, scores, or records
+  a decision reads the live DECISIONS.md in full; a session that only
+  moves or edits the record mechanically need not.
+- **Every prompt has:** numbered steps, each with its own check and stop
+  condition; a scope list of the files the session may create or edit; and
+  the end-of-session steps from CLAUDE.md.
+- **Every prompt names the DECISIONS entries and SPEC sections each step
+  needs,** archived ones by number, so Claude Code reads only those.
+- **Every D entry says which Live index changes it makes** (D93.8).
+- **Model choice in Claude Code** (Zac's setting): a lighter model (Sonnet)
+  for mechanical sessions such as moves, doc edits and checks; the strongest
+  model (Opus) for design, statistics and model fitting. The planning chat
+  recommends one with each invocation.
 
 ---
 
