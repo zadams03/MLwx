@@ -1,0 +1,223 @@
+SESSION 103 OUTPUT: the bias-drift test (D97, F146). BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+SUMMARY
+- Done: D97 recorded (sed, diff and cmp equal, 0 em-dashes); PROJECT-INSTRUCTIONS.md section 8 one line added (D97.3);
+  scripts/session103_bias_drift_cv.py written; --check, --gate, --score, --meta run; F146 recorded; archive step; STATUS.md.
+- Checks: preflight PASS; tests 24 of 24 PASS (start and end); --check 4 of 4 PASS; --gate PASS (cells 3,168 of 3,168,
+  headline 2 of 2, n 6 of 6); --score baseline refit equal to F139 PASS; 0 rows used an error not before their cycle PASS.
+- Headline MAE (degrees C): raw GFS 1.4617, baseline 1.0498 (1.049777501605027), drift 1.0190 (1.019044682206963).
+- Per airport baseline / drift: EGLC 0.7742 / 0.7742, LFPG 0.8937 / 0.8865, DSM 1.2034 / 1.1775, YSDU 1.2149 / 1.1792,
+  RNO 1.1735 / 1.1474, KSFO 1.0390 / 0.9495. Fold-level drift 1.0271 / 1.0329 / 0.9970 (baseline 1.0585 / 1.0634 / 1.0274).
+- D89.6: (a) 0.029276 > 0.01 yes; (b) 6 of 6 airports; (c) 3 of 3 folds. PASSED. D97.8: the curve becomes the baseline
+  plus this correction, identically at every airport, cycle hour and lead.
+- Rows corrected with b = 0: 1,655 (552 / 551 / 552). Fits 1,584 per run (fit 118.0 s, 118.1 s); --score 139.4 s.
+- Outputs: scores csv 4,752 rows dcae3a8a...7059ec5; meta e69a3c7a...0eef516; script 56460a0a...c0d0e83.
+- Readings for the owner (F146.7): EGLC's gain is about 0.000007 C and drift is higher there in 2 of 3 folds ((b) still
+  5 of 6 without it); KSFO gains most (0.089); mean_error was already a session 100 column, so the file keeps its nine
+  columns; "b at the end of a fold" read as after all its errors; --score repeats the full gate; 2024-25's 551 b = 0 rows
+  not traced; D97.4's weight source not checked.
+- Archive: D96 and F145 moved (6,166 bytes); 4 checks PASS. Citations: 172 resolved, 0 unresolved, 0 in both files,
+  0 duplicated, 0 out of order. DECISIONS.md 65,950 bytes after the archive (under 80,000): PASS.
+- Scope: git status shows exactly the scope list (plus the two pre-existing files). commit-102.txt's existing change
+  removes Co-Authored-By, Claude-Session and a blank line (3 lines; the prompt says two); not touched. PASS.
+- MLwx-stagec/, MLwx-pull/, MLwx-pull-f025-048/: no file newer than the session prompt. No __pycache__ written.
+- Open items: D97.1 (scripts that read DECISIONS by text); SPEC 6's stage C bullet and RESULTS section 7 do not yet
+  mention the bias-drift outcome (not in scope; for the owner).
+- Not done: nothing committed, no commit message, no network, nothing from 2026-27, no other variant tried.
+
+CHECKPOINTS
+Step 0 (preflight): git status shows only " M docs/commits/commit-102.txt" and "?? docs/sessions/session-103.md"; last entries D96 and F145; D97 and F146 found 0 times in each file; none of the four new files exists; SHA-256 equal: session97_stagec_cv.py 987ab6ba...5631f91, session100_structure_cv.py 67e709ea...26d6957, session97_stagec_cv_scores.csv 5604ccd1...d9d76. Importing session100_structure_cv printed nothing and its work is behind if __name__ == "__main__". score_airport("EGLC", ["baseline"], timer): 264 cells, keys obs, raw, cycles, baseline, equal lengths, cycles strictly ascending in 264 of 264, 0 missing obs (24.3 s; nothing written). Tests 24 of 24 OK. Files changed: notes/session-103-output.txt. PASS.
+Step 1 (D97): appended "---", a blank line, then docs/sessions/session-103.md lines 78 to 152 (between the markers) with sed; after the index edit D97 sits at DECISIONS.md lines 895 to      969 (heading 895, **D97. at 897). diff and cmp: byte-equal. Em-dashes 0. Live index (D97.12): D96 and F145 lines removed, "- D97: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test." added; F146's line waits for the end. Files changed: DECISIONS.md. PASS.
+Step 2 (PROJECT-INSTRUCTIONS.md section 8, D97.3): the line was found exactly once (l.180, section 8 "Commit commands"); the new line was added after it. 1 insertion, nothing else changed. Files changed: docs/PROJECT-INSTRUCTIONS.md. PASS. git diff:
+    diff --git a/docs/PROJECT-INSTRUCTIONS.md b/docs/PROJECT-INSTRUCTIONS.md
+    index 482f90a..f9c9516 100644
+    --- a/docs/PROJECT-INSTRUCTIONS.md
+    +++ b/docs/PROJECT-INSTRUCTIONS.md
+    @@ -178,6 +178,7 @@ prompt beforehand. House style:
+     
+     - After the review, the planning chat writes the commit message to `docs/commits/commit-NN.txt`: a title
+       line, a blank line, then a full multi-paragraph body. Any punctuation is fine.
+    +  It never includes a Co-Authored-By or Claude-Session line (D97.3).
+     - Zac runs `git add .`, then `git status` (to eyeball what's staged), then
+       `git commit -F docs/commits/commit-NN.txt`. The message file is committed with the session, as part of
+       the record.
+Step 3 (script, --check, --gate): wrote scripts/session103_bias_drift_cv.py. It checks session100_structure_cv.py's SHA-256 (F143) before import and uses its run_all (which calls score_airport(st, ["baseline"], timer)), errors, check_against_s97, d89_6, print_test and F139_HEADLINE; names unchanged. lightgbm imported directly; session-48 guard not imported or called; bytecode off; outputs write-once (s97.write_new). --check: 4 of 4 PASS. --gate: 1,584 fits, cells 3,168 of 3,168, headline 2 of 2, n 6 of 6, GATE PASS, 137.8 s. Files changed: scripts/session103_bias_drift_cv.py. PASS. Output:
+    SESSION 103 --check (offline, no table read), start 2026-10-11T10:57:22Z; w = 0.02
+      PASS: daily, lead 3, errors 1.0 x 4: corrections [0.0, 0.02, 0.0396, 0.058808], expected [0.0, 0.02, 0.0396, 0.058808]; errors used [0, 1, 2, 3], expected [0, 1, 2, 3]
+      PASS: daily, lead 24, errors 1.0 x 3: corrections [0.0, 0.0, 0.02], expected [0.0, 0.0, 0.02]; errors used [0, 0, 1], expected [0, 0, 1]
+      PASS: missing day, lead 3, days 1, 2, 4: corrections [0.0, 0.02, 0.0596], expected [0.0, 0.02, 0.0596]; errors used [0, 1, 2], expected [0, 1, 2]
+      PASS: latest valid time used is before the row's cycle: 10 of 10 rows
+    CHECK PASS
+    SESSION 103 --gate (offline), start 2026-10-11T10:57:27Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+    session100_structure_cv.py SHA-256 checked before import: 67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957
+      EGLC: baseline 264 fits, 22.4 s
+      LFPG: baseline 264 fits, 21.6 s
+      DSM: baseline 264 fits, 24.3 s
+      YSDU: baseline 264 fits, 22.6 s
+      RNO: baseline 264 fits, 22.8 s
+      SFO: baseline 264 fits, 23.8 s
+    baseline fits: 1584; fit time 118.0 s
+    cells equal to session97_stagec_cv_scores.csv (n and MAE, raw_gfs and baseline): 3168 of 3168
+    headline equal to F139 at full precision: 2 of 2 (raw_gfs 1.4616990883475995, baseline 1.049777501605027)
+    per-airport n equal to F139.4: 6 of 6
+    GATE PASS; end 2026-10-11T10:59:45Z; run time 137.8 s
+Step 4 (--score, --meta): baseline refit equal to F139 (3,168 of 3,168 cells, headline 2 of 2, n 6 of 6); 1,584 fits, 118.1 s; tracker 1,584 cells, 577,262 rows, 0 rows using an error not before their cycle; b = 0 rows 1,655. Scores file 4,752 rows (+ header), SHA-256 dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5; its baseline rows byte-equal to session 100's (1,584), its raw_gfs rows' first eight columns byte-equal to session 97's (1,584). D89.6: (a) 0.029276 yes, (b) 6 of 6, (c) 3 of 3: drift PASSES (D97.8). EGLC's margin is tiny: baseline 0.774180, drift 0.774173 (pooled from the file's n and MAE, about 0.000007 C). Meta written, SHA-256 e69a3c7ae51608a45ad77e83ac9f5442e2705fbeafe160f4b2b01948d0eef516. Script SHA-256 56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83. No __pycache__ written. Files changed: data/processed/session103_bias_drift_cv_scores.csv, data/processed/session103_bias_drift_cv.meta.txt. PASS. Full --score output (BUILD-CHOICE SCORES, NOT RESULTS):
+    SESSION 103 --score (offline), start 2026-10-11T10:59:56Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+    LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}; w = 0.02
+    BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+      EGLC: baseline 264 fits, 23.7 s
+      LFPG: baseline 264 fits, 21.8 s
+      DSM: baseline 264 fits, 22.5 s
+      YSDU: baseline 264 fits, 24.2 s
+      RNO: baseline 264 fits, 22.5 s
+      SFO: baseline 264 fits, 23.2 s
+    baseline refit against F139: cells equal 3168 of 3168; headline 2 of 2 (baseline 1.049777501605027); n 6 of 6
+    baseline fits: 1584; fit time 118.1 s
+    tracker: 1584 cells, 577,262 rows, 0.7 s; rows whose latest error used is not before their cycle: 0
+    rows corrected with b = 0 (no error yet), by fold: 2023-24 552, 2024-25 551, 2025-26 552; total 1655
+    wrote data/processed/session103_bias_drift_cv_scores.csv: 4752 rows, SHA-256 dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5
+    
+    ==========================================================================================
+    SUMMARY. BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C. Common row set (D89.5).
+    ==========================================================================================
+    
+    Per airport, pooled over folds, cycle hours and leads 3 to 24:
+      airport        n   raw_gfs  baseline     drift
+      EGLC      96,368    0.9725    0.7742    0.7742
+      LFPG      96,188    1.1596    0.8937    0.8865
+      DSM       96,389    1.7582    1.2034    1.1775
+      YSDU      95,645    1.4633    1.2149    1.1792
+      RNO       96,342    2.1717    1.1735    1.1474
+      SFO       96,330    1.2449    1.0390    0.9495
+      HEADLINE            1.4617    1.0498    1.0190
+      full precision: raw_gfs 1.4616990883475995, baseline 1.049777501605027, drift 1.019044682206963
+    
+    Per fold: each airport's MAE over the fold's rows, and the fold-level MAE (unweighted mean of six):
+      fold     method       EGLC    LFPG     DSM    YSDU     RNO     SFO  fold-level
+      2023-24  raw_gfs    0.9614  1.1477  1.9144  1.4724  2.0114  1.2514      1.4598
+      2023-24  baseline   0.7491  0.8653  1.2463  1.2457  1.2148  1.0297      1.0585
+      2023-24  drift      0.7465  0.8598  1.2119  1.2022  1.1884  0.9540      1.0271
+      2024-25  raw_gfs    0.9891  1.1739  1.6502  1.5053  2.2890  1.2237      1.4719
+      2024-25  baseline   0.8010  0.9434  1.1430  1.1976  1.1860  1.1095      1.0634
+      2024-25  drift      0.8032  0.9374  1.1184  1.1821  1.1694  0.9870      1.0329
+      2025-26  raw_gfs    0.9672  1.1571  1.7095  1.4120  2.2152  1.2595      1.4534
+      2025-26  baseline   0.7725  0.8726  1.2208  1.2013  1.1193  0.9777      1.0274
+      2025-26  drift      0.7729  0.8623  1.2022  1.1531  1.0841  0.9076      0.9970
+    
+    D89.6 test, drift against the baseline (incumbent minus challenger, over incumbent; ties keep the incumbent):
+      drift against the baseline:
+        (a) headline reduction 0.029276 (2.928 %), above 0.01: yes
+        (b) airports where the challenger is lower: 6 of 6, 4 or more: yes
+        (c) folds where the challenger is lower: 3 of 3, 2 or more: yes
+        => PASS: the challenger replaces the incumbent
+    
+    D97.8 OUTCOME: drift passes: the curve becomes the baseline plus this correction, identically at every airport, cycle hour and lead (a build choice, not a result)
+    
+    DESCRIPTIVE (D97.9), not used by the rule.
+    
+    Mean error (observation minus forecast), degrees C, per airport and fold:
+      airport fold       raw_gfs  baseline     drift
+      EGLC    2023-24     0.3927    0.0261    0.0225
+      EGLC    2024-25     0.1677   -0.0994   -0.0066
+      EGLC    2025-26     0.1298   -0.1184   -0.0185
+      EGLC    all         0.2303   -0.0638   -0.0009
+      LFPG    2023-24     0.5570    0.0843    0.0454
+      LFPG    2024-25     0.2956   -0.1566   -0.0420
+      LFPG    2025-26     0.2380   -0.1624   -0.0286
+      LFPG    all         0.3639   -0.0780   -0.0083
+      DSM     2023-24     0.8597    0.2323    0.0638
+      DSM     2024-25     0.5176   -0.1703   -0.0750
+      DSM     2025-26     0.4906   -0.2096   -0.0575
+      DSM     all         0.6229   -0.0489   -0.0228
+      YSDU    2023-24    -0.4867    0.1250   -0.0365
+      YSDU    2024-25    -0.5578   -0.0820   -0.0342
+      YSDU    2025-26    -0.2489    0.2474    0.0421
+      YSDU    all        -0.4315    0.0966   -0.0096
+      RNO     2023-24    -0.0140    0.2189    0.0523
+      RNO     2024-25    -0.3826   -0.1118   -0.0238
+      RNO     2025-26    -0.7638   -0.3292   -0.0574
+      RNO     all        -0.3862   -0.0736   -0.0095
+      SFO     2023-24     0.5638    0.0605   -0.0916
+      SFO     2024-25    -0.0513   -0.5592   -0.0881
+      SFO     2025-26    -0.1109   -0.4234   -0.0347
+      SFO     all         0.1345   -0.3069   -0.0715
+    
+    b at the end of each fold (after all the fold's errors), over each airport's 88 cells, degrees C:
+      airport fold         mean      min      max
+      EGLC    2023-24    0.1646  -0.1366   0.4548
+      EGLC    2024-25   -0.0483  -0.3402   0.3508
+      EGLC    2025-26   -0.1349  -0.6382   0.1583
+      LFPG    2023-24    0.3313  -0.0980   0.7897
+      LFPG    2024-25   -0.3059  -1.0071   0.2212
+      LFPG    2025-26   -0.2076  -0.8502   0.2902
+      DSM     2023-24    0.4665   0.0310   0.8871
+      DSM     2024-25   -0.5470  -1.0640  -0.0614
+      DSM     2025-26   -0.4185  -0.9217   0.1418
+      YSDU    2023-24   -0.2646  -0.7387   0.1672
+      YSDU    2024-25   -0.2481  -0.4735   0.0584
+      YSDU    2025-26    0.3039  -0.2271   0.7884
+      RNO     2023-24    0.3826  -0.0200   0.9204
+      RNO     2024-25   -0.1734  -0.7140   0.3816
+      RNO     2025-26   -0.4179  -0.9705  -0.0502
+      SFO     2023-24   -0.6701  -1.0092  -0.2035
+      SFO     2024-25   -0.6420  -0.9142  -0.3587
+      SFO     2025-26   -0.2527  -0.5624   0.0406
+    
+    Six-airport mean MAE per lead (each airport pooled over folds and cycle hours):
+      lead   raw_gfs  baseline     drift
+         3    1.3606    0.9648    0.9291
+         4    1.3773    0.9748    0.9397
+         5    1.3914    0.9826    0.9514
+         6    1.4056    0.9967    0.9622
+         7    1.4234    1.0107    0.9787
+         8    1.4332    1.0218    0.9930
+         9    1.4501    1.0409    1.0092
+        10    1.4533    1.0371    1.0057
+        11    1.4537    1.0407    1.0109
+        12    1.4592    1.0496    1.0172
+        13    1.4689    1.0536    1.0233
+        14    1.4691    1.0611    1.0305
+        15    1.4827    1.0736    1.0412
+        16    1.4816    1.0677    1.0361
+        17    1.4799    1.0651    1.0365
+        18    1.4883    1.0754    1.0461
+        19    1.5002    1.0824    1.0519
+        20    1.5020    1.0891    1.0602
+        21    1.5187    1.1048    1.0751
+        22    1.5199    1.1000    1.0718
+        23    1.5163    1.0945    1.0665
+        24    1.5223    1.1083    1.0828
+    
+    end 2026-10-11T11:02:15Z; run time 139.4 s
+    wrote data/processed/session103_bias_drift_cv.meta.txt: 37 lines, SHA-256 e69a3c7ae51608a45ad77e83ac9f5442e2705fbeafe160f4b2b01948d0eef516
+
+END OF SESSION
+F146 appended (27 lines incl. heading), F146 added to the Live index after D97. Archive --apply --session 103:
+    
+    archive_decisions.py --apply --session 103: span table
+    
+    Header: lines 1 to 30.
+    
+    index | first line | lines | bytes | ID | first line of span (80 chars) | action
+    1 | 32 | 3 | 639 | D47 | **D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D1 | KEEP
+    2 | 36 | 106 | 7002 | D73 | ## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward | KEEP
+    3 | 143 | 108 | 6696 | D77 | ## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and | KEEP
+    4 | 252 | 60 | 3724 | D79 | ## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the  | KEEP
+    5 | 313 | 116 | 7126 | D82 | ## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and st | KEEP
+    6 | 430 | 89 | 5259 | D88 | ## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C deve | KEEP
+    7 | 520 | 77 | 4756 | D89 | ## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for st | KEEP
+    8 | 598 | 58 | 8541 | F139 | ## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the | KEEP
+    9 | 657 | 117 | 7416 | D93 | ## 2026-10-09: Session 99 decision: F141 accepted, the session order, and a work | KEEP
+    10 | 775 | 54 | 3400 | D95 | ## 2026-10-09: Session 101 decision: the structure question closed, the order of | KEEP
+    11 | 830 | 47 | 2907 | D96 | ## 2026-10-09: Session 102 decision: F144 accepted, the gate's lookup, session 8 | MOVE
+    12 | 878 | 16 | 3259 | F145 | ## 2026-10-09: Session 102 finding: the gate fixed, and the f025 to f048 test ch | MOVE
+    13 | 895 | 77 | 5058 | D97 | ## 2026-10-11: Session 103 decision: F145 accepted, the f025 to f048 pull, the c | KEEP
+    14 | 973 | 29 | 4911 | F146 | ## 2026-10-11: Session 103 finding: the bias-drift test | KEEP
+    
+    IDs in more than one span: none
+Citations:
+    
+    Unresolved (number: where cited):
+    Found in both files (number: where cited):
+    First opening line appearing more than once:
+    Dated headings out of order in DECISIONS.md:
+Tests at end: 24 of 24 OK. DECISIONS.md 65,950 bytes. Scope check: matches the list.

@@ -19,8 +19,8 @@ It records choices made, why they were made, open questions, and findings.
 - F139: the baseline's cross-validation scores (the incumbent, D89.7).
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
 - D95: the structure question closed, the next steps, tests, and the f025 to f048 pull.
-- D96: the gate's lookup, session 86's gate, the 25-48 Release notes, and the order of the next steps.
-- F145: session 102's finding.
+- D97: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test.
+- F146: session 103's finding.
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -828,65 +828,108 @@ read or scored.
 
 ---
 
-## 2026-10-09: Session 102 decision: F144 accepted, the gate's lookup, session 86's gate, and the order of the next steps (owner, planning chat)
+## 2026-10-11: Session 103 decision: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test (owner, planning chat)
 
-**D96. Owner decisions, planning chat (after session 101): F144 accepted,
-how session 91's gate finds F122.3, what session 86's gate can still do,
-the 25-48 Release notes, and the order of the next steps.** Written at the
-start of session 102, before any other edit. No 2026-27 value has been
+**D97. Owner decisions, planning chat (after session 102): F145 accepted,
+the f025 to f048 pull run, the commit history rewritten, and every choice of
+the bias-drift test (D78.2, D81.10(b)), fixed before any score.** Written at
+the start of session 103, before any other edit. No 2026-27 value has been
 read or scored.
 
-- **D96.1 F144 accepted,** with its six readings. Reading 1 is handled by
-  D96.2 and D96.3. Reading 5 is handled by D96.4. Readings 2, 3, 4 and 6
-  change nothing.
-- **D96.2 Session 91's gate.** It stops looking for F122.3 in
-  DECISIONS.md. It holds F122.3's training-set SHA-256 as a fixed value
-  in the script (as `session87_forward_score.py` already does), and a test
-  checks that value against the record in both DECISIONS files. So the
-  script no longer depends on where an entry lives, and a disagreement
-  between script and record fails the test suite. Nothing else in the
-  script changes; its plans for hours 0-24 and 25-48 stay byte-for-byte
-  as F144 recorded.
-- **D96.3 Session 86's gate.** A survey at session 101's review found
-  three scripts that read a DECISIONS file: `session87_forward_score.py`
-  reads both files (unaffected); `session91_grib_pull.py` (D96.2); and
-  `session86_forward_build.py`, which reads DECISIONS.md alone, for
-  F122.3 and F122.5, only inside its `--gate` mode (`run_gate` and
-  `plumbing`). Its `--build` mode, the one stage B uses, reads neither
-  file. Session 86 is frozen (D62.3(a)) and is not edited. So its
-  `--gate`, which passed once (F128), can no longer be re-run as it
-  stands. This loses no check stage B needs. A test guards the lookups
-  stage B does use (session 87's).
-- **D96.4 The 25-48 Release notes.** For `hours` = `25-48` the Release
-  notes say "Raw GFS values at forecast hours 25 to 48, at the four grid
-  points around each pull airport (DECISIONS D82.4, D83, D95). One month
-  per set of three files." For `0-24` nothing changes.
-- **D96.5 Order of the next steps (replaces D95.4's session numbers).**
-  Session 102: this entry, the gate fix, and D95.7's test chunk and gate.
-  If the gate passes, the owner runs the workflow with `hours` = `25-48`
-  for 2022-01 alone, then for 2021-03..2026-07 once that month's verify
-  step has passed. Session 103: bias drift (D78.2, D81.10(b)), as a build
-  choice against the baseline. Session 104: download and verify the 25-48
-  pull, extend the development table and the baseline to leads 25 to 48,
-  fix the daily maximum's metric in its own entry (D89.8), and score it.
-- **D96.6 Unchanged:** D95.5 to D95.8.
-- **D96.7 Live index.** Removed (archived): F144, which is settled. Added:
-  D96 and F145. D95 stays (D95.5 to D95.8 are in force). After session
-  102: D47, D73, D77, D79, D82, D88, D89, F139, D93, D95, D96, F145.
+- **D97.1 F145 accepted,** with its three readings. Reading 1 stays open:
+  `session92_verify_chunk.py --gate` (local only) and
+  `session95_check_release.py` still look up F122.3 and F133 to F136 in
+  DECISIONS.md by text, and session 95's script is fixed to the 0-24
+  Release. Neither is used by the workflow. Both are dealt with when session
+  104, which downloads and checks the f025 to f048 pull, is planned.
+- **D97.2 The f025 to f048 pull (D96.5), run by the owner on GitHub
+  Actions.** First `hours` = `25-48` for 2022-01 alone: the verify step
+  printed `RESULT: PASS`, and the owner checked the new Release
+  `stagec-grib-pull-f025-048` (title, notes and three files). Then
+  2021-03..2026-07: the Release holds 195 files, three for each of the 65
+  months (owner's count, 2026-10-10). The workflow publishes a month only
+  after its verify step (D84.4) passes. The files have not been downloaded
+  or checked together; that is session 104's.
+- **D97.3 Commit history.** Some commit messages (sessions 73, 101 and 102)
+  ended with `Co-Authored-By` and `Claude-Session` lines, which GitHub reads
+  as a co-author. On 2026-10-09 the owner removed those lines from every
+  commit message on `main` (`git filter-branch --msg-filter`) and
+  force-pushed. Commit IDs from session 73 onward changed; no file's content
+  changed. Commit messages never include such lines; PROJECT-INSTRUCTIONS.md
+  section 8 says so from session 103.
+- **D97.4 What is tested.** One challenger. For every test row, its forecast
+  is the baseline's forecast plus b, where b is a decaying average of the
+  baseline's own recent errors (observation minus baseline forecast). After
+  each new error e: b = (1 - w) x b + w x e, with w = 0.02. The weight is
+  NOAA's operational value for NAEFS bias correction (about a 50-day memory;
+  Cui, NCEP, "Decide to use 2% (~ 50 days)"; planning-chat web check
+  2026-10-11, not checked by this session). It is fixed in advance, not
+  tuned, and no other weight or method is tried.
+- **D97.5 One tracker per airport, fold, cycle hour and lead,** the same
+  cells as the baseline's models. A tracker is updated only by its own
+  cell's test rows that are scored (complete case, with an observation), in
+  ascending valid time. A missing day is skipped: the update counts errors,
+  not calendar days. Errors are always the baseline's, never the corrected
+  forecast's.
+- **D97.6 No look-ahead.** The forecast from the cycle starting at time c
+  uses only errors whose valid time is before c. The observation is within
+  15 minutes of its valid whole hour (D88.7), so it was reported at least 45
+  minutes before c. So at lead n, the newest usable error is from the cycle
+  one day earlier for n up to 23, and two days earlier for n = 24.
+- **D97.7 Start of each test year.** Every tracker starts at b = 0 at its
+  fold's T0 (D89.3). Errors on training rows are in-sample and are never
+  used. This handicaps the challenger early in each fold; it is accepted.
+- **D97.8 The rule.** The incumbent is D88.4's baseline (D89.7, D95.2).
+  Metric and rows as D89.5; the challenger's rows are the baseline's,
+  exactly. D89.6 decides. If the challenger passes, the curve becomes the
+  baseline plus this correction, identically at every airport, cycle hour
+  and lead (D89.8). If not, the baseline stays. Either way no other variant
+  (weight, window, pooling, latency) is scored in session 103; any later
+  variant is a new build choice, fixed in its own entry before its score.
+- **D97.9 Descriptive figures, not used by the rule.** The mean error
+  (observation minus forecast) of raw GFS, the baseline and the challenger
+  per airport and fold; each airport's b at the end of each fold (mean,
+  minimum and maximum over its 88 cells); and the six-airport MAE per lead
+  for each method.
+- **D97.10 This is not a claim.** Build-choice scores are never quoted as
+  results (SPEC 2.5). No later change to the recipe can be claimed against
+  NBM on 2026-27 (D78.4).
+- **D97.11 Order of the next steps (replaces D96.5's session numbers).**
+  Session 103: this entry and the bias-drift test. Session 104: download and
+  check the f025 to f048 pull (with D97.1's open item), extend the
+  development table and the curve to leads 25 to 48 (with the bias-drift
+  correction if it passed), fix the daily maximum's metric in its own entry
+  (D89.8), and score it.
+- **D97.12 Live index.** Removed (archived): D96 and F145, which are settled
+  (their open parts are restated here). Added: D97 and F146. After session
+  103: D47, D73, D77, D79, D82, D88, D89, F139, D93, D95, D97, F146.
 
 ---
 
-## 2026-10-09: Session 102 finding: the gate fixed, and the f025 to f048 test chunk passed it
+## 2026-10-11: Session 103 finding: the bias-drift test
 
-**F145. Session 102. D96 was recorded first. Session 91's `--gate` now compares the training set with a fixed F122.3 value; the 25-48 Release has its own notes text; three record-lookup tests were added; and D95.7's test chunk (hours 21 to 48, three dates, all four cycles) passed the gate: GATE PASSED, 18 of 18 station-days, every column 18 of 18, exact equality. No model fit, no score, nothing from 2026-27, no non-development observation. Pull script SHA-256 `557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675`; workflow `4e0e73cbb410c995d9d0ffed00cf87414ddb114749bd25330b07e1d8c89ef5d0`. Full output: `notes/session-102-output.txt`. Run 2026-10-09. Python 3.12.2.**
+**F146. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. Offline. D97 was recorded first. The tracker passed its self-check and the baseline refit reproduced F139 exactly; the challenger `drift` (the baseline plus a decaying average of its own recent errors, w = 0.02, D97.4) was then scored against the baseline under D89.6 and passed all three parts. Under D97.8 the curve becomes the baseline plus this correction, identically at every airport, cycle hour and lead. Script: `scripts/session103_bias_drift_cv.py` (new; modes `--check`, `--gate`, `--score`, `--meta`; SHA-256 `56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83`). Full real output: `notes/session-103-output.txt`. Run 2026-10-11. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
 
-- **F145.1 The gate (D96.2).** Added `TRAINING_SET_SHA256` (`# F122.3`) to `session91_grib_pull.py`; `run_gate` compares with it; the regex is gone. `--plan` for 0-24 and 25-48 and both (cycle, hour) key lists are byte-equal before and after (195,600 and 187,768 keys; hashes equal F144's; the list format is "ISO cycle,hour" per line). `--guard-check` 12 of 12. A dummy extract now passes the training-set check and stops for "no rows" (18 not rebuilt), with no AttributeError.
-- **F145.2 `DECISIONS_FILE` kept.** The prompt allowed removing it only if unused. `session92_verify_chunk.py` (l.286, its local `--gate`) and `session95_check_release.py` (l.73) use `p91.DECISIONS_FILE`, so it stays.
-- **F145.3 The workflow (D96.4).** New env `RELEASE_NOTES` and `--notes "$RELEASE_NOTES"`. The 0-24 string is identical to the old one (checked by script); only 3 lines changed. Not tested: YAML parsing, GitHub expressions, `gh`, Actions.
-- **F145.4 Tests.** 3 added to `tests/test_record.py` (s91's fixed value against F122.3 and the file; s87's manifest pattern finds F122.5's one value, equal to the file; F122.5's table has six airports). Session 87 imports with no side effect. The suite has 24 tests; at the Step 4 run 23 passed and the citations test failed only because D96 cited F145 before it existed. Final run: see the output file.
-- **F145.5 The test chunk.** 12 cycles, 336 files, 3,360 messages: ok 3,360, ok (whole file) 0, absent by design 0, idx missing 0, check failed 0. Requests: 336 `.idx`, 3,360 message; 1 retry; 0 HTTP 404. 2,623,485,001 bytes; 865 s (about 14.4 min). Temporary folder deleted.
-- **F145.6 Readings for the owner.**
-  1. `session92_verify_chunk.py` (`--gate`, local only) and `session95_check_release.py` read F122.3 and F133 to F136 values from DECISIONS.md by text, so they have the same archive problem. The workflow's verify step does not use `--gate`. Not fixed (out of scope); whether `session95_check_release.py` still runs is unchecked.
-  2. The key-list format was not recorded in F144; it was recovered by trying formats, and both hashes then matched F144's.
-  3. The gate covers leads 24 to 29 only; the 25-48 pull's own checks are the verifier's (D84.4) in the workflow.
-- **F145.7 Not done.** No push, workflow run, Release change or `gh` call. No script edited except `session91_grib_pull.py`; no frozen script edited. SPEC.md, RESULTS.md, README.md, CLAUDE.md not edited. Nothing committed and no commit message written.
+- **F146.1 Steps 0 to 2.** Preflight passed (SHA-256 of sessions 97 and 100's scripts and session 97's scores file equal to the record; importing session 100 runs nothing; its `score_airport` returns `obs`, `raw`, `cycles` and `baseline` in ascending cycle time; tests 24 of 24). D97 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes. PROJECT-INSTRUCTIONS.md section 8: one line added (D97.3).
+- **F146.2 Self-check and gate.** `--check` 4 of 4 PASS (lead 3: 0, 0.02, 0.0396, 0.058808; lead 24: 0, 0, 0.02; a missing day uses both earlier errors, 0.0596; latest error used before the cycle in 10 of 10 rows). `--gate`: 1,584 fits; cells 3,168 of 3,168, headline 2 of 2, n 6 of 6; PASS (137.8 s).
+- **F146.3 The scores (`--score`).** The baseline refit again equal to F139 (1.049777501605027). Tracker: 1,584 cells, 577,262 rows; 0 rows used an error not before their cycle; 1,655 rows corrected with b = 0 (552, 551 and 552 per fold). MAE in degrees C:
+
+| | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | fold 23-24 / 24-25 / 25-26 |
+|---|---|---|---|---|---|---|---|---|
+| raw GFS | 0.9725 | 1.1596 | 1.7582 | 1.4633 | 2.1717 | 1.2449 | 1.4617 | 1.4598 / 1.4719 / 1.4534 |
+| baseline | 0.7742 | 0.8937 | 1.2034 | 1.2149 | 1.1735 | 1.0390 | 1.0498 | 1.0585 / 1.0634 / 1.0274 |
+| drift | 0.7742 | 0.8865 | 1.1775 | 1.1792 | 1.1474 | 0.9495 | 1.0190 | 1.0271 / 1.0329 / 0.9970 |
+
+  Drift's headline at full precision: 1.019044682206963.
+- **F146.4 D89.6, drift against the baseline.** (a) reduction 0.029276 (2.93 percent), above 0.01: yes; (b) lower at 6 of 6 airports: yes; (c) lower in 3 of 3 folds: yes. **Passed.** D97.8: the curve becomes the baseline plus this correction.
+- **F146.5 Descriptive (D97.9).** Mean error (observation minus forecast) over all folds, baseline then drift: EGLC -0.064 / -0.001, LFPG -0.078 / -0.008, DSM -0.049 / -0.023, YSDU +0.097 / -0.010, RNO -0.074 / -0.010, KSFO -0.307 / -0.072. The baseline's per-fold mean error ranges from -0.559 (KSFO 2024-25) to +0.247 (YSDU 2025-26); drift's from -0.092 to +0.064. b at the end of a fold, airport means, ranges from -0.670 (KSFO 2023-24) to +0.467 (DSM 2023-24). Drift is lower than the baseline at every lead 3 to 24 (six-airport mean). Full tables in the output file.
+- **F146.6 Outputs.** `data/processed/session103_bias_drift_cv_scores.csv` (4,752 rows, SHA-256 `dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5`); its baseline rows are byte-equal to session 100's, and its raw GFS rows' first eight columns to session 97's. Meta `data/processed/session103_bias_drift_cv.meta.txt` (`e69a3c7ae51608a45ad77e83ac9f5442e2705fbeafe160f4b2b01948d0eef516`). Fits: 1,584 in `--gate`, 1,584 in `--score` (fit time 118.0 s and 118.1 s; `--score` run 139.4 s); drift fits no model.
+- **F146.7 Readings for the owner.**
+  1. EGLC's gain is tiny: 0.774180 against 0.774173 (pooled from the file, about 0.000007 degrees C), and drift is higher at EGLC in folds 2024-25 and 2025-26. Without EGLC, (b) would still pass (5 of 6).
+  2. The gain is largest at KSFO (0.089), whose baseline mean error is the most negative, consistent with D78.2 and D71.4 (KSFO’s bias shifting between years).
+  3. Session 100's scores-file columns already include `mean_error`, so the file keeps those nine columns; `model` repeats the method, `raw_gfs` included.
+  4. "b at the end of each fold" is read as b after every error of the fold has been applied, including the last ones no row used.
+  5. `--score` repeats the full gate (cells, headline and n), not only the headline.
+  6. The 552 b = 0 rows per fold equal one per cell at leads 3 to 23 and two per cell at lead 24; 2024-25's 551 was not traced.
+  7. The weight's source (D97.4) was not checked by this session.
+- **F146.8 What this did not do.** No other weight, window, pooling, latency or method tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.

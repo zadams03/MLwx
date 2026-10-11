@@ -1,0 +1,43 @@
+Session 103: D97, the bias-drift test passed (F146), a build choice
+
+Records D97 (owner decisions after session 102): F145 accepted, the
+f025 to f048 pull run on GitHub Actions (Release
+stagec-grib-pull-f025-048, 195 files, not yet downloaded or checked),
+the commit history rewrite of 2026-10-09 (Co-Authored-By and
+Claude-Session lines removed, commit IDs from session 73 on changed, no
+file content changed), and every choice of the bias-drift test, fixed
+before any score.
+
+The challenger is the baseline plus a decaying average of its own
+recent errors, w = 0.02 (NOAA's NAEFS value, fixed in advance, not
+tuned), one tracker per airport, fold, cycle hour and lead, using only
+errors whose valid time is before the forecast's cycle. New script
+scripts/session103_bias_drift_cv.py: --check 4 of 4 PASS; --gate
+reproduced F139 exactly (cells 3,168 of 3,168, headline 2 of 2, n 6 of
+6), and --score reproduced it again before scoring; 0 rows used an
+error not before their cycle.
+
+Build-choice scores, not results (SPEC 2.5). Headline MAE: raw GFS
+1.4617, baseline 1.0498, drift 1.0190 (2.93 percent lower). D89.6:
+(a) 0.029276 above 0.01, (b) lower at 6 of 6 airports, (c) lower in 3
+of 3 folds. Passed: under D97.8 the curve becomes the baseline plus
+this correction, identically at every airport, cycle hour and lead.
+EGLC's gain is effectively nil (about 0.000007 degrees C, worse in 2 of
+3 folds); (b) passes without it. KSFO gains most (0.089). Drift is
+lower than the baseline at every lead 3 to 24.
+
+Outputs: data/processed/session103_bias_drift_cv_scores.csv (4,752
+rows) and its meta file. F146.7's readings accepted by the owner (to be
+recorded in session 104's D entry); reading 2's wording corrected at
+review.
+
+docs/PROJECT-INSTRUCTIONS.md section 8: commit messages never include a
+Co-Authored-By or Claude-Session line (D97.3). docs/commits/
+commit-102.txt: those lines removed after session 102's commit.
+
+Archive step moved D96 and F145. DECISIONS.md 65,950 bytes; 172
+citations, 0 unresolved. Tests 24 of 24. STATUS.md overwritten.
+
+Open: D97.1 (session 92's local --gate and session 95's checker still
+read DECISIONS.md by text); SPEC section 6 and RESULTS section 7 do not
+yet mention the bias-drift outcome. Both for session 104's planning.

@@ -3,25 +3,27 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 9 October 2026, after session 102._
+_Last updated: 11 October 2026, after session 103._
 
 ---
 
-## Session 102: the gate fixed and passed (D96, F145)
+## Session 103: the bias-drift test (D97, F146)
 
-Full output: `notes/session-102-output.txt`.
+Full output: `notes/session-103-output.txt`.
 
-- **D96** recorded. **Session 91's `--gate`** now checks the training set
-  against a fixed F122.3 value (`TRAINING_SET_SHA256`); a test checks that
-  value against the record. The plans for hours 0-24 and 25-48 are unchanged.
-- **The workflow** has its own Release notes text for `25-48` (D96.4). Not
-  run; YAML and GitHub expressions untested.
-- **Tests:** 3 added (record lookups for sessions 91 and 87); 24 in all.
-- **D95.7's test chunk and gate:** hours 21-48, three dates, 3,360 of 3,360
-  messages ok. **GATE PASSED**, 18 of 18 station-days, exact equality. The
-  f025 to f048 pull is ready to run.
-- **D96.3:** session 86's `--gate` can no longer be re-run (it reads
-  DECISIONS.md only); its `--build` mode, which stage B uses, is unaffected.
+- **D97** recorded: F145 accepted, the f025 to f048 pull, the commit
+  history, and every choice of the bias-drift test, fixed before any score.
+- **The test passed (a build choice, not a result, SPEC 2.5).** The
+  challenger is the baseline plus a decaying average of its own recent
+  errors (w = 0.02, D97.4). D89.6: headline 1.0498 to 1.0190 (2.93 percent
+  lower), lower at 6 of 6 airports and in 3 of 3 folds. So, under D97.8,
+  the curve becomes the baseline plus this correction, identically at every
+  airport, cycle hour and lead. EGLC's gain is tiny (about 0.000007
+  degrees C); KSFO's is the largest (F146.7).
+- **The baseline refit** reproduced F139 exactly, twice (cells 3,168 of
+  3,168).
+- **PROJECT-INSTRUCTIONS.md section 8** now says commit messages never
+  include a Co-Authored-By or Claude-Session line (D97.3).
 
 ---
 
@@ -40,12 +42,17 @@ curve plus the daily maximum (D82.2).
   The hold rule (D73.8) stands. Session 86's `--gate` cannot be re-run
   (D96.3); `--build` is unaffected.
 - **Stage C.** Design (D82), development table (D88, F138), build-choice
-  rules (D89), the baseline scored (F139); the structure question closed,
-  the baseline stays (D94, F143, D95.2). The f025 to f048 pull passed its
-  local gate (F145). Next, per D96.5: the owner runs it, then bias drift
-  (session 103), then leads 25 to 48 and the daily maximum (session 104,
-  its metric fixed first, D89.8). The claim batch (D82.7: EDDM, KORD, CYYZ,
-  ZGSZ, ZUCK, NZWN) is judged at stage C's lock.
+  rules (D89), the baseline scored (F139); the structure stays the
+  baseline (D95.2); the bias-drift correction added to it (D97.8, F146).
+  The f025 to f048 pull has run: its Release
+  `stagec-grib-pull-f025-048` holds 195 files (three for each of 65
+  months), not yet downloaded or checked together (D97.2). Next (D97.11):
+  session 104. The claim batch (D82.7: EDDM, KORD, CYYZ, ZGSZ, ZUCK,
+  NZWN) is judged at stage C's lock.
+- **Commit history.** On 2026-10-09 the owner removed Co-Authored-By and
+  Claude-Session lines from every commit message on `main` and
+  force-pushed; commit IDs from session 73 on changed, file contents did
+  not (D97.3).
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
 - **Open item MMMX (D83.4).** Almost no usable observations under the
@@ -55,12 +62,13 @@ curve plus the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **Other scripts that find entries in DECISIONS.md by text (F145.6).**
+- **Scripts that find entries in DECISIONS.md by text (D97.1).**
   `session92_verify_chunk.py` (`--gate`, local only) and
-  `session95_check_release.py` read F122 and F133 to F136 values from
-  DECISIONS.md, so they fail or may fail since the archive move. Not fixed.
-  Whether `session95_check_release.py` still runs is unchecked.
-- **F145.6's other readings**, for the owner to confirm.
+  `session95_check_release.py` read F122.3 and F133 to F136 from
+  DECISIONS.md by text, and session 95's script is fixed to the 0-24
+  Release. Neither is used by the workflow. Dealt with when session 104 is
+  planned.
+- **F146.7's readings**, for the owner to confirm.
 
 ---
 
@@ -81,4 +89,4 @@ curve plus the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 102 (the gate passed). The owner commits and pushes (`git commit -F docs/commits/commit-102.txt`), the planning chat syncs Project knowledge, and the owner runs the workflow with `hours` = `25-48` for 2022-01 alone, then 2021-03..2026-07 once that month's verify step has passed. Then plan session 103, bias drift (D96.5).
+**Next planning session:** Review session 103. The owner commits and pushes (`git commit -F docs/commits/commit-103.txt`) and the planning chat syncs Project knowledge. Then plan session 104 (D97.11): download and check the f025 to f048 pull (with D97.1's open item), extend the development table and the curve to leads 25 to 48 (with the bias-drift correction, which passed), fix the daily maximum's metric in its own entry (D89.8), and score it.

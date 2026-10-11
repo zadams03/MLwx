@@ -178,6 +178,7 @@ prompt beforehand. House style:
 
 - After the review, the planning chat writes the commit message to `docs/commits/commit-NN.txt`: a title
   line, a blank line, then a full multi-paragraph body. Any punctuation is fine.
+  It never includes a Co-Authored-By or Claude-Session line (D97.3).
 - Zac runs `git add .`, then `git status` (to eyeball what's staged), then
   `git commit -F docs/commits/commit-NN.txt`. The message file is committed with the session, as part of
   the record.

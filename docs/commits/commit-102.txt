@@ -32,6 +32,3 @@ plans the 25-48 download and checks.
 
 Archive step moved F144. DECISIONS.md 62,160 bytes; 170 citations, 0
 unresolved. STATUS.md overwritten.
-
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01KAj4WniZNMq9vssYwAyvQy
