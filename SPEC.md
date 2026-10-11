@@ -760,8 +760,11 @@ side, because both are time-critical.
   cycle hour and lead (DECISIONS D95.2), plus a correction for drifting
   bias (DECISIONS D97, F146). Its pull for forecast hours 25 to 48 is
   complete and checked, the curve runs to 48 hours, and the daily
-  maximum's metric is fixed (DECISIONS D98, F147). Its claim is judged
-  on new airports only, drawn by the rule in DECISIONS D82.7.
+  maximum's metric is fixed (DECISIONS D98, F147). The daily maximum is
+  read off the curve: two challengers were not adopted (DECISIONS D99,
+  F148). Stage C is locked, and its claim is pre-registered on the six
+  new airports drawn by the rule in DECISIONS D82.7 (DECISIONS D100);
+  its design is section 9.
 - **Stage D — correct each other weather model on its own,** on the
   full curve, screening each at a few hours first.
 - **Stage E — blend and stack.** Combine the corrected models, with NBM
@@ -783,8 +786,9 @@ The former stages 3 to 6 are replaced (DECISIONS D72.10): former stage
 blend) is stages D and E; former stage 5 (widen the target, and the
 48-hour lead) is stage C; former stage 6 (live product) is stage G.
 
-*(The roadmap stages have no sections of their own yet, and will not
-until the owner opens them. Stage 2 needs no section of its own,
+*(Of the roadmap stages, only stage C has a section of its own (9),
+written at its lock (DECISIONS D82.5, D100); the others will not until
+the owner opens them. Stage 2 needs no section of its own,
 however many airports it comes to hold: the sections above are written
 per airport, so opening one means adding a row to the airport table,
 not adding a design.)*
@@ -1179,3 +1183,63 @@ under `scripts/`.
 
 These details are recorded for reproducibility. They change no result on
 record (DECISIONS D64.1, D65.1).
+
+---
+
+## 9. Stage C: the corrected curve and daily maximum (locked)
+
+This section is stage C's design, written at its lock (DECISIONS D82.5,
+D100). Stage C widens the target from one hour a day to every GFS run.
+
+**9.1 What it forecasts.** From every GFS cycle (00, 06, 12 and 18 UTC), a
+corrected 2 m temperature for every whole hour from 3 to 48 hours ahead (the
+hourly curve), plus the daily maximum: the highest value of the curve over
+the airport's local calendar day, from the latest run that has arrived
+before the day starts (a run is taken to arrive 4 hours after its start).
+Leads 0 to 2 are not forecast: they are already in the past when a run
+arrives (DECISIONS D82, D88.6, D98.10).
+
+**9.2 Data.** NOAA's GFS 0.25 degree GRIB archive, read by byte range at the
+four grid points around each airport, for every cycle whose valid times lie
+in 2021-03-24 to 2026-07-31 (all GFS v16), in two pulls: forecast hours 0 to
+24 and 25 to 48 (DECISIONS D82.4, D87, F137, D98, F147). Features are the
+recipe's (section 8) at every lead, with radiation and pressure tendency
+defined for any lead (DECISIONS D88.5). The observation is the nearest
+routine report within 15 minutes of the valid hour (DECISIONS D88.7).
+
+**9.3 The method.** One model per airport, run hour and lead, with section
+8's recipe and settings unchanged (the baseline, DECISIONS D88.4), plus a
+correction for drifting bias: a running average of the baseline's own
+recent errors, weight 0.02 per new error, using only errors observed before
+the run starts (DECISIONS D97, F146). The daily maximum is read off this
+curve (DECISIONS D98.10).
+
+**9.4 How it was chosen.** By time-ordered cross-validation on the six
+development airports (EGLC, LFPG, DSM, YSDU, RNO, KSFO), three test years
+2023-24 to 2025-26, with a fixed rule: a challenger replaces the incumbent
+only if its average MAE is more than 1 percent lower, and lower at 4 of 6
+airports and in 2 of 3 years (DECISIONS D89). Tried and not adopted: two
+pooled model structures (DECISIONS D94, F143), a daily-maximum model of its
+own and a daily drift correction on the maximum (DECISIONS D99, F148).
+Adopted: the drift correction on the curve (DECISIONS D97, F146). These are
+build choices, never results (2.5).
+
+**9.5 The claim test (pre-registered, DECISIONS D100).** On the six claim
+airports drawn by DECISIONS D82.7 (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN),
+never used for any build choice. At each, the method is trained once on
+data before 2024-08-01 and frozen, and the drift correction runs on through
+the test. Two looks, each run once: look A tests runs from 2024-08-01 to
+2025-07-31, look B from 2025-08-01 to 2026-07-31. Per look and per output
+(hourly curve at leads 3 to 48; daily maximum), the method's MAE must be
+lower than raw GFS (elevation-adjusted, 5.2) and lower than persistence
+(the latest value at the same hour, or the latest daily maximum, already
+observed when the run starts), on the same rows. An airport passes an
+output only if both looks pass (5.0). The claim is stated per output as
+"passes at N of 6 new airports in both held-out years"; nothing is averaged
+across airports. Expected: both outputs pass at all six. The result will be
+recorded here and in RESULTS.md once the look is run.
+
+**9.6 Caveats.** All data is GFS v16; GFS v17 is stage B's and stage F's
+question. Three claim airports have sea in their grid box (CYYZ, ZGSZ,
+NZWN). The MAE of an hourly curve or of a daily maximum is not comparable
+with sections 3 to 8's one-hour results.

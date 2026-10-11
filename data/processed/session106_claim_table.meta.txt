@@ -1,0 +1,91 @@
+Provenance (SPEC 2.3). Do not edit the data files.
+
+files       : stagec_claim_f000_024_<ICAO>.csv.gz and stagec_claim_f025_048_<ICAO>.csv.gz, two per claim airport
+purpose     : session 106 (DECISIONS D100.3(a)): stage C's tables for the six claim airports (D82.7): every GFS
+              cycle in the two pulls and every forecast hour 0 to 24 and 25 to 48, D88.5's features rebuilt
+              from the stored grid values and D88.7's hourly observation, by session 96's make_row and
+              session 104's load_values (imported unchanged). No model, no score.
+where       : MLwx-stagec/ beside the repository (not tracked, D88.8), next to F138's and F147's files,
+              which are unchanged. Rebuilt exactly by scripts/session106_claim_table.py --build.
+written by  : scripts/session106_claim_table.py --build; this meta by --records at 2026-10-11T17:22:50Z
+script sha256: ac5c67eba453b8a14883bbe3d7d34384823872013037e7ad7d035a72617cff96
+
+table files :
+  stagec_claim_f000_024_EDDM.csv.gz  rows 195,600  bytes 8,383,288  sha256 9d9e38201d0aa63ae0da0a20c64254c172f57993df0d99dd767a567a5418c84d
+  stagec_claim_f025_048_EDDM.csv.gz  rows 187,768  bytes 8,118,863  sha256 b5600c13948fd7ad6bd6411366b3676211b68dd332e37c3a409262eac3457c7b
+  stagec_claim_f000_024_KORD.csv.gz  rows 195,600  bytes 8,428,445  sha256 51c69aa5b204f7991ae7522fd850b5b3c4715f017ed4ee2f1b4269a2d4a515ad
+  stagec_claim_f025_048_KORD.csv.gz  rows 187,768  bytes 8,167,600  sha256 2252e3ffb73294e31b4aba1e605f204f70ccc80cbbcb701f79173e0940770662
+  stagec_claim_f000_024_CYYZ.csv.gz  rows 195,600  bytes 8,403,093  sha256 899e54777fdff5f8ac0b6cc78b15ebea6340a072b23c5acf6c39486c139c25d7
+  stagec_claim_f025_048_CYYZ.csv.gz  rows 187,768  bytes 8,149,275  sha256 ab631d6e43750071e9b7878cb24127269aae5a3831d1234a299c8a0ab2054b44
+  stagec_claim_f000_024_ZGSZ.csv.gz  rows 195,600  bytes 8,486,935  sha256 1a83bb1ba7b7c2ed389244fd3362c32e6a641847b3b074680d00a84a858de011
+  stagec_claim_f025_048_ZGSZ.csv.gz  rows 187,768  bytes 8,223,178  sha256 b70b5f4c648fa6e5971084e8993e99fa2d2fffd7394e6e7b262c06aa6d2df0f5
+  stagec_claim_f000_024_ZUCK.csv.gz  rows 195,600  bytes 8,297,144  sha256 1be74331235cd973b919db7aa8a587b7065eaf154e95f08f03dbf62ac0a89379
+  stagec_claim_f025_048_ZUCK.csv.gz  rows 187,768  bytes 8,043,956  sha256 35e85af2c47df13afd0fbd8279aadd330157072bb8d1f17f800515619296b096
+  stagec_claim_f000_024_NZWN.csv.gz  rows 195,600  bytes 8,495,180  sha256 f5c7a598cef58190e593d74cd961fd15912d9fd3ce196f149092807215a92e74
+  stagec_claim_f025_048_NZWN.csv.gz  rows 187,768  bytes 8,250,966  sha256 4db4350540342b4a01502731a0daf5b943a6e619a0893ee6bf12ca6ade2f3fc0
+  rows per airport: hours 0 to 24 195,600, hours 25 to 48 187,768 (session91_grib_pull.py's plan)
+  columns, column order, row rules, gzip and number format exactly as F138's and F147's files; rows in
+  cycle, then lead order. The station column holds the IEM id (ORD for KORD).
+
+elevation constants (D100.3(b): round(7.429 x height_diff_m / 1000, 4), height_diff_m from session90_airports.csv):
+  EDDM  height_diff_m 34.8464380945278  correction_c 0.2589
+  KORD  height_diff_m 7.382661630400378  correction_c 0.0548
+  CYYZ  height_diff_m 5.931679918528204  correction_c 0.0441
+  ZGSZ  height_diff_m 19.864645310582418  correction_c 0.1476
+  ZUCK  height_diff_m -33.930193000000656  correction_c -0.2521
+  NZWN  height_diff_m 79.16768573279572  correction_c 0.5881
+
+time zones (session90_airports.csv, for D100.3(e)):
+  EDDM Europe/Berlin; KORD America/Chicago; CYYZ America/Toronto; ZGSZ Asia/Shanghai; ZUCK Asia/Chongqing; NZWN Pacific/Auckland
+
+inputs      :
+  data/processed/session104_pull_f025_048_inventory.csv sha256 5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1 (MLwx-pull-f025-048/)
+  data/processed/session95_pull_inventory.csv sha256 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a (MLwx-pull/)
+  (every pull file checked against its inventory before the build)
+  data/processed/session91_pull_airports.csv sha256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+  data/processed/session90_airports.csv sha256 b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+  observation files (session 90, F132.4):
+  data/raw/iem_asos_EDDM_2021-03-24_2021-12-31_routine.csv sha256 05b8aa1cf572e4884bc88c67f2a02c61ec547808c541cb8451c715dc0c4f2730
+  data/raw/iem_asos_EDDM_2022-01-01_2022-12-31_routine.csv sha256 df7f6fa488ac88046ab2d8139ce0731ff5548b60b5b225ea9cf8dfbd3ff672fb
+  data/raw/iem_asos_EDDM_2023-01-01_2023-12-31_routine.csv sha256 bbaaf733489ac104e71a09e02e0e99146ace762f5cff2af663596fe00ed740a3
+  data/raw/iem_asos_EDDM_2024-01-01_2024-12-31_routine.csv sha256 c5d7083b4879ed744cd6c201e89486d25d9961d70fae1313d07dc19ac23cc513
+  data/raw/iem_asos_EDDM_2025-01-01_2025-12-31_routine.csv sha256 55e519193252a65275d051bcbd46f8bd654d7e17cb4a3123d8457b69dcdca795
+  data/raw/iem_asos_EDDM_2026-01-01_2026-07-31_routine.csv sha256 c576901b77ad6cbfe29e66202fe0fdd67c50aa16a4bf61f2f46f7b0556885cb4
+  data/raw/iem_asos_ORD_2021-03-24_2021-12-31_routine.csv sha256 9b10bdcd5de2790fe5c72d1393555182ed03bf0352f8ac53b0ed4cf9e04eac88
+  data/raw/iem_asos_ORD_2022-01-01_2022-12-31_routine.csv sha256 5080c48a2da3021296e66304b64d215220a7e747ae8f0eadb3d49a5d461a868a
+  data/raw/iem_asos_ORD_2023-01-01_2023-12-31_routine.csv sha256 55ab6fed7e6105b29a02c133cfe818d85d73cd07048210a3afaddf79a515cf7a
+  data/raw/iem_asos_ORD_2024-01-01_2024-12-31_routine.csv sha256 46bfd93a2921cf12237cddfd1afe463c1a94bb86a231f5f882abcd7c7771e525
+  data/raw/iem_asos_ORD_2025-01-01_2025-12-31_routine.csv sha256 c26d9e7819d98044e55ec88766af162e2be0bf0cd362f7dd1c3437de7272aaae
+  data/raw/iem_asos_ORD_2026-01-01_2026-07-31_routine.csv sha256 e776547f5e26b6e90a2666f051098a874d33fa13f9bcbf76eadf8a109968c146
+  data/raw/iem_asos_CYYZ_2021-03-24_2021-12-31_routine.csv sha256 4f51e7828d0c745f3012c311e83ee488b599584f33958353846668e140449981
+  data/raw/iem_asos_CYYZ_2022-01-01_2022-12-31_routine.csv sha256 a58752516e7b18894bbb089420ff12727f6eac0b02d1c63d3c0a8ae8076a47b4
+  data/raw/iem_asos_CYYZ_2023-01-01_2023-12-31_routine.csv sha256 35275aad3b82bf4aecb21a4f9efd9dec3947267503561e416c5ebb9dd4ebc226
+  data/raw/iem_asos_CYYZ_2024-01-01_2024-12-31_routine.csv sha256 2db0fa135d5926f5115052f5107aa5bc2b681116262ec6a091388ab2e433971f
+  data/raw/iem_asos_CYYZ_2025-01-01_2025-12-31_routine.csv sha256 2e6fc0bc5b3c81f3f99c1a6d290addfa5ed23249967568540290409370f738d7
+  data/raw/iem_asos_CYYZ_2026-01-01_2026-07-31_routine.csv sha256 c5f17d5607e5ec33c502e2c7f9ebf9e001408d10bfba22331ed3000cba15e37b
+  data/raw/iem_asos_ZGSZ_2021-03-24_2021-12-31_routine.csv sha256 ce8209b635aa6ee6cb45e4b532ff3788335e22b6ffde2f5a7474490b84a97fb3
+  data/raw/iem_asos_ZGSZ_2022-01-01_2022-12-31_routine.csv sha256 a5b04de0adc52b8643cea81d085921bdcbddced44c6d4a266682aae0fe6a7d63
+  data/raw/iem_asos_ZGSZ_2023-01-01_2023-12-31_routine.csv sha256 bb0a7c3649007991689a5c67237f8af3271520d662dd7f4c1259277e3dc7bb38
+  data/raw/iem_asos_ZGSZ_2024-01-01_2024-12-31_routine.csv sha256 417e21ba0a7f4fa4483d19212931a0d749cfc3aa3db19254b0e586db5826cc21
+  data/raw/iem_asos_ZGSZ_2025-01-01_2025-12-31_routine.csv sha256 35658952c6c7f042310357081f3ca7ff75634a3e0b7cea9902a5a09db8240518
+  data/raw/iem_asos_ZGSZ_2026-01-01_2026-07-31_routine.csv sha256 42df9da690f9a4a1437f7f2114ea4492cca786ebd7a43a652b0864e556113fd6
+  data/raw/iem_asos_ZUCK_2021-03-24_2021-12-31_routine.csv sha256 28bf73b7a01d9059090f329e321091de8a14a3316a926dd73acd5bd203ef3fbd
+  data/raw/iem_asos_ZUCK_2022-01-01_2022-12-31_routine.csv sha256 a5773c1852b037326801dc21a4bc1cd521622d0e56f5123b4f7f9da8dc84c3a4
+  data/raw/iem_asos_ZUCK_2023-01-01_2023-12-31_routine.csv sha256 aadfc68dd1641fa293f6de88daf522cfc0b90b1d028007937c50734921be40bf
+  data/raw/iem_asos_ZUCK_2024-01-01_2024-12-31_routine.csv sha256 56d7f4b94a8c46683b813969d0158e063e4510912000ddf70a4f7eae2efe8295
+  data/raw/iem_asos_ZUCK_2025-01-01_2025-12-31_routine.csv sha256 1b4fbfa53baf6f01a498573aaf839d65b8ea426d5f3de3890a0dbab985bbf4cf
+  data/raw/iem_asos_ZUCK_2026-01-01_2026-07-31_routine.csv sha256 d1b9204bdc1e774a88bf7419389333e3224eb5b63d24401c165d8ff16ff49f07
+  data/raw/iem_asos_NZWN_2021-03-24_2021-12-31_routine.csv sha256 4498935f1cd5c45e56ef31313141b617328ba4219d7f7dfd280d48573c97dc80
+  data/raw/iem_asos_NZWN_2022-01-01_2022-12-31_routine.csv sha256 db624195db0a16997b58049c76098a0cbc173efc59db4898ad33be3fc3b086ef
+  data/raw/iem_asos_NZWN_2023-01-01_2023-12-31_routine.csv sha256 d96c87278200f0136d6aa58b384a2e29021893c68f142f8034070ec11ed3eed6
+  data/raw/iem_asos_NZWN_2024-01-01_2024-12-31_routine.csv sha256 1b2d484ff897cc49587a3d11d6a7a0a22bf8eec317259353341d213e489249dd
+  data/raw/iem_asos_NZWN_2025-01-01_2025-12-31_routine.csv sha256 df8c6083f6d2dc3338e5d6bb23494385b9326a62956b58b52efbe1efbe11257c
+  data/raw/iem_asos_NZWN_2026-01-01_2026-07-31_routine.csv sha256 375a102a85d662afdd3cc4a84d4636dc58518cf8b7293d5983bbc65f0ecb2d8b
+imported code:
+  scripts/session104_stagec_table_f025_048.py sha256 77457e262aae6388495ebebac64c730bc82d82675a3802d89fbd5f7f09fc2222
+  scripts/session96_stagec_table.py sha256 40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee
+  scripts/session86_forward_build.py sha256 da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125
+  scripts/session92_verify_chunk.py sha256 7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a
+  scripts/session91_grib_pull.py sha256 557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675
+counts      : data/processed/session106_claim_counts.csv sha256 c3148cfb6ddd16411a25871f1a567d63e5f5d36637e0fc383ab69bde0f570c72
+versions    : python 3.12.2; numpy 2.5.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0

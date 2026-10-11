@@ -1,0 +1,28 @@
+Session 106: stage C locked, claim airports' tables built, look script gated (D100, F149)
+
+D100 records the owner's decisions after session 105: F148 accepted, and
+stage C's lock. The method is frozen (the baseline per airport, cycle hour
+and lead 3 to 48, plus the drift correction; the daily maximum read off the
+curve), and its claim test is pre-registered on the six claim airports
+(EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) before any of their held-out data was
+read: models trained once on data before 2024-08-01 and frozen; two looks
+(2024-25 and 2025-26), each judged separately; per look and output (hourly
+curve, daily maximum), the curve must beat raw GFS and persistence on the
+same rows; an airport passes an output only if both looks pass. Expected:
+both outputs pass at all six.
+
+The claim airports' tables were built (twelve files outside the repo, rows
+equal to the plan) by a new builder that first rebuilt EGLC and RNO
+byte-equal to F138's and F147's rows. Elevation constants follow D100.3(b).
+A pipeline check on training rows only (before 2024-08-01) found nothing
+gross. No statistic of any claim airport's held-out value was computed.
+
+The look script was written and gated at the development airports: look A
+reproduced session 104's 2024-25 fold exactly (3,312 hourly cells, 2,190
+days). Look B ran there as a smoke test on spent years, descriptive only.
+The look mode refuses without its session 107 flag and was not run with
+it; one flagless invocation refused before reading anything (F149.6).
+
+SPEC section 9 (stage C, at its lock) is written, and SPEC 6 and RESULTS 7
+are updated. 14 new tests (50 pass). D97, F147, D99 and F148 archived;
+DECISIONS.md is 48,215 bytes.

@@ -863,9 +863,11 @@ They now apply to a project with three proven methods, not one.
   running average of the curve's own recent errors, was adopted (DECISIONS
   D97, F146). The curve now runs to 48 hours ahead, and the daily maximum,
   read off the curve, has a fixed way of being scored (DECISIONS D98,
-  F147). Stage
-  C's claim will be judged on six new airports (EDDM, KORD, CYYZ, ZGSZ,
-  ZUCK, NZWN), fixed before any of their held-out data is read. Stages D
+  F147). Two ways to improve the daily maximum were tested and not
+  adopted (DECISIONS D99, F148). Stage C is now locked: its claim test on
+  six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) is pre-registered,
+  before any of their held-out data was read (DECISIONS D100, SPEC 9).
+  Stages D
   to H (other weather models, blending, upgrade policy, the live tool and
   probabilistic ranges) follow; pooling is conditional.
 
@@ -874,6 +876,6 @@ They now apply to a project with three proven methods, not one.
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*

@@ -1,5 +1,6 @@
 """Stage C checks added in session 104 (DECISIONS D98.2, D98.10, D97, D98.5)
-and session 105 (D99.3, D99.5). Offline; reads no table and writes nothing.
+and session 105 (D99.3, D99.5), and session 106 (D100.3 to D100.6, D98.2).
+Offline; reads no table and writes nothing.
 
 Run from the repo root: python3 -m unittest discover -s tests -v
 """
@@ -18,6 +19,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import session104_pull_check as s104p  # noqa: E402
 import session104_curve_cv as s104c  # noqa: E402
 import session105_dailymax_cv as s105  # noqa: E402
+import session106_claim_table as s106t  # noqa: E402
+import session106_claim_look as s106l  # noqa: E402
 
 
 def entry_text(entry_id):
@@ -163,6 +166,152 @@ class DailyTracker(unittest.TestCase):
             self.assertTrue(latest is None or latest < days[i][0])
             if i > 0:
                 self.assertNotEqual(latest, days[i - 1][1])
+
+
+class ClaimHourlyPersistence(unittest.TestCase):
+    """D100.5: hourly persistence uses the observation k days before the valid
+    time, k the smallest whole number of days before the cycle; a missing
+    observation gives none, never an older one."""
+
+    def test_leads(self):
+        c = dt.datetime(2024, 1, 10, 0)
+        start = c - dt.timedelta(days=5)
+        # every hour's made-up observation is its hour count from start, so each value names its hour
+        obs = {start + dt.timedelta(hours=i): float(i) for i in range(0, 24 * 8)}
+        for n, k in ((3, 1), (23, 1), (24, 2), (47, 2), (48, 3)):
+            with self.subTest(lead=n):
+                v = c + dt.timedelta(hours=n)
+                want = v - dt.timedelta(days=k)
+                self.assertEqual(s106l.persistence_k(c, v), k)
+                self.assertEqual(s106l.hourly_persistence(c, v, obs), obs[want])
+                self.assertLess(want, c)
+                self.assertGreaterEqual(want + dt.timedelta(days=1), c)
+
+    def test_missing_gives_none(self):
+        c = dt.datetime(2024, 1, 10, 0)
+        v = c + dt.timedelta(hours=3)
+        obs = {v - dt.timedelta(days=1): None, v - dt.timedelta(days=2): 5.0}
+        self.assertIsNone(s106l.hourly_persistence(c, v, obs))
+        del obs[v - dt.timedelta(days=1)]
+        self.assertIsNone(s106l.hourly_persistence(c, v, obs))
+
+
+class ClaimDailyPersistence(unittest.TestCase):
+    """D100.5: daily persistence is the observed maximum of the latest local day
+    whose last hour is valid before the run's cycle."""
+
+    @staticmethod
+    def full_days(tzname, days, value_of):
+        obs = {}
+        for d in days:
+            _, _, hours = s104c.local_day(d, tzname)
+            for i, h in enumerate(hours):
+                obs[h] = value_of(d) + 0.01 * i
+        return obs
+
+    def check(self, st, tzname, d, cycle, want):
+        s, _, _ = s104c.local_day(d, tzname)
+        self.assertEqual(s104c.day_cycle(s), cycle)
+        days = [d - dt.timedelta(days=k) for k in range(1, 5)]
+        obs = self.full_days(tzname, days, lambda x: float(x.day))
+        p, v = s106l.daily_persistence(d, cycle, tzname, obs)
+        self.assertEqual(p, want)
+        _, _, hours = s104c.local_day(want, tzname)
+        self.assertEqual(v, max(obs[h] for h in hours))
+        return obs
+
+    def test_eglc(self):
+        self.check("EGLC", s104c.TZ["EGLC"], dt.date(2024, 1, 15), dt.datetime(2024, 1, 14, 18),
+                   dt.date(2024, 1, 13))
+
+    def test_dsm(self):
+        self.check("DSM", s104c.TZ["DSM"], dt.date(2024, 1, 15), dt.datetime(2024, 1, 15, 0),
+                   dt.date(2024, 1, 13))
+
+    def test_unusable_day_gives_none(self):
+        tz = s104c.TZ["EGLC"]
+        d, c = dt.date(2024, 1, 15), dt.datetime(2024, 1, 14, 18)
+        obs = self.full_days(tz, [d - dt.timedelta(days=k) for k in range(1, 5)], lambda x: float(x.day))
+        _, _, hours = s104c.local_day(dt.date(2024, 1, 13), tz)
+        for h in hours[:3]:
+            obs[h] = None
+        p, v = s106l.daily_persistence(d, c, tz, obs)
+        self.assertEqual(p, dt.date(2024, 1, 13))
+        self.assertIsNone(v)
+
+
+class ClaimLookAssignment(unittest.TestCase):
+    """D100.4: a row or day belongs to the look of its cycle."""
+
+    def test_cycles(self):
+        for c, want in ((dt.datetime(2024, 7, 31, 18), None), (dt.datetime(2024, 8, 1, 0), "A"),
+                        (dt.datetime(2025, 7, 31, 18), "A"), (dt.datetime(2025, 8, 1, 0), "B"),
+                        (dt.datetime(2026, 7, 31, 18), "B")):
+            with self.subTest(cycle=c):
+                self.assertEqual(s106l.look_of(c), want)
+
+
+class ClaimBar(unittest.TestCase):
+    """D100.5, D100.6, D79.2: strictly lower on both halves; PASS, SPLIT, FAIL."""
+
+    def test_tie_fails(self):
+        self.assertFalse(s106l.half_pass(1.25, 1.25))
+        self.assertTrue(s106l.half_pass(1.2499999999999998, 1.25))
+
+    def test_both_halves_needed(self):
+        raw = s106l.half_pass(1.0, 1.2)
+        pers = s106l.half_pass(1.3, 1.2)
+        self.assertTrue(raw)
+        self.assertFalse(pers)
+        self.assertFalse(s106l.look_pass(raw, pers))
+        self.assertTrue(s106l.look_pass(True, True))
+
+    def test_no_rows_cannot_pass(self):
+        self.assertFalse(s106l.half_pass(None, 1.0))
+        self.assertFalse(s106l.half_pass(1.0, None))
+
+    def test_verdicts(self):
+        self.assertEqual(s106l.verdict(True, True), "PASS")
+        self.assertEqual(s106l.verdict(True, False), "SPLIT")
+        self.assertEqual(s106l.verdict(False, True), "SPLIT")
+        self.assertEqual(s106l.verdict(False, False), "FAIL")
+
+    def test_margin(self):
+        m, d = s106l.margin(0.9, 1.2)
+        self.assertAlmostEqual(m, 25.0, places=12)
+        self.assertAlmostEqual(d, 0.3, places=12)
+        self.assertLess(s106l.margin(1.3, 1.2)[0], 0)
+
+
+class ClaimTableConstants(unittest.TestCase):
+    """D98.2: the look script's twelve claim-table SHA-256 equal the values in F149."""
+
+    def test_f149(self):
+        text = entry_text("F149")
+        for ic, (h0, h25) in s106l.CLAIM_TABLES.items():
+            with self.subTest(icao=ic):
+                m = re.search(rf"{ic} `([0-9a-f]{{64}})`, `([0-9a-f]{{64}})`", text)
+                self.assertIsNotNone(m)
+                self.assertEqual((h0, h25), m.groups())
+
+
+class ClaimElevationConstant(unittest.TestCase):
+    """D100.3(b): 7.429 x height difference / 1000 at 4 decimals; KSFO's check
+    (SPEC 3.4, 5.2) and the six claim constants against the table meta."""
+
+    def test_ksfo(self):
+        self.assertEqual(s106t.elevation_constant(93.47), 0.6944)
+        self.assertEqual(f"{7.429 * 93.47 / 1000:.4f}", "0.6944")
+
+    def test_claim_meta(self):
+        meta = (ROOT / "data" / "processed" / "session106_claim_table.meta.txt").read_text()
+        got = {sp["icao"]: sp["a"]["correction_c"] for sp in s106t.claim_specs()}
+        self.assertEqual(sorted(got), sorted(s106l.CLAIM))
+        for ic, v in got.items():
+            with self.subTest(icao=ic):
+                m = re.search(rf"^  {ic}  height_diff_m \S+  correction_c (\S+)$", meta, re.M)
+                self.assertIsNotNone(m)
+                self.assertEqual(float(m.group(1)), v)
 
 
 if __name__ == "__main__":
