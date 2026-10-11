@@ -1,0 +1,77 @@
+Provenance (SPEC 2.3). Do not edit the data files.
+
+files       : stagec_dev_f025_048_<ICAO>.csv.gz, one per development airport
+purpose     : session 104 (DECISIONS D98.4): the stage C development table for forecast hours 25 to 48:
+              for each development airport, every GFS cycle in the f025 to f048 pull's plan and every
+              forecast hour 25 to 48, D88.5's features rebuilt from the stored grid values and D88.7's
+              hourly observation, by session 96's code (make_row, imported unchanged). No model, no score.
+where       : MLwx-stagec/ beside the repository (not tracked, D88.8), next to F138's six files,
+              which are unchanged. Rebuilt exactly by scripts/session104_stagec_table_f025_048.py --build.
+written by  : scripts/session104_stagec_table_f025_048.py --build; this meta by --records at 2026-10-11T12:42:47Z
+script sha256: 77457e262aae6388495ebebac64c730bc82d82675a3802d89fbd5f7f09fc2222
+
+table files :
+  stagec_dev_f025_048_EGLC.csv.gz  rows 187,768  bytes 8,070,560  sha256 947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9
+  stagec_dev_f025_048_LFPG.csv.gz  rows 187,768  bytes 8,129,523  sha256 04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35
+  stagec_dev_f025_048_KDSM.csv.gz  rows 187,768  bytes 8,250,293  sha256 bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3
+  stagec_dev_f025_048_YSDU.csv.gz  rows 187,768  bytes 8,193,074  sha256 b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac
+  stagec_dev_f025_048_KRNO.csv.gz  rows 187,768  bytes 8,425,665  sha256 3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58
+  stagec_dev_f025_048_KSFO.csv.gz  rows 187,768  bytes 8,341,002  sha256 2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b
+  rows per airport 187,768 (session91_grib_pull.py's plan, hours 25 to 48); all 1,126,608
+  columns, column order, row rules, gzip and number format exactly as F138's files (session 96's
+  COLUMNS, make_row, fmt, table_bytes); rows in cycle, then lead order.
+  Inputs below forecast hour 25 (PRMSL at 22 to 24 for T at leads 25 to 27; DSWRF at 23 and 24 for R
+  at lead 25) come from the f000 to f024 pull, same cycle; where that pull's plan has no such hour,
+  the feature is empty with reason 'outside pull window' (D98.4).
+
+inputs      :
+  data/processed/session104_pull_f025_048_inventory.csv sha256 5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1 (MLwx-pull-f025-048/,
+  195 files, each checked against it before the build)
+  data/processed/session95_pull_inventory.csv sha256 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a (MLwx-pull/, 195 files,
+  each checked against it before the build)
+  data/processed/session91_pull_airports.csv sha256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+  data/raw/diagnostics/session37/session37_elevation_correction_params.csv sha256 a0d44319606be14b511009d4abb968fb29cafbac6e7bb028bf987138cc6af841
+  data/raw/diagnostics/session76/session76_elevation_correction_params.csv sha256 a2750f6b254e3503ea88f8b7cc99578304fac06cf89c0a9cd96dad9249abf211
+  observation files (as F138):
+  data/raw/iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv sha256 4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19
+  data/raw/iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv sha256 30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16
+  data/raw/iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv sha256 92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e
+  data/raw/iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv sha256 20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f
+  data/raw/iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv sha256 8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb
+  data/raw/iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv sha256 0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233
+  data/raw/iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv sha256 4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23
+  data/raw/iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv sha256 5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5
+  data/raw/iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv sha256 d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223
+  data/raw/iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv sha256 648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24
+  data/raw/iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv sha256 ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df
+  data/raw/iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv sha256 580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c
+  data/raw/iem_asos_DSM_2021-03-24_2021-12-31_routine.csv sha256 8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7
+  data/raw/iem_asos_DSM_2022-01-01_2022-12-31_routine.csv sha256 94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407
+  data/raw/iem_asos_DSM_2023-01-01_2023-12-31_routine.csv sha256 0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649
+  data/raw/iem_asos_DSM_2024-01-01_2024-12-31_routine.csv sha256 ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be
+  data/raw/iem_asos_DSM_2025-01-01_2025-12-31_routine.csv sha256 82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6
+  data/raw/iem_asos_DSM_2026-01-01_2026-07-31_routine.csv sha256 0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de
+  data/raw/iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv sha256 af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f
+  data/raw/iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv sha256 01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352
+  data/raw/iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv sha256 948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d
+  data/raw/iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv sha256 1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a
+  data/raw/iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv sha256 cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff
+  data/raw/iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv sha256 db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1
+  data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv sha256 0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c
+  data/raw/iem_asos_RNO_2022-01-01_2022-12-31_routine.csv sha256 3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155
+  data/raw/iem_asos_RNO_2023-01-01_2023-12-31_routine.csv sha256 fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a
+  data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv sha256 88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a
+  data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv sha256 4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b
+  data/raw/iem_asos_RNO_2026-01-01_2026-07-31_routine.csv sha256 9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515
+  data/raw/iem_asos_SFO_2021-03-24_2021-12-31_routine.csv sha256 8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003
+  data/raw/iem_asos_SFO_2022-01-01_2022-12-31_routine.csv sha256 7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618
+  data/raw/iem_asos_SFO_2023-01-01_2023-12-31_routine.csv sha256 06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221
+  data/raw/iem_asos_SFO_2024-01-01_2024-12-31_routine.csv sha256 dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9
+  data/raw/iem_asos_SFO_2025-01-01_2025-12-31_routine.csv sha256 c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307
+  data/raw/iem_asos_SFO_2026-01-01_2026-07-31_routine.csv sha256 cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382
+imported code:
+  scripts/session96_stagec_table.py sha256 40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee
+  scripts/session86_forward_build.py sha256 da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125
+  scripts/session92_verify_chunk.py sha256 7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a
+  scripts/session91_grib_pull.py sha256 557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675
+versions    : python 3.12.2; numpy 2.5.2; eccodes (Python) 2.48.0; ecCodes library 2.48.0

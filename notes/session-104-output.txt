@@ -1,0 +1,419 @@
+SESSION 104 OUTPUT
+
+SUMMARY (build-choice scores, not results, SPEC 2.5)
+- Step 0 preflight PASS. Step 1 D98 recorded byte-equal (sed, diff, cmp), 0 em-dashes.
+- Step 2 PASS: 195 files, each equal to its Release digest; metas name F145's pull script; verifier 13/13 and
+  --ranges clean on 65 months; union = 25-48 plan, 187,768 keys; ok (whole file) 300 (F135's cycles), idx missing 0,
+  check failed 0; negative tests as specified; inventory 5b6cd6f9...f9d1.
+- Step 3: --inputs, --equiv PASS; --build 187,768 rows per airport; first --gate STOPPED on one cell (YSDU 2021-03-24
+  pressure tendency, input before the pull window). Owner ruling at the stop (F147.3); re-run GATE PASSED with exactly
+  1 accepted cell, 0 other mismatches; observations equal obs_c on every day. --records PASS.
+- Step 4 PASS: tracker 6/6; F139 3,168/3,168, headline 2/2, n 6/6; F146 1,584/1,584, 1.019044682206963; F109 at YSDU,
+  RNO lead 26 exact (YSDU's one cell filled with -0.921 for this gate only, ruling 3).
+- Step 5 PASS after one fix: run 1 stopped at the daily-maximum cross-check (a bug in my script's usable flag);
+  fixed, re-run; scores file byte-equal to run 1's. Fits 3,312 per run; 0 rows used a late error.
+- Hourly headline, leads 3-48: raw 1.5315, baseline 1.1161, curve 1.0892 (3-24: 1.4617 / 1.0498 / 1.0190;
+  25-48: 1.5956 / 1.1769 / 1.1535). D89.6 at 25-48, descriptive: 1.985 %, 5 of 6 (not EGLC), 3 of 3.
+- Daily maximum headline: raw 1.3622, baseline 1.0543, curve 1.0338; 1,085 to 1,095 common days per airport.
+- Step 6: 7 new tests pass. Step 7: SPEC 6 and RESULTS 7 edited as specified (diffs below).
+- End: F147 recorded; archive moved D95 and F146 (2 spans); DECISIONS.md 74,367 bytes (< 80,000); citations 175
+  resolved, 0 unresolved, 0 duplicates, 0 out of order; tests 31 of 31 OK; STATUS.md overwritten.
+- Scope: every changed or new file is in the scope list. Outside the repo: MLwx-pull-f025-048/ 1.1 GB (195 files);
+  six new table files in MLwx-stagec/, 49,410,117 bytes.
+- Readings for the owner: F147.8 (EGLC not helped at 25-48; read-off maximum runs low at YSDU, RNO, KSFO; one
+  cycle hour per airport; the script fix; 2024-25's 4 extra b = 0 rows not traced).
+- Nothing committed; no commit message written.
+
+CHECKPOINTS
+Step 0: PASS. git status only ?? docs/sessions/session-104.md; last entries D97, F146; no D98 or F147; no new scope file existed. SHA-256 equal to the record: session91_grib_pull.py (F145 557e8832...), workflow (F145 4e0e73cb...), session92_verify_chunk.py 7b59a5c2... (equals F136's value as cited in F137.1, not F134's f61136a8...), session96 (F138), session97 (F139), session100 (F143), session103 (F146), session95_pull_inventory.csv (F137), session97 scores (F139), session103 scores (F146), F138's six table files (session97 TABLES), all full values. Imports of sessions 96, 97, 100, 103 print nothing. MLwx-pull-f025-048/ does not exist. Free disk 16 GiB (>= 8). Tests 24 of 24 OK. Files changed: notes/session-104-output.txt.
+Step 1: PASS. D98 copied with sed from docs/sessions/session-104.md lines 97 to 226 into DECISIONS.md lines 939 to 1068, after '---' and a blank line; diff and cmp equal; em-dashes 0. Live index: D95 and F146 removed, D98 added (F147 at the end). Files: DECISIONS.md.
+Step 2: PASS. scripts/session104_pull_check.py written (new; script SHA-256 at the inventory run fabd0cbeddc97029e4ea46e2247aad3f42edaf9d57bddb0fff9c5c132669b19f). --release: 195 assets, 3 per month 2021-03..2026-07, all uploaded with digests, 1,217,250,028 B. --download: 195 files, 1,217,250,028 B, 1,129.8 s, 0 retries; hosts github.com, release-assets.githubusercontent.com; API requests 3. --months: every meta as expected (args '--chunk --month <m> --hours 25-48 --out out --workers 16', pull-script SHA-256 557e8832...7b1675 = F145 in all 65), verifier 13 of 13 on all 65, --ranges 0 outside bounds, 0 read-back mismatches (383,046,720 cells); meta retries 151 (2022-11 150, 2024-10 1), HTTP 404 0. --totals: 7,826 cycles, 187,768 (cycle, hour) keys = F145.1, 1,877,680 manifest rows and messages, 9,576,168 points rows, all equal to the plan, no key twice, no key in another month; status totals ok 1,877,380, ok (whole file) 300, absent by design 0, idx missing 0, check failed 0. The 300 whole-file messages are 30 files (10 each) in F135's three cycles 2022-11-29T18, 2022-11-30T00, 2022-11-30T06. --negative: as specified. --inventory: data/processed/session104_pull_f025_048_inventory.csv (195 rows, 5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1) and .csv.meta.txt (ab244d9bfbd554a8f9dfc3e6f851e5bf1cb7f5f5c98020e86fb8a1f8b8d99e65). Files: the script, the two inventory files, MLwx-pull-f025-048/ (195 files).
+Step 3 (partial, STOPPED): scripts/session104_stagec_table_f025_048.py written. --inputs PASS (25-48 files vs the new inventory; f000-f024 files vs session 95's; prior hours read: 22, 23, 24). --equiv PASS (EGLC, RNO 2022-01: 3,100 rows each byte-equal to F138). --build: six files in MLwx-stagec/, 187,768 rows each (1,126,608), 236.4 s; F138 files unchanged before and after; complete case EGLC 187,588, LFPG 187,200, DSM 187,716, YSDU 185,852, RNO 187,335, SFO 187,620; no observation 174, 560, 46, 1,908, 433, 142; whole-file rows 60 each; empty cells only "outside pull window": R 5 and T 8 per airport. SHA-256: EGLC 947bf2f0...6ea9, LFPG 04dbd411...2c35, KDSM bd2d80c0...e2f3, YSDU b801fcc2...81ac, KRNO 3ca1d4ff...bd58, KSFO 2e355c01...b84b. --gate: FAILED, 1 mismatch (YSDU 2021-03-24 pressure_tendency_3h_hpa, committed -0.921, table empty, reason outside pull window: f023 of cycle 2021-03-23T00 is valid 2021-03-23T23:00, before the window; MLwx-pull's manifest for that cycle holds prmsl only at f024). Table-only days (no committed row): YSDU 27, RNO 4, KSFO 4. Observation differs from obs_c: 0, 0, 0. Stopped here: --records, Steps 4 to 7 and the end steps not run. Files: the script; six files in MLwx-stagec/.
+
+Owner ruling at the stop (planning chat, 2026-10-11): (1) the YSDU 2021-03-24 pressure_tendency_3h_hpa cell is the case D98.4 names (input PRMSL f023 of cycle 2021-03-23T00, valid 2021-03-23T23:00, before the pull window, D82.4); it stays empty, "outside pull window", not complete case; the table is not changed. (2) --gate re-run with the rule: a committed value may differ only where the table cell is empty, "outside pull window", with its missing input valid before 2021-03-24T00:00; listed and counted; any other mismatch stops. (3) Step 4's YSDU fitting gate uses the committed -0.921 for that cell, gate only, never in any CV fit or score. (4) Carry on. D98 not edited.
+Step 3 (resumed): PASS. Gate rule added to scripts/session104_stagec_table_f025_048.py (early_inputs; run_gate). --gate: GATE PASSED; accepted cells 1 (YSDU 2021-03-24 pressure_tendency_3h_hpa, committed -0.921, table empty, input valid 2021-03-23T23:00Z); every other cell equal: YSDU 1,929 days (T 1,928 equal + 1 accepted), RNO 1,952, KSFO 1,952, all 10 columns; feature mismatches 0; committed rows with no table row 0; table-only days YSDU 27, RNO 4, KSFO 4; observation differs from obs_c 0 at all three. --records: all six in-memory rebuilds byte-equal; DSM rebuilt alone in mktemp -d byte-equal, directory deleted; counts data/processed/session104_stagec_f025_048_counts.csv (144 rows, 67 columns, ca9b2deec0d90bf374f4342e156e12295d20219ba2c41fe8eecb9d07f72796f2); meta data/processed/session104_stagec_f025_048_table.meta.txt (27622adad720b020766f8f8a3eec5f5aa11a7594e40c93d5d48be276df7f5859); F138's six files unchanged before and after; 362.0 s. Functions used from session 96 unchanged: make_row (with derive, r_inputs, r_value, t_inputs, t_value, nearest_obs inside), load_obs, load_positions, check_pull_files, table_bytes, write_new_file, read_table, sha256_bytes, versions, COLUMNS, GRIB_COLS, REASONS, OK_STATUSES, STATIONS, DEV_ICAOS, table_name, obs_files, INVENTORY, PULL_DIR, OUT_DEFAULT, GuardError. Written new: read_pull_month (session 96's read_month with a folder argument), load_values (its bilinear loop), build, prior_needs, the inventory check, equiv, gate, records.
+
+git status --porcelain at the stop:
+ M DECISIONS.md
+?? data/processed/session104_pull_f025_048_inventory.csv
+?? data/processed/session104_pull_f025_048_inventory.csv.meta.txt
+?? docs/sessions/session-104.md
+?? notes/session-104-output.txt
+?? scripts/session104_curve_cv.py
+?? scripts/session104_pull_check.py
+?? scripts/session104_stagec_table_f025_048.py
+?? tests/test_stagec.py
+All in the scope list.
+
+==== DETAIL: Step 2 and Step 3 logs ====
+---- s2_release ----
+SESSION 104 --release (GitHub REST API, unauthenticated) at 2026-10-11T11:55:01Z
+Release: zadams03/MLwx, tag stagec-grib-pull-f025-048, title 'Stage C GRIB pull, forecast hours 25 to 48', draft False, prerelease False, published 2026-10-09T21:29:57Z; assets 195 (expected 195)
+plan months 2021-03 to 2026-07: 65; with exactly 3 files: 65; missing 0; not in plan 0; state not uploaded 0; without digest 0
+total bytes 1,217,250,028 (points 1,169,679,142; manifests 47,466,434; meta 104,452)
+assets uploaded 2026-10-09T21:29:58Z to 2026-10-09T23:31:38Z
+API requests used: 3 (647,495 B)
+RELEASE CHECK: PASS
+---- s2_months ----
+SESSION 104 --months (offline) at 2026-10-11T12:14:08Z; /Users/zacharyadams/Coding Projects/MLwx-pull-f025-048
+pull-script SHA-256 expected (F145): 557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675; committed positions file cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+  month   meta retr 404  verifier idx miss whole ranges outside readback      cells
+  2021-03 ok      0   0  13 of 13        0     0 exit 0       0        0  1,827,840
+  2021-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2021-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2021-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2021-07 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2021-08 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2021-09 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2021-10 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2021-11 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2021-12 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-01 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-02 ok      0   0  13 of 13        0     0 exit 0       0        0  5,483,520
+  2022-03 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2022-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2022-07 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-08 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-09 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2022-10 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2022-11 ok    150   0  13 of 13        0   300 exit 0       0        0  5,875,200
+  2022-12 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-01 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-02 ok      0   0  13 of 13        0     0 exit 0       0        0  5,483,520
+  2023-03 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2023-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2023-07 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-08 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-09 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2023-10 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2023-11 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2023-12 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-01 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-02 ok      0   0  13 of 13        0     0 exit 0       0        0  5,679,360
+  2024-03 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2024-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2024-07 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-08 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-09 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2024-10 ok      1   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2024-11 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2024-12 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-01 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-02 ok      0   0  13 of 13        0     0 exit 0       0        0  5,483,520
+  2025-03 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2025-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2025-07 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-08 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-09 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2025-10 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2025-11 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2025-12 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2026-01 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2026-02 ok      0   0  13 of 13        0     0 exit 0       0        0  5,483,520
+  2026-03 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2026-04 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2026-05 ok      0   0  13 of 13        0     0 exit 0       0        0  6,071,040
+  2026-06 ok      0   0  13 of 13        0     0 exit 0       0        0  5,875,200
+  2026-07 ok      0   0  13 of 13        0     0 exit 0       0        0  5,793,600
+metas: arguments after '--chunk --month <m> --hours 25-48': ['--out out --workers 16']; pull-script SHA-256 values ['557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675']; packages ['python 3.12.15; eccodes (Python) 2.48.0; ecCodes library 2.48.0; numpy 2.5.2; requests 2.34.2']
+sums: retries 151; HTTP 404 0; idx missing 0; ok (whole file) 300; value cells 383,046,720; outside bounds 0; read-back mismatches 0
+per field over all 65 months (units as GRIB gives them; bounds from session92_verify_chunk.BOUNDS):
+  field        values                minimum                maximum               bounds  outside
+  t2m      38,304,672     242.81837890625002       323.073193359375           150 to 350        0
+  tcdc     38,304,672                    0.0                  100.0             0 to 100        0
+  u10      38,304,672    -33.286342773437504       39.2765283203125          -100 to 100        0
+  v10      38,304,672       -31.001748046875     26.980905761718752          -100 to 100        0
+  d2m      38,304,672         236.9133203125     302.11154785156253           150 to 350        0
+  t850     38,304,672     241.54347656250002           312.04640625           150 to 350        0
+  dswrf    38,304,672                    0.0                1163.04            0 to 1500        0
+  prmsl    38,304,672            95196.76875              105553.75      85000 to 110000        0
+  tmax2m   38,304,672        243.19060546875     323.20000000000005           150 to 350        0
+  tmin2m   38,304,672        242.79482421875      320.9034423828125           150 to 350        0
+MONTHS: PASS (every meta as expected; verifier 13 of 13 and --ranges clean on all 65 months)
+---- s2_totals ----
+SESSION 104 --totals (offline) at 2026-10-11T12:24:30Z; /Users/zacharyadams/Coding Projects/MLwx-pull-f025-048
+full plan (session 91: all_months, month_cycles, plan_chunk, FIELDS, selector; hours 25-48; first cycle 2021-03-22T12:00Z): 7,826 cycles, 187,768 (cycle, hour) keys, 1,877,680 manifest rows, 1,877,680 messages, 9,576,168 points rows (51 airports)
+(cycle, hour) keys equal F145.1's 187,768 and first cycle 2021-03-22T12 (D95.5): True
+  [PASS] cycles (manif.) plan      7,826; found      7,826 rows,      7,826 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] cycles (points) plan      7,826; found      7,826 rows,      7,826 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] files (manif.)  plan    187,768; found    187,768 rows,    187,768 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] files (points)  plan    187,768; found    187,768 rows,    187,768 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] manifest rows   plan  1,877,680; found  1,877,680 rows,  1,877,680 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] messages        plan  1,877,680; found  1,877,680 rows,  1,877,680 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] points rows     plan  9,576,168; found  9,576,168 rows,  9,576,168 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] keys whose cycle is in another month: 0; rows with an unknown field, airport or status: 0 (a key holds its cycle, so a key only in its own cycle's month cannot be in two months)
+status totals across all months:
+  'ok'                  1,877,380
+  'absent by design'            0
+  'idx missing'                 0
+  'check failed'                0
+  'ok (whole file)'           300
+  total                1,877,680
+seconds 51.8
+TOTALS: PASS
+---- s2_whole ----
+2022-11-29T18:00Z 10 [25, 26, 31, 32, 34, 38, 39, 43, 47, 48]
+2022-11-30T00:00Z 10 [26, 27, 28, 29, 31, 33, 35, 36, 38, 45]
+2022-11-30T06:00Z 10 [27, 28, 29, 30, 31, 32, 36, 42, 46, 47]
+---- s2_neg ----
+SESSION 104 --negative (offline) at 2026-10-11T12:25:28Z
+temporary directory /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session104_neg_mbamcwam
+(a) chunk_2021-03.meta.txt: untouched copy passes the digest check True; with byte 100 changed (size 1542, unchanged) it passes False
+(b) copied 65 points files and 64 manifests (manifest_2023-06.csv.gz left out)
+  [FAIL] cycles (manif.) plan      7,826; found      7,706 rows,      7,706 distinct; keys in more than one row 0; plan keys missing 120; keys not in plan 0
+  [PASS] cycles (points) plan      7,826; found      7,826 rows,      7,826 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [FAIL] files (manif.)  plan    187,768; found    184,888 rows,    184,888 distinct; keys in more than one row 0; plan keys missing 2,880; keys not in plan 0
+  [PASS] files (points)  plan    187,768; found    187,768 rows,    187,768 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [FAIL] manifest rows   plan  1,877,680; found  1,848,880 rows,  1,848,880 distinct; keys in more than one row 0; plan keys missing 28,800; keys not in plan 0
+  [FAIL] messages        plan  1,877,680; found  1,848,880 rows,  1,848,880 distinct; keys in more than one row 0; plan keys missing 28,800; keys not in plan 0
+  [PASS] points rows     plan  9,576,168; found  9,576,168 rows,  9,576,168 distinct; keys in more than one row 0; plan keys missing 0; keys not in plan 0
+  [PASS] keys whose cycle is in another month: 0; rows with an unknown field, airport or status: 0 (a key holds its cycle, so a key only in its own cycle's month cannot be in two months)
+    plan for 2023-06: 2880 files, 28800 manifest rows, 28800 messages
+    totals check result: FAIL (expected FAIL, on the missing keys)
+temporary directory deleted: True; MLwx-pull-f025-048/ unchanged (SHA-256 of all 195 files): True
+  [OK ] (a) one byte changed fails the digest check
+  [OK ] (b) one manifest left out fails the totals check
+NEGATIVE TESTS: AS SPECIFIED
+---- s2_inv ----
+SESSION 104 --inventory at 2026-10-11T12:26:24Z
+Release read at 2026-10-11T12:26:24Z: 195 assets; API requests 3
+wrote data/processed/session104_pull_f025_048_inventory.csv (195 rows), SHA-256 5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1
+wrote data/processed/session104_pull_f025_048_inventory.csv.meta.txt, SHA-256 ab244d9bfbd554a8f9dfc3e6f851e5bf1cb7f5f5c98020e86fb8a1f8b8d99e65
+this script's SHA-256 fabd0cbeddc97029e4ea46e2247aad3f42edaf9d57bddb0fff9c5c132669b19f
+---- s3_inputs ----
+SESSION 104 --inputs (offline), 2026-10-11T12:26:42Z
+inventory data/processed/session104_pull_f025_048_inventory.csv SHA-256 5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1
+25-48 pull files: 195 in MLwx-pull-f025-048/; inventory rows 195; names, bytes and SHA-256 all equal: True
+inventory data/processed/session95_pull_inventory.csv SHA-256 7177b6612224358051018bb6ef1efed1c7e3bfc88ac08940aa6d1bea0918b70a
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+forecast hours read from the f000 to f024 pull for leads 25 to 48: [22, 23, 24]
+INPUTS: PASS
+---- s3_equiv ----
+SESSION 104 --equiv (offline), 2026-10-11T12:26:44Z: the builder on hours 0 to 24, EGLC and RNO, 2022-01
+  EGLC: rebuilt rows 3100; F138 rows with a 2022-01 cycle 3100; header equal True; lines differing 0; byte-equal True
+  RNO: rebuilt rows 3100; F138 rows with a 2022-01 cycle 3100; header equal True; lines differing 0; byte-equal True
+EQUIVALENCE: PASS
+---- s3_build ----
+SESSION 104 --build (offline), start 2026-10-11T12:26:52Z; out /Users/zacharyadams/Coding Projects/MLwx-stagec
+F138's six table files, SHA-256 equal to F138.4 (before): True 
+25-48 pull files: 195 in MLwx-pull-f025-048/; inventory rows 195; names, bytes and SHA-256 all equal: True
+pull files: 195 in /Users/zacharyadams/Coding Projects/MLwx-pull; inventory rows 195; names, bytes and SHA-256 all equal: True
+  2021-03: 38 cycles, 896 rows per airport (2026-10-11T12:26:57Z)
+  2021-04: 120 cycles, 2880 rows per airport (2026-10-11T12:27:00Z)
+  2021-05: 124 cycles, 2976 rows per airport (2026-10-11T12:27:04Z)
+  2021-06: 120 cycles, 2880 rows per airport (2026-10-11T12:27:07Z)
+  2021-07: 124 cycles, 2976 rows per airport (2026-10-11T12:27:11Z)
+  2021-08: 124 cycles, 2976 rows per airport (2026-10-11T12:27:14Z)
+  2021-09: 120 cycles, 2880 rows per airport (2026-10-11T12:27:18Z)
+  2021-10: 124 cycles, 2976 rows per airport (2026-10-11T12:27:21Z)
+  2021-11: 120 cycles, 2880 rows per airport (2026-10-11T12:27:25Z)
+  2021-12: 124 cycles, 2976 rows per airport (2026-10-11T12:27:28Z)
+  2022-01: 124 cycles, 2976 rows per airport (2026-10-11T12:27:31Z)
+  2022-02: 112 cycles, 2688 rows per airport (2026-10-11T12:27:35Z)
+  2022-03: 124 cycles, 2976 rows per airport (2026-10-11T12:27:38Z)
+  2022-04: 120 cycles, 2880 rows per airport (2026-10-11T12:27:41Z)
+  2022-05: 124 cycles, 2976 rows per airport (2026-10-11T12:27:45Z)
+  2022-06: 120 cycles, 2880 rows per airport (2026-10-11T12:27:48Z)
+  2022-07: 124 cycles, 2976 rows per airport (2026-10-11T12:27:52Z)
+  2022-08: 124 cycles, 2976 rows per airport (2026-10-11T12:27:55Z)
+  2022-09: 120 cycles, 2880 rows per airport (2026-10-11T12:27:59Z)
+  2022-10: 124 cycles, 2976 rows per airport (2026-10-11T12:28:02Z)
+  2022-11: 120 cycles, 2880 rows per airport (2026-10-11T12:28:05Z)
+  2022-12: 124 cycles, 2976 rows per airport (2026-10-11T12:28:09Z)
+  2023-01: 124 cycles, 2976 rows per airport (2026-10-11T12:28:12Z)
+  2023-02: 112 cycles, 2688 rows per airport (2026-10-11T12:28:15Z)
+  2023-03: 124 cycles, 2976 rows per airport (2026-10-11T12:28:19Z)
+  2023-04: 120 cycles, 2880 rows per airport (2026-10-11T12:28:22Z)
+  2023-05: 124 cycles, 2976 rows per airport (2026-10-11T12:28:26Z)
+  2023-06: 120 cycles, 2880 rows per airport (2026-10-11T12:28:29Z)
+  2023-07: 124 cycles, 2976 rows per airport (2026-10-11T12:28:33Z)
+  2023-08: 124 cycles, 2976 rows per airport (2026-10-11T12:28:36Z)
+  2023-09: 120 cycles, 2880 rows per airport (2026-10-11T12:28:40Z)
+  2023-10: 124 cycles, 2976 rows per airport (2026-10-11T12:28:43Z)
+  2023-11: 120 cycles, 2880 rows per airport (2026-10-11T12:28:47Z)
+  2023-12: 124 cycles, 2976 rows per airport (2026-10-11T12:28:50Z)
+  2024-01: 124 cycles, 2976 rows per airport (2026-10-11T12:28:54Z)
+  2024-02: 116 cycles, 2784 rows per airport (2026-10-11T12:28:57Z)
+  2024-03: 124 cycles, 2976 rows per airport (2026-10-11T12:29:00Z)
+  2024-04: 120 cycles, 2880 rows per airport (2026-10-11T12:29:04Z)
+  2024-05: 124 cycles, 2976 rows per airport (2026-10-11T12:29:07Z)
+  2024-06: 120 cycles, 2880 rows per airport (2026-10-11T12:29:11Z)
+  2024-07: 124 cycles, 2976 rows per airport (2026-10-11T12:29:14Z)
+  2024-08: 124 cycles, 2976 rows per airport (2026-10-11T12:29:18Z)
+  2024-09: 120 cycles, 2880 rows per airport (2026-10-11T12:29:21Z)
+  2024-10: 124 cycles, 2976 rows per airport (2026-10-11T12:29:25Z)
+  2024-11: 120 cycles, 2880 rows per airport (2026-10-11T12:29:28Z)
+  2024-12: 124 cycles, 2976 rows per airport (2026-10-11T12:29:32Z)
+  2025-01: 124 cycles, 2976 rows per airport (2026-10-11T12:29:35Z)
+  2025-02: 112 cycles, 2688 rows per airport (2026-10-11T12:29:39Z)
+  2025-03: 124 cycles, 2976 rows per airport (2026-10-11T12:29:43Z)
+  2025-04: 120 cycles, 2880 rows per airport (2026-10-11T12:29:46Z)
+  2025-05: 124 cycles, 2976 rows per airport (2026-10-11T12:29:49Z)
+  2025-06: 120 cycles, 2880 rows per airport (2026-10-11T12:29:53Z)
+  2025-07: 124 cycles, 2976 rows per airport (2026-10-11T12:29:56Z)
+  2025-08: 124 cycles, 2976 rows per airport (2026-10-11T12:30:00Z)
+  2025-09: 120 cycles, 2880 rows per airport (2026-10-11T12:30:03Z)
+  2025-10: 124 cycles, 2976 rows per airport (2026-10-11T12:30:07Z)
+  2025-11: 120 cycles, 2880 rows per airport (2026-10-11T12:30:11Z)
+  2025-12: 124 cycles, 2976 rows per airport (2026-10-11T12:30:14Z)
+  2026-01: 124 cycles, 2976 rows per airport (2026-10-11T12:30:18Z)
+  2026-02: 112 cycles, 2688 rows per airport (2026-10-11T12:30:21Z)
+  2026-03: 124 cycles, 2976 rows per airport (2026-10-11T12:30:25Z)
+  2026-04: 120 cycles, 2880 rows per airport (2026-10-11T12:30:28Z)
+  2026-05: 124 cycles, 2976 rows per airport (2026-10-11T12:30:32Z)
+  2026-06: 120 cycles, 2880 rows per airport (2026-10-11T12:30:35Z)
+  2026-07: 120 cycles, 2840 rows per airport (2026-10-11T12:30:39Z)
+
+plan rows per airport: 187768; all 1126608
+  stagec_dev_f025_048_EGLC.csv.gz: rows 187768, bytes 8,070,560, SHA-256 947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9
+  stagec_dev_f025_048_LFPG.csv.gz: rows 187768, bytes 8,129,523, SHA-256 04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35
+  stagec_dev_f025_048_KDSM.csv.gz: rows 187768, bytes 8,250,293, SHA-256 bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3
+  stagec_dev_f025_048_YSDU.csv.gz: rows 187768, bytes 8,193,074, SHA-256 b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac
+  stagec_dev_f025_048_KRNO.csv.gz: rows 187768, bytes 8,425,665, SHA-256 3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58
+  stagec_dev_f025_048_KSFO.csv.gz: rows 187768, bytes 8,341,002, SHA-256 2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b
+
+per airport: rows; complete-case rows; no observation; uses whole file; empty cells by column and reason
+  EGLC: rows 187768; complete case 187588; no observation 174; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+  LFPG: rows 187768; complete case 187200; no observation 560; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+  DSM: rows 187768; complete case 187716; no observation 46; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+  YSDU: rows 187768; complete case 185852; no observation 1908; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+  RNO: rows 187768; complete case 187335; no observation 433; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+  SFO: rows 187768; complete case 187620; no observation 142; uses whole file 60; obs ties 0
+      dswrf_2h_wm2 empty, outside pull window: 5
+      pressure_tendency_3h_hpa empty, outside pull window: 8
+F138's six table files, SHA-256 equal to F138.4 (after): True 
+leftover partial files: none
+end 2026-10-11T12:30:48Z; run time 236.4 s
+---- s3_gate ----
+SESSION 104 --gate (offline), 2026-10-11T12:30:54Z
+training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal True
+columns compared (held by both): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa', 'temperature_grib_c']
+
+YSDU (YSDU) 00z lead 26: committed station-days 1929; table rows 1956; compared 1929; committed with no table row 0 ; table with no committed row 27 ['2022-07-23', '2022-07-25', '2022-10-21', '2022-10-22', '2022-10-23', '2022-10-24', '2022-12-01', '2022-12-12', '2023-03-23', '2023-05-10', '2024-02-04', '2024-05-14', '2024-07-20', '2024-09-18', '2024-11-17', '2024-11-27', '2025-03-08', '2025-07-22', '2025-08-30', '2025-10-28', '2025-11-15', '2025-11-25', '2025-11-30', '2025-12-03', '2026-01-18', '2026-02-14', '2026-04-12']
+  column                             compared    equal mismatched
+  temp                                   1929     1929          0
+  season_sin                             1929     1929          0
+  season_cos                             1929     1929          0
+  cloud_cover                            1929     1929          0
+  wind_speed_10m                         1929     1929          0
+  dewpoint_depression_t2m_floored        1929     1929          0
+  lapse_rate_t2_t850                     1929     1929          0
+  dswrf_2h_wm2                           1929     1929          0
+  pressure_tendency_3h_hpa               1929     1928          1
+  temperature_grib_c                     1929     1929          0
+  observation: table's obs_tmpc differs from the record's obs_c on 0 days; table has no observation on 0 days; equal on 1929 (count only, D98.4)
+  MISMATCH YSDU 2021-03-24 pressure_tendency_3h_hpa: committed '-0.921', table ''
+
+RNO (KRNO) 18z lead 26: committed station-days 1952; table rows 1956; compared 1952; committed with no table row 0 ; table with no committed row 4 ['2021-05-02', '2021-05-03', '2022-11-30', '2024-03-21']
+  column                             compared    equal mismatched
+  temp                                   1952     1952          0
+  season_sin                             1952     1952          0
+  season_cos                             1952     1952          0
+  cloud_cover                            1952     1952          0
+  wind_speed_10m                         1952     1952          0
+  dewpoint_depression_t2m_floored        1952     1952          0
+  lapse_rate_t2_t850                     1952     1952          0
+  dswrf_2h_wm2                           1952     1952          0
+  pressure_tendency_3h_hpa               1952     1952          0
+  temperature_grib_c                     1952     1952          0
+  observation: table's obs_tmpc differs from the record's obs_c on 0 days; table has no observation on 0 days; equal on 1952 (count only, D98.4)
+
+SFO (KSFO) 18z lead 26: committed station-days 1952; table rows 1956; compared 1952; committed with no table row 0 ; table with no committed row 4 ['2022-03-17', '2022-11-30', '2024-07-13', '2024-12-20']
+  column                             compared    equal mismatched
+  temp                                   1952     1952          0
+  season_sin                             1952     1952          0
+  season_cos                             1952     1952          0
+  cloud_cover                            1952     1952          0
+  wind_speed_10m                         1952     1952          0
+  dewpoint_depression_t2m_floored        1952     1952          0
+  lapse_rate_t2_t850                     1952     1952          0
+  dswrf_2h_wm2                           1952     1952          0
+  pressure_tendency_3h_hpa               1952     1952          0
+  temperature_grib_c                     1952     1952          0
+  observation: table's obs_tmpc differs from the record's obs_c on 0 days; table has no observation on 0 days; equal on 1952 (count only, D98.4)
+
+feature mismatches plus committed rows with no table row: 1
+GATE NOT PASSED: STOP
+---- s2_download ----
+SESSION 104 --download into /Users/zacharyadams/Coding Projects/MLwx-pull-f025-048 at 2026-10-11T11:55:06Z
+Release listed and checked (195 assets); API requests 3
+held locally: 0; not a Release asset []; not equal to its size and SHA-256 []
+to download: 195
+
+downloaded 195 files, 1,217,250,028 B, 1,129.8 s, 195 download requests, retries 0; hosts reached ['github.com', 'release-assets.githubusercontent.com']
+API requests 3 (647,495 B)
+MLwx-pull-f025-048/: 195 files; not a Release asset []; missing or not equal []
+DOWNLOAD: PASS, 195 assets held, each equal to its Release digest
+Step 4: PASS. scripts/session104_curve_cv.py --gate (126.5 s). Gate 1: session 103's four cases PASS; lead 47 corrections 0, 0, 0.02, 0.0396 and lead 48 0, 0, 0, 0.02 PASS. Gate 2 (D98.6): 1,584 fits; F139 cells 3,168 of 3,168, headline 2 of 2 (raw 1.4616990883475995, baseline 1.049777501605027), n 6 of 6; F146 drift cells 1,584 of 1,584 equal to session 103's file, headline 1.019044682206963 equal. Gate 3 (D98.5), the table's own observations: YSDU 00z lead 26 train 1,213, test 360: B+D,L,R,T 1.2642703316294652 = grid, raw 1.4896583333333335 = grid; RNO 18z lead 26 train 1,222, test 365: 1.2741517803385958 = grid, 1.6134575342465751 = grid; 4 of 4 exact. Owner ruling 3 applied at YSDU for gate 3 only: 2021-03-24 pressure_tendency_3h_hpa = -0.921 (committed value), so that training row is complete as in F109; not used in any CV fit or score. No re-run with the record's observations was needed. Used from earlier scripts: s97 load_table, fold_role, fit_predict, mae, mean_error, csv_text, fmt, write_new, parse_time, check_valid, check_obs_time, fval, TABLE_COLUMNS, G15, LGB_PARAMS, FOLDS, CYCLE_HOURS, GATE_TRAIN, GATE_TEST, TRAINING_SET, GRID; s100 split_rows (leads 3 to 24), check_against_s97, print_test; s103 track (unchanged), run_check, W. Written new: load_table25, score_part, correct (extra rows via track on earlier rows plus the row), errors, pooled and d89_6 over any leads, the daily maximum. No new bytecode written.
+Step 5: PASS (after one fix to this session's own script). --score run 1: gates 1 and 2 PASS, 1,728 fits at 25 to 48, trackers clean, scores file written, then STOP at the daily-maximum cross-check (EGLC hour sets differed). Cause: my cross-check gave session 90's rule every report as usable, but session 86's parse_reports also returns unusable reports (value None); the 20 differing hours over six airports each had only an unusable report near the hour. Fixed (usable = value is not None, as session 90 uses it); the run-1 scores file (69ec86bf...a35e) was moved to the scratchpad, --score re-run: scores file byte-equal to run 1's. Run 2: gates 1, 2 PASS; fits 1,584 + 1,728 = 3,312, fit time 227 s, run 282.9 s; scored rows 1,206,438; extra rows (complete features, no observation, D98.7) 2,490; rows using an error not before their cycle 0; b = 0 rows by fold 3-24 / 25-48: 552 / 1,176, 552 / 1,180, 552 / 1,176. Hourly headline 3 to 48: raw 1.5315, baseline 1.1161, curve 1.0892; 3 to 24 reproduces F139/F146; 25 to 48: 1.5956, 1.1769, 1.1535. D89.6 at 25 to 48 (descriptive): 1.985 %, 5 of 6 (EGLC higher), 3 of 3. Cross-check: session 90's rule and the table agree at all six airports. Daily maximum headline: raw 1.3622, baseline 1.0543, curve 1.0338; common days 1,085 to 1,095. Outputs: data/processed/session104_curve_cv_scores.csv (9,936 rows, 69ec86bf600fcb2c5b8ad0f8ec0cb8ed69adb314813e9ab1ee4b578f0fffa35e), data/processed/session104_dailymax_days.csv (6,570 rows, 65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3), data/processed/session104_curve_cv.meta.txt (cb7950ae906d86a44fa64ded318b91abdc79d89c50030935ca208cf30d7ea398). Script final SHA-256 6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb.
+Step 6: tests/test_stagec.py written: 7 tests (F145 constant, D98.10(b) runs for 7 days, the usable rule 23/24/25 hours, tracker leads 47 and 48), all 7 pass. Suite: 31 tests, 30 pass; test_citations_real_files_resolve fails only because D98 cites F147, not yet recorded (as F145.4 saw for D96). Re-run after F147 at the end.
+Step 7: PASS. SPEC 6 stage C bullet and RESULTS section 7 replaced (each old text found once); closing note extended. Diffs follow.
+diff --git a/RESULTS.md b/RESULTS.md
+index 97bd669..738fb98 100644
+--- a/RESULTS.md
++++ b/RESULTS.md
+@@ -857,10 +857,13 @@ They now apply to a project with three proven methods, not one.
+   every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
+   pull to 24 hours ahead is complete, and its build choices are made by
+   time-ordered cross-validation on the six development airports, never
+-  quoted as results (SPEC 2.5). So far the curve keeps the proven recipe
+-  as one model per airport, run time and lead; two pooled structures were
+-  tested and not adopted (DECISIONS D94, F143). Next come forecast hours
+-  25 to 48, a correction for drifting bias, and the daily maximum. Stage
++  quoted as results (SPEC 2.5). The curve keeps the proven recipe as one
++  model per airport, run time and lead; two pooled structures were tested
++  and not adopted (DECISIONS D94, F143). A correction for drifting bias, a
++  running average of the curve's own recent errors, was adopted (DECISIONS
++  D97, F146). The curve now runs to 48 hours ahead, and the daily maximum,
++  read off the curve, has a fixed way of being scored (DECISIONS D98,
++  F147). Stage
+   C's claim will be judged on six new airports (EDDM, KORD, CYYZ, ZGSZ,
+   ZUCK, NZWN), fixed before any of their held-out data is read. Stages D
+   to H (other weather models, blending, upgrade policy, the live tool and
+@@ -871,6 +874,6 @@ They now apply to a project with three proven methods, not one.
+ *All figures in this file are cited to their DECISIONS.md/SPEC.md source
+ and were checked against it when this file was written (session 30),
+ revised (session 44, DECISIONS F95), revised again (session 65,
+-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95). SPEC.md remains the source of truth for how the project
++DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98). SPEC.md remains the source of truth for how the project
+ works; this file is a read-only summary of results already on record
+ there.*
+diff --git a/SPEC.md b/SPEC.md
+index 0bf7c3b..23af528 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -756,8 +756,12 @@ side, because both are time-critical.
+   DECISIONS D82 and D83. Its GRIB pull for forecast hours 0 to 24 is
+   complete and checked (DECISIONS D87, F137). Its development table and
+   baseline are set in DECISIONS D88, and the rules for its build choices
+-  in DECISIONS D89. Its claim is judged on new airports only, drawn by
+-  the rule in DECISIONS D82.7.
++  in DECISIONS D89. Its structure is the baseline, one model per airport,
++  cycle hour and lead (DECISIONS D95.2), plus a correction for drifting
++  bias (DECISIONS D97, F146). Its pull for forecast hours 25 to 48 is
++  complete and checked, the curve runs to 48 hours, and the daily
++  maximum's metric is fixed (DECISIONS D98, F147). Its claim is judged
++  on new airports only, drawn by the rule in DECISIONS D82.7.
+ - **Stage D — correct each other weather model on its own,** on the
+   full curve, screening each at a few hours first.
+ - **Stage E — blend and stack.** Combine the corrected models, with NBM
+End steps (partial): F147 recorded, Live index + F147. Archive --apply --session 104: moved 2 spans (expected D95, F146), kept 12; DECISIONS.md 74,367 bytes (under 80,000). Citations: 175 resolved, 0 unresolved, 0 duplicates, 0 out of order. Tests 31 of 31 OK. Scope: every changed file is in the scope list. NOT DONE (usage limit): STATUS.md overwrite; rewriting this file's top summary (it still describes the Step 3 stop); sizes of MLwx-pull-f025-048/ and the new table files.
+End steps (completed after the usage limit): STATUS.md overwritten; summary rewritten; sizes MLwx-pull-f025-048/ 1.1 GB, six table files 49,410,117 bytes.

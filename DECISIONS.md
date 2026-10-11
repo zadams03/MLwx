@@ -18,9 +18,9 @@ It records choices made, why they were made, open questions, and findings.
 - D89: the rules for stage C's build choices.
 - F139: the baseline's cross-validation scores (the incumbent, D89.7).
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
-- D95: the structure question closed, the next steps, tests, and the f025 to f048 pull.
 - D97: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test.
-- F146: session 103's finding.
+- D98: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric.
+- F147: session 104's finding.
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -773,61 +773,6 @@ scored.
 
 ---
 
-## 2026-10-09: Session 101 decision: the structure question closed, the order of the next steps, tests, and the f025 to f048 pull (owner, planning chat)
-
-**D95. Owner decisions, planning chat (after session 100): F143 accepted,
-the model-structure question closed, the order of the next steps, the
-tests folder, and the design of the f025 to f048 pull.** Written at the
-start of session 101, before any other edit. No 2026-27 value has been
-read or scored.
-
-- **D95.1 F143 accepted,** with its five readings. Reading 3 (the
-  descriptive A-against-B line prints "PASS") changes nothing.
-- **D95.2 The structure question is closed.** No larger-settings test for
-  pooled models is run (D94.5). The curve's structure is the baseline
-  (D88.4): one model per airport, cycle hour and lead. This closes D82.5's
-  model-structure comparisons, so RESULTS.md section 7 is updated now
-  (D93.4).
-- **D95.3 Why the daily maximum waits.** One GFS run's usable leads (3 to
-  24) cover at most 22 hours, so no single run made the day before covers
-  a whole local day. The forecast daily maximum needs leads beyond 24
-  hours. So the f025 to f048 pull (D82.3) comes first.
-- **D95.4 Order of the next steps.** Session 101: this entry, RESULTS
-  section 7, the tests folder, and the f025 to f048 pull prepared and
-  gated locally. The owner then runs the pull on GitHub Actions: one month
-  first (2022-01), then the rest. Session 102: bias drift (D78.2,
-  D81.10(b)), as a build choice against the baseline, needing no new
-  data. Session 103: verify the f025 to f048 pull, extend the development
-  table and the baseline to leads 25 to 48, fix the daily maximum's metric
-  in its own entry (D89.8), and score it.
-- **D95.5 The f025 to f048 pull.** Same script, same fields, same grid
-  points, same checks as the f000 to f024 pull (D83.5, D84.4, F136).
-  Cycles from 2021-03-22T12 (D84.2), the first GFS v16 run; earlier cycles
-  are never requested, whatever their valid time. Valid times stay within
-  2021-03-24T00 to 2026-07-31T23. The pull script gains this cycle floor,
-  and nothing else; the f000 to f024 plan must be unchanged by it.
-- **D95.6 Its Release.** Published to a separate Release,
-  `stagec-grib-pull-f025-048`, with the same file names per month. The
-  f000 to f024 Release `stagec-grib-pull-v1` is never touched. The
-  workflow gains an `hours` input, `0-24` (the default, which keeps the
-  current behaviour exactly) or `25-48`, which sets the pull's and the
-  verifier's hours and the Release. Locally, its files go to a separate
-  folder, `MLwx-pull-f025-048/`, beside the repo.
-- **D95.7 Its gate.** A local test chunk on D83.6's three dates
-  (2022-01-12, 2023-07-12, 2024-04-12), all four cycles, forecast hours 21
-  to 48 (so that the lead-24 airports' R and T inputs, at f021 and f022,
-  are inside it), through session 91's `--gate`: 18 station-days, exact
-  equality with `session81_training_set.csv`, as F133.7.
-- **D95.8 The tests folder (D90.12).** Python's standard `unittest`, no new
-  package. Tests run offline, write only to temporary folders, and finish
-  in a few minutes. They cover the leakage guards, the archive tool, and
-  reproductions of recorded figures from committed files.
-- **D95.9 Live index.** Removed (archived): F142, D94 and F143, which are
-  settled. Added: D95 and F144. After session 101: D47, D73, D77, D79,
-  D82, D88, D89, F139, D93, D95, F144.
-
----
-
 ## 2026-10-11: Session 103 decision: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test (owner, planning chat)
 
 **D97. Owner decisions, planning chat (after session 102): F145 accepted,
@@ -906,30 +851,164 @@ read or scored.
 
 ---
 
-## 2026-10-11: Session 103 finding: the bias-drift test
+## 2026-10-11: Session 104 decision: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric (owner, planning chat)
 
-**F146. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. Offline. D97 was recorded first. The tracker passed its self-check and the baseline refit reproduced F139 exactly; the challenger `drift` (the baseline plus a decaying average of its own recent errors, w = 0.02, D97.4) was then scored against the baseline under D89.6 and passed all three parts. Under D97.8 the curve becomes the baseline plus this correction, identically at every airport, cycle hour and lead. Script: `scripts/session103_bias_drift_cv.py` (new; modes `--check`, `--gate`, `--score`, `--meta`; SHA-256 `56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83`). Full real output: `notes/session-103-output.txt`. Run 2026-10-11. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+**D98. Owner decisions, planning chat (after session 103): F146 accepted,
+D97.1's open item closed, the download and checks of the f025 to f048 pull,
+the curve extended to lead 48, the hourly metric over the whole horizon, and
+the daily maximum's metric (D89.8), all fixed before any score.** Written at
+the start of session 104, before any other edit. No 2026-27 value has been
+read or scored.
 
-- **F146.1 Steps 0 to 2.** Preflight passed (SHA-256 of sessions 97 and 100's scripts and session 97's scores file equal to the record; importing session 100 runs nothing; its `score_airport` returns `obs`, `raw`, `cycles` and `baseline` in ascending cycle time; tests 24 of 24). D97 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes. PROJECT-INSTRUCTIONS.md section 8: one line added (D97.3).
-- **F146.2 Self-check and gate.** `--check` 4 of 4 PASS (lead 3: 0, 0.02, 0.0396, 0.058808; lead 24: 0, 0, 0.02; a missing day uses both earlier errors, 0.0596; latest error used before the cycle in 10 of 10 rows). `--gate`: 1,584 fits; cells 3,168 of 3,168, headline 2 of 2, n 6 of 6; PASS (137.8 s).
-- **F146.3 The scores (`--score`).** The baseline refit again equal to F139 (1.049777501605027). Tracker: 1,584 cells, 577,262 rows; 0 rows used an error not before their cycle; 1,655 rows corrected with b = 0 (552, 551 and 552 per fold). MAE in degrees C:
+- **D98.1 F146 accepted,** with its seven readings. Reading 2's wording was
+  corrected at the review, before the commit: the gain at KSFO is
+  "consistent with D78.2 and D71.4 (KSFO's bias shifting between years)".
+- **D98.2 D97.1 closed: scripts that find entries by text.**
+  `session92_verify_chunk.py --gate` (local only) and
+  `session95_check_release.py` are not edited. Their checks ran and passed
+  (F134, F137) and stand. F122 and F133 to F136 are now archived, so those
+  lookups no longer resolve and those modes cannot be re-run as they stand.
+  This is recorded, not fixed, as D96.3 did for session 86. Session 92's
+  other modes, which the workflow's verify step uses, read no DECISIONS
+  entry and are unaffected. From now on a script never finds a recorded
+  value by searching DECISIONS text: it holds the value as a constant, and a
+  test in `tests/` checks the constant against the entry in either
+  DECISIONS file.
+- **D98.3 The download and checks.** A new script downloads the Release
+  `stagec-grib-pull-f025-048` once into `MLwx-pull-f025-048/` beside the
+  repository (D95.6) and checks, as session 95 did for the f000 to f024 pull
+  (D87, F137): every file equal to its Release size and SHA-256; every
+  month's meta as expected, with the pull script's SHA-256 equal to F145's;
+  session 92's verifier with `--hours 25-48` (its D84.4 checks, then with
+  `--ranges`) on every month; the union of all months equal to the 25-48
+  plan (187,768 (cycle, hour) keys, F145.1), with no key in two months;
+  status totals, including any "ok (whole file)" messages; a negative test;
+  and an inventory file committed. Network only to GitHub's API and the
+  Release's download links (and the host they redirect to). The pull-level
+  `--gate` is not run (D98.2); D98.4's table gate checks the same values
+  and more.
+- **D98.4 The table for leads 25 to 48.** For each development airport and
+  every (cycle, forecast hour) in the 25-48 plan: D88.5's features and
+  D88.7's observation, by session 96's code and rules, written as six new
+  files in `MLwx-stagec/`. F138's six files are never changed. Inputs before
+  forecast hour 25 (T at leads 25 to 27; R at lead 25, which needs A(24) and
+  A(23)) come from the f000 to f024 pull (`MLwx-pull/`, F137). Where that
+  pull has no such value (cycles before its first), the feature is empty,
+  with reason "outside pull window", and counted. The new builder must
+  reproduce F138's rows exactly when run on hours 0 to 24 (Step 3's
+  equivalence check). Gate: at YSDU (00z, lead 26), RNO and KSFO (18z, lead
+  26), every committed station-day of `session81_training_set.csv` equal in
+  every shared column, exact equality, as F138 did at lead 24. This is the
+  first stage C gate at these three airports. Observation agreement with the
+  record's `obs_c` is counted and reported.
+- **D98.5 The curve at leads 25 to 48.** As at leads 3 to 24: D88.4's
+  baseline (one model per airport, cycle hour and lead) plus D97's
+  correction, with D97.4 to D97.7 unchanged. A tracker uses only errors
+  whose valid time is before the forecast's cycle (D97.6). So the newest
+  usable error is two days old at leads 25 to 47 and three days old at lead
+  48. Folds and rows as D89.3. The fitting code's gate (extends D89.9): from
+  the table's rows, F109's raw GFS and `B+D,L,R,T` MAEs at YSDU (00z, lead
+  26) and RNO (18z, lead 26), reproduced exactly, as F139.3 did at the other
+  three airports. If either differs, and the only difference is in the
+  observations (the table's pairing against the record's, SPEC 4.5's
+  note), the gate is run again with the record's observations and both
+  results are reported; any other difference stops the session. KSFO is not
+  in this gate: F109 has no KSFO row, and D98.4 gates its features.
+- **D98.6 Reproduction at leads 3 to 24, before any new score.** The refit
+  reproduces F139 exactly (every cell's n and MAE, the headline, the
+  per-airport n) and F146's correction exactly (every drift cell's n and MAE
+  equal to session 103's scores file; headline 1.019044682206963).
+- **D98.7 Forecasts on rows with no observation.** Each model also predicts
+  test rows whose features are complete but which have no observation; the
+  daily maximum needs them (D98.10(c)). Such rows never enter an hourly
+  score and never update a tracker (D97.5), and every correction is applied
+  to them too. No hourly score changes.
+- **D98.8 The hourly metric (amends D89.5).** From this entry, D89.5's
+  metric is taken over leads 3 to 48, the product's horizon (D82.2): per
+  airport, one MAE pooled over folds, cycle hours and leads 3 to 48; the
+  headline and fold level as D89.5. Leads 3 to 24 and 25 to 48 are also
+  reported. D89.6 and D89.8 are unchanged. The incumbent for the next hourly
+  build choice is the curve, the baseline plus D97's correction (D97.8); its
+  scores at leads 3 to 48 are F147's.
+- **D98.9 The correction at leads 25 to 48 is carried as decided** (D97.8:
+  identically at every lead). Its scores there, with D89.6's three parts
+  against the baseline, are descriptive only. If its 25 to 48 headline is
+  not lower than the baseline's, that is a reading for the owner; nothing
+  changes in session 104.
+- **D98.10 The daily maximum's metric (D89.8),** fixed before any
+  daily-maximum score.
+  (a) The observed maximum, as D82.8. Hourly values by D88.7 (the table's
+  pairing) at every whole UTC hour of the local day; the day is usable if
+  its usable hours are at least its hours minus 2. Time zones: EGLC
+  Europe/London, LFPG Europe/Paris, DSM America/Chicago, YSDU
+  Australia/Sydney, RNO and KSFO America/Los_Angeles. A day is used only if
+  its last hour is valid on or before 2026-07-31T23:00 UTC.
+  (b) Which run. For the local day D starting at UTC time s, the cycle is
+  the latest GFS cycle c (00, 06, 12 or 18 UTC) with c + 4 hours <= s; a run
+  arrives about 3.5 to 4 hours after it starts (D88.6). So every hour of D
+  lies at lead 4 to 33, and each day has one forecast: the "tomorrow's
+  maximum" a user would see the evening before. Forecasts for the same day
+  from later runs (partly observed already) are a later question.
+  (c) The forecast maximum: the highest of the method's hourly forecasts
+  from cycle c over every whole hour of D. If any hour has no forecast, the
+  day is dropped for that method and counted.
+  (d) Folds: a day belongs to the fold of its cycle (D89.3's test rule). A
+  day whose cycle is before its fold's T0 is in neither, and counted.
+  (e) Metric: MAE of the daily maximum, degrees C, full precision, on the
+  common day set (a usable observed maximum and a forecast maximum from
+  every method compared). Per airport, pooled over folds; the headline is
+  the unweighted mean of the six; fold level as D89.5.
+  (f) Methods scored in session 104: raw GFS (`temperature_grib_c`), the
+  baseline, and the curve (the baseline plus D97's correction), each read
+  off its hourly values. Mean error (observation minus forecast) and the
+  cycle hours used are descriptive.
+  (g) Later daily-maximum build choices: D89.6 on this metric. The
+  incumbent is the curve's read-off maximum. Each challenger (for example a
+  model of its own, D82.5, or one using GFS's 6-hour maximum, D88.5(e)) is
+  fixed in its own entry before its score. Session 104 makes no
+  daily-maximum build choice.
+  (h) Hourly values miss a peak between reports, on both sides alike
+  (D82.8).
+- **D98.11 This is not a claim.** Every score here is a build-choice score
+  (SPEC 2.5). Nothing from 2026-27 is read.
+- **D98.12 SPEC and RESULTS.** Session 104 updates SPEC 6's stage C bullet
+  and RESULTS section 7's roadmap paragraph, with the text in its prompt.
+- **D98.13 Session 104's plan.** This entry; the download and checks; the
+  table and its gate; the curve's gates and scores; the daily maximum;
+  tests; the SPEC and RESULTS edits; F147. The next step is chosen at
+  session 105's planning.
+- **D98.14 Live index.** Removed (archived): D95 (its work is done; the
+  structure it closed is restated in D98.8) and F146 (reproduced and
+  restated by F147, D98.6). Added: D98 and F147. After session 104: D47,
+  D73, D77, D79, D82, D88, D89, F139, D93, D97, D98, F147.
 
-| | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | fold 23-24 / 24-25 / 25-26 |
+---
+
+## 2026-10-11: Session 104 finding: the f025 to f048 pull checked, the table and curve to 48 hours, and the daily maximum scored
+
+**F147. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. D98 was recorded first. The f025 to f048 pull was downloaded and passed every check; the development table for leads 25 to 48 was built and gated (with one cell accepted by an owner ruling at a stop); the curve's gates reproduced F139, F146 and F109 (YSDU, RNO at lead 26) exactly; the curve was scored at leads 3 to 48 and the daily maximum under D98.10. No build choice was made. Scripts (new): `scripts/session104_pull_check.py` (`fabd0cbeddc97029e4ea46e2247aad3f42edaf9d57bddb0fff9c5c132669b19f`), `scripts/session104_stagec_table_f025_048.py` (`77457e262aae6388495ebebac64c730bc82d82675a3802d89fbd5f7f09fc2222`), `scripts/session104_curve_cv.py` (`6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb`). Full real output: `notes/session-104-output.txt`. Run 2026-10-11. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+- **F147.1 The pull (D98.3).** 195 files, 1,217,250,028 B, each equal to its Release digest (0 retries, 1,130 s), in `MLwx-pull-f025-048/`. Every meta as expected, pull script `557e8832...7b1675` (F145) in all 65. Verifier 13 of 13 and `--ranges` clean on all 65 months. Union equals the 25-48 plan: 187,768 (cycle, hour) keys (F145.1), 1,877,680 messages, 9,576,168 points rows; no key twice. Statuses: ok 1,877,380; ok (whole file) 300 (30 files in F135's three 2022-11 cycles); idx missing 0; check failed 0. Negative tests as specified. Inventory `data/processed/session104_pull_f025_048_inventory.csv` (195 rows, `5b6cd6f99dcadd0df5bbc313988514495d906126738df6f45944e2ce9208f9d1`).
+- **F147.2 The table (D98.4).** 187,768 rows per airport (1,126,608), in `MLwx-stagec/stagec_dev_f025_048_<ICAO>.csv.gz` (SHA-256 in `data/processed/session104_stagec_f025_048_table.meta.txt`, `27622ada...5859`; counts `ca9b2dee...96f2`). Complete-case rows: EGLC 187,588, LFPG 187,200, DSM 187,716, YSDU 185,852, RNO 187,335, KSFO 187,620. Empty cells only "outside pull window" (R 5, T 8 per airport). Equivalence: rebuilt hours 0 to 24 (EGLC, RNO, 2022-01) byte-equal to F138's. F138's six files unchanged.
+- **F147.3 The stop and the owner ruling (planning chat, 2026-10-11).** The first `--gate` stopped on one mismatch: YSDU 2021-03-24 `pressure_tendency_3h_hpa`, committed -0.921, table empty, since its input (PRMSL at f023 of cycle 2021-03-23T00, valid 2021-03-23T23:00) lies before the pull window (D82.4). Ruling: (1) accepted as the case D98.4 names; the cell stays empty and the table is unchanged; (2) the gate accepts a difference only where the cell is empty "outside pull window" with its input valid before 2021-03-24T00:00, listed and counted; (3) Step 4's YSDU fitting gate uses -0.921 for that cell, gate only, never in any fit or score; (4) carry on. D98 is not edited. Re-run: GATE PASSED, 1 accepted cell, all else equal: YSDU 1,929, RNO 1,952, KSFO 1,952 station-days, 10 columns, 0 mismatches. The table's observation equals `obs_c` on every day.
+- **F147.4 The curve's gates (D98.5, D98.6).** Tracker self-check 6 of 6 (lead 47: 0, 0, 0.02, 0.0396; lead 48: 0, 0, 0, 0.02). Refit at 3 to 24: F139 cells 3,168 of 3,168, headline 2 of 2, n 6 of 6; F146 drift cells 1,584 of 1,584, headline 1.019044682206963. Lead 26, table's own observations, exact: YSDU B+D,L,R,T 1.2642703316294652, raw 1.4896583333333335; RNO 1.2741517803385958, 1.6134575342465751.
+- **F147.5 Hourly scores (D98.8; MAE, degrees C; headline = mean of six).**
+
+| leads | method | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline |
 |---|---|---|---|---|---|---|---|---|
-| raw GFS | 0.9725 | 1.1596 | 1.7582 | 1.4633 | 2.1717 | 1.2449 | 1.4617 | 1.4598 / 1.4719 / 1.4534 |
-| baseline | 0.7742 | 0.8937 | 1.2034 | 1.2149 | 1.1735 | 1.0390 | 1.0498 | 1.0585 / 1.0634 / 1.0274 |
-| drift | 0.7742 | 0.8865 | 1.1775 | 1.1792 | 1.1474 | 0.9495 | 1.0190 | 1.0271 / 1.0329 / 0.9970 |
+| 3-48 | raw GFS / baseline / curve | 1.0425 / 0.8375 / 0.8386 | 1.2336 / 0.9596 / 0.9544 | 1.8795 / 1.3231 / 1.3000 | 1.5226 / 1.2631 / 1.2304 | 2.2187 / 1.2284 / 1.2079 | 1.2923 / 1.0848 / 1.0037 | 1.5315 / 1.1161 / 1.0892 |
+| 3-24 | same | 0.9725 / 0.7742 / 0.7742 | 1.1596 / 0.8937 / 0.8865 | 1.7582 / 1.2034 / 1.1775 | 1.4633 / 1.2149 / 1.1792 | 2.1717 / 1.1735 / 1.1474 | 1.2449 / 1.0390 / 0.9495 | 1.4617 / 1.0498 / 1.0190 |
+| 25-48 | same | 1.1066 / 0.8957 / 0.8978 | 1.3015 / 1.0200 / 1.0167 | 1.9907 / 1.4329 / 1.4123 | 1.5769 / 1.3073 / 1.2775 | 2.2619 / 1.2788 / 1.2634 | 1.3357 / 1.1267 / 1.0535 | 1.5956 / 1.1769 / 1.1535 |
 
-  Drift's headline at full precision: 1.019044682206963.
-- **F146.4 D89.6, drift against the baseline.** (a) reduction 0.029276 (2.93 percent), above 0.01: yes; (b) lower at 6 of 6 airports: yes; (c) lower in 3 of 3 folds: yes. **Passed.** D97.8: the curve becomes the baseline plus this correction.
-- **F146.5 Descriptive (D97.9).** Mean error (observation minus forecast) over all folds, baseline then drift: EGLC -0.064 / -0.001, LFPG -0.078 / -0.008, DSM -0.049 / -0.023, YSDU +0.097 / -0.010, RNO -0.074 / -0.010, KSFO -0.307 / -0.072. The baseline's per-fold mean error ranges from -0.559 (KSFO 2024-25) to +0.247 (YSDU 2025-26); drift's from -0.092 to +0.064. b at the end of a fold, airport means, ranges from -0.670 (KSFO 2023-24) to +0.467 (DSM 2023-24). Drift is lower than the baseline at every lead 3 to 24 (six-airport mean). Full tables in the output file.
-- **F146.6 Outputs.** `data/processed/session103_bias_drift_cv_scores.csv` (4,752 rows, SHA-256 `dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5`); its baseline rows are byte-equal to session 100's, and its raw GFS rows' first eight columns to session 97's. Meta `data/processed/session103_bias_drift_cv.meta.txt` (`e69a3c7ae51608a45ad77e83ac9f5442e2705fbeafe160f4b2b01948d0eef516`). Fits: 1,584 in `--gate`, 1,584 in `--score` (fit time 118.0 s and 118.1 s; `--score` run 139.4 s); drift fits no model.
-- **F146.7 Readings for the owner.**
-  1. EGLC's gain is tiny: 0.774180 against 0.774173 (pooled from the file, about 0.000007 degrees C), and drift is higher at EGLC in folds 2024-25 and 2025-26. Without EGLC, (b) would still pass (5 of 6).
-  2. The gain is largest at KSFO (0.089), whose baseline mean error is the most negative, consistent with D78.2 and D71.4 (KSFO’s bias shifting between years).
-  3. Session 100's scores-file columns already include `mean_error`, so the file keeps those nine columns; `model` repeats the method, `raw_gfs` included.
-  4. "b at the end of each fold" is read as b after every error of the fold has been applied, including the last ones no row used.
-  5. `--score` repeats the full gate (cells, headline and n), not only the headline.
-  6. The 552 b = 0 rows per fold equal one per cell at leads 3 to 23 and two per cell at lead 24; 2024-25's 551 was not traced.
-  7. The weight's source (D97.4) was not checked by this session.
-- **F146.8 What this did not do.** No other weight, window, pooling, latency or method tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.
+  Curve headline at 3 to 48, full precision: 1.0891748115841342. Fold level 3 to 48 (raw / baseline / curve): 2023-24 1.5231 / 1.1204 / 1.0910; 2024-25 1.5417 / 1.1294 / 1.1031; 2025-26 1.5297 / 1.0984 / 1.0734. D89.6's parts, curve against baseline at 25 to 48, descriptive only (D98.9): 1.985 percent lower; lower at 5 of 6 airports (not EGLC); 3 of 3 folds.
+- **F147.6 Daily maximum (D98.10; common day set).** Days: EGLC 1,095, LFPG 1,094, DSM 1,095, YSDU 1,085, RNO 1,093, KSFO 1,093. MAE raw / baseline / curve: EGLC 0.9460 / 0.8479 / 0.8410; LFPG 1.1968 / 0.9780 / 0.9558; DSM 1.7297 / 1.2543 / 1.2240; YSDU 1.0861 / 1.0475 / 1.0268; RNO 1.5511 / 0.9490 / 0.9477; KSFO 1.6635 / 1.2489 / 1.2076; headline 1.3622 / 1.0543 / 1.0338. Fold level: 2023-24 1.4509 / 1.0508 / 1.0212; 2024-25 1.3405 / 1.0857 / 1.0630; 2025-26 1.2947 / 1.0260 / 1.0171. Curve mean error (obs minus forecast) from -0.031 (DSM) to +0.228 (KSFO); raw GFS +0.068 to +1.230. One cycle hour per airport (EGLC, LFPG 18z; DSM, RNO, KSFO 00z; YSDU 06z). Dropped: 15 days with too few usable hours (LFPG 1, YSDU 10, RNO 2, KSFO 2); 3 days whose cycle is before T0; 6 whose last hour is after 2026-07-31T23:00. Session 90's rule agrees with the table's usable days at all six airports. Incumbent (D98.10(g)): the curve's read-off maximum.
+- **F147.7 Fits and outputs.** Fits: `--gate` 1,584 + 2; `--score` 3,312 (1,584 + 1,728), run twice (F147.8, item 2); fit time 227 s, run 282.9 s. Scores `data/processed/session104_curve_cv_scores.csv` (9,936 rows, `69ec86bf600fcb2c5b8ad0f8ec0cb8ed69adb314813e9ab1ee4b578f0fffa35e`); days `data/processed/session104_dailymax_days.csv` (6,570 rows, `65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3`); meta `data/processed/session104_curve_cv.meta.txt` (`cb7950ae906d86a44fa64ded318b91abdc79d89c50030935ca208cf30d7ea398`). Predicted and corrected but never scored rows (D98.7): 2,490; rows using an error not before their cycle: 0.
+- **F147.8 Readings for the owner.**
+  1. At 25 to 48 the correction helps at five airports but not EGLC (0.8978 against 0.8957); at 3 to 48 too (0.8386 against 0.8375). Descriptive only (D98.9).
+  2. The first `--score` run stopped at the daily-maximum cross-check: my new script gave session 90's rule every report as usable, but session 86's `parse_reports` also returns unusable ones. Fixed in this session's script only; the re-run's scores file is byte-equal to the first run's.
+  3. The curve's daily maximum has a lower MAE than the baseline's at all six airports, but a larger positive mean error at YSDU, RNO and KSFO (+0.144, +0.156, +0.228): the read-off maximum runs low there.
+  4. D98.10(b) gives one cycle hour per airport all year (the 4-hour arrival rule never crosses a cycle boundary at these six), so each airport's daily maximum is scored from a single run hour.
+  5. Each model predicts its scored and no-observation rows in one call; F139 and F146 still reproduce exactly.
+  6. The days file adds the first and last lead and a reason column for each maximum.
+  7. Rows corrected with b = 0 at 25 to 48: 1,176, 1,180, 1,176 by fold (2 per cell at leads 25 to 47, 3 at 48); 2024-25's extra 4 not traced.
+- **F147.9 What this did not do.** No build choice; no other weight, structure, feature, setting or daily-maximum method; no model saved; nothing from 2026-27; no non-development airport's observation; no network outside Step 2, no GRIB request; nothing installed; no existing script or data file edited; F138's table and `MLwx-pull/` unchanged. Nothing committed and no commit message written.

@@ -756,8 +756,12 @@ side, because both are time-critical.
   DECISIONS D82 and D83. Its GRIB pull for forecast hours 0 to 24 is
   complete and checked (DECISIONS D87, F137). Its development table and
   baseline are set in DECISIONS D88, and the rules for its build choices
-  in DECISIONS D89. Its claim is judged on new airports only, drawn by
-  the rule in DECISIONS D82.7.
+  in DECISIONS D89. Its structure is the baseline, one model per airport,
+  cycle hour and lead (DECISIONS D95.2), plus a correction for drifting
+  bias (DECISIONS D97, F146). Its pull for forecast hours 25 to 48 is
+  complete and checked, the curve runs to 48 hours, and the daily
+  maximum's metric is fixed (DECISIONS D98, F147). Its claim is judged
+  on new airports only, drawn by the rule in DECISIONS D82.7.
 - **Stage D — correct each other weather model on its own,** on the
   full curve, screening each at a few hours first.
 - **Stage E — blend and stack.** Combine the corrected models, with NBM

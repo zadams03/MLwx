@@ -3,27 +3,32 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 11 October 2026, after session 103._
+_Last updated: 11 October 2026, after session 104._
 
 ---
 
-## Session 103: the bias-drift test (D97, F146)
+## Session 104: the f025 to f048 pull, the curve to 48 hours, the daily maximum (D98, F147)
 
-Full output: `notes/session-103-output.txt`.
+Full output: `notes/session-104-output.txt`.
 
-- **D97** recorded: F145 accepted, the f025 to f048 pull, the commit
-  history, and every choice of the bias-drift test, fixed before any score.
-- **The test passed (a build choice, not a result, SPEC 2.5).** The
-  challenger is the baseline plus a decaying average of its own recent
-  errors (w = 0.02, D97.4). D89.6: headline 1.0498 to 1.0190 (2.93 percent
-  lower), lower at 6 of 6 airports and in 3 of 3 folds. So, under D97.8,
-  the curve becomes the baseline plus this correction, identically at every
-  airport, cycle hour and lead. EGLC's gain is tiny (about 0.000007
-  degrees C); KSFO's is the largest (F146.7).
-- **The baseline refit** reproduced F139 exactly, twice (cells 3,168 of
-  3,168).
-- **PROJECT-INSTRUCTIONS.md section 8** now says commit messages never
-  include a Co-Authored-By or Claude-Session line (D97.3).
+- **D98** recorded: F146 accepted, D97.1 closed (scripts hold recorded
+  values as constants, checked by tests; D98.2), and every choice of this
+  session, fixed before any score.
+- **The f025 to f048 pull** is downloaded (`MLwx-pull-f025-048/`, 195
+  files) and passed every check: 187,768 (cycle, hour) keys, check failed
+  0, idx missing 0.
+- **The development table for leads 25 to 48** is built (six new files in
+  `MLwx-stagec/`) and gated at YSDU, RNO and KSFO at lead 26. The first gate
+  stopped on one cell (YSDU 2021-03-24, pressure tendency, input before the
+  pull window); the owner accepted it by a ruling at the stop (F147.3).
+- **The curve's gates** reproduced F139, F146 and F109 (YSDU, RNO at lead
+  26) exactly.
+- **Scores (build choices, not results, SPEC 2.5).** Hourly headline at
+  leads 3 to 48: raw GFS 1.5315, baseline 1.1161, curve 1.0892. Daily
+  maximum headline: raw GFS 1.3622, baseline 1.0543, curve 1.0338.
+- **Incumbents:** the curve (the baseline plus D97's correction) for the
+  hourly curve; its read-off maximum for the daily maximum (D98.8,
+  D98.10(g)). No build choice was made in session 104.
 
 ---
 
@@ -41,18 +46,11 @@ curve plus the daily maximum (D82.2).
   **None has been run.** Per period, after it ends: build, fetch, score.
   The hold rule (D73.8) stands. Session 86's `--gate` cannot be re-run
   (D96.3); `--build` is unaffected.
-- **Stage C.** Design (D82), development table (D88, F138), build-choice
-  rules (D89), the baseline scored (F139); the structure stays the
-  baseline (D95.2); the bias-drift correction added to it (D97.8, F146).
-  The f025 to f048 pull has run: its Release
-  `stagec-grib-pull-f025-048` holds 195 files (three for each of 65
-  months), not yet downloaded or checked together (D97.2). Next (D97.11):
-  session 104. The claim batch (D82.7: EDDM, KORD, CYYZ, ZGSZ, ZUCK,
-  NZWN) is judged at stage C's lock.
-- **Commit history.** On 2026-10-09 the owner removed Co-Authored-By and
-  Claude-Session lines from every commit message on `main` and
-  force-pushed; commit IDs from session 73 on changed, file contents did
-  not (D97.3).
+- **Stage C.** Development tables for leads 0 to 24 (F138) and 25 to 48
+  (F147); build-choice rules (D89), with the hourly metric over leads 3 to
+  48 (D98.8) and the daily maximum's metric (D98.10). The curve is the
+  baseline plus the bias-drift correction (D95.2, D97.8). The claim batch
+  (D82.7: EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) is judged at stage C's lock.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
 - **Open item MMMX (D83.4).** Almost no usable observations under the
@@ -62,13 +60,12 @@ curve plus the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **Scripts that find entries in DECISIONS.md by text (D97.1).**
-  `session92_verify_chunk.py` (`--gate`, local only) and
-  `session95_check_release.py` read F122.3 and F133 to F136 from
-  DECISIONS.md by text, and session 95's script is fixed to the 0-24
-  Release. Neither is used by the workflow. Dealt with when session 104 is
-  planned.
-- **F146.7's readings**, for the owner to confirm.
+- **F147.8's readings**, for the owner to confirm. In brief: at leads 25 to
+  48 the correction does not help EGLC; the read-off daily maximum runs
+  low at YSDU, RNO and KSFO (mean error +0.14 to +0.23 degrees C); each
+  airport's daily maximum comes from one cycle hour; the first `--score`
+  run stopped on a bug in the new script's cross-check, fixed, and the
+  re-run's scores file is byte-equal.
 
 ---
 
@@ -80,6 +77,8 @@ curve plus the daily maximum (D82.2).
 - **lightgbm (D93.3).** New scripts may import lightgbm directly, with no
   libomp shim. scikit-learn stays pinned.
 - **Frozen scripts (D62.3(a), restated in D93.8)** are never edited.
+- **Recorded values in scripts (D98.2).** Never found by searching
+  DECISIONS text; held as constants and checked by a test.
 - **Later work (D90.12).** A `src/` package only at stage G.
 - **MOSMIX notes (D80.4, D81.6, F130.5, F132.5).** Matching rule is the
   owner's later decision; EGLC station position note.
@@ -89,4 +88,4 @@ curve plus the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 103. The owner commits and pushes (`git commit -F docs/commits/commit-103.txt`) and the planning chat syncs Project knowledge. Then plan session 104 (D97.11): download and check the f025 to f048 pull (with D97.1's open item), extend the development table and the curve to leads 25 to 48 (with the bias-drift correction, which passed), fix the daily maximum's metric in its own entry (D89.8), and score it.
+**Next planning session:** Review session 104. The owner commits and pushes (`git commit -F docs/commits/commit-104.txt`) and the planning chat syncs Project knowledge. Then plan session 105, the next stage C step (D98.13).

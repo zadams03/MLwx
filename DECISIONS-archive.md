@@ -20816,3 +20816,91 @@ read or scored.
   2. The key-list format was not recorded in F144; it was recovered by trying formats, and both hashes then matched F144's.
   3. The gate covers leads 24 to 29 only; the 25-48 pull's own checks are the verifier's (D84.4) in the workflow.
 - **F145.7 Not done.** No push, workflow run, Release change or `gh` call. No script edited except `session91_grib_pull.py`; no frozen script edited. SPEC.md, RESULTS.md, README.md, CLAUDE.md not edited. Nothing committed and no commit message written.
+
+---
+
+## Moved by session 104 (D93.8)
+---
+
+## 2026-10-09: Session 101 decision: the structure question closed, the order of the next steps, tests, and the f025 to f048 pull (owner, planning chat)
+
+**D95. Owner decisions, planning chat (after session 100): F143 accepted,
+the model-structure question closed, the order of the next steps, the
+tests folder, and the design of the f025 to f048 pull.** Written at the
+start of session 101, before any other edit. No 2026-27 value has been
+read or scored.
+
+- **D95.1 F143 accepted,** with its five readings. Reading 3 (the
+  descriptive A-against-B line prints "PASS") changes nothing.
+- **D95.2 The structure question is closed.** No larger-settings test for
+  pooled models is run (D94.5). The curve's structure is the baseline
+  (D88.4): one model per airport, cycle hour and lead. This closes D82.5's
+  model-structure comparisons, so RESULTS.md section 7 is updated now
+  (D93.4).
+- **D95.3 Why the daily maximum waits.** One GFS run's usable leads (3 to
+  24) cover at most 22 hours, so no single run made the day before covers
+  a whole local day. The forecast daily maximum needs leads beyond 24
+  hours. So the f025 to f048 pull (D82.3) comes first.
+- **D95.4 Order of the next steps.** Session 101: this entry, RESULTS
+  section 7, the tests folder, and the f025 to f048 pull prepared and
+  gated locally. The owner then runs the pull on GitHub Actions: one month
+  first (2022-01), then the rest. Session 102: bias drift (D78.2,
+  D81.10(b)), as a build choice against the baseline, needing no new
+  data. Session 103: verify the f025 to f048 pull, extend the development
+  table and the baseline to leads 25 to 48, fix the daily maximum's metric
+  in its own entry (D89.8), and score it.
+- **D95.5 The f025 to f048 pull.** Same script, same fields, same grid
+  points, same checks as the f000 to f024 pull (D83.5, D84.4, F136).
+  Cycles from 2021-03-22T12 (D84.2), the first GFS v16 run; earlier cycles
+  are never requested, whatever their valid time. Valid times stay within
+  2021-03-24T00 to 2026-07-31T23. The pull script gains this cycle floor,
+  and nothing else; the f000 to f024 plan must be unchanged by it.
+- **D95.6 Its Release.** Published to a separate Release,
+  `stagec-grib-pull-f025-048`, with the same file names per month. The
+  f000 to f024 Release `stagec-grib-pull-v1` is never touched. The
+  workflow gains an `hours` input, `0-24` (the default, which keeps the
+  current behaviour exactly) or `25-48`, which sets the pull's and the
+  verifier's hours and the Release. Locally, its files go to a separate
+  folder, `MLwx-pull-f025-048/`, beside the repo.
+- **D95.7 Its gate.** A local test chunk on D83.6's three dates
+  (2022-01-12, 2023-07-12, 2024-04-12), all four cycles, forecast hours 21
+  to 48 (so that the lead-24 airports' R and T inputs, at f021 and f022,
+  are inside it), through session 91's `--gate`: 18 station-days, exact
+  equality with `session81_training_set.csv`, as F133.7.
+- **D95.8 The tests folder (D90.12).** Python's standard `unittest`, no new
+  package. Tests run offline, write only to temporary folders, and finish
+  in a few minutes. They cover the leakage guards, the archive tool, and
+  reproductions of recorded figures from committed files.
+- **D95.9 Live index.** Removed (archived): F142, D94 and F143, which are
+  settled. Added: D95 and F144. After session 101: D47, D73, D77, D79,
+  D82, D88, D89, F139, D93, D95, F144.
+
+---
+
+## 2026-10-11: Session 103 finding: the bias-drift test
+
+**F146. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. Offline. D97 was recorded first. The tracker passed its self-check and the baseline refit reproduced F139 exactly; the challenger `drift` (the baseline plus a decaying average of its own recent errors, w = 0.02, D97.4) was then scored against the baseline under D89.6 and passed all three parts. Under D97.8 the curve becomes the baseline plus this correction, identically at every airport, cycle hour and lead. Script: `scripts/session103_bias_drift_cv.py` (new; modes `--check`, `--gate`, `--score`, `--meta`; SHA-256 `56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83`). Full real output: `notes/session-103-output.txt`. Run 2026-10-11. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+- **F146.1 Steps 0 to 2.** Preflight passed (SHA-256 of sessions 97 and 100's scripts and session 97's scores file equal to the record; importing session 100 runs nothing; its `score_airport` returns `obs`, `raw`, `cycles` and `baseline` in ascending cycle time; tests 24 of 24). D97 copied with `sed`, `diff` and `cmp` equal, 0 em-dashes. PROJECT-INSTRUCTIONS.md section 8: one line added (D97.3).
+- **F146.2 Self-check and gate.** `--check` 4 of 4 PASS (lead 3: 0, 0.02, 0.0396, 0.058808; lead 24: 0, 0, 0.02; a missing day uses both earlier errors, 0.0596; latest error used before the cycle in 10 of 10 rows). `--gate`: 1,584 fits; cells 3,168 of 3,168, headline 2 of 2, n 6 of 6; PASS (137.8 s).
+- **F146.3 The scores (`--score`).** The baseline refit again equal to F139 (1.049777501605027). Tracker: 1,584 cells, 577,262 rows; 0 rows used an error not before their cycle; 1,655 rows corrected with b = 0 (552, 551 and 552 per fold). MAE in degrees C:
+
+| | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | fold 23-24 / 24-25 / 25-26 |
+|---|---|---|---|---|---|---|---|---|
+| raw GFS | 0.9725 | 1.1596 | 1.7582 | 1.4633 | 2.1717 | 1.2449 | 1.4617 | 1.4598 / 1.4719 / 1.4534 |
+| baseline | 0.7742 | 0.8937 | 1.2034 | 1.2149 | 1.1735 | 1.0390 | 1.0498 | 1.0585 / 1.0634 / 1.0274 |
+| drift | 0.7742 | 0.8865 | 1.1775 | 1.1792 | 1.1474 | 0.9495 | 1.0190 | 1.0271 / 1.0329 / 0.9970 |
+
+  Drift's headline at full precision: 1.019044682206963.
+- **F146.4 D89.6, drift against the baseline.** (a) reduction 0.029276 (2.93 percent), above 0.01: yes; (b) lower at 6 of 6 airports: yes; (c) lower in 3 of 3 folds: yes. **Passed.** D97.8: the curve becomes the baseline plus this correction.
+- **F146.5 Descriptive (D97.9).** Mean error (observation minus forecast) over all folds, baseline then drift: EGLC -0.064 / -0.001, LFPG -0.078 / -0.008, DSM -0.049 / -0.023, YSDU +0.097 / -0.010, RNO -0.074 / -0.010, KSFO -0.307 / -0.072. The baseline's per-fold mean error ranges from -0.559 (KSFO 2024-25) to +0.247 (YSDU 2025-26); drift's from -0.092 to +0.064. b at the end of a fold, airport means, ranges from -0.670 (KSFO 2023-24) to +0.467 (DSM 2023-24). Drift is lower than the baseline at every lead 3 to 24 (six-airport mean). Full tables in the output file.
+- **F146.6 Outputs.** `data/processed/session103_bias_drift_cv_scores.csv` (4,752 rows, SHA-256 `dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5`); its baseline rows are byte-equal to session 100's, and its raw GFS rows' first eight columns to session 97's. Meta `data/processed/session103_bias_drift_cv.meta.txt` (`e69a3c7ae51608a45ad77e83ac9f5442e2705fbeafe160f4b2b01948d0eef516`). Fits: 1,584 in `--gate`, 1,584 in `--score` (fit time 118.0 s and 118.1 s; `--score` run 139.4 s); drift fits no model.
+- **F146.7 Readings for the owner.**
+  1. EGLC's gain is tiny: 0.774180 against 0.774173 (pooled from the file, about 0.000007 degrees C), and drift is higher at EGLC in folds 2024-25 and 2025-26. Without EGLC, (b) would still pass (5 of 6).
+  2. The gain is largest at KSFO (0.089), whose baseline mean error is the most negative, consistent with D78.2 and D71.4 (KSFO’s bias shifting between years).
+  3. Session 100's scores-file columns already include `mean_error`, so the file keeps those nine columns; `model` repeats the method, `raw_gfs` included.
+  4. "b at the end of each fold" is read as b after every error of the fold has been applied, including the last ones no row used.
+  5. `--score` repeats the full gate (cells, headline and n), not only the headline.
+  6. The 552 b = 0 rows per fold equal one per cell at leads 3 to 23 and two per cell at lead 24; 2024-25's 551 was not traced.
+  7. The weight's source (D97.4) was not checked by this session.
+- **F146.8 What this did not do.** No other weight, window, pooling, latency or method tried; nothing tuned; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; SPEC.md, RESULTS.md, CLAUDE.md and README.md not edited. Nothing committed; no commit message written.

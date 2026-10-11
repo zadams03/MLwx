@@ -1,0 +1,46 @@
+Session 104: D98, the f025 to f048 pull checked, the curve to 48 hours, and the daily maximum scored (F147)
+
+Records D98 (owner decisions after session 103): F146 accepted; D97.1
+closed (sessions 92 and 95's DECISIONS lookups are recorded as no longer
+resolving, not edited; new scripts hold recorded values as constants
+checked by tests); the download and checks of the f025 to f048 pull; the
+table and curve to lead 48; the hourly metric over leads 3 to 48; and the
+daily maximum's metric, all fixed before any score.
+
+The pull: 195 Release files (1.2 GB) downloaded to MLwx-pull-f025-048/,
+each equal to its digest; every meta names F145's pull script; verifier
+13 of 13 and ranges clean on all 65 months; the union equals the plan,
+187,768 (cycle, hour) keys; check failed 0, idx missing 0, ok (whole
+file) 300 in F135's three 2022-11 cycles. Inventory committed.
+
+The table for leads 25 to 48: 187,768 rows per airport, six new files in
+MLwx-stagec/; F138's files unchanged; the builder reproduces F138's rows
+byte for byte on hours 0 to 24. Gate at YSDU, RNO and KSFO, lead 26 (the
+first stage C gate at these airports): the first run stopped on one cell
+(YSDU 2021-03-24 pressure tendency, whose input lies before the pull
+window). Owner ruling at the stop (F147.3): accepted as the case D98.4
+names, the table unchanged, the gate rule made explicit. Re-run passed:
+1 accepted cell, every other value equal, observations equal the record's
+on every day.
+
+The curve's gates: F139 and F146 reproduced exactly at leads 3 to 24;
+F109 reproduced exactly at YSDU and RNO, lead 26 (YSDU's one cell taken
+from the record for the gate only).
+
+Build-choice scores, not results (SPEC 2.5). Hourly headline MAE, leads
+3 to 48: raw GFS 1.5315, baseline 1.1161, curve (baseline plus the
+bias-drift correction) 1.0892. At leads 25 to 48 the correction is 1.985
+percent lower than the baseline, at 5 of 6 airports (not EGLC) and 3 of 3
+folds; descriptive only (D98.9). Daily maximum (one forecast per local
+day, from the latest run available before the day starts): raw GFS
+1.3622, baseline 1.0543, curve 1.0338; the read-off maximum runs low at
+YSDU, RNO and KSFO. No build choice was made; the incumbents are the
+curve and its read-off maximum.
+
+New scripts session104_pull_check.py, session104_stagec_table_f025_048.py
+and session104_curve_cv.py; scores, daily-maximum days, counts and meta
+files; tests/test_stagec.py (7 tests). SPEC section 6's stage C bullet and
+RESULTS section 7's roadmap paragraph updated.
+
+Archive step moved D95 and F146. DECISIONS.md 74,367 bytes; 175
+citations, 0 unresolved. Tests 31 of 31. STATUS.md overwritten.

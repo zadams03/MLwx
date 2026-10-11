@@ -1,0 +1,53 @@
+session104_curve_cv.meta.txt
+written 2026-10-11T12:56:45Z by scripts/session104_curve_cv.py --meta
+
+What the files are (BUILD-CHOICE SCORES, NOT RESULTS, SPEC 2.5):
+  session104_curve_cv_scores.csv: per method (raw_gfs, baseline, curve), airport, fold, cycle hour and
+    lead 3 to 48: n, MAE and mean error (obs_tmpc minus forecast), full precision; session 103's columns,
+    model repeats the method's name. Common row set (D89.5, D98.8). curve is session 103's drift.
+  session104_dailymax_days.csv: one row per airport and local day in a test fold (D98.10): hours in the
+    day, usable hours, observed maximum (or why none), the cycle and its first and last lead, the three
+    methods' forecast maxima (or why none), and whether the day is in the common day set.
+  baseline: D88.4, one model per airport, fold, cycle hour and lead; it also predicts test rows with
+    complete features and no observation (D98.7). curve: the baseline plus b, w = 0.02 (D97.4 to D97.7,
+    D98.5), session 103's track unchanged.
+
+Rules: DECISIONS D98 (D98.5 to D98.10), D97, D89.3, D89.5, D89.6.
+
+Inputs and their SHA-256:
+  MLwx-stagec/stagec_dev_EGLC.csv.gz af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_LFPG.csv.gz 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_KDSM.csv.gz 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_YSDU.csv.gz 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_KRNO.csv.gz 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_KSFO.csv.gz 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  MLwx-stagec/stagec_dev_f025_048_EGLC.csv.gz 947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9 (meta: 947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9)
+  MLwx-stagec/stagec_dev_f025_048_LFPG.csv.gz 04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35 (meta: 04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35)
+  MLwx-stagec/stagec_dev_f025_048_KDSM.csv.gz bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3 (meta: bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3)
+  MLwx-stagec/stagec_dev_f025_048_YSDU.csv.gz b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac (meta: b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac)
+  MLwx-stagec/stagec_dev_f025_048_KRNO.csv.gz 3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58 (meta: 3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58)
+  MLwx-stagec/stagec_dev_f025_048_KSFO.csv.gz 2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b (meta: 2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b)
+  data/processed/session104_stagec_f025_048_table.meta.txt 27622adad720b020766f8f8a3eec5f5aa11a7594e40c93d5d48be276df7f5859
+  data/processed/session81_training_set.csv ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+  data/processed/session63_reserved_confirm_grid.csv 0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3
+  data/processed/session97_stagec_cv_scores.csv 5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76
+  data/processed/session103_bias_drift_cv_scores.csv dcae3a8a66349fcccb261aebd60213936e4fb05e1431fe2df7b08997c7059ec5
+  scripts/session103_bias_drift_cv.py 56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83
+  scripts/session100_structure_cv.py 67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957
+  scripts/session97_stagec_cv.py 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91
+  scripts/session62_reserved_confirm.py 9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4
+  scripts/session96_stagec_table.py 40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee
+  scripts/session90_airport_check.py c55bab8dc736c2d43a66d640892038e19b2cb517cf5dc2f812e6c9eba6310a8d
+
+Script: scripts/session104_curve_cv.py 6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb
+
+Outputs and their SHA-256:
+  data/processed/session104_curve_cv_scores.csv 69ec86bf600fcb2c5b8ad0f8ec0cb8ed69adb314813e9ab1ee4b578f0fffa35e
+  data/processed/session104_dailymax_days.csv 65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3
+
+LGB_PARAMS as passed (from session 97, which takes them from scripts/session62_reserved_confirm.py): {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}
+G15 column order (same source): ['temp', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']
+w: 0.02
+Fit counts: --gate 1,584 (leads 3 to 24) plus 2 (gate 3); --score 3,312 per run (1,584 leads 3 to 24, 1,728 leads 25 to 48), two runs. No model saved.
+Run times (as printed by the runs): --gate 126.5 s (fit 103.4 s); --score run 1 stopped at the daily-maximum cross-check (a bug in this script's usable flag, fixed; its scores file was byte-equal to run 2's); --score run 2 282.9 s
+Versions: python 3.12.2; numpy 2.5.2; lightgbm 4.7.0

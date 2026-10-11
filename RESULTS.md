@@ -857,10 +857,13 @@ They now apply to a project with three proven methods, not one.
   every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
   pull to 24 hours ahead is complete, and its build choices are made by
   time-ordered cross-validation on the six development airports, never
-  quoted as results (SPEC 2.5). So far the curve keeps the proven recipe
-  as one model per airport, run time and lead; two pooled structures were
-  tested and not adopted (DECISIONS D94, F143). Next come forecast hours
-  25 to 48, a correction for drifting bias, and the daily maximum. Stage
+  quoted as results (SPEC 2.5). The curve keeps the proven recipe as one
+  model per airport, run time and lead; two pooled structures were tested
+  and not adopted (DECISIONS D94, F143). A correction for drifting bias, a
+  running average of the curve's own recent errors, was adopted (DECISIONS
+  D97, F146). The curve now runs to 48 hours ahead, and the daily maximum,
+  read off the curve, has a fixed way of being scored (DECISIONS D98,
+  F147). Stage
   C's claim will be judged on six new airports (EDDM, KORD, CYYZ, ZGSZ,
   ZUCK, NZWN), fixed before any of their held-out data is read. Stages D
   to H (other weather models, blending, upgrade policy, the live tool and
@@ -871,6 +874,6 @@ They now apply to a project with three proven methods, not one.
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*
