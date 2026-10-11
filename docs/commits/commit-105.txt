@@ -1,0 +1,28 @@
+Session 105: two daily-maximum challengers judged, neither adopted (D99, F148)
+
+D99 records the owner's decisions after session 104: F147 accepted with
+all seven F147.8 readings, and two daily-maximum build choices under
+D98.10(g), each fixed in writing before any score. Challenger 1 is a
+daily-maximum model of its own (one LightGBM model per airport and fold,
+record settings, ten GFS-only inputs: raw GFS's read-off maximum, GFS's
+6-hour maximum over the day, and the other eight recipe columns at raw
+GFS's peak hour). Challenger 2 is a daily drift correction (w = 0.02) on
+top of whichever method was best after test 1. Both are judged by D89.6 on
+D98.10(e)'s metric.
+
+The reproduction passed: F147.6's daily-maximum scores from session 104's
+days file (at 4 decimals, by an owner ruling at a stop, because no
+full-precision value had been recorded; F148.1), the day list and the raw
+GFS maximum rebuilt from the tables, 0 mismatches on 6,570 days.
+
+Test 1 (build-choice scores, not results, SPEC 2.5): challenger 1's
+headline MAE is 1.0642 against the curve's read-off 1.0338, worse at all
+six airports and all three folds. Not passed. Test 2: the curve's read-off
+maximum plus daily drift gives 1.0306 (0.315 percent lower), lower at 2 of
+6 airports and 2 of 3 folds. Not passed. The daily maximum stays the
+curve's read-off maximum; the hourly incumbent is unchanged.
+
+New script scripts/session105_dailymax_cv.py, its days and meta files, and
+five new test cases (36 tests pass). The archive step moved D47, D73, D77,
+D79 and F139, settled and still binding by number. DECISIONS.md is now
+60,038 bytes. SPEC and RESULTS are not edited (D99.12).

@@ -9,305 +9,21 @@ It records choices made, why they were made, open questions, and findings.
 ## Live index
 
 <!-- live-index-start -->
-- D47: raw-data policy for large re-fetchable sources.
-- D73: pre-registration of the 2026-27 GFS forward test.
-- D77: the NBM/MOS comparison and the 2026-27 NBM/MOS test (D77.6).
-- D79: how the 2026-27 tests are reported.
 - D82: stage C's design.
 - D88: stage C's development table and the curve's baseline.
 - D89: the rules for stage C's build choices.
-- F139: the baseline's cross-validation scores (the incumbent, D89.7).
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
 - D97: F145 accepted, the f025 to f048 pull, the commit history, and the bias-drift test.
 - D98: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric.
 - F147: session 104's finding.
+- D99: F147 accepted, and two daily-maximum challengers in a fixed order.
+- F148: session 105's finding.
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
 binding. Entry numbers never change, so every citation resolves in one of the
 two files. This list changes only through an owner's DECISIONS entry; a
 session adds its own new entries (D93.8).
-
----
-
-**D47. Raw-data policy for large re-fetchable sources: manifest, not bytes.** D15 committed raw pulls when raw meant small Open-Meteo JSON. The GRIB pull is ~20 GB, which cannot live in git (binary bloat; GitHub file and repo size limits). For large, re-fetchable public archives such as GFS GRIB, D15s immutable-provenance intent is served by committing the provenance manifest (exact queries, URLs, byte-ranges, and the drop log) plus the processed dataset, and gitignoring the raw bytes -- which are reproducible from the manifest. D15 stands unchanged for small API pulls. The ~20 GB local GRIB cache is disposable and re-fetchable.
-
----
-
-## 2026-09-27 — Session 81 decision: pre-registration of the 2026-27 GFS forward test (owner, planning chat)
-
-**D73. Owner decision, planning chat (after session 80): the
-pre-registration of the 2026-27 GFS forward test (D72.5).** Written at the
-start of session 81, before any data was read or any model was fit. No
-2026-27 value has been read or scored. Where this entry is more precise
-than D72.5, this entry governs; D73.4 amends D72.5's "only file paths may
-change".
-
-- **D73.1 What is tested.** SPEC 8's recipe `B+D,L,R,T`, unchanged: the
-  same features and transforms (SPEC 8.1), the same column order (SPEC
-  8.8 G15), the same frozen LightGBM settings (D21.4/D48.6, lightgbm
-  4.7.0, SPEC 8.8 G14, G17), the same target (observation minus
-  `temperature_grib_c`, SPEC 8.8 G20). Six airports: EGLC, LFPG, DSM,
-  YSDU, RNO and KSFO, each with its own grid point, target hour, lead and
-  elevation constant (SPEC 3.4, 4.1, 5.2, 7.2).
-- **D73.2 The frozen models.** One `B+D,L,R,T` model per airport, trained
-  once on every complete-case row dated 2021-03-24 to 2026-07-31 (all
-  GFS v16), in ascending date order (G19), from committed processed files
-  only. It is saved as a LightGBM text model file and its SHA-256 is
-  recorded in F122. It is never refit. Also frozen, as descriptive rungs
-  only: one plain `B` model per airport, trained the same way on the same
-  rows; and one mean-bias constant per airport, mean(observation minus
-  raw GFS (GRIB)) over the same rows. The training rows keep the
-  historical observation pairing (SPEC 4.5's note); new 2026-27 code
-  pairs explicitly to the nearest report (SPEC 8.7).
-- **D73.3 The test year and its split.** The test year is 2026-08-01 to
-  2027-07-31. A target day is in period B if the GFS cycle that forecasts
-  it (SPEC 7.2's lead convention) is an operational GFS v17 cycle, and in
-  period A otherwise. Any v16.x cycle is period A. The boundary is the
-  first operational v17 cycle, taken from NCEP's Service Change Notice and
-  confirmed in the archive. Parallel ("para") data is never used. If no
-  operational v17 cycle has forecast any day by 2027-07-31, period A is
-  the whole year and period B is not run. If anything other than one
-  clean switch happens (a rollback, a second version change, mixed
-  cycles), stop: the owner decides in writing before any value is scored.
-- **D73.4 Inputs after v17 (amends D72.5).** 2026-27 features are built
-  with the same logic as the record pipelines, with only their date
-  ranges extended (as F107 did for the reserved year); the code itself is
-  new (D73.8). For v17 inputs, file paths may change. How a field is
-  fetched (message name, level specification, which accumulation window
-  is read) may also change, but only if the physical quantity is
-  identical: the same variable, level, time window ending at the target
-  hour, units and transform. The owner approves each such change. It is
-  decided from v17's documentation and the fields themselves, never from
-  any 2026-27 error or score. Each change is written into DECISIONS, with
-  its evidence, before any period-B value is scored. If any input to `B+D,L,R,T` or to raw GFS
-  (GRIB) cannot be built this way, or the 0.25° GRIB2 grid is no longer
-  offered, period B is recorded as void (not run). A void period is not
-  a fail. The elevation constants (SPEC 5.2) stay frozen, even though
-  v17's terrain differs; they apply to raw GFS and the model alike. The
-  grid points (SPEC 3.4) and interpolation (SPEC 8.8 G6) are unchanged.
-  Nothing is refit, retuned or reselected.
-- **D73.5 The bar and the rungs.** The bar is SPEC 5.3, applied per
-  airport per period: the frozen `B+D,L,R,T` model's MAE must be lower
-  than both raw GFS (GRIB, elevation-adjusted, SPEC 5.2) and persistence.
-  Descriptive rungs, never part of the bar: the frozen `B` model and the
-  mean-bias reference. The day basis is SPEC 8.5's: raw GFS and the
-  models on every complete-case test day; persistence on test days that
-  also have a previous-day observation. Missing forecasts or observations
-  are dropped and counted (SPEC 2.2). There is no minimum day count. Each
-  period's row count is reported against its full expected count; a
-  shortfall is reported and does not block the verdict.
-- **D73.6 Verdicts.** Each airport gets one PASS or FAIL per period,
-  labelled with the period's dates and season. The two periods answer
-  different questions (A: does the recipe hold on a new year; B: does the
-  v16-trained model survive v17), so they are not combined, and D71.6's
-  every-look-must-pass rule does not apply. Nothing is averaged across
-  airports (SPEC 5.0). KSFO carries D71.5's framing. The write-up leads,
-  in each period, with the smallest bar margin across the six airports.
-  No earlier verdict changes.
-- **D73.7 Expectations, stated before any value is seen.** Period A:
-  `B+D,L,R,T` passes at all six airports. Period B: no expectation is
-  stated. Period A will probably be short (a few months of autumn); its
-  verdict stands whatever its length, labelled with its dates and season.
-- **D73.8 When it is scored.** No 2026-27 value (model prediction error,
-  raw-GFS error or persistence error) is computed until its period has
-  ended and its observations are in. **Hold rule:** period A is not
-  scored until the owner has decided, in writing, whether to pre-register
-  a comparison against NBM/NWS MOS on 2026-27 (stage A, D72.7). Once any
-  part of 2026-27 is scored, no new test may be pre-registered on it
-  (SPEC 2.5). The 2026-27 data-build and scoring scripts are written in a
-  later session and committed before any 2026-27 row is built. They
-  implement this entry exactly, and SPEC 8.7's build requirements apply
-  to them. Until each period is scored, its data is held out for claims
-  and no build choice may use it (SPEC 2.5).
-- **D73.9 A consequence, accepted.** Period B's data is held out until it
-  is scored, after 2027-07-31. So stage F (upgrade policy) cannot use
-  live v17 data for any build choice before then without spending period
-  B. Before then, its only v17 training data would be NOAA's v17
-  retrospective runs, if they are public (D72.3). The design is not
-  changed for this.
-- **D73.10 The two DSM A67-15 files** (D62.7): the two tracked DSM files
-  for 2026-08-05..2026-08-15. Their paths and SHA-256 are recorded in
-  F122. They were not opened in session 81. They are not used to build
-  or score anything; period A's data is fetched fresh.
-- **D73.11 Session 81's plan.** Record this entry; build the training set
-  from committed files; pass a reproduction gate (the new training code
-  must reproduce F109's and KSFO look B's recorded MAEs exactly); train
-  and freeze the models; record F122.
-- **D73.12 GFS v17 (planning-chat web search, 2026-09-27, not checked by
-  this session).** Still no Service Change Notice; only the April 2026
-  proposals (PNS 26-29, 26-30). The SCN is due 30 days before go-live, so
-  the earliest go-live is about late October 2026.
-
----
-
-## 2026-09-29: Session 85 decision: the NBM/MOS comparison, its outcome rule and the 2026-27 NBM/MOS test (owner, planning chat)
-
-**D77. Owner decisions, planning chat (after session 84): the NBM/MOS
-comparison (D72.7), its outcome rule, the F123.9 decision (D75.3) and a
-pre-registered NBM/MOS test on 2026-27 (D73.8).** Written at the start of
-session 85, before any network call or data read. No NBM or MOS value
-and no 2026-27 value has been read.
-
-- **D77.1 Competitors.** NBM CONUS `core`, the deterministic 2 m
-  temperature, at DSM, RNO and KSFO: the primary comparison. GFS MOS
-  (MAV) at DSM only: a secondary, descriptive comparison, because MAV
-  has no 20:00 UTC projection at RNO or KSFO (F123.4) and no value is
-  interpolated in time. NAM MOS is excluded (terminated October 14,
-  2026, SCN 26-47). LAMP is excluded (not a day-ahead product).
-- **D77.2 Matching.** For each target day D: the same target hour as
-  the record (SPEC 3.4); the competitor run with the same nominal cycle
-  as our GFS cycle (floor(H/6)x6 UTC on D-1, F5, F89), at the lead that
-  makes its valid time equal the target hour (DSM: 18z D-1, 24 h; RNO
-  and KSFO: 18z D-1, 26 h). NBM's value is taken at the grid point
-  nearest the station's position in SPEC 3.4 (nearest neighbour, no
-  interpolation), converted from K to degC. MAV's value is used as
-  issued (whole degF), converted to degC exactly; the rounding is a
-  recorded caveat and is not corrected. The observation is the one in
-  the recorded rows, so every forecast is scored against the same
-  value. Missing competitor values are dropped and counted (SPEC 2.2).
-- **D77.3 The spent-year comparison.** Recorded predictions only, after
-  a reproduction gate: F109's `B+D,L,R,T` at DSM and RNO (2024-08-01 to
-  2025-07-31) and F119's saved predictions at KSFO, look A (2024-25) and
-  look B (2025-26). No other years: the feature-selection folds
-  (2022-23, 2023-24 and truncated 2025-26) chose `B+D,L,R,T`'s features
-  and would flatter it. Day set: the recorded model test days on which
-  the competitor value is present. Reported per airport-look: MAE of
-  the model, the competitor and raw GFS (GRIB, elevation-adjusted), mean
-  errors, d = MAE(competitor) - MAE(model) in degC and skill =
-  1 - MAE(model)/MAE(competitor), with F125's interval method (7-day
-  moving blocks, 10,000 resamples, 95% percentile) and seed 85. NBM
-  version segments are labelled; MAE per segment is descriptive only.
-  This spends no held-out data: the years are already spent (F94, F109,
-  F119). It is descriptive and decides direction only (D72.7). It
-  changes no verdict. KSFO carries D71.5's framing. The comparison is
-  at one hour; stage C re-runs it on the full curve, as a description
-  (D72.8).
-- **D77.4 The outcome rule (D72.7), fixed before the comparison is
-  run.** Judged on NBM only, on point estimates, over the four
-  airport-looks (DSM, RNO, KSFO look A, KSFO look B):
-  - **Win:** the model's MAE is lower than NBM's at all four. The
-    roadmap carries on as D72 sets it.
-  - **Lose:** NBM's MAE is lower than or equal to the model's at all
-    four.
-  - **Mixed:** anything else.
-  On "lose" or "mixed", the gap is recorded (d, skill and intervals),
-  and the owner decides in writing, before stage C's lock, between:
-  (a) bringing a US-only stacking check (NBM as an input) forward from
-  stage E; (b) weighting the roadmap towards non-US airports; (c) both;
-  or (d) neither, with reasons. The intervals are reported but do not
-  set the band. The MAV comparison is reported and does not set the
-  band. The comparison is reported in full whatever the band.
-- **D77.5 F123.9 accepted.** Session 82's exploratory MOS request held
-  projections valid 2026-08-01 to 08-08 in memory only; no value was
-  printed, saved or used, and no observation or score was involved. No
-  information about 2026-27 outcomes was learned. It is accepted and
-  recorded; no 2026-27 day is excluded because of it.
-- **D77.6 A pre-registered NBM/MOS test on 2026-27.** This entry is the
-  owner's written decision that D73.8's hold rule requires.
-  - What is tested: the frozen F122 `B+D,L,R,T` models (SHA-256 in
-    F122), unchanged, at DSM, RNO and KSFO.
-  - Competitors and matching: as D77.1 and D77.2. NBM at all three; MAV
-    at DSM only.
-  - Periods: D73.3's period A and period B, judged separately. Neither
-    is scored before it has ended and its observations are in (D73.8).
-  - Day set: D73.5's complete-case test days on which the competitor
-    value is also present. Missing values are dropped and counted.
-  - Pass rule: per airport, per period, per competitor, PASS if the
-    frozen model's MAE is lower than the competitor's MAE on that day
-    set, otherwise FAIL. Each verdict is labelled with its dates, its
-    season and the competitor versions in force.
-  - Descriptive, never part of the rule: F125-method intervals, and the
-    frozen `B` model and raw GFS on the same days.
-  - Separate from D73: no D73 verdict depends on this test, and this
-    test changes none.
-  - Expectations: none stated.
-  - Competitor changes: a version change inside a period does not split
-    it; it is labelled. If a competitor has no value in a period (for
-    example, it is discontinued), that comparison is void for that
-    period. A void comparison is not a fail.
-  - Data: fetched from the archives after each period ends, with the
-    same valid-time guards. The scripts are written in a later session,
-    with D73.8's scripts, and committed before any 2026-27 row is built.
-  - KSFO carries D71.5's framing. The write-up leads, in each period,
-    with the smallest margin.
-- **D77.7 NBM versions (planning-chat web search, 2026-09-29, not
-  checked by this session).** v4.2 from 2024-05-15; v4.3 effective on
-  or about 2025-05-27 from the 12z run (SCN 25-34 was issued
-  2025-04-15, which explains F123.3's two dates); v5.0 from 2026-05-05;
-  v5.0.14 on 2026-07-28, which fixed anomalous temperature and dewpoint
-  guidance, notably in transition seasons and coastal areas. So both
-  spent years use NBM before that fix. v4.3's changes were mainly to
-  tropical-cyclone wind and severe-weather products.
-- **D77.8 GFS v17 (planning-chat web search, 2026-09-29, not checked by
-  this session).** Still no Service Change Notice; the newest SCN listed
-  is SCN 26-87 (2026-09-22). With 30 days' notice, the earliest go-live
-  is about late October 2026 or later.
-- **D77.9 Session 85's plan.** Record this entry; run the reproduction
-  gate; pull NBM and MAV for the spent-year days only; run the
-  comparison and apply D77.4's rule; record F127. SPEC 6's stage A and
-  stage B bullets are updated to point to this entry and F127.
-
----
-
-## 2026-09-30: Session 87 decision: how the 2026-27 tests are reported, and the scoring and competitor scripts (owner, planning chat)
-
-**D79. Owner decisions, planning chat (after session 86): how the
-2026-27 tests (D73, D77.6) are reported, and the scope of the scoring
-and competitor scripts (D78.7).** Written at the start of session 87,
-before any other edit, network call or data read. No 2026-27 value has
-been read or scored. This entry makes D73 and D77.6 precise where they
-leave a reporting detail open. It changes no pass rule, rung, day set
-or expectation.
-
-- **D79.1 Margin.** Where D73.6 and D77.6 say the write-up leads with
-  the smallest margin, the margin is a percentage: 100 x (1 -
-  MAE(model)/MAE(baseline)), at full precision, with the difference
-  MAE(baseline) - MAE(model) in degC shown beside it.
-  - D73: per period, the smallest over the six airports and both halves
-    of the bar (raw GFS (GRIB) and persistence), twelve values.
-  - D77.6: per period, the smallest over DSM against NBM, RNO against
-    NBM, KSFO against NBM and DSM against MAV.
-  A failing result has a negative margin, so it leads. Reason: the
-  airports' error levels differ, so a percentage compares like with
-  like; it is also the form of the record's tables (SPEC 7.4, 8.5).
-- **D79.2 Ties.** PASS needs a strictly lower MAE at full precision
-  (SPEC 5.3, D73.5, D77.6). An equal MAE is FAIL.
-- **D79.3 No days.** If an airport has no complete-case day in a period,
-  or has complete-case days but none with a previous-day observation,
-  its D73 result for that period is "no verdict (0 days)". It is neither
-  a pass nor a fail, and it is reported. D77.6's own rule for a
-  competitor with no value in a period (void) is unchanged. Otherwise
-  D73.5's rule stands: there is no minimum day count.
-- **D79.4 Labels.** Each verdict's season label is its first and last
-  target date and the calendar months it covers, for example
-  "2026-08-01 to 2026-11-10 (Aug, Sep, Oct, Nov)". NBM and MAV version
-  labels (D77.6) come from a DECISIONS entry written before that period
-  is scored, naming each version and the cycle it started from. The
-  scripts print these labels; they do not infer versions.
-- **D79.5 Intervals.** D77.6's descriptive intervals use F125's method
-  as F127 used it: 7-day moving blocks, 10,000 resamples, 95% percentile,
-  for d and skill. Each period uses a new generator,
-  numpy.random.default_rng(87), in this order: DSM against NBM, RNO
-  against NBM, KSFO against NBM, DSM against MAV. D73 reports no
-  intervals, because it did not pre-register any (D73.8: its scripts
-  implement it exactly).
-- **D79.6 Periods.** The competitor fetch and the scoring script cover
-  both periods, so neither needs editing after any 2026-27 row exists.
-  Period B is used only with the first operational v17 cycle from a
-  DECISIONS entry (D73.3), and is scored only from a period-B rows file
-  made by a later build mode that D73.4's v17 entry allows. If period B
-  is not run (D73.3) or is void (D73.4), the scripts are not run for it.
-- **D79.7 GFS v17 (planning-chat web search, 2026-09-30, not checked by
-  this session).** Still no Service Change Notice. The newest SCN listed
-  is SCN 26-87 (2026-09-22). The only v17 notices are still the April
-  proposals, PNS 26-29 and PNS 26-30. With 30 days' notice, the earliest
-  go-live is about 30 October 2026. PNS 26-30 still says the 0.25 degree
-  pgrb2 files remain; this is to be confirmed against the SCN (D73.4).
-- **D79.8 Session 87's plan.** Record this entry; write and gate the
-  competitor script and the scoring script; record F129; add citations
-  of D78, F128 and (if both gates pass) F129 to SPEC 6. Neither script's
-  2026-27 mode is run.
 
 ---
 
@@ -593,65 +309,6 @@ before any other edit and before any cross-validation score. No
   alternatives, each against the baseline under D89.6, one at a time;
   then the daily maximum and bias drift (D81.10(b)). Stage C's claim
   design is fixed at its lock.
-
----
-
-## 2026-10-06: Session 97 finding: the cross-validation folds, the gate, and the baseline scored
-
-**F139. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim, a pass or a fail. Offline. D89 was recorded first. The fold rows were counted under D89.3 with no fit. The new fitting code passed D89.9's gate: it reproduced F109's raw GFS and `B+D,L,R,T` MAEs at EGLC, LFPG and DSM exactly, 6 of 6. D88.4's baseline was then fit (1,584 models) and scored with raw GFS on the same rows, per airport, fold, cycle hour and lead 3 to 24. Headline (D89.5): raw GFS 1.4617, baseline 1.0498 degrees C. No build choice was made. Script: `scripts/session97_stagec_cv.py` (new; modes `--folds`, `--gate`, `--score`, `--guard-check`, `--meta`; SHA-256 `987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91`). Full real output: `notes/session-97-output.txt`. Run 2026-10-06. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
-
-**F139.1 Step 0 and Step 1.** `git status --porcelain` showed only `?? docs/session-97.md`. The last entries were D88 and F138; no D89 or F139 existed in either DECISIONS file; the new script and the three new `data/processed/` files did not exist. SHA-256 equal to the record: the six table files (F138.4), the table meta `eace666a...9463` and counts `304d25a6...3dfb`, `session96_stagec_table.py` `40b63d00...6eee`, `session62_reserved_confirm.py` `9f8af9af...80b4` (D70.2), `session81_training_set.csv` `ab8f25f2...8d4a` (F122.3). `session63_reserved_confirm_grid.csv` is `0138ba039d0bd077e71b829789a8d3c93175e22493ed115f7503b2baa30f4ed3`; that value is recorded in `notes/session-85-output.txt` (lines 21 and 167), not in either DECISIONS file. Read: D70, D71, D72, D82, D88, F109, F122, F138; SPEC 2.5, 5, 8.1 to 8.3, 8.5, 8.8; the record script in full. D89 was copied with `sed` from `docs/session-97.md` lines 105 to 177 into DECISIONS.md lines 3736 to 3808 (heading at 3734) and checked byte-equal with `diff` and `cmp`, before any other edit.
-
-**F139.2 The folds (Step 2, `--folds`, no fit).** Complete-case rows, leads 3 to 24, four cycle hours. Every airport and fold has 40 boundary rows (cycles of 31 July with valid times on 1 August: 1 + 7 + 13 + 19). Test rows of the three folds never overlap (0 at every airport); every training row's valid time is before its T0 (0 violations).
-
-| airport | train 23-24 / 24-25 / 25-26 | test 23-24 / 24-25 / 25-26 | test dropped (not complete) | smallest model train |
-|---|---|---|---|---|
-| EGLC | 75,555 / 107,760 / 139,864 | 32,205 / 32,104 / 32,059 | 3 / 16 / 21 | 856 / 1,222 / 1,587 |
-| LFPG | 75,370 / 107,541 / 139,600 | 32,171 / 32,059 / 31,958 | 37 / 61 / 122 | 844 / 1,209 / 1,566 |
-| DSM | 75,647 / 107,847 / 139,964 | 32,200 / 32,117 / 32,072 | 8 / 3 / 8 | 858 / 1,223 / 1,588 |
-| YSDU | 74,694 / 106,652 / 138,576 | 31,958 / 31,924 / 31,763 | 250 / 196 / 317 | 845 / 1,207 / 1,568 |
-| RNO | 75,341 / 107,534 / 139,643 | 32,193 / 32,109 / 32,040 | 15 / 11 / 40 | 854 / 1,220 / 1,585 |
-| KSFO (SFO) | 75,623 / 107,822 / 139,913 | 32,199 / 32,091 / 32,040 | 9 / 29 / 40 | 858 / 1,223 / 1,588 |
-
-`data/processed/session97_stagec_cv_folds.csv`: 1,584 rows, SHA-256 `77fce6c7c288f37a9d63f4e9b9b8675cad26f0e9b8a2ba4b657084496fb01b66`.
-
-**F139.3 The gate (Step 3, `--gate`, D89.9). PASSED, 6 of 6, exact equality.** Table rows on the training set's (station, valid date) keys, F109's fold by valid date; every selected row was complete case.
-
-| airport | train (F122.4) | test (F109) | B+D,L,R,T: this fit = grid `final_mae` | raw GFS: this fit = grid `raw_mae` |
-|---|---|---|---|---|
-| EGLC 12z, lead 24 | 1,225 (1,225) | 364 (364; grid no_obs 1) | 1.0007550363323212 | 1.23621978021978 |
-| LFPG 12z, lead 24 | 1,224 (1,224) | 365 (365) | 1.2368626165917669 | 1.4091397260273972 |
-| DSM 18z, lead 24 | 1,225 (1,225) | 365 (365) | 1.4122847644111458 | 1.7043452054794521 |
-
-**F139.4 The scores (Step 4, `--score`; build-choice scores, not results).** 1,584 fits, 118.8 s. The two methods' n are equal in every cell. MAE in degrees C, common row set (D89.5).
-
-| airport | n | raw GFS | baseline | raw GFS by fold 23-24 / 24-25 / 25-26 | baseline by fold |
-|---|---|---|---|---|---|
-| EGLC | 96,368 | 0.9725 | 0.7742 | 0.9614 / 0.9891 / 0.9672 | 0.7491 / 0.8010 / 0.7725 |
-| LFPG | 96,188 | 1.1596 | 0.8937 | 1.1477 / 1.1739 / 1.1571 | 0.8653 / 0.9434 / 0.8726 |
-| DSM | 96,389 | 1.7582 | 1.2034 | 1.9144 / 1.6502 / 1.7095 | 1.2463 / 1.1430 / 1.2208 |
-| YSDU | 95,645 | 1.4633 | 1.2149 | 1.4724 / 1.5053 / 1.4120 | 1.2457 / 1.1976 / 1.2013 |
-| RNO | 96,342 | 2.1717 | 1.1735 | 2.0114 / 2.2890 / 2.2152 | 1.2148 / 1.1860 / 1.1193 |
-| KSFO (SFO) | 96,330 | 1.2449 | 1.0390 | 1.2514 / 1.2237 / 1.2595 | 1.0297 / 1.1095 / 0.9777 |
-| **headline / fold-level** | | **1.4617** | **1.0498** | 1.4598 / 1.4719 / 1.4534 | 1.0585 / 1.0634 / 1.0274 |
-
-Headline at full precision: raw GFS 1.4616990883475995, baseline 1.049777501605027. **No airport-lead where the baseline is not below raw GFS** (pooled over folds and cycle hours; 0 of 132). The six-airport mean per lead runs from 1.3606 / 0.9648 (lead 3) to 1.5223 / 1.1083 (lead 24); per cycle hour, 12z is lowest for both (1.4380 / 1.0328). Full tables in the output file. `data/processed/session97_stagec_cv_scores.csv`: 3,168 rows, SHA-256 `5604ccd16118fe772cd24a7be83b36ee62e500c78b3ed5bf55c76ed4e78d9d76`.
-
-**F139.5 Repeatability and meta (Step 5).** `--score --airports EGLC` into a `mktemp -d` directory: its 528 rows (with the header) are byte-equal to EGLC's rows in the scores file (`diff` and `cmp`); the directory was deleted. The 2026-27 guard refuses a valid time of 2026-08-01T00:00 and allows 2026-07-31T23:00 (2 of 2). `data/processed/session97_stagec_cv.meta.txt`, SHA-256 `95223b4fbc519c5cc1811d1682e0b0e94c5976c54511dedaf58c4777671b313a`, lists the inputs, script and outputs with SHA-256, `LGB_PARAMS` as passed and the versions.
-
-**F139.6 Readings made where the prompt is silent (for the owner to confirm or change).**
-1. **The session-48 module.** As the prompt says, `LGB_PARAMS` and the G15 order are imported from `session62_reserved_confirm.py` (after its SHA-256 check), as session 81 did. That script imports the session-48 reserved-year module at load, for its own use (D70.7, F118.9). This script never imports or calls the guard itself; D89.4's "not imported here" is read that way.
-2. The G15 order imported is also checked in code against D70.1's written list.
-3. Boundary rows (D89.3, "in neither") are counted whatever their completeness; test rows "dropped as not complete case" are those with no observation (leads 0 to 2 are outside the files' lead range).
-4. Error is `obs_tmpc` minus forecast (Step 4.2); the record computes forecast minus observation. Their absolute values are equal bit for bit, so MAEs are unaffected; the sign matters only for the mean error column.
-5. A pooled MAE (per airport, per fold, per lead or per cycle hour) is the NumPy mean of the concatenated errors, in fold, cycle hour, lead, then cycle-time order. It is not rebuilt from the per-cell MAEs.
-6. Training rows within a model are in ascending cycle time (G19); test rows the same.
-7. On load, each table file's SHA-256 is checked against F138.4, `complete_case` is checked against the nine columns and the observation (no disagreement), `temp` is checked equal to `temperature_grib_c`, and every valid and observation time passes the 2026-27 guard.
-8. "Smallest training count of any single model": where several models tie, the lowest (cycle hour, lead) is named.
-9. The output file adds one table not asked for: each airport's raw GFS and baseline MAE per lead (pooled over folds and cycle hours), from which Step 4.4's last item is read.
-10. Output files are written once and refused if present (SPEC 8.7 item 5). Bytecode writing was turned off for every run, so no `__pycache__` was written.
-
-**F139.7 What this did not do.** No network. No build choice: D89.6's rule was not applied, and no setting, feature, parameter or structure was changed, tuned or selected; only D88.4's baseline was fit, with the record's settings. No model was saved, and `data/models/` was not touched. Nothing from 2026-27: no row valid after 2026-07-31T23:00 was read or scored. No non-development airport's data was read. `MLwx-stagec/` and `MLwx-pull/` unchanged (SHA-256 checked at the end). No existing script edited. Nothing installed. SPEC.md, RESULTS.md, CLAUDE.md, README.md and PROJECT-INSTRUCTIONS.md not edited. Nothing committed and no commit message written.
 
 ---
 
@@ -1012,3 +669,138 @@ read or scored.
   6. The days file adds the first and last lead and a reason column for each maximum.
   7. Rows corrected with b = 0 at 25 to 48: 1,176, 1,180, 1,176 by fold (2 per cell at leads 25 to 47, 3 at 48); 2024-25's extra 4 not traced.
 - **F147.9 What this did not do.** No build choice; no other weight, structure, feature, setting or daily-maximum method; no model saved; nothing from 2026-27; no non-development airport's observation; no network outside Step 2, no GRIB request; nothing installed; no existing script or data file edited; F138's table and `MLwx-pull/` unchanged. Nothing committed and no commit message written.
+
+---
+
+## 2026-10-11: Session 105 decision: F147 accepted, and two daily-maximum challengers (owner, planning chat)
+
+**D99. Owner decisions, planning chat (after session 104): F147 accepted, and
+two daily-maximum build choices under D98.10(g), judged in a fixed order,
+with every choice fixed before any score.** Written at the start of session
+105, before any other edit. No 2026-27 value has been read or scored.
+
+- **D99.1 F147 accepted,** with all seven F147.8 readings: the correction is
+  carried at leads 25 to 48 though it does not help EGLC there (reading 1,
+  descriptive only, D98.9); the cross-check fix in session 104's own script,
+  with a byte-equal re-run (reading 2); the read-off maximum running low at
+  YSDU, RNO and KSFO (reading 3), which motivates this entry; one cycle hour
+  per airport (reading 4); readings 5 and 6 as written; and reading 7's
+  extra 4 rows at b = 0 in 2024-25, accepted untraced.
+- **D99.2 What is tested.** Two challengers to the daily maximum, in this
+  order: challenger 1, a daily-maximum model of its own (D82.5, using GFS's
+  6-hour maximum, D88.5(e)); then challenger 2, a daily drift correction.
+  Each is judged by D89.6 on D98.10(e)'s metric. Test 2 is run whatever test
+  1 gives.
+- **D99.3 Challenger 1: the daily-maximum model.**
+  (a) Days, the cycle c, the observed maximum and folds: D98.10(a), (b) and
+  (d), unchanged. H is the set of the day's whole UTC hours, all from cycle
+  c (leads 4 to 33).
+  (b) Inputs, from the development tables (F138's for leads up to 24, F147's
+  for 25 to 48), all from cycle c:
+  raw_max: the highest `temperature_grib_c` over H, which is D98.10(f)'s raw
+  GFS read-off maximum;
+  the peak hour p: the hour in H with the highest `temperature_grib_c`; on a
+  tie, the earliest;
+  gfs_tmax: the highest `tmax2m_c` over H (D88.5(e): bilinear, no elevation
+  constant). Each value is GFS's maximum since its last 6-hour reset, so a
+  window may begin a few hours before the day; accepted, the same
+  everywhere;
+  the other eight G15 columns (SPEC 8.8 G15, every column except `temp`) at
+  hour p, as the table holds them (the season terms from p's valid time).
+  The features, in this order: raw_max, gfs_tmax, then those eight in G15
+  order. Ten features.
+  (c) Target: observed maximum minus raw_max. Forecast: raw_max plus the
+  model's prediction (the record's form, SPEC 8.8 G20).
+  (d) Complete case: a day has inputs only if every hour of H has
+  `temperature_grib_c` and `tmax2m_c`, and every one of the eight columns at
+  p exists. A test day without inputs has no forecast from this method; it
+  is counted and leaves the common day set.
+  (e) One model per airport and fold, with the record's settings
+  (`LGB_PARAMS`, unchanged; D21.4, D48.6). Training days: a usable observed
+  maximum, complete inputs, and the day's last hour valid before the fold's
+  T0 (D89.3's rule: only observations known when the first test cycle
+  starts). Training days in ascending date (G19). Test days: the fold's days
+  (D98.10(d)).
+  (f) Only GFS values are inputs. The baseline's and the curve's forecasts on
+  training days are in-sample, so neither is an input.
+  (g) Nothing is tuned. This feature set and these settings are the only
+  version scored.
+- **D99.4 Test 1.** Incumbent: the curve's read-off maximum (D98.10(g)).
+  Challenger: D99.3. D89.6 on D98.10(e)'s metric. The common day set: days
+  with a usable observed maximum and a forecast maximum from raw GFS, the
+  baseline, the curve and challenger 1. If D89.6 passes, M is challenger 1;
+  otherwise M is the curve's read-off maximum.
+- **D99.5 Challenger 2: daily drift.** M plus b, where b is a decaying
+  average of M's own daily-maximum errors (observed maximum minus M's
+  forecast): after each new error e, b = (1 - w) x b + w x e, w = 0.02
+  (D97.4's value, not tuned). One tracker per airport and fold, starting at
+  b = 0 at the fold's T0 (D97.7). It is updated by each test day of its fold
+  with a usable observed maximum and a forecast from M, in ascending local
+  date; a missing day is skipped. No look-ahead: the forecast for a day whose
+  cycle is c uses only errors of days whose last hour is valid before c. So
+  the newest usable error is normally two days earlier.
+- **D99.6 Test 2.** Incumbent: M. Challenger: D99.5. D89.6 on the same common
+  day set as test 1. If D89.6 passes, the daily maximum is M plus D99.5's
+  correction; otherwise it is M.
+- **D99.7 Nothing else.** No other feature set, setting, weight or method is
+  scored in session 105. Any later variant is a new build choice, fixed in
+  its own entry before its score.
+- **D99.8 Reproduction first.** Before any fit: from
+  `session104_dailymax_days.csv` (SHA-256 as F147.7), F147.6's per-airport
+  MAEs and headline for raw GFS, the baseline and the curve, exactly. Then
+  this session's day list (station, local date, cycle, fold, observed
+  maximum) equals that file's, and raw_max equals its `raw_gfs_max` on every
+  day where both exist. The curve's and the baseline's daily maxima are taken
+  from that file; the hourly models are not refitted.
+- **D99.9 Accepted consequence.** If challenger 1 is adopted, the daily
+  maximum is no longer the highest hour of the curve, so the two can differ.
+  This is accepted; the product shows both.
+- **D99.10 Descriptive figures, not used by the rules.** Mean error per
+  method and airport; challenger 1's training days per airport and fold and
+  test days lost for missing inputs; challenger 2's b at the end of each fold
+  per airport; MAE per method on F147.6's own day set beside the new common
+  set.
+- **D99.11 This is not a claim.** Every score here is a build-choice score
+  (SPEC 2.5). Nothing from 2026-27 is read.
+- **D99.12 Session 105's plan.** This entry; the reproduction; test 1; test
+  2; tests; F148; the archive step. SPEC and RESULTS are not edited; the
+  daily maximum's outcome goes into them with the next session that edits
+  them.
+- **D99.13 Live index.** Removed (archived), each settled and still binding
+  by number: D47 (raw-data policy), D73, D77 and D79 (stage B's
+  pre-registrations and reporting; frozen and gated, F128, F129), and F139
+  (no longer the incumbent: D98.8; reproduced by F147.4). Added: D99 and
+  F148. After session 105: D82, D88, D89, D93, D97, D98, F147, D99, F148.
+
+---
+
+## 2026-10-11: Session 105 finding: the daily maximum reproduced, and two daily-maximum challengers judged
+
+**F148. Every score in this entry is a build-choice score, not a result (SPEC 2.5); none is a claim. D99 was recorded first. F147.6 was reproduced from session 104's days file (with an owner ruling at a stop), the day list and raw GFS maximum were rebuilt from the tables, and both challengers were judged by D89.6 on D98.10(e)'s metric. Neither passed. The daily maximum's incumbent after session 105 is unchanged: the curve's read-off maximum. Script (new): `scripts/session105_dailymax_cv.py` (`90c059ec5dc92d7653cd0e1d57aedc229fe85299bdfbb87c0399e07c9a54ddda`). Full real output: `notes/session-105-output.txt`. Run 2026-10-11. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+
+- **F148.1 The stop and the owner ruling (planning chat, 2026-10-11).** Before Step 1: the prompt's full-precision daily-maximum headline line is not in `notes/session-104-output.txt` (only 4 decimals) nor in either DECISIONS file. Ruling: (1) gate 1's full-precision comparison is dropped (the days file is tied to the record by its SHA-256, F147.7); (2) gate 1 checks at 4 decimals against F147.6 the per-airport MAEs of raw GFS, the baseline and the curve, the three headlines, the fold levels and the day counts; (3) the headlines are printed at full precision for this entry; (4) gates 2 and 3 unchanged; D99 not edited.
+- **F148.2 The reproduction (D99.8). PASSED.** Gate 1: 36 values compared, 0 mismatches. Full precision: raw GFS 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871. Gate 2: the day list rebuilt with session 104's `day_cycle`, `local_day`, `usable_day` and `fold_of` equals the file's (station, local date, cycle, fold, observed maximum) on 6,570 of 6,570 days. Gate 3: raw_max equals `raw_gfs_max` on 6,570 of 6,570 days, exact.
+- **F148.3 Challenger 1's inputs and fits (D99.3).** Every local day in the window (1,955 or 1,956 per airport) has complete inputs; peak-hour ties broken 2 to 8 per airport. No test day lost, so D99.4's common day set equals F147.6's (1,085 to 1,095 days per airport). 18 fits with session 97's `fit_predict` (target observed maximum minus raw_max); training days 846 to 859 (2023-24), 1,209 to 1,225 (2024-25), 1,572 to 1,590 (2025-26); every training day's last hour before T0.
+- **F148.4 Test 1 (D99.4; MAE, degrees C).**
+
+| method | EGLC | LFPG | DSM | YSDU | RNO | KSFO | headline | folds 23-24 / 24-25 / 25-26 |
+|---|---|---|---|---|---|---|---|---|
+| raw GFS | 0.9460 | 1.1968 | 1.7297 | 1.0861 | 1.5511 | 1.6635 | 1.3622 | 1.4509 / 1.3405 / 1.2947 |
+| baseline | 0.8479 | 0.9780 | 1.2543 | 1.0475 | 0.9490 | 1.2489 | 1.0543 | 1.0508 / 1.0857 / 1.0260 |
+| curve | 0.8410 | 0.9558 | 1.2240 | 1.0268 | 0.9477 | 1.2076 | 1.0338 | 1.0212 / 1.0630 / 1.0171 |
+| challenger 1 | 0.8424 | 1.0092 | 1.2642 | 1.0528 | 0.9566 | 1.2601 | 1.0642 | 1.0293 / 1.1073 / 1.0559 |
+
+  D89.6, challenger 1 against the curve: (a) -2.940 percent; (b) 0 of 6; (c) 0 of 3. Not passed. **M = the curve's read-off maximum.**
+- **F148.5 Test 2 (D99.6).** M plus b (w = 0.02, 18 trackers): EGLC 0.8467, LFPG 0.9570, DSM 1.2299, YSDU 1.0084, RNO 0.9485, KSFO 1.1928; headline 1.0306 (full precision 1.0305687073248007) against M's 1.0338; folds 1.0122 / 1.0588 / 1.0206. D89.6: (a) 0.315 percent; (b) 2 of 6 (YSDU, KSFO); (c) 2 of 3. Not passed. Errors used from a day whose last hour is not before the cycle: 0; common days corrected with b = 0: 36. b at the end of each fold from -0.301 (YSDU 2024-25) to +0.556 (KSFO 2025-26).
+- **F148.6 The daily maximum's incumbent after session 105: the curve's read-off maximum** (unchanged, D98.10(g)). The hourly incumbent is unchanged (the curve).
+- **F148.7 Mean error (observed minus forecast), descriptive.** Curve -0.031 (DSM) to +0.228 (KSFO); challenger 1 -0.380 (KSFO) to +0.039 (YSDU), negative at five airports; M plus b -0.014 to +0.024 at all six.
+- **F148.8 Fits and outputs.** `--gate` 0 fits (54.6 s); `--score` 18 fits, run twice (F148.9, item 4): 50.7 s and 52.8 s, fit time 1.4 s and 1.3 s. Days `data/processed/session105_dailymax_cv_days.csv` (6,570 rows, `4b51d1ec8fc0832c0cddff83a34c7d5736bd820fdbd5f772820c04ec6276806e`); meta `data/processed/session105_dailymax_cv.meta.txt` (`9f38cfa4952f4ce4d8eccb7d44aa6d06c8c5e2103915b20a165d926fd2a20af8`).
+- **F148.9 Readings for the owner.**
+  1. Challenger 1 is worse than the curve at every airport and fold, and runs high at five airports (largest at KSFO and RNO). Fitting the maximum from one peak hour's inputs and about 850 to 1,600 days does not beat 100 hourly models plus the drift correction.
+  2. Challenger 2 removes most of the curve's mean error at all six airports and helps most where the read-off maximum runs low (YSDU, KSFO), but its headline gain (0.315 percent) is far under D89.6's 1 percent, and it is worse at four airports.
+  3. "From the first pull cycle" is read as: every local day whose first hour is valid on or after 2021-03-24T00:00 (the pull window's first hour). EGLC's 2021-03-24 uses cycle 2021-03-23T18, whose leads 6 to 29 lie in the window.
+  4. The training-day rule was moved into a named function after the first `--score` run, so test 3 could call it; the re-run's days file is byte-equal (`cmp`), and the meta was written again.
+  5. The tracker is updated by every fold day with a usable observed maximum and an M forecast; these are exactly the common days here.
+  6. As F139.6 item 1: session 97's record-script import loads the session-48 module for its own use; this script never imports or calls the guard.
+  7. Archive survey (Step 0): no code looks up D47, D73, D77, D79 or F139 by text; the lookups that exist (sessions 86 and 87) find F122, already archived.
+- **F148.10 What this did not do.** No other daily-maximum variant, feature, setting or weight; no hourly refit or build choice; no model saved; nothing from 2026-27; no non-development airport's data; no network; nothing installed; no existing script or data file edited; `MLwx-stagec/` and `MLwx-pull*/` unchanged. SPEC.md and RESULTS.md not edited (D99.12). Nothing committed and no commit message written.

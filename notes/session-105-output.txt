@@ -1,0 +1,311 @@
+SESSION 105 OUTPUT: two daily-maximum challengers (D99, F148). Build-choice scores, not results (SPEC 2.5).
+
+SUMMARY
+- Done: D99 recorded (byte-equal); the reproduction; challenger 1 and test 1; challenger 2 and test 2; 5 new test cases;
+  F148; archive step; STATUS.md. Nothing committed.
+- Stop before Step 1, owner ruling (F148.1): no full-precision daily-maximum line existed in notes/session-104-output.txt;
+  gate 1 checks F147.6 at 4 decimals instead.
+- Checks: Step 0 preflight PASS (31 tests OK; archive survey: no code looks up D47, D73, D77, D79 or F139 by text).
+  Gate 1 PASS (36 values, 0 mismatches). Gate 2 PASS (6,570 days, 0). Gate 3 PASS (6,570 days, 0).
+  Training days before T0 PASS. Tracker look-ahead 0 PASS. Re-run days file byte-equal PASS.
+  Tests at end: 36 run, OK. Citations PASS (176 of 176). Scope PASS. Size PASS (DECISIONS.md 60,038 bytes).
+- Headline (daily maximum MAE, degrees C, 1,085 to 1,095 common days per airport):
+  raw GFS 1.3622, baseline 1.0543, curve 1.0338 (full 1.0338223451337871), challenger 1 1.0642, curve plus b 1.0306.
+- Test 1, challenger 1 (own daily-maximum model) against the curve: (a) -2.940 %, (b) 0 of 6, (c) 0 of 3. NOT PASSED.
+  M = the curve's read-off maximum.
+- Test 2, M plus daily drift (w = 0.02) against M: (a) 0.315 %, (b) 2 of 6 (YSDU, KSFO), (c) 2 of 3. NOT PASSED.
+- Incumbent after session 105: the daily maximum stays the curve's read-off maximum; hourly unchanged (the curve).
+- Challenger 1 inputs: all 1,955 to 1,956 days per airport complete; 0 test days lost. 18 fits per run, fit 1.4 s.
+- Readings for the owner (F148.9): challenger 1 runs high at five airports (KSFO -0.380, RNO -0.279);
+  challenger 2 cuts mean error to -0.014..+0.024 but gains far under 1 %; "first pull cycle" read as days whose first
+  hour is on or after 2021-03-24T00:00; training_day moved into a function after run 1 (re-run byte-equal).
+- Archive: moved D47, D73, D77, D79, F139 (with headings); Live index now D82, D88, D89, D93, D97, D98, F147, D99, F148.
+- Outputs: script 90c059ec...ddda; days file 4b51d1ec...806e (6,570 rows); meta 9f38cfa4...0af8.
+- Open items: F148.9's readings; session 104's output file lacked its full --score log (now recorded in F148.2);
+  SPEC 6 and RESULTS 7 get F148 with the next session that edits them (D99.12).
+- Stopped at the end-of-session steps for the owner's review. No commit message written.
+
+CHECKPOINTS
+Step 0: PASS. git status --porcelain: only "?? docs/sessions/session-105.md". Last entries in DECISIONS.md D98 and F147; no D99 or F148 in either file; none of the four new files exists. SHA-256 equal (full values): scripts/session104_curve_cv.py 6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb (F147 header); data/processed/session104_dailymax_days.csv 65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3 (F147.7); data/processed/session104_curve_cv_scores.csv 69ec86bf600fcb2c5b8ad0f8ec0cb8ed69adb314813e9ab1ee4b578f0fffa35e (F147.7); data/processed/session104_stagec_f025_048_table.meta.txt 27622adad720b020766f8f8a3eec5f5aa11a7594e40c93d5d48be276df7f5859 (F147.2 gives only 27622ada...5859; the full value equals the one in notes/session-104-output.txt line 34). Importing session104_curve_cv ran nothing (printed only the test's own line; no new file). Archive survey (D99.13): no code in scripts/ or .github/ looks up D47, D73, D77, D79 or F139 by text; every mention of those numbers is a comment, docstring or printed label (scripts/README.md, sessions 40, 49, 70, 71, 76, 81, 85, 86, 87 (both), 88, 97, 98b, 100, 103, 104). The DECISIONS lookups that do exist find other entries: session86_forward_build.py --gate (expected_hash_from_decisions, plumbing) reads DECISIONS.md only, for F122.3 and F122.5 (already archived; D96.3); session87_forward_score.py --score/--gate (load_frozen_models) reads both files, for F122.5. Neither is affected by this archive set; --build reads no DECISIONS entry. Tests: 31 run, OK.
+Step 0 note (raised before Step 1, ruled by the owner): Read first's "DAILY MAXIMUM (D98.10)" section and its full-precision headline line are not in notes/session-104-output.txt (only the 4-decimal headline, line 17); no full-precision daily-maximum headline is in either DECISIONS file. Owner ruling (recorded in F148): gate 1's full-precision comparison is dropped; gate 1 checks at 4 decimals (f"{x:.4f}") against F147.6 the per-airport MAEs of raw_gfs, baseline and curve, the three headlines, the three fold-level values per fold and the common-day counts per airport, all equal or stop; the three headlines are printed at full precision for F148; gates 2 and 3 unchanged; D99 and the session file not edited.
+Step 1: PASS. D99 copied with sed from docs/sessions/session-105.md lines 89 to 187 to DECISIONS.md lines 1018 to 1116 (after '---' and a blank line); diff and cmp byte-equal; em-dashes 0. Live index (D99.13): removed D47, D73, D77, D79, F139; added D99 (F148's line at the end). DECISIONS.md 80,452 bytes (above 80,000 until the archive step, as expected). Files: DECISIONS.md.
+Step 2: PASS. scripts/session105_dailymax_cv.py written (new) and --gate run (54.6 s, no fit, nothing written). It checks session104_curve_cv.py's SHA-256 (F147) before importing it. Used from session 104: day_cycle, local_day, usable_day, fold_of, TZ, DAY_LAST_VALID, table25_hashes, load_table25, TABLE25, TABLE25_META, now_utc, versions; from session 97 (through it): load_table, fit_predict, mae, mean_error, csv_text, fmt, write_new, parse_time, check_valid, fval, TABLE_COLUMNS, STATIONS, TABLES, STAGEC_DIR, RECORD_SCRIPT, FOLDS, LGB_PARAMS, G15; from session 100: print_test. Not used: fold_role (the day rules are D98.10(d) and D99.3(e), applied by fold_of and the last-hour test). tmax2m_c: read_tmax reads each table file again after the same SHA-256 check (F138.4's for leads 0 to 24, table25_hashes for 25 to 48), keyed by (cycle, lead); its keys are checked equal to the loaders' rows. Gate 1 (owner ruling): 36 values compared (18 airport MAEs, 3 headlines, 9 fold levels, 6 day counts), mismatches 0; headlines at full precision raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871. Gate 2: 6,570 days compared, mismatches 0. Gate 3: 6,570 days compared, mismatches 0. Files: scripts/session105_dailymax_cv.py. No bytecode written.
+Step 3: PASS. --score (run once, 50.7 s): the gate again (PASSED, as Step 2). Challenger 1's inputs over every local day in the window (first hour on or after 2021-03-24T00:00 UTC, last on or before 2026-07-31T23:00): 1,955 or 1,956 days per airport, all with complete inputs (0 without); peak-hour ties broken EGLC 6, LFPG 8, DSM 6, YSDU 7, RNO 2, KSFO 8. 18 fits with session 97's fit_predict (it takes a general feature vector, target obs minus raw_max, forecast raw_max plus output), fit time 1.4 s; every training day's last hour before its T0 (asserted). Training days 846 to 859 (2023-24), 1,209 to 1,225 (2024-25), 1,572 to 1,590 (2025-26). Test days lost for missing inputs: 0, so the common day set equals F147.6's. Test 1: headline curve 1.0338, challenger 1 1.0642; D89.6 (a) -2.940 %, (b) 0 of 6, (c) 0 of 3: not passed. M = the curve's read-off maximum. Files: none new (the days file is written in Step 4's part of the run).
+Step 4: PASS. Daily tracker written new (daily_track, D97.4's update, w = 0.02). Forecasts using an error from a day whose last hour is not before their cycle: 0. Common days corrected with b = 0: 36 (2 per airport and fold). Test 2: headline M 1.0338, M plus b 1.0306; D89.6 (a) 0.315 %, (b) 2 of 6 (YSDU, KSFO), (c) 2 of 3: not passed. The daily maximum's incumbent after session 105: the curve's read-off maximum (unchanged). Wrote data/processed/session105_dailymax_cv_days.csv (6,570 rows, 4b51d1ec8fc0832c0cddff83a34c7d5736bd820fdbd5f772820c04ec6276806e). --meta wrote data/processed/session105_dailymax_cv.meta.txt (43 lines, 8d50e9485d6ee181d93fe320767206bd459e46a8c1af22de14a968a916cb54b7). Script final SHA-256 ae6efc6fc8f84722cc8be502e15e908f7bcfeed1cde75bbd11b28a55d110f28b. Files: the two data files.
+Step 5: PASS (new cases). tests/test_stagec.py: four new classes, existing cases unchanged (only the docstring's first lines and one import added): DailyMaxConstants (2 cases: S104_SCRIPT_SHA256 and S104_DAYS_SHA256 equal F147's values, found in either DECISIONS file), DailyMaxPeakHour (tie gives the earlier hour, lead 6 of 6 and 7; gfs_tmax 16.0 is the highest tmax2m_c, not 13.0 at the peak hour), DailyMaxTrainingDay (2024-07-31T23:00 trains, 2024-08-01T00:00 does not, T0 2024-08-01T00:00), DailyTracker (EGLC 2024-01-01 to 04, cycles 18z the evening before: 0, 0, 0.02, 0.0396; latest error used is never the day before's). For test 3 the training-day rule was moved into a named function training_day in the new script; --score was then re-run (run 1's days file and meta moved to the scratchpad): days file byte-equal (cmp), printed output equal apart from times; --meta re-written (9f38cfa4952f4ce4d8eccb7d44aa6d06c8c5e2103915b20a165d926fd2a20af8). Script final SHA-256 90c059ec5dc92d7653cd0e1d57aedc229fe85299bdfbb87c0399e07c9a54ddda. Suite at this point: 36 run, 34 OK, 2 expected failures in test_record.ArchiveTool before the end steps (F148 cited by D99 but not yet written; DECISIONS.md 80,452 bytes before the archive step). Files: tests/test_stagec.py, scripts/session105_dailymax_cv.py, data/processed/session105_dailymax_cv.meta.txt.
+End steps: F148 written (33 lines, em-dashes 0) and "- F148: session 105's finding." added to the Live index after D99. Archive: python3 scripts/archive_decisions.py --apply --session 105: checks 1 to 4 PASS; moved 5 spans (26,602 bytes): D47, D73, D77, D79 and F139, each with its own dated heading, under "## Moved by session 105 (D93.8)"; kept 9 (D82, D88, D89, D93, D97, D98, F147, D99, F148). DECISIONS.md 86,660 -> 60,038 bytes (under 80,000: PASS); DECISIONS-archive.md 1,311,613 -> 1,338,272 bytes. Citations: 176 cited, 176 resolved, 0 unresolved, 0 in both files; 0 duplicated entries; 0 dated headings out of order: PASS. Tests: 36 run, OK. STATUS.md overwritten. Scope: git status shows only scope-list files (M DECISIONS-archive.md, DECISIONS.md, STATUS.md, tests/test_stagec.py; ?? the two data files, the session file, this file, the new script): PASS, no breach. MLwx-stagec/, MLwx-pull/, MLwx-pull-f025-048/: no file newer than the session prompt. No __pycache__ written. Em-dashes in new text: 0.
+Consistency (re-read of this session's changes in DECISIONS and STATUS): no disagreement found with the rest of the record. Two findings for the owner: (1) the prompt's Read first pointed to a "DAILY MAXIMUM (D98.10)" section of notes/session-104-output.txt that does not exist; that file holds checkpoints and summaries, not the full --score log (F148.1, ruled). (2) D99.13's live list after session 105 equals the Live index.
+
+FULL OUTPUT: --gate
+SESSION 105 --gate (offline, no fit), start 2026-10-11T16:23:55Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+GATE (D99.8, with the owner ruling at session 105's stop)
+  data/processed/session104_dailymax_days.csv: 6570 rows, SHA-256 equal to F147.7
+  gate 1 (F147.6 at 4 decimals): 36 values compared, mismatches 0
+  headlines at full precision (for F148): raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871
+  EGLC: tables loaded, 1956 local days in the window, 9.6 s
+  LFPG: tables loaded, 1955 local days in the window, 8.9 s
+  DSM: tables loaded, 1955 local days in the window, 9.3 s
+  YSDU: tables loaded, 1955 local days in the window, 8.2 s
+  RNO: tables loaded, 1955 local days in the window, 9.0 s
+  SFO: tables loaded, 1955 local days in the window, 9.3 s
+  gate 2 (station, local date, cycle, fold, observed maximum): 6570 days compared, mismatches 0
+  gate 3 (raw_max = raw_gfs_max, exact): 6570 days compared, mismatches 0
+GATE PASSED
+run time 54.6 s
+
+FULL OUTPUT: --score, run 1 (outputs then moved to the scratchpad; Step 5)
+SESSION 105 --score (offline), start 2026-10-11T16:25:01Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}; features: ['raw_max', 'gfs_tmax', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']; w = 0.02
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+GATE (D99.8, with the owner ruling at session 105's stop)
+  data/processed/session104_dailymax_days.csv: 6570 rows, SHA-256 equal to F147.7
+  gate 1 (F147.6 at 4 decimals): 36 values compared, mismatches 0
+  headlines at full precision (for F148): raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871
+  EGLC: tables loaded, 1956 local days in the window, 8.0 s
+  LFPG: tables loaded, 1955 local days in the window, 8.0 s
+  DSM: tables loaded, 1955 local days in the window, 7.8 s
+  YSDU: tables loaded, 1955 local days in the window, 8.6 s
+  RNO: tables loaded, 1955 local days in the window, 8.1 s
+  SFO: tables loaded, 1955 local days in the window, 8.5 s
+  gate 2 (station, local date, cycle, fold, observed maximum): 6570 days compared, mismatches 0
+  gate 3 (raw_max = raw_gfs_max, exact): 6570 days compared, mismatches 0
+GATE PASSED
+
+CHALLENGER 1'S INPUTS (D99.3), every local day in the window
+  EGLC: days 1956 (2021-03-24 to 2026-07-31); complete inputs 1956; without 0 ; peak-hour ties broken 6; usable observed maximum 1952
+  LFPG: days 1955 (2021-03-25 to 2026-07-31); complete inputs 1955; without 0 ; peak-hour ties broken 8; usable observed maximum 1950
+  DSM: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 6; usable observed maximum 1955
+  YSDU: days 1955 (2021-03-25 to 2026-07-31); complete inputs 1955; without 0 ; peak-hour ties broken 7; usable observed maximum 1932
+  RNO: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 2; usable observed maximum 1948
+  SFO: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 8; usable observed maximum 1952
+
+FITS (one per airport and fold; session 97's fit_predict, LGB_PARAMS unchanged)
+  EGLC: training days 2023-24 856 (2021-03-24 to 2023-07-31), test days with inputs 366; 2024-25 1222 (2021-03-24 to 2024-07-31), test days with inputs 365; 2025-26 1587 (2021-03-24 to 2025-07-31), test days with inputs 364
+  LFPG: training days 2023-24 855 (2021-03-25 to 2023-07-31), test days with inputs 366; 2024-25 1221 (2021-03-25 to 2024-07-31), test days with inputs 365; 2025-26 1586 (2021-03-25 to 2025-07-31), test days with inputs 364
+  DSM: training days 2023-24 859 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1225 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1590 (2021-03-24 to 2025-07-30), test days with inputs 364
+  YSDU: training days 2023-24 846 (2021-03-25 to 2023-07-31), test days with inputs 366; 2024-25 1209 (2021-03-25 to 2024-07-31), test days with inputs 365; 2025-26 1572 (2021-03-25 to 2025-07-31), test days with inputs 364
+  RNO: training days 2023-24 854 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1219 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1584 (2021-03-24 to 2025-07-30), test days with inputs 364
+  SFO: training days 2023-24 858 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1224 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1588 (2021-03-24 to 2025-07-30), test days with inputs 364
+  fits 18; fit time 1.4 s; every training day's last hour is before its T0: yes
+
+Test days lost for missing inputs (in F147.6's common set, no challenger 1 forecast): EGLC 0 ; LFPG 0 ; DSM 0 ; YSDU 0 ; RNO 0 ; SFO 0 
+
+==========================================================================================
+TEST 1 (D99.4). BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C.
+==========================================================================================
+
+Common day set (D99.4), pooled over folds:
+  airport  days    raw_gfs   baseline      curve        ch1
+  EGLC     1095     0.9460     0.8479     0.8410     0.8424
+  LFPG     1094     1.1968     0.9780     0.9558     1.0092
+  DSM      1095     1.7297     1.2543     1.2240     1.2642
+  YSDU     1085     1.0861     1.0475     1.0268     1.0528
+  RNO      1093     1.5511     0.9490     0.9477     0.9566
+  SFO      1093     1.6635     1.2489     1.2076     1.2601
+  HEADLINE          1.3622     1.0543     1.0338     1.0642
+  full precision: raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871, ch1 1.0642171933415898
+  fold level:
+    2023-24: raw_gfs 1.4509, baseline 1.0508, curve 1.0212, ch1 1.0293; days EGLC 366, LFPG 366, DSM 366, YSDU 363, RNO 365, SFO 366
+    2024-25: raw_gfs 1.3405, baseline 1.0857, curve 1.0630, ch1 1.1073; days EGLC 365, LFPG 365, DSM 365, YSDU 363, RNO 365, SFO 364
+    2025-26: raw_gfs 1.2947, baseline 1.0260, curve 1.0171, ch1 1.0559; days EGLC 364, LFPG 363, DSM 364, YSDU 359, RNO 363, SFO 363
+  mean error (observed minus forecast):
+    EGLC    raw_gfs +0.0676 baseline -0.0469 curve +0.0477 ch1 -0.1236
+    LFPG    raw_gfs +0.1387 baseline -0.1161 curve +0.0139 ch1 -0.1568
+    DSM     raw_gfs +0.3696 baseline -0.2188 curve -0.0305 ch1 -0.2343
+    YSDU    raw_gfs +0.0723 baseline +0.1267 curve +0.1437 ch1 +0.0385
+    RNO     raw_gfs +1.2302 baseline -0.1141 curve +0.1560 ch1 -0.2790
+    SFO     raw_gfs +0.8738 baseline -0.0156 curve +0.2275 ch1 -0.3796
+
+D89.6, challenger 1 against the curve's read-off maximum:
+  challenger 1 (daily-maximum model) against the curve:
+    (a) headline reduction -0.029400 (-2.940 %), above 0.01: no
+    (b) airports where the challenger is lower: 0 of 6, 4 or more: no
+    (c) folds where the challenger is lower: 0 of 3, 2 or more: no
+    => not passed: the incumbent stays
+M = the curve's read-off maximum
+
+==========================================================================================
+TEST 2 (D99.6). BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C.
+==========================================================================================
+trackers: 18; forecasts that used an error from a day whose last hour is not before their cycle: 0; common days corrected with b = 0: 36
+b at the end of each fold:
+  EGLC    2023-24 +0.2321, 2024-25 -0.0475, 2025-26 -0.0404
+  LFPG    2023-24 +0.4712, 2024-25 -0.1793, 2025-26 -0.0445
+  DSM     2023-24 +0.0128, 2024-25 -0.2781, 2025-26 +0.0837
+  YSDU    2023-24 -0.0094, 2024-25 -0.3012, 2025-26 +0.0271
+  RNO     2023-24 +0.2192, 2024-25 +0.1620, 2025-26 +0.1377
+  SFO     2023-24 -0.0947, 2024-25 +0.0601, 2025-26 +0.5559
+
+Common day set (as test 1), pooled over folds:
+  airport  days          M        ch2
+  EGLC     1095     0.8410     0.8467
+  LFPG     1094     0.9558     0.9570
+  DSM      1095     1.2240     1.2299
+  YSDU     1085     1.0268     1.0084
+  RNO      1093     0.9477     0.9485
+  SFO      1093     1.2076     1.1928
+  HEADLINE          1.0338     1.0306
+  full precision: M 1.0338223451337871, ch2 1.0305687073248007
+  fold level:
+    2023-24: M 1.0212, ch2 1.0122; days EGLC 366, LFPG 366, DSM 366, YSDU 363, RNO 365, SFO 366
+    2024-25: M 1.0630, ch2 1.0588; days EGLC 365, LFPG 365, DSM 365, YSDU 363, RNO 365, SFO 364
+    2025-26: M 1.0171, ch2 1.0206; days EGLC 364, LFPG 363, DSM 364, YSDU 359, RNO 363, SFO 363
+  mean error (observed minus forecast):
+    EGLC    M +0.0477 ch2 +0.0067
+    LFPG    M +0.0139 ch2 +0.0115
+    DSM     M -0.0305 ch2 -0.0084
+    YSDU    M +0.1437 ch2 -0.0135
+    RNO     M +0.1560 ch2 +0.0242
+    SFO     M +0.2275 ch2 +0.0243
+
+D89.6, challenger 2 (M plus b) against M:
+  challenger 2 (daily drift) against M:
+    (a) headline reduction 0.003147 (0.315 %), above 0.01: no
+    (b) airports where the challenger is lower: 2 of 6, 4 or more: no
+    (c) folds where the challenger is lower: 2 of 3, 2 or more: yes
+    => not passed: the incumbent stays
+
+The daily maximum's incumbent after session 105: the curve's read-off maximum
+
+wrote data/processed/session105_dailymax_cv_days.csv: 6570 rows, SHA-256 4b51d1ec8fc0832c0cddff83a34c7d5736bd820fdbd5f772820c04ec6276806e
+
+DESCRIPTIVE (D99.10), not used by the rules
+MAE on F147.6's own day set (each method where it has a forecast; days in brackets) beside the new common set:
+  raw_gfs   F147.6 set: headline 1.3622 (EGLC 0.9460 [1095], LFPG 1.1968 [1094], DSM 1.7297 [1095], YSDU 1.0861 [1085], RNO 1.5511 [1093], SFO 1.6635 [1093]); new common set: headline 1.3622
+  baseline  F147.6 set: headline 1.0543 (EGLC 0.8479 [1095], LFPG 0.9780 [1094], DSM 1.2543 [1095], YSDU 1.0475 [1085], RNO 0.9490 [1093], SFO 1.2489 [1093]); new common set: headline 1.0543
+  curve     F147.6 set: headline 1.0338 (EGLC 0.8410 [1095], LFPG 0.9558 [1094], DSM 1.2240 [1095], YSDU 1.0268 [1085], RNO 0.9477 [1093], SFO 1.2076 [1093]); new common set: headline 1.0338
+  ch1       F147.6 set: headline 1.0642 (EGLC 0.8424 [1095], LFPG 1.0092 [1094], DSM 1.2642 [1095], YSDU 1.0528 [1085], RNO 0.9566 [1093], SFO 1.2601 [1093]); new common set: headline 1.0642
+  M         F147.6 set: headline 1.0338 (EGLC 0.8410 [1095], LFPG 0.9558 [1094], DSM 1.2240 [1095], YSDU 1.0268 [1085], RNO 0.9477 [1093], SFO 1.2076 [1093]); new common set: headline 1.0338
+  ch2       F147.6 set: headline 1.0306 (EGLC 0.8467 [1095], LFPG 0.9570 [1094], DSM 1.2299 [1095], YSDU 1.0084 [1085], RNO 0.9485 [1093], SFO 1.1928 [1093]); new common set: headline 1.0306
+
+end 2026-10-11T16:25:51Z; run time 50.7 s; fits 18; fit time 1.4 s
+
+FULL OUTPUT: --score, run 2 (final; days file byte-equal to run 1)
+SESSION 105 --score (offline), start 2026-10-11T16:26:38Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+LGB_PARAMS: {'objective': 'regression_l1', 'n_estimators': 300, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 40, 'subsample': 1.0, 'colsample_bytree': 1.0, 'reg_alpha': 0.0, 'reg_lambda': 0.0, 'random_state': 42, 'n_jobs': 1, 'deterministic': True, 'force_row_wise': True, 'verbose': -1}; features: ['raw_max', 'gfs_tmax', 'season_sin', 'season_cos', 'cloud_cover', 'wind_speed_10m', 'dewpoint_depression_t2m_floored', 'lapse_rate_t2_t850', 'dswrf_2h_wm2', 'pressure_tendency_3h_hpa']; w = 0.02
+BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5).
+GATE (D99.8, with the owner ruling at session 105's stop)
+  data/processed/session104_dailymax_days.csv: 6570 rows, SHA-256 equal to F147.7
+  gate 1 (F147.6 at 4 decimals): 36 values compared, mismatches 0
+  headlines at full precision (for F148): raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871
+  EGLC: tables loaded, 1956 local days in the window, 9.0 s
+  LFPG: tables loaded, 1955 local days in the window, 8.1 s
+  DSM: tables loaded, 1955 local days in the window, 8.5 s
+  YSDU: tables loaded, 1955 local days in the window, 8.2 s
+  RNO: tables loaded, 1955 local days in the window, 8.9 s
+  SFO: tables loaded, 1955 local days in the window, 8.4 s
+  gate 2 (station, local date, cycle, fold, observed maximum): 6570 days compared, mismatches 0
+  gate 3 (raw_max = raw_gfs_max, exact): 6570 days compared, mismatches 0
+GATE PASSED
+
+CHALLENGER 1'S INPUTS (D99.3), every local day in the window
+  EGLC: days 1956 (2021-03-24 to 2026-07-31); complete inputs 1956; without 0 ; peak-hour ties broken 6; usable observed maximum 1952
+  LFPG: days 1955 (2021-03-25 to 2026-07-31); complete inputs 1955; without 0 ; peak-hour ties broken 8; usable observed maximum 1950
+  DSM: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 6; usable observed maximum 1955
+  YSDU: days 1955 (2021-03-25 to 2026-07-31); complete inputs 1955; without 0 ; peak-hour ties broken 7; usable observed maximum 1932
+  RNO: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 2; usable observed maximum 1948
+  SFO: days 1955 (2021-03-24 to 2026-07-30); complete inputs 1955; without 0 ; peak-hour ties broken 8; usable observed maximum 1952
+
+FITS (one per airport and fold; session 97's fit_predict, LGB_PARAMS unchanged)
+  EGLC: training days 2023-24 856 (2021-03-24 to 2023-07-31), test days with inputs 366; 2024-25 1222 (2021-03-24 to 2024-07-31), test days with inputs 365; 2025-26 1587 (2021-03-24 to 2025-07-31), test days with inputs 364
+  LFPG: training days 2023-24 855 (2021-03-25 to 2023-07-31), test days with inputs 366; 2024-25 1221 (2021-03-25 to 2024-07-31), test days with inputs 365; 2025-26 1586 (2021-03-25 to 2025-07-31), test days with inputs 364
+  DSM: training days 2023-24 859 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1225 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1590 (2021-03-24 to 2025-07-30), test days with inputs 364
+  YSDU: training days 2023-24 846 (2021-03-25 to 2023-07-31), test days with inputs 366; 2024-25 1209 (2021-03-25 to 2024-07-31), test days with inputs 365; 2025-26 1572 (2021-03-25 to 2025-07-31), test days with inputs 364
+  RNO: training days 2023-24 854 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1219 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1584 (2021-03-24 to 2025-07-30), test days with inputs 364
+  SFO: training days 2023-24 858 (2021-03-24 to 2023-07-30), test days with inputs 366; 2024-25 1224 (2021-03-24 to 2024-07-30), test days with inputs 365; 2025-26 1588 (2021-03-24 to 2025-07-30), test days with inputs 364
+  fits 18; fit time 1.3 s; every training day's last hour is before its T0: yes
+
+Test days lost for missing inputs (in F147.6's common set, no challenger 1 forecast): EGLC 0 ; LFPG 0 ; DSM 0 ; YSDU 0 ; RNO 0 ; SFO 0 
+
+==========================================================================================
+TEST 1 (D99.4). BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C.
+==========================================================================================
+
+Common day set (D99.4), pooled over folds:
+  airport  days    raw_gfs   baseline      curve        ch1
+  EGLC     1095     0.9460     0.8479     0.8410     0.8424
+  LFPG     1094     1.1968     0.9780     0.9558     1.0092
+  DSM      1095     1.7297     1.2543     1.2240     1.2642
+  YSDU     1085     1.0861     1.0475     1.0268     1.0528
+  RNO      1093     1.5511     0.9490     0.9477     0.9566
+  SFO      1093     1.6635     1.2489     1.2076     1.2601
+  HEADLINE          1.3622     1.0543     1.0338     1.0642
+  full precision: raw_gfs 1.362196678488343, baseline 1.054275670219807, curve 1.0338223451337871, ch1 1.0642171933415898
+  fold level:
+    2023-24: raw_gfs 1.4509, baseline 1.0508, curve 1.0212, ch1 1.0293; days EGLC 366, LFPG 366, DSM 366, YSDU 363, RNO 365, SFO 366
+    2024-25: raw_gfs 1.3405, baseline 1.0857, curve 1.0630, ch1 1.1073; days EGLC 365, LFPG 365, DSM 365, YSDU 363, RNO 365, SFO 364
+    2025-26: raw_gfs 1.2947, baseline 1.0260, curve 1.0171, ch1 1.0559; days EGLC 364, LFPG 363, DSM 364, YSDU 359, RNO 363, SFO 363
+  mean error (observed minus forecast):
+    EGLC    raw_gfs +0.0676 baseline -0.0469 curve +0.0477 ch1 -0.1236
+    LFPG    raw_gfs +0.1387 baseline -0.1161 curve +0.0139 ch1 -0.1568
+    DSM     raw_gfs +0.3696 baseline -0.2188 curve -0.0305 ch1 -0.2343
+    YSDU    raw_gfs +0.0723 baseline +0.1267 curve +0.1437 ch1 +0.0385
+    RNO     raw_gfs +1.2302 baseline -0.1141 curve +0.1560 ch1 -0.2790
+    SFO     raw_gfs +0.8738 baseline -0.0156 curve +0.2275 ch1 -0.3796
+
+D89.6, challenger 1 against the curve's read-off maximum:
+  challenger 1 (daily-maximum model) against the curve:
+    (a) headline reduction -0.029400 (-2.940 %), above 0.01: no
+    (b) airports where the challenger is lower: 0 of 6, 4 or more: no
+    (c) folds where the challenger is lower: 0 of 3, 2 or more: no
+    => not passed: the incumbent stays
+M = the curve's read-off maximum
+
+==========================================================================================
+TEST 2 (D99.6). BUILD-CHOICE SCORES, NOT RESULTS (SPEC 2.5). MAE in degrees C.
+==========================================================================================
+trackers: 18; forecasts that used an error from a day whose last hour is not before their cycle: 0; common days corrected with b = 0: 36
+b at the end of each fold:
+  EGLC    2023-24 +0.2321, 2024-25 -0.0475, 2025-26 -0.0404
+  LFPG    2023-24 +0.4712, 2024-25 -0.1793, 2025-26 -0.0445
+  DSM     2023-24 +0.0128, 2024-25 -0.2781, 2025-26 +0.0837
+  YSDU    2023-24 -0.0094, 2024-25 -0.3012, 2025-26 +0.0271
+  RNO     2023-24 +0.2192, 2024-25 +0.1620, 2025-26 +0.1377
+  SFO     2023-24 -0.0947, 2024-25 +0.0601, 2025-26 +0.5559
+
+Common day set (as test 1), pooled over folds:
+  airport  days          M        ch2
+  EGLC     1095     0.8410     0.8467
+  LFPG     1094     0.9558     0.9570
+  DSM      1095     1.2240     1.2299
+  YSDU     1085     1.0268     1.0084
+  RNO      1093     0.9477     0.9485
+  SFO      1093     1.2076     1.1928
+  HEADLINE          1.0338     1.0306
+  full precision: M 1.0338223451337871, ch2 1.0305687073248007
+  fold level:
+    2023-24: M 1.0212, ch2 1.0122; days EGLC 366, LFPG 366, DSM 366, YSDU 363, RNO 365, SFO 366
+    2024-25: M 1.0630, ch2 1.0588; days EGLC 365, LFPG 365, DSM 365, YSDU 363, RNO 365, SFO 364
+    2025-26: M 1.0171, ch2 1.0206; days EGLC 364, LFPG 363, DSM 364, YSDU 359, RNO 363, SFO 363
+  mean error (observed minus forecast):
+    EGLC    M +0.0477 ch2 +0.0067
+    LFPG    M +0.0139 ch2 +0.0115
+    DSM     M -0.0305 ch2 -0.0084
+    YSDU    M +0.1437 ch2 -0.0135
+    RNO     M +0.1560 ch2 +0.0242
+    SFO     M +0.2275 ch2 +0.0243
+
+D89.6, challenger 2 (M plus b) against M:
+  challenger 2 (daily drift) against M:
+    (a) headline reduction 0.003147 (0.315 %), above 0.01: no
+    (b) airports where the challenger is lower: 2 of 6, 4 or more: no
+    (c) folds where the challenger is lower: 2 of 3, 2 or more: yes
+    => not passed: the incumbent stays
+
+The daily maximum's incumbent after session 105: the curve's read-off maximum
+
+wrote data/processed/session105_dailymax_cv_days.csv: 6570 rows, SHA-256 4b51d1ec8fc0832c0cddff83a34c7d5736bd820fdbd5f772820c04ec6276806e
+
+DESCRIPTIVE (D99.10), not used by the rules
+MAE on F147.6's own day set (each method where it has a forecast; days in brackets) beside the new common set:
+  raw_gfs   F147.6 set: headline 1.3622 (EGLC 0.9460 [1095], LFPG 1.1968 [1094], DSM 1.7297 [1095], YSDU 1.0861 [1085], RNO 1.5511 [1093], SFO 1.6635 [1093]); new common set: headline 1.3622
+  baseline  F147.6 set: headline 1.0543 (EGLC 0.8479 [1095], LFPG 0.9780 [1094], DSM 1.2543 [1095], YSDU 1.0475 [1085], RNO 0.9490 [1093], SFO 1.2489 [1093]); new common set: headline 1.0543
+  curve     F147.6 set: headline 1.0338 (EGLC 0.8410 [1095], LFPG 0.9558 [1094], DSM 1.2240 [1095], YSDU 1.0268 [1085], RNO 0.9477 [1093], SFO 1.2076 [1093]); new common set: headline 1.0338
+  ch1       F147.6 set: headline 1.0642 (EGLC 0.8424 [1095], LFPG 1.0092 [1094], DSM 1.2642 [1095], YSDU 1.0528 [1085], RNO 0.9566 [1093], SFO 1.2601 [1093]); new common set: headline 1.0642
+  M         F147.6 set: headline 1.0338 (EGLC 0.8410 [1095], LFPG 0.9558 [1094], DSM 1.2240 [1095], YSDU 1.0268 [1085], RNO 0.9477 [1093], SFO 1.2076 [1093]); new common set: headline 1.0338
+  ch2       F147.6 set: headline 1.0306 (EGLC 0.8467 [1095], LFPG 0.9570 [1094], DSM 1.2299 [1095], YSDU 1.0084 [1085], RNO 0.9485 [1093], SFO 1.1928 [1093]); new common set: headline 1.0306
+
+end 2026-10-11T16:27:31Z; run time 52.8 s; fits 18; fit time 1.3 s
+
+FULL OUTPUT: --meta (final)
+wrote data/processed/session105_dailymax_cv.meta.txt: 43 lines, SHA-256 9f38cfa4952f4ce4d8eccb7d44aa6d06c8c5e2103915b20a165d926fd2a20af8
