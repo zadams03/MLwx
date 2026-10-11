@@ -15,7 +15,8 @@ It records choices made, why they were made, open questions, and findings.
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
 - D98: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric.
 - D100: F148 accepted, stage C's lock, and its claim test pre-registered.
-- F149: session 106's finding.
+- D101: F149 accepted, three rulings, and how stage C's look is run.
+- F150: session 107's finding (stage C's look).
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -672,28 +673,90 @@ restates them without change.
 
 ---
 
-## 2026-10-11: Session 106 finding: stage C's claim tables built and checked, and the look script gated (look not run)
+## 2026-10-11: Session 107 decision: F149 accepted, three rulings, and how the look is run (owner, planning chat)
 
-**F149. D100 was recorded first. The six claim airports' tables were built and checked, the training-row sanity check passed, and the look script passed its gate at the development airports. The look was not run: no claim airport's error, MAE or mean error from 2024-08-01 onward was computed. Scripts (new): `scripts/session106_claim_table.py` (`ac5c67eba453b8a14883bbe3d7d34384823872013037e7ad7d035a72617cff96`), `scripts/session106_claim_look.py` (`5e046acffc6eb28619d1883c8b93b6ff97bc3305addade56be5ab30af169281a`). Full real output: `notes/session-106-output.txt`. Run 2026-10-11, offline. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.**
+**D101. Owner decisions, planning chat (after session 106): F149 accepted
+with three rulings, and the rules for running stage C's look once (D100.12)
+and reporting it.** Written at the start of session 107, before any other
+edit and before any claim airport's value from 2024-08-01 onward has been
+read. No 2026-27 value has been read or scored. D100 is unchanged.
 
-- **F149.1 Inputs.** 36 observation files (six yearly pieces per airport, `data/raw/iem_asos_<IEM id>_..._routine.csv`; IEM id ORD for KORD, the ICAO code for the rest), each SHA-256 equal to its `.meta.txt`; values not opened. Positions: each claim airport's four grid points and weights equal in the pull's positions file and `session90_airports.csv` (as sets). Elevation constants (D100.3(b), round(7.429 x `height_diff_m` / 1000, 4)): EDDM 0.2589, KORD 0.0548, CYYZ 0.0441, ZGSZ 0.1476, ZUCK -0.2521, NZWN 0.5881. KSFO's check gives 0.6944.
-- **F149.2 The tables (D100.3(a)).** Twelve files in `MLwx-stagec/`, 99,447,923 bytes in all. Rows per airport: 195,600 (hours 0 to 24) and 187,768 (25 to 48), each equal to the plan. Complete-case rows, by valid time before / from 2024-08-01 (counts only): 0-24: EDDM 107,832 / 64,232; KORD 107,807 / 64,118; CYYZ 107,622 / 64,191; ZGSZ 107,815 / 64,232; ZUCK 107,815 / 64,236; NZWN 107,583 / 64,221. 25-48: EDDM 117,628 / 70,072; KORD 117,604 / 69,944; CYYZ 117,400 / 70,028; ZGSZ 117,612 / 70,072; ZUCK 117,612 / 70,076; NZWN 117,352 / 70,060. Empty cells as F138 and F147 at every airport: 0-24, R "lead too short" 15,648 and "outside pull window" 7, T 23,472 and 10, tmax2m and tmin2m "absent by design" 7,824 each; 25-48, R 5 and T 8 "outside pull window". Rows with no observation: 62 (EDDM, 25-48) to 362 (NZWN, 0-24). Equivalence: the new build on EGLC's and RNO's own inputs, 2022-01, 4 of 4 byte-equal to F138's and F147's rows. Records: 12 of 12 in-memory rebuilds byte-equal; NZWN rebuilt alone into a temporary directory, both files byte-equal. Counts `data/processed/session106_claim_counts.csv` (`c3148cfb6ddd16411a25871f1a567d63e5f5d36637e0fc383ab69bde0f570c72`); meta `data/processed/session106_claim_table.meta.txt` (`fd743bda7a5f89b5e684132de1550dad45c7fb8916445b9b7b638b83649dc646`).
-  Table SHA-256 (0-24, 25-48), held as constants in the look script (D98.2):
-  EDDM `9d9e38201d0aa63ae0da0a20c64254c172f57993df0d99dd767a567a5418c84d`, `b5600c13948fd7ad6bd6411366b3676211b68dd332e37c3a409262eac3457c7b`;
-  KORD `51c69aa5b204f7991ae7522fd850b5b3c4715f017ed4ee2f1b4269a2d4a515ad`, `2252e3ffb73294e31b4aba1e605f204f70ccc80cbbcb701f79173e0940770662`;
-  CYYZ `899e54777fdff5f8ac0b6cc78b15ebea6340a072b23c5acf6c39486c139c25d7`, `ab631d6e43750071e9b7878cb24127269aae5a3831d1234a299c8a0ab2054b44`;
-  ZGSZ `1a83bb1ba7b7c2ed389244fd3362c32e6a641847b3b074680d00a84a858de011`, `b70b5f4c648fa6e5971084e8993e99fa2d2fffd7394e6e7b262c06aa6d2df0f5`;
-  ZUCK `1be74331235cd973b919db7aa8a587b7065eaf154e95f08f03dbf62ac0a89379`, `35e85af2c47df13afd0fbd8279aadd330157072bb8d1f17f800515619296b096`;
-  NZWN `f5c7a598cef58190e593d74cd961fd15912d9fd3ce196f149092807215a92e74`, `4db4350540342b4a01502731a0daf5b943a6e619a0893ee6bf12ca6ade2f3fc0`.
-- **F149.3 Training-row sanity (D100.9(b)), leads 3 to 24, valid before 2024-08-01, raw GFS; n, mean error (obs minus forecast), MAE:** EDDM 107,832, +0.1372, 1.5757; KORD 107,807, +0.3473, 1.2253; CYYZ 107,622, +0.7438, 1.3536; ZGSZ 107,815, +0.0688, 1.0527; ZUCK 107,815, -0.2943, 1.4569; NZWN 107,583, +0.5772, 1.1556. None gross; nothing changed. The statistic refused a made-up row valid 2024-08-01T00:00; later rows were skipped on their valid time before any value was read (73,000 per airport).
-- **F149.4 The look script's gate (D100.9(c)).** Gate 1, the tracker self-check: PASS. 1,104 frozen fits (184 per airport). Gate 2, look A against session 104's fold 2024-25: 3,312 of 3,312 hourly cells (n and MAE, raw GFS, baseline and curve, exact) and 2,190 of 2,190 days (cycle, observed, raw GFS and curve maxima, exact), 0 mismatches. Gate 3: the development airports' look B and both looks' bar ran as a smoke test on spent years; its figures are in the output file only, descriptive, not a result.
-- **F149.5 The guard check.** `--look` refused without `--confirm-look 107`, with `--confirm-look 106` and with KDSM; `--gate` refused EDDM and ORD; all before any read. `--look` was not run with the flag; no `session107_*` file exists. See F149.6 item 1.
-- **F149.6 Readings for the owner.**
-  1. Deviation: after the guard check I ran `session106_claim_look.py --look` once from the command line, without the flag. It refused at once ("needs --confirm-look 107"), read no table and wrote nothing. The prompt says `--look` is not run in any form; this breaks its letter.
-  2. The development params files compute their constants from a gap stored at 2 decimals. Done that way, ZGSZ would be 0.1475 and NZWN 0.5882. D100.3(b) and the prompt use the unrounded `height_diff_m`, which this session followed.
-  3. D100 does not say what happens if a bar half has no rows. The script treats it as not passing and prints it; the owner may want to rule on it before the look.
-  4. The tables' station column holds the IEM id (ORD for KORD), as the development tables hold SPEC 3.4's codes (DSM, RNO, SFO).
-  5. derive (inside session 96's make_row) needs a "lead" for an R value make_row never uses; the claim specs pass 24 as a placeholder. The equivalence check shows the tables are unaffected.
-  6. The persistence half uses the same rows for both sides (D100.5(b)); in the smoke test the persistence subset was 7 to 650 rows smaller than the common set per airport and look (hourly) and 0 to 5 days smaller (daily).
-  7. As F148.9 item 6: session 97's record-script import loads the session-48 module for its own use; this script never imports or calls the guard.
-- **F149.7 What this did not do.** `--look` with the flag; any statistic of a claim airport's value from 2024-08-01 onward; any change to D100 or the method after Step 2's figures; anything per airport; no model saved; nothing from 2026-27; no network; nothing installed; no existing script or data file edited; `MLwx-pull*/` and the existing `MLwx-stagec/` files unchanged. Nothing committed and no commit message written.
+- **D101.1 F149 accepted,** with all seven F149.6 readings, and these
+  rulings:
+  (1) The flagless `--look` run (reading 1) refused before reading any
+  table and wrote nothing. The deviation is accepted. The look has not been
+  run; session 107's run with the flag is its one run.
+  (2) The claim airports' elevation constants stay as built, from the
+  unrounded `height_diff_m` (reading 2), as D100.3(b) says: EDDM 0.2589,
+  KORD 0.0548, CYYZ 0.0441, ZGSZ 0.1476, ZUCK -0.2521, NZWN 0.5881
+  (F149.1). They are not recomputed.
+  (3) A bar half with no rows (reading 3) counts as not passing: that look
+  fails for that output at that airport, and the write-up says "no rows".
+  D79.3's "no verdict" rule belongs to stage B (D73) and does not apply
+  here. This ruling is made before the look.
+  Readings 4 to 7 are accepted as written.
+- **D101.2 The look, run once.** Before it: the look script's SHA-256
+  equals F149's; each of the twelve claim tables' SHA-256 equals F149.2's;
+  no `session107_*` file exists. Then `--look` is run once, with
+  `--confirm-look 107`, unchanged. No other mode of the look script is run
+  in session 107. What it produces stands: after any held-out value has been
+  printed or written, no method, bar, rule, script or table is changed, and
+  the look is not run again.
+- **D101.3 If the run stops with an error.** Session 107 stops and reports
+  what was printed and which files exist. It does not fix, edit or re-run
+  anything. Whether and how the look may be run again is the owner's
+  decision, in a new DECISIONS entry that says what was seen.
+- **D101.4 Reporting (D100.6, D79.1, D79.2).** Per output (the hourly curve
+  at leads 3 to 48; the daily maximum), per airport, per look and per bar
+  half (raw GFS; persistence): n, the method's MAE, the comparator's MAE,
+  the margin as 100 x (1 - MAE(method) / MAE(comparator)) with the
+  difference in degrees C beside it, and pass or fail (strictly lower at
+  full precision). Then the verdict per airport and output: PASS, SPLIT or
+  FAIL. The claim per output: "passes at N of 6 new airports in both
+  held-out years". The finding leads, per output, with the smallest of its
+  24 margins (6 airports x 2 looks x 2 halves), naming its airport, look and
+  half; a failing margin is negative and leads. It states plainly whether
+  D100.7's expectation was met. Nothing is averaged across airports.
+  D100.8's descriptive figures go to the output file; the finding cites
+  them only where they explain a failing or narrowest margin, and calls
+  them descriptive. D100.10's caveats are carried in the finding.
+- **D101.5 Not in session 107.** No SPEC or RESULTS edit (the result is
+  folded in after the owner has reviewed it); no diagnosis or follow-up
+  test; nothing per airport; no model saved beyond what the look mode
+  already writes; nothing from 2026-27.
+- **D101.6 Live index.** Removed (archived, still binding by number): F149
+  (accepted here; its constants and table hashes are held in the look
+  script, D98.2). Added: D101 and F150. After session 107: D82, D88, D89,
+  D93, D98, D100, D101, F150.
+- **D101.7 Plan.** Session 107: this entry; the pre-look checks; the look,
+  run once; the verdicts and margins; F150. The next step is chosen at
+  session 108's planning.
+
+---
+
+## 2026-10-11: Session 107 finding: stage C's look on the six claim airports
+
+**F150. D101 was recorded first. The pre-look checks held, and stage C's look (D100) was run once, with `--confirm-look 107`, unchanged. It finished without error. Hourly curve: passes at 6 of 6 new airports in both held-out years; smallest margin +8.216 % (+0.1093 degrees C), KORD, look B, against raw GFS. Daily maximum: passes at 6 of 6 new airports in both held-out years; smallest margin +2.589 % (+0.0297 degrees C), KORD, look B, against raw GFS. Full real output: `notes/session-107-output.txt`.**
+
+- **F150.1 Expectation.** D100.7's expectation (both outputs pass at all six airports in both looks) was met: all 48 bar halves pass.
+- **F150.2 Verdicts and margins** (percent, D79.1; columns: look A raw GFS, look A persistence, look B raw GFS, look B persistence). Nothing is averaged across airports.
+  Hourly curve, leads 3 to 48 (n per half 66,514 to 67,160):
+  EDDM PASS 24.83, 55.07, 26.96, 57.96; KORD PASS 14.39, 73.54, 8.22, 71.93;
+  CYYZ PASS 22.04, 70.16, 23.48, 71.17; ZGSZ PASS 21.63, 48.48, 23.09, 51.53;
+  ZUCK PASS 23.91, 54.39, 27.07, 57.81; NZWN PASS 31.71, 62.65, 32.99, 65.11.
+  Daily maximum (n per half 358 to 365 days):
+  EDDM PASS 29.14, 66.02, 31.44, 66.33; KORD PASS 9.32, 78.63, 2.59, 77.35;
+  CYYZ PASS 23.19, 76.15, 21.22, 77.12; ZGSZ PASS 40.31, 57.60, 39.63, 58.37;
+  ZUCK PASS 14.84, 64.16, 14.14, 67.99; NZWN PASS 55.74, 65.41, 57.21, 63.68.
+- **F150.3 Checks.** Before the look (D101.2): the look script's SHA-256 equal to F149's; 12 of 12 claim tables equal to F149.2 (bytes only); no `session107_*` file. After: each half's pass or fail and margin, recomputed from the MAEs in the verdicts file, equal to the script's (0 disagreements); the 12 verdicts follow D100.6; no half had no rows (D101.1(3) not needed).
+- **F150.4 Files and run.** Script `scripts/session106_claim_look.py` (`5e046acffc6eb28619d1883c8b93b6ff97bc3305addade56be5ab30af169281a`), not edited. Written by the look:
+  `data/processed/session107_claim_scores.csv` (`2918fff42ab17ff2fce55260d7d0d757638b989943324ddceb3e1a7ff59488ca`);
+  `data/processed/session107_claim_days.csv` (`3ef112935585e03245238dedbdc521063db81e486e61c55021f7026a03f8a297`);
+  `data/processed/session107_claim_verdicts.csv` (`0a9c1dc80a1e052c5b98a117b6c42cbd9811c160a944be959dca0e4575e319da`).
+  Run 2026-10-11, 20:45:35 to 20:47:36 UTC, offline, 1,104 frozen fits, 121.3 s. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.
+- **F150.5 Caveats (D100.10).** All data is GFS v16; the build choices were made on six other airports; CYYZ, ZGSZ and NZWN have sea in their grid box; the MAE of an hourly curve or a daily maximum is not comparable with the record's one-hour results.
+- **F150.6 Readings for the owner.**
+  1. Both narrowest margins are at KORD, look B, against raw GFS. Descriptive figures (D100.8, not part of the bar): KORD's raw GFS daily-maximum MAE is the lowest of the six in both looks (1.1752, 1.1484); in look B the baseline without the drift correction had an hourly mean error of -0.4120 degrees C, and the curve -0.0493.
+  2. The persistence subset was 0 to 235 rows smaller than the common set (hourly) and 0 to 3 days smaller (daily). Days dropped for too few usable observed hours: KORD look B 3, CYYZ look A 1, NZWN look B 1.
+  3. The `--look` run also ran the tracker's self-check (gate 1) inside itself, as built; it passed. No other mode was run.
+- **F150.7 What this did not do (D101.5).** No SPEC or RESULTS edit; no diagnosis or follow-up test; nothing per airport; no model saved beyond the look's own files; nothing from 2026-27; no network; nothing installed; no script, table or test edited. Nothing committed and no commit message written.

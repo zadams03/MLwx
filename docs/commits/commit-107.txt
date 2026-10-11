@@ -1,0 +1,35 @@
+Session 107: stage C's claim look, run once: both outputs pass at 6 of 6 new airports (D101, F150)
+
+D101 records the owner's acceptance of F149 with three rulings: the flagless
+--look refusal in session 106 is accepted (it read and wrote nothing); the
+claim airports' elevation constants stay as built from the unrounded height
+difference; and a bar half with no rows would count as not passing. It also
+fixes how the look is run (once, after hash checks, nothing changed after any
+held-out value is seen) and how it is reported (D100.6, D79.1, D79.2).
+
+Before the look, the look script's SHA-256 and all twelve claim tables'
+SHA-256 matched F149, and no session107 file existed. The look was then run
+once, unchanged (--look --confirm-look 107), offline, with 1,104 frozen fits.
+It wrote three files: data/processed/session107_claim_scores.csv,
+session107_claim_days.csv and session107_claim_verdicts.csv.
+
+F150 records the result on the six claim airports (EDDM, KORD, CYYZ, ZGSZ,
+ZUCK, NZWN), held-out years 2024-25 (look A) and 2025-26 (look B):
+- Hourly curve, leads 3 to 48: passes at 6 of 6 new airports in both
+  held-out years. Smallest margin +8.216 % (+0.1093 C), KORD, look B,
+  against raw GFS.
+- Daily maximum: passes at 6 of 6 new airports in both held-out years.
+  Smallest margin +2.589 % (+0.0297 C), KORD, look B, against raw GFS.
+All 48 bar halves pass; D100.7's expectation was met. The margins and
+verdicts were recomputed from the verdicts file with 0 disagreements. The
+caveats in D100.10 apply: GFS v16 only, build choices made on six other
+airports, sea in the grid box at CYYZ, ZGSZ and NZWN.
+
+Descriptive only (not part of the bar, in the output file): the curve's MAE
+was above the baseline's (no drift correction) in 6 of 12 hourly and 5 of 12
+daily airport-look cells.
+
+The archive step moved F149 out of the Live index (now D82, D88, D89, D93,
+D98, D100, D101, F150). All 179 citations resolve; DECISIONS.md is 49,157
+bytes. STATUS.md is overwritten. SPEC 9 and RESULTS 7 are not yet updated
+with the result; session 108 does that after the owner's ruling on F150.

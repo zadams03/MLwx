@@ -1,0 +1,366 @@
+SESSION 107 SUMMARY (stage C's look on the six claim airports, run once; D101, F150)
+Done: D101 recorded (byte-equal) before any other edit; the four pre-look checks held; the look was run
+once (--look --confirm-look 107, unchanged) and finished without error; the verdicts and margins were
+recomputed from its files; F150 recorded; STATUS overwritten; archive step run. No SPEC or RESULTS edit.
+Checks:
+- Step 1 D101 byte-equal (diff, cmp; 58 lines), em-dashes 0: PASS
+- Step 2 look script SHA-256 = F149's; 12 of 12 tables = F149.2; no session107_* file; git status clean: PASS
+- Step 3 the look: exit 0, 1,104 fits, run time 121.3 s (wall 122.87 s); 3 files written, all session107_*: PASS
+- Step 4 48 of 48 halves: pass/fail and margins equal to the script's (0 disagreements); 12 of 12 verdicts
+  follow D100.6; 0 halves with no rows; no summary script needed: PASS
+- Step 5 F150 recorded, byte-equal, 26 lines, em-dashes 0: PASS
+- Archive: F149 moved (6,643 bytes), 8 kept; checks 1 to 4 PASS. Citations 179 of 179 resolved: PASS
+- DECISIONS.md 49,157 bytes (under 80,000): PASS. Scope: no breach.
+Headline numbers (the claim, D100.6):
+- Hourly curve: passes at 6 of 6 new airports in both held-out years. Smallest margin +8.216 %
+  (+0.1093 C), KORD, look B, against raw GFS. Largest: +73.538 % (KORD A, persistence).
+- Daily maximum: passes at 6 of 6 new airports in both held-out years. Smallest margin +2.589 %
+  (+0.0297 C), KORD, look B, against raw GFS.
+- D100.7's expectation (both outputs pass at all six airports in both looks) was met.
+Readings for the owner (F150.6 and below):
+1 Both narrowest margins are at KORD look B vs raw GFS. Descriptive: KORD's raw GFS daily-max MAE is
+  the lowest of the six in both looks (1.1752, 1.1484); look B baseline hourly mean error -0.4120 C,
+  curve -0.0493 C.
+2 Persistence subsets 0 to 235 rows (hourly) and 0 to 3 days (daily) smaller than the common sets.
+3 The look ran the tracker self-check (gate 1) inside itself, as built; PASS.
+4 Descriptive only, output file only (not in F150, per D101.4): the curve's MAE was above the
+  baseline's in 6 of 12 hourly and 5 of 12 daily airport-look cells.
+Open items: the owner's review of F150; session 108 folds the result into SPEC 9 and RESULTS 7
+(SPEC 9.5's "once the look is run" sentence is now out of date by design).
+
+
+======================================================================
+CHECKPOINTS
+======================================================================
+Step 1 (D101): PASS. D101 copied from the prompt (between the markers, markers not copied) with sed, after '---' and a blank line, at the bottom of DECISIONS.md, before any other edit and before any data was read. diff and cmp byte-equal (58 lines); em-dashes 0. No D101 or F150 existed before in either file. Live index not changed yet. Files changed: DECISIONS.md.
+Step 2 (pre-look checks): PASS, 4 of 4. (1) SHA-256 of scripts/session106_claim_look.py = 5e046acffc6eb28619d1883c8b93b6ff97bc3305addade56be5ab30af169281a, equal to F149. (2) The twelve claim tables in MLwx-stagec/ (stagec_claim_f000_024_<ICAO>.csv.gz and stagec_claim_f025_048_<ICAO>.csv.gz), hashed as bytes only: 12 of 12 equal to F149.2 (compared by a script against the F149.2 lines). (3) find over the repository and MLwx-stagec/: 0 files named session107_*. (4) git status --porcelain: " M DECISIONS.md", "?? docs/sessions/session-107.md", "?? notes/session-107-output.txt"; nothing else. Files changed: notes/session-107-output.txt.
+Step 3 (the look, run once, D101.2): PASS. Command: python3 scripts/session106_claim_look.py --look --confirm-look 107 (no other flag; the parser has no other flag required for --look). Run once, started 2026-10-11T20:45:35Z, ended 20:47:36Z; script run time 121.3 s, wall time 122.87 s (/usr/bin/time -p); exit status 0; stderr held only the timing lines. 1,104 frozen fits (184 per airport). No other mode of the look script was run in this session. Files written, all named session107_* (git status shows these three new files and nothing else new; no new file in MLwx-stagec/):
+  data/processed/session107_claim_scores.csv    2918fff42ab17ff2fce55260d7d0d757638b989943324ddceb3e1a7ff59488ca (11,101 lines)
+  data/processed/session107_claim_days.csv      3ef112935585e03245238dedbdc521063db81e486e61c55021f7026a03f8a297 (4,375 lines)
+  data/processed/session107_claim_verdicts.csv  0a9c1dc80a1e052c5b98a117b6c42cbd9811c160a944be959dca0e4575e319da (49 lines)
+Files changed: the three files above, notes/session-107-output.txt.
+Step 4 (verdicts and margins, D101.4): PASS. data/processed/session107_claim_verdicts.csv already holds every number needed (per output, airport, look and half: n, the curve's MAE, the comparator's MAE, margin, difference, pass), so no summary script was written. An inline Python calculation read only that file: margin = 100 x (1 - curve MAE / comparator MAE), difference = comparator MAE - curve MAE, pass = curve MAE strictly lower at full precision. Checks: 48 of 48 rows; each half's pass or fail equal to the script's half_pass, and each margin and difference equal to the script's (within 1e-9): 0 disagreements. Halves with no rows: 0. Each of the 12 verdicts recomputed from its two looks by D100.6 equals the script's: 0 disagreements. Hourly: 6 of 6 PASS, smallest margin +8.216 % (+0.1093 C), KORD look B against raw GFS. Daily: 6 of 6 PASS, smallest margin +2.589 % (+0.0297 C), KORD look B against raw GFS. The full table and D100.8's descriptive figures are in the detail sections below. Files changed: notes/session-107-output.txt.
+Step 5 (F150): PASS. F150 written to the scratchpad, appended at the bottom of DECISIONS.md after '---' and a blank line, and checked byte-equal (cmp). 26 lines including its heading; em-dashes 0. Contents in the prompt's order: lead lines, D100.7, compact tables, files and versions, caveats, readings, what was not done, pointer (in the opening paragraph). Files changed: DECISIONS.md, notes/session-107-output.txt.
+End step 2 (STATUS.md): overwritten as a current-only snapshot (88 lines, em-dashes 0); last line is the prompt's "Next planning session" line. Files changed: STATUS.md.
+End step 3 (archive, D101.6): Live index: F149 removed; D101 and F150 added. Index now D82, D88, D89, D93, D98, D100, D101, F150 (as D101.6). python3 scripts/archive_decisions.py --apply --session 107: plan spans 9, keep 8, move 1 (F149, 6,643 bytes); checks 1 to 4 PASS. DECISIONS.md 55,804 -> 49,157 bytes; DECISIONS-archive.md 1,363,791 -> 1,370,475 bytes; F149 found once in the archive. Files changed: DECISIONS.md, DECISIONS-archive.md.
+End step 4 (checks): --citations: 179 distinct entry numbers cited, 179 resolved, 0 unresolved, 0 in both files; duplicated opening lines 0; dated headings out of order 0: PASS. DECISIONS.md 49,157 bytes (under 80,000): PASS. Scope (git status --porcelain): M DECISIONS-archive.md, M DECISIONS.md, M STATUS.md, ?? data/processed/session107_claim_days.csv, ?? data/processed/session107_claim_scores.csv, ?? data/processed/session107_claim_verdicts.csv, ?? docs/sessions/session-107.md (the prompt), ?? notes/session-107-output.txt: all in the scope list, no breach. scripts/session107_summary.py and data/processed/session107_summary.csv were not needed and not written. Consistency re-read (only what this session changed): see "Consistency findings" below.
+
+======================================================================
+STEP 3 DETAIL: THE LOOK'S TERMINAL SUMMARY (copied verbatim; stderr held only: real 122.87, user 118.67, sys 1.61)
+======================================================================
+SESSION 107 --look (offline), start 2026-10-11T20:45:35Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+STAGE C'S CLAIM LOOK (DECISIONS D100), RUN ONCE.
+Gate 1: the tracker's self-check
+SESSION 103 --check (offline, no table read), start 2026-10-11T20:45:35Z; w = 0.02
+  PASS: daily, lead 3, errors 1.0 x 4: corrections [0.0, 0.02, 0.0396, 0.058808], expected [0.0, 0.02, 0.0396, 0.058808]; errors used [0, 1, 2, 3], expected [0, 1, 2, 3]
+  PASS: daily, lead 24, errors 1.0 x 3: corrections [0.0, 0.0, 0.02], expected [0.0, 0.0, 0.02]; errors used [0, 0, 1], expected [0, 0, 1]
+  PASS: missing day, lead 3, days 1, 2, 4: corrections [0.0, 0.02, 0.0596], expected [0.0, 0.02, 0.0596]; errors used [0, 1, 2], expected [0, 1, 2]
+  PASS: latest valid time used is before the row's cycle: 10 of 10 rows
+CHECK PASS
+  PASS: daily, lead 47, errors 1.0 x 4: corrections [0.0, 0.0, 0.02, 0.0396], expected [0.0, 0.0, 0.02, 0.0396]; errors used [0, 0, 1, 2], expected [0, 0, 1, 2]
+  PASS: daily, lead 48, errors 1.0 x 4: corrections [0.0, 0.0, 0.0, 0.02], expected [0.0, 0.0, 0.0, 0.02]; errors used [0, 0, 0, 1], expected [0, 0, 0, 1]
+Gate 1: PASS (session 103's four cases and the two at leads 47 and 48)
+  EDDM (EDDM, Europe/Berlin): 184 models, training rows per model 1224 to 1226, 18.9 s
+  KORD (ORD, America/Chicago): 184 models, training rows per model 1223 to 1226, 21.7 s
+  CYYZ (CYYZ, America/Toronto): 184 models, training rows per model 1221 to 1225, 19.4 s
+  ZGSZ (ZGSZ, Asia/Shanghai): 184 models, training rows per model 1223 to 1226, 19.3 s
+  ZUCK (ZUCK, Asia/Chongqing): 184 models, training rows per model 1224 to 1226, 19.6 s
+  NZWN (NZWN, Pacific/Auckland): 184 models, training rows per model 1220 to 1225, 20.0 s
+
+====================================================================================================
+STAGE C CLAIM LOOK (D100.5, D100.6): the curve against raw GFS and persistence, per airport, look and output.
+====================================================================================================
+
+HOURLY
+  SMALLEST MARGIN (D79.1, over 24 values): +8.216 % (+0.1093 degrees C), KORD look B against raw_gfs
+  airport look half               n           curve MAE           other MAE  margin %   diff C pass
+  EDDM    A    raw_gfs        67160  1.3099492755147915  1.7425431060154855   +24.825  +0.4326 True
+  EDDM    A    persistence    67160  1.3099492755147915  2.9156343061346037   +55.072  +1.6057 True
+  EDDM    B    raw_gfs        66968  1.3484233980618792  1.8461234619519773   +26.959  +0.4977 True
+  EDDM    B    persistence    66952  1.3484865714843648  3.2076263591826981   +57.960  +1.8591 True
+  KORD    A    raw_gfs        67137  1.1494532340270740  1.3426658623411829   +14.390  +0.1932 True
+  KORD    A    persistence    67114  1.1495676590643154  4.3442065738892026   +73.538  +3.1946 True
+  KORD    B    raw_gfs        66749  1.2214132093195125  1.3307448950546077    +8.216  +0.1093 True
+  KORD    B    persistence    66514  1.2204266478706620  4.3483865050966708   +71.934  +3.1280 True
+  CYYZ    A    raw_gfs        67075  1.1549415823073870  1.4814394334699963   +22.039  +0.3265 True
+  CYYZ    A    persistence    66990  1.1550741757453098  3.8703985669502909   +70.156  +2.7153 True
+  CYYZ    B    raw_gfs        66968  1.1191644774944700  1.4626586429339385   +23.484  +0.3435 True
+  CYYZ    B    persistence    66952  1.1191848304263767  3.8826024614649302   +71.174  +2.7634 True
+  ZGSZ    A    raw_gfs        67160  0.9186260061370910  1.1722000297796307   +21.632  +0.2536 True
+  ZGSZ    A    persistence    67160  0.9186260061370910  1.7830702799285290   +48.481  +0.8644 True
+  ZGSZ    B    raw_gfs        66968  0.8808167744662391  1.1452211802652015   +23.088  +0.2644 True
+  ZGSZ    B    persistence    66952  0.8808565649384037  1.8172571394431831   +51.528  +0.9364 True
+  ZUCK    A    raw_gfs        67160  1.1300803039568206  1.4852565366289459   +23.913  +0.3552 True
+  ZUCK    A    persistence    67160  1.1300803039568206  2.4777248362120310   +54.390  +1.3476 True
+  ZUCK    B    raw_gfs        66976  1.0479501249415846  1.4369376940993790   +27.071  +0.3890 True
+  ZUCK    B    persistence    66968  1.0480026671353155  2.4840968820929401   +57.812  +1.4361 True
+  NZWN    A    raw_gfs        67153  0.7878545285264380  1.1537036171131594   +31.711  +0.3658 True
+  NZWN    A    persistence    67146  0.7878557321629962  2.1096565692669706   +62.655  +1.3218 True
+  NZWN    B    raw_gfs        66952  0.7825523002790348  1.1678226042537938   +32.990  +0.3853 True
+  NZWN    B    persistence    66920  0.7825852852183958  2.2430663478780635   +65.111  +1.4605 True
+  verdicts (D100.6): EDDM PASS (A True, B True); KORD PASS (A True, B True); CYYZ PASS (A True, B True); ZGSZ PASS (A True, B True); ZUCK PASS (A True, B True); NZWN PASS (A True, B True)
+  passes at 6 of 6 airports in both looks
+
+DAILY
+  SMALLEST MARGIN (D79.1, over 24 values): +2.589 % (+0.0297 degrees C), KORD look B against raw_gfs
+  airport look half               n           curve MAE           other MAE  margin %   diff C pass
+  EDDM    A    raw_gfs          365  1.2669855173291442  1.7879068493150685   +29.136  +0.5209 True
+  EDDM    A    persistence      365  1.2669855173291442  3.7287671232876711   +66.021  +2.4618 True
+  EDDM    B    raw_gfs          364  1.2276553396362877  1.7905467032967033   +31.437  +0.5629 True
+  EDDM    B    persistence      364  1.2276553396362877  3.6456043956043955   +66.325  +2.4179 True
+  KORD    A    raw_gfs          365  1.0656884522461170  1.1751780821917808    +9.317  +0.1095 True
+  KORD    A    persistence      365  1.0656884522461170  4.9861095890410958   +78.627  +3.9204 True
+  KORD    B    raw_gfs          361  1.1186442070747256  1.1483739612188366    +2.589  +0.0297 True
+  KORD    B    persistence      358  1.1216737933810144  4.9531843575418995   +77.354  +3.8315 True
+  CYYZ    A    raw_gfs          364  1.0581071634901067  1.3776236263736263   +23.193  +0.3195 True
+  CYYZ    A    persistence      363  1.0609609325288720  4.4490358126721761   +76.153  +3.3881 True
+  CYYZ    B    raw_gfs          364  1.0251407501644909  1.3012912087912090   +21.221  +0.2762 True
+  CYYZ    B    persistence      364  1.0251407501644909  4.4807692307692308   +77.121  +3.4556 True
+  ZGSZ    A    raw_gfs          365  0.9050147821529588  1.5161753424657534   +40.309  +0.6112 True
+  ZGSZ    A    persistence      365  0.9050147821529588  2.1342465753424658   +57.596  +1.2292 True
+  ZGSZ    B    raw_gfs          364  0.9206542051671482  1.5249560439560441   +39.627  +0.6043 True
+  ZGSZ    B    persistence      364  0.9206542051671482  2.2115384615384617   +58.370  +1.2909 True
+  ZUCK    A    raw_gfs          365  1.1949593836909771  1.4032246575342464   +14.842  +0.2083 True
+  ZUCK    A    persistence      365  1.1949593836909771  3.3342465753424659   +64.161  +2.1393 True
+  ZUCK    B    raw_gfs          364  1.1493136604693470  1.3385906593406596   +14.140  +0.1893 True
+  ZUCK    B    persistence      364  1.1493136604693470  3.5906593406593408   +67.992  +2.4413 True
+  NZWN    A    raw_gfs          365  0.7505313922624689  1.6959013698630137   +55.744  +0.9454 True
+  NZWN    A    persistence      365  0.7505313922624689  2.1698630136986301   +65.411  +1.4193 True
+  NZWN    B    raw_gfs          363  0.7291818445891086  1.7039338842975207   +57.206  +0.9748 True
+  NZWN    B    persistence      362  0.7284804068169523  2.0055248618784529   +63.676  +1.2770 True
+  verdicts (D100.6): EDDM PASS (A True, B True); KORD PASS (A True, B True); CYYZ PASS (A True, B True); ZGSZ PASS (A True, B True); ZUCK PASS (A True, B True); NZWN PASS (A True, B True)
+  passes at 6 of 6 airports in both looks
+
+----------------------------------------------------------------------------------------------------
+CLAIM AIRPORTS. D100.8 DESCRIPTIVE FIGURES (never part of the bar).
+----------------------------------------------------------------------------------------------------
+  EDDM look A hourly: rows scored 67160
+    common set n 67160: raw_gfs MAE 1.7425 mean error +0.0038, baseline MAE 1.3084 mean error +0.0241, curve MAE 1.3099 mean error -0.0161
+    persistence subset n 67160: persistence MAE 2.9156 mean error -0.0305
+    leads 3-24 n 32120: raw_gfs 1.6922, baseline 1.2485, curve 1.2462
+    leads 25-48 n 35040: raw_gfs 1.7887, baseline 1.3633, curve 1.3684
+    00z n 16790: raw_gfs 1.7385, baseline 1.3020, curve 1.3056
+    06z n 16790: raw_gfs 1.7392, baseline 1.3021, curve 1.3041
+    12z n 16790: raw_gfs 1.7412, baseline 1.2981, curve 1.2958
+    18z n 16790: raw_gfs 1.7513, baseline 1.3313, curve 1.3343
+  EDDM look A daily: local days 365, common 365, persistence subset 365; raw_gfs MAE 1.7879 mean error +0.5606, baseline MAE 1.2805 mean error -0.0910, curve MAE 1.2670 mean error +0.0317; persistence MAE 3.7288
+    days dropped or short, by reason: none; cycle hours used: 18z 365
+  EDDM look B hourly: rows complete features, no observation (predicted, never scored) 16, scored 66968
+    common set n 66968: raw_gfs MAE 1.8461 mean error +0.0253, baseline MAE 1.3542 mean error +0.0422, curve MAE 1.3484 mean error +0.0677
+    persistence subset n 66952: persistence MAE 3.2076 mean error +0.0422
+    leads 3-24 n 32072: raw_gfs 1.7857, baseline 1.2814, curve 1.2723
+    leads 25-48 n 34896: raw_gfs 1.9016, baseline 1.4210, curve 1.4184
+    00z n 16760: raw_gfs 1.8475, baseline 1.3638, curve 1.3615
+    06z n 16748: raw_gfs 1.8490, baseline 1.3586, curve 1.3473
+    12z n 16736: raw_gfs 1.8406, baseline 1.3334, curve 1.3270
+    18z n 16724: raw_gfs 1.8474, baseline 1.3608, curve 1.3579
+  EDDM look B daily: local days 364, common 364, persistence subset 364; raw_gfs MAE 1.7905 mean error +0.7680, baseline MAE 1.2507 mean error +0.1458, curve MAE 1.2277 mean error +0.2345; persistence MAE 3.6456
+    days dropped or short, by reason: none; cycle hours used: 18z 364
+  EDDM: days outside the looks, by reason: {'cycle outside both looks': 1, 'last hour after 2026-07-31T23:00': 1}
+  KORD look A hourly: rows complete features, no observation (predicted, never scored) 23, scored 67137
+    common set n 67137: raw_gfs MAE 1.3427 mean error +0.1410, baseline MAE 1.1504 mean error -0.1419, curve MAE 1.1495 mean error -0.0447
+    persistence subset n 67114: persistence MAE 4.3442 mean error -0.0262
+    leads 3-24 n 32109: raw_gfs 1.2182, baseline 1.0227, curve 1.0178
+    leads 25-48 n 35028: raw_gfs 1.4567, baseline 1.2674, curve 1.2701
+    00z n 16785: raw_gfs 1.3318, baseline 1.1401, curve 1.1386
+    06z n 16784: raw_gfs 1.3516, baseline 1.1659, curve 1.1661
+    12z n 16784: raw_gfs 1.3534, baseline 1.1576, curve 1.1568
+    18z n 16784: raw_gfs 1.3338, baseline 1.1379, curve 1.1363
+  KORD look A daily: local days 365, common 365, persistence subset 365; raw_gfs MAE 1.1752 mean error +0.5325, baseline MAE 1.0655 mean error +0.0978, curve MAE 1.0657 mean error +0.1573; persistence MAE 4.9861
+    days dropped or short, by reason: none; cycle hours used: 00z 365
+  KORD look B hourly: rows complete features, no observation (predicted, never scored) 235, scored 66749
+    common set n 66749: raw_gfs MAE 1.3307 mean error -0.0682, baseline MAE 1.2566 mean error -0.4120, curve MAE 1.2214 mean error -0.0493
+    persistence subset n 66514: persistence MAE 4.3484 mean error +0.0191
+    leads 3-24 n 31969: raw_gfs 1.2194, baseline 1.1358, curve 1.0931
+    leads 25-48 n 34780: raw_gfs 1.4331, baseline 1.3677, curve 1.3394
+    00z n 16705: raw_gfs 1.3136, baseline 1.2515, curve 1.2144
+    06z n 16694: raw_gfs 1.3368, baseline 1.2667, curve 1.2342
+    12z n 16682: raw_gfs 1.3492, baseline 1.2606, curve 1.2261
+    18z n 16668: raw_gfs 1.3233, baseline 1.2478, curve 1.2109
+  KORD look B daily: local days 364, common 361, persistence subset 358; raw_gfs MAE 1.1484 mean error +0.2263, baseline MAE 1.1008 mean error -0.2456, curve MAE 1.1186 mean error +0.2047; persistence MAE 4.9532
+    days dropped or short, by reason: {'observed: too few usable hours': 3, 'no persistence value': 3}; cycle hours used: 00z 361
+  KORD: days outside the looks, by reason: {'last hour after 2026-07-31T23:00': 1}
+  CYYZ look A hourly: rows complete features, no observation (predicted, never scored) 85, scored 67075
+    common set n 67075: raw_gfs MAE 1.4814 mean error +0.7327, baseline MAE 1.1536 mean error -0.0208, curve MAE 1.1549 mean error -0.0182
+    persistence subset n 66990: persistence MAE 3.8704 mean error -0.0222
+    leads 3-24 n 32079: raw_gfs 1.4116, baseline 1.0754, curve 1.0731
+    leads 25-48 n 34996: raw_gfs 1.5455, baseline 1.2253, curve 1.2300
+    00z n 16769: raw_gfs 1.4896, baseline 1.1523, curve 1.1520
+    06z n 16768: raw_gfs 1.4741, baseline 1.1609, curve 1.1611
+    12z n 16768: raw_gfs 1.4649, baseline 1.1574, curve 1.1607
+    18z n 16770: raw_gfs 1.4971, baseline 1.1438, curve 1.1459
+  CYYZ look A daily: local days 365, common 364, persistence subset 363; raw_gfs MAE 1.3776 mean error +0.7835, baseline MAE 1.0456 mean error +0.1171, curve MAE 1.0581 mean error +0.1441; persistence MAE 4.4490
+    days dropped or short, by reason: {'observed: too few usable hours': 1, 'no persistence value': 1}; cycle hours used: 00z 364
+  CYYZ look B hourly: rows complete features, no observation (predicted, never scored) 16, scored 66968
+    common set n 66968: raw_gfs MAE 1.4627 mean error +0.8381, baseline MAE 1.1154 mean error +0.0605, curve MAE 1.1192 mean error +0.0084
+    persistence subset n 66952: persistence MAE 3.8826 mean error +0.0146
+    leads 3-24 n 32072: raw_gfs 1.3965, baseline 1.0269, curve 1.0276
+    leads 25-48 n 34896: raw_gfs 1.5235, baseline 1.1967, curve 1.2033
+    00z n 16760: raw_gfs 1.4616, baseline 1.1224, curve 1.1256
+    06z n 16748: raw_gfs 1.4650, baseline 1.1156, curve 1.1202
+    12z n 16736: raw_gfs 1.4386, baseline 1.1048, curve 1.1109
+    18z n 16724: raw_gfs 1.4854, baseline 1.1187, curve 1.1199
+  CYYZ look B daily: local days 364, common 364, persistence subset 364; raw_gfs MAE 1.3013 mean error +0.7529, baseline MAE 0.9882 mean error +0.1289, curve MAE 1.0251 mean error +0.1049; persistence MAE 4.4808
+    days dropped or short, by reason: none; cycle hours used: 00z 364
+  CYYZ: days outside the looks, by reason: {'last hour after 2026-07-31T23:00': 1}
+  ZGSZ look A hourly: rows scored 67160
+    common set n 67160: raw_gfs MAE 1.1722 mean error +0.2101, baseline MAE 0.9339 mean error +0.1598, curve MAE 0.9186 mean error -0.0016
+    persistence subset n 67160: persistence MAE 1.7831 mean error -0.0020
+    leads 3-24 n 32120: raw_gfs 1.0847, baseline 0.8453, curve 0.8342
+    leads 25-48 n 35040: raw_gfs 1.2524, baseline 1.0151, curve 0.9960
+    00z n 16790: raw_gfs 1.1767, baseline 0.9324, curve 0.9181
+    06z n 16790: raw_gfs 1.1724, baseline 0.9389, curve 0.9251
+    12z n 16790: raw_gfs 1.1633, baseline 0.9225, curve 0.9073
+    18z n 16790: raw_gfs 1.1765, baseline 0.9417, curve 0.9240
+  ZGSZ look A daily: local days 365, common 365, persistence subset 365; raw_gfs MAE 1.5162 mean error +1.1945, baseline MAE 0.9335 mean error +0.3316, curve MAE 0.9050 mean error +0.2196; persistence MAE 2.1342
+    days dropped or short, by reason: none; cycle hours used: 12z 365
+  ZGSZ look B hourly: rows complete features, no observation (predicted, never scored) 16, scored 66968
+    common set n 66968: raw_gfs MAE 1.1452 mean error +0.2952, baseline MAE 0.8888 mean error +0.1073, curve MAE 0.8808 mean error -0.0042
+    persistence subset n 66952: persistence MAE 1.8173 mean error -0.0110
+    leads 3-24 n 32072: raw_gfs 1.0723, baseline 0.8315, curve 0.8246
+    leads 25-48 n 34896: raw_gfs 1.2122, baseline 0.9415, curve 0.9325
+    00z n 16760: raw_gfs 1.1511, baseline 0.8922, curve 0.8843
+    06z n 16748: raw_gfs 1.1353, baseline 0.8814, curve 0.8765
+    12z n 16736: raw_gfs 1.1335, baseline 0.8802, curve 0.8711
+    18z n 16724: raw_gfs 1.1610, baseline 0.9014, curve 0.8913
+  ZGSZ look B daily: local days 364, common 364, persistence subset 364; raw_gfs MAE 1.5250 mean error +1.2879, baseline MAE 0.9268 mean error +0.3521, curve MAE 0.9207 mean error +0.2709; persistence MAE 2.2115
+    days dropped or short, by reason: none; cycle hours used: 12z 364
+  ZGSZ: days outside the looks, by reason: {'cycle outside both looks': 1, 'last hour after 2026-07-31T23:00': 1}
+  ZUCK look A hourly: rows scored 67160
+    common set n 67160: raw_gfs MAE 1.4853 mean error -0.1566, baseline MAE 1.1455 mean error +0.0804, curve MAE 1.1301 mean error +0.0531
+    persistence subset n 67160: persistence MAE 2.4777 mean error +0.0146
+    leads 3-24 n 32120: raw_gfs 1.4312, baseline 1.0885, curve 1.0741
+    leads 25-48 n 35040: raw_gfs 1.5349, baseline 1.1978, curve 1.1814
+    00z n 16790: raw_gfs 1.4630, baseline 1.1264, curve 1.1149
+    06z n 16790: raw_gfs 1.4718, baseline 1.1284, curve 1.1135
+    12z n 16790: raw_gfs 1.5001, baseline 1.1523, curve 1.1378
+    18z n 16790: raw_gfs 1.5060, baseline 1.1750, curve 1.1541
+  ZUCK look A daily: local days 365, common 365, persistence subset 365; raw_gfs MAE 1.4032 mean error +0.2508, baseline MAE 1.2394 mean error +0.2498, curve MAE 1.1950 mean error +0.2213; persistence MAE 3.3342
+    days dropped or short, by reason: none; cycle hours used: 12z 365
+  ZUCK look B hourly: rows complete features, no observation (predicted, never scored) 8, scored 66976
+    common set n 66976: raw_gfs MAE 1.4369 mean error -0.1736, baseline MAE 1.0404 mean error +0.0437, curve MAE 1.0480 mean error -0.0389
+    persistence subset n 66968: persistence MAE 2.4841 mean error -0.0028
+    leads 3-24 n 32076: raw_gfs 1.3581, baseline 0.9748, curve 0.9798
+    leads 25-48 n 34900: raw_gfs 1.5094, baseline 1.1008, curve 1.1106
+    00z n 16762: raw_gfs 1.4187, baseline 1.0202, curve 1.0281
+    06z n 16750: raw_gfs 1.4298, baseline 1.0270, curve 1.0351
+    12z n 16738: raw_gfs 1.4356, baseline 1.0411, curve 1.0488
+    18z n 16726: raw_gfs 1.4637, baseline 1.0735, curve 1.0798
+  ZUCK look B daily: local days 364, common 364, persistence subset 364; raw_gfs MAE 1.3386 mean error +0.2143, baseline MAE 1.1453 mean error +0.1496, curve MAE 1.1493 mean error +0.1067; persistence MAE 3.5907
+    days dropped or short, by reason: none; cycle hours used: 12z 364
+  ZUCK: days outside the looks, by reason: {'cycle outside both looks': 1, 'last hour after 2026-07-31T23:00': 1}
+  NZWN look A hourly: rows complete features, no observation (predicted, never scored) 7, scored 67153
+    common set n 67153: raw_gfs MAE 1.1537 mean error +0.7006, baseline MAE 0.7848 mean error +0.0420, curve MAE 0.7879 mean error +0.0010
+    persistence subset n 67146: persistence MAE 2.1097 mean error +0.0034
+    leads 3-24 n 32117: raw_gfs 1.1273, baseline 0.7429, curve 0.7448
+    leads 25-48 n 35036: raw_gfs 1.1779, baseline 0.8231, curve 0.8273
+    00z n 16789: raw_gfs 1.1428, baseline 0.7752, curve 0.7787
+    06z n 16788: raw_gfs 1.1645, baseline 0.7949, curve 0.7974
+    12z n 16788: raw_gfs 1.1519, baseline 0.7789, curve 0.7821
+    18z n 16788: raw_gfs 1.1557, baseline 0.7901, curve 0.7933
+  NZWN look A daily: local days 365, common 365, persistence subset 365; raw_gfs MAE 1.6959 mean error +1.6376, baseline MAE 0.7531 mean error +0.1684, curve MAE 0.7505 mean error +0.1311; persistence MAE 2.1699
+    days dropped or short, by reason: none; cycle hours used: 06z 365
+  NZWN look B hourly: rows complete features, no observation (predicted, never scored) 32, scored 66952
+    common set n 66952: raw_gfs MAE 1.1678 mean error +0.7126, baseline MAE 0.7810 mean error +0.0851, curve MAE 0.7826 mean error +0.0244
+    persistence subset n 66920: persistence MAE 2.2431 mean error +0.0089
+    leads 3-24 n 32064: raw_gfs 1.1479, baseline 0.7414, curve 0.7412
+    leads 25-48 n 34888: raw_gfs 1.1862, baseline 0.8174, curve 0.8205
+    00z n 16756: raw_gfs 1.1572, baseline 0.7732, curve 0.7753
+    06z n 16744: raw_gfs 1.1764, baseline 0.7870, curve 0.7884
+    12z n 16732: raw_gfs 1.1652, baseline 0.7748, curve 0.7758
+    18z n 16720: raw_gfs 1.1726, baseline 0.7891, curve 0.7907
+  NZWN look B daily: local days 364, common 363, persistence subset 362; raw_gfs MAE 1.7039 mean error +1.6516, baseline MAE 0.7357 mean error +0.2578, curve MAE 0.7292 mean error +0.2045; persistence MAE 2.0055
+    days dropped or short, by reason: {'observed: too few usable hours': 1, 'no persistence value': 1}; cycle hours used: 06z 363
+  NZWN: days outside the looks, by reason: {'cycle outside both looks': 1, 'last hour after 2026-07-31T23:00': 1}
+wrote data/processed/session107_claim_scores.csv: SHA-256 2918fff42ab17ff2fce55260d7d0d757638b989943324ddceb3e1a7ff59488ca
+wrote data/processed/session107_claim_days.csv: SHA-256 3ef112935585e03245238dedbdc521063db81e486e61c55021f7026a03f8a297
+wrote data/processed/session107_claim_verdicts.csv: SHA-256 0a9c1dc80a1e052c5b98a117b6c42cbd9811c160a944be959dca0e4575e319da
+
+end 2026-10-11T20:47:36Z; run time 121.3 s; fits 1104
+
+======================================================================
+STEP 4 DETAIL: D101.4's TABLE (48 rows), recomputed inline from data/processed/session107_claim_verdicts.csv only
+Method = the curve (baseline plus drift correction). Comparator = raw GFS (elevation-adjusted) or persistence.
+Margin % = 100 x (1 - method MAE / comparator MAE); diff C = comparator MAE - method MAE; pass = strictly lower at full precision.
+D100.8's descriptive figures (baseline without the drift correction, mean errors, leads 3-24 and 25-48, per cycle hour, rows and days counted and dropped by reason) are in the Step 3 detail above, block 'CLAIM AIRPORTS. D100.8 DESCRIPTIVE FIGURES'. Per-cell figures (each cycle hour and lead) are in data/processed/session107_claim_scores.csv.
+======================================================================
+output  airport look half          n      curve MAE (method)     comparator MAE     margin %   diff C    pass
+hourly  EDDM    A    raw_gfs       67160  1.3099492755147915  1.7425431060154855   +24.825  +0.4326  pass
+hourly  EDDM    A    persistence   67160  1.3099492755147915  2.9156343061346037   +55.072  +1.6057  pass
+hourly  EDDM    B    raw_gfs       66968  1.3484233980618792  1.8461234619519773   +26.959  +0.4977  pass
+hourly  EDDM    B    persistence   66952  1.3484865714843648  3.2076263591826981   +57.960  +1.8591  pass
+daily   EDDM    A    raw_gfs         365  1.2669855173291442  1.7879068493150685   +29.136  +0.5209  pass
+daily   EDDM    A    persistence     365  1.2669855173291442  3.7287671232876711   +66.021  +2.4618  pass
+daily   EDDM    B    raw_gfs         364  1.2276553396362877  1.7905467032967033   +31.437  +0.5629  pass
+daily   EDDM    B    persistence     364  1.2276553396362877  3.6456043956043955   +66.325  +2.4179  pass
+hourly  KORD    A    raw_gfs       67137  1.1494532340270740  1.3426658623411829   +14.390  +0.1932  pass
+hourly  KORD    A    persistence   67114  1.1495676590643154  4.3442065738892026   +73.538  +3.1946  pass
+hourly  KORD    B    raw_gfs       66749  1.2214132093195125  1.3307448950546077    +8.216  +0.1093  pass
+hourly  KORD    B    persistence   66514  1.2204266478706620  4.3483865050966708   +71.934  +3.1280  pass
+daily   KORD    A    raw_gfs         365  1.0656884522461170  1.1751780821917808    +9.317  +0.1095  pass
+daily   KORD    A    persistence     365  1.0656884522461170  4.9861095890410958   +78.627  +3.9204  pass
+daily   KORD    B    raw_gfs         361  1.1186442070747256  1.1483739612188366    +2.589  +0.0297  pass
+daily   KORD    B    persistence     358  1.1216737933810144  4.9531843575418995   +77.354  +3.8315  pass
+hourly  CYYZ    A    raw_gfs       67075  1.1549415823073870  1.4814394334699963   +22.039  +0.3265  pass
+hourly  CYYZ    A    persistence   66990  1.1550741757453098  3.8703985669502909   +70.156  +2.7153  pass
+hourly  CYYZ    B    raw_gfs       66968  1.1191644774944700  1.4626586429339385   +23.484  +0.3435  pass
+hourly  CYYZ    B    persistence   66952  1.1191848304263767  3.8826024614649302   +71.174  +2.7634  pass
+daily   CYYZ    A    raw_gfs         364  1.0581071634901067  1.3776236263736263   +23.193  +0.3195  pass
+daily   CYYZ    A    persistence     363  1.0609609325288720  4.4490358126721761   +76.153  +3.3881  pass
+daily   CYYZ    B    raw_gfs         364  1.0251407501644909  1.3012912087912090   +21.221  +0.2762  pass
+daily   CYYZ    B    persistence     364  1.0251407501644909  4.4807692307692308   +77.121  +3.4556  pass
+hourly  ZGSZ    A    raw_gfs       67160  0.9186260061370910  1.1722000297796307   +21.632  +0.2536  pass
+hourly  ZGSZ    A    persistence   67160  0.9186260061370910  1.7830702799285290   +48.481  +0.8644  pass
+hourly  ZGSZ    B    raw_gfs       66968  0.8808167744662391  1.1452211802652015   +23.088  +0.2644  pass
+hourly  ZGSZ    B    persistence   66952  0.8808565649384037  1.8172571394431831   +51.528  +0.9364  pass
+daily   ZGSZ    A    raw_gfs         365  0.9050147821529588  1.5161753424657534   +40.309  +0.6112  pass
+daily   ZGSZ    A    persistence     365  0.9050147821529588  2.1342465753424658   +57.596  +1.2292  pass
+daily   ZGSZ    B    raw_gfs         364  0.9206542051671482  1.5249560439560441   +39.627  +0.6043  pass
+daily   ZGSZ    B    persistence     364  0.9206542051671482  2.2115384615384617   +58.370  +1.2909  pass
+hourly  ZUCK    A    raw_gfs       67160  1.1300803039568206  1.4852565366289459   +23.913  +0.3552  pass
+hourly  ZUCK    A    persistence   67160  1.1300803039568206  2.4777248362120310   +54.390  +1.3476  pass
+hourly  ZUCK    B    raw_gfs       66976  1.0479501249415846  1.4369376940993790   +27.071  +0.3890  pass
+hourly  ZUCK    B    persistence   66968  1.0480026671353155  2.4840968820929401   +57.812  +1.4361  pass
+daily   ZUCK    A    raw_gfs         365  1.1949593836909771  1.4032246575342464   +14.842  +0.2083  pass
+daily   ZUCK    A    persistence     365  1.1949593836909771  3.3342465753424659   +64.161  +2.1393  pass
+daily   ZUCK    B    raw_gfs         364  1.1493136604693470  1.3385906593406596   +14.140  +0.1893  pass
+daily   ZUCK    B    persistence     364  1.1493136604693470  3.5906593406593408   +67.992  +2.4413  pass
+hourly  NZWN    A    raw_gfs       67153  0.7878545285264380  1.1537036171131594   +31.711  +0.3658  pass
+hourly  NZWN    A    persistence   67146  0.7878557321629962  2.1096565692669706   +62.655  +1.3218  pass
+hourly  NZWN    B    raw_gfs       66952  0.7825523002790348  1.1678226042537938   +32.990  +0.3853  pass
+hourly  NZWN    B    persistence   66920  0.7825852852183958  2.2430663478780635   +65.111  +1.4605  pass
+daily   NZWN    A    raw_gfs         365  0.7505313922624689  1.6959013698630137   +55.744  +0.9454  pass
+daily   NZWN    A    persistence     365  0.7505313922624689  2.1698630136986301   +65.411  +1.4193  pass
+daily   NZWN    B    raw_gfs         363  0.7291818445891086  1.7039338842975207   +57.206  +0.9748  pass
+daily   NZWN    B    persistence     362  0.7284804068169523  2.0055248618784529   +63.676  +1.2770  pass
+
+hourly: verdicts: EDDM PASS (A True, B True); KORD PASS (A True, B True); CYYZ PASS (A True, B True); ZGSZ PASS (A True, B True); ZUCK PASS (A True, B True); NZWN PASS (A True, B True)
+hourly: passes at 6 of 6 new airports in both held-out years
+hourly: smallest margin over 24 values: +8.216 % (+0.1093 degrees C), KORD look B against raw_gfs (full precision 8.215826049109786)
+daily: verdicts: EDDM PASS (A True, B True); KORD PASS (A True, B True); CYYZ PASS (A True, B True); ZGSZ PASS (A True, B True); ZUCK PASS (A True, B True); NZWN PASS (A True, B True)
+daily: passes at 6 of 6 new airports in both held-out years
+daily: smallest margin over 24 values: +2.589 % (+0.0297 degrees C), KORD look B against raw_gfs (full precision 2.588856517833016)
+
+hourly: airport, verdict, margins % (A raw GFS, A persistence, B raw GFS, B persistence)
+  EDDM PASS: 24.83, 55.07, 26.96, 57.96
+  KORD PASS: 14.39, 73.54, 8.22, 71.93
+  CYYZ PASS: 22.04, 70.16, 23.48, 71.17
+  ZGSZ PASS: 21.63, 48.48, 23.09, 51.53
+  ZUCK PASS: 23.91, 54.39, 27.07, 57.81
+  NZWN PASS: 31.71, 62.65, 32.99, 65.11
+daily: airport, verdict, margins % (A raw GFS, A persistence, B raw GFS, B persistence)
+  EDDM PASS: 29.14, 66.02, 31.44, 66.33
+  KORD PASS: 9.32, 78.63, 2.59, 77.35
+  CYYZ PASS: 23.19, 76.15, 21.22, 77.12
+  ZGSZ PASS: 40.31, 57.60, 39.63, 58.37
+  ZUCK PASS: 14.84, 64.16, 14.14, 67.99
+  NZWN PASS: 55.74, 65.41, 57.21, 63.68
+
+Descriptive only (D100.8, never part of the bar), computed at full precision from session107_claim_scores.csv (hourly: pooled from its per-cell n and MAE, which reproduces the common-set n, e.g. EDDM A 67,160): the curve's MAE was above the baseline's (no drift correction) in 6 of 12 hourly airport-look cells (CYYZ A, CYYZ B, EDDM A, NZWN A, NZWN B, ZUCK B) and 5 of 12 daily cells (CYYZ A, CYYZ B, KORD A, KORD B, ZUCK B). Not a diagnosis; not part of any verdict; not cited in F150 (D101.4 limits the finding's descriptive citations to the narrowest or failing margins).
+
+======================================================================
+CONSISTENCY FINDINGS (end step 4: re-read of what this session changed)
+======================================================================
+1. D101, F150, the Live index and STATUS agree with each other and with D100: index as D101.6; F150's numbers equal the look's verdicts file; STATUS's numbers equal F150's.
+2. Not a disagreement, but now out of date by design (D101.5 forbids the edit here): SPEC 9.5's last sentence ("The result will be recorded here and in RESULTS.md once the look is run", SPEC.md line 1240), SPEC 6's stage C bullet (lines 765 to 767) and RESULTS 7 (lines 867 to 869) still describe the claim as pre-registered only. Session 108 folds the result in (D101.7, STATUS).
+3. No other disagreement found.
