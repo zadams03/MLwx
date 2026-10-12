@@ -1,0 +1,10 @@
+# MLwx-live: what must not enter the history (the log and the state do).
+__pycache__/
+*.pyc
+.DS_Store
+# the MLwx code is checked out at a pinned commit for each run
+mlwx/
+# the frozen models come from a Release asset
+models/
+# the page is built by each run and published to GitHub Pages
+site/

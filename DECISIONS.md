@@ -10,8 +10,8 @@ It records choices made, why they were made, open questions, and findings.
 
 <!-- live-index-start -->
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
-- D102: F150 accepted, its framing, the GRIB cache, stage G next, and a smaller live log.
-- F151: session 108's finding (stage C's result folded in, figures, README files).
+- D103: F151 accepted, and stage G's design (the live product v1, GFS only).
+- F152: session 109's finding (the live package, its gates, the frozen models, a dry run).
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -139,80 +139,100 @@ scored.
 
 ---
 
-## 2026-10-12: Session 108 decision: F150 accepted, its framing, the GRIB cache, stage G next, and a smaller live log (owner, planning chat)
+## 2026-10-12: Session 109 decision: F151 accepted, and stage G's design (owner, planning chat)
 
-**D102. Owner decisions, planning chat (after session 107): F150 accepted
-with its readings, how stage C's result is described, the GRIB cache's new
-place, stage G brought forward, and a smaller Live index.** Written at the
-start of session 108, before any other edit. No 2026-27 value has been read
-or scored. Nothing in D100 or F150 changes, and nothing is refit or
-re-scored.
+**D103. Owner decisions, planning chat (after session 108): F151
+accepted, and stage G's design (D102.4), recorded before any build.**
+Written at the start of session 109, before any other edit. No value on
+or after 2026-08-01 has been scored. Stage G makes no claim (D102.5).
 
-- **D102.1 F150 accepted,** with its three F150.6 readings as written.
-- **D102.2 How the result is described (descriptive, D100.8; not a new
-  test).** The frozen curve passes at 6 of 6 new airports in both held-out
-  years for both outputs, and almost all of the gain over raw GFS comes
-  from the baseline. In session 107's output file, the curve's MAE was
-  above the baseline's (no drift correction) in 6 of 12 hourly and 5 of 12
-  daily airport-look cells. So the drift correction helps when GFS's bias
-  shifts and is roughly neutral otherwise. The one clear exception is KORD
-  look B, hourly: the baseline's mean error was -0.41 degrees C and the
-  curve's -0.05, and the correction gave about a third of the gain over
-  raw GFS (MAE: raw GFS 1.3307, baseline 1.2566, curve 1.2214).
-- **D102.3 The GRIB cache has moved.** The gitignored cache
-  `data/raw/grib/` (about 39 GB, 62,572 files, D47) was moved by the owner
-  off the laptop to an external drive, at
-  `/Volumes/MY PASSPORT/MLwx-grib-cache/`. No current or stage B script
-  reads it. Only finished scripts from sessions 37 to 89 do, so those
-  cannot be re-run without the drive. Its manifests stay committed. The
-  README's size of "about 20 GB" is corrected.
-- **D102.4 Stage G comes next (changes D72.3's order only).** After stage
-  C, the next stage is G, live product version 1, on GFS only, built with
-  the weather model as a setting (as stage C was) so that later models plug
-  in without a rebuild. Its design, including how it handles GFS v17, is
-  set in a planning conversation and recorded in its own DECISIONS entry
-  before any build. Stages D, E, F and H keep their scope and follow it,
-  in that order; stage F still covers every model's version changes.
-  Reasons: stage C's method has passed its claim; a never-edited
-  prediction log gives forward evidence from now on; the ECMWF archives
-  are shallow (F123) and deepen while we wait; GFS v17's earliest go-live
-  is about November 2026.
-- **D102.5 Unchanged.** Stage B (D73, its hold rule and scripts); the
-  rule that no 2026-27 value is scored before its test is pre-registered;
-  D72.4's 2027-28 forward year as the place for the live product's claim.
-  Stage G makes no claim until one is pre-registered.
-- **D102.6 README and figures.** Session 108 brings README.md and
-  data/README.md up to date with stage C's result and the order in
-  D102.4, and draws two descriptive figures from session 107's committed
-  files: per-airport MAE of raw GFS and the curve in each look, for both
-  outputs; and MAE by lead per airport. Nothing is averaged across
-  airports.
-- **D102.7 A smaller live file.** To cut what each session reads, the
-  Live index after session 108 is D93, D102 and F151. Archived (still
-  binding, cited by number): D82, D88, D89 and D98 (stage C's design,
-  restated in SPEC 9 where it matters), D100, D101 and F150 (folded into
-  SPEC 9 and RESULTS 7). From now on the index holds only D93, the newest
-  session's own entries, and any entry a running stage needs open; a
-  session's Read first section names other entries by number.
-- **D102.8 SPEC and RESULTS.** Session 108 updates SPEC 6 and 9 and
-  RESULTS 7 with the text in its prompt.
-- **D102.9 Plan.** Session 108: this entry; SPEC and RESULTS; the figures;
-  the README files; a read-only list of which scripts open SPEC.md or
-  DECISIONS.md (to show whether SPEC can be shortened safely later); F151.
-  Next: stage G's design, in the next planning conversation.
+- **D103.1 F151 accepted,** with its four F151.8 readings as written.
+- **D103.2 What v1 is.** For every GFS cycle, a corrected 2 m
+  temperature curve at leads 3 to 48 and, for each local calendar day
+  wholly inside those leads, its maximum read off the curve, by SPEC
+  9.3's method unchanged. GFS only. No accuracy figure is computed or
+  shown for any period until a test on it is pre-registered (D102.5).
+  The drift tracker's errors are an input, not a score.
+- **D103.3 The weather model is a setting.** The code is a package,
+  `src/mlwx/`, in this repo (D90.12), with a config per weather model:
+  data source and fetch, field map, cycle hours, leads and a version
+  table. v1 has only `gfs`. A new model adds a config and an adapter,
+  not a rebuild.
+- **D103.4 Airports.** v1 runs the 12 airports with stage C tables: the
+  development airports (EGLC, LFPG, DSM, YSDU, RNO, KSFO) and the claim
+  airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN). The rest of D83's
+  product list is added later by a one-script onboarding tool.
+- **D103.5 Product models.** Refit once at each v1 airport by SPEC 9.3's
+  structure and section 8's settings, on every complete-case row valid
+  up to 2026-07-31, spent years and the claim airports' look years
+  included. This is a build step, not a test: nothing is scored, and
+  stage C's look is not run again (D101.2). The models are then frozen;
+  v1 does no retraining. Storage: if the whole set is under 50 MB, it is
+  committed to the live repo; otherwise it is one Release asset there.
+  Either way its SHA-256 is held as a constant (D98.2), and every log
+  row cites it.
+- **D103.6 Drift tracker.** As D97.5 and D97.6: per airport, cycle hour
+  and lead, weight 0.02, updated only by the baseline's own errors whose
+  observation is valid before the cycle starts, in ascending valid time,
+  each error once. Every tracker starts at b = 0 at the first live cycle
+  (D97.7's rule), so early forecasts equal the baseline. Observations:
+  IEM routine reports, the nearest within 15 minutes of the valid hour
+  (D88.7).
+- **D103.7 Live data.** GFS from the same AWS archive, by the same
+  byte-range method and at the same four grid points and weights per
+  airport as the pull (D82.4); observations from IEM. On any fetch error
+  or missing field, that cycle issues nothing, and the page says so.
+- **D103.8 The prediction log.** One file per cycle, for all airports,
+  written once and never edited. Each row: airport, cycle, lead, valid
+  time, raw GFS, baseline, b, corrected value, GFS version, model
+  SHA-256, code commit and issue time. A correction is a new file, never
+  an edit. Git history is the proof.
+- **D103.9 Where it runs.** A separate public repo, zadams03/MLwx-live.
+  A GitHub Actions workflow runs four times a day after each cycle lands
+  and also catches up any cycle of the past 24 hours missing from the
+  log. It checks out this repo's code at a pinned commit, commits the
+  log and tracker state, and publishes a static page with GitHub Pages:
+  the curve and daily maxima per airport, the GFS version and a status
+  line. Public because, on the free plan, public repos get unlimited
+  Actions minutes and Pages, and a timestamped, never-edited log is
+  forward evidence. This repo receives no automated commits.
+- **D103.10 GFS v17 (owner's choice: continue under narrow mapping).**
+  Every row carries the GFS version from the config's version table: v16
+  until the first operational v17 cycle is recorded in a DECISIONS
+  entry. Before a cycle is used, a guard checks every GRIB message's
+  identity keys and the grid against the field map; any mismatch stops
+  that cycle (D103.7). After v17 starts, the pipeline keeps running only
+  under D73's narrow mapping: a fetch may change only if the physical
+  quantity is identical, recorded in DECISIONS first. The models are not
+  retrained, and the page marks v17 forecasts as not validated.
+  Retraining and upgrade policy stay in stage F (D102.4). A 2027-28
+  claim (D72.4) would then be on v17; stage F decides how it is framed.
+- **D103.11 Plan.** Session 109: this entry; the package; gates that
+  reproduce stage C's tables and F147's scores at the development
+  airports; the product refit; live GFS and observation adapters, gated
+  against committed data; the log, tracker state, page and runner; one
+  dry run on the latest real cycle into a temporary folder; the live
+  repo's files, written but not deployed; F152. Session 110: the owner
+  creates MLwx-live; deployment; the first live runs checked; the
+  onboarding script and the remaining airports.
+- **D103.12 Live index.** Removed (archived): D102 and F151, which are
+  settled. Added: D103 and F152. After session 109: D93, D103, F152.
 
 ---
 
-## 2026-10-12: Session 108 finding: stage C's result folded in, two figures, README files, and which scripts read the record
+## 2026-10-12: Session 109 finding: the live package, its gates, the frozen models and a dry run
 
-**F151. D102 was recorded first. Stage C's result (F150) was folded into SPEC 6 and 9, RESULTS 7 and the README files, two descriptive figures were drawn from session 107's committed files, and a read-only list was made of which scripts open SPEC.md or DECISIONS. No model was refit or re-scored; no claim airport table, `MLwx-*` folder, `/Volumes/` path or 2026-27 value was read; no network. Full real output: `notes/session-108-output.txt`.**
+**F152. D103 was recorded first. The package `src/mlwx/` was built and gated against the record, the 2,208 product models were fitted and frozen, the live GFS and observation adapters were gated, the log, tracker state, page and runner were built, one dry run was made into a temporary folder, and the live repo's files were written, not deployed. Nothing was scored: no error, MAE or mean error on any row valid on or after 2026-08-01. Network only in Steps 5, 6 and 8, only to the AWS GFS archive and IEM. Full real output: `notes/session-109-output.txt`. Gates script: `scripts/session109_gates.py` (`b08311554757fa999e0edf93a1f79a84cb33adf11dbbfefa435746f7269a9aff`). Run 2026-10-12. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, eccodes 2.48.0.**
 
-- **F151.1 D102.** Recorded first, byte-equal to the prompt's block (61 lines, `diff` and `cmp`), 0 em-dashes.
-- **F151.2 SPEC and RESULTS (D102.8).** SPEC: section 6's order sentence (a), stage C bullet (b), stage G bullet (c); section 9.5's result paragraph (d). RESULTS 7: stage C "done" (e), the roadmap bullet's result text (f), the footer line (g). Each old text found exactly once; nothing else changed in either file.
-- **F151.3 README files (D102.6).** README.md: sections 1, 2 (retitled "Headline results", stage C subsection first, F109 content unchanged under its own heading, one caveats bullet), 4 (one paragraph), 5 (stage C done, G next, then D, E, F, H), 7 (GRIB cache, no drive path) and one clause in section 6's figures row. data/README.md: the `grib` line, `MLwx-pull-f025-048/`, the claim airports' tables. Numbers copied from F150, SPEC 9.5 and D102; nothing averaged across airports.
-- **F151.4 Figures.** `scripts/session108_figures.py` (`dc42002b124024c43c1e5d1e35030d99f4a3c90acd1fafa842f6d376cc7e558c`), standard library only, three input SHA-256 values held as constants (F150.4, D98.2). `figures/stagec_headline.svg` (`14dc9372c605ab5123564efc4c08c6961ea4142a3cf1ff5b7928ad8713ee296d`) and `figures/stagec_mae_by_lead.svg` (`1721cd2164a86d36de72fbedc93dd7fc4b5a2ba111087d5ab04522fb08742ee3`). Gate 1: 24 of 24 raw GFS halves, 100 x (1 - curve / raw) at 2 decimals equals F150.2: PASS. Gate 2: pooling by-lead values over cycle hours and leads reproduces the hourly raw GFS half's n exactly and both MAEs within 1e-9, 12 of 12 airport-looks: PASS. Two runs into `mktemp -d` folders were byte-equal.
-- **F151.5 Test.** One case added to `tests/test_stagec.py` (the script's three SHA-256 constants equal F150.4's): passes. Suite: 51 tests, all pass.
-- **F151.6 Which scripts read the record (Step 5, read only).** SPEC.md is opened by path by 6 scripts (session86, session87_forward_competitors, session87_forward_score, session89, session91, archive_decisions) and reached by 2 more through imports (session96, session104_f025_048). 5 of these search its text, all for section 3.4's airport table (fixed start and end text and two column names); the archive tool only scans it for citation numbers. 3 of the 5 are frozen. Several scripts search DECISIONS text; those for F122 to F135 already cannot resolve in the live file (D96.3, D98.2).
-- **F151.7 `data/raw/grib/`** (Step 0): absent (does not exist), as D102.3 expects.
-- **F151.8 Readings for the owner.** (1) The figures script also hash-checks the days file, as the prompt's three-constant test requires, but reads no value from it. (2) README.md grew by about 2 KB; section 2 holds the result and the other sections are about the same length. (3) The README's section 6 figures row now names the new script, a clause the prompt did not list. (4) SPEC could be shortened later if section 3.4's table, its heading line and "Notes on the table:" stay as they are (F151.6).
-- **F151.9 What was not done.** No SPEC or RESULTS edit beyond Step 3; no existing script, data file or figure edited; nothing committed and no commit message written.
+- **F152.1 D103.** Recorded first, byte-equal to the prompt's block (78 lines, `diff` and `cmp`), 0 em-dashes. Step 0: every stage C input equal to its recorded SHA-256 (24 tables, both pull folders, the positions file, 72 observation files, the record scripts and files).
+- **F152.2 The package (Step 2).** `src/mlwx/`: config per weather model (only `gfs`: bucket, field map with each message's identity keys, cycle hours, leads 0 to 48, grid, a version table with v16 only), `gfs` (byte-range fetch and the guard), `features` (four-point bilinear, D88.5 arithmetic), `observations`, `tables`, `baseline`, `tracker`, `dailymax`, `prediction_log`, `state`, `page`, `runner`, `refit`, `records`; 12 airports in `data/gfs_airports.csv`. Standard library, numpy, lightgbm and eccodes (all in `requirements.txt`, which was not edited). Tests: `tests/test_live.py`, 99 offline tests; whole suite 150 tests, all pass.
+- **F152.3 Gate A.** The package rebuilt the 12 development tables (hours 0 to 24 and 25 to 48) and the 12 claim tables: 24 of 24 equal to the record by SHA-256 (F138.4, the session 104 meta, F149.2).
+- **F152.4 Gate B.** The package's fit, tracker and daily-maximum read-off reproduce F147 at the six development airports: 3,312 fits; 9,936 of 9,936 hourly cells and 6,570 of 6,570 days equal; the rebuilt scores and days texts have F147.7's SHA-256; per-airport and headline MAE equal F147.5 and F147.6 at 4 decimals; curve headline at 3 to 48 equal to 1.0891748115841342. A build-choice reproduction (SPEC 2.5); the claim look was not run (D101.2). Gates A and B were run twice, the second time on the final script, with the same result.
+- **F152.5 Product models (D103.5).** 2,208 models (12 airports x 4 cycle hours x leads 3 to 48) on every complete-case row valid up to 2026-07-31 (1,925 to 1,956 rows each, 4,310,207 in all). Fitted twice in separate processes: identical. Saved in `../MLwx-live-build/models/` (48 files and `manifest.txt`). **Manifest SHA-256 `16485f384c81094247ec745550ad04982e8c3adb255147546bf1190f498641ef`**, held as `baseline.MANIFEST_SHA256`, checked by a test against this entry. Total 305,986,723 bytes, over the 50 MB limit: **the set is one Release asset in the live repo** (a tar of the folder), not committed. Nothing was uploaded.
+- **F152.6 Gate C (Step 5).** Three live cycles from the AWS archive (2021-09-15 18z, 2023-03-08 06z, 2026-07-14 12z), 12 airports, leads 0 to 48: 18,768 values each, all equal to the pull's extract. The guard stops on every altered key in the tests (13 keys, a missing value, a wrong field, a missing idx line, a wrong run stamp) and on 5 of 5 in the gate's offline demonstration.
+- **F152.7 Gate D (Step 6) and the owner's rulings at a stop.** The first run stopped: raw rows identical at all 12 airports, but the pairing differed in 7 of 8,640 hour-airport cases. Six were the first hour of the month (the request began on 1 June, the committed pairing used reports from 31 May). One was DSM 2023-06-30 11:00: two rows share the timestamp 10:50 (21.67 and M), and IEM lists them in a different order from the committed file, so the record's first-row rule gave a different value. Rulings (owner, planning chat): (1) re-run with the request starting one day earlier, comparing the 720 hours of June 2023; (2) live pairing only: when rows share a timestamp and their values differ (one missing counts), that timestamp is ignored and the nearest other report within 15 minutes is used (D88.7); the record's tables and training pairing are unchanged. Implemented as `ReportSet(live=True)`, used by the runner, with tests. Re-run: raw rows identical; pairing equal at 8,639 of 8,640, the one difference being DSM 2023-06-30 11:00, by design under ruling 2; no other difference.
+- **F152.8 Log, state, page, runner (Step 7).** Log: `log/YYYY/MM/gfs_YYYYMMDDHH.csv`, one file per cycle for all airports, written once (a temporary name, then a hard link; an existing file is never overwritten). State: one JSON file, each cell holds b, the last valid time applied and a count, starting at b = 0. Page: one standard-library HTML file, no accuracy figure. Runner: every cycle of the past 24 hours that has arrived (cycle + 4 h 10 min) and is not logged, in time order. A cycle older than the newest logged one is never issued (no tracker holds an error from after a forecast it helped make). A guard stop is final for that cycle and later cycles go on; a fetch problem waits, and blocks later cycles, until the cycle is 12 hours old.
+- **F152.9 Dry run (Step 8).** Latest cycle 2026-10-12 06z, fresh state, into `/tmp/mlwx-dryrun.R8jNkG` (kept): one log file, 552 rows (12 airports, leads 3 to 48), b = 0 everywhere, v16, the page built. The table of raw GFS and corrected values at leads 3, 24 and 48 is in the output file. IEM was not called (no earlier log row, so no error to take).
+- **F152.10 Live repo files (Step 9).** `deploy/mlwx-live/`: workflow (four crons at cycle + 4 h 10 min, manual trigger, pinned MLwx commit as a placeholder, models from a Release asset, commits log and state, publishes the page), `requirements.txt`, `README.md`, `.gitignore`. The workflow parses as YAML. No remote repo was created and nothing was pushed.
+- **F152.11 Readings for the owner.** (1) The models are 306 MB, so each run downloads them unless the Actions cache holds them (the workflow caches by tag). (2) The workflow and the Linux install of `requirements.txt` are untested (no network to PyPI or GitHub was allowed): run it by hand first in session 110. (3) `code_commit` in the dry run is the repo HEAD plus "-dirty", because the work is not committed; in the live repo it is the pinned commit. (4) The whole-file fallback of D86.2 is not ported: a live cycle with a wrong .idx issues nothing. (5) The 2 m maximum and minimum are not fetched live (not features). (6) In the dry run the baseline moved GFS by up to about 3.4 degrees (EDDM lead 24); nothing was compared with an observation. (7) The first live runs will have b = 0 and the page says "drift warming up" until each cell holds 50 errors. (8) Errors older than 7 days in the log are not used by the tracker (a longer gap is skipped like a missing observation).
+- **F152.12 What was not done.** No look, score or accuracy figure of any kind; no retraining; no change to D103 or to any existing script, data file, figure or `MLwx-*` folder; SPEC.md, RESULTS.md, README.md and CLAUDE.md not edited; no remote repo, push, upload or commit; no commit message written.

@@ -1,0 +1,138 @@
+# MLwx-live: issue every new GFS cycle (DECISIONS D103.7 to D103.9).
+#
+# Four times a day, about cycle + 4 h 10 min UTC (cycles at 00, 06, 12 and 18 UTC), and by hand.
+# Each run:
+#   1. checks out this repo (the log and the tracker state) and the MLwx code at ONE pinned commit;
+#   2. installs the pinned requirements;
+#   3. gets the frozen models (one Release asset, D103.5), checked against the manifest SHA-256 held in the code;
+#   4. runs the runner: every cycle of the past 24 hours that has arrived and is not yet logged, in time order;
+#   5. commits the log files and the tracker state (the log is written once and never edited);
+#   6. publishes the static page to GitHub Pages;
+#   7. fails the job (so the owner is told) if any cycle issued nothing.
+#
+# Written in session 109 and NOT deployed. Session 110 (owner) sets the two values marked SET IN SESSION 110
+# below, creates the repo, and runs this by hand first.
+
+name: live
+
+on:
+  schedule:
+    - cron: "10 4 * * *"      # the 00 UTC cycle
+    - cron: "10 10 * * *"     # the 06 UTC cycle
+    - cron: "10 16 * * *"     # the 12 UTC cycle
+    - cron: "10 22 * * *"     # the 18 UTC cycle
+  workflow_dispatch:
+    inputs:
+      latest_only:
+        description: "Only the latest available cycle (no catching up)"
+        type: boolean
+        default: false
+
+env:
+  MLWX_REPO: zadams03/MLwx
+  MLWX_COMMIT: "SET-IN-SESSION-110-the-40-character-commit-of-MLwx"     # SET IN SESSION 110
+  MODELS_TAG: "SET-IN-SESSION-110-the-release-tag-of-the-models"        # SET IN SESSION 110
+  MODELS_FILE: gfs-models.tar
+
+# One run at a time: the log and the tracker state are written in time order.
+concurrency:
+  group: live
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write        # commit the log and the state
+      pages: write           # publish the page
+      id-token: write        # publish the page
+    steps:
+      - name: Stop if the placeholders are still there
+        run: |
+          case "$MLWX_COMMIT$MODELS_TAG" in
+            *SET-IN-SESSION-110*) echo "MLWX_COMMIT or MODELS_TAG is still a placeholder"; exit 1 ;;
+          esac
+
+      - name: Check out this repo (the log and the state)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out the MLwx code at the pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MLWX_REPO }}
+          ref: ${{ env.MLWX_COMMIT }}
+          path: mlwx
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the pinned requirements
+        run: python -m pip install -r requirements.txt
+
+      - name: Restore the models from the cache
+        id: models
+        uses: actions/cache@v4
+        with:
+          path: models
+          key: gfs-models-${{ env.MODELS_TAG }}
+
+      - name: Download the models (one Release asset)
+        if: steps.models.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$MODELS_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$MODELS_FILE" --dir .
+          mkdir -p models
+          tar -xf "$MODELS_FILE" -C models
+          rm "$MODELS_FILE"
+
+      - name: Run the runner
+        id: runner
+        env:
+          PYTHONPATH: mlwx/src
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set +e
+          args=""
+          if [ "${{ inputs.latest_only }}" = "true" ]; then args="--latest-only"; fi
+          python -m mlwx.runner --root . --models models --commit "$MLWX_COMMIT" $args
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit the log and the tracker state
+        run: |
+          git config user.name "mlwx-live"
+          git config user.email "mlwx-live@users.noreply.github.com"
+          git add log state
+          if git diff --cached --quiet; then
+            echo "nothing new to commit"
+          else
+            git commit -m "Cycles issued by the run of $(date -u +%Y-%m-%dT%H:%MZ)"
+            for i in 1 2 3; do git push && break; git pull --rebase; done
+          fi
+
+      - name: Prepare the page
+        uses: actions/configure-pages@v5
+
+      - name: Upload the page
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Publish the page
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Fail the job if a cycle issued nothing (exit code 3) or is waiting (2)
+        if: steps.runner.outputs.code != '0'
+        run: |
+          echo "The runner finished with exit code ${{ steps.runner.outputs.code }}; see its output above."
+          exit 1

@@ -1,0 +1,30 @@
+Session 109: stage G live package built and gated, product models frozen, dry run (D103, F152)
+
+Records D103: F151 accepted, and stage G's design. v1 is GFS only, with
+the weather model as a config setting, at the 12 airports with stage C
+tables. Models are refit once on all data to 2026-07-31 and frozen. The
+drift tracker starts at b = 0. The log is written once and never edited.
+GFS v17 continues under D73's narrow mapping. It runs from a separate
+public repo, zadams03/MLwx-live, and no accuracy figure is shown.
+
+Adds the package src/mlwx/ and 99 offline tests in tests/test_live.py.
+Gated against the record with the package's own code: all 24 stage C
+tables rebuilt with equal SHA-256 (Gate A), and F147 reproduced exactly,
+curve headline 1.0891748115841342 (Gate B). Live GFS byte-range fetches
+of three past cycles equal the pull at 18,768 of 18,768 values each
+(Gate C). The live IEM fetch has identical raw rows; its pairing is
+equal at 8,639 of 8,640 after two owner rulings at a stop (F152.7: a
+padded request window; live-only handling of repeated timestamps whose
+values differ).
+
+The 2,208 product models were fitted twice with identical results.
+Manifest SHA-256 16485f38...41ef is held as a constant. At 306 MB they
+are kept outside the repo, to be one Release asset in the live repo.
+One dry run on cycle 2026-10-12 06z into a temp folder gave 552 rows,
+b = 0 everywhere, and the page built. Nothing was scored.
+deploy/mlwx-live/ holds the live repo's workflow, requirements and
+README, not deployed.
+
+Archive step: D102 and F151 moved; the Live index is D93, D103 and
+F152. Tests 150 of 150 pass; citations 175 of 175 resolve. Full output:
+notes/session-109-output.txt.
