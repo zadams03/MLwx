@@ -314,5 +314,20 @@ class ClaimElevationConstant(unittest.TestCase):
                 self.assertEqual(float(m.group(1)), v)
 
 
+class FiguresConstants(unittest.TestCase):
+    """D98.2: session 108's figure script holds F150.4's three SHA-256 values."""
+
+    def test_f150_4(self):
+        import session108_figures as s108
+        text = entry_text("F150")
+        for name, const in (("session107_claim_scores.csv", s108.SCORES_SHA256),
+                            ("session107_claim_days.csv", s108.DAYS_SHA256),
+                            ("session107_claim_verdicts.csv", s108.VERDICTS_SHA256)):
+            with self.subTest(file=name):
+                m = re.search(rf"data/processed/{re.escape(name)}` \(`([0-9a-f]{{64}})`\)", text)
+                self.assertIsNotNone(m)
+                self.assertEqual(const, m.group(1))
+
+
 if __name__ == "__main__":
     unittest.main()

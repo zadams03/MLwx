@@ -1,0 +1,321 @@
+SESSION 108 SUMMARY (stage C's result folded in, README and figures, a smaller live log; D102, F151)
+Done: D102 recorded byte-equal first; two figures drawn from session 107's files; SPEC 6 and 9 and RESULTS 7 updated with
+the prompt's text; README.md and data/README.md brought up to date; read-only list of scripts that open SPEC.md or
+DECISIONS; F151 recorded; STATUS overwritten; archive step run. Nothing refit or re-scored; no claim table, MLwx-* folder,
+/Volumes/ path, 2026-27 value or network used. Nothing committed.
+Checks:
+- Step 0 preflight (status, no D102/F151, no new files, three F150.4 hashes, tests 50): PASS. data/raw/grib/: ABSENT
+- Step 1 D102 byte-equal (diff, cmp, 61 lines), em-dashes 0: PASS
+- Step 2 figures: gate 1 (24 margins equal F150.2) PASS; gate 2 (pooled by-lead reproduces n and MAE within 1e-9, 12 of 12) PASS;
+  two runs byte-equal PASS; new test (three SHA-256 constants equal F150.4) PASS
+- Step 3 SPEC (a to d) and RESULTS (e to g): each old text found once, replaced: PASS
+- Step 4 README.md and data/README.md edited, 0 new em-dashes: PASS
+- Step 5 list of scripts that read the record files: PASS (table below)
+- Archive: 7 moved (D82, D88, D89, D98, D100, D101, F150), live index D93, D102, F151; its 4 checks PASS
+- Citations 175 of 175 resolved, 0 duplicates, 0 out of order: PASS. Tests 51, all OK: PASS
+- DECISIONS.md 56,610 -> 16,051 bytes (limit 80,000): PASS. Scope: no breach.
+Headline numbers:
+- figures/stagec_headline.svg SHA-256 14dc9372c605ab5123564efc4c08c6961ea4142a3cf1ff5b7928ad8713ee296d
+- figures/stagec_mae_by_lead.svg SHA-256 1721cd2164a86d36de72fbedc93dd7fc4b5a2ba111087d5ab04522fb08742ee3
+- scripts/session108_figures.py SHA-256 dc42002b124024c43c1e5d1e35030d99f4a3c90acd1fafa842f6d376cc7e558c
+- Step 5: SPEC.md opened by path by 6 scripts, reached through imports by 2 more; 5 of them search its text (section 3.4's
+  table markers); 3 of those 5 are frozen. DECISIONS lookups for F122 to F135 already cannot resolve in the live file.
+Readings for the owner (F151.8): (1) the figures script hash-checks the days file but reads no value from it; (2) README.md grew
+about 2 KB, in section 2; (3) README section 6's figures row now names the new script (not listed in the prompt);
+(4) SPEC 3.4's table and its two marker lines must stay as they are if SPEC is shortened later.
+Open items: the owner's review; then stage G's design in the planning chat and session 109's plan.
+
+
+======================================================================
+CHECKPOINTS
+======================================================================
+Step 0 (preflight): PASS. git status showed only ?? docs/sessions/session-108.md. DECISIONS.md ends with D101 and F150; no D102 or F151 in either DECISIONS file. None of the scope-list new files existed. SHA-256 of session107_claim_scores.csv (2918fff4...88ca), _days.csv (3ef11293...f8a297), _verdicts.csv (0a9c1dc8...319da) equal F150.4 (full values compared). data/raw/grib/: ABSENT (does not exist; D102.3 expected absent or empty). Tests: 50 run, all OK. Files changed: notes/session-108-output.txt (new).
+Step 1 (D102): PASS. D102 block (61 lines, markers excluded) appended after '---' and blank line with sed/cat from the prompt; diff and cmp byte-equal; earlier content unchanged (prefix cmp); em-dashes in D102: 0 (the file's one em-dash is the existing title line). Live index not changed. Files changed: DECISIONS.md.
+Step 2 (figures): PASS. scripts/session108_figures.py written (stdlib only, offline, bytecode off, SHA-256 of three inputs held as constants citing F150.4 and D98.2, refuses to overwrite, no date or random value). Columns used: verdicts file icao, output, look, half, n, curve_mae, other_mae, margin_pct; scores file icao, look, output, method, row_set, cycle_hour, lead, n, mae. The days file is only hash-checked, nothing is read from it. Gate 1: for 24 raw GFS halves, 100 x (1 - curve/raw) at 2 decimals equals F150.2's raw GFS columns: PASS. Gate 2: pooling per-lead values over all cycle hours and leads reproduces the hourly raw GFS half's n exactly and both MAEs within 1e-9 for 12 airport-looks: PASS. Determinism: two runs into two mktemp -d folders gave byte-equal files (folders deleted). Real run wrote figures/stagec_headline.svg (16,644 bytes, SHA-256 14dc9372c605ab5123564efc4c08c6961ea4142a3cf1ff5b7928ad8713ee296d) and figures/stagec_mae_by_lead.svg (32,962 bytes, SHA-256 1721cd2164a86d36de72fbedc93dd7fc4b5a2ba111087d5ab04522fb08742ee3); a third run refuses (files exist). Both figures looked at as rendered images. One line added to scripts/README.md. One test added (FiguresConstants in tests/test_stagec.py): passes. Whole suite: 51 run; 1 failure, test_record.ArchiveTool.test_citations_real_files_resolve, because D102 cites F151, which is written at the end of the session; it is expected to pass once F151 exists (rechecked at the end). Files changed: scripts/session108_figures.py (new), figures/stagec_headline.svg (new), figures/stagec_mae_by_lead.svg (new), scripts/README.md, tests/test_stagec.py.
+
+Step 3 (SPEC and RESULTS): PASS. Each of the seven old texts (a to g) found exactly once and replaced; nothing else changed in either file. Added lines contain 0 em-dashes. Files changed: SPEC.md, RESULTS.md. git diff follows.
+----- git diff SPEC.md RESULTS.md -----
+diff --git a/RESULTS.md b/RESULTS.md
+index 62c7867..ff547ab 100644
+--- a/RESULTS.md
++++ b/RESULTS.md
+@@ -853,7 +853,7 @@ They now apply to a project with three proven methods, not one.
+   Stage B runs: the 2026-27 GFS forward test is pre-registered, its models
+   are frozen, and its scripts are written and gated; it is scored only
+   after each of its periods ends (DECISIONS D73, D77.6, D79). Stage C is
+-  open: it widens the target from one hour a day to an hourly curve from
++  done: it widens the target from one hour a day to an hourly curve from
+   every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
+   pull to 24 hours ahead is complete, and its build choices are made by
+   time-ordered cross-validation on the six development airports, never
+@@ -864,18 +864,25 @@ They now apply to a project with three proven methods, not one.
+   D97, F146). The curve now runs to 48 hours ahead, and the daily maximum,
+   read off the curve, has a fixed way of being scored (DECISIONS D98,
+   F147). Two ways to improve the daily maximum were tested and not
+-  adopted (DECISIONS D99, F148). Stage C is now locked: its claim test on
+-  six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) is pre-registered,
+-  before any of their held-out data was read (DECISIONS D100, SPEC 9).
+-  Stages D
+-  to H (other weather models, blending, upgrade policy, the live tool and
+-  probabilistic ranges) follow; pooling is conditional.
++  adopted (DECISIONS D99, F148). Stage C was locked and its claim
++  pre-registered on six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK,
++  NZWN) before any of their held-out data was read (DECISIONS D100). The
++  look was run once: both the hourly curve and the daily maximum pass at
++  6 of 6 new airports in both held-out years. The smallest margins are at
++  KORD, look B, against raw GFS: +8.2 percent hourly and +2.6 percent for
++  the daily maximum (DECISIONS F150, SPEC 9.5). Almost all of the gain
++  over raw GFS comes from the baseline; the drift correction helps when
++  GFS's bias shifts (KORD look B) and is roughly neutral otherwise
++  (DECISIONS D102.2, descriptive). Stage G, the live tool on GFS, comes
++  next; stages D, E, F and H (other weather models, blending, upgrade
++  policy and probabilistic ranges) follow it (DECISIONS D102.4); pooling
++  is conditional.
+ 
+ ---
+ 
+ *All figures in this file are cited to their DECISIONS.md/SPEC.md source
+ and were checked against it when this file was written (session 30),
+ revised (session 44, DECISIONS F95), revised again (session 65,
+-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100). SPEC.md remains the source of truth for how the project
++DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100) and after session 108 (DECISIONS D102). SPEC.md remains the source of truth for how the project
+ works; this file is a read-only summary of results already on record
+ there.*
+diff --git a/SPEC.md b/SPEC.md
+index 3d71509..0b4cc06 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -721,7 +721,8 @@ it as a warning sign and stop.
+     (DECISIONS D72.2).
+ 
+ **The roadmap after stage 2 (DECISIONS D72).** The end goal is set out
+-in section 1. Stages run in this order. Stages A and B run side by
++in section 1. Stages run in this order, except that stage G now comes straight
++after stage C (DECISIONS D102.4). Stages A and B run side by
+ side, because both are time-critical.
+ 
+ - **Stage A — benchmark and source probe.** Confidence intervals for
+@@ -762,9 +763,10 @@ side, because both are time-critical.
+   complete and checked, the curve runs to 48 hours, and the daily
+   maximum's metric is fixed (DECISIONS D98, F147). The daily maximum is
+   read off the curve: two challengers were not adopted (DECISIONS D99,
+-  F148). Stage C is locked, and its claim is pre-registered on the six
+-  new airports drawn by the rule in DECISIONS D82.7 (DECISIONS D100);
+-  its design is section 9.
++  F148). Stage C is locked (DECISIONS D100), and its claim passed: both
++  outputs pass at 6 of 6 new airports, drawn by the rule in DECISIONS
++  D82.7, in both held-out years (DECISIONS F150, D102). Its design and
++  result are section 9.
+ - **Stage D — correct each other weather model on its own,** on the
+   full curve, screening each at a few hours first.
+ - **Stage E — blend and stack.** Combine the corrected models, with NBM
+@@ -773,7 +775,10 @@ side, because both are time-critical.
+   changes version, starting with GFS v17.
+ - **Stage G — live product, version 1.** A daily pipeline, a
+   prediction log that is never edited, a simple display, and
+-  one-script airport onboarding.
++  one-script airport onboarding. It comes straight after stage C, on
++  GFS only, with the weather model as a setting; its design includes
++  how it handles GFS v17. Stages D, E, F and H follow it, with their
++  scope unchanged (DECISIONS D102.4).
+ - **Stage H — probabilistic forecasts.** Ranges with stated odds,
+   judged against their own bar, fixed before running.
+ - **Pooling (conditional).** Combining airports into one model with
+@@ -1236,8 +1241,20 @@ lower than raw GFS (elevation-adjusted, 5.2) and lower than persistence
+ observed when the run starts), on the same rows. An airport passes an
+ output only if both looks pass (5.0). The claim is stated per output as
+ "passes at N of 6 new airports in both held-out years"; nothing is averaged
+-across airports. Expected: both outputs pass at all six. The result will be
+-recorded here and in RESULTS.md once the look is run.
++across airports. Expected: both outputs pass at all six.
++
++**Result (DECISIONS F150, D102).** The look was run once, in session 107.
++Both outputs pass at 6 of 6 new airports in both held-out years, as
++expected. The smallest margin is at KORD, look B, against raw GFS: +8.216
++percent (+0.1093 degrees C) for the hourly curve and +2.589 percent
++(+0.0297 degrees C) for the daily maximum. Almost all of the gain over raw
++GFS comes from the baseline. Described only (DECISIONS D100.8, not part of
++the bar): the curve's MAE was above the baseline's in 6 of 12 hourly and 5
++of 12 daily airport-look cells, so the drift correction helps when GFS's
++bias shifts and is roughly neutral otherwise. The clear exception is KORD
++look B, hourly, where the baseline's mean error was -0.41 degrees C and
++the curve's -0.05, and the correction gave about a third of the gain
++(MAE: raw GFS 1.3307, baseline 1.2566, curve 1.2214).
+ 
+ **9.6 Caveats.** All data is GFS v16; GFS v17 is stage B's and stage F's
+ question. Three claim airports have sea in their grid box (CYYZ, ZGSZ,
+----- end diff -----
+Step 4 (README.md, data/README.md): PASS. Edits by item: README section 1 last two sentences; section 2 retitled 'Headline results' with a stage C subsection (figure, alt text, caption, four sentences, second figure with caption, one caveats bullet) and the F109 content under a new subsection heading, otherwise unchanged; section 4 'Stage C's target' paragraph; section 5 stage C done, order G, D, E, F, H, new airports bullet; section 6 figures row names the new script (not listed in the prompt, one clause, flagged); section 7 GRIB cache bullet (about 39 GB, external drive, no drive path printed). data/README.md: grib line, MLwx-pull-f025-048/ and the claim tables lines. Added lines: 0 em-dashes. Numbers all copied from F150, SPEC 9.5, D102. README.md grew from 19,346 to 21,399 bytes (section 2 holds the new result; the other sections are about the same length). Files changed: README.md, data/README.md. git diff follows.
+----- git diff README.md data/README.md -----
+diff --git a/README.md b/README.md
+index f68c467..31c76e8 100644
+--- a/README.md
++++ b/README.md
+@@ -11,9 +11,10 @@ and corrects new forecasts with it. At five airports, on a reserved year,
+ the selected-features method lowers the mean absolute error (MAE, the
+ average size of the miss) against raw GFS by 12.2% to 21.0%, and every 95%
+ interval lies above zero (F109, F125.6). Each claim came from a single
+-look at held-out data, with the pass rule fixed in writing first. The
+-work now under way is stage C: an hourly corrected temperature curve for
+-every GFS run (D82).
++look at held-out data, with the pass rule fixed in writing first. Stage
++C's corrected hourly curve and daily maximum, from every GFS run out to 48
++hours, then passed their pre-registered test at 6 of 6 new airports in both
++held-out years (F150). Stage G, the live tool, is next (D102.4).
+ 
+ This is a research project and a private tool. It is not an operational
+ forecast, and it must not be used for safety-critical decisions.
+@@ -23,7 +24,35 @@ log, [DECISIONS.md](DECISIONS.md), or its archive,
+ [DECISIONS-archive.md](DECISIONS-archive.md). "SPEC 8" means section 8 of
+ [SPEC.md](SPEC.md).
+ 
+-## 2. Headline result
++## 2. Headline results
++
++### Stage C: the hourly curve and the daily maximum, six new airports
++
++![Grouped bars of raw GFS MAE and the stage C curve's MAE at EDDM, KORD, CYYZ, ZGSZ, ZUCK and NZWN, in two held-out years, for the hourly curve and the daily maximum](figures/stagec_headline.svg)
++
++*Stage C claim, six new airports: the curve has a lower MAE than raw GFS in
++both held-out years, for both outputs (F150).*
++
++Stage C was tested on six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK,
++NZWN) in two held-out years. For the hourly curve at leads 3 to 48 and for
++the daily maximum, the curve had to beat both raw GFS and persistence in
++both years (SPEC 9.5). It did, at 6 of 6 airports for each output (F150).
++The smallest margins are at KORD, look B, against raw GFS: +8.2% hourly and
+++2.6% for the daily maximum. Almost all of the gain over raw GFS comes from
++the baseline; the drift correction helps when GFS's bias shifts and is
++roughly neutral otherwise (D102.2, descriptive).
++
++![Six small line charts of MAE by forecast hour from 3 to 48, one per claim airport, raw GFS and the curve, in two looks](figures/stagec_mae_by_lead.svg)
++
++*MAE by forecast hour, per airport, pooled over the four GFS runs a day.
++Descriptive (D100.8).*
++
++- **Caveats (D100.10).** All data is GFS v16. The build choices were made on
++  six other airports (D82.6). CYYZ, ZGSZ and NZWN have sea in their grid
++  box (F132.3). The MAE of an hourly curve or a daily maximum is not
++  comparable with the one-hour results below.
++
++### The selected-features method on five airports (F109)
+ 
+ ![Grouped bars: raw GFS MAE and the selected-features method's MAE at EGLC, LFPG, DSM, YSDU and RNO on the reserved year 2024-25](figures/headline_mae.svg)
+ 
+@@ -132,6 +161,11 @@ is ignored, so the hour stays fixed all year. The model learns the
+ residual: observed temperature minus the GFS forecast (SPEC 4.2). The
+ corrected forecast is GFS plus that predicted residual.
+ 
++**Stage C's target.** Stage C forecasts every whole hour from 3 to 48 hours
++ahead from each GFS run. It uses one model per airport, run hour and lead,
++plus a running correction for drifting bias. The daily maximum is read off
++the curve (SPEC 9.1, 9.3).
++
+ **Three methods**, each tested against the same frozen pass bar (SPEC
+ 5.3): the corrected forecast must beat both raw GFS and persistence on MAE
+ over the held-out period.
+@@ -182,22 +216,21 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
+   forward test is pre-registered (D73) and its models are frozen (F122).
+   Its build, fetch and scoring scripts exist and passed their gates (F128,
+   F129). Each period is scored only after it has ended (D73.8).
+-- **C. Hourly curve on GFS: under way.** The design is set (D82, D83).
+-  The GRIB pull for forecast hours 0 to 24 is complete and checked
+-  (F137). The development table is built and gated (F138). The rules for
+-  build choices are fixed (D89), and the curve's baseline is fitted
+-  (F139). Next: D82.5's alternatives, each compared with the baseline
+-  under D89.6.
++- **C. Hourly curve on GFS: done.** The corrected hourly curve and the
++  daily maximum passed their pre-registered test at 6 of 6 new airports
++  in both held-out years (D100, F150).
++- **G. Live product, version 1: next** (D102.4). On GFS only, with the
++  weather model as a setting. A daily pipeline, a prediction log that is
++  never edited, a simple display and one-script airport onboarding. Its
++  design, including GFS v17, is set before any build.
+ - **D.** Correct each other weather model on its own.
+ - **E.** Blend and stack the corrected models.
+ - **F.** An upgrade policy for when a weather model changes version,
+   starting with GFS v17.
+-- **G.** Live product, version 1: a daily pipeline, a prediction log that
+-  is never edited, a simple display and one-script airport onboarding.
+ - **H.** Probabilistic forecasts: ranges with stated odds.
+-- **New airports** are an ongoing track. Stage C's claim will be judged
+-  on six new airports drawn by a fixed rule: EDDM, KORD, CYYZ, ZGSZ, ZUCK
+-  and NZWN (D82.7, F132). **Pooling** (one model across airports) is
++- **New airports** are an ongoing track. Stage C's claim was judged on six
++  new airports drawn by a fixed rule, and all six passed: EDDM, KORD,
++  CYYZ, ZGSZ, ZUCK and NZWN (D82.7, F150). **Pooling** (one model across airports) is
+   conditional.
+ 
+ ## 6. Repository map
+@@ -206,7 +239,7 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
+ |---|---|---|
+ | Start here | `README.md` | This file. |
+ | | [RESULTS.md](RESULTS.md) | The results in one place, each number cited to its entry. |
+-| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py`. |
++| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. |
+ | The research record | [SPEC.md](SPEC.md) | The source of truth for how the project should work. |
+ | | [DECISIONS.md](DECISIONS.md) | The append-only log of decisions (D) and findings (F). |
+ | | [DECISIONS-archive.md](DECISIONS-archive.md) | Settled entries moved out of DECISIONS.md word for word. |
+@@ -256,7 +289,9 @@ run in session 98b (F140).
+   `.meta.txt` beside it that gives the pull date and exact query (SPEC
+   2.3).
+ - **The bulk GRIB cache is not committed.** It is the gitignored folder
+-  `data/raw/grib` (about 20 GB, D47). The committed pull manifests under
++  `data/raw/grib` (about 39 GB). It was moved off the laptop to an external
++  drive. Only finished scripts from sessions 37 to 89 read it, so they
++  need the drive to re-run (D102.3). The committed pull manifests under
+   `data/raw/diagnostics/` (for example
+   `session37/session37_pull_manifest.csv` and
+   `session76/session76_pull_manifest.csv`) give the exact URL and byte
+diff --git a/data/README.md b/data/README.md
+index 8dc2af1..6bb1297 100644
+--- a/data/README.md
++++ b/data/README.md
+@@ -22,9 +22,10 @@ each is a fixed snapshot of a live service.
+   (D47, D62.7).
+ - **`iem_mos/`:** the raw GFS MOS (MAV) responses for the NBM and MOS
+   comparison, saved unchanged (F127.3).
+-- **`grib`** (not committed): the bulk GRIB cache, about 20 GB. It can be
+-  fetched again from the manifests in `diagnostics/`, so only they are
+-  committed (D47).
++- **`grib`** (not committed): the bulk GRIB cache, about 39 GB. It was
++  moved off the laptop to an external drive. Only finished scripts from
++  sessions 37 to 89 read it, so they need the drive to re-run. Its
++  manifests in `diagnostics/` stay committed (D47, D102.3).
+ 
+ ## processed/
+ 
+@@ -62,6 +63,11 @@ by SHA-256:
+   built from them, one file per development airport, rebuilt exactly from
+   the Release and the committed observations (D88.8, F138). Its files'
+   SHA-256 are in `processed/session96_stagec_dev_table.meta.txt`.
++- **`MLwx-pull-f025-048/`**, a folder beside the repo: the owner's local
++  copy of the Release for forecast hours 25 to 48 (D98, F147).
++- **The claim airports' tables**, also in `MLwx-stagec/`: twelve files, two
++  per claim airport (hours 0 to 24 and 25 to 48), built for stage C's claim
++  test (D100, F149).
+ 
+ The data's sources and terms are in the root README's section 9,
+ [Data credits and terms](../README.md#9-data-credits-and-terms).
+----- end diff -----
+Step 5 (which scripts read the record files; read only): PASS. Method: grep of scripts/ and tests/ for the file names and path constants, then the lines read. Many other scripts only name SPEC or DECISIONS in comments or docstrings; they open neither file. Nothing was edited or run.
+
+| file | opens | frozen? | searches its text, or only hashes or copies |
+|---|---|---|---|
+| scripts/session86_forward_build.py | SPEC.md; DECISIONS.md | yes (D91.2) | SPEC: finds "**3.4 The airport table.**" up to "Notes on the table:", then the table rows ("station code" header). DECISIONS (live file only): regex for session81_training_set.csv hash line, the manifest.json hash, and the F122.5 table between "**F122.5" and "**F122.6" (F122 is archived, so the live-file lookups already fail, D96.3) |
+| scripts/session87_forward_competitors.py | SPEC.md | yes (D80.1, D91.2) | SPEC: same 3.4 block and "target hour (UTC)" column |
+| scripts/session87_forward_score.py | SPEC.md; DECISIONS.md and DECISIONS-archive.md | yes (D80.1, D91.2) | SPEC: same 3.4 block. DECISIONS: manifest.json hash and the F122.5 table (reads both files, so it still resolves) |
+| scripts/session89_stage_c_scoping.py | SPEC.md | no | SPEC: same 3.4 block |
+| scripts/session91_grib_pull.py | SPEC.md; defines DECISIONS_FILE | no | SPEC: same 3.4 block; also hashes SPEC.md for a meta file. DECISIONS_FILE is used by other scripts (below) |
+| scripts/session92_verify_chunk.py | DECISIONS.md (through session91's constant) | no (not edited, D98.2) | DECISIONS: regex for the F122.3 training-set hash (archived, so that mode cannot resolve, D98.2) |
+| scripts/session95_check_release.py | DECISIONS.md (through session91's constant) | no (not edited, D98.2) | DECISIONS: regex for F133, F134.1, F135.2, F135.3 values (archived, cannot resolve, D98.2) |
+| scripts/session96_stagec_table.py | neither directly; through session86's load_airports and expected_hash_from_decisions, and session91's load_airports | no | SPEC 3.4 block and the F122.3 hash line (live file only), by those imports |
+| scripts/session104_stagec_table_f025_048.py | neither directly; session86's load_airports | no | SPEC 3.4 block, by that import |
+| scripts/archive_decisions.py | SPEC.md, STATUS.md, CLAUDE.md, RESULTS.md, DECISIONS.md, DECISIONS-archive.md | no (standing tool) | reads SPEC and the other record files only to find cited D and F numbers; parses DECISIONS for its Live index markers and entry headings; moves text; never edits SPEC |
+| tests/test_record.py | DECISIONS.md, DECISIONS-archive.md (and copies in a temp folder) | no | runs the archive tool; reads F122 text from both files; checks the live file's size |
+| tests/test_stagec.py | DECISIONS.md, DECISIONS-archive.md | no | finds an entry by its number ("**Dnn. " or "**Fnn. ") in either file; checks recorded hashes |
+| (no other script or test opens either file by path) | | | |
+
+Counts: scripts that open SPEC.md by path: 6 (session86, session87_forward_competitors, session87_forward_score, session89, session91, archive_decisions); 2 more reach it by importing session86 or session91 code (session96, session104_f025_048). Scripts that search SPEC.md's text: 5 stage scripts search for the fixed text "**3.4 The airport table.**", "Notes on the table:", "station code" and "target hour (UTC)" (plus the 2 importers); archive_decisions.py only scans for citation numbers. Nothing else in SPEC is searched, and no script hashes SPEC except session91 (one meta file).
+Reading, not a decision: SPEC could be shortened without breaking a script if section 3.4's table, its heading line and the line "Notes on the table:" stay as they are; three of the five scripts that read it are frozen and the other two are finished scripts. The archive tool needs only that citations resolve. Files changed: none.
+End steps: PASS. F151 recorded (16 lines, 0 new em-dashes). STATUS.md overwritten (2,410 bytes, 0 em-dashes). Live index set to exactly D93, D102, F151. Archive: python3 scripts/archive_decisions.py --apply --session 108 moved 7 spans (D82, D88, D89, D98, D100, D101, F150; 40,531 bytes), kept 3; its four checks PASS. DECISIONS.md 56,610 -> 16,051 bytes (limit 80,000: PASS). Citations: 175 distinct, resolved 175, unresolved 0, duplicates 0, out of order 0: PASS. Tests: 51 run, all OK (the one failure after Step 2 was D102's citation of F151 before F151 existed; resolved). Scope check (git status --porcelain): changed or new files are DECISIONS.md, DECISIONS-archive.md, SPEC.md, RESULTS.md, README.md, data/README.md, scripts/README.md, tests/test_stagec.py, STATUS.md, scripts/session108_figures.py, figures/stagec_headline.svg, figures/stagec_mae_by_lead.svg, notes/session-108-output.txt, plus the already-untracked docs/sessions/session-108.md; all in the scope list; no breach. Consistency re-read of what changed: SPEC 6 and 9, RESULTS 7, README sections 1, 2, 5 and STATUS agree (stage C done; G next; D, E, F, H after; same margins +8.216 / +2.589 in SPEC 9.5, +8.2 / +2.6 elsewhere). A grep for stale wording ("under way", "is open", "once the look is run", "will be judged") found none. Nothing disagrees. One note: the prompt's Step 4 said section 2's F109 content stays unchanged "except its heading"; its caveat bullet list was left in place and the stage C caveats were added as a separate bullet in the new subsection.

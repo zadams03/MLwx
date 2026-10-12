@@ -9,305 +9,15 @@ It records choices made, why they were made, open questions, and findings.
 ## Live index
 
 <!-- live-index-start -->
-- D82: stage C's design.
-- D88: stage C's development table and the curve's baseline.
-- D89: the rules for stage C's build choices.
 - D93: the workflow rules (Live index, size limit, finding length, guardrails).
-- D98: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric.
-- D100: F148 accepted, stage C's lock, and its claim test pre-registered.
-- D101: F149 accepted, three rulings, and how stage C's look is run.
-- F150: session 107's finding (stage C's look).
+- D102: F150 accepted, its framing, the GRIB cache, stage G next, and a smaller live log.
+- F151: session 108's finding (stage C's result folded in, figures, README files).
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
 binding. Entry numbers never change, so every citation resolves in one of the
 two files. This list changes only through an owner's DECISIONS entry; a
 session adds its own new entries (D93.8).
-
----
-
-## 2026-10-03: Session 90 decision: F131 accepted, the end goal reworded, and stage C's design (owner, planning chat)
-
-**D82. Owner decisions, planning chat (after session 89): F131
-accepted, the end goal reworded, and stage C's design: target and
-horizon, data route, airports, the claim batch rule and the daily
-maximum.** Written at the start of session 90, before any other edit or
-network call. No 2026-27 value has been read or scored.
-
-- **D82.1 F131 accepted.** The owner accepts F131 and all eleven
-  F131.9 readings, including the reduced reproduction sample (13 of 63
-  dates) and the strided speed test. Its conclusions stand: the
-  dynamical.org archive lacks two of the recipe's inputs (850 hPa
-  temperature, 2 m dew point) and defines cloud cover differently, so
-  it is not used; the GRIB route holds every field at every hour.
-- **D82.2 The end goal, reworded (replaces D72.1's wording).** A
-  private, live tool for ten or more airports that corrects every GFS
-  run (four a day), as each run arrives, into an hourly temperature
-  curve out to the forecast horizon, plus the daily maximum; the
-  horizon is 24 hours first and 48 hours later; then a choice of which
-  weather model is corrected, plus a blend; and probabilistic ranges.
-  It stays a private product built with good academic practice (D72.1,
-  D72.2(d)). The rest of D72 is unchanged.
-- **D82.3 Stage C's target and horizon.** The corrected forecast is
-  made from every GFS cycle (00, 06, 12 and 18 UTC), for every forecast
-  hour from 0 to 24 first. Forecast hours 25 to 48 are added later by a
-  separate, additive pull; nothing in the first pull is repeated. The
-  daily maximum is part of stage C's target (D82.8).
-- **D82.4 The data route.** NOAA's GFS GRIB files on
-  `noaa-gfs-bdp-pds`, fetched by byte range as the record does (SPEC
-  7.2). The pull runs on GitHub Actions in the public project
-  repository, as resumable chunks (each job is capped at 6 hours); the
-  first chunk measures speed. Each global field is downloaded, the
-  values at the four grid points around each airport are read out, and
-  the field is discarded: no global field is kept. Fields: the record's
-  eight (2 m temperature, total cloud cover, 10 m u and v wind, 2 m dew
-  point, 850 hPa temperature, downward shortwave radiation at the
-  surface, mean sea level pressure) plus GFS's 2 m maximum and minimum
-  temperature. Kept: the raw value at each of the four grid points, per
-  airport, field, cycle and forecast hour, so interpolation choices stay
-  open. Period: every cycle and forecast hour whose valid time lies
-  between 2021-03-24T00:00 and 2026-07-31T23:00 UTC; nothing from
-  2026-27. Estimated at about 100 files a day, about 1.6 to 1.8 TB of
-  downloads and about 1.5 GB kept for 47 airports (planning-chat
-  estimate from F131, not checked). The kept files are published as
-  GitHub Release files and downloaded once to the owner's laptop, so
-  the repository stays small. Gate: at each existing airport's target
-  hour, cycle and lead, the new values equal the committed ones. The
-  design details are session 91's.
-- **D82.5 What is not decided.** Whether one model takes lead time as an
-  input or each lead has its own model; whether the daily maximum is
-  read off the corrected curve or has its own model; and stage C's
-  claim design (bar, looks, lead bands). These are fixed by
-  time-ordered cross-validation on the development airports (D82.6) or
-  at stage C's lock, before any claim airport's held-out data is read.
-  Stage C's SPEC section is written at its lock. Bias drift follows
-  D81.10(b).
-- **D82.6 The airports.** The owner's 47-airport list, by ICAO code and
-  the owner's region label:
-  Europe: EHAM, LTAC, EFHK, LTFM, EGLC, LEMD, LIMC, UUWW, EDDM, LFPB,
-  EPWA.
-  North America: KATL, KAUS, KORD, KDAL, KBKF, KHOU, KLAX, MMMX, KMIA,
-  KLGA, KSFO, KSEA, CYYZ.
-  South America: SAEZ, SBGR.
-  Asia: ZBAA, RKPK, ZUUU, ZUCK, ZGGG, OEJN, OPKC, WMKK, VILK, RPLL,
-  ZSQD, RKSI, ZSPD, ZGSZ, WSSS, RCSS, LLBG, RJTT, ZHHH.
-  Africa: FACT. Oceania: NZWN.
-  All 47 are in the pull and are the product's airports. EGLC and KSFO
-  are already spent. The 45 others are new. **Until a later decision
-  says otherwise, no new airport's data is used for any build choice:**
-  build choices use the six development airports (EGLC, LFPG, DSM,
-  YSDU, RNO, KSFO) only, so every new airport stays clean for this and
-  later claim batches (D72.2(a), D72.3 "Ongoing"). Whether the MOSMIX
-  list (D81.2) grows to new airports is left to the saver session;
-  session 90 records which have a station within 10 km.
-- **D82.7 The claim batch: rules fixed before any check is run.** Six
-  airports, drawn by this rule and nothing else:
-  (a) Excluded: EGLC and KSFO (spent), and LFPB (about 9 km from LFPG, a
-  development airport, so weak evidence; it stays in the product).
-  (b) Eligible: an airport whose saved hourly observations give a usable
-  daily maximum (D82.8) on at least 90 percent of local days in
-  2021-03-24..2026-07-31, and on at least 90 percent of local days in
-  its held-out window 2024-08-01..2026-07-31. A local day counts only if
-  it starts on or after 2021-03-24T00:00 UTC and ends on or before
-  2026-07-31T23:59 UTC. An airport with no IEM archive is not eligible.
-  (c) Strata and sizes, in this order: Europe 1; North America 2; Asia
-  2; South (the owner's South America, Africa and Oceania labels
-  together) 1.
-  (d) Draw: Python's `random.Random(20261003)`, one generator for the
-  whole draw. For each stratum in (c)'s order, `sample` its eligible
-  airports, sorted by ICAO code, for its size. If a stratum has fewer
-  eligible airports than its size, take them all, and after the last
-  stratum fill the shortfall by `sample` from all remaining eligible
-  airports, sorted by ICAO code, with the same generator. Record the
-  Python version.
-  (e) Each drawn airport's held-out window is 2024-08-01..2026-07-31
-  (D72.4); its earlier years are for training. Its looks are fixed at
-  stage C's lock.
-- **D82.8 The daily maximum (stage C's target).** From the routine
-  hourly reports (SPEC 3), at every airport: the local calendar day,
-  midnight to midnight in the airport's own time zone (civil time,
-  daylight saving included); each report assigned to its nearest whole
-  hour by SPEC 8.8 G2 and G3; the day's maximum is the highest usable
-  hourly value. A day is usable only if usable hours are at least its
-  number of hours minus 2 (22 of 24; 21 of 23 and 23 of 25 on
-  clock-change days). A peak between hourly reports is missed; this is
-  accepted, being the same everywhere. It is not meant to match any
-  outside published figure; the aim is accuracy.
-- **D82.9 SPEC.** SPEC 1's end-goal paragraph is reworded to D82.2, and
-  SPEC 6's stage C bullet records D81 and D82 (session 90, Step 2).
-- **D82.10 Sequence.** Session 90: this entry, the SPEC edits, the
-  airport metadata check (counts only) and the draw. Session 91: build
-  the GitHub Actions pull and run a small local test chunk through
-  D82.4's gate. The owner then pushes and starts the full pull. Session
-  92: verify the extracts.
-
----
-
-## 2026-10-06: Session 96 decision: F137 accepted, GFS v17, and the stage C development table (owner, planning chat)
-
-**D88. Owner decisions, planning chat (after session 95): F137
-accepted, GFS v17, and the first step on stage C's build choices: the
-development table, the curve's baseline, and the rules for features at
-every lead.** Written at the start of session 96, before any other
-edit. No 2026-27 value has been read or scored.
-
-- **D88.1 F137 accepted.** The owner accepts F137 and all nine F137.11
-  readings, including the change to the download step (F137.3).
-  Reading 9 (2022-11's 135 retries equal 27 x 5) is the script's
-  arithmetic inference; the meta does not record it.
-- **D88.2 GFS v17 (planning-chat check of the NWS notices page,
-  2026-10-06, not checked by this session).** Still no Service Change
-  Notice for GFS v17. The newest SCN listed is SCN 26-89 (2 October
-  2026, model changes for the RRFS implementation). Correction to
-  D87.6: SCN 26-89 was posted on the same day as SCN 26-88, so 26-88
-  was not the newest. With 30 days' notice, the earliest go-live is
-  about 5 November 2026. PNS 26-29's proposed October 2026 date can no
-  longer be met.
-- **D88.3 What comes first.** D82.5's build choices need a development
-  table: for each development airport (EGLC, LFPG, DSM, YSDU, RNO,
-  KSFO), every GFS cycle in the pull and every forecast hour 0 to 24,
-  the record's features rebuilt from the stored grid values, and the
-  hourly observation at the valid time. Session 96 builds it and gates
-  it against the committed record. It fits no model and computes no
-  score.
-- **D88.4 The curve's baseline.** SPEC 8's recipe `B+D,L,R,T`, applied
-  unchanged at each cycle hour and lead: one model per airport, cycle
-  hour (00, 06, 12, 18 UTC) and lead, so 100 models per airport, with
-  the record's settings, column order and complete-case rule. This is
-  the proven method applied at every hour, one well-understood input
-  first (D72.2(b)). It is recorded now and fitted later. D82.5's
-  alternatives (one model per lead with the cycle hour as an input; one
-  model with lead and hour as inputs) are each compared against it by
-  time-ordered cross-validation.
-- **D88.5 Features at every lead.** The record's definitions, extended:
-  (a) Instantaneous fields (temperature, cloud cover, 10 m wind, dew
-  point, 850 hPa temperature, sea level pressure) at every lead,
-  including f000 (the analysis), by the record's arithmetic
-  (bilinear, elevation constant on temperature only, rounding as SPEC
-  8.8 G4 and G7).
-  (b) R is the mean downward shortwave radiation over the 2 hours
-  ending at the valid time. GFS gives A(N), the average over (W, N],
-  W = 6 x floor((N-1)/6). If N - W >= 2: R = ((N - W) x A(N) -
-  (N - 2 - W) x A(N - 2)) / 2, where the second term is zero when
-  N - 2 = W (so R = A(N) at leads 2, 8, 14, 20). This is the record's
-  de-accumulation at lead 24. If N - W = 1 (leads 7, 13, 19): R =
-  (A(N) + 6 x A(W) - 5 x A(W - 1)) / 2, adding the last hour of the
-  previous 6-hour window. R does not exist at leads 0 and 1.
-  (c) T is the sea level pressure at lead N minus that at lead N - 3,
-  same cycle, in hPa, from the two rounded pressures as the record
-  does. At lead 3 it uses the f000 analysis. T does not exist at
-  leads 0 to 2.
-  (d) Season terms from the valid date, by the record's
-  `year_fraction`.
-  (e) GFS's 6-hour maximum and minimum 2 m temperature are kept as
-  raw columns (bilinear, degrees C, rounded to 3 decimals, no
-  elevation constant) for the later daily maximum work. They are not
-  features of the baseline.
-- **D88.6 Leads 0 to 2.** The complete-case rule stands. Rows at leads
-  0 to 2 stay in the table, marked incomplete and counted, never
-  filled. A GFS run arrives about 3.5 to 4 hours after its start time,
-  so these leads are already in the past when it lands.
-- **D88.7 The observation.** At every valid whole hour: the nearest
-  usable report within 15 minutes, inclusive (SPEC 4.5, 8.8 G2 and G3,
-  the record's `pair_nearest`; a tie keeps the earlier report). The
-  same at every airport.
-- **D88.8 Where the table lives.** About 1.17 million rows, so it is
-  kept outside the repository, in `MLwx-stagec/` beside `MLwx-pull/`.
-  The repository holds the script, a meta file with every table file's
-  SHA-256, and a counts file. The table is rebuilt exactly from the
-  Release and the committed observation files.
-- **D88.9 Rules for build choices.** Before any cross-validation score
-  is computed, a DECISIONS entry fixes the folds, the metric, and a
-  rule of the form "keep the simpler option unless the other wins by
-  more than a stated margin". Build choices are never quoted as
-  results (SPEC 2.5).
-- **D88.10 SPEC 6.** The stage C bullet records that the pull is
-  complete and checked (D87, F137), and points to this entry (session
-  96, Step 2).
-- **D88.11 Sequence.** Session 96: this entry, the SPEC edit, the
-  table and its gate. Then, planned: session 97 writes D88.9's entry
-  before any score, then fits the baseline and scores raw GFS and the
-  baseline per lead by cross-validation. D82.5's comparisons, the daily
-  maximum, and bias drift (D81.10(b)) follow, one change at a time.
-  Stage C's claim design is fixed at its lock.
-
----
-
-## 2026-10-06: Session 97 decision: F138 accepted, GFS v17, and the rules for stage C's build choices (owner, planning chat)
-
-**D89. Owner decisions, planning chat (after session 96): F138
-accepted, GFS v17, and the rules for stage C's build choices: folds,
-metric and decision rule (D88.9).** Written at the start of session 97,
-before any other edit and before any cross-validation score. No
-2026-27 value has been read or scored.
-
-- **D89.1 F138 accepted.** The owner accepts F138 and all thirteen
-  F138.8 readings, including: both `temp` and `temperature_grib_c`
-  kept as columns; the instantaneous columns taken from session 91's
-  `derive` with placeholder R and T inputs that never reach the table;
-  and the fourth empty reason, "outside pull window" (7 R and 10 T
-  cells per airport in the first cycles).
-- **D89.2 GFS v17 (planning-chat check of the NWS notices page,
-  2026-10-06, not checked by this session).** Still no Service Change
-  Notice for GFS v17. The newest SCN listed is still SCN 26-89 (2
-  October 2026). The earliest go-live stays about 5 November 2026.
-- **D89.3 Folds.** Three time-ordered folds, each with an expanding
-  training window. A test year runs 1 August to 31 July:
-  fold 2023-24: test cycles 2023-08-01T00 to 2024-07-31T18;
-  fold 2024-25: test cycles 2024-08-01T00 to 2025-07-31T18;
-  fold 2025-26: test cycles 2025-08-01T00 to 2026-07-31T18.
-  With T0 the test year's start (1 August, 00:00 UTC): training rows
-  are those with valid time before T0; test rows are those whose cycle
-  starts on or after T0 and before the next 1 August. A row whose cycle
-  is before T0 and whose valid time is on or after T0 is in neither,
-  and is counted. Training thus uses only observations already known
-  when the first test cycle starts. The 2022-23 fold is not used: its
-  training window (about 1.4 years) is far shorter than the product's
-  or the claim airports' (about 3.4 years, D82.7(e)), and would
-  unfairly penalise options that fit many small models.
-- **D89.4 The spent years.** 2024-25 and 2025-26 are spent at every
-  development airport (F94, F109, F119; D71.1), so they may be used
-  for build choices (D72.2(a), SPEC 2.5). The session-48 reserved-year
-  guard stays unchanged in its own script and is not imported here.
-  Nothing from 2026-27 is used.
-- **D89.5 Metric.** Mean absolute error (MAE) of the hourly
-  temperature, degrees C, full precision (SPEC 8.8 G24), on leads 3 to
-  24. Rows: the common row set, meaning test rows that have an
-  observation and are complete for every option compared (for the
-  baseline, the table's `complete_case`). Per airport: one MAE over all
-  its test rows, pooled across the three folds, four cycle hours and
-  leads 3 to 24. Headline: the unweighted mean of the six airport
-  MAEs. Fold level: per fold, the unweighted mean of the six airports'
-  MAEs over that fold's rows.
-- **D89.6 Decision rule.** The challenger replaces the incumbent only
-  if all three hold: (a) the headline MAE is lower by more than 1
-  percent of the incumbent's headline, that is (incumbent - challenger)
-  / incumbent > 0.01; (b) the airport MAE is lower at 4 or more of the
-  6 airports; (c) the fold-level MAE is lower in at least 2 of the 3
-  folds. Otherwise the incumbent stays. A tie keeps the incumbent.
-- **D89.7 The incumbent.** For D82.5's model-structure comparisons, the
-  incumbent is D88.4's baseline (the proven recipe, unchanged, D72.2(b)),
-  even though the alternatives use fewer models. Every later
-  comparison names its incumbent in its own DECISIONS entry before it
-  is scored.
-- **D89.8 Scope of the rule.** It applies to every stage C build choice
-  on the hourly curve. A choice is applied to the whole curve and to
-  every airport identically: never per airport, cycle hour or lead.
-  The daily maximum's metric is fixed in its own entry before any
-  daily-maximum score. Changing these rules needs a new DECISIONS entry
-  written before the affected score. Build-choice scores are never
-  quoted as results (SPEC 2.5).
-- **D89.9 The fitting code's gate.** Before any fold is scored, the new
-  fitting code reproduces F109's recorded raw GFS and `B+D,L,R,T` MAEs
-  at EGLC and LFPG (12z, lead 24) and DSM (18z, lead 24), exactly, from
-  the table's rows on the record's days. This is a code check against
-  numbers already on record. It is not a new look and decides nothing.
-- **D89.10 Sequence.** Session 97: this entry, the fold counts, the gate,
-  then the baseline and raw GFS scored per airport, fold, cycle hour
-  and lead. No build choice is made. Then, planned: D82.5's
-  alternatives, each against the baseline under D89.6, one at a time;
-  then the daily maximum and bias drift (D81.10(b)). Stage C's claim
-  design is fixed at its lock.
 
 ---
 
@@ -429,334 +139,80 @@ scored.
 
 ---
 
-## 2026-10-11: Session 104 decision: F146 accepted, D97.1 closed, the f025 to f048 checks, the curve to 48 hours, and the daily maximum's metric (owner, planning chat)
+## 2026-10-12: Session 108 decision: F150 accepted, its framing, the GRIB cache, stage G next, and a smaller live log (owner, planning chat)
 
-**D98. Owner decisions, planning chat (after session 103): F146 accepted,
-D97.1's open item closed, the download and checks of the f025 to f048 pull,
-the curve extended to lead 48, the hourly metric over the whole horizon, and
-the daily maximum's metric (D89.8), all fixed before any score.** Written at
-the start of session 104, before any other edit. No 2026-27 value has been
-read or scored.
+**D102. Owner decisions, planning chat (after session 107): F150 accepted
+with its readings, how stage C's result is described, the GRIB cache's new
+place, stage G brought forward, and a smaller Live index.** Written at the
+start of session 108, before any other edit. No 2026-27 value has been read
+or scored. Nothing in D100 or F150 changes, and nothing is refit or
+re-scored.
 
-- **D98.1 F146 accepted,** with its seven readings. Reading 2's wording was
-  corrected at the review, before the commit: the gain at KSFO is
-  "consistent with D78.2 and D71.4 (KSFO's bias shifting between years)".
-- **D98.2 D97.1 closed: scripts that find entries by text.**
-  `session92_verify_chunk.py --gate` (local only) and
-  `session95_check_release.py` are not edited. Their checks ran and passed
-  (F134, F137) and stand. F122 and F133 to F136 are now archived, so those
-  lookups no longer resolve and those modes cannot be re-run as they stand.
-  This is recorded, not fixed, as D96.3 did for session 86. Session 92's
-  other modes, which the workflow's verify step uses, read no DECISIONS
-  entry and are unaffected. From now on a script never finds a recorded
-  value by searching DECISIONS text: it holds the value as a constant, and a
-  test in `tests/` checks the constant against the entry in either
-  DECISIONS file.
-- **D98.3 The download and checks.** A new script downloads the Release
-  `stagec-grib-pull-f025-048` once into `MLwx-pull-f025-048/` beside the
-  repository (D95.6) and checks, as session 95 did for the f000 to f024 pull
-  (D87, F137): every file equal to its Release size and SHA-256; every
-  month's meta as expected, with the pull script's SHA-256 equal to F145's;
-  session 92's verifier with `--hours 25-48` (its D84.4 checks, then with
-  `--ranges`) on every month; the union of all months equal to the 25-48
-  plan (187,768 (cycle, hour) keys, F145.1), with no key in two months;
-  status totals, including any "ok (whole file)" messages; a negative test;
-  and an inventory file committed. Network only to GitHub's API and the
-  Release's download links (and the host they redirect to). The pull-level
-  `--gate` is not run (D98.2); D98.4's table gate checks the same values
-  and more.
-- **D98.4 The table for leads 25 to 48.** For each development airport and
-  every (cycle, forecast hour) in the 25-48 plan: D88.5's features and
-  D88.7's observation, by session 96's code and rules, written as six new
-  files in `MLwx-stagec/`. F138's six files are never changed. Inputs before
-  forecast hour 25 (T at leads 25 to 27; R at lead 25, which needs A(24) and
-  A(23)) come from the f000 to f024 pull (`MLwx-pull/`, F137). Where that
-  pull has no such value (cycles before its first), the feature is empty,
-  with reason "outside pull window", and counted. The new builder must
-  reproduce F138's rows exactly when run on hours 0 to 24 (Step 3's
-  equivalence check). Gate: at YSDU (00z, lead 26), RNO and KSFO (18z, lead
-  26), every committed station-day of `session81_training_set.csv` equal in
-  every shared column, exact equality, as F138 did at lead 24. This is the
-  first stage C gate at these three airports. Observation agreement with the
-  record's `obs_c` is counted and reported.
-- **D98.5 The curve at leads 25 to 48.** As at leads 3 to 24: D88.4's
-  baseline (one model per airport, cycle hour and lead) plus D97's
-  correction, with D97.4 to D97.7 unchanged. A tracker uses only errors
-  whose valid time is before the forecast's cycle (D97.6). So the newest
-  usable error is two days old at leads 25 to 47 and three days old at lead
-  48. Folds and rows as D89.3. The fitting code's gate (extends D89.9): from
-  the table's rows, F109's raw GFS and `B+D,L,R,T` MAEs at YSDU (00z, lead
-  26) and RNO (18z, lead 26), reproduced exactly, as F139.3 did at the other
-  three airports. If either differs, and the only difference is in the
-  observations (the table's pairing against the record's, SPEC 4.5's
-  note), the gate is run again with the record's observations and both
-  results are reported; any other difference stops the session. KSFO is not
-  in this gate: F109 has no KSFO row, and D98.4 gates its features.
-- **D98.6 Reproduction at leads 3 to 24, before any new score.** The refit
-  reproduces F139 exactly (every cell's n and MAE, the headline, the
-  per-airport n) and F146's correction exactly (every drift cell's n and MAE
-  equal to session 103's scores file; headline 1.019044682206963).
-- **D98.7 Forecasts on rows with no observation.** Each model also predicts
-  test rows whose features are complete but which have no observation; the
-  daily maximum needs them (D98.10(c)). Such rows never enter an hourly
-  score and never update a tracker (D97.5), and every correction is applied
-  to them too. No hourly score changes.
-- **D98.8 The hourly metric (amends D89.5).** From this entry, D89.5's
-  metric is taken over leads 3 to 48, the product's horizon (D82.2): per
-  airport, one MAE pooled over folds, cycle hours and leads 3 to 48; the
-  headline and fold level as D89.5. Leads 3 to 24 and 25 to 48 are also
-  reported. D89.6 and D89.8 are unchanged. The incumbent for the next hourly
-  build choice is the curve, the baseline plus D97's correction (D97.8); its
-  scores at leads 3 to 48 are F147's.
-- **D98.9 The correction at leads 25 to 48 is carried as decided** (D97.8:
-  identically at every lead). Its scores there, with D89.6's three parts
-  against the baseline, are descriptive only. If its 25 to 48 headline is
-  not lower than the baseline's, that is a reading for the owner; nothing
-  changes in session 104.
-- **D98.10 The daily maximum's metric (D89.8),** fixed before any
-  daily-maximum score.
-  (a) The observed maximum, as D82.8. Hourly values by D88.7 (the table's
-  pairing) at every whole UTC hour of the local day; the day is usable if
-  its usable hours are at least its hours minus 2. Time zones: EGLC
-  Europe/London, LFPG Europe/Paris, DSM America/Chicago, YSDU
-  Australia/Sydney, RNO and KSFO America/Los_Angeles. A day is used only if
-  its last hour is valid on or before 2026-07-31T23:00 UTC.
-  (b) Which run. For the local day D starting at UTC time s, the cycle is
-  the latest GFS cycle c (00, 06, 12 or 18 UTC) with c + 4 hours <= s; a run
-  arrives about 3.5 to 4 hours after it starts (D88.6). So every hour of D
-  lies at lead 4 to 33, and each day has one forecast: the "tomorrow's
-  maximum" a user would see the evening before. Forecasts for the same day
-  from later runs (partly observed already) are a later question.
-  (c) The forecast maximum: the highest of the method's hourly forecasts
-  from cycle c over every whole hour of D. If any hour has no forecast, the
-  day is dropped for that method and counted.
-  (d) Folds: a day belongs to the fold of its cycle (D89.3's test rule). A
-  day whose cycle is before its fold's T0 is in neither, and counted.
-  (e) Metric: MAE of the daily maximum, degrees C, full precision, on the
-  common day set (a usable observed maximum and a forecast maximum from
-  every method compared). Per airport, pooled over folds; the headline is
-  the unweighted mean of the six; fold level as D89.5.
-  (f) Methods scored in session 104: raw GFS (`temperature_grib_c`), the
-  baseline, and the curve (the baseline plus D97's correction), each read
-  off its hourly values. Mean error (observation minus forecast) and the
-  cycle hours used are descriptive.
-  (g) Later daily-maximum build choices: D89.6 on this metric. The
-  incumbent is the curve's read-off maximum. Each challenger (for example a
-  model of its own, D82.5, or one using GFS's 6-hour maximum, D88.5(e)) is
-  fixed in its own entry before its score. Session 104 makes no
-  daily-maximum build choice.
-  (h) Hourly values miss a peak between reports, on both sides alike
-  (D82.8).
-- **D98.11 This is not a claim.** Every score here is a build-choice score
-  (SPEC 2.5). Nothing from 2026-27 is read.
-- **D98.12 SPEC and RESULTS.** Session 104 updates SPEC 6's stage C bullet
-  and RESULTS section 7's roadmap paragraph, with the text in its prompt.
-- **D98.13 Session 104's plan.** This entry; the download and checks; the
-  table and its gate; the curve's gates and scores; the daily maximum;
-  tests; the SPEC and RESULTS edits; F147. The next step is chosen at
-  session 105's planning.
-- **D98.14 Live index.** Removed (archived): D95 (its work is done; the
-  structure it closed is restated in D98.8) and F146 (reproduced and
-  restated by F147, D98.6). Added: D98 and F147. After session 104: D47,
-  D73, D77, D79, D82, D88, D89, F139, D93, D97, D98, F147.
+- **D102.1 F150 accepted,** with its three F150.6 readings as written.
+- **D102.2 How the result is described (descriptive, D100.8; not a new
+  test).** The frozen curve passes at 6 of 6 new airports in both held-out
+  years for both outputs, and almost all of the gain over raw GFS comes
+  from the baseline. In session 107's output file, the curve's MAE was
+  above the baseline's (no drift correction) in 6 of 12 hourly and 5 of 12
+  daily airport-look cells. So the drift correction helps when GFS's bias
+  shifts and is roughly neutral otherwise. The one clear exception is KORD
+  look B, hourly: the baseline's mean error was -0.41 degrees C and the
+  curve's -0.05, and the correction gave about a third of the gain over
+  raw GFS (MAE: raw GFS 1.3307, baseline 1.2566, curve 1.2214).
+- **D102.3 The GRIB cache has moved.** The gitignored cache
+  `data/raw/grib/` (about 39 GB, 62,572 files, D47) was moved by the owner
+  off the laptop to an external drive, at
+  `/Volumes/MY PASSPORT/MLwx-grib-cache/`. No current or stage B script
+  reads it. Only finished scripts from sessions 37 to 89 do, so those
+  cannot be re-run without the drive. Its manifests stay committed. The
+  README's size of "about 20 GB" is corrected.
+- **D102.4 Stage G comes next (changes D72.3's order only).** After stage
+  C, the next stage is G, live product version 1, on GFS only, built with
+  the weather model as a setting (as stage C was) so that later models plug
+  in without a rebuild. Its design, including how it handles GFS v17, is
+  set in a planning conversation and recorded in its own DECISIONS entry
+  before any build. Stages D, E, F and H keep their scope and follow it,
+  in that order; stage F still covers every model's version changes.
+  Reasons: stage C's method has passed its claim; a never-edited
+  prediction log gives forward evidence from now on; the ECMWF archives
+  are shallow (F123) and deepen while we wait; GFS v17's earliest go-live
+  is about November 2026.
+- **D102.5 Unchanged.** Stage B (D73, its hold rule and scripts); the
+  rule that no 2026-27 value is scored before its test is pre-registered;
+  D72.4's 2027-28 forward year as the place for the live product's claim.
+  Stage G makes no claim until one is pre-registered.
+- **D102.6 README and figures.** Session 108 brings README.md and
+  data/README.md up to date with stage C's result and the order in
+  D102.4, and draws two descriptive figures from session 107's committed
+  files: per-airport MAE of raw GFS and the curve in each look, for both
+  outputs; and MAE by lead per airport. Nothing is averaged across
+  airports.
+- **D102.7 A smaller live file.** To cut what each session reads, the
+  Live index after session 108 is D93, D102 and F151. Archived (still
+  binding, cited by number): D82, D88, D89 and D98 (stage C's design,
+  restated in SPEC 9 where it matters), D100, D101 and F150 (folded into
+  SPEC 9 and RESULTS 7). From now on the index holds only D93, the newest
+  session's own entries, and any entry a running stage needs open; a
+  session's Read first section names other entries by number.
+- **D102.8 SPEC and RESULTS.** Session 108 updates SPEC 6 and 9 and
+  RESULTS 7 with the text in its prompt.
+- **D102.9 Plan.** Session 108: this entry; SPEC and RESULTS; the figures;
+  the README files; a read-only list of which scripts open SPEC.md or
+  DECISIONS.md (to show whether SPEC can be shortened safely later); F151.
+  Next: stage G's design, in the next planning conversation.
 
 ---
 
-## 2026-10-11: Session 106 decision: F148 accepted, and stage C's lock (owner, planning chat)
+## 2026-10-12: Session 108 finding: stage C's result folded in, two figures, README files, and which scripts read the record
 
-**D100. Owner decisions, planning chat (after session 105): F148 accepted,
-stage C's method frozen, and its claim test pre-registered on the six claim
-airports (D82.7), every choice fixed before any of their held-out data is
-read.** Written at the start of session 106, before any other edit. No claim
-airport's value from 2024-08-01 onward has been read, and no 2026-27 value
-has been read or scored. Where this entry restates D88, D97 or D98, it
-restates them without change.
+**F151. D102 was recorded first. Stage C's result (F150) was folded into SPEC 6 and 9, RESULTS 7 and the README files, two descriptive figures were drawn from session 107's committed files, and a read-only list was made of which scripts open SPEC.md or DECISIONS. No model was refit or re-scored; no claim airport table, `MLwx-*` folder, `/Volumes/` path or 2026-27 value was read; no network. Full real output: `notes/session-108-output.txt`.**
 
-- **D100.1 F148 accepted,** with all nine F148.9 readings. The daily
-  maximum stays the curve's read-off maximum (F148.6).
-- **D100.2 Stage C is locked.** Its build choices are closed for this
-  claim: D88.4 (the baseline), D94 (no pooled structure), D97 (the drift
-  correction), D98.10 (the daily maximum read off the curve) and F148 (no
-  daily-maximum challenger adopted). Nothing in D100.3 to D100.6 changes
-  after any claim airport's data is built.
-- **D100.3 The frozen method, at each claim airport.**
-  (a) Data. Every GFS cycle in the two pulls (F137, F147) and forecast hours
-  0 to 48; features by D88.5, the observation by D88.7, the complete-case
-  rule as D88.6. Grid positions: IEM's airport position and its four grid
-  points and weights in the pull's positions file (D83.3, F133.3).
-  (b) Elevation constant. 7.429 degrees C per km (SPEC 7.2) times the
-  airport's `height_diff_m` in `data/processed/session90_airports.csv`
-  (model height minus station elevation, F132.3), added to temperature
-  only, as at every airport (SPEC 5.2, 7.2). It is held in the same form
-  (the same number of decimals) as the development airports' constants in
-  the record's params files. Fixed now; never refit.
-  (c) Models. D88.4's recipe: one LightGBM model per airport, cycle hour
-  (00, 06, 12, 18 UTC) and lead 3 to 48 (184 models per airport), with the
-  record's settings (`LGB_PARAMS`), the G15 column order and target (SPEC
-  8.8 G15, G20). Trained once on the complete-case rows whose valid time is
-  before 2024-08-01T00:00 UTC, in ascending cycle time (G19), then frozen
-  for both looks. Never refit.
-  (d) The curve. The baseline's forecast plus b, D97.4 to D97.7 unchanged:
-  w = 0.02, one tracker per airport, cycle hour and lead, b = 0 at
-  2024-08-01T00:00, updated by the baseline's own errors on scored rows
-  (complete case, with an observation) in ascending valid time, using only
-  errors whose valid time is before the forecast's cycle (D97.6, D98.5).
-  The trackers run without a break through both looks, as they would live.
-  Rows with complete features and no observation are predicted and
-  corrected, never scored (D98.7).
-  (e) The daily maximum. D98.10(a) to (c): the airport's own time zone
-  (`time_zone` in `session90_airports.csv`), the cycle c with c + 4 hours
-  at or before the local day's start, the forecast maximum read off the
-  curve over the day's whole hours.
-- **D100.4 The looks.** Two per airport (D71.6, D82.7(e)), each judged
-  separately, each run once:
-  look A, cycles 2024-08-01T00 to 2025-07-31T18;
-  look B, cycles 2025-08-01T00 to 2026-07-31T18.
-  A row or a local day belongs to the look of its cycle. Nothing valid
-  after 2026-07-31T23:00 UTC is used.
-- **D100.5 The bar,** per airport, per look, per output, at full precision;
-  a tie fails (D79.2). The method's MAE must be lower than both:
-  (a) raw GFS (the elevation-adjusted `temperature_grib_c`, SPEC 5.2), on
-  the common set: for the hourly curve, the look's scored rows at leads 3
-  to 48 (D89.5's common row set, pooled over cycle hours and leads); for the
-  daily maximum, the look's days with a usable observed maximum and both
-  forecast maxima (D98.10(e));
-  (b) persistence, on the subset of that common set where persistence has a
-  value, with the method's MAE taken on the same subset.
-  Persistence, using only what was observed before the run's cycle c:
-  hourly, for valid time v, the table's observation at v - 24k hours, k the
-  smallest whole number of days with v - 24k before c (k = 1 at leads 3 to
-  23, 2 at leads 24 to 47, 3 at lead 48); daily, the observed maximum
-  (D98.10(a)) of the latest local day whose last hour is valid before c. If
-  that value is missing, persistence has none for that row or day; no older
-  value is used. (Unlike SPEC 8.5's day basis, both sides of (b) use the
-  same rows, so the comparison is like for like.)
-- **D100.6 Verdicts and the claim.** Per airport and output: PASS if both
-  looks pass, SPLIT if one does, FAIL if neither (D71.6). Two outputs, the
-  hourly curve and the daily maximum, each with its own verdict. The claim
-  is stated per output as "passes at N of 6 new airports in both held-out
-  years". Nothing is averaged across airports (SPEC 5.0). The write-up leads
-  with the smallest margin, as a percentage (D79.1), over the 6 airports x
-  2 looks x 2 bar halves, per output.
-- **D100.7 Expectation, stated before any held-out value is seen.** Both
-  outputs pass at all six airports in both looks.
-- **D100.8 Descriptive, never part of the bar.** The baseline without the
-  drift correction; mean errors; leads 3 to 24 and 25 to 48 separately; per
-  cycle hour; days and rows counted and dropped by reason. No intervals are
-  pre-registered.
-- **D100.9 Checks before the look (session 106).** (a) The claim tables'
-  builder reproduces F138's and F147's rows exactly at development
-  airports. (b) A pipeline check on each claim airport's training rows only
-  (valid before 2024-08-01): raw GFS mean error and MAE at leads 3 to 24 are
-  printed, and only a gross value (either above 8 degrees C in size, a sign
-  of a units or elevation bug) stops the session. Nothing is chosen, tuned
-  or changed per airport from these figures. (c) The look script's gate:
-  run at the six development airports with look A's windows, it reproduces
-  session 104's 2024-25 fold exactly (every hourly cell's n and MAE for raw
-  GFS, the baseline and the curve; every 2024-25 day's raw and curve
-  maxima). Development airports' look B is run too, as a smoke test on spent
-  years, descriptive only. (d) The look mode refuses to run in session 106.
-- **D100.10 Caveats carried with the claim.** All data is GFS v16. Build
-  choices were made on six other airports (D82.6); CYYZ, ZGSZ and NZWN have
-  sea in their grid box (F132.3); MAE of an hourly curve and of a daily
-  maximum are not comparable with the record's one-hour results.
-- **D100.11 SPEC and RESULTS.** Session 106 writes SPEC section 9 (stage C,
-  at its lock, D82.5), updates SPEC 6 and RESULTS 7 for D99, F148 and this
-  lock, with the text in its prompt.
-- **D100.12 Plan.** Session 106: this entry; the claim tables and their
-  checks; the look script and its gate; tests; SPEC and RESULTS; F149.
-  Session 107: the look, run once, and its finding.
-- **D100.13 Live index.** Removed (archived, still binding by number): D97
-  (restated in D100.3(d)), F147, D99 and F148 (settled; F148's outcome is
-  restated in D100.1). Added: D100 and F149. After session 106: D82, D88,
-  D89, D93, D98, D100, F149.
-
----
-
-## 2026-10-11: Session 107 decision: F149 accepted, three rulings, and how the look is run (owner, planning chat)
-
-**D101. Owner decisions, planning chat (after session 106): F149 accepted
-with three rulings, and the rules for running stage C's look once (D100.12)
-and reporting it.** Written at the start of session 107, before any other
-edit and before any claim airport's value from 2024-08-01 onward has been
-read. No 2026-27 value has been read or scored. D100 is unchanged.
-
-- **D101.1 F149 accepted,** with all seven F149.6 readings, and these
-  rulings:
-  (1) The flagless `--look` run (reading 1) refused before reading any
-  table and wrote nothing. The deviation is accepted. The look has not been
-  run; session 107's run with the flag is its one run.
-  (2) The claim airports' elevation constants stay as built, from the
-  unrounded `height_diff_m` (reading 2), as D100.3(b) says: EDDM 0.2589,
-  KORD 0.0548, CYYZ 0.0441, ZGSZ 0.1476, ZUCK -0.2521, NZWN 0.5881
-  (F149.1). They are not recomputed.
-  (3) A bar half with no rows (reading 3) counts as not passing: that look
-  fails for that output at that airport, and the write-up says "no rows".
-  D79.3's "no verdict" rule belongs to stage B (D73) and does not apply
-  here. This ruling is made before the look.
-  Readings 4 to 7 are accepted as written.
-- **D101.2 The look, run once.** Before it: the look script's SHA-256
-  equals F149's; each of the twelve claim tables' SHA-256 equals F149.2's;
-  no `session107_*` file exists. Then `--look` is run once, with
-  `--confirm-look 107`, unchanged. No other mode of the look script is run
-  in session 107. What it produces stands: after any held-out value has been
-  printed or written, no method, bar, rule, script or table is changed, and
-  the look is not run again.
-- **D101.3 If the run stops with an error.** Session 107 stops and reports
-  what was printed and which files exist. It does not fix, edit or re-run
-  anything. Whether and how the look may be run again is the owner's
-  decision, in a new DECISIONS entry that says what was seen.
-- **D101.4 Reporting (D100.6, D79.1, D79.2).** Per output (the hourly curve
-  at leads 3 to 48; the daily maximum), per airport, per look and per bar
-  half (raw GFS; persistence): n, the method's MAE, the comparator's MAE,
-  the margin as 100 x (1 - MAE(method) / MAE(comparator)) with the
-  difference in degrees C beside it, and pass or fail (strictly lower at
-  full precision). Then the verdict per airport and output: PASS, SPLIT or
-  FAIL. The claim per output: "passes at N of 6 new airports in both
-  held-out years". The finding leads, per output, with the smallest of its
-  24 margins (6 airports x 2 looks x 2 halves), naming its airport, look and
-  half; a failing margin is negative and leads. It states plainly whether
-  D100.7's expectation was met. Nothing is averaged across airports.
-  D100.8's descriptive figures go to the output file; the finding cites
-  them only where they explain a failing or narrowest margin, and calls
-  them descriptive. D100.10's caveats are carried in the finding.
-- **D101.5 Not in session 107.** No SPEC or RESULTS edit (the result is
-  folded in after the owner has reviewed it); no diagnosis or follow-up
-  test; nothing per airport; no model saved beyond what the look mode
-  already writes; nothing from 2026-27.
-- **D101.6 Live index.** Removed (archived, still binding by number): F149
-  (accepted here; its constants and table hashes are held in the look
-  script, D98.2). Added: D101 and F150. After session 107: D82, D88, D89,
-  D93, D98, D100, D101, F150.
-- **D101.7 Plan.** Session 107: this entry; the pre-look checks; the look,
-  run once; the verdicts and margins; F150. The next step is chosen at
-  session 108's planning.
-
----
-
-## 2026-10-11: Session 107 finding: stage C's look on the six claim airports
-
-**F150. D101 was recorded first. The pre-look checks held, and stage C's look (D100) was run once, with `--confirm-look 107`, unchanged. It finished without error. Hourly curve: passes at 6 of 6 new airports in both held-out years; smallest margin +8.216 % (+0.1093 degrees C), KORD, look B, against raw GFS. Daily maximum: passes at 6 of 6 new airports in both held-out years; smallest margin +2.589 % (+0.0297 degrees C), KORD, look B, against raw GFS. Full real output: `notes/session-107-output.txt`.**
-
-- **F150.1 Expectation.** D100.7's expectation (both outputs pass at all six airports in both looks) was met: all 48 bar halves pass.
-- **F150.2 Verdicts and margins** (percent, D79.1; columns: look A raw GFS, look A persistence, look B raw GFS, look B persistence). Nothing is averaged across airports.
-  Hourly curve, leads 3 to 48 (n per half 66,514 to 67,160):
-  EDDM PASS 24.83, 55.07, 26.96, 57.96; KORD PASS 14.39, 73.54, 8.22, 71.93;
-  CYYZ PASS 22.04, 70.16, 23.48, 71.17; ZGSZ PASS 21.63, 48.48, 23.09, 51.53;
-  ZUCK PASS 23.91, 54.39, 27.07, 57.81; NZWN PASS 31.71, 62.65, 32.99, 65.11.
-  Daily maximum (n per half 358 to 365 days):
-  EDDM PASS 29.14, 66.02, 31.44, 66.33; KORD PASS 9.32, 78.63, 2.59, 77.35;
-  CYYZ PASS 23.19, 76.15, 21.22, 77.12; ZGSZ PASS 40.31, 57.60, 39.63, 58.37;
-  ZUCK PASS 14.84, 64.16, 14.14, 67.99; NZWN PASS 55.74, 65.41, 57.21, 63.68.
-- **F150.3 Checks.** Before the look (D101.2): the look script's SHA-256 equal to F149's; 12 of 12 claim tables equal to F149.2 (bytes only); no `session107_*` file. After: each half's pass or fail and margin, recomputed from the MAEs in the verdicts file, equal to the script's (0 disagreements); the 12 verdicts follow D100.6; no half had no rows (D101.1(3) not needed).
-- **F150.4 Files and run.** Script `scripts/session106_claim_look.py` (`5e046acffc6eb28619d1883c8b93b6ff97bc3305addade56be5ab30af169281a`), not edited. Written by the look:
-  `data/processed/session107_claim_scores.csv` (`2918fff42ab17ff2fce55260d7d0d757638b989943324ddceb3e1a7ff59488ca`);
-  `data/processed/session107_claim_days.csv` (`3ef112935585e03245238dedbdc521063db81e486e61c55021f7026a03f8a297`);
-  `data/processed/session107_claim_verdicts.csv` (`0a9c1dc80a1e052c5b98a117b6c42cbd9811c160a944be959dca0e4575e319da`).
-  Run 2026-10-11, 20:45:35 to 20:47:36 UTC, offline, 1,104 frozen fits, 121.3 s. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0.
-- **F150.5 Caveats (D100.10).** All data is GFS v16; the build choices were made on six other airports; CYYZ, ZGSZ and NZWN have sea in their grid box; the MAE of an hourly curve or a daily maximum is not comparable with the record's one-hour results.
-- **F150.6 Readings for the owner.**
-  1. Both narrowest margins are at KORD, look B, against raw GFS. Descriptive figures (D100.8, not part of the bar): KORD's raw GFS daily-maximum MAE is the lowest of the six in both looks (1.1752, 1.1484); in look B the baseline without the drift correction had an hourly mean error of -0.4120 degrees C, and the curve -0.0493.
-  2. The persistence subset was 0 to 235 rows smaller than the common set (hourly) and 0 to 3 days smaller (daily). Days dropped for too few usable observed hours: KORD look B 3, CYYZ look A 1, NZWN look B 1.
-  3. The `--look` run also ran the tracker's self-check (gate 1) inside itself, as built; it passed. No other mode was run.
-- **F150.7 What this did not do (D101.5).** No SPEC or RESULTS edit; no diagnosis or follow-up test; nothing per airport; no model saved beyond the look's own files; nothing from 2026-27; no network; nothing installed; no script, table or test edited. Nothing committed and no commit message written.
+- **F151.1 D102.** Recorded first, byte-equal to the prompt's block (61 lines, `diff` and `cmp`), 0 em-dashes.
+- **F151.2 SPEC and RESULTS (D102.8).** SPEC: section 6's order sentence (a), stage C bullet (b), stage G bullet (c); section 9.5's result paragraph (d). RESULTS 7: stage C "done" (e), the roadmap bullet's result text (f), the footer line (g). Each old text found exactly once; nothing else changed in either file.
+- **F151.3 README files (D102.6).** README.md: sections 1, 2 (retitled "Headline results", stage C subsection first, F109 content unchanged under its own heading, one caveats bullet), 4 (one paragraph), 5 (stage C done, G next, then D, E, F, H), 7 (GRIB cache, no drive path) and one clause in section 6's figures row. data/README.md: the `grib` line, `MLwx-pull-f025-048/`, the claim airports' tables. Numbers copied from F150, SPEC 9.5 and D102; nothing averaged across airports.
+- **F151.4 Figures.** `scripts/session108_figures.py` (`dc42002b124024c43c1e5d1e35030d99f4a3c90acd1fafa842f6d376cc7e558c`), standard library only, three input SHA-256 values held as constants (F150.4, D98.2). `figures/stagec_headline.svg` (`14dc9372c605ab5123564efc4c08c6961ea4142a3cf1ff5b7928ad8713ee296d`) and `figures/stagec_mae_by_lead.svg` (`1721cd2164a86d36de72fbedc93dd7fc4b5a2ba111087d5ab04522fb08742ee3`). Gate 1: 24 of 24 raw GFS halves, 100 x (1 - curve / raw) at 2 decimals equals F150.2: PASS. Gate 2: pooling by-lead values over cycle hours and leads reproduces the hourly raw GFS half's n exactly and both MAEs within 1e-9, 12 of 12 airport-looks: PASS. Two runs into `mktemp -d` folders were byte-equal.
+- **F151.5 Test.** One case added to `tests/test_stagec.py` (the script's three SHA-256 constants equal F150.4's): passes. Suite: 51 tests, all pass.
+- **F151.6 Which scripts read the record (Step 5, read only).** SPEC.md is opened by path by 6 scripts (session86, session87_forward_competitors, session87_forward_score, session89, session91, archive_decisions) and reached by 2 more through imports (session96, session104_f025_048). 5 of these search its text, all for section 3.4's airport table (fixed start and end text and two column names); the archive tool only scans it for citation numbers. 3 of the 5 are frozen. Several scripts search DECISIONS text; those for F122 to F135 already cannot resolve in the live file (D96.3, D98.2).
+- **F151.7 `data/raw/grib/`** (Step 0): absent (does not exist), as D102.3 expects.
+- **F151.8 Readings for the owner.** (1) The figures script also hash-checks the days file, as the prompt's three-constant test requires, but reads no value from it. (2) README.md grew by about 2 KB; section 2 holds the result and the other sections are about the same length. (3) The README's section 6 figures row now names the new script, a clause the prompt did not list. (4) SPEC could be shortened later if section 3.4's table, its heading line and "Notes on the table:" stay as they are (F151.6).
+- **F151.9 What was not done.** No SPEC or RESULTS edit beyond Step 3; no existing script, data file or figure edited; nothing committed and no commit message written.

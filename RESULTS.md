@@ -853,7 +853,7 @@ They now apply to a project with three proven methods, not one.
   Stage B runs: the 2026-27 GFS forward test is pre-registered, its models
   are frozen, and its scripts are written and gated; it is scored only
   after each of its periods ends (DECISIONS D73, D77.6, D79). Stage C is
-  open: it widens the target from one hour a day to an hourly curve from
+  done: it widens the target from one hour a day to an hourly curve from
   every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
   pull to 24 hours ahead is complete, and its build choices are made by
   time-ordered cross-validation on the six development airports, never
@@ -864,18 +864,25 @@ They now apply to a project with three proven methods, not one.
   D97, F146). The curve now runs to 48 hours ahead, and the daily maximum,
   read off the curve, has a fixed way of being scored (DECISIONS D98,
   F147). Two ways to improve the daily maximum were tested and not
-  adopted (DECISIONS D99, F148). Stage C is now locked: its claim test on
-  six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) is pre-registered,
-  before any of their held-out data was read (DECISIONS D100, SPEC 9).
-  Stages D
-  to H (other weather models, blending, upgrade policy, the live tool and
-  probabilistic ranges) follow; pooling is conditional.
+  adopted (DECISIONS D99, F148). Stage C was locked and its claim
+  pre-registered on six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK,
+  NZWN) before any of their held-out data was read (DECISIONS D100). The
+  look was run once: both the hourly curve and the daily maximum pass at
+  6 of 6 new airports in both held-out years. The smallest margins are at
+  KORD, look B, against raw GFS: +8.2 percent hourly and +2.6 percent for
+  the daily maximum (DECISIONS F150, SPEC 9.5). Almost all of the gain
+  over raw GFS comes from the baseline; the drift correction helps when
+  GFS's bias shifts (KORD look B) and is roughly neutral otherwise
+  (DECISIONS D102.2, descriptive). Stage G, the live tool on GFS, comes
+  next; stages D, E, F and H (other weather models, blending, upgrade
+  policy and probabilistic ranges) follow it (DECISIONS D102.4); pooling
+  is conditional.
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100) and after session 108 (DECISIONS D102). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*

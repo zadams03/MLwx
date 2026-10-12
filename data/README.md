@@ -22,9 +22,10 @@ each is a fixed snapshot of a live service.
   (D47, D62.7).
 - **`iem_mos/`:** the raw GFS MOS (MAV) responses for the NBM and MOS
   comparison, saved unchanged (F127.3).
-- **`grib`** (not committed): the bulk GRIB cache, about 20 GB. It can be
-  fetched again from the manifests in `diagnostics/`, so only they are
-  committed (D47).
+- **`grib`** (not committed): the bulk GRIB cache, about 39 GB. It was
+  moved off the laptop to an external drive. Only finished scripts from
+  sessions 37 to 89 read it, so they need the drive to re-run. Its
+  manifests in `diagnostics/` stay committed (D47, D102.3).
 
 ## processed/
 
@@ -62,6 +63,11 @@ by SHA-256:
   built from them, one file per development airport, rebuilt exactly from
   the Release and the committed observations (D88.8, F138). Its files'
   SHA-256 are in `processed/session96_stagec_dev_table.meta.txt`.
+- **`MLwx-pull-f025-048/`**, a folder beside the repo: the owner's local
+  copy of the Release for forecast hours 25 to 48 (D98, F147).
+- **The claim airports' tables**, also in `MLwx-stagec/`: twelve files, two
+  per claim airport (hours 0 to 24 and 25 to 48), built for stage C's claim
+  test (D100, F149).
 
 The data's sources and terms are in the root README's section 9,
 [Data credits and terms](../README.md#9-data-credits-and-terms).

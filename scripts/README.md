@@ -73,6 +73,7 @@ re-run must happen in a clean clone (D62.3, D62.6).
 | `session97_stagec_cv.py` | the cross-validation folds, the fitting-code gate and the baseline | F139 |
 | **This README** | | |
 | `session98b_figures.py` | draws the SVG figures in `../figures/` | F140 |
+| `session108_figures.py` | draws stage C's two descriptive figures in `../figures/` from session 107's files | F150, D102.6 |
 
 ## Everything else
 

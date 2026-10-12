@@ -11,9 +11,10 @@ and corrects new forecasts with it. At five airports, on a reserved year,
 the selected-features method lowers the mean absolute error (MAE, the
 average size of the miss) against raw GFS by 12.2% to 21.0%, and every 95%
 interval lies above zero (F109, F125.6). Each claim came from a single
-look at held-out data, with the pass rule fixed in writing first. The
-work now under way is stage C: an hourly corrected temperature curve for
-every GFS run (D82).
+look at held-out data, with the pass rule fixed in writing first. Stage
+C's corrected hourly curve and daily maximum, from every GFS run out to 48
+hours, then passed their pre-registered test at 6 of 6 new airports in both
+held-out years (F150). Stage G, the live tool, is next (D102.4).
 
 This is a research project and a private tool. It is not an operational
 forecast, and it must not be used for safety-critical decisions.
@@ -23,7 +24,35 @@ log, [DECISIONS.md](DECISIONS.md), or its archive,
 [DECISIONS-archive.md](DECISIONS-archive.md). "SPEC 8" means section 8 of
 [SPEC.md](SPEC.md).
 
-## 2. Headline result
+## 2. Headline results
+
+### Stage C: the hourly curve and the daily maximum, six new airports
+
+![Grouped bars of raw GFS MAE and the stage C curve's MAE at EDDM, KORD, CYYZ, ZGSZ, ZUCK and NZWN, in two held-out years, for the hourly curve and the daily maximum](figures/stagec_headline.svg)
+
+*Stage C claim, six new airports: the curve has a lower MAE than raw GFS in
+both held-out years, for both outputs (F150).*
+
+Stage C was tested on six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK,
+NZWN) in two held-out years. For the hourly curve at leads 3 to 48 and for
+the daily maximum, the curve had to beat both raw GFS and persistence in
+both years (SPEC 9.5). It did, at 6 of 6 airports for each output (F150).
+The smallest margins are at KORD, look B, against raw GFS: +8.2% hourly and
++2.6% for the daily maximum. Almost all of the gain over raw GFS comes from
+the baseline; the drift correction helps when GFS's bias shifts and is
+roughly neutral otherwise (D102.2, descriptive).
+
+![Six small line charts of MAE by forecast hour from 3 to 48, one per claim airport, raw GFS and the curve, in two looks](figures/stagec_mae_by_lead.svg)
+
+*MAE by forecast hour, per airport, pooled over the four GFS runs a day.
+Descriptive (D100.8).*
+
+- **Caveats (D100.10).** All data is GFS v16. The build choices were made on
+  six other airports (D82.6). CYYZ, ZGSZ and NZWN have sea in their grid
+  box (F132.3). The MAE of an hourly curve or a daily maximum is not
+  comparable with the one-hour results below.
+
+### The selected-features method on five airports (F109)
 
 ![Grouped bars: raw GFS MAE and the selected-features method's MAE at EGLC, LFPG, DSM, YSDU and RNO on the reserved year 2024-25](figures/headline_mae.svg)
 
@@ -132,6 +161,11 @@ is ignored, so the hour stays fixed all year. The model learns the
 residual: observed temperature minus the GFS forecast (SPEC 4.2). The
 corrected forecast is GFS plus that predicted residual.
 
+**Stage C's target.** Stage C forecasts every whole hour from 3 to 48 hours
+ahead from each GFS run. It uses one model per airport, run hour and lead,
+plus a running correction for drifting bias. The daily maximum is read off
+the curve (SPEC 9.1, 9.3).
+
 **Three methods**, each tested against the same frozen pass bar (SPEC
 5.3): the corrected forecast must beat both raw GFS and persistence on MAE
 over the held-out period.
@@ -182,22 +216,21 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
   forward test is pre-registered (D73) and its models are frozen (F122).
   Its build, fetch and scoring scripts exist and passed their gates (F128,
   F129). Each period is scored only after it has ended (D73.8).
-- **C. Hourly curve on GFS: under way.** The design is set (D82, D83).
-  The GRIB pull for forecast hours 0 to 24 is complete and checked
-  (F137). The development table is built and gated (F138). The rules for
-  build choices are fixed (D89), and the curve's baseline is fitted
-  (F139). Next: D82.5's alternatives, each compared with the baseline
-  under D89.6.
+- **C. Hourly curve on GFS: done.** The corrected hourly curve and the
+  daily maximum passed their pre-registered test at 6 of 6 new airports
+  in both held-out years (D100, F150).
+- **G. Live product, version 1: next** (D102.4). On GFS only, with the
+  weather model as a setting. A daily pipeline, a prediction log that is
+  never edited, a simple display and one-script airport onboarding. Its
+  design, including GFS v17, is set before any build.
 - **D.** Correct each other weather model on its own.
 - **E.** Blend and stack the corrected models.
 - **F.** An upgrade policy for when a weather model changes version,
   starting with GFS v17.
-- **G.** Live product, version 1: a daily pipeline, a prediction log that
-  is never edited, a simple display and one-script airport onboarding.
 - **H.** Probabilistic forecasts: ranges with stated odds.
-- **New airports** are an ongoing track. Stage C's claim will be judged
-  on six new airports drawn by a fixed rule: EDDM, KORD, CYYZ, ZGSZ, ZUCK
-  and NZWN (D82.7, F132). **Pooling** (one model across airports) is
+- **New airports** are an ongoing track. Stage C's claim was judged on six
+  new airports drawn by a fixed rule, and all six passed: EDDM, KORD,
+  CYYZ, ZGSZ, ZUCK and NZWN (D82.7, F150). **Pooling** (one model across airports) is
   conditional.
 
 ## 6. Repository map
@@ -206,7 +239,7 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
 |---|---|---|
 | Start here | `README.md` | This file. |
 | | [RESULTS.md](RESULTS.md) | The results in one place, each number cited to its entry. |
-| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py`. |
+| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. |
 | The research record | [SPEC.md](SPEC.md) | The source of truth for how the project should work. |
 | | [DECISIONS.md](DECISIONS.md) | The append-only log of decisions (D) and findings (F). |
 | | [DECISIONS-archive.md](DECISIONS-archive.md) | Settled entries moved out of DECISIONS.md word for word. |
@@ -256,7 +289,9 @@ run in session 98b (F140).
   `.meta.txt` beside it that gives the pull date and exact query (SPEC
   2.3).
 - **The bulk GRIB cache is not committed.** It is the gitignored folder
-  `data/raw/grib` (about 20 GB, D47). The committed pull manifests under
+  `data/raw/grib` (about 39 GB). It was moved off the laptop to an external
+  drive. Only finished scripts from sessions 37 to 89 read it, so they
+  need the drive to re-run (D102.3). The committed pull manifests under
   `data/raw/diagnostics/` (for example
   `session37/session37_pull_manifest.csv` and
   `session76/session76_pull_manifest.csv`) give the exact URL and byte

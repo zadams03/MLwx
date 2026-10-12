@@ -721,7 +721,8 @@ it as a warning sign and stop.
     (DECISIONS D72.2).
 
 **The roadmap after stage 2 (DECISIONS D72).** The end goal is set out
-in section 1. Stages run in this order. Stages A and B run side by
+in section 1. Stages run in this order, except that stage G now comes straight
+after stage C (DECISIONS D102.4). Stages A and B run side by
 side, because both are time-critical.
 
 - **Stage A — benchmark and source probe.** Confidence intervals for
@@ -762,9 +763,10 @@ side, because both are time-critical.
   complete and checked, the curve runs to 48 hours, and the daily
   maximum's metric is fixed (DECISIONS D98, F147). The daily maximum is
   read off the curve: two challengers were not adopted (DECISIONS D99,
-  F148). Stage C is locked, and its claim is pre-registered on the six
-  new airports drawn by the rule in DECISIONS D82.7 (DECISIONS D100);
-  its design is section 9.
+  F148). Stage C is locked (DECISIONS D100), and its claim passed: both
+  outputs pass at 6 of 6 new airports, drawn by the rule in DECISIONS
+  D82.7, in both held-out years (DECISIONS F150, D102). Its design and
+  result are section 9.
 - **Stage D — correct each other weather model on its own,** on the
   full curve, screening each at a few hours first.
 - **Stage E — blend and stack.** Combine the corrected models, with NBM
@@ -773,7 +775,10 @@ side, because both are time-critical.
   changes version, starting with GFS v17.
 - **Stage G — live product, version 1.** A daily pipeline, a
   prediction log that is never edited, a simple display, and
-  one-script airport onboarding.
+  one-script airport onboarding. It comes straight after stage C, on
+  GFS only, with the weather model as a setting; its design includes
+  how it handles GFS v17. Stages D, E, F and H follow it, with their
+  scope unchanged (DECISIONS D102.4).
 - **Stage H — probabilistic forecasts.** Ranges with stated odds,
   judged against their own bar, fixed before running.
 - **Pooling (conditional).** Combining airports into one model with
@@ -1236,8 +1241,20 @@ lower than raw GFS (elevation-adjusted, 5.2) and lower than persistence
 observed when the run starts), on the same rows. An airport passes an
 output only if both looks pass (5.0). The claim is stated per output as
 "passes at N of 6 new airports in both held-out years"; nothing is averaged
-across airports. Expected: both outputs pass at all six. The result will be
-recorded here and in RESULTS.md once the look is run.
+across airports. Expected: both outputs pass at all six.
+
+**Result (DECISIONS F150, D102).** The look was run once, in session 107.
+Both outputs pass at 6 of 6 new airports in both held-out years, as
+expected. The smallest margin is at KORD, look B, against raw GFS: +8.216
+percent (+0.1093 degrees C) for the hourly curve and +2.589 percent
+(+0.0297 degrees C) for the daily maximum. Almost all of the gain over raw
+GFS comes from the baseline. Described only (DECISIONS D100.8, not part of
+the bar): the curve's MAE was above the baseline's in 6 of 12 hourly and 5
+of 12 daily airport-look cells, so the drift correction helps when GFS's
+bias shifts and is roughly neutral otherwise. The clear exception is KORD
+look B, hourly, where the baseline's mean error was -0.41 degrees C and
+the curve's -0.05, and the correction gave about a third of the gain
+(MAE: raw GFS 1.3307, baseline 1.2566, curve 1.2214).
 
 **9.6 Caveats.** All data is GFS v16; GFS v17 is stage B's and stage F's
 question. Three claim airports have sea in their grid box (CYYZ, ZGSZ,

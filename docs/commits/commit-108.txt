@@ -1,0 +1,27 @@
+Session 108: stage C's result folded in, README and figures, smaller live log (D102, F151)
+
+Records D102: F150 accepted with its readings; how stage C's result is
+described (almost all of the gain over raw GFS comes from the baseline,
+and the drift correction helps when GFS's bias shifts, as at KORD look B);
+the gitignored GRIB cache (about 39 GB) moved to an external drive; stage
+G, the live product on GFS, brought forward to come straight after stage
+C, with stages D, E, F and H following it; and a smaller Live index.
+
+Stage C's result is folded into SPEC 6 and 9.5 and RESULTS 7: both
+outputs pass at 6 of 6 new airports in both held-out years, smallest
+margins at KORD look B against raw GFS (+8.216 percent hourly, +2.589
+percent daily maximum). README.md and data/README.md are brought up to
+date, with two new descriptive figures (figures/stagec_headline.svg and
+figures/stagec_mae_by_lead.svg) drawn by scripts/session108_figures.py
+from session 107's committed files. Both figures reproduce F150's margins
+and the verdicts file's n and MAE exactly, and two runs are byte-equal.
+
+A read-only list of which scripts open SPEC.md or DECISIONS is recorded
+in F151.6: SPEC could be shortened later only if section 3.4's airport
+table and its marker lines stay as they are.
+
+Archive step: D82, D88, D89, D98, D100, D101 and F150 moved to the
+archive; the Live index is D93, D102 and F151. DECISIONS.md is 16,051
+bytes. Citations 175 of 175 resolve; tests 51, all pass. Nothing was
+refit or re-scored, and no claim table, 2026-27 value or network was
+used. Full output: notes/session-108-output.txt.
