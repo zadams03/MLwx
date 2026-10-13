@@ -208,12 +208,20 @@ class Case(unittest.TestCase):
 # ------------------------------------------------------------------ config
 
 class ConfigTests(Case):
-    def test_airports_are_the_twelve_of_d103_4(self):
-        self.assertEqual([a.icao for a in AIRPORTS],
+    def test_airports_are_the_twelve_of_d103_4_then_the_onboarded_ones(self):
+        self.assertEqual([a.icao for a in AIRPORTS[:12]],
                          ["EGLC", "LFPG", "KDSM", "YSDU", "KRNO", "KSFO", "EDDM", "KORD", "CYYZ", "ZGSZ", "ZUCK", "NZWN"])
-        self.assertEqual([a.role for a in AIRPORTS], ["development"] * 6 + ["claim"] * 6)
-        self.assertEqual([a.station for a in AIRPORTS],
+        self.assertEqual([a.role for a in AIRPORTS[:12]], ["development"] * 6 + ["claim"] * 6)
+        self.assertEqual([a.station for a in AIRPORTS[:12]],
                          ["EGLC", "LFPG", "DSM", "YSDU", "RNO", "SFO", "EDDM", "ORD", "CYYZ", "ZGSZ", "ZUCK", "NZWN"])
+        # session 110 (D104.6, D104.7, F153): the airports that passed both rules, in the counts file's order
+        with open(PROCESSED / "session110_onboard_counts.csv", newline="") as f:
+            passed = [r["airport"] for r in csv.DictReader(f) if r["verdict"] == "pass"]
+        self.assertEqual(len(passed), 37)
+        self.assertEqual([a.icao for a in AIRPORTS[12:]], passed)
+        self.assertEqual({a.role for a in AIRPORTS[12:]}, {"new"})
+        self.assertNotIn("VILK", [a.icao for a in AIRPORTS])
+        self.assertNotIn("MMMX", [a.icao for a in AIRPORTS])
 
     def test_airports_file_equals_its_committed_sources(self):
         """The package's airports file is rebuilt from the positions file, the params files and
@@ -819,11 +827,12 @@ class BaselineTests(Case):
         self.assertRegex(baseline.MANIFEST_SHA256, r"^[0-9a-f]{64}$")
 
     def test_manifest_constant_equals_the_record(self):
-        """D98.2: the constant equals the value in F152, in whichever DECISIONS file holds it."""
-        self.assertTrue(baseline.MANIFEST_SHA256 in entry_text("F152"))
+        """D98.2: the constant equals the value in F153 (the 49-airport set, D104.9), in whichever DECISIONS
+        file holds it."""
+        self.assertTrue(baseline.MANIFEST_SHA256 in entry_text("F153"))
 
     def test_manifest_constant_equals_the_manifest_file_when_the_build_folder_is_there(self):
-        manifest = ROOT.parent / "MLwx-live-build" / "models" / baseline.MANIFEST_NAME
+        manifest = ROOT.parent / "MLwx-live-build" / "models-49" / baseline.MANIFEST_NAME
         if not manifest.exists():
             self.skipTest("the live build folder is not on this machine")
         self.assertEqual(baseline.manifest_sha256(manifest.read_text()), baseline.MANIFEST_SHA256)
@@ -1078,7 +1087,7 @@ class RunnerTests(Case):
         files = sorted((self.tmp / "log").rglob("*.csv"))
         self.assertEqual([f.name for f in files], ["gfs_2026101206.csv"])
         rows = prediction_log.read_log(files[0])
-        self.assertEqual(len(rows), 12 * 46)
+        self.assertEqual(len(rows), len(AIRPORTS) * 46)
         self.assertEqual({r["airport"] for r in rows}, {a.icao for a in AIRPORTS})
         self.assertEqual({r["lead"] for r in rows}, set(range(3, 49)))
         self.assertEqual({r["b"] for r in rows}, {0.0})
@@ -1131,7 +1140,7 @@ class RunnerTests(Case):
         self.assertEqual(st.cells["EGLC|00|3"].last_valid, day1 + 3 * HOUR)
         self.assertEqual(st.cells["EGLC|00|24"].n, 0)
         self.assertEqual({c[0] for c in obs_calls}, {a.station for a in AIRPORTS})
-        self.assertEqual(len(obs_calls), 12)
+        self.assertEqual(len(obs_calls), len(AIRPORTS))
 
     def test_no_observation_fetch_when_nothing_is_pending(self):
         calls = []
@@ -1203,8 +1212,59 @@ class RunnerTests(Case):
         self.run_at(dt.datetime(2026, 10, 12, 16, 30), latest_only=True)         # logs the 12z cycle only
         res = self.run_at(dt.datetime(2026, 10, 12, 16, 30))                      # 00z, 06z are now older than the log
         self.assertEqual(res["issued"], [])
-        self.assertTrue(all("tracker order" in why for _, why in res["stopped"]))
+        self.assertEqual(res["stopped"], [])
+        self.assertEqual(len(res["out_of_order"]), 3)
+        self.assertTrue(all("tracker order" in why for _, why in res["out_of_order"]))
         self.assertEqual(set(prediction_log.logged_cycles(self.tmp, "gfs")), {c12})
+
+    # D104.4: the exit code, through main(), with the fetches and the models faked.
+    def main_at(self, now, fetch_gfs=None, latest_only=False):
+        args = ["--root", str(self.tmp), "--models", str(self.tmp / "models"), "--now", f"{now:%Y-%m-%dT%H:%M}",
+                "--commit", "deadbeef"] + (["--latest-only"] if latest_only else [])
+        out = io.StringIO()
+        with mock.patch.object(baseline, "ModelSet", lambda *a, **k: FakeModels()), \
+                mock.patch.object(gfs, "fetch_cycle", fetch_gfs or fake_gfs()), \
+                mock.patch.object(observations, "fetch_reports", fake_obs_for(self.tmp)), \
+                mock.patch("sys.stdout", out):
+            code = runner.main(args)
+        return code, out.getvalue()
+
+    def test_last_nights_case_a_tracker_order_skip_exits_0(self):
+        """D104.3(b): 12z logged by hand, then the 18z run: 06z is in the window and older than the log, 18z is new."""
+        c6, c12, c18 = (dt.datetime(2026, 10, 12, h) for h in (6, 12, 18))
+        code, _ = self.main_at(dt.datetime(2026, 10, 12, 20, 0), latest_only=True)
+        self.assertEqual(code, 0)
+        self.assertEqual(set(prediction_log.logged_cycles(self.tmp, "gfs")), {c12})
+        code, out = self.main_at(dt.datetime(2026, 10, 13, 2, 58))
+        self.assertEqual(code, 0)
+        self.assertEqual(set(prediction_log.logged_cycles(self.tmp, "gfs")), {c12, c18})
+        self.assertIn("2026-10-12T06z: not issued: a later cycle is already in the log (tracker order)", out)
+        self.assertIn("2026-10-12T18z: issued", out)
+        self.assertIn("issued 1, stopped 0, not issued (tracker order) 1, waiting False", out)
+        st = state_mod.load_state(self.tmp, "gfs")
+        self.assertIn(c6, st.stopped())
+        self.assertEqual(st.last_run["status"], "ok")
+        html_text = (self.tmp / "site" / "index.html").read_text()
+        self.assertIn("cycle 2026-10-12 06z issued nothing: not issued: a later cycle is already in the log", html_text)
+
+    def test_a_guard_stop_still_exits_3(self):
+        c6 = dt.datetime(2026, 10, 12, 6)
+        code, out = self.main_at(self.NOW, fetch_gfs=fake_gfs(fail={c6: gfs.GuardStop("t2m f005: identity changed")}),
+                                 latest_only=True)
+        self.assertEqual(code, 3)
+        self.assertIn("ISSUED NOTHING. guard stop", out)
+
+    def test_a_fetch_that_never_succeeded_exits_3(self):
+        c0 = dt.datetime(2026, 10, 12, 0)
+        code, out = self.main_at(dt.datetime(2026, 10, 12, 12, 30), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertEqual(code, 3)
+        self.assertIn("gave up after 12 hours", out)
+
+    def test_a_waiting_fetch_still_exits_2(self):
+        c6 = dt.datetime(2026, 10, 12, 6)
+        code, out = self.main_at(self.NOW, fetch_gfs=fake_gfs(fail={c6: gfs.FetchError("HTTP 404")}), latest_only=True)
+        self.assertEqual(code, 2)
+        self.assertIn("issued nothing yet, will try again", out)
 
     def test_incomplete_features_stop_the_cycle(self):
         def holey(model, airports, cycle):
@@ -1258,7 +1318,7 @@ class PageTests(Case):
         html_text = self.build()
         for a in AIRPORTS:
             self.assertIn(f"<h2>{a.icao}</h2>", html_text)
-        self.assertEqual(html_text.count("<svg"), 12)
+        self.assertEqual(html_text.count("<svg"), len(AIRPORTS))
         self.assertIn("cycle 2026-10-12 06z", html_text)
         self.assertIn("GFS v16", html_text)
         self.assertIn("issued 2026-10-12 10:12 UTC", html_text)
@@ -1349,7 +1409,7 @@ class RecordedConstants(Case):
         self.assertEqual(g.DEV_0_24, records.DEV_0_24)
         self.assertEqual(g.DEV_25_48, records.DEV_25_48)
         self.assertEqual(g.CLAIM_TABLES, records.CLAIM_TABLES)
-        for a in AIRPORTS:
+        for a in AIRPORTS[:12]:          # the record's airports (the onboarded ones have their own tables)
             for hs in ("f000_024", "f025_048"):
                 self.assertEqual(g.table_name(a, hs), records.table_name(a, hs))
                 self.assertEqual(g.recorded_sha(a, hs), records.recorded_sha(a, hs))

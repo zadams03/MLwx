@@ -3,7 +3,7 @@
 A corrected temperature forecast, issued automatically for every new GFS run, with an
 append-only record of what was issued.
 
-**Version 1** (GFS only). For each GFS run (00, 06, 12 and 18 UTC) it issues, for 12 airports:
+**Version 1** (GFS only). For each GFS run (00, 06, 12 and 18 UTC) it issues, for 49 airports:
 
 - a corrected 2 m air temperature for every whole hour from 3 to 48 hours ahead (the curve); and
 - for each local calendar day that lies wholly inside those hours, the day's maximum, read off the

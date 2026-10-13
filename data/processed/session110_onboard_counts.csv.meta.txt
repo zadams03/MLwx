@@ -1,0 +1,27 @@
+Provenance of session110_onboard_counts.csv (session 110, Step 5.1; DECISIONS D104.6, D104.7, F153).
+
+file        : session110_onboard_counts.csv
+sha256      : 7149245a287b122f51c10451cb221f0a1d264a208b9f812a17b9fa46efdaa101
+rows        : 38 airports (header excluded)
+made at     : 2026-10-13 UTC, offline
+tool        : PYTHONPATH=src python3 -m mlwx.onboard counts --tables ../MLwx-live-build/tables --csv data/processed/session110_onboard_counts.csv <the 38 airports>
+inputs      : the 76 tables in ../MLwx-live-build/tables/ (both hour sets per airport), each checked
+              against that folder's manifest.txt (SHA-256 c2625306dfeb8b80c4b90e3e4b2730c924d1c5c173776765bb416b372b477098);
+              built by python -m mlwx.onboard tables from MLwx-pull/ and MLwx-pull-f025-048/ (each file
+              equal to its inventory) and the saved IEM files in data/raw/ (each equal to its .meta.txt).
+
+columns:
+  airport             ICAO code
+  smallest_cell_rows  the fewest complete-case rows in any of the airport's 184 model cells
+                      (cycle hours 00, 06, 12, 18 x leads 3 to 48), all valid up to 2026-07-31T23:00
+  largest_cell_rows   the most complete-case rows in any of those cells
+  cells_below_1200    the number of cells with fewer than 1,200 rows
+  verdict             pass if every cell has at least 1,200 rows (D104.7), else fail
+
+Counts only: no forecast, observation or error value is summarised (D104.7, D104.8).
+
+Left out before any data was opened, so not in this file: VILK (time zone Asia/Kolkata, UTC+5:30, is
+not a whole number of hours from UTC on every day from 2021-03-01 to 2027-12-31; owner's ruling at
+session 110's Step 4 stop, F153). No table or count was made for it.
+
+Result: 37 pass, 1 fails (MMMX, smallest cell 767, 60 cells below 1,200).

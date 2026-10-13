@@ -15,7 +15,9 @@ order. For each cycle:
 
 A cycle is only issued if it is newer than every cycle already in the log, so a tracker never
 holds an error from after a forecast it helped to make. A cycle that cannot be issued is recorded
-in the state file with the reason, and the page says so. A network or file-not-there-yet problem
+in the state file with the reason, and the page says so. A cycle passed over because a later cycle
+is already in the log is its own outcome: shown as before, but it does not fail the run (D104.4).
+A network or file-not-there-yet problem
 is tried again at the next run, and later cycles wait, until the cycle is 12 hours old; a guard
 failure is final for that cycle and later cycles go on. Errors older than 7 days in the log are not
 used (a gap that long is skipped, like a missing observation).
@@ -156,8 +158,10 @@ def issue_cycle(root, model, airports, models, state, cycle, now, commit, fetch_
 
 def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=None, fetch_gfs=None,
         fetch_obs=None, write_page=True, log=print, models=None):
-    """One run. Returns a dict: issued (cycles), stopped ([(cycle, reason)]), waiting ((cycle, why) or None),
-    skipped (cycles already done). `models` replaces the folder of frozen models (tests only)."""
+    """One run. Returns a dict: issued (cycles), stopped ([(cycle, reason)]: should have issued and did not),
+    out_of_order ([(cycle, reason)]: passed over because a later cycle is already in the log, D104.4),
+    waiting ((cycle, why) or None), skipped (cycles already done). `models` replaces the folder of frozen
+    models (tests only)."""
     now = now or utc_now()
     model = config.get_model(model_name)
     airports = config.load_airports(model)
@@ -166,7 +170,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
     commit = commit or code_commit()
     models = models or baseline.ModelSet(models_dir, model_name)
     state = state_mod.load_state(root, model_name)
-    result = {"issued": [], "stopped": [], "waiting": None, "skipped": []}
+    result = {"issued": [], "stopped": [], "out_of_order": [], "waiting": None, "skipped": []}
 
     cycles = available_cycles(model, now)
     if latest_only and cycles:
@@ -179,7 +183,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
         if logged and cycle < max(logged):
             reason = "not issued: a later cycle is already in the log (tracker order)"
             state.add_stop(cycle, reason, now)
-            result["stopped"].append((cycle, reason))
+            result["out_of_order"].append((cycle, reason))
             log(f"{cycle:%Y-%m-%dT%H}z: {reason}")
             continue
         work = copy.deepcopy(state)
@@ -225,8 +229,10 @@ def main(argv=None):
     a = ap.parse_args(argv)
     now = dt.datetime.strptime(a.now, "%Y-%m-%dT%H:%M") if a.now else utc_now()
     res = run(Path(a.root), Path(a.models), now, a.model, a.latest_only, a.commit)
-    print(f"issued {len(res['issued'])}, stopped {len(res['stopped'])}, waiting {res['waiting'] is not None}, "
-          f"already done {len(res['skipped'])}")
+    print(f"issued {len(res['issued'])}, stopped {len(res['stopped'])}, not issued (tracker order) "
+          f"{len(res['out_of_order'])}, waiting {res['waiting'] is not None}, already done {len(res['skipped'])}")
+    # D104.4: 3 for a cycle that should have issued and did not (a guard stop, or a fetch that never
+    # succeeded), 2 for a fetch still waiting; a tracker-order skip sets no failing code.
     if res["stopped"]:
         return 3
     if res["waiting"]:

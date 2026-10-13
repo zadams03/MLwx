@@ -43,8 +43,10 @@ LGB_PARAMS = dict(
     verbose=-1,
 )
 
-# The SHA-256 over the product models' manifest (D103.5, D98.2), set in session 109, Step 4 (F152).
-MANIFEST_SHA256 = "16485f384c81094247ec745550ad04982e8c3adb255147546bf1190f498641ef"
+# The SHA-256 over the product models' manifest (D103.5, D98.2). Session 109's 12 airports (F152):
+# 16485f384c81094247ec745550ad04982e8c3adb255147546bf1190f498641ef. Session 110's combined set of 49
+# airports (D104.9, F153), in ../MLwx-live-build/models-49/:
+MANIFEST_SHA256 = "484590bf6c877bb153446dc87f57c0f00270ad689066ea1791a60cea71baeea4"
 
 MANIFEST_NAME = "manifest.txt"
 

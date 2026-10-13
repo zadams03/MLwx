@@ -1,0 +1,31 @@
+Session 110: D104, the runner fix, and 37 more airports onboarded (N = 49)
+
+D104 (owner decisions) recorded first: F152 accepted with all eight
+readings; the hand deployment of MLwx-live on 2026-10-12 and its first
+runs; the runner fix; the template's SET-AT-DEPLOY marker; the onboarding
+tool, its gate and its inclusion rule (at least 1,200 complete-case rows
+in every model cell); no held-out year spent; one combined model set
+under a new tag.
+
+Runner: a cycle not issued because a later cycle is already logged is
+now its own outcome. It is still shown on the page and in the run
+output, but no longer fails the job (exit 0). Guard stops and failed
+fetches still exit 3; a waiting fetch still exits 2. This was the cause
+of the red scheduled run on 2026-10-13. Goes live at the next redeploy.
+
+Onboarding: src/mlwx/onboard.py (python -m mlwx.onboard) builds an
+airport's row, tables, counts and models from the recorded sources. Gate
+passed before any new airport was opened: NZWN and ORD rebuilt as if new
+gave byte-equal rows, tables (F149.2) and model files. 37 of the 39
+remaining airports onboarded. Left out: MMMX (smallest cell 767 rows,
+closes D83.4) and VILK (owner's ruling at the Step 4 stop: a time zone
+must be a whole number of hours from UTC, F153.5).
+
+Models: combined set of 196 files for 49 airports, the 48 current files
+byte-identical; new manifest SHA-256 held as baseline.MANIFEST_SHA256.
+Tar gfs-models-49.tar built outside the repo, not uploaded. One dry run
+with all 49 airports issued cleanly. Nothing was scored.
+
+Records: F153 added; F152 archived; STATUS updated; deploy template and
+README updated; counts file data/processed/session110_onboard_counts.csv.
+Tests: 172, all pass.
