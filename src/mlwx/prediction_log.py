@@ -49,14 +49,20 @@ def row_values(r):
 
 def write_log(path, rows):
     """Write one cycle's rows. Refuses to overwrite (LogExists). The folder is made if needed."""
+    write_once(path, LOG_COLUMNS, (row_values(r) for r in rows))
+
+
+def write_once(path, columns, value_rows):
+    """Write a CSV of a header and rows of strings, once. Refuses to overwrite (LogExists). The folder
+    is made if needed. Also used for the observation snapshot (D105.7)."""
     path = Path(path)
     if path.exists():
         raise LogExists(str(path))
     buf = io.StringIO()
     w = csv.writer(buf, lineterminator="\n")
-    w.writerow(LOG_COLUMNS)
-    for r in rows:
-        w.writerow(row_values(r))
+    w.writerow(columns)
+    for r in value_rows:
+        w.writerow(r)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".partial")
     with open(tmp, "x", newline="") as f:

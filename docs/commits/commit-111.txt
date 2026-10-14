@@ -1,0 +1,43 @@
+Session 111: D105 (live-forecast test pre-registered), the observation snapshot, and the refit fix for 49 airports
+
+D105 (owner decisions) recorded first: F153 accepted; the owner's redeploy
+of 2026-10-13 (Release gfs-models-49, asset gfs-models.tar with F153.7's
+SHA-256, MLWX_COMMIT e37c86d, one hourly schedule, the job failing only on
+exit code 3); the first runs after it; scheduled runs kept hourly, with
+lateness counted rather than fixed in v1.
+
+D105.5 pre-registers a test of the live forecasts, locked before any value
+on or after 2026-08-01 is scored, stage B included. It scores the corrected
+column of MLwx-live's log as issued (first file per cycle), for the hourly
+curve and the daily maximum, against D100.5's bar (raw GFS and persistence),
+per airport, per period and per output. Period A covers v16 cycles from each
+airport's first cycle to v17 or 2027-07-31; period B covers v17 cycles.
+Observations come from a fresh IEM fetch after each period ends. Expectation:
+in period A both outputs pass at the 12 airports of D103.4; none is stated
+for the 37 or for period B. D72.4's 2027-28 claim is kept.
+
+Live-run check (read-only clone of MLwx-live): 7 of 7 cycles from 2026-10-12
+12z to 2026-10-14 00z logged, each log file added once and never changed;
+the first 49-airport cycle is 2026-10-13 18z; all v16; issue lag 5 h 25 min
+to 8 h 59 min.
+
+Observation snapshot (D105.7): for each issued cycle the runner also writes
+obs/YYYY/MM/gfs_YYYYMMDDHH.csv with the observations the tracker paired
+(airport, valid time, value, report time; no forecast, b or error column),
+written once after the log file. A snapshot problem never blocks or changes
+the log. Dry run re-issuing cycle 2026-10-14 00z from the live state:
+raw_gfs and baseline equal to the live file in every row, and b and
+corrected differ in 0 rows.
+
+Refit and Gate A (D105.8): the 74 new tables' SHA-256 recorded in
+data/processed/session111_new_tables.csv (constant in records.py). Gate:
+OPKC and RCSS refitted to byte-equal model files. mlwx.refit now covers all
+49 airports (--new-tables, --check-only: 98 of 98 tables equal), and Gate A
+defaults to the 12 airports with stage C tables.
+
+Template (D105.9): matches the deployed workflow plus the snapshot. The
+commit step adds obs/ only if it exists (fixed at review, F154.9(1)), and
+the README is updated.
+
+Records: F154 added; D104 and F153 archived; STATUS updated. DECISIONS.md
+is 27,548 bytes. Tests: 181, all pass. Nothing was scored.

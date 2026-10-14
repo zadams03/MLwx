@@ -3,7 +3,18 @@
 The SHA-256 of each stage C table (F138.4, session104_stagec_f025_048_table.meta.txt, F149.2). The
 product refit reads these tables, so it checks each file against its recorded value first. A test
 checks these constants against the record. Tables are named by ICAO code.
+
+The airports onboarded in session 110 have no stage C tables. Their tables (built by mlwx.onboard,
+F153.6) are listed with their SHA-256 in data/processed/session111_new_tables.csv, and that file's
+own SHA-256 is held here (D105.8).
 """
+
+import csv
+import hashlib
+from pathlib import Path
+
+NEW_TABLES_FILE = Path(__file__).resolve().parents[2] / "data" / "processed" / "session111_new_tables.csv"
+NEW_TABLES_SHA256 = "a8d3d1f6ca6842d170c4bd42fd88ece5d9a63b015d90c003c834322981423933"   # D105.8, F154
 
 DEV_0_24 = {   # F138.4: stagec_dev_<ICAO>.csv.gz
     "EGLC": "af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126",
@@ -37,14 +48,45 @@ CLAIM_TABLES = {   # F149.2: (hours 0 to 24, hours 25 to 48)
 }
 
 
+def has_stagec_tables(airport):
+    """True for the 12 airports with stage C tables (D103.4), whatever gfs_airports.csv holds."""
+    return airport.icao in DEV_0_24 or airport.icao in CLAIM_TABLES
+
+
+def new_tables(path=None):
+    """{(icao, hour_set): (file name, SHA-256)} of the onboarded airports' tables, read only after
+    the list itself is checked against NEW_TABLES_SHA256 (D105.8)."""
+    path = path or NEW_TABLES_FILE
+    data = Path(path).read_bytes()
+    got = hashlib.sha256(data).hexdigest()
+    if got != NEW_TABLES_SHA256:
+        raise SystemExit(f"STOP: {Path(path).name} SHA-256 {got} is not the recorded {NEW_TABLES_SHA256}")
+    rows = csv.DictReader(data.decode().splitlines())
+    if rows.fieldnames != ["airport", "hour_set", "file", "sha256"]:
+        raise SystemExit(f"STOP: {Path(path).name}: not the expected columns")
+    return {(r["airport"], r["hour_set"]): (r["file"], r["sha256"]) for r in rows}
+
+
+def new_entry(airport, hour_set):
+    got = new_tables().get((airport.icao, hour_set))
+    if got is None:
+        raise SystemExit(f"STOP: {airport.icao} {hour_set}: no recorded table (neither stage C nor {NEW_TABLES_FILE.name})")
+    return got
+
+
 def table_name(airport, hour_set):
-    """File name of an airport's stage C table; hour_set is 'f000_024' or 'f025_048'."""
-    if airport.role == "development":
+    """File name of an airport's table; hour_set is 'f000_024' or 'f025_048'. Stage C tables for the
+    12 airports of D103.4; for an onboarded airport, the name in session111_new_tables.csv."""
+    if airport.icao in DEV_0_24:
         return f"stagec_dev_{airport.icao}.csv.gz" if hour_set == "f000_024" else f"stagec_dev_f025_048_{airport.icao}.csv.gz"
-    return f"stagec_claim_{hour_set}_{airport.icao}.csv.gz"
+    if airport.icao in CLAIM_TABLES:
+        return f"stagec_claim_{hour_set}_{airport.icao}.csv.gz"
+    return new_entry(airport, hour_set)[0]
 
 
 def recorded_sha(airport, hour_set):
-    if airport.role == "development":
+    if airport.icao in DEV_0_24:
         return (DEV_0_24 if hour_set == "f000_024" else DEV_25_48)[airport.icao]
-    return CLAIM_TABLES[airport.icao][0 if hour_set == "f000_024" else 1]
+    if airport.icao in CLAIM_TABLES:
+        return CLAIM_TABLES[airport.icao][0 if hour_set == "f000_024" else 1]
+    return new_entry(airport, hour_set)[1]

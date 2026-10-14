@@ -1,0 +1,23 @@
+Provenance of session111_new_tables.csv (session 111, Step 5.1; DECISIONS D105.8).
+
+file        : session111_new_tables.csv
+sha256      : a8d3d1f6ca6842d170c4bd42fd88ece5d9a63b015d90c003c834322981423933
+rows        : 74 tables of 37 airports (header excluded)
+made at     : 2026-10-14 UTC, offline
+tool        : a short script run in session 111 (hashlib.sha256 of each file's bytes); recorded in
+              notes/session-111-output.txt, Step 5.1
+inputs      : the tables of the 37 airports onboarded in session 110 (gfs_airports.csv rows 13 to 49,
+              role "new"), in ../MLwx-live-build/tables/, built by python -m mlwx.onboard tables (F153.6).
+              Each SHA-256 equals its line in that folder's manifest.txt (SHA-256
+              c2625306dfeb8b80c4b90e3e4b2730c924d1c5c173776765bb416b372b477098, session 110 Step 5.1).
+              MMMX's two tables are in that folder but not here (left out by D104.7).
+
+columns:
+  airport   ICAO code, in gfs_airports.csv order
+  hour_set  f000_024 (leads 0 to 24) or f025_048 (leads 25 to 48)
+  file      the table's file name in the tables folder
+  sha256    the SHA-256 of the file's bytes
+
+This file's own SHA-256 is held as records.NEW_TABLES_SHA256 and checked by a test (D98.2, D105.8).
+The product refit checks each new airport's table against it before reading the table.
+No forecast, observation or error value is read or summarised.

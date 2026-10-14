@@ -101,6 +101,8 @@ CLAIM_TABLES = {   # F149.2: (0-24, 25-48)
     "NZWN": ("f5c7a598cef58190e593d74cd961fd15912d9fd3ce196f149092807215a92e74",
              "4db4350540342b4a01502731a0daf5b943a6e619a0893ee6bf12ca6ade2f3fc0"),
 }
+# Gate A's airports by default: the 12 with stage C tables (D103.4), whatever gfs_airports.csv holds (D105.8).
+RECORD_AIRPORTS = [a for a in AIRPORTS if a.icao in DEV_0_24 or a.icao in CLAIM_TABLES]
 # Recorded F147 files (F147.7).
 F147_SCORES_SHA256 = "69ec86bf600fcb2c5b8ad0f8ec0cb8ed69adb314813e9ab1ee4b578f0fffa35e"
 F147_DAYS_SHA256 = "65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3"
@@ -293,8 +295,8 @@ def run_trial(args):
     print(f"SESSION 109 --trial (offline), {now_utc()}: 2022-01, every airport, both hour sets, against the recorded files")
     ok = True
     for hs in HOURSETS:
-        lines, _, n = build_tables(hs, AIRPORTS, months={"2022-01"}, log=lambda *a: None)
-        for a in AIRPORTS:
+        lines, _, n = build_tables(hs, RECORD_AIRPORTS, months={"2022-01"}, log=lambda *a: None)
+        for a in RECORD_AIRPORTS:
             with gzip.open(STAGEC / table_name(a, hs), "rt", newline="") as f:
                 old = [ln.rstrip("\n") for ln in f]
             old_rows = [old[0]] + [ln for ln in old[1:] if ln.split(",", 2)[1].startswith("2022-01")]
@@ -324,8 +326,8 @@ def run_gate_a(args):
             raise SystemExit("STOP: a pull file differs from its inventory")
     results = []
     for hs in HOURSETS:
-        lines, ostats, n_plan = build_tables(hs, AIRPORTS)
-        for a in AIRPORTS:
+        lines, ostats, n_plan = build_tables(hs, RECORD_AIRPORTS)
+        for a in RECORD_AIRPORTS:
             data = tables.table_bytes(lines[a.icao])
             sha = tables.sha256_bytes(data)
             want = recorded_sha(a, hs)

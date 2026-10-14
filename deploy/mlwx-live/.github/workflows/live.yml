@@ -1,14 +1,16 @@
 # MLwx-live: issue every new GFS cycle (DECISIONS D103.7 to D103.9).
 #
-# Four times a day, about cycle + 4 h 10 min UTC (cycles at 00, 06, 12 and 18 UTC), and by hand.
+# Every hour at 40 minutes past (UTC), and by hand. A run with nothing new to issue only republishes the page.
 # Each run:
 #   1. checks out this repo (the log and the tracker state) and the MLwx code at ONE pinned commit;
 #   2. installs the pinned requirements;
 #   3. gets the frozen models (one Release asset, D103.5), checked against the manifest SHA-256 held in the code;
 #   4. runs the runner: every cycle of the past 24 hours that has arrived and is not yet logged, in time order;
-#   5. commits the log files and the tracker state (the log is written once and never edited);
+#   5. commits the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and
+#      snapshot file is written once and never edited);
 #   6. publishes the static page to GitHub Pages;
-#   7. fails the job (so the owner is told) if any cycle issued nothing.
+#   7. fails the job (so the owner is told) if any cycle issued nothing (exit code 3). A cycle still
+#      waiting (exit code 2) is not a failure; the next hourly run tries again.
 #
 # This is a template: a commit cannot hold its own hash. The two values marked SET-AT-DEPLOY below
 # (MLWX_COMMIT and MODELS_TAG) are set by the owner at each deploy, and the deployed values are recorded
@@ -18,10 +20,7 @@ name: live
 
 on:
   schedule:
-    - cron: "10 4 * * *"      # the 00 UTC cycle
-    - cron: "10 10 * * *"     # the 06 UTC cycle
-    - cron: "10 16 * * *"     # the 12 UTC cycle
-    - cron: "10 22 * * *"     # the 18 UTC cycle
+    - cron: "40 * * * *"      # every hour at :40 UTC
   workflow_dispatch:
     inputs:
       latest_only:
@@ -113,6 +112,7 @@ jobs:
           git config user.name "mlwx-live"
           git config user.email "mlwx-live@users.noreply.github.com"
           git add log state
+          if [ -d obs ]; then git add obs; fi
           if git diff --cached --quiet; then
             echo "nothing new to commit"
           else
@@ -132,8 +132,8 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Fail the job if a cycle issued nothing (exit code 3) or is waiting (2)
-        if: steps.runner.outputs.code != '0'
+      - name: Fail the job if a cycle issued nothing (exit code 3)
+        if: steps.runner.outputs.code == '3'
         run: |
-          echo "The runner finished with exit code ${{ steps.runner.outputs.code }}; see its output above."
+          echo "The runner finished with exit code 3 (a cycle issued nothing); see its output above."
           exit 1

@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 13 October 2026, after session 110._
+_Last updated: 14 October 2026, after session 111._
 
 ---
 
@@ -19,23 +19,20 @@ the daily maximum (D82.2).
   still binding).** Pre-registered, models frozen, scripts gated. **None
   has been run.** The hold rule (D73.8) stands.
 - **Stage C: done (D100, F150).** The look is not run again (D101.2).
-- **Stage G, live product v1: deployed with 12 airports (D104.2, D104.3).**
-  Public repo zadams03/MLwx-live, pinned to session 109's commit, models
-  `gfs-models-12`, page at https://zadams03.github.io/MLwx-live/. Runs
-  issue every cycle; scheduled runs can start hours late (the 24-hour
-  catch-up recovers them).
-- **49 airports onboarded and ready, not live (D104, F153).** The 12 plus
-  37 of the 39 others, by `python -m mlwx.onboard`, gated on NZWN and ORD
-  byte for byte. Left out: MMMX (D104.7, smallest cell 767 rows, which
-  closes D83.4) and VILK (owner's time-zone rule at the Step 4 stop,
-  F153.5: Asia/Kolkata is UTC+5:30). Combined models in
-  `../MLwx-live-build/models-49/`, manifest SHA-256 `484590bf...aeea4`
-  (`baseline.MANIFEST_SHA256`); tar `../MLwx-live-build/gfs-models-49.tar`,
-  1,248,979,968 bytes, SHA-256 `e30f8fb9...f284`. Not uploaded. One dry
-  run with all 49 airports into `/tmp/mlwx-dryrun.nm4b4V`.
-- **The runner fix (D104.4): made and tested, not yet live.** A
-  tracker-order skip no longer fails the job. It goes live at the next
-  redeploy (session 111), with the 49 airports.
+- **Stage G, live product v1: live with 49 airports (D105.2, D105.3,
+  F154.2).** Public repo zadams03/MLwx-live, pinned to session 110's
+  commit, models `gfs-models-49`, one hourly schedule (:40 UTC), page at
+  https://zadams03.github.io/MLwx-live/. Every cycle from 2026-10-12 12z
+  to 2026-10-14 00z is logged; the first 49-airport cycle is 2026-10-13
+  18z. Issue lag so far 5 h 25 min to 8 h 59 min.
+- **A pre-registered test of the live forecasts (D105.5).** Locked before
+  any value on or after 2026-08-01 is scored. Period A runs to the last
+  v16 cycle or 2027-07-31 18z. No accuracy figure is computed or shown
+  until its look (D103.2, D105.6).
+- **Made and tested in session 111, not yet live (F154):** the
+  observation snapshot (`obs/`, D105.7), and the template with `obs/` in
+  its commit line (D105.9). They go live at the next redeploy. The refit
+  and Gate A now handle 49 airports (D105.8).
 - Stages D, E, F and H follow stage G.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
@@ -45,11 +42,10 @@ the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- F153's readings (F153.9), for the owner. In particular: with 49 airports
-  configured, `scripts/session109_gates.py` and `python -m mlwx.refit`
-  with no airport list stop at a new airport (F153.9(2)); and the model
-  asset is now 1.25 GB (F153.9(3)); the workflow expects the asset name
-  `gfs-models.tar` (F153.9(8)).
+- F154's readings (F154.9), for the owner. (1) and (5) were fixed at
+  review.
+- Gates C and D in `scripts/session109_gates.py` loop over all 49
+  configured airports; not changed or run (F154.9(4)).
 
 ---
 
@@ -57,7 +53,8 @@ the daily maximum (D82.2).
 
 - **GFS v17 (D93.5, D93.15, D103.10).** A weekly scheduled task checks for
   the Service Change Notice. Until the first operational v17 cycle is
-  recorded in a DECISIONS entry, the config's version table says v16.
+  recorded in a DECISIONS entry, the config's version table says v16. It
+  also sets the end of period A in the live test (D105.5(e)).
 - **lightgbm (D93.3).** New scripts may import lightgbm directly.
 - **Frozen scripts (D62.3(a), D93.8)** are never edited.
 - **Recorded values in scripts (D98.2).** Held as constants and checked by
@@ -68,4 +65,4 @@ the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 110 and commit; then plan session 111: the owner uploads `gfs-models-49.tar` under tag `gfs-models-49`, sets `MLWX_COMMIT` to session 110's commit and `MODELS_TAG` in MLwx-live's workflow and copies the template's comment fix; Claude Code checks the live runs; decide a pre-registered test of the live forecasts (window from 12 October 2026, handling of v17 rows, locked before any 2026-27 scoring including stage B's), whether to save an observation snapshot alongside the log, and whether to add cron times.
+**Next planning session:** Review session 111 and commit; then the owner's redeploy (D105.9): set `MLWX_COMMIT` in MLwx-live's workflow to session 111's commit and copy the template's two commit lines (`git add log state` and `if [ -d obs ]; then git add obs; fi`); then a dedicated planning chat on deeper statistics of the current models, using only spent data (D105.10).

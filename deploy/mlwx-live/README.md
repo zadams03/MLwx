@@ -13,8 +13,8 @@ The correction is a model fitted once on GFS version 16 data up to 31 July 2026 
 retraining), plus a running correction for drifting bias that uses only observations already in when
 a run starts.
 
-**No accuracy figure is computed or shown here.** Version 1 makes no claim. A test of the live
-forecasts will be written down in advance before anything is scored.
+**No accuracy figure is computed or shown here.** Version 1 makes no claim. The test of the live
+forecasts is pre-registered in DECISIONS D105.5 in the MLwx repo.
 
 ## The prediction log
 
@@ -40,13 +40,32 @@ every file is added in a commit made by the automated run, with the time it was 
 If anything is wrong with a run's data, that run issues **nothing**: there is no file for it, and the
 page says so. Nothing is ever filled in.
 
+## The observation snapshot
+
+`obs/YYYY/MM/gfs_YYYYMMDDHH.csv`: for each issued run, named like its log file, the observations the
+bias trackers looked up for that run. One row per airport and valid time, sorted by airport and valid
+time. Written once, after the log file, and never edited. A run with nothing to look up gets a file
+with only the header. A problem writing it never blocks or changes the log file; it is shown in the
+run's output.
+
+| column | meaning |
+|---|---|
+| `airport` | ICAO code |
+| `valid_utc` | the hour looked up |
+| `obs_c` | the observed temperature (deg C) of the routine report nearest that hour within 15 minutes; empty if none |
+| `report_utc` | the time of that report; empty if none |
+
+It holds no forecast and no error.
+
 ## The other folders
 
 - `state/tracker_gfs.json`: where each bias tracker had got to (b, the last valid time applied, the
   count). A cache; the log is the record. Updated each run.
 - `site/` is built by each run and published with GitHub Pages; it is not committed.
-- `.github/workflows/live.yml`: the schedule (about 4 hours 10 minutes after each run starts), plus a
-  manual trigger.
+- `.github/workflows/live.yml`: the schedule (every hour at 40 minutes past, UTC; a GFS run is used
+  from about 4 hours 10 minutes after it starts), plus a manual trigger. Each run commits `log/`,
+  `obs/` and `state/`. The job fails only if a GFS run should have issued and did not (the runner's
+  exit code 3); a run still waiting for its data (code 2) is tried again the next hour.
 - `requirements.txt`: the exact Python packages.
 
 ## The code

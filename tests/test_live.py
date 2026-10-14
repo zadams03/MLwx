@@ -6,6 +6,7 @@ Run from the repo root: python3 -m unittest discover -s tests -v
 
 import csv
 import datetime as dt
+import gzip
 import hashlib
 import io
 import json
@@ -1291,6 +1292,118 @@ class RunnerTests(Case):
             runner.main(["--root", str(self.tmp), "--models", str(self.tmp / "nope"), "--now", "2026-10-12T10:30"])
 
 
+class SnapshotTests(Case):
+    """The observation snapshot (D105.7), through runner.run and runner.main with fake fetches."""
+    DAY1, DAY2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+    LATE = dt.timedelta(hours=4, minutes=30)
+    HEADER = "airport,valid_utc,obs_c,report_utc\n"
+
+    def run_in(self, root, now, **kw):
+        kw.setdefault("models", FakeModels())
+        kw.setdefault("fetch_gfs", fake_gfs())
+        kw.setdefault("fetch_obs", fake_obs_for(root))
+        kw.setdefault("commit", "deadbeef")
+        kw.setdefault("log", lambda *a: None)
+        return runner.run(root, root / "models", now, latest_only=True, **kw)
+
+    def main_in(self, root, now):
+        args = ["--root", str(root), "--models", str(root / "models"), "--now", f"{now:%Y-%m-%dT%H:%M}",
+                "--commit", "deadbeef", "--latest-only"]
+        out = io.StringIO()
+        with mock.patch.object(baseline, "ModelSet", lambda *a, **k: FakeModels()), \
+                mock.patch.object(gfs, "fetch_cycle", fake_gfs()), \
+                mock.patch.object(observations, "fetch_reports", fake_obs_for(root)), \
+                mock.patch("sys.stdout", out):
+            code = runner.main(args)
+        return code, out.getvalue()
+
+    def test_snapshot_rows_are_the_pairs_used_and_their_values(self):
+        self.run_in(self.tmp, self.DAY1 + self.LATE)
+        full = fake_obs_for(self.tmp)
+
+        def altered(station, d1, d2):
+            out = []
+            for line in full(station, d1, d2).splitlines():
+                if line.startswith(f"{station},2026-10-11 05:"):
+                    continue                                                  # no report: empty cells
+                if line.startswith(f"{station},2026-10-11 07:00"):
+                    line = line.replace("2026-10-11 07:00", "2026-10-11 07:10")   # 10 minutes off: paired
+                if line.startswith(f"{station},2026-10-11 09:00"):
+                    line = line.replace("2026-10-11 09:00", "2026-10-11 09:20")   # 20 minutes off: not paired
+                out.append(line)
+            return "\n".join(out) + "\n"
+
+        res = self.run_in(self.tmp, self.DAY2 + self.LATE, fetch_obs=altered)
+        self.assertEqual((res["issued"], res["snapshot_problems"]), ([self.DAY2], []))
+        log1 = prediction_log.read_log(prediction_log.log_path(self.tmp, "gfs", self.DAY1))
+        expect = [self.HEADER]
+        for r in sorted(log1, key=lambda r: (r["airport"], r["valid"])):
+            if r["valid"] >= self.DAY2:
+                continue
+            v = r["valid"]
+            obs = float(format(round(r["baseline"] + 1.0, 2), ".2f"))
+            vs = prediction_log.iso(v)
+            if v.hour in (5, 9):
+                expect.append(f"{r['airport']},{vs},,\n")
+            elif v.hour == 7:
+                expect.append(f"{r['airport']},{vs},{obs!r},{prediction_log.iso(v + dt.timedelta(minutes=10))}\n")
+            else:
+                expect.append(f"{r['airport']},{vs},{obs!r},{vs}\n")
+        snap = runner.snapshot_path(self.tmp, "gfs", self.DAY2)
+        self.assertEqual(snap, self.tmp / "obs" / "2026" / "10" / "gfs_2026101200.csv")
+        self.assertEqual(snap.read_text(), "".join(expect))
+        self.assertEqual(len(expect) - 1, len(AIRPORTS) * 21)            # leads 3 to 23 of day 1
+        # the pairs with a value are exactly the errors the trackers took
+        st = state_mod.load_state(self.tmp, "gfs")
+        with open(snap, newline="") as f:
+            snap_rows = list(csv.DictReader(f))
+        for s in snap_rows:
+            lead = (prediction_log.parse_time(s["valid_utc"]) - self.DAY1) // HOUR
+            self.assertEqual(st.cells[f"{s['airport']}|00|{lead}"].n, 1 if s["obs_c"] else 0)
+
+    def test_a_cycle_with_no_lookups_gets_a_header_only_file(self):
+        res = self.run_in(self.tmp, self.DAY1 + self.LATE)
+        self.assertEqual((res["issued"], res["snapshot_problems"]), ([self.DAY1], []))
+        self.assertEqual(runner.snapshot_path(self.tmp, "gfs", self.DAY1).read_text(), self.HEADER)
+
+    def test_the_log_is_byte_identical_when_the_snapshot_fails_and_the_exit_code_is_unchanged(self):
+        a, b = self.tmp / "a", self.tmp / "b"
+        for root in (a, b):
+            code, _ = self.main_in(root, self.DAY1 + self.LATE)
+            self.assertEqual(code, 0)
+        code_a, out_a = self.main_in(a, self.DAY2 + self.LATE)
+        original = prediction_log.write_once
+
+        def failing(path, columns, rows):
+            if columns == runner.OBS_COLUMNS:
+                raise OSError("disk full")
+            return original(path, columns, rows)
+
+        with mock.patch.object(prediction_log, "write_once", failing):
+            code_b, out_b = self.main_in(b, self.DAY2 + self.LATE)
+        self.assertEqual((code_a, code_b), (0, 0))
+        for c in (self.DAY1, self.DAY2):
+            self.assertEqual(prediction_log.log_path(a, "gfs", c).read_bytes(),
+                             prediction_log.log_path(b, "gfs", c).read_bytes())
+        self.assertTrue(runner.snapshot_path(a, "gfs", self.DAY2).exists())
+        self.assertFalse(runner.snapshot_path(b, "gfs", self.DAY2).exists())
+        self.assertEqual((a / "state" / "tracker_gfs.json").read_bytes(), (b / "state" / "tracker_gfs.json").read_bytes())
+        self.assertIn("2026-10-12T00z: OBSERVATION SNAPSHOT NOT WRITTEN: OSError('disk full')", out_b)
+        self.assertNotIn("NOT WRITTEN", out_a)
+        self.assertIn("issued 1, stopped 0", out_b)
+
+    def test_an_existing_snapshot_is_never_overwritten(self):
+        snap = runner.snapshot_path(self.tmp, "gfs", self.DAY1)
+        snap.parent.mkdir(parents=True)
+        snap.write_text("already here\n")
+        res = self.run_in(self.tmp, self.DAY1 + self.LATE)
+        self.assertEqual(res["issued"], [self.DAY1])
+        self.assertEqual(snap.read_text(), "already here\n")
+        self.assertEqual(len(res["snapshot_problems"]), 1)
+        self.assertIn("LogExists", res["snapshot_problems"][0][1])
+        self.assertTrue(prediction_log.log_path(self.tmp, "gfs", self.DAY1).exists())
+
+
 # ------------------------------------------------------------------ the page
 
 class PageTests(Case):
@@ -1488,6 +1601,74 @@ class RefitTests(Case):
         self.assertIs(records.recorded_sha, real)
         with self.assertRaises(SystemExit):
             refit.refit(d, self.tmp / "m3", [a], log=lambda *x: None, model=small)
+
+    def test_an_onboarded_airport_reads_its_own_folder_checked_against_the_new_tables_list(self):
+        """D105.8: the refit reads an onboarded airport's tables from --new-tables, each checked against
+        session111_new_tables.csv, whose own SHA-256 is checked first."""
+        import dataclasses
+        from mlwx import records, refit
+        a = AIRPORTS[12]                                         # the first onboarded airport
+        self.assertFalse(records.has_stagec_tables(a))
+        small = dataclasses.replace(MODEL, cycle_hours=(0,), last_lead=3)
+        new_dir = self.tmp / "new"
+        new_dir.mkdir()
+        listing = ["airport,hour_set,file,sha256"]
+        src = self.synthetic_tables(AIRPORTS[0])
+        for hs in ("f000_024", "f025_048"):
+            name = f"onboard_{hs}_{a.icao}.csv.gz"
+            data = (src / records_name(AIRPORTS[0], hs)).read_bytes()
+            text = gzip.decompress(data).decode().replace(f"{AIRPORTS[0].station},", f"{a.station},")
+            (new_dir / name).write_bytes(tables.table_bytes(text.rstrip("\n").split("\n")))
+            listing.append(f"{a.icao},{hs},{name},{tables.sha256_file(new_dir / name)}")
+        csv_path = self.tmp / "new_tables.csv"
+        csv_path.write_text("\n".join(listing) + "\n")
+        with mock.patch.object(records, "NEW_TABLES_FILE", csv_path), \
+                mock.patch.object(records, "NEW_TABLES_SHA256", tables.sha256_file(csv_path)):
+            e, sha, info = refit.refit(self.tmp / "stagec", self.tmp / "m1", [a], log=lambda *x: None, model=small,
+                                       new_table_dir=new_dir)
+            self.assertEqual(info, [(a.icao, 0, 3, 150)])
+            self.assertEqual(refit.check_tables(self.tmp / "stagec", new_dir, [a]),
+                             [(a.icao, f"onboard_f000_024_{a.icao}.csv.gz"), (a.icao, f"onboard_f025_048_{a.icao}.csv.gz")])
+            with self.assertRaises(SystemExit):                  # no --new-tables
+                refit.refit(self.tmp / "stagec", self.tmp / "m2", [a], log=lambda *x: None, model=small)
+            with self.assertRaises(SystemExit):                  # an airport not in the list
+                refit.check_tables(self.tmp / "stagec", new_dir, [AIRPORTS[13]])
+            (new_dir / f"onboard_f025_048_{a.icao}.csv.gz").write_bytes(b"changed")
+            with self.assertRaises(SystemExit):                  # a table that is not the listed one
+                refit.check_tables(self.tmp / "stagec", new_dir, [a])
+        with mock.patch.object(records, "NEW_TABLES_FILE", csv_path):
+            with self.assertRaises(SystemExit):                  # the list itself is not the recorded one
+                records.new_tables()
+
+    def test_the_new_tables_list_equals_its_constant_and_the_onboarded_airports(self):
+        from mlwx import records
+        self.assertEqual(tables.sha256_file(records.NEW_TABLES_FILE), records.NEW_TABLES_SHA256)
+        got = records.new_tables()
+        self.assertEqual(sorted(got), sorted((a.icao, hs) for a in AIRPORTS[12:] for hs in ("f000_024", "f025_048")))
+        self.assertEqual(len(got), 74)
+        self.assertEqual([a.icao for a in AIRPORTS if records.has_stagec_tables(a)], [a.icao for a in AIRPORTS[:12]])
+
+    def test_the_new_tables_constant_equals_the_record(self):
+        """D98.2: the constant equals the value in F154, in whichever DECISIONS file holds it."""
+        from mlwx import records
+        self.assertIn(records.NEW_TABLES_SHA256, entry_text("F154"))
+
+    def test_a_49_airport_refit_passes_every_table_check_without_fitting(self):
+        from mlwx import refit
+        stagec, new = ROOT.parent / "MLwx-stagec", ROOT.parent / "MLwx-live-build" / "tables"
+        if not (stagec.exists() and new.exists()):
+            self.skipTest("the table folders are not on this machine")
+        checked = refit.check_tables(stagec, new)
+        self.assertEqual(len(checked), 2 * len(AIRPORTS))
+        self.assertEqual(len(AIRPORTS), 49)
+        with self.assertRaises(SystemExit):                      # without the new airports' folder, it stops
+            refit.check_tables(stagec)
+
+    def test_gate_a_defaults_to_the_12_airports_with_stage_c_tables(self):
+        import session109_gates as g
+        self.assertEqual([a.icao for a in g.RECORD_AIRPORTS],
+                         ["EGLC", "LFPG", "KDSM", "YSDU", "KRNO", "KSFO", "EDDM", "KORD", "CYYZ", "ZGSZ", "ZUCK", "NZWN"])
+        self.assertEqual(len(g.AIRPORTS), 49)
 
 
 def records_name(airport, hs):

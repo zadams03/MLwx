@@ -11,7 +11,10 @@ order. For each cycle:
      once (tracker.advance); observations are IEM routine reports, the nearest within 15 minutes
      of the valid hour (observations.py);
   3. predict the baseline with the frozen models, add b, and write the log file (written once);
-  4. save the tracker state.
+  4. save the tracker state;
+  5. write the observation snapshot (D105.7): obs/YYYY/MM/<model>_YYYYMMDDHH.csv, one row per airport
+     and valid time looked up in step 2, with the report ReportSet.nearest gave. Written once, after the log
+     file; a snapshot problem is printed and never blocks or changes the log file or the exit code.
 
 A cycle is only issued if it is newer than every cycle already in the log, so a tracker never
 holds an error from after a forecast it helped to make. A cycle that cannot be issued is recorded
@@ -38,6 +41,7 @@ CATCH_UP = dt.timedelta(hours=24)                      # D103.9: any cycle of th
 GIVE_UP_AFTER = dt.timedelta(hours=12)                 # a fetch problem older than this is final for the cycle
 LOOKBACK = dt.timedelta(days=7)
 HOUR = dt.timedelta(hours=1)
+OBS_COLUMNS = ["airport", "valid_utc", "obs_c", "report_utc"]    # D105.7
 
 
 def utc_now():
@@ -67,8 +71,24 @@ def code_commit():
 
 
 class Issued:
-    def __init__(self, cycle, path, rows, applied, obs_requests):
+    def __init__(self, cycle, path, rows, applied, obs_requests, lookups):
         self.cycle, self.path, self.rows, self.applied, self.obs_requests = cycle, path, rows, applied, obs_requests
+        self.lookups = lookups
+
+
+def snapshot_path(root, model, cycle):
+    """The observation snapshot, named like the cycle's log file (D105.7)."""
+    return Path(root) / "obs" / f"{cycle:%Y}" / f"{cycle:%m}" / f"{model}_{cycle:%Y%m%d%H}.csv"
+
+
+def write_snapshot(path, lookups):
+    """Write the snapshot once (prediction_log's write-once rule): {(icao, valid): (obs or None, report
+    time or None)} as rows sorted by airport and valid time; empty cells where there is no report.
+    No forecast, baseline, b or error column."""
+    rows = [[icao, prediction_log.iso(v), "" if o is None else repr(o), "" if t is None else prediction_log.iso(t)]
+            for (icao, v), (o, t) in sorted(lookups.items())]
+    prediction_log.write_once(path, OBS_COLUMNS, rows)
+    return len(rows)
 
 
 def pending_baselines(root, model_name, cycle, lookback=LOOKBACK):
@@ -85,7 +105,9 @@ def pending_baselines(root, model_name, cycle, lookback=LOOKBACK):
 
 
 def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
-    """Apply the arrived errors to every cell of this cycle hour, up to the cycle. Returns the number applied."""
+    """Apply the arrived errors to every cell of this cycle hour, up to the cycle. Returns the number applied.
+    Every (icao, valid) looked up, with what ReportSet.nearest gave, goes into stats["lookups"] (D105.7)."""
+    lookups = stats.setdefault("lookups", {})
     pend = pending_baselines(root, model.name, cycle)
     applied = 0
     by_airport = {}
@@ -107,7 +129,8 @@ def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
         for lead, rows in leads.items():
             errors = []
             for v, b in rows:
-                o, _ = reports.nearest(v)
+                o, t = reports.nearest(v)
+                lookups[(a.icao, v)] = (o, t)
                 if o is not None:
                     errors.append((v, o - b))
             applied += tracker.advance(state.cell(a.icao, cycle.hour, lead), errors, cycle)
@@ -138,7 +161,7 @@ def issue_cycle(root, model, airports, models, state, cycle, now, commit, fetch_
     caller passed a copy (run() does)."""
     cv = fetch_gfs(model, airports, cycle)
     per = build_cycle_rows(model, airports, cycle, cv)
-    stats = {"obs_requests": 0}
+    stats = {"obs_requests": 0, "lookups": {}}
     applied = bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats)
     version = model.version_of(cycle)
     rows = []
@@ -153,14 +176,15 @@ def issue_cycle(root, model, airports, models, state, cycle, now, commit, fetch_
     path = prediction_log.log_path(root, model.name, cycle)
     prediction_log.write_log(path, rows)
     state.last_cycle = cycle
-    return Issued(cycle, path, rows, applied, stats["obs_requests"])
+    return Issued(cycle, path, rows, applied, stats["obs_requests"], stats["lookups"])
 
 
 def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=None, fetch_gfs=None,
         fetch_obs=None, write_page=True, log=print, models=None):
     """One run. Returns a dict: issued (cycles), stopped ([(cycle, reason)]: should have issued and did not),
     out_of_order ([(cycle, reason)]: passed over because a later cycle is already in the log, D104.4),
-    waiting ((cycle, why) or None), skipped (cycles already done). `models` replaces the folder of frozen
+    waiting ((cycle, why) or None), skipped (cycles already done), snapshot_problems ([(cycle, why)]: the
+    observation snapshot was not written; this sets no exit code, D105.7). `models` replaces the folder of frozen
     models (tests only)."""
     now = now or utc_now()
     model = config.get_model(model_name)
@@ -170,7 +194,8 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
     commit = commit or code_commit()
     models = models or baseline.ModelSet(models_dir, model_name)
     state = state_mod.load_state(root, model_name)
-    result = {"issued": [], "stopped": [], "out_of_order": [], "waiting": None, "skipped": []}
+    result = {"issued": [], "stopped": [], "out_of_order": [], "waiting": None, "skipped": [],
+              "snapshot_problems": []}
 
     cycles = available_cycles(model, now)
     if latest_only and cycles:
@@ -210,6 +235,12 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
         result["issued"].append(cycle)
         log(f"{cycle:%Y-%m-%dT%H}z: issued {len(issued.rows)} rows to {issued.path}; errors applied "
             f"{issued.applied}; IEM requests {issued.obs_requests}")
+        try:
+            n = write_snapshot(snapshot_path(root, model_name, cycle), issued.lookups)
+            log(f"{cycle:%Y-%m-%dT%H}z: observation snapshot {n} rows")
+        except Exception as e:      # D105.7: never blocks or changes the log file
+            result["snapshot_problems"].append((cycle, repr(e)))
+            log(f"{cycle:%Y-%m-%dT%H}z: OBSERVATION SNAPSHOT NOT WRITTEN: {e!r}")
     state.last_run = {"at": state_mod.iso(now), "status": ("waiting" if result["waiting"] else
                                                           "stopped" if result["stopped"] else "ok")}
     state_mod.save_state(root, state)
