@@ -1,0 +1,72 @@
+run 2026-10-14T21:34:37Z; run time 86 s; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 112
+script SHA-256 bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab
+EDDM: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+EDDM: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,916; scored days that are day 1 of their cycle: 729 of 729
+KORD: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+KORD: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,901; scored days that are day 1 of their cycle: 729 of 729
+CYYZ: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+CYYZ: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,909; scored days that are day 1 of their cycle: 729 of 729
+ZGSZ: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+ZGSZ: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,915; scored days that are day 1 of their cycle: 729 of 729
+ZUCK: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+ZUCK: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,915; scored days that are day 1 of their cycle: 729 of 729
+NZWN: scored days against the record's day file: 729 of 729 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 729
+NZWN: every-cycle days 2,920 (day 1 2,920, day 2 0); with an observed maximum and both raw GFS and curve maxima 2,910; scored days that are day 1 of their cycle: 729 of 729
+EGLC: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+EGLC: every-cycle days 4,384 (day 1 4,384, day 2 0); with an observed maximum and both raw GFS and curve maxima 4,380; scored days that are day 1 of their cycle: 1095 of 1095
+LFPG: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+LFPG: every-cycle days 4,384 (day 1 4,384, day 2 0); with an observed maximum and both raw GFS and curve maxima 4,376; scored days that are day 1 of their cycle: 1095 of 1095
+KDSM: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+KDSM: every-cycle days 4,384 (day 1 4,384, day 2 0); with an observed maximum and both raw GFS and curve maxima 4,377; scored days that are day 1 of their cycle: 1095 of 1095
+YSDU: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+YSDU: every-cycle days 3,841 (day 1 3,841, day 2 0); with an observed maximum and both raw GFS and curve maxima 3,801; scored days that are day 1 of their cycle: 1095 of 1095
+KRNO: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+KRNO: every-cycle days 4,006 (day 1 4,006, day 2 0); with an observed maximum and both raw GFS and curve maxima 3,991; scored days that are day 1 of their cycle: 1095 of 1095
+KSFO: scored days against the record's day file: 1095 of 1095 equal (cycle, observed, raw GFS, baseline and curve maxima); days built 1095
+KSFO: every-cycle days 4,006 (day 1 4,006, day 2 0); with an observed maximum and both raw GFS and curve maxima 3,991; scored days that are day 1 of their cycle: 1095 of 1095
+table hourly_headline.csv: rows 294, SHA-256 db080daad9aa71bdec82e569d7360530f99de4680cee58ae8b9d39bd7814dfe2
+table hourly_curve_skill.csv: rows 252, SHA-256 222a7e89bc60727362b2272a2450db0561dbe37d518364d8b705fa46f5a53ab5
+table hourly_breakdowns.csv: rows 10,290, SHA-256 0a0cf2e7852e6a34be9077f5e34d7e84ab69dca164cb6cd97dec80fc4e59ea2e
+table hourly_conditional_bias.csv: rows 480, SHA-256 7d4cb112a7cdd6c404142eefad74497f5dfab90ada3a210f7cc6a6ff4869d35f
+table hourly_ranges.csv: rows 5,616, SHA-256 f50ef8262c09c4f51803cba6b97063495791a3a87d87bb1b620a35ae3c73cf68
+table b_summary.csv: rows 30, SHA-256 07b7cb4686f433d6c54ba032271d792ae38d353ab6fb227ffd55c4b442e0d641
+table smoothness.csv: rows 12, SHA-256 99574083e3e1afe0275b3db57a8204718e33cc51aeea7cf04239b8468d29d79b
+table run_to_run_hourly.csv: rows 960, SHA-256 f28e10cc58ffd988e41f85bf6e55e67027555ee880686809505210634d90ac3e
+table limits.csv: rows 12, SHA-256 3e743784555cae5e96ecde8cae113499a56475a394f14a1031e83e52b8c4962c
+table dailymax_headline.csv: rows 294, SHA-256 da9ee0c200bed601758900c07a9a2c5e6507c9e4845f74a175fe9a279e7f9c63
+table dailymax_curve_skill.csv: rows 252, SHA-256 2c23a87a633bd4431629ca66a45fc53bf3c2dd00922026ac4a6b5b9282a5cae6
+table dailymax_every_cycle.csv: rows 420, SHA-256 721395b7cddf993519cfa54e353f9e2262604e1cff92c988cf90355d4b04af58
+table dailymax_extremes.csv: rows 336, SHA-256 fa8598f189d4efec0fdd6b2a6e7981af003ae56afcad63077916480989a36a6f
+table dailymax_decomposition.csv: rows 48, SHA-256 cceb8075b485afd9398adaab387c4b71e873216a03bc7ef63b97fa119d9bc9e3
+table dailymax_peak_hour.csv: rows 36, SHA-256 3737fa8787bd3ce1a870a5dad0ee1001aca6e2d0e07c6123a372926811907f44
+table dailymax_peak_hour_hist.csv: rows 1,092, SHA-256 a1296419d686d5c6033906b027c91be06f5d2b008a6bf7073cf14cd938722084
+table dailymax_edge.csv: rows 72, SHA-256 963fb7bb8f1a7693ad1cd5f1bdd309b1a48acf980e591e8476c11a59a10c1daf
+table dailymax_ranges.csv: rows 720, SHA-256 4e365412da10826155fdd7ad02b48b3d3ea04d29dc5cc2e222fe9386d2aff76c
+table dailymax_whole_day_leads.csv: rows 48, SHA-256 5eca39c2aea0a4d9539776c510320b2342c4f6a82aeaa841fde7cba08b6b28e6
+table shape_diurnal_range.csv: rows 36, SHA-256 97b7eddd7712dd94e8955dffcd7447fc9dcaff94f98d81c5f26ae67b2f634e5b
+table run_to_run_dailymax.csv: rows 96, SHA-256 305d00377ec666d28d9be7c0900853f37003ab7e13c4037a37904e9397600ce3
+table dm_tests.csv: rows 48, SHA-256 6b6c6b5de08d88f2f944f22d9d1cc2eecf24653f3094929d1f3582e3e007908b
+figure hourly_error_box.svg: bytes 200,234, SHA-256 c6e6e2907d53a9fa8651da091135ed18390db8552b14baa6782e97598c118776
+figure hourly_abs_error_ecdf.svg: bytes 165,038, SHA-256 439bf20e5e8de0548743c30837b02bd012412d63e347394123244abb08af838b
+figure hourly_mae_by_lead.svg: bytes 175,819, SHA-256 e5e76908fa25a2f4fcbe25bededc0ebe240f2ad808883397b92a5f31f3ea5b94
+figure hourly_me_by_lead.svg: bytes 174,588, SHA-256 795c5dcf5cef2fbbc3ff4714558fc84bcae6ddde36319cd543e4cc95129805a5
+figure hourly_mae_by_local_hour.svg: bytes 279,362, SHA-256 a967dc8616c1e42415eccfd8f8c0e0e0b086531619460366c33d80fb6a6d7b76
+figure hourly_me_by_local_hour.svg: bytes 279,812, SHA-256 4784ffe4ff29877c2dd9ced3857dcf8647163cc0fd657d86f42e5c9f9801138b
+figure hourly_mae_by_month.svg: bytes 205,308, SHA-256 66b40acd94936e4fb80f250df26455f748d9021d6d147f6cdad6109b5d357778
+figure hourly_me_by_month.svg: bytes 211,123, SHA-256 4d8c721b991c08eea88871d8291c4e95137867d757945a871030214aa4331209
+figure hourly_conditional_bias.svg: bytes 204,457, SHA-256 6c0bea247e0a4adfe088d327a4f4465192e43e8eecfacad4c78d07eb01fa8443
+figure hourly_regimes.svg: bytes 349,957, SHA-256 7a7dedd5f7c9577c20d46bdbde3edba0c915f9ceda9e154b94376e6709e3e31b
+figure drift_by_days_since_start.svg: bytes 145,931, SHA-256 b3546f3fa85211d31c778045ba7b5d034e55f5e2d00a861cb8f79696ce72cfc7
+figure b_over_time.svg: bytes 351,884, SHA-256 ad4fc2ec929d51bc26429fd72ae9bc1f036d5e448a80a1303d46d0d97877eac5
+figure dailymax_error_box.svg: bytes 190,746, SHA-256 0c2056097a7fdff1ef652219677d5a5e8c75e95e0ad6e32e693f2bfe1b32f171
+figure dailymax_error_hist.svg: bytes 193,467, SHA-256 e4e27f1884dace1c990a23710c106d6a59366ed05950129675133eedd961cc81
+figure dailymax_by_cycle_hour.svg: bytes 137,997, SHA-256 d248036ff6130fbfe3d837850476feabcbe9fe538405a80161c82977e0a7ac9c
+figure dailymax_extremes.svg: bytes 119,921, SHA-256 681bded9cccd29efac28a76e7c5683558fbdb3760839c8126ba2d2e315805495
+figure dailymax_decomposition.svg: bytes 35,679, SHA-256 febedb28fb4e4e6beddb41a5b116218cc56f1a556b7d284a8397140c43bb0fe8
+figure dailymax_peak_hour.svg: bytes 154,708, SHA-256 df1703888dddde3bdbd2992d616a987c6752a916e2329fb3203d2898185b8920
+figure dailymax_edge_of_day.svg: bytes 53,367, SHA-256 5e919e582492f14c8b2551847746d6494fae8f446061e63d1b954dd6856423b4
+figure dailymax_ranges_fan.svg: bytes 305,748, SHA-256 3eecf7fa54a73589976d659d96fff137c77b075e9716859c031e2eb451fa9b41
+figure hourly_ranges_fan.svg: bytes 224,010, SHA-256 5d1d0077ac842114fa325621c19c16df4d41f59e6ba873d00b55aca3625e60f6
+figure shape_range_smoothness.svg: bytes 50,627, SHA-256 4bee572e0f6401095f5890ff33f5fbe79bfff1243bdd7c49194eb27e5401a09c
+figure run_to_run_hourly.svg: bytes 154,630, SHA-256 ef4ca54d5b9d24e36c9c01ec3518ee7f3a5f1977b8dec361a0c920b9d7beaae3
+figure dm_tests.svg: bytes 85,368, SHA-256 a93df97c45b735bdc8ce9f612feaa1ef05a137326cab3fb9b2fc4f0cd69df7eb

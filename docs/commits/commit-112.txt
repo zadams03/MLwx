@@ -1,0 +1,42 @@
+Session 112: D106 analysis plan and a descriptive analysis of the stage C curve and its daily maximum (F155)
+
+D106 records the owner's decisions from the statistics planning chat: F154
+accepted, and a plan for a descriptive analysis of the stage C curve and its
+daily maximum on spent data, fixed before any of its numbers was computed
+(data, references, metrics, breakdowns with bin edges from training rows,
+the daily maximum as the main section, curve shape, drift, model internals,
+limits, uncertainty and formal tests, the ZUCK case, outputs, and the next
+two sessions). It changes no verdict, model, setting, rule, bar or table,
+and nothing in D73, D77.6 or D105.5. Stage C's look was not run again.
+
+F155: the stage C predictions at the 12 airports of D103.4 were regenerated
+through the record's own routes and reproduce session 104's and session
+107's files exactly (Gate D 9,936 cells and 6,570 days; Gate C 11,100 score
+rows and 4,374 days). Seven forecasts were compared: raw GFS, persistence,
+climatology, constant bias, linear MOS, the baseline and the curve. The
+curve beats raw GFS at 12 of 12 airports for both outputs and linear MOS at
+11 of 12 hourly (Diebold-Mariano with Benjamini-Hochberg), and the baseline
+at 4 of 12, all development airports. The daily maximum reads low by +0.12
+to +0.25 degrees C at every claim airport; this is consistent with a
+selection effect but not separated from any damping of the forecast peak.
+The curve is 1.5 to 3.3 times as jagged as raw GFS across leads.
+
+ANALYSIS.md holds a draft field guide (claim airports first), an appendix
+with every planned statistic, per-lead error ranges, and five candidates
+for later; nothing was changed on them. Figures are in figures/analysis/
+and tables in data/processed/session112_analysis/. The regenerated
+predictions and references live outside the repo in
+../MLwx-stagec/analysis112/ with SHA-256 in their meta files; a provenance
+re-run with the final script reproduced all 36 data files byte for byte.
+
+Owner rulings in this session: matplotlib 3.11.2 installed into .venv and
+added to requirements.txt (numpy and lightgbm unchanged). Accepted at
+review, to be recorded in session 113's D entry: a run never holds a whole
+second local day, so D106.7's day 1 or 2 split became cycle hour; the |b|
+and curve-minus-raw tercile edges come from test-period forecast values.
+Review corrections before commit: softer wording on why the maximum reads
+low, the rounding floor stated as a floor rather than a share of the MAE,
+a season caveat on the large-|b| reading, and one rounding slip.
+
+Live index after session 112: D93, D103, D105, D106, F155 (F154 archived).
+DECISIONS.md 37,468 bytes.

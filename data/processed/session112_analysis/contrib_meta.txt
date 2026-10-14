@@ -1,0 +1,7 @@
+run 2026-10-14T21:38:14Z; run time 206 s; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2
+script SHA-256 bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab
+refits 576; refit forecasts different from the stored baseline: 0; largest |sum of contributions - prediction| 2.49e-14
+table contrib_shares.csv: rows 72, SHA-256 3ac0cf44cab792a64d6e63b3e5f479215df11eb0d4501333df775ee4309b433a
+figure contrib_shares.svg: bytes 371,942, SHA-256 3a70ce275f80c478e883f7488ca70b7e1b135176d8754b8f55244551050dc407
+figure contrib_vs_temperature.svg: bytes 1,102,626, SHA-256 a4e78797cfebc3cd98ad7befb14296c6ed6e7b7396265207d69c6a3ac0923efe
+figure contrib_vs_cloud.svg: bytes 1,106,487, SHA-256 09f2ddc4b0c86523ac504e84a48f871b56ca2ce69115bf2842fe34cb25c17245

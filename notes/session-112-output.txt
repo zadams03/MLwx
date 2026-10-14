@@ -1,0 +1,247 @@
+Session 112 output (notes/session-112-output.txt)
+
+SUMMARY (second run, after the owner's ruling to install matplotlib; the first run's block is kept below)
+- Step 0 preflight: PASS (all hashes, HEAD, index). matplotlib 3.11.2 installed in .venv with 9 dependencies;
+  numpy 2.5.2, lightgbm 4.7.0 unchanged; one line in requirements.txt. Step 1 D106: PASS, byte-equal.
+- Step 2 regenerate: PASS. Gate D 9,936/9,936 cells, 6,570/6,570 days; Gate C 11,100/11,100 score rows,
+  4,374/4,374 days, all exact. 4,416 fits; 2,013,792 prediction rows in ../MLwx-stagec/analysis112/.
+- Step 3 references: PASS. Training counts equal an independent count (24 sets x 184 cells); bin_edges.csv
+  a5dd5231...1a93 written before any test error. Persistence missing 7 to 650 scored rows, counted.
+- Step 4 --check: 14 of 14 PASS (final script too). Step 7 --contrib: 576 refits equal the stored baseline.
+- Steps 5 to 8 --analyse: PASS on run 4 (runs 1 to 3 failed or were wrong through this session's own code;
+  fixed; partial outputs deleted). 22 tables, 24 figures; scored days equal the record at 12 of 12 airports.
+- Review provenance check (owner): final script's --regen and --refs rerun into a temp folder: 36 of 36 data
+  files' SHA-256 equal meta.txt and refs_meta.txt, bin_edges.csv equal, Gates C and D pass again: PASS.
+- Step 9 ZUCK: PASS (one file, 348feb22...ddeb; forecast columns only). Step 10 ANALYSIS.md: 745 lines,
+  0 em-dashes. Step 11 F155: recorded (17 lines). Final script SHA-256 bf1fadbf...a71aab.
+- Headline: the curve beats raw GFS by 11 to 32 % hourly and 6 to 57 % for the daily maximum at the claim
+  airports; DM + BH: against raw GFS 12/12 (hourly) and 12/12 (daily max); against linear MOS 11/12 (not
+  EGLC); against the baseline 4/12 (KDSM, YSDU, KRNO, KSFO). The daily maximum reads low by +0.12 to +0.25
+  at every claim airport: peak-level term +0.81 to +0.92 minus timing term 0.63 to 0.78.
+- Readings for the owner (F155.7): (1) no run holds a whole "day 2" (46 h of leads), so D106.7's day 1/2
+  split became cycle hour, labelled; (2) |b| and curve-minus-raw tercile edges come from the test forecasts
+  (no training value); whole-day diurnal ranges leave about half the rows unbinned; (3) the curve is 1.5 to
+  3.3 times as jagged as raw GFS across leads and moves more per run; (4) nothing disagrees with F147, F150.
+- End checks: archive --apply --session 112: 4 of 4 PASS, moved F154; --citations: 178 resolved, 0
+  unresolved, 0 duplicates, 0 out of order; DECISIONS.md 36,923 bytes (limit 80,000: PASS). Scope: every
+  changed or new path is in the prompt's list (no breach). Re-read of this session's DECISIONS and STATUS
+  text: consistent with the record, apart from reading (1), which is a gap in D106.7(b) itself.
+- Open items: F155.7's readings; which statistics lead the field guide; Gates C and D in session109_gates.py
+  (F154.9(4)), not touched. Nothing committed; no commit message written.
+
+FIRST RUN (stopped at Step 0), kept as written:
+SUMMARY (session stopped at Step 0)
+- Step 0 preflight: FAIL. matplotlib does not import (ModuleNotFoundError) in the project's
+  python3 (.venv, Python 3.12.2). The prompt says: "If matplotlib does not, stop: nothing is
+  installed." Stopped here. Nothing was installed.
+- Every other Step 0 check: PASS (listed below).
+- Steps 1 to 11 not done: D106 not recorded, no script, no predictions, no ANALYSIS.md, no F155.
+- No file edited except this one (new, in scope).
+- Open item for the owner: matplotlib is needed for Steps 5 to 9's figures. It is not in
+  requirements.txt and not in any python3 on this machine (.venv 3.12.2, /usr/bin 3.9.6,
+  /opt/homebrew 3.14.8, /usr/local 3.12.2). Options are the owner's: install it into .venv
+  (the version would need recording), or change the plan's figure format.
+
+CHECKPOINTS
+Step 0: FAIL (stop). git status: only docs/sessions/session-112.md untracked: PASS. HEAD
+d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb: PASS. Live index D93, D103, D105, F154; no D106 or
+F155 in either DECISIONS file; no new path of this session exists: PASS.
+session104_curve_cv.py SHA-256 6dcd8724...0d4cb = F147 (session106's constant): PASS.
+session106_claim_look.py SHA-256 5e046acf...9281a = F150.4: PASS. session104_curve_cv_scores.csv
+69ec86bf...a35e and session104_dailymax_days.csv 65cb6d75...7dd3 = F147.7: PASS.
+session107_claim_scores.csv 2918fff4...88ca, _days.csv 3ef11293...a297, _verdicts.csv
+0a9c1dc8...19da = F150.4: PASS. 24 stage C tables (12 development, 12 claim) equal the scripts'
+SHA-256 (and DEV_TABLE25 equals session 104's table meta): 24 of 24 PASS. numpy 2.5.2 and
+lightgbm 4.7.0 import: PASS. matplotlib: does not import: FAIL. DECISIONS.md 27,548 bytes.
+Files changed: notes/session-112-output.txt (new).
+
+SECOND RUN (2026-10-14), after the owner's ruling: install matplotlib into .venv. The first run's
+lines above are kept as written.
+
+Step 0 (second run): PASS. git status: only docs/sessions/session-112.md and
+notes/session-112-output.txt untracked: PASS. HEAD d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb: PASS.
+Live index D93, D103, D105, F154; no D106 or F155 in either DECISIONS file; no new path of this
+session exists (apart from this file): PASS. session104_curve_cv.py SHA-256 = session106's
+S104_SCRIPT_SHA256 (F147): PASS. session106_claim_look.py 5e046acf...9281a = F150.4: PASS.
+session104_curve_cv_scores.csv and _dailymax_days.csv = F147.7: PASS. session107_claim_scores.csv,
+_days.csv, _verdicts.csv = F150.4: PASS. 24 of 24 stage C tables equal the scripts' SHA-256: PASS.
+Install: .venv/bin/python -m pip install matplotlib: exit 0. Added by pip (pip freeze diff):
+contourpy 1.4.0, cycler 0.12.1, fonttools 4.67.0, kiwisolver 1.5.1, matplotlib 3.11.2,
+packaging 26.3, pillow 12.3.0, pyparsing 3.3.3, python-dateutil 2.9.0.post0, six 1.17.0. Nothing
+else changed in the freeze list. After it: numpy 2.5.2, lightgbm 4.7.0 (unchanged): PASS; import
+matplotlib with the Agg backend and an SVG save: PASS. requirements.txt: one line added at the end,
+matplotlib==3.11.2. DECISIONS.md 27,548 bytes. Files changed: requirements.txt, .venv/ (install),
+notes/session-112-output.txt.
+Step 1: PASS. D106 copied with sed (session file lines 56 to 77, 22 lines) and appended after one
+blank line; diff and cmp of the block against DECISIONS.md's last 22 lines: byte-equal; the file's
+earlier bytes unchanged (cmp); em-dashes in the block: 0. D106 added to the Live index. Files
+changed: DECISIONS.md.
+Step 2: PASS. scripts/session112_analysis.py --regen (offline), 2026-10-14 21:11:49 to 21:19:35 UTC, run
+time 466 s, fit time 303 s, 4,416 fits (3,312 dev by session 104's score_part; 1,104 claim by session
+106's run_airport). Imported read only after SHA-256 checks: session104_curve_cv.py (F147) and
+session106_claim_look.py (F150.4). Reused: s104 score_part, load_table25, table25_hashes, errors,
+daily_max, fold_of; s106 run_airport, tables_of, load_rows, check_claim_zones, hourly_errors,
+daily_sets, daily_errors, mae_or_none; s97 load_table. New code (no function existed): the gate
+comparisons, a restatement of run_look's scoring loop (claim_score_rows; it is inline in run_look,
+not a function), the prediction writer. Session 106's --look was not called; no session107_* file
+written. Gate D: cells 9,936 of 9,936 equal (n, MAE and mean error, full precision); days 6,570 of
+6,570 equal (fold, cycle, observed, raw GFS, baseline and curve maxima, common flag), 0 extra.
+Gate C: score rows 11,100 of 11,100 equal (n, MAE, mean error), key sets equal at all six; days
+4,374 of 4,374 equal (look, cycle, all maxima, persistence date and value, both flags), 0 extra.
+Predictions: ../MLwx-stagec/analysis112/pred_<ICAO>.csv.gz, 12 files, 2,013,792 rows (claim 134,144
+each, dev 201,488 each); no row with incomplete features in any test period; extra rows (complete
+features, no observation) 7 to 1,607 per airport. meta.txt holds SHA-256 per file. Note: meta.txt's
+"script SHA-256" (83af9eaf...7a64) is of the file as it stood when the meta was written; later modes
+(refs, check, analyse) were being added to the file while --regen ran; the --regen code path itself
+was not changed after the run started. Files changed: scripts/session112_analysis.py (new), and
+outside the repo ../MLwx-stagec/analysis112/ (new).
+Step 3: PASS. --refs, 2026-10-14 21:21:15 to 21:24:09 UTC, 175 s. Per fold (dev) or once (claim,
+before 2024-08-01), from the baseline's own training rows (s104.split_rows_leads, the route's own
+selection): constant bias (mean training residual per airport, cycle hour and lead), linear MOS (OLS
+with an intercept on the nine G15 features, predicting the residual, per cell, no drift correction),
+climatology (mean training observation per UTC hour and day of year within 15 days, circular 365-day
+year, 29 February counted as 28 February; each training hour counted once); persistence by s106's
+hourly_persistence (D100.5). Checks: every cell's training-row count equals an independent count of
+complete-case rows valid before T0 (184 of 184 cells in each of 24 training sets: PASS); latest
+training valid time before T0 in every set (e.g. 2023-07-31T23:00 for 2023-24, 2024-07-31T23:00 for
+claim and 2024-25): PASS; missing reference values on scored rows, counted: climatology, constant
+bias, linear MOS 0 everywhere; persistence 7 to 650 per airport and period (the same rows as the
+record's persistence gaps, e.g. KORD look B 235, F150.6). Bin edges written before any test error
+was computed: data/processed/session112_analysis/bin_edges.csv, 216 rows, SHA-256
+a5dd523136b002fffd01ab566e13d465589fa47652f58664f661845849e61a93. Two choices the plan left open
+(for F155): (1) abs_b and curve_minus_raw have no value on training rows (b exists only from each
+tracker's start), so their tercile edges come from the test period's own forecast-side values (no
+observation or error read), per fold at dev airports and from both looks at claim airports; (2) raw
+GFS's (and the observed) diurnal range is taken only over a whole local day inside leads 0 to 48 of
+the same cycle (observed: D82.8's usable rule), so about half of the rows have no raw range (e.g.
+EDDM training 117,552 of 225,460) and are left out of that breakdown, counted. Also written outside
+the repo: refs_<ICAO>.csv.gz and obs_<ICAO>.csv.gz (every whole hour's table observation, for daily
+persistence) and refs_meta.txt with their SHA-256. Files changed:
+data/processed/session112_analysis/bin_edges.csv (new), the script, ../MLwx-stagec/analysis112/.
+Step 4: PASS. --check, synthetic data only, 14 of 14 PASS (full lines below in DETAIL). Bootstrap:
+mean 95 % width over 100 iid N(0,1) series of 365 days 0.1990 against normal theory 0.2052 (ratio
+0.970, tolerance 10 %). In development a first draft of this check used one series and failed
+(ratio 0.79): that series had chance lag-1 autocorrelation -0.16, which the block bootstrap
+rightly reflects; the check was changed to average over 100 series before the step was run. DM:
+identical errors p = 1; 200 same-distribution pairs mean p 0.488, share p < 0.05 0.050; constant gap
+0.5 p = 0, errors shifted by 1 p 1.2e-31. BH: two hand-worked examples (the second tests step-up).
+Decomposition: exact on a made-up curve of dyadic values; within 3.6e-15 on 1,000 random curves.
+Peak ties (first hour wins), edge rule on 23, 24 and 25-hour days, Europe/London's 23 and 25-hour
+days; ZGSZ and ZUCK have only 24-hour days. Files changed: the script.
+Steps 5 to 8 (one run of --analyse writes all four steps' tables and figures): PASS, after three
+failed runs of this session's own code, each recorded here. Run 1 (21:24:46): stopped at D106.7(g)
+on an empty set: a run covers leads 3 to 48 (46 hours), so it never holds two whole local days (two
+need at least 47 hours); D106.7(b)'s "day 2" is empty at every airport (counted: day 2 = 0
+everywhere). Kept the plan's numbering (all days are day 1) and used cycle hour, which fixes how far
+ahead the whole day lies (dailymax_whole_day_leads.csv: first lead 4 to 26), as the labelled stand-in
+for "day 1 or 2" in (b), (f) and (g). Nothing was written by run 1. Run 2 (21:29:00): tables written,
+then the figures stopped: at YSDU, KRNO and KSFO one cycle hour has no whole day in some seasons (the
+first lead is 25 or 26 in standard time: YSDU 12z 553 of 1,096 cycles, KRNO and KSFO 06z 718); fixed
+the fan figure to show a gap. Run 3 (21:31): complete, but my code started the claim airports' tracker
+clock at each look's start, not at 2024-08-01 (D100.3), so the drift band "over 365" was empty; fixed.
+Before runs 3 and 4 this session's own partial outputs from the run before were deleted (every file in
+data/processed/session112_analysis/ except bin_edges.csv, and every file in figures/analysis/);
+bin_edges.csv was kept unchanged (SHA-256 a5dd5231...1a93 re-checked). Run 4 (21:34:37 UTC, 86 s):
+exit 0, 22 tables, 24 figures, analyse_meta.txt (script SHA-256 bf1fadbf...a71aab, seed 112).
+Checks inside the run: every scored row has observation, raw GFS and curve; scored days rebuilt here
+equal the record's day files at all 12 airports (729 of 729 claim, 1,095 of 1,095 dev: cycle,
+observed, raw GFS, baseline and curve maxima); every scored day is day 1 of its cycle; the
+decomposition's sum check within 8.9e-16 everywhere. Reproduces F150 (e.g. KORD look B hourly curve
+1.2214 / raw 1.3307; daily 1.1186 / 1.1484) and F147.6 (e.g. EGLC daily 0.8410).
+Step 5 (hourly, D106.5, D106.6, D106.9, D106.11): hourly_headline.csv (7 forecasts, per period and
+pooled, 10,000 resamples), hourly_curve_skill.csv (the curve against each of 6 references),
+hourly_breakdowns.csv (15 conditions, 2,000 resamples, per-period MAE spread beside each interval),
+hourly_conditional_bias.csv, b_summary.csv, limits.csv; 13 figures. Step 6 (D106.7 (a) to (g)):
+dailymax_headline.csv, _curve_skill.csv, _every_cycle.csv, _extremes.csv, _decomposition.csv,
+_peak_hour.csv, _peak_hour_hist.csv, _edge.csv, _ranges.csv, _whole_day_leads.csv, hourly_ranges.csv;
+8 figures. Step 7 (D106.8): shape_diurnal_range.csv, smoothness.csv, run_to_run_hourly.csv,
+run_to_run_dailymax.csv; 2 figures (D106.10 is --contrib, below). Step 8: dm_tests.csv and dm_tests.svg.
+Files changed: data/processed/session112_analysis/ (22 tables, analyse_meta.txt), figures/analysis/
+(24 SVG), the script.
+Step 9: PASS. Downloaded only https://raw.githubusercontent.com/zadams03/MLwx-live/main/log/2026/10/
+gfs_2026101306.csv with curl into the temporary folder /tmp/mlwx-zuck112.MJGHA5 (kept): exit 0, 121,529
+bytes, SHA-256 348feb226d8da93f048a32fad6f140a12fa26881a82a1b7668579bf5017fddeb. --zuck read only ZUCK's
+46 rows and only airport, cycle_utc, lead, valid_utc, raw_gfs, baseline, b, corrected (8 of 12
+columns). Nothing under obs/ was opened; no observation was read and no error computed. One whole
+local day (2026-10-14, Asia/Chongqing, leads 10 to 33): raw GFS maximum 22.896 at local 00:00 (the
+first hour, an edge), the curve's 22.347 at 14:00 (not an edge). Figure figures/analysis/
+zuck_case_2026101306.svg (31,484 bytes, SHA-256 4147d41219fd93a8f3c239e5b01a4de67efe9cb9cb9de7499536c88507f0f1ae),
+with ZUCK's spent-data edge-of-day shares beside it (from dailymax_edge.csv). Files changed:
+figures/analysis/zuck_case_2026101306.svg (new), the script.
+Step 7, D106.10 (--contrib): PASS. 2026-10-14 21:34:49 to 21:38:14 UTC, 206 s. 576 refits (leads 6, 12,
+18, 24, 36, 48; four cycle hours; three folds at dev, one frozen fit at claim) by fit_model, which is
+session 97's fit_predict restated to return the model (fit_predict returns only forecasts); each
+refit's forecasts on its scored test rows equal the stored baseline exactly: 0 differences. LightGBM's
+pred_contrib (no new package): largest |sum of contributions - prediction| 2.5e-14. Mean |contribution|
+share per feature, averaged over the six leads: season terms (sin + cos) 17 % (ZGSZ) to 43 % (ZUCK),
+dewpoint depression 9 to 24 %, wind 6 to 21 %, temperature 6 % (KRNO) to 33 % (ZGSZ), radiation 3 to 15 %,
+lapse rate 6 to 16 %, pressure tendency 4 to 9 %, cloud 5 to 7 % everywhere. Read for physical sense: at ZGSZ the temperature term pulls cold forecasts colder
+and warm ones warmer (raw GFS's range there is too narrow: slope 1.10, Table A5); cloud adds at most
+about +-0.3 degrees C. Files: data/processed/session112_analysis/contrib_shares.csv (72 rows, SHA-256
+3ac0cf44...b433a), contrib_meta.txt; figures contrib_shares.svg, contrib_vs_temperature.svg,
+contrib_vs_cloud.svg.
+Step 10: PASS. ANALYSIS.md (new, repo root, 745 lines, 71,121 bytes, 0 em-dashes): a header with D106.2's
+status, where the files are and the words used; Part 1, the draft field guide (marked "draft: the owner
+chooses what goes first"; claim airports first; every number cites its table or figure); Part 2, the
+appendix in D106's order (D106.3 to D106.13), each item with its file, a one-line note on how to read it,
+and its table (development airports marked dev); Part 3, five candidates for later, each with its
+evidence and the test it would need. Every table in it was generated from the session's CSV files by a
+scratch script (not by hand); each sentence of Part 1 was then checked against the files, and nine
+wording slips were corrected before writing (e.g. smoothness ratio 1.5 to 3.3, not 3.4; 11 of 12 airports,
+not 10; dev scored rows 1,206,438). The day 1 or 2 change is labelled in place (D106.7(b)). Files
+changed: ANALYSIS.md (new).
+Step 11: PASS. F155 appended to DECISIONS.md (17 lines in the file, nine items, 0 em-dashes): what was
+done, both gates, the headline per airport (claim first), the decomposition per group, the four
+families' outcomes, eight readings, what was not done, pointers. Files changed: DECISIONS.md.
+
+END OF SESSION (detail)
+STATUS.md overwritten (current-only snapshot; last line as the prompt gives). Live index per D106.16:
+F154 removed, F155 added; after the session: D93, D103, D105, D106, F155.
+archive_decisions.py --apply --session 112: plan spans 6, keep 5, move 1 (F154, 5,741 bytes); checks 1 to 4
+PASS; DECISIONS.md 42,668 -> 36,923 bytes (28584ec8...7986); DECISIONS-archive.md 1,438,508 -> 1,444,290
+bytes (7132ecf7...f7e). --citations: 178 distinct cited, resolved 178, unresolved 0, in both files 0;
+duplicated opening lines 0; dated headings out of order 0. DECISIONS.md 36,923 bytes, under 80,000: PASS.
+Scope (git status --porcelain --untracked-files=all): M DECISIONS-archive.md, M DECISIONS.md, M STATUS.md,
+M requirements.txt; new ANALYSIS.md, scripts/session112_analysis.py, data/processed/session112_analysis/
+(24 CSV + analyse_meta.txt + contrib_meta.txt), figures/analysis/ (28 SVG), notes/session-112-output.txt;
+docs/sessions/session-112.md (the owner's, untracked at start). .venv/ is ignored (the install only). Outside
+the repo: ../MLwx-stagec/analysis112/ (38 files, new; nothing else in MLwx-stagec changed) and
+/tmp/mlwx-zuck112.MJGHA5 (the download, kept). No scripts/__pycache__ file of this session remains (two
+.pyc made by the preflight import were removed at Step 2). No scope breach.
+Re-read of this session's changes in DECISIONS (D106, F155, the index) and STATUS: consistent with the
+record. One point to flag: D106.7(b) and (g) assume a "day 2" that cannot exist with leads 3 to 48 (F155.7(1)).
+Final script SHA-256 bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab: the version that
+ran --analyse, --contrib, --zuck and the final --check (14 of 14). --regen ran on an earlier state
+(83af9eaf...7a64, in meta.txt) and --refs on another (0817a32a...5dc3, in refs_meta.txt); the code of
+those two modes did not change afterwards. ANALYSIS.md SHA-256 e4b958d6...6fa8.
+Nothing committed; no commit message written.
+
+Review corrections (owner), two review messages, 2026-10-14:
+1. Provenance check: PASS. scratchpad wrapper run_prov.py loaded the final script (bf1fadbf...a71aab, unedited)
+   as a module, moved only PRED_DIR, PRED_META, REFS_META, OUT_DIR and EDGES_OUT to the temporary folder
+   .../scratchpad/prov/out.4xzUnc (outside the repo), and called its run_regen and run_refs. --regen (22:01 to
+   22:11 UTC, 4,416 fits): Gate C 11,100 of 11,100 and Gate D 9,936 of 9,936 cells again; 12 prediction files
+   written. --refs computed everything and wrote bin_edges.csv, then stopped on a print of that path relative
+   to the repo (my wrapper had moved it outside the repo); no hash difference was involved. After removing that
+   temporary bin_edges.csv, run_refs_only.py ran run_refs again with ROOT also moved (22:12 UTC, 173 s, exit 0).
+   Result: 36 of 36 data files (12 pred_, 12 refs_, 12 obs_) have SHA-256 equal to the values in meta.txt and
+   refs_meta.txt; the new metas list the same 36 values; bin_edges.csv a5dd5231...1a93 equal. (The meta files
+   themselves differ only in their run-time lines.) Recorded in F155.7(8) and the summary. File: DECISIONS.md.
+2. The maximum reading low: "by construction", "by a selection effect" and "answers F147.8(3)" replaced by the
+   owner's wording (consistent with a selection effect; the decomposition does not separate it from damping of
+   the forecast peak; raw GFS's larger low reading is a real bias). Files: DECISIONS.md (F155.7(3)); ANALYSIS.md
+   (section 1.4, Table B4's note, Part 3 item 2); STATUS.md (analysis bullet now cites F155.7(3)).
+3. Rounding floor: ANALYSIS.md section 1.4 and Table C5's note (the D106.11 part) now say an MAE of about 0.25
+   is a floor even for a perfect forecast against whole-degree reports, and not a share of the MAE.
+4. ANALYSIS.md section 1.2: "far more often" became "more often" (ZUCK, 19 % against 14 %).
+5. ANALYSIS.md section 1.2 and Part 3 item 5: large |b| may coincide with harder seasons or weather, which the
+   breakdown does not separate.
+6. Day sets (second message): Table B1a's mean error and Table B4's mean e_max use the same days (D98.10's common
+   scored days; the same n per airport) and are equal to full precision (CYYZ 0.1245...). Section 1.4's "+0.13 to
+   +0.25" was my rounding slip; it now reads "+0.12 to +0.25", as F155.5 and Table 1. Stray full stop before
+   "(Table C5)" removed. File: ANALYSIS.md.
+7. This summary: one line added for the provenance check; the Step 4 and Step 7 lines merged to stay at 30.
+No number in any table, figure or data file changed. Files changed by the review: ANALYSIS.md, DECISIONS.md,
+STATUS.md, notes/session-112-output.txt. Outside the repo: the temporary folder above (scratchpad).
+Cleanup: the provenance wrapper's module load left scripts/__pycache__/session112_analysis.cpython-312.pyc (git-ignored, 22:01 UTC); removed.
+End checks after the review: scope as before, no breach (no new or changed path outside the prompt's list); --citations 178 resolved, 0 unresolved, 0 duplicates, 0 out of order; DECISIONS.md 37,468 bytes (under 80,000); script SHA-256 still bf1fadbf...a71aab; 0 em-dashes in ANALYSIS.md, STATUS.md and this file. Nothing committed.
