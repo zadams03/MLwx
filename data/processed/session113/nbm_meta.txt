@@ -1,0 +1,25 @@
+Provenance (SPEC 2.3, D47, D107.6). Do not edit the data files.
+
+source      : nbm
+written by  : scripts/session113_comparison_pull.py --pull nbm
+written at  : 2026-10-16T03:28:36Z
+pulled      : 2026-10-15T16:53:19Z to 2026-10-16T03:28:11Z
+airports    : KDSM KRNO KSFO KORD CYYZ
+windows     : KDSM 2023-08-01T00:00Z to 2026-07-31T18:00Z; KRNO 2023-08-01T00:00Z to 2026-07-31T18:00Z; KSFO 2023-08-01T00:00Z to 2026-07-31T18:00Z; KORD 2024-08-01T00:00Z to 2026-07-31T18:00Z; CYYZ 2024-08-01T00:00Z to 2026-07-31T18:00Z
+columns     : airport, position_set, grid, cycle, step, valid_utc, param, window_start_utc, window_end_utc, v1, v2, v3, v4, units, msg
+values      : v1..v4 at the four points of positions_<source>_<grid>.csv (same order), full precision, in the message's own units (K); window_* only for maximum fields
+rows        : value rows 1298722; messages 176888; gaps 5
+gaps        : TMP index offset does not match the file 3; TMP no message 2
+terrain     : absent (no orography field in the source)
+packages    : python 3.12.2; eccodes 2.48.0; numpy 2.5.2; requests 2.34.2
+versions    : NBM v4.1, v4.2 (2024-05-15), v4.3 (2025-05-27 12z), v5.0 (2026-04-30 13z), v5.0.14 (2026-07-28 12z) (D77.7 with F127.7's corrections)
+requests    : at most 8 at once; owner's override: Owner's override of D107.7 for the NBM grid (session 113, asked in chat): pulled in this session although the estimate (about 266.6 GB transferred, none stored; 6.72 h) exceeds 250 GB; NBS kept as well
+
+files (SHA-256, rows):
+  nbm_KDSM.csv.gz  913f7ad34f7edcea6225101414837357d032405766953aa553d758bc057415cc  353776
+  nbm_KRNO.csv.gz  c03e3ae7fb0148b94e0c052af5cdb33fbca89f0677a0ab455c3412df50cab5b4  353776
+  nbm_KSFO.csv.gz  7d1c296737fb37e2522f679950896886fba23b9618978d1dd14ed8a60329f16f  353776
+  nbm_KORD.csv.gz  8d64e0a0782f2ec639abb8f85cc867f443576efb763f7734edc18a1211fc75ae  118697
+  nbm_CYYZ.csv.gz  8a824a0825d8013831fd9220625229bd65aea8e36ed0479b2e58fd76d2f1e23b  118697
+  nbm_manifest.csv.gz  ce171afa2e012f2e151758b1c819308e2fa8653ac61491bc576c11319c150e76  176888
+  nbm_gaps.csv  7834445b8cab89c5200e45c71f8c5e93ca867fc4210e5fb92826c584ed35ab5a  5

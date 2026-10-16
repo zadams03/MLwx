@@ -1,0 +1,6 @@
+airport,run,copies,action,differing element and projection
+KDSM,2025-10-14T07:00Z,2,"dropped, counted as a gap",TXN at 2025-10-16T00:00Z (lead 41)
+KRNO,2025-10-14T07:00Z,2,"identical copies, one kept",
+KSFO,2025-10-14T07:00Z,2,"dropped, counted as a gap",TMP at 2025-10-15T15:00Z (lead 32)
+KORD,2025-10-14T07:00Z,2,"identical copies, one kept",
+CYYZ,2025-10-14T07:00Z,2,"dropped, counted as a gap",TMP at 2025-10-14T12:00Z (lead 5)

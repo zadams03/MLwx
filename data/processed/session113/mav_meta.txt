@@ -1,0 +1,24 @@
+Provenance (SPEC 2.3, D107.6). Do not edit the data files.
+
+source      : IEM MOS archive, model GFS (mav), https://mesonet.agron.iastate.edu/cgi-bin/request/mos.py
+written by  : scripts/session113_comparison_pull.py --pull mav
+written at  : 2026-10-15T16:18:39Z
+stations    : KDSM KRNO KSFO KORD
+windows     : KDSM nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KRNO nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KSFO nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KORD nominal cycles 2024-08-01T00:00Z to 2026-07-31T18:00Z
+runs        : {0: 0, 6: 6, 12: 12, 18: 18} (run hour -> nominal GFS cycle hour)
+columns     : airport, mos_station, model, cycle, cycle_label, nominal_cycle, ftime_utc, lead, lead_from_nominal, element, value_f, value_c, window_start_utc, window_end_utc, definition
+leads       : projections whose valid time is 3 to 48 h after the nominal cycle and on or before 2026-07-31T23:00 UTC
+values      : as issued, whole degrees F (value_f), and converted exactly (value_c = (F - 32) * 5 / 9)
+dropped     : rows filtered on time fields before any value was read: {'run not paired or outside the window': 0, 'lead outside 3-48': 96336, 'after the limit': 256}
+maximum     : X: N/X daytime maximum, 7 a.m. to 7 p.m. local standard time (MDL weather elements page); value at the 00 UTC projection (MAV card: HR is the end of the period); a maximum whose window ends after the limit is not kept
+gaps        : 20 rows in mav_gaps.csv (counted, never filled)
+packages    : python 3.12.2; requests 2.34.2
+
+files (SHA-256, rows):
+  mav_KDSM.csv.gz  71c9ac0000ba0fb17a397389dc7c0feb18687a83dc91b88809ac8bf3f6eaded5  72195
+  mav_KRNO.csv.gz  d4ae0cb2911865194150544af92fdbfebbf63df9517244f7e937aee29a72b78c  72195
+  mav_KSFO.csv.gz  073875e821a9f0bd05ab367ae07e874460303981b96bb282d75a8ac0ece66dd7  72195
+  mav_KORD.csv.gz  115323166b263e62a21d7fc9da96394bb14c47f559b4a7693135fc8f7d7004b8  48039
+  mav_queries.csv.gz  74b9640464aa8b1c7c0f6deaffe885e078d2f1f2791c5626da2c0a80adea9aeb  132
+  mav_gaps.csv  d132264c7c1e6b0d02b3d4e456978364d764f9033857068addc720ca5b13df05  20
+  mav_runs.csv  edcaec8653dd843f1af6cf9d0adb4153151bc286f199c5f2aaab898e9edfbd52  8

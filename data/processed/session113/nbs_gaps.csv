@@ -1,0 +1,31 @@
+source,airport,nominal_cycle,run,reason
+nbs,KDSM,2024-05-31T18:00Z,,no run paired with this nominal cycle
+nbs,KDSM,2024-10-15T12:00Z,,no run paired with this nominal cycle
+nbs,KDSM,2025-06-20T06:00Z,,no run paired with this nominal cycle
+nbs,KDSM,2025-09-13T06:00Z,,no run paired with this nominal cycle
+nbs,KDSM,2025-10-14T06:00Z,2025-10-14T07:00Z,issued twice with differing values
+nbs,KDSM,2026-02-22T06:00Z,,no run paired with this nominal cycle
+nbs,KDSM,2026-07-31T18:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2024-05-31T18:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2024-06-05T18:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2024-10-15T12:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2025-06-20T06:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2026-02-22T06:00Z,,no run paired with this nominal cycle
+nbs,KRNO,2026-07-31T18:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2024-05-31T18:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2024-06-05T18:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2024-10-15T12:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2025-06-20T06:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2025-10-14T06:00Z,2025-10-14T07:00Z,issued twice with differing values
+nbs,KSFO,2026-02-22T06:00Z,,no run paired with this nominal cycle
+nbs,KSFO,2026-07-31T18:00Z,,no run paired with this nominal cycle
+nbs,KORD,2024-10-15T12:00Z,,no run paired with this nominal cycle
+nbs,KORD,2025-06-20T06:00Z,,no run paired with this nominal cycle
+nbs,KORD,2026-02-22T06:00Z,,no run paired with this nominal cycle
+nbs,KORD,2026-07-31T18:00Z,,no run paired with this nominal cycle
+nbs,CYYZ,2024-10-15T12:00Z,,no run paired with this nominal cycle
+nbs,CYYZ,2025-06-20T06:00Z,,no run paired with this nominal cycle
+nbs,CYYZ,2025-09-13T06:00Z,,no run paired with this nominal cycle
+nbs,CYYZ,2025-10-14T06:00Z,2025-10-14T07:00Z,issued twice with differing values
+nbs,CYYZ,2026-02-22T06:00Z,,no run paired with this nominal cycle
+nbs,CYYZ,2026-07-31T18:00Z,,no run paired with this nominal cycle

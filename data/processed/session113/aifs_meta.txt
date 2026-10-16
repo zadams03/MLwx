@@ -1,0 +1,33 @@
+Provenance (SPEC 2.3, D47, D107.6). Do not edit the data files.
+
+source      : aifs
+written by  : scripts/session113_comparison_pull.py --pull aifs
+written at  : 2026-10-15T15:42:37Z
+pulled      : 2026-10-15T12:12:04Z to 2026-10-15T15:40:51Z
+airports    : EDDM KORD CYYZ ZGSZ ZUCK NZWN EGLC LFPG KDSM YSDU KRNO KSFO
+windows     : EDDM 2025-02-25T06:00Z to 2026-07-31T18:00Z; KORD 2025-02-25T06:00Z to 2026-07-31T18:00Z; CYYZ 2025-02-25T06:00Z to 2026-07-31T18:00Z; ZGSZ 2025-02-25T06:00Z to 2026-07-31T18:00Z; ZUCK 2025-02-25T06:00Z to 2026-07-31T18:00Z; NZWN 2025-02-25T06:00Z to 2026-07-31T18:00Z; EGLC 2025-02-25T06:00Z to 2026-07-31T18:00Z; LFPG 2025-02-25T06:00Z to 2026-07-31T18:00Z; KDSM 2025-02-25T06:00Z to 2026-07-31T18:00Z; YSDU 2025-02-25T06:00Z to 2026-07-31T18:00Z; KRNO 2025-02-25T06:00Z to 2026-07-31T18:00Z; KSFO 2025-02-25T06:00Z to 2026-07-31T18:00Z
+columns     : airport, position_set, grid, cycle, step, valid_utc, param, window_start_utc, window_end_utc, v1, v2, v3, v4, units, msg
+values      : v1..v4 at the four points of positions_<source>_<grid>.csv (same order), full precision, in the message's own units (K); window_* only for maximum fields
+rows        : value rows 299880; messages 16660; gaps 0
+gaps        : none
+terrain     : aifs_terrain.csv
+packages    : python 3.12.2; eccodes 2.48.0; numpy 2.5.2; requests 2.34.2
+versions    : AIFS Single from its first operational run (probe.csv); versions per probe.csv
+requests    : at most 8 at once
+
+files (SHA-256, rows):
+  aifs_EDDM.csv.gz  dd0af4bff9f74bb19105d9da15bba1f4f3fc50ce917b7e25043d28a655697538  16660
+  aifs_KORD.csv.gz  2b2221ed0351ebb6d64569e8bde945bcbe659aea2c4356d9079df1923a15543f  16660
+  aifs_CYYZ.csv.gz  c72184fe1777adcad58622f6839d96ff283dcbd5a027d0ff260f97a632038111  16660
+  aifs_ZGSZ.csv.gz  6bfea4c70a9cf72926b68dbd512c3771b1b8bcf222649e6b291cd47c6afb6086  16660
+  aifs_ZUCK.csv.gz  bea4aea22ee460919378348083851fefe6ff156f66a1818e5b3f22df832765f7  16660
+  aifs_NZWN.csv.gz  249054dd45b1a1e6a40cf254fbe04c2d4714b74e68e8ca757e18978ad92899d7  16660
+  aifs_EGLC.csv.gz  4553d082adef6d74fa494aa8647c505cbd55d438bd5c48b5020bc4cb7be3e7ef  33320
+  aifs_LFPG.csv.gz  a61cc45b2dae5b543837bb89247701c566bfe85616d5390bad723a9a1f705738  33320
+  aifs_KDSM.csv.gz  af3f2ba1ea352ca44265200dc1142bb01f327450fd0ea9212dba582af10de5e2  33320
+  aifs_YSDU.csv.gz  d017a39e794f51727f77df06513fb37aa0fa49ff2e7008989a88b85f051a860d  33320
+  aifs_KRNO.csv.gz  a96057a94a0632960546268b56390ce8fd1def9033527a2cbcd38021f1a90022  33320
+  aifs_KSFO.csv.gz  ebad68b9a6379af7dcad41536a253bc32981ff9992adfb4bab42250cdfc6d950  33320
+  aifs_manifest.csv.gz  d9a8a76fda9a76a2006a52db57b8e9663f865e15b15119b1d18673447c2227c1  16660
+  aifs_gaps.csv  67cfd7a78efc14345b02457b1a63403a4a24dfa25670b1f259936a88f5ab2ccb  0
+  aifs_terrain.csv  53078c2d14aa6e3ce5edc5a0d418f992f8c08d3335cb3b3c8428ab513ba8c362  

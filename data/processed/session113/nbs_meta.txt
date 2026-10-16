@@ -1,0 +1,27 @@
+Provenance (SPEC 2.3, D107.6). Do not edit the data files.
+
+source      : IEM MOS archive, model NBS (nbs), https://mesonet.agron.iastate.edu/cgi-bin/request/mos.py
+written by  : scripts/session113_comparison_pull.py --pull nbs
+written at  : 2026-10-15T16:43:13Z
+stations    : KDSM KRNO KSFO KORD CYYZ
+windows     : KDSM nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KRNO nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KSFO nominal cycles 2023-08-01T00:00Z to 2026-07-31T18:00Z; KORD nominal cycles 2024-08-01T00:00Z to 2026-07-31T18:00Z; CYYZ nominal cycles 2024-08-01T00:00Z to 2026-07-31T18:00Z
+runs        : {0: 0, 6: 6, 12: 12, 18: 18, 1: 0, 7: 6, 13: 12, 19: 18} (run hour -> nominal GFS cycle hour); owner's ruling: 01/07/13/19 UTC runs kept, labelled one hour later than the nominal cycle; matching by valid time, never by lead; these runs hold one hour more data than the GFS cycle
+columns     : airport, mos_station, model, cycle, cycle_label, nominal_cycle, ftime_utc, lead, lead_from_nominal, element, value_f, value_c, window_start_utc, window_end_utc, definition
+leads       : projections whose valid time is 3 to 48 h after the nominal cycle and on or before 2026-07-31T23:00 UTC
+values      : as issued, whole degrees F (value_f), and converted exactly (value_c = (F - 32) * 5 / 9)
+dropped     : rows filtered on time fields before any value was read: {'run not paired or outside the window': 460, 'lead outside 3-48': 152600, 'after the limit': 320}
+maximum     : TXN: TXN maximum between 12Z (current day) and 06Z (next day), reported at 00Z (NBM text card v5.0; earlier versions' card not read); a maximum whose window ends after the limit is not kept
+gaps        : 30 rows in nbs_gaps.csv (counted, never filled)
+duplicates  : 5 runs IEM holds more than once (nbs_duplicates.csv); owner's ruling: identical copies, one kept; differing copies, the run dropped and counted as a gap ('issued twice with differing values'); IEM gives no issuance time to order the copies
+packages    : python 3.12.2; requests 2.34.2
+
+files (SHA-256, rows):
+  nbs_KDSM.csv.gz  7b89ce7e4c54e7bf46def426202b294ffb665260a008dca93c5a7c55dac21f31  72584
+  nbs_KRNO.csv.gz  4887fd5da824e4c2a24b478a2412152d5fb64ce3c24f50aa50cabad9b3f20a8c  72602
+  nbs_KSFO.csv.gz  24f22e4f2f6568c0499abdd1194c4944ef0ce71a35b97fd0bea6906296b4ec91  72585
+  nbs_KORD.csv.gz  b7d8e52ec88b11a3b7ebe5db21dfa2e5e3bca568be02f4ae2de612b9165bdbab  48478
+  nbs_CYYZ.csv.gz  8381fb239f5eff60c511050d45c96d60b401049997f2f5bf6fa9e1db1bafc74a  48444
+  nbs_queries.csv.gz  0144467b67852d6dfffd1f2acaad8c406873aa5e3ad840ac40df90b2e63b5d30  156
+  nbs_gaps.csv  b1ad9156c8492b917acf7403d4c698a5dcd77c3cbcd197b63937ed839eb0c49c  30
+  nbs_runs.csv  86c7123052beb1234699743133f05fe61c09e98f91a1578977058a96eb42bbc3  20
+  nbs_duplicates.csv  f404d436121da6c0f516f8f77b056c31c1d909e67a67f09d1e96d91429a5ad60  5

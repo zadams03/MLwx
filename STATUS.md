@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 14 October 2026, after session 112._
+_Last updated: 16 October 2026, after session 113._
 
 ---
 
@@ -19,13 +19,15 @@ the daily maximum (D82.2).
   still binding).** Pre-registered, models frozen, scripts gated. **None
   has been run.** The hold rule (D73.8) stands.
 - **Stage C: done (D100, F150).** The look is not run again (D101.2).
-- **A descriptive analysis of stage C on spent data: done (D106, F155).**
-  `ANALYSIS.md` holds a draft field guide, an appendix with every planned
-  statistic, and five candidates for later. It changed nothing; it
-  reproduces F147 and F150 exactly. Headline: the curve beats raw GFS at
-  12 of 12 airports for both outputs and linear MOS at 11 of 12 hourly
-  (formal tests); the daily maximum reads low by +0.12 to +0.25 degrees C
-  at every claim airport, consistent with a selection effect (F155.7(3)).
+- **A descriptive analysis of stage C on spent data: done (D106, F155,
+  accepted in D107.1).** `ANALYSIS.md` holds the draft field guide.
+- **Comparison sources on spent years: probed and mostly pulled (D107,
+  F156).** Point values in `data/processed/session113/`: AIFS (12
+  airports, from 2025-02-25), the NBM grid and NBS (DSM, RNO, KSFO, KORD,
+  CYYZ), MAV (the four US airports), and the official daily maximum (CLI
+  and GHCN-Daily, four US airports). **ECMWF IFS is not pulled**: over the
+  24-hour gate even at 16 and 32 requests at once (F156.3). Nothing has
+  been scored. Session 114's comparison rules are fixed in D107.9.
 - **Stage G, live product v1: live with 49 airports (D105.2, D105.3,
   F154.2).** Public repo zadams03/MLwx-live, page at
   https://zadams03.github.io/MLwx-live/. Models `gfs-models-49`, one
@@ -36,21 +38,26 @@ the daily maximum (D82.2).
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
 - **GRIB cache.** On an external drive (D102.3).
-- **matplotlib 3.11.2** is now in `.venv` and `requirements.txt` (owner's
-  ruling, session 112).
 
 ---
 
 ## Open questions (live)
 
-- F155's readings (F155.7), for the owner. In particular: (1) a run never
-  holds a whole "day 2" (46 hours of leads), so D106.7's day 1 or 2 split
-  was replaced by cycle hour, labelled; any later "day 2" wording
-  (D106.15) needs the same care. (2) Two bin-edge choices the plan left
-  open (|b| and curve minus raw GFS; whole-day diurnal ranges).
-- Which statistics go first in `ANALYSIS.md`'s field guide (D106.2).
+- **IFS pull (F156.9(1)).** A follow-up session with
+  `scripts/session113_comparison_pull.py --pull ifs` unchanged needs the
+  owner's D107.7 override of the hours (about 26.5 h at 8 at once).
+  Until then, session 114 has no IFS values.
+- F156's readings (F156.9): NBS's 01/07/13/19 UTC runs hold one hour more
+  data than their GFS cycle; NBM grid terrain absent (elevation treatment
+  labelled); IFS terrain only from 2024-12-03 and mx2t3 only from 49r1;
+  NBS TXN definition before v5.0 not read; the official sources agree on
+  fewer days in 2024-25 at KDSM and KORD; KORD's CLI site is 3.07 km from
+  IEM's ORD position.
+- The owner's rulings and corrections in F156.2, recorded as rulings for
+  the owner to confirm in the next D entry.
 - Gates C and D in `scripts/session109_gates.py` loop over all 49
   configured airports; not changed or run (F154.9(4)).
+- WeatherNext: deferred until the owner's access is granted (D107.4).
 
 ---
 
@@ -70,4 +77,4 @@ the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 112 and commit; then plan session 113 (D106.15): the read-only probe and pull of comparison forecasts on spent years, and the official daily maximum at the four US airports. The owner's WeatherNext access request is pending.
+**Next planning session:** Review session 113 and commit; then plan session 114 (D107.9): the comparisons against ECMWF, NBM and MAV, the official-maximum gap, and the field guide finished. WeatherNext is deferred until the owner's access is granted (D107.4).

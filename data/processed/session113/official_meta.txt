@@ -1,0 +1,34 @@
+Provenance (SPEC 2.3, D107.8). Do not edit the data files.
+
+written by  : scripts/session113_comparison_pull.py --pull official
+written at  : 2026-10-15T16:19:37Z
+CLI         : IEM json/cli.py by calendar year; each record filtered on its date field alone, in memory, before any other field (owner's ruling); climate days whose window ends after 2026-07-31T23:00 UTC dropped unread: {'KDSM': 76, 'KRNO': 76, 'KSFO': 76, 'KORD': 76}
+climate day : midnight to midnight local standard time (recorded, not adjusted)
+GHCN-Daily  : https://www.ncei.noaa.gov/access/services/data/v1 dataset daily-summaries, TMAX, units metric (degrees C as given), stations {'KDSM': 'USW00014933', 'KRNO': 'USW00023185', 'KSFO': 'USW00023234', 'KORD': 'USW00094846'}
+agreement   : a day agrees if |CLI high converted exactly to C - GHCN TMAX| < 0.05 C (GHCN's precision; no ties are possible for whole degrees F)
+
+queries:
+  cli | KDSM | https://mesonet.agron.iastate.edu/json/cli.py?station=KDSM&year=2023&fmt=json | 2026-10-15T16:18:39Z | 455726 | cf825c72e1d6b3a486827d91d1818997d22d3736b5e3401bb7b18b2c7164daef
+  cli | KDSM | https://mesonet.agron.iastate.edu/json/cli.py?station=KDSM&year=2024&fmt=json | 2026-10-15T16:18:40Z | 457044 | 3d886e75639c1f0ecf0d6a682022b24896438a61c28b836f265d714b85b6f065
+  cli | KDSM | https://mesonet.agron.iastate.edu/json/cli.py?station=KDSM&year=2025&fmt=json | 2026-10-15T16:18:43Z | 453479 | 7df37a16ba649e379a5fe88f73017a7b9dbef6e1683c05ac5efca5c80da7ff15
+  cli | KDSM | https://mesonet.agron.iastate.edu/json/cli.py?station=KDSM&year=2026&fmt=json | 2026-10-15T16:18:47Z | 358375 | (2026 response: not kept, not hashed to disk; owner's ruling)
+  ghcn | KDSM | https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USW00014933&startDate=2023-08-01&endDate=2026-07-30&dataTypes=TMAX&format=json&units=metric&includeAttributes=true | 2026-10-15T16:18:51Z | 92918 | 7ea574ff010533f87335d413f18559da9c63171ca7693f31b2bc6a4f02bdfe46
+  cli | KRNO | https://mesonet.agron.iastate.edu/json/cli.py?station=KRNO&year=2023&fmt=json | 2026-10-15T16:18:54Z | 457631 | 2581eed1d712bedde8a3a76c139c8a2411aeda7c571de96a77b6b78b1a3e2bae
+  cli | KRNO | https://mesonet.agron.iastate.edu/json/cli.py?station=KRNO&year=2024&fmt=json | 2026-10-15T16:18:55Z | 458491 | cdff65137538a6897bbc1dc975ff3e7f554a935762341fa7dcd97b7e329a98ec
+  cli | KRNO | https://mesonet.agron.iastate.edu/json/cli.py?station=KRNO&year=2025&fmt=json | 2026-10-15T16:18:59Z | 453578 | a929a9aef1cc1cdbbe931bac04de89df8ebfbf0e18e5fd247b857dc539de8a53
+  cli | KRNO | https://mesonet.agron.iastate.edu/json/cli.py?station=KRNO&year=2026&fmt=json | 2026-10-15T16:19:03Z | 359562 | (2026 response: not kept, not hashed to disk; owner's ruling)
+  ghcn | KRNO | https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USW00023185&startDate=2023-08-01&endDate=2026-07-30&dataTypes=TMAX&format=json&units=metric&includeAttributes=true | 2026-10-15T16:19:07Z | 92940 | 18a56f5591efa4e7bd5225d6166519010af365e468fff6f678f4a918c222e642
+  cli | KSFO | https://mesonet.agron.iastate.edu/json/cli.py?station=KSFO&year=2023&fmt=json | 2026-10-15T16:19:09Z | 457537 | 61808cc86bbc22d43fecf62bce7e875720d73f6f6d5a74652bc72f70c663f70e
+  cli | KSFO | https://mesonet.agron.iastate.edu/json/cli.py?station=KSFO&year=2024&fmt=json | 2026-10-15T16:19:12Z | 458662 | eabdce39adf8c4ad94be8b618eb650b2f81669483584609e62a5f69a5b379b4a
+  cli | KSFO | https://mesonet.agron.iastate.edu/json/cli.py?station=KSFO&year=2025&fmt=json | 2026-10-15T16:19:15Z | 452285 | 2f4103f725a199d8a12287432db91da7a01c452b7e7e0c50e21f250811d8fe47
+  cli | KSFO | https://mesonet.agron.iastate.edu/json/cli.py?station=KSFO&year=2026&fmt=json | 2026-10-15T16:19:21Z | 359837 | (2026 response: not kept, not hashed to disk; owner's ruling)
+  ghcn | KSFO | https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USW00023234&startDate=2023-08-01&endDate=2026-07-30&dataTypes=TMAX&format=json&units=metric&includeAttributes=true | 2026-10-15T16:19:23Z | 93078 | f7fdaf103cf511193d98c25293bb7b106c52174879d285d7c10ae02b5a03f2c0
+  cli | KORD | https://mesonet.agron.iastate.edu/json/cli.py?station=KORD&year=2024&fmt=json | 2026-10-15T16:19:25Z | 459279 | bd24f781cb606bd143632fef3e83d7876ce2fbc19fad1499f9be7f2729add796
+  cli | KORD | https://mesonet.agron.iastate.edu/json/cli.py?station=KORD&year=2025&fmt=json | 2026-10-15T16:19:27Z | 458009 | 7dda809c131ebc8f9d8574ba8d8b76cfdd9fe7c2ac8d71bda2530fe21052d3ea
+  cli | KORD | https://mesonet.agron.iastate.edu/json/cli.py?station=KORD&year=2026&fmt=json | 2026-10-15T16:19:31Z | 360142 | (2026 response: not kept, not hashed to disk; owner's ruling)
+  ghcn | KORD | https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USW00094846&startDate=2024-08-01&endDate=2026-07-30&dataTypes=TMAX&format=json&units=metric&includeAttributes=true | 2026-10-15T16:19:35Z | 61850 | 96ce78b757ab60a9b69cd21fdf186c8aab85a26f08b73de7508958a4a430c119
+
+files (SHA-256, rows):
+  official_cli.csv.gz  01221ed94f6f871a3c205b0dc966467428deedbf354396991f275a12ada98d3d  4005
+  official_ghcn.csv.gz  4362b2f838b57ed76cd37c3cb96312f2b665f359d6e684c2143f38eee9ea7355  4014
+  official_agreement.csv  c27c2890d591e6867c534366f82b77f8182691b21104d3a18b84d69cab268d34  11

@@ -1,0 +1,40 @@
+Session 113: D107 and F156, comparison sources probed, gated and pulled on spent years
+
+D107 records the owner's acceptance of F155 with two rulings (cycle hour
+replaces "day 2" for runs of leads 3 to 48; tercile edges for |b| and the
+curve minus raw GFS from the forecast side only), and fixes, before any
+competitor value is scored, the sources, windows, pull rules, cost gate,
+official daily maximum, latency measure and session 114's comparison rules
+(D107.9). WeatherNext is deferred until access is granted; ICON is dropped.
+
+F156 records the probe, the cost gate and the pulls. New script
+scripts/session113_comparison_pull.py (--check 13 of 13 PASS, including an
+exact reproduction of every airport's four GFS points and weights). Point
+values only, no GRIB kept, in data/processed/session113/ (61 files, about
+50 MB, none over 50 MB): ECMWF AIFS at the 12 airports from its first
+operational run (2025-02-25T06), the NBM grid and NBS at KDSM, KRNO, KSFO,
+KORD and CYYZ, MAV at the four US airports, and the official daily maximum
+(IEM CLI primary, GHCN-Daily cross-check) at the four US airports, with
+latency from archive listings. Every pull passed its checks: rows equal
+expected minus counted gaps, nothing valid after 2026-07-31T23:00 UTC,
+no value outside -70 to 60 C, 20 of 20 re-fetches identical.
+
+ECMWF IFS is not pulled: its estimate (26.5 h at 8 requests at once) is
+over D107.7's 24-hour gate, and the owner's re-measurement at 16 and 32 at
+once did not bring it under (ECMWF's bucket throttles). The NBM grid was
+pulled under the owner's override of the 250 GB limit (about 274 GB
+transferred, none stored). Owner rulings made during the session (both
+position sets at the development airports, CLI 2026 filtered in memory,
+both NBS run sets, the duplicated NBS run of 2025-10-14T07, three NBM index
+mismatches on 2024-05-15T00, the IFS re-measurement and the NBM override)
+are recorded in F156.2, to be confirmed in the next D entry.
+
+Review correction: F156.4 now notes that the 2026-07-31T18 nominal cycle
+counted among the MAV and NBS gaps is a run with no projection on or
+before the limit (first projection 2026-08-01T00:00Z), not an archive gap;
+the gap files keep their "no run paired" label. Checked by counting rows
+by run and projection time only; no value read.
+
+Nothing was scored. F155 archived; Live index D93, D103, D105, D106, D107,
+F156; citations 180 of 180 resolved; DECISIONS.md 47,874 bytes. STATUS.md
+overwritten; next is planning session 114.

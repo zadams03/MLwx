@@ -1,0 +1,21 @@
+source,cycle_hour,n,median_h,min_h,max_h,p05_h,p95_h,label
+gfs,00,1096,3.79,3.70,5.76,3.73,4.05,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+gfs,06,1096,3.74,3.67,7.46,3.69,4.00,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+gfs,12,1096,3.76,3.68,5.26,3.71,4.02,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+gfs,18,1096,3.81,3.70,7.32,3.74,4.06,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+ifs,00,1096,7.92,6.98,25.85,6.98,8.57,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+ifs,06,1095,7.21,6.45,21.62,6.45,7.46,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+ifs,12,1095,7.92,6.98,37.31,6.98,8.57,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+ifs,18,1095,7.21,6.45,31.77,6.45,7.46,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+aifs,00,521,5.26,5.16,14.22,5.21,5.42,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+aifs,06,522,5.14,5.07,30.93,5.10,5.44,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+aifs,12,522,5.27,5.14,25.73,5.17,5.54,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+aifs,18,522,5.14,5.07,19.85,5.09,5.42,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+nbm,00,1096,1.07,0.90,44.77,0.97,1.25,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+nbm,06,1096,0.81,0.65,35.57,0.71,1.12,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+nbm,12,1096,1.05,0.79,32.31,0.97,1.22,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+nbm,18,1096,0.89,0.62,26.34,0.71,1.14,archive write time (S3 LastModified of the 48 h file) minus cycle; may be later than public release
+mos,MAVDSM 2025-03-01,,,,,,,0 products: []
+mos,NBSUSA 2025-03-01,,,,,,,0 products: []
+mav,all,,,,,,,"documented time only: MAV is generated from 00, 06, 12 and 18 UTC GFS output (MDL MAV card); no issuance time is given in the documentation read; IEM's AFOS list holds no MAV product (probe), so no product-header time exists here"
+nbs,all,,,,,,,documented time only: no issuance time is given in the NBM text card v5.0; IEM's AFOS list holds no NBS product (probe); runs are labelled by the run time IEM gives

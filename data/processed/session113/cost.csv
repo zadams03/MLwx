@@ -1,0 +1,4 @@
+source,sample_files,sample_messages,sample_requests,sample_bytes,sample_seconds,total_files,est_requests,est_GB,est_hours,gate
+ifs,60,76,149,56169342,81.7,70080,174032,65.6,26.51,NOT PULLED (owner decides)
+aifs,60,60,120,34423806,61.0,16660,33320,9.6,4.71,PASS
+nbm,60,65,125,94515851,8.6,169232,352567,266.6,6.72,NOT PULLED (owner decides)

@@ -1,0 +1,6 @@
+source,cycle,step,param,reason,detail
+nbm,2024-05-15T00:00Z,26,TMP,index offset does not match the file,index offset does not match the file (no GRIB message at the index's byte range)
+nbm,2024-05-15T00:00Z,27,TMP,index offset does not match the file,index offset does not match the file (no GRIB message at the index's byte range)
+nbm,2024-05-15T00:00Z,31,TMP,index offset does not match the file,index offset does not match the file (no GRIB message at the index's byte range)
+nbm,2026-05-05T00:00Z,6,TMP,no message,no idx line
+nbm,2026-05-05T00:00Z,34,TMP,no message,no idx line
