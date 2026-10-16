@@ -1,0 +1,390 @@
+Session 114 output (notes/session-114-output.txt)
+
+SUMMARY (session 114; at most 30 lines)
+- Done: D108 recorded (byte-equal, 0 em-dashes); scripts/session114_comparisons.py; the comparisons of D107.9 and D108 for AIFS, the NBM grid, NBS and MAV on spent years; the official maximum (CLI); 5 figures; ANALYSIS.md Part 1 rewritten in D108.6's order, Part 2 Tables E1 to E9, Part 3 items 6 and 7; F157; STATUS; archive step. IFS not compared (D108.2).
+- Checks: Step 0 preflight PASS (77 of 77 SHA-256); --check 20 of 20 PASS; --gate PASS (1: 12 of 12 airports, 168 cells equal; 2: dm_tests family 1 at EDDM and EGLC, 7 of 7 fields, generator replayed; 3: 12 of 12 constants within the record's rounding); --match PASS (cycle counts equal F156.4, 26 of 26; pairs at every covered airport and year); --docs PASS; --verify PASS (776 numbers, 0 mismatches, 0 em-dashes); all 40 tables reproduce byte for byte with the final script.
+- Hourly, skill of the curve against the competitor (claim first): AIFS -12.8 % (KORD) to +25.1 % (NZWN) at claim airports, -24.3 (KDSM) to +31.4 (KRNO) dev; BH 7 of 12 (curve better 4, AIFS 3). NBM grid -10.6 to +29.5, 5 of 5 (NBM better 3). NBS -5.0 to -13.8, NBS better at 5 of 5. MAV +11.4, +8.6, -5.9 (KRNO), +5.0; curve better 3 of 4.
+- Daily maximum (D98.10 days): curve against AIFS (6-hourly steps) +6.9 to +59.8 % claim, BH 9 of 12 for the curve; NBM TMAX -1.5 to +35.3, 2 of 5; NBS TXN -1.1 to +9.9, 0 of 5; MAV X +14.2 to +25.8, 4 of 4. Curve worse than no competitor by any test.
+- Official maximum: CLI above our hourly-report maximum by +0.27 (KORD), +0.30 (KDSM), +0.50 (KRNO), +0.48 (KSFO) on average; the standard-time window changes it by 0.03 at most. MAE against CLI, curve / NBM TMAX / NBS / MAV: KORD 1.15/1.10/1.08/1.40; KDSM 1.28/1.27/1.22/1.50; KRNO 1.13/1.10/0.83/0.95; KSFO 1.35/1.62/1.15/1.31; same order on agreement days at 4 of 4.
+- TXN windows: v4.1, v4.2, v4.3, v5.0 all 12Z to 06Z next day; v5.0.14 no card (404), its 2 days per airport reported separately.
+- Readings for the owner: (1) choices the plan left open (NBS same-cycle run where both exist; later runs placed by leads from the nominal cycle; 4-decimal elevation constant; "equal" = |gap| < 0.05 C; IFS maximum rule for session 115 to confirm, see STATUS); (2) AIFS's daily-maximum result rests partly on 6-hourly sampling (curve at the same steps worse at 6 of 12); (3) NBM grid at KRNO and KSFO read 6.0 and 8.5 km from the airport (D108.3); (4) NBS beats the curve hourly everywhere it exists; (5) curve reads +0.28 to +0.70 low against CLI; (6) gate 3 needed the record's rounding at LFPG and YSDU (stated, not loosened beyond it).
+- Deviations: NBS's daily maximum ran after --docs (D108.4(c) needs the TXN labels); an added --verify mode; match_counts.csv rewritten once after a reason-label fix and its TXN column filled by --docs; txn_windows.csv rewritten once to add a page-title check; one NBS run stopped by a bug before writing anything.
+- Scope: git status shows only scope files (DECISIONS.md, DECISIONS-archive.md, STATUS.md, ANALYSIS.md, the new script, session114_comparisons/ with 43 files, 5 comparison_*.svg, this file, plus the session prompt). No breach.
+- Sizes: DECISIONS.md 51,649 bytes (under 80,000); archive moved F156; Live index D93, D103, D105, D106, D107, D108, F157; citations 183 resolved, 0 unresolved, 0 duplicates, 0 out of order.
+- Open items: IFS pull and session 115 (D108.2, D108.7); IFS daily-maximum rule against D108.4(b)'s literal wording (STATUS); ANALYSIS.md Table D1's BH column corrected at review (see the review checkpoint); session 115 may add iem-set rows at the development airports (planning chat to decide); Gates C and D (F154.9(4)); WeatherNext (D107.4).
+- Network: only the 6 NBM documentation URLs of --docs. Nothing installed. Nothing committed.
+
+CHECKPOINTS
+- Step 0 (preflight): git status clean apart from docs/sessions/session-114.md; HEAD 7391faa equals commit-113.txt's first line ("Session 113: D107 and F156, ..."). Live index D93, D103, D105, D106, D107, F156; no D108 or F157 in either DECISIONS file; none of this session's new paths exists. SHA-256: 77 of 77 files listed in the meta files match (41 in data/processed/session113/ from aifs/mav/nbm/nbs/official_meta.txt; 36 in ../MLwx-stagec/analysis112/ from meta.txt and refs_meta.txt), 0 mismatches. Files read with no recorded SHA-256 in any meta file: probe.csv, latency.csv and the six positions_*.csv (also cost*, listing_*; not read); all 61 session113 files are tracked by git and unchanged (status clean), noted as the check for these. Python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, matplotlib 3.11.2 import (pandas absent, not needed). DECISIONS.md 47,874 bytes. Files changed: notes/session-114-output.txt. PASS.
+- Step 1 (D108): block copied with sed from docs/sessions/session-114.md lines 47 to 60 and appended after a blank line; diff and cmp of the sed copy against DECISIONS.md's last 14 lines: byte-equal; em-dashes in the block: 0. D108 added to the Live index (F156 stays until the archive step, D108.8). Files changed: DECISIONS.md. PASS.
+- Step 2 (script, --check, --gate): scripts/session114_comparisons.py written with modes --check, --gate, --match, --hourly, --dailymax, --docs, --official, --figures and an added --verify (Part 1's number check needs its own run), and --source aifs|nbm|nbs|mav|ifs; the comparison modes were written in the steps that run them. Imported read only after SHA-256 checks: session112_analysis.py (bf1fadbf...) and session113_comparison_pull.py (2023b0b0...), both equal to HEAD. Reused: session 112's loaders (load_edges, load_airport, DayBuilder, scored_days, every_cycle_days, days_arrays), bootstrap and tests (Sums, block_weights, ratio_interval, skill_interval, dm_test, benjamini_hochberg, metrics), plotting setup; session 104's local_day; session 113's guards, climate_day_window, f_to_c, test_year, get. New code (no function existed): session 113 file readers with SHA-256 checks, competitor loaders and elevation treatment, versions, step schedules, pairing by valid time, window choice, scoring and tables, official gap, TXN documentation reader, the replay of session 112's generator, figures, Part 1 renderer and checker. --check: 20 of 20 PASS (pairing incl. NBS one-hour-later runs 5 of 5; civil and standard days summer, winter, clock change 5 of 5; window choice at each cycle hour 3 of 3; elevation sign and size 3 of 3; F to C exact; guard; Benjamini-Hochberg; versions). --gate: (1) 12 of 12 airports, curve and raw GFS n and MAE, hourly and daily maximum, per test year and pooled, equal to session 112's tables at full precision (168 cells); (2) dm_tests.csv family 1 at EDDM and EGLC, all 7 fields equal (days, rows, mean daily difference, interval, DM, p), by replaying session 112's seed-112 generator through every earlier draw; (3) elevation constant 12 of 12. Gate 3 reading: at LFPG and YSDU 7.429 x the record's 2-decimal height gap gives -0.1698 and +0.2460 at 4 decimals, against the record's -0.1697 and +0.2461 (the record made them from unrounded terrain); within the record's rounding (0.00005 plus 7.429 x 0.005 m / 1000 = 0.000087; largest difference 0.000053). Claim airports exact at 4 decimals (differences 0.000026 to 0.000046 before rounding). Files changed: scripts/session114_comparisons.py. PASS.
+- Step 3 (--match): match_counts.csv (2,103 rows: per source, airport, test year, cycle hour, version and run set; hourly, D98.10 days and every-cycle days; paired or the reason unpaired; NBS TXN labels "pending (Step 6)"). Loader cycle counts equal F156.4 at every source, airport and test year (26 of 26). Paired hourly rows: AIFS 16,492 to 16,660 per airport (from 2025-02-25T06; 6-hourly steps); NBM grid 113,382 (KORD) and 113,513 (CYYZ) and 169,095 to 169,194 (dev); NBS 43,609 to 43,624 and 65,577 to 65,591; MAV 43,594 and 65,592 to 65,621. Paired D98.10 days: AIFS 515 to 521; NBM and NBS 726 to 728 (claim), 1,093 to 1,095 (dev); MAV 724 (KORD), 1,091 to 1,093. Every-cycle days: AIFS 1,759 to 2,083; NBM 2,901 to 4,377; NBS 2,898 to 4,371; MAV 2,897 to 4,373. Unpaired days by reason (all sources): before AIFS's first run; observed maximum not usable (7 to 54 per source); day ends after the limit (every-cycle only); no run at the cycle (MAV 8, NBS 0 on D98.10 days). No "no window" or "missing step" day remains. NBS: 20 nominal cycles have both run sets; the same cycle's run is used (D107.9(a)), the later run's 330 values per airport not used. Decision the plan left open, recorded: NBS one-hour-later runs' windows and steps are placed by leads from the nominal cycle (3 to 48), the same window as ours. Two reason labels fixed during trials (days ending after the limit were first counted as "no window" or "missing step"); match_counts.csv was rewritten once by this session after that fix. Files changed: scripts/session114_comparisons.py, data/processed/session114_comparisons/match_counts.csv. PASS.
+- Step 4 (--hourly, aifs, nbm, nbs, mav): tables hourly_<source>.csv (per airport and test year and pooled: MAE, mean error, RMSE of the competitor, the curve, raw GFS and linear MOS on the paired rows, 10,000 resamples), _skill.csv, _breakdown.csv (lead band, cycle hour, season, version; NBS run set; 2,000 resamples), _dm.csv (family per source, BH at 0.05). Seed 114, one generator per run. Latency printed and written beside each row (AIFS archive write 5.14 to 5.27 h median, GFS 3.74 to 3.81 h; NBM grid 0.81 to 1.07 h; NBS and MAV documented time only). Pooled skill of the curve against the competitor (1 - MAE curve / MAE competitor), claim airports first: AIFS EDDM -5.5 %, KORD -12.8, CYYZ -0.7, ZGSZ +6.9, ZUCK -3.5, NZWN +25.1; dev EGLC +22.5, LFPG +13.8, KDSM -24.3, YSDU -6.1, KRNO +31.4, KSFO -2.0; BH rejects 7 of 12 (curve better: NZWN, EGLC, LFPG, KRNO; AIFS better: KORD, KDSM, YSDU). NBM grid KORD -10.6, CYYZ -6.8, KDSM -5.1, KRNO +17.7, KSFO +29.5; 5 of 5 rejected (NBM better at 3, the curve at 2). NBS KORD -13.8, CYYZ -7.7, KDSM -13.6, KRNO -5.0, KSFO -10.3; 5 of 5 rejected, NBS better at all 5. MAV KORD +11.4, KDSM +8.6, KRNO -5.9, KSFO +5.0; 4 of 4 rejected (curve better at 3, MAV at KRNO). Reading: at the development airports the NBM grid is read at GFS's position (D108.3), 6.02 km (KRNO) and 8.53 km (KSFO) from the airport, which a 2.5 km grid feels more than GFS's 0.25 degree grid; NBS (station forecast) has 0.918 and 1.166 there against the grid's 1.404 and 1.444. A trial of MAV into the scratchpad before the real runs gave byte-equal tables. Files changed: data/processed/session114_comparisons/hourly_{aifs,nbm,nbs,mav}{,_skill,_breakdown,_dm}.csv (16). PASS.
+- Step 5 (--dailymax, aifs, nbm, mav; then nbs after Step 6's --docs): run order changed for NBS only, because D108.4(c) needs each NBM version's TXN label before NBS's days can be split (Step 3's labels were "pending" until then, as the prompt foresaw); recorded here, nothing else moved. Tables dailymax_<source>.csv, _skill, _breakdown (season, version, cycle hour; NBS run set), _dm, _every_cycle (by cycle hour, first leads), and dailymax_nbs_txn_not_found.csv. Truth: our hourly-report maximum (D82.8). Primary days: D98.10's. Family (curve's D98.10 maximum against the competitor's maximum), pooled skill [95 %], claim airports first: AIFS (highest of its 6-hourly steps) EDDM +6.9 [-4.3, +15.9], KORD +21.7, CYYZ +21.8, ZGSZ +24.8, ZUCK +8.8, NZWN +59.8; dev EGLC +7.6, LFPG +37.3, KDSM +13.5, YSDU +34.5, KRNO +41.5, KSFO +19.6; BH rejects 9 of 12 (not EDDM, ZUCK, EGLC), all in the curve's favour. NBM TMAX: KORD +4.4, CYYZ +14.0, KDSM +5.5, KRNO -1.5, KSFO +35.3; 2 of 5 (CYYZ, KSFO). NBS TXN (versions with a found definition): KORD +2.5, CYYZ +9.9, KDSM +0.4, KRNO +2.0, KSFO -1.1; 0 of 5. MAV X: KORD +25.8, KDSM +22.0, KRNO +15.7, KSFO +14.2; 4 of 4. Reading (like for like, descriptive): our curve's maximum sampled only at the competitor's own steps against the competitor's: AIFS -41.2 (EDDM) to +46.1 (NZWN), worse than AIFS at 6 of 12 by the point value; NBM steps equal to the full curve (hourly to 36 h); so the AIFS family result rests partly on its 6-hourly sampling (labelled "6-hourly steps", D108.4(b)). MAV's X is a daytime 7 a.m. to 7 p.m. LST maximum and NBS's TXN a 12Z to 06Z one, both scored against the civil-day hourly maximum (labelled). NBS v5.0.14 days (2026-07-28 12z on, 2 per airport) reported separately. A bug (empty breakdown in the separate NBS set) stopped the first NBS run before any file was written; fixed; MAV's hourly and daily tables rerun into the scratchpad after the fix are byte-equal (9 of 9). Files changed: data/processed/session114_comparisons/dailymax_{aifs,nbm,nbs,mav}{,_skill,_breakdown,_dm,_every_cycle}.csv (20), dailymax_nbs_txn_not_found.csv. PASS.
+- Step 6, first part (--docs): read https://vlab.noaa.gov/web/mdl/nbm-versions and the text cards nbm-textcard-v4.1, v4.2, v4.3, v5.0 (each page's title names its version) and tried v5.0.14 (HTTP 404). TXN maximum window 12Z (current day) to 06Z (next day) in v4.1, v4.2, v4.3 and v5.0 (same wording); v5.0.14 "definition not found". txn_windows.csv written (the first run lacked the page-title check, so it was deleted and rerun with it; same windows); match_counts.csv's 232 NBS daily rows labelled by version. Network: those 6 documentation URLs only. Files changed: txn_windows.csv, match_counts.csv (label column), scripts/session114_comparisons.py. PASS.
+- Step 6, second part (--official, D108.4(d); descriptive): official_gap.csv (60 rows) and official_scores.csv (660 rows). CLI checks on reading: every climate day's window equals the local standard time day; every high_c equals high_f converted exactly; agreement with GHCN-Daily |difference| < 0.05 C (F156.7's counts reproduced: KORD 691, KDSM 1,034, KRNO 1,090, KSFO 1,089 of 729/1,093/1,092/1,089). Gap = CLI minus our hourly-report maximum, all test years, civil local day: KORD mean +0.27, MAE 0.33, equal (< 0.05 C) 52 %; KDSM +0.30, 0.36, 45 %; KRNO +0.50, 0.50, 30 %; KSFO +0.48, 0.48, 33 %. Over the local standard time day: +0.29, +0.33, +0.50, +0.48 (MAE 0.31, 0.34, 0.50, 0.48), so the window explains little; the gap is the measurement (continuous against hourly). Per test year the gap is steady (e.g. KRNO +0.52, +0.50, +0.46). MAE against CLI on D98.10 days, all years: KORD curve 1.151, raw GFS 1.223, NBM TMAX 1.099, NBS TXN 1.082, MAV X 1.397; KDSM 1.280, 1.828, 1.271, 1.218, 1.503; KRNO 1.132, 1.947, 1.102, 0.827, 0.950; KSFO 1.346, 1.908, 1.623, 1.149, 1.314. Against CLI the curve's mean error is +0.28 to +0.70 (it targets the hourly maximum); NBS's and MAV's are -0.04 to +0.23 and -0.04 to -0.28. On agreement days the same order holds (KORD curve 1.158, NBM 1.107, NBS 1.091, MAV 1.399; KDSM 1.295, 1.264, 1.211, 1.494). NBS v5.0.14 days (2 per airport) reported separately by version. Files changed: official_gap.csv, official_scores.csv, scripts/session114_comparisons.py. PASS.
+- Step 7 (--figures, ANALYSIS.md, --verify): 5 new figures in figures/analysis/ (comparison_hourly_mae.svg, comparison_dailymax_mae.svg, comparison_skill.svg, comparison_lead_band.svg, comparison_official_gap.svg), session 112's style; palette order checked with the dataviz validator (curve blue, raw GFS orange, competitor aqua, violet; all checks pass, aqua's contrast warning covered by legends and tables); rendered and looked at in trials (layout and label overlaps fixed before the real run). Part 1 and the Part 2 section are rendered by the script from the tables (data/processed/session114_comparisons/part1.md, part2_comparisons.md) and pasted into ANALYSIS.md. ANALYSIS.md: status and file paragraphs cover D107 and D108; words for AIFS, NBM grid, NBS, MAV, IFS, CLI and formal test defined; Part 1 rewritten in D108.6's order (short version; accuracy x hours out, Tables 1a, 1b; the daily maximum incl. the official gap; how it compares, Tables 2a, 2b with IFS "pending (D108.2)", linear MOS yardstick, formal tests, Table 2c against CLI; when to trust it less; limits), labelled as chosen after session 112's results; model internals no longer in Part 1 (Part 2 keeps D106.9 and D106.10). Part 2 gains "D107.9 and D108: comparisons (session 114)" with Tables E1 to E9 (pairs, hourly and daily headlines, lead bands, formal tests, every cycle, TXN windows, official gap and scores). Part 3 gains candidates 6 (station guidance where it exists) and 7 (a maximum aimed at the official figure), each with evidence and the line "seen after the comparisons; any test is a D89 build choice". --verify: 776 numbers in Part 1, 776 re-rendered from the tables, mismatches 0, text identical; 84 placeholders each filled from a table file; 80 literal numbers, all structural (section and entry numbers, dates, lead bands, percentile names, "of 12"/"of 4" airport counts, the 0.05 tolerance); em-dashes in Part 1 0 (in ANALYSIS.md 0). Files changed: ANALYSIS.md, figures/analysis/comparison_*.svg (5), data/processed/session114_comparisons/part1.md, part2_comparisons.md, scripts/session114_comparisons.py. PASS.
+- Step 8 (F157): F157 appended to DECISIONS.md (13 entry lines, about 40 when wrapped; 0 em-dashes): D108, self-checks and gates, pairs, hourly and daily-maximum results with BH outcomes, the official gap and scores against CLI with the agreement-day check, TXN windows, readings, not done (IFS), pointers. One sentence in F157.3 corrected before the end steps (raw GFS also beats AIFS at EGLC by point value). Files changed: DECISIONS.md. PASS.
+- End of session: STATUS.md overwritten (current state, open items, last line as the prompt gives). Live index set by D108.8 (F156 removed; D108, F157 added). python3 scripts/archive_decisions.py --apply --session 114: moved 1 span (F156, 9,323 bytes), checks 1 to 4 PASS; DECISIONS.md 60,976 -> 51,649 bytes (under 80,000, D93.9); DECISIONS-archive.md 1,451,271 -> 1,460,635. --citations: 183 cited, 183 resolved, 0 unresolved, 0 in both files, 0 duplicate first lines, 0 headings out of order. Consistency re-read of what this session changed (D108, F157, STATUS; SPEC not changed): one disagreement found and reported: for IFS (session 115) the script takes the highest 3-hourly 2 m step as the primary maximum, while D108.4(b) reads "a competitor's own maximum field ... where it exists" (mx2t3 exists from 49r1, as 3-hour windows); left for session 115's entry (STATUS, F157.7(1)). Em-dashes in new text: 0 (STATUS, ANALYSIS, F157, D108 block, script, this file); DECISIONS.md's one is its old title line. Scope check: git status --porcelain lists only the prompt's scope paths plus docs/sessions/session-114.md (the prompt itself): no breach. Final reproducibility check: every offline mode rerun with the final script into the scratchpad; 40 of 40 tables byte-equal (match_counts compared without the TXN label column, which --docs filled). --check 20 of 20 and --verify PASS rerun after the last script edit (an em-dash in the checker replaced by its escape).
+- Review corrections (owner, after the end steps): (1) Part 1 item 1, via the renderer: AIFS's hourly outcome given claim airports first (better at NZWN, worse at KORD, not separated at the other 4; dev better at EGLC, LFPG, KRNO, worse at KDSM, YSDU), and the daily-maximum AIFS clause now says AIFS's maximum is the highest of four 6-hourly values and that read at the same steps the curve's is worse at 6 of 12. (2) Item 4 "Read with care": both AIFS and the NBM grid are read at GFS's position at the development airports (D108.3), with each one's distance from the airport computed from the positions files (gfs set against IEM's position; AIFS EGLC 4.3 km, LFPG 3.4, KDSM 1.8, YSDU 6.7, KRNO 6.0, KSFO 8.5, equal in both AIFS grid files; NBM grid KDSM 1.8, KRNO 6.0, KSFO 8.5); "worse than no competitor at any airport" (rendered only when the count is 0). part1.md regenerated by rerunning --figures after deleting this session's figures and part files: the 5 figures byte-equal to before (SHA-256 checked), part2_comparisons.md unchanged (372b86be...), part1.md 3c05c56d...; ANALYSIS.md Part 1 replaced with it. (3) Part 2 Table D1: BH column re-rendered from data/processed/session112_analysis/dm_tests.csv: 39 rejected (families 12, 12, 11, 4), 39 rows changed, each only in that cell (diff against HEAD); one line added under it. (4) F157.7(3) extended to AIFS with the distances; F157.7(5) now says Table D1 was corrected at review; STATUS.md: Table D1 item removed, the session 115 iem-set item added, the F157 readings line updated to AIFS and the NBM grid. (5) Checks: --verify PASS (783 numbers, 0 mismatches, text identical, 0 em-dashes in Part 1); --check 20 of 20; em-dashes in new text 0 (STATUS, ANALYSIS, F157, script, this file; DECISIONS.md's one is its old title line); --citations 183 resolved, 0 unresolved, 0 duplicates, 0 out of order; DECISIONS.md 51,984 bytes (under 80,000); scope: git status lists only scope paths, the session prompt, and docs/commits/commit-114.txt, which this session did not create or touch. Files changed: scripts/session114_comparisons.py, ANALYSIS.md, DECISIONS.md, STATUS.md, data/processed/session114_comparisons/part1.md (and part2_comparisons.md rewritten byte-equal), figures/analysis/comparison_*.svg (rewritten byte-equal), this file. PASS.
+
+DETAIL
+
+== check
+SESSION 114 --check (synthetic data only; no table, prediction or competitor file read), start 2026-10-16T08:39:46Z
+  PASS  pairing: a one-hour-later NBS run pairs by valid time with the nominal cycle
+  PASS  pairing: our lead 5 has no NBS step (3-hourly from 6) and is counted
+  PASS  pairing: a cycle with no run is counted, not filled
+  PASS  pairing: a competitor value at lead 49 has no row of ours and is counted
+  PASS  pairing: a scheduled step absent from the run is counted as missing
+  PASS  civil local day, summer (Chicago, CDT): 05Z to 05Z, 24 hours
+  PASS  local standard time day, summer (Chicago): 06Z to 06Z
+  PASS  winter (Chicago, CST): civil and standard days both 06Z to 06Z
+  PASS  clock-change day (Chicago, 2025-03-09): civil day 23 hours, standard day 24
+  PASS  summer (Los Angeles, PDT): civil 07Z, standard 08Z
+  PASS  maximum window: start on the local date, inside leads 3 to 48, at each cycle hour: 00z day+0: 1.0; 00z day+1: 2.0; 06z day+0: 1.0; 06z day+1: 2.0; 12z day+0: no maximum window starti; 12z day+1: 2.0; 18z day+0: no maximum window starti; 18z day+1: 1.0
+  PASS  maximum window: a MAV X window (13Z to 01Z) is chosen from the 18z run and from the next 00z run
+  PASS  maximum window: a window ending after lead 48 is not used, and counted
+  PASS  elevation: terrain above the station warms (KRNO record: 1619.08 m over 1344 m gives +2.0436)
+  PASS  elevation: terrain below the station cools (100 m under 200 m gives -0.7429)
+  PASS  elevation: 1 km of difference gives 7.429 degrees C
+  PASS  F to C exact
+  PASS  guard: 2026-07-31T23:00 accepted; 2026-08-01T00:00 refused (valid time and window end)
+  PASS  Benjamini-Hochberg at 0.05: all four; step-up rejects 0.02 with 0.03; none of 0.04/0.06/0.5/0.9
+  PASS  versions: NBM v5.0 from the 13z run of 2026-04-30; the 12z run is v4.3
+--check: 20 of 20 PASS
+
+== gate
+SESSION 114 --gate (real data; no competitor value read), start 2026-10-16T08:39:47Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2
+  gate 1 EDDM: 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 KORD: 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 CYYZ (sea): 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 ZGSZ (sea): 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 ZUCK: 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 NZWN (sea): 12 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 EGLC (dev): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 LFPG (dev): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 KDSM (dev): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 YSDU (dev): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 KRNO (dev): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+  gate 1 KSFO (dev) (sea): 16 cells (curve and raw GFS, n and MAE, hourly and daily maximum, per test year and pooled): equal
+gate 1: 12 of 12 airports reproduce session 112 exactly: PASS
+gate 2 EDDM: dm_tests.csv family 1: days 730, rows 134128, mean daily difference -0.465698 [-0.550286, -0.383677], DM -10.6785, p 1.283e-26: all 7 fields equal
+gate 2 EGLC (dev): dm_tests.csv family 1: days 1096, rows 201404, mean daily difference -0.204062 [-0.231331, -0.176037], DM -13.6199, p 3.050e-42: all 7 fields equal
+gate 2: PASS (seed 112, session 112's draws replayed in order)
+  gate 3 EDDM: terrain 481.8464 m, station 447.00 m -> +0.258874 (+0.2589 at 4 decimals); record +0.2589, config +0.2589; |difference| 0.000026 within 0.000050: yes
+  gate 3 KORD: terrain 212.3827 m, station 205.00 m -> +0.054846 (+0.0548 at 4 decimals); record +0.0548, config +0.0548; |difference| 0.000046 within 0.000050: yes
+  gate 3 CYYZ (sea): terrain 178.9317 m, station 173.00 m -> +0.044066 (+0.0441 at 4 decimals); record +0.0441, config +0.0441; |difference| 0.000034 within 0.000050: yes
+  gate 3 ZGSZ (sea): terrain 20.8646 m, station 1.00 m -> +0.147574 (+0.1476 at 4 decimals); record +0.1476, config +0.1476; |difference| 0.000026 within 0.000050: yes
+  gate 3 ZUCK: terrain 317.0698 m, station 351.00 m -> -0.252067 (-0.2521 at 4 decimals); record -0.2521, config -0.2521; |difference| 0.000033 within 0.000050: yes
+  gate 3 NZWN (sea): terrain 79.1677 m, station 0.00 m -> +0.588137 (+0.5881 at 4 decimals); record +0.5881, config +0.5881; |difference| 0.000037 within 0.000050: yes
+  gate 3 EGLC (dev): terrain 37.4700 m, station 4.00 m -> +0.248649 (+0.2486 at 4 decimals); record +0.2486, config +0.2486; |difference| 0.000049 within 0.000087: yes
+  gate 3 LFPG (dev): terrain 86.1500 m, station 109.00 m -> -0.169753 (-0.1698 at 4 decimals); record -0.1697, config -0.1697; |difference| 0.000053 within 0.000087: yes
+  gate 3 KDSM (dev): terrain 270.1100 m, station 285.00 m -> -0.110618 (-0.1106 at 4 decimals); record -0.1106, config -0.1106; |difference| 0.000018 within 0.000087: yes
+  gate 3 YSDU (dev): terrain 312.1200 m, station 279.00 m -> +0.246048 (+0.2460 at 4 decimals); record +0.2461, config +0.2461; |difference| 0.000052 within 0.000087: yes
+  gate 3 KRNO (dev): terrain 1619.0800 m, station 1344.00 m -> +2.043569 (+2.0436 at 4 decimals); record +2.0436, config +2.0436; |difference| 0.000031 within 0.000087: yes
+  gate 3 KSFO (dev) (sea): terrain 94.4700 m, station 1.00 m -> +0.694389 (+0.6944 at 4 decimals); record +0.6944, config +0.6944; |difference| 0.000011 within 0.000087: yes
+gate 3: 12 of 12 airports: PASS
+--gate: PASS (38 s)
+
+== match
+SESSION 114 --match (pairs counted; no error computed), start 2026-10-16T08:44:05Z
+  aifs EDDM               paired hourly rows  16,660; paired days: D98.10   521, every cycle 2,083  (3 s)
+  aifs KORD               paired hourly rows  16,620; paired days: D98.10   517, every cycle 2,068  (5 s)
+  aifs CYYZ (sea)         paired hourly rows  16,660; paired days: D98.10   520, every cycle 2,080  (8 s)
+  aifs ZGSZ (sea)         paired hourly rows  16,660; paired days: D98.10   521, every cycle 2,082  (10 s)
+  aifs ZUCK               paired hourly rows  16,660; paired days: D98.10   521, every cycle 2,082  (13 s)
+  aifs NZWN (sea)         paired hourly rows  16,644; paired days: D98.10   520, every cycle 2,077  (16 s)
+  aifs EGLC (dev)         paired hourly rows  16,644; paired days: D98.10   521, every cycle 2,083  (20 s)
+  aifs LFPG (dev)         paired hourly rows  16,572; paired days: D98.10   520, every cycle 2,079  (24 s)
+  aifs KDSM (dev)         paired hourly rows  16,660; paired days: D98.10   520, every cycle 2,080  (28 s)
+  aifs YSDU (dev)         paired hourly rows  16,492; paired days: D98.10   515, every cycle 1,759  (32 s)
+  aifs KRNO (dev)         paired hourly rows  16,652; paired days: D98.10   519, every cycle 1,939  (36 s)
+  aifs KSFO (dev) (sea)   paired hourly rows  16,652; paired days: D98.10   518, every cycle 1,935  (40 s)
+  nbm  KORD               paired hourly rows 113,382; paired days: D98.10   726, every cycle 2,901  (42 s)
+  nbm  CYYZ (sea)         paired hourly rows 113,513; paired days: D98.10   728, every cycle 2,909  (43 s)
+  nbm  KDSM (dev)         paired hourly rows 169,194; paired days: D98.10 1,095, every cycle 4,377  (47 s)
+  nbm  KRNO (dev)         paired hourly rows 169,107; paired days: D98.10 1,093, every cycle 3,991  (50 s)
+  nbm  KSFO (dev) (sea)   paired hourly rows 169,095; paired days: D98.10 1,093, every cycle 3,991  (53 s)
+  nbs  KORD               paired hourly rows  43,609; paired days: D98.10   726, every cycle 2,898  (54 s)
+  nbs  CYYZ (sea)         paired hourly rows  43,624; paired days: D98.10   728, every cycle 2,904  (55 s)
+  nbs  KDSM (dev)         paired hourly rows  65,591; paired days: D98.10 1,095, every cycle 4,371  (56 s)
+  nbs  KRNO (dev)         paired hourly rows  65,577; paired days: D98.10 1,093, every cycle 3,987  (58 s)
+  nbs  KSFO (dev) (sea)   paired hourly rows  65,584; paired days: D98.10 1,093, every cycle 3,986  (59 s)
+  mav  KORD               paired hourly rows  43,594; paired days: D98.10   724, every cycle 2,897  (60 s)
+  mav  KDSM (dev)         paired hourly rows  65,621; paired days: D98.10 1,093, every cycle 4,373  (62 s)
+  mav  KRNO (dev)         paired hourly rows  65,592; paired days: D98.10 1,091, every cycle 3,987  (63 s)
+  mav  KSFO (dev) (sea)   paired hourly rows  65,614; paired days: D98.10 1,091, every cycle 3,987  (65 s)
+  aifs EDDM: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs KORD: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs CYYZ: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs ZGSZ: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs ZUCK: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs NZWN: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs EGLC: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs LFPG: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs KDSM: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs YSDU: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs KRNO: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  aifs KSFO: cycles with 2 m temperature per test year {'2024-25': 627, '2025-26': 1459} (F156.4: {'2024-25': 627, '2025-26': 1459}); read: {'2 m temperature values': 16660}
+  nbm KORD: cycles with 2 m temperature per test year {'2024-25': 1460, '2025-26': 1460} (F156.4: {'2024-25': 1460, '2025-26': 1460}); read: {'2 m temperature values': 113598, 'maximum field values': 5099}
+  nbm CYYZ: cycles with 2 m temperature per test year {'2024-25': 1460, '2025-26': 1460} (F156.4: {'2024-25': 1460, '2025-26': 1460}); read: {'2 m temperature values': 113598, 'maximum field values': 5099}
+  nbm KDSM: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460} (F156.4: {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460}); read: {'2 m temperature values': 169227, 'maximum field values': 7661}
+  nbm KRNO: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460} (F156.4: {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460}); read: {'2 m temperature values': 169227, 'maximum field values': 7661}
+  nbm KSFO: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460} (F156.4: {'2023-24': 1464, '2024-25': 1460, '2025-26': 1460}); read: {'2 m temperature values': 169227, 'maximum field values': 7661}
+  nbs KORD: cycles with 2 m temperature per test year {'2024-25': 1458, '2025-26': 1458} (F156.4: {'2024-25': 1458, '2025-26': 1458}); read: {"nominal cycles with both runs: the same cycle's run used": 20, '2 m temperature values': 43691, 'maximum field values': 4457, "values of a one-hour-later run not used (the same cycle's run exists)": 330}
+  nbs CYYZ: cycles with 2 m temperature per test year {'2024-25': 1458, '2025-26': 1456} (F156.4: {'2024-25': 1458, '2025-26': 1456}); read: {"nominal cycles with both runs: the same cycle's run used": 20, '2 m temperature values': 43661, 'maximum field values': 4453, "values of a one-hour-later run not used (the same cycle's run exists)": 330}
+  nbs KDSM: cycles with 2 m temperature per test year {'2023-24': 1463, '2024-25': 1458, '2025-26': 1456} (F156.4: {'2023-24': 1463, '2024-25': 1458, '2025-26': 1456}); read: {"nominal cycles with both runs: the same cycle's run used": 20, '2 m temperature values': 65606, 'maximum field values': 6648, "values of a one-hour-later run not used (the same cycle's run exists)": 330}
+  nbs KRNO: cycles with 2 m temperature per test year {'2023-24': 1462, '2024-25': 1458, '2025-26': 1458} (F156.4: {'2023-24': 1462, '2024-25': 1458, '2025-26': 1458}); read: {"nominal cycles with both runs: the same cycle's run used": 20, '2 m temperature values': 65621, 'maximum field values': 6651, "values of a one-hour-later run not used (the same cycle's run exists)": 330}
+  nbs KSFO: cycles with 2 m temperature per test year {'2023-24': 1462, '2024-25': 1458, '2025-26': 1457} (F156.4: {'2023-24': 1462, '2024-25': 1458, '2025-26': 1457}); read: {"nominal cycles with both runs: the same cycle's run used": 20, '2 m temperature values': 65606, 'maximum field values': 6649, "values of a one-hour-later run not used (the same cycle's run exists)": 330}
+  mav KORD: cycles with 2 m temperature per test year {'2024-25': 1457, '2025-26': 1458} (F156.4: {'2024-25': 1457, '2025-26': 1458}); read: {'2 m temperature values': 43676, 'maximum field values': 4363}
+  mav KDSM: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458} (F156.4: {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458}); read: {'2 m temperature values': 65636, 'maximum field values': 6559}
+  mav KRNO: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458} (F156.4: {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458}); read: {'2 m temperature values': 65636, 'maximum field values': 6559}
+  mav KSFO: cycles with 2 m temperature per test year {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458} (F156.4: {'2023-24': 1464, '2024-25': 1457, '2025-26': 1458}); read: {'2 m temperature values': 65636, 'maximum field values': 6559}
+match_counts.csv: 2103 rows; e666a44ec02f827f55830a39643c7a8a6dae4540544200300a1c65d2fc293dd2
+--match: PASS (65 s)
+
+== hourly_aifs
+SESSION 114 --hourly --source aifs (AIFS; descriptive, D107.2), start 2026-10-16T08:47:10Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  latency: AIFS: archive write time minus cycle, median 5.14 to 5.27 h over the cycle hours (range 5.07 to 30.93); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f))
+  EDDM               n  16,660  MAE AIFS 1.214  curve 1.282  raw GFS 1.896  skill curve vs AIFS -5.5 % [-13.2, +1.0]  DM p 1.29e-01  (3 s)
+  KORD               n  16,620  MAE AIFS 1.118  curve 1.261  raw GFS 1.418  skill curve vs AIFS -12.8 % [-19.1, -6.3]  DM p 6.88e-05  (5 s)
+  CYYZ (sea)         n  16,660  MAE AIFS 1.175  curve 1.183  raw GFS 1.590  skill curve vs AIFS -0.7 % [-6.5, +5.5]  DM p 8.49e-01  (8 s)
+  ZGSZ (sea)         n  16,660  MAE AIFS 0.960  curve 0.893  raw GFS 1.202  skill curve vs AIFS +6.9 % [+0.9, +13.3]  DM p 3.95e-02  (10 s)
+  ZUCK               n  16,660  MAE AIFS 1.062  curve 1.099  raw GFS 1.504  skill curve vs AIFS -3.5 % [-8.5, +2.1]  DM p 1.73e-01  (13 s)
+  NZWN (sea)         n  16,644  MAE AIFS 1.056  curve 0.791  raw GFS 1.138  skill curve vs AIFS +25.1 % [+20.4, +29.4]  DM p 2.33e-19  (15 s)
+  EGLC (dev)         n  16,644  MAE AIFS 1.129  curve 0.875  raw GFS 1.086  skill curve vs AIFS +22.5 % [+17.5, +26.5]  DM p 1.03e-15  (18 s)
+  LFPG (dev)         n  16,572  MAE AIFS 1.107  curve 0.954  raw GFS 1.291  skill curve vs AIFS +13.8 % [+8.0, +19.0]  DM p 9.20e-06  (22 s)
+  KDSM (dev)         n  16,660  MAE AIFS 1.083  curve 1.346  raw GFS 1.864  skill curve vs AIFS -24.3 % [-31.7, -17.6]  DM p 2.40e-12  (25 s)
+  YSDU (dev)         n  16,492  MAE AIFS 1.121  curve 1.189  raw GFS 1.491  skill curve vs AIFS -6.1 % [-10.6, -2.3]  DM p 2.84e-03  (29 s)
+  KRNO (dev)         n  16,652  MAE AIFS 1.602  curve 1.099  raw GFS 2.093  skill curve vs AIFS +31.4 % [+25.0, +37.0]  DM p 1.58e-14  (32 s)
+  KSFO (dev) (sea)   n  16,652  MAE AIFS 0.944  curve 0.963  raw GFS 1.300  skill curve vs AIFS -2.0 % [-8.1, +3.8]  DM p 4.98e-01  (35 s)
+  family aifs hourly (curve against AIFS): Benjamini-Hochberg at 0.05 rejects 7 of 12: EDDM +0.066 not, KORD +0.144 rej, CYYZ +0.007 not, ZGSZ -0.066 not, ZUCK +0.039 not, NZWN -0.265 rej, EGLC -0.255 rej, LFPG -0.153 rej, KDSM +0.262 rej, YSDU +0.069 rej, KRNO -0.505 rej, KSFO +0.020 not
+  hourly_aifs.csv: 144 rows, SHA-256 ca659a814e1499f269662b1d238657c8d50a05614b7c705bee9d4e176e935b2f
+  hourly_aifs_skill.csv: 144 rows, SHA-256 3019549cb16ca7e0ab64d06069752c915874cc04b5c5d904349fb217312021c4
+  hourly_aifs_breakdown.csv: 720 rows, SHA-256 48d91a4024f1064aecb11c478c1298f3511e7f3d25b6768467e19417c0322a5c
+  hourly_aifs_dm.csv: 12 rows, SHA-256 b459e613f3017602c8ca39ddecb763e0adac92db3846b848693bbebc8a4c4d40
+--hourly --source aifs: done (35 s)
+
+== hourly_nbm
+SESSION 114 --hourly --source nbm (NBM grid; descriptive, D107.2), start 2026-10-16T08:47:46Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  latency: NBM grid: archive write time minus cycle, median 0.81 to 1.07 h over the cycle hours (range 0.62 to 44.77); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f))
+  KORD               n 113,382  MAE NBM grid 1.045  curve 1.157  raw GFS 1.310  skill curve vs NBM grid -10.6 % [-13.6, -7.6]  DM p 2.32e-15  (4 s)
+  CYYZ (sea)         n 113,513  MAE NBM grid 1.047  curve 1.118  raw GFS 1.468  skill curve vs NBM grid -6.8 % [-9.9, -3.5]  DM p 2.80e-06  (8 s)
+  KDSM (dev)         n 169,194  MAE NBM grid 1.208  curve 1.270  raw GFS 1.856  skill curve vs NBM grid -5.1 % [-8.1, -2.2]  DM p 4.91e-04  (14 s)
+  KRNO (dev)         n 169,107  MAE NBM grid 1.444  curve 1.188  raw GFS 2.198  skill curve vs NBM grid +17.7 % [+15.0, +20.3]  DM p 2.80e-35  (20 s)
+  KSFO (dev) (sea)   n 169,095  MAE NBM grid 1.404  curve 0.990  raw GFS 1.278  skill curve vs NBM grid +29.5 % [+26.8, +32.0]  DM p 5.08e-56  (26 s)
+  family nbm hourly (curve against NBM grid): Benjamini-Hochberg at 0.05 rejects 5 of 5: KORD +0.112 rej, CYYZ +0.075 rej, KDSM +0.064 rej, KRNO -0.255 rej, KSFO -0.414 rej
+  hourly_nbm.csv: 72 rows, SHA-256 cb984a00e4f65c0dfd86314089310669694e2921f2ff845aa624edbc229cb85a
+  hourly_nbm_skill.csv: 72 rows, SHA-256 bffe494e499cabdb62ba92a3c05178ebb830b631cdae8f576b04cc67989d279e
+  hourly_nbm_breakdown.csv: 332 rows, SHA-256 ba1111c01235c7ade95667dcade714e4ccfa677ce9987c9017a944c67a659064
+  hourly_nbm_dm.csv: 5 rows, SHA-256 8f5df210ecbb211086edca3da7b93e9ec6ea643ef6ea45955e2a66c475003c78
+--hourly --source nbm: done (26 s)
+
+== hourly_nbs
+SESSION 114 --hourly --source nbs (NBS; descriptive, D107.2), start 2026-10-16T08:48:14Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  latency: NBS: documented time only: no issuance time is given in the NBM text card v5.0; IEM's AFOS list holds no NBS product (probe); runs are labelled by the run time IEM gives. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f))
+  KORD               n  43,609  MAE NBS 1.061  curve 1.207  raw GFS 1.358  skill curve vs NBS -13.8 % [-17.0, -10.6]  DM p 2.03e-22  (3 s)
+  CYYZ (sea)         n  43,624  MAE NBS 1.072  curve 1.155  raw GFS 1.488  skill curve vs NBS -7.7 % [-10.8, -4.5]  DM p 1.42e-06  (6 s)
+  KDSM (dev)         n  65,591  MAE NBS 1.164  curve 1.323  raw GFS 1.903  skill curve vs NBS -13.6 % [-16.9, -10.4]  DM p 1.06e-17  (10 s)
+  KRNO (dev)         n  65,577  MAE NBS 1.166  curve 1.224  raw GFS 2.232  skill curve vs NBS -5.0 % [-8.1, -1.8]  DM p 3.14e-03  (15 s)
+  KSFO (dev) (sea)   n  65,584  MAE NBS 0.918  curve 1.012  raw GFS 1.301  skill curve vs NBS -10.3 % [-13.7, -7.2]  DM p 6.98e-10  (19 s)
+  family nbs hourly (curve against NBS): Benjamini-Hochberg at 0.05 rejects 5 of 5: KORD +0.145 rej, CYYZ +0.083 rej, KDSM +0.158 rej, KRNO +0.057 rej, KSFO +0.094 rej
+  hourly_nbs.csv: 72 rows, SHA-256 d86bf0d4d4414fdcf6f1a2bae9ba62e48193323bb662cce0c64a18c806e7fafd
+  hourly_nbs_skill.csv: 72 rows, SHA-256 32f4f176251034159355a018a1aa7ed2e837dbbde6239ee6e60349a68aa8c178
+  hourly_nbs_breakdown.csv: 372 rows, SHA-256 fe4a181da9d22571d58d5b22cf6dd529bcf507424d60a66e1f0d81cc79cf24c6
+  hourly_nbs_dm.csv: 5 rows, SHA-256 9a552baa83babee35fe4bd8db935c7c050014295aa4627e7fc29186e411551e8
+--hourly --source nbs: done (19 s)
+
+== hourly_mav
+SESSION 114 --hourly --source mav (MAV; descriptive, D107.2), start 2026-10-16T08:48:34Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  latency: MAV: documented time only: MAV is generated from 00, 06, 12 and 18 UTC GFS output (MDL MAV card); no issuance time is given in the documentation read; IEM's AFOS list holds no MAV product (probe), so no product-header time exists here. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f))
+  KORD               n  43,594  MAE MAV 1.361  curve 1.206  raw GFS 1.358  skill curve vs MAV +11.4 % [+8.7, +14.0]  DM p 3.58e-15  (3 s)
+  KDSM (dev)         n  65,621  MAE MAV 1.447  curve 1.323  raw GFS 1.903  skill curve vs MAV +8.6 % [+5.7, +11.2]  DM p 2.11e-08  (7 s)
+  KRNO (dev)         n  65,592  MAE MAV 1.157  curve 1.225  raw GFS 2.232  skill curve vs MAV -5.9 % [-9.0, -2.9]  DM p 1.21e-04  (12 s)
+  KSFO (dev) (sea)   n  65,614  MAE MAV 1.065  curve 1.012  raw GFS 1.300  skill curve vs MAV +5.0 % [+1.6, +8.1]  DM p 4.30e-03  (16 s)
+  family mav hourly (curve against MAV): Benjamini-Hochberg at 0.05 rejects 4 of 4: KORD -0.155 rej, KDSM -0.124 rej, KRNO +0.068 rej, KSFO -0.053 rej
+  hourly_mav.csv: 60 rows, SHA-256 a0263639a9ebc0e5d61deb15a7881cc6ecda0a36eb78c746f55b219fd642a18e
+  hourly_mav_skill.csv: 60 rows, SHA-256 af319b7d058f7e796f99e6b5d75c21a9ee98d43a00d51909c4b3e342a5875906
+  hourly_mav_breakdown.csv: 208 rows, SHA-256 b7f4901399f5121d5bc286e72f596f727badae5b919a17a423ec61dd5999d83f
+  hourly_mav_dm.csv: 4 rows, SHA-256 4fa638b0db741b5584868091b6aa30922afddeeb3e37990e74bdfc8c759c40f6
+--hourly --source mav: done (16 s)
+
+== dailymax_aifs
+SESSION 114 --dailymax --source aifs (AIFS; descriptive, D107.2), start 2026-10-16T08:50:43Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  AIFS's maximum: highest of its own 6-hourly steps inside the local day (6-hourly steps; no maximum field)
+  EDDM               days   521  MAE AIFS 1.208  curve 1.124  curve at its steps 1.705  raw GFS 1.702  skill curve vs AIFS +6.9 % [-4.3, +15.9]  DM p 1.98e-01  (3 s)
+  KORD               days   517  MAE AIFS 1.426  curve 1.117  curve at its steps 1.533  raw GFS 1.200  skill curve vs AIFS +21.7 % [+13.9, +29.0]  DM p 4.38e-06  (5 s)
+  CYYZ (sea)         days   520  MAE AIFS 1.385  curve 1.083  curve at its steps 1.368  raw GFS 1.460  skill curve vs AIFS +21.8 % [+15.3, +28.1]  DM p 1.11e-08  (8 s)
+  ZGSZ (sea)         days   521  MAE AIFS 1.226  curve 0.923  curve at its steps 1.052  raw GFS 1.572  skill curve vs AIFS +24.8 % [+18.1, +31.7]  DM p 7.34e-09  (10 s)
+  ZUCK               days   521  MAE AIFS 1.315  curve 1.200  curve at its steps 1.544  raw GFS 1.445  skill curve vs AIFS +8.8 % [+0.0, +17.2]  DM p 5.62e-02  (13 s)
+  NZWN (sea)         days   520  MAE AIFS 1.799  curve 0.724  curve at its steps 0.969  raw GFS 1.627  skill curve vs AIFS +59.8 % [+56.0, +63.1]  DM p 5.33e-43  (16 s)
+  EGLC (dev)         days   521  MAE AIFS 0.981  curve 0.907  curve at its steps 1.234  raw GFS 1.032  skill curve vs AIFS +7.6 % [-3.8, +16.5]  DM p 1.57e-01  (19 s)
+  LFPG (dev)         days   520  MAE AIFS 1.448  curve 0.909  curve at its steps 1.429  raw GFS 1.215  skill curve vs AIFS +37.3 % [+30.8, +42.7]  DM p 5.34e-19  (23 s)
+  KDSM (dev)         days   520  MAE AIFS 1.431  curve 1.238  curve at its steps 1.672  raw GFS 1.600  skill curve vs AIFS +13.5 % [+2.0, +23.4]  DM p 2.67e-02  (27 s)
+  YSDU (dev)         days   515  MAE AIFS 1.478  curve 0.968  curve at its steps 1.305  raw GFS 1.078  skill curve vs AIFS +34.5 % [+27.3, +41.1]  DM p 9.00e-14  (30 s)
+  KRNO (dev)         days   519  MAE AIFS 1.397  curve 0.818  curve at its steps 1.163  raw GFS 1.367  skill curve vs AIFS +41.5 % [+34.6, +47.6]  DM p 1.93e-15  (34 s)
+  KSFO (dev) (sea)   days   518  MAE AIFS 1.453  curve 1.167  curve at its steps 1.629  raw GFS 1.519  skill curve vs AIFS +19.6 % [+9.1, +29.6]  DM p 9.72e-04  (38 s)
+  family aifs daily maximum (the curve's D98.10 maximum against AIFS's): Benjamini-Hochberg at 0.05 rejects 9 of 12: EDDM -0.083 not, KORD -0.309 rej, CYYZ -0.302 rej, ZGSZ -0.303 rej, ZUCK -0.115 not, NZWN -1.075 rej, EGLC -0.074 not, LFPG -0.540 rej, KDSM -0.193 rej, YSDU -0.510 rej, KRNO -0.579 rej, KSFO -0.285 rej
+  dailymax_aifs.csv: 180 rows, SHA-256 96ddc753e0d873e763daf48526d452439e4bfa830fc42707da801a8f100ae761
+  dailymax_aifs_skill.csv: 180 rows, SHA-256 14bd518bcd43c04afecd112c61b29506a43ded1b525b630e4210493f38a39f09
+  dailymax_aifs_breakdown.csv: 480 rows, SHA-256 ecf7f862c3af42a496b8ac979158c5f3bdb784a049581392d98e27e916ded921
+  dailymax_aifs_dm.csv: 12 rows, SHA-256 b5efa509171527bd758586cbfcdc064158ca4e7f78aa17589294c025f754feb8
+  dailymax_aifs_every_cycle.csv: 240 rows, SHA-256 af84bb980ef6b37ef6b699c1ee766220419af78a32095b20a85cf6512a057286
+--dailymax --source aifs: done (38 s)
+
+== dailymax_nbm
+SESSION 114 --dailymax --source nbm (NBM grid; descriptive, D107.2), start 2026-10-16T08:51:23Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  NBM grid's maximum: TMAX: its 12-hour maximum, 12z to 00z UTC, from the same run; also highest of its own steps inside the local day
+  KORD               days   726  MAE NBM grid 1.143  curve 1.092  curve at its steps 1.090  raw GFS 1.162  skill curve vs NBM grid +4.4 % [-3.6, +12.2]  DM p 2.92e-01  (4 s)
+  CYYZ (sea)         days   728  MAE NBM grid 1.212  curve 1.042  curve at its steps 1.040  raw GFS 1.339  skill curve vs NBM grid +14.0 % [+6.7, +20.9]  DM p 4.20e-04  (8 s)
+  KDSM (dev)         days 1,095  MAE NBM grid 1.295  curve 1.224  curve at its steps 1.225  raw GFS 1.730  skill curve vs NBM grid +5.5 % [-0.5, +11.1]  DM p 7.06e-02  (14 s)
+  KRNO (dev)         days 1,093  MAE NBM grid 0.934  curve 0.948  curve at its steps 0.948  raw GFS 1.551  skill curve vs NBM grid -1.5 % [-7.1, +4.0]  DM p 6.00e-01  (22 s)
+  KSFO (dev) (sea)   days 1,093  MAE NBM grid 1.868  curve 1.208  curve at its steps 1.208  raw GFS 1.663  skill curve vs NBM grid +35.3 % [+28.4, +41.1]  DM p 8.12e-13  (28 s)
+  family nbm daily maximum (the curve's D98.10 maximum against NBM grid's): Benjamini-Hochberg at 0.05 rejects 2 of 5: KORD -0.051 not, CYYZ -0.170 rej, KDSM -0.071 not, KRNO +0.014 not, KSFO -0.660 rej
+  dailymax_nbm.csv: 108 rows, SHA-256 8b0498e22af665dbcf3569c187d1eca515b9b2e7089bb0d4f6c88a70c07f441d
+  dailymax_nbm_skill.csv: 108 rows, SHA-256 058547986cb536707eafef42bd314811f341467cdd623943aa917f1ea88bb372
+  dailymax_nbm_breakdown.csv: 288 rows, SHA-256 2df714d5c084a107f44f68b1352192d78d69c022d1c211a2a609a116dd62f7ba
+  dailymax_nbm_dm.csv: 5 rows, SHA-256 cc4503a6264685a14fbeb04b61d521ae3a5d5ef23c2d2c0f44c03934ab7d7201
+  dailymax_nbm_every_cycle.csv: 120 rows, SHA-256 766c54589627347307d4a53be18e8c750767d2ac5dff6795b5691fdfeba9b077
+--dailymax --source nbm: done (28 s)
+
+== dailymax_mav
+SESSION 114 --dailymax --source mav (MAV; descriptive, D107.2), start 2026-10-16T08:51:52Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  MAV's maximum: X: daytime maximum, 7 a.m. to 7 p.m. local standard time (MDL)
+  KORD               days   724  MAE MAV 1.471  curve 1.091  curve at its steps 1.178  raw GFS 1.161  skill curve vs MAV +25.8 % [+19.3, +31.4]  DM p 9.68e-12  (3 s)
+  KDSM (dev)         days 1,093  MAE MAV 1.569  curve 1.224  curve at its steps 1.289  raw GFS 1.731  skill curve vs MAV +22.0 % [+16.4, +26.6]  DM p 8.21e-13  (8 s)
+  KRNO (dev)         days 1,091  MAE MAV 1.124  curve 0.948  curve at its steps 1.099  raw GFS 1.551  skill curve vs MAV +15.7 % [+9.3, +21.8]  DM p 6.04e-06  (12 s)
+  KSFO (dev) (sea)   days 1,091  MAE MAV 1.405  curve 1.205  curve at its steps 1.329  raw GFS 1.662  skill curve vs MAV +14.2 % [+7.7, +19.9]  DM p 5.31e-05  (17 s)
+  family mav daily maximum (the curve's D98.10 maximum against MAV's): Benjamini-Hochberg at 0.05 rejects 4 of 4: KORD -0.379 rej, KDSM -0.345 rej, KRNO -0.176 rej, KSFO -0.200 rej
+  dailymax_mav.csv: 75 rows, SHA-256 a9bd5ba3c4bbfefd8b94b3590e5add69dac61bceb80252d519eeaef09d5f1a1d
+  dailymax_mav_skill.csv: 75 rows, SHA-256 5532552c60437ee17c251e2a251e5f5911e5664fd61a74712de214ad3fcd1f99
+  dailymax_mav_breakdown.csv: 120 rows, SHA-256 9f8857c15a09aea9c1c176c3bfc135beeb6b58accb89d534c74e27ae79e06a80
+  dailymax_mav_dm.csv: 4 rows, SHA-256 a9c58df58ca1b912440e8f09153c31784662c341b67e010fb75423c1779ba559
+  dailymax_mav_every_cycle.csv: 80 rows, SHA-256 14ee88045025e32a048e47dcac5bac0f02e24514be9f905b036d9ec184e491c0
+--dailymax --source mav: done (17 s)
+
+== docs
+SESSION 114 --docs (NBM text documentation pages only), start 2026-10-16T08:52:44Z
+  https://vlab.noaa.gov/web/mdl/nbm-versions: read; text-card links found for ['v5.0']
+  v4.1: definition found: 12Z (current day) to 06Z (next day) (https://vlab.noaa.gov/web/mdl/nbm-textcard-v4.1); tried 1
+  v4.2: definition found: 12Z (current day) to 06Z (next day) (https://vlab.noaa.gov/web/mdl/nbm-textcard-v4.2); tried 1
+  v4.3: definition found: 12Z (current day) to 06Z (next day) (https://vlab.noaa.gov/web/mdl/nbm-textcard-v4.3); tried 1
+  v5.0: definition found: 12Z (current day) to 06Z (next day) (https://vlab.noaa.gov/web/mdl/nbm-textcard-v5.0); tried 1
+  v5.0.14: definition not found; tried 1
+  match_counts.csv: 232 TXN labels filled; SHA-256 7b5e5d71e03da119d8c12804e99f7796ad1bc6137330acff12d1c9491c093919
+  txn_windows.csv: 5 rows, SHA-256 dae1b7c7d5946f9be007ce36ea06add604d2eb4623354e1be7831afdad0ac3a2
+
+== dailymax_nbs
+SESSION 114 --dailymax --source nbs (NBS; descriptive, D107.2), start 2026-10-16T08:53:08Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+  NBS's maximum: TXN: its maximum, window per NBM version (txn_windows.csv)
+  KORD               days   724  MAE NBS 1.121  curve 1.093  curve at its steps 1.179  raw GFS 1.163  skill curve vs NBS +2.5 % [-6.2, +10.6]  DM p 5.79e-01  (not-found TXN days 2)  (3 s)
+  CYYZ (sea)         days   726  MAE NBS 1.156  curve 1.041  curve at its steps 1.117  raw GFS 1.340  skill curve vs NBS +9.9 % [+2.3, +16.9]  DM p 1.56e-02  (not-found TXN days 2)  (6 s)
+  KDSM (dev)         days 1,093  MAE NBS 1.227  curve 1.223  curve at its steps 1.291  raw GFS 1.728  skill curve vs NBS +0.4 % [-6.1, +6.7]  DM p 9.12e-01  (not-found TXN days 2)  (11 s)
+  KRNO (dev)         days 1,091  MAE NBS 0.967  curve 0.949  curve at its steps 1.101  raw GFS 1.552  skill curve vs NBS +2.0 % [-4.6, +8.0]  DM p 5.49e-01  (not-found TXN days 2)  (15 s)
+  KSFO (dev) (sea)   days 1,091  MAE NBS 1.194  curve 1.208  curve at its steps 1.331  raw GFS 1.665  skill curve vs NBS -1.1 % [-8.1, +5.1]  DM p 7.36e-01  (not-found TXN days 2)  (20 s)
+  family nbs daily maximum (the curve's D98.10 maximum against NBS's): Benjamini-Hochberg at 0.05 rejects 0 of 5: KORD -0.027 not, CYYZ -0.115 not, KDSM -0.004 not, KRNO -0.019 not, KSFO +0.014 not
+  dailymax_nbs.csv: 90 rows, SHA-256 ff77d31a78018a7f5ad6bf2a28ba71906329976267e484e7588331744da16eda
+  dailymax_nbs_skill.csv: 90 rows, SHA-256 eaaa53c75fe29821788d585f3ab5332e46bcef9bfe50c2c91e6b0bd064bd2286
+  dailymax_nbs_breakdown.csv: 265 rows, SHA-256 7cc5465dea712d6427188a4ed9f16abf54c332ed9be8185897baa25e4a8aa6bb
+  dailymax_nbs_dm.csv: 5 rows, SHA-256 d185bb4d481a568612d6589813cce148ebfdc295dbb3f12d11566b88377224ce
+  dailymax_nbs_every_cycle.csv: 100 rows, SHA-256 09ef170b12bd3d8235bd936a230d78a747fa45cb0a91ade766f39fa456a369a2
+  dailymax_nbs_txn_not_found.csv: 50 rows, SHA-256 eab5e9210433d25f8207ccc3251c64b2d71ba7d8a142a9140b0a35d670e06bc8
+--dailymax --source nbs: done (20 s)
+
+== official
+SESSION 114 --official (descriptive only, D108.4(d)), start 2026-10-16T08:55:13Z
+  KORD           CLI days 729; agree with GHCN 691; gap (CLI minus ours), civil local day: n 726, mean +0.27, MAE 0.33, equal 52 %; local standard time day: n 726, mean +0.29, MAE 0.31, equal 53 %  (5 s)
+      curve and raw GFS (D98.10 days with CLI)   curve                        n   729  MAE 1.151  mean error +0.445
+      curve and raw GFS (D98.10 days with CLI)   raw_gfs                      n   729  MAE 1.223  mean error +0.644
+      curve and raw GFS (D98.10 days with CLI)   our hourly-report maximum    n   726  MAE 0.330  mean error +0.266
+      NBM grid pairs                             nbm (TMAX)                   n   729  MAE 1.099  mean error +0.207
+      NBM grid pairs                             nbm (its own steps)          n   728  MAE 1.164  mean error +0.743
+      NBM grid pairs                             curve                        n   729  MAE 1.151  mean error +0.445
+      NBM grid pairs                             raw_gfs                      n   729  MAE 1.223  mean error +0.644
+      NBS pairs                                  nbs (TXN)                    n   727  MAE 1.082  mean error +0.226
+      NBS pairs                                  curve                        n   727  MAE 1.151  mean error +0.444
+      NBS pairs                                  raw_gfs                      n   727  MAE 1.223  mean error +0.645
+      MAV pairs                                  mav (X)                      n   727  MAE 1.397  mean error -0.041
+      MAV pairs                                  curve                        n   727  MAE 1.151  mean error +0.445
+      MAV pairs                                  raw_gfs                      n   727  MAE 1.223  mean error +0.644
+  KDSM (dev)     CLI days 1093; agree with GHCN 1034; gap (CLI minus ours), civil local day: n 1093, mean +0.30, MAE 0.36, equal 45 %; local standard time day: n 1093, mean +0.33, MAE 0.34, equal 46 %  (12 s)
+      curve and raw GFS (D98.10 days with CLI)   curve                        n  1093  MAE 1.280  mean error +0.276
+      curve and raw GFS (D98.10 days with CLI)   raw_gfs                      n  1093  MAE 1.828  mean error +0.674
+      curve and raw GFS (D98.10 days with CLI)   our hourly-report maximum    n  1093  MAE 0.361  mean error +0.305
+      NBM grid pairs                             nbm (TMAX)                   n  1093  MAE 1.271  mean error +0.178
+      NBM grid pairs                             nbm (its own steps)          n  1091  MAE 1.274  mean error +0.553
+      NBM grid pairs                             curve                        n  1093  MAE 1.280  mean error +0.276
+      NBM grid pairs                             raw_gfs                      n  1093  MAE 1.828  mean error +0.674
+      NBS pairs                                  nbs (TXN)                    n  1091  MAE 1.218  mean error +0.231
+      NBS pairs                                  curve                        n  1091  MAE 1.279  mean error +0.279
+      NBS pairs                                  raw_gfs                      n  1091  MAE 1.827  mean error +0.680
+      MAV pairs                                  mav (X)                      n  1091  MAE 1.503  mean error -0.039
+      MAV pairs                                  curve                        n  1091  MAE 1.279  mean error +0.274
+      MAV pairs                                  raw_gfs                      n  1091  MAE 1.829  mean error +0.672
+  KRNO (dev)     CLI days 1092; agree with GHCN 1090; gap (CLI minus ours), civil local day: n 1090, mean +0.50, MAE 0.50, equal 30 %; local standard time day: n 1090, mean +0.50, MAE 0.50, equal 30 %  (20 s)
+      curve and raw GFS (D98.10 days with CLI)   curve                        n  1092  MAE 1.132  mean error +0.653
+      curve and raw GFS (D98.10 days with CLI)   raw_gfs                      n  1092  MAE 1.947  mean error +1.727
+      curve and raw GFS (D98.10 days with CLI)   our hourly-report maximum    n  1090  MAE 0.499  mean error +0.496
+      NBM grid pairs                             nbm (TMAX)                   n  1092  MAE 1.102  mean error +0.619
+      NBM grid pairs                             nbm (its own steps)          n  1091  MAE 1.627  mean error +1.439
+      NBM grid pairs                             curve                        n  1092  MAE 1.132  mean error +0.653
+      NBM grid pairs                             raw_gfs                      n  1092  MAE 1.947  mean error +1.727
+      NBS pairs                                  nbs (TXN)                    n  1090  MAE 0.827  mean error -0.023
+      NBS pairs                                  curve                        n  1090  MAE 1.132  mean error +0.652
+      NBS pairs                                  raw_gfs                      n  1090  MAE 1.947  mean error +1.727
+      MAV pairs                                  mav (X)                      n  1090  MAE 0.950  mean error -0.274
+      MAV pairs                                  curve                        n  1090  MAE 1.132  mean error +0.652
+      MAV pairs                                  raw_gfs                      n  1090  MAE 1.947  mean error +1.727
+  KSFO (dev) (sea) CLI days 1089; agree with GHCN 1089; gap (CLI minus ours), civil local day: n 1087, mean +0.48, MAE 0.48, equal 33 %; local standard time day: n 1087, mean +0.48, MAE 0.48, equal 34 %  (27 s)
+      curve and raw GFS (D98.10 days with CLI)   curve                        n  1089  MAE 1.346  mean error +0.696
+      curve and raw GFS (D98.10 days with CLI)   raw_gfs                      n  1089  MAE 1.908  mean error +1.347
+      curve and raw GFS (D98.10 days with CLI)   our hourly-report maximum    n  1087  MAE 0.481  mean error +0.476
+      NBM grid pairs                             nbm (TMAX)                   n  1089  MAE 1.623  mean error -1.055
+      NBM grid pairs                             nbm (its own steps)          n  1088  MAE 1.462  mean error -0.146
+      NBM grid pairs                             curve                        n  1089  MAE 1.346  mean error +0.696
+      NBM grid pairs                             raw_gfs                      n  1089  MAE 1.908  mean error +1.347
+      NBS pairs                                  nbs (TXN)                    n  1087  MAE 1.149  mean error -0.022
+      NBS pairs                                  curve                        n  1087  MAE 1.346  mean error +0.695
+      NBS pairs                                  raw_gfs                      n  1087  MAE 1.911  mean error +1.348
+      MAV pairs                                  mav (X)                      n  1088  MAE 1.314  mean error -0.280
+      MAV pairs                                  curve                        n  1088  MAE 1.346  mean error +0.697
+      MAV pairs                                  raw_gfs                      n  1088  MAE 1.909  mean error +1.348
+  official_gap.csv: 60 rows, SHA-256 6839e1951f44444dd5cedf4f2d1a68e0e6b8ffaf289a030c02c092232c70e764
+  official_scores.csv: 660 rows, SHA-256 c4eb4a0413e67df7b4b631680d9616ebd115eb187d261fe9690b815a449f5631
+--official: done (27 s)
+
+== figures
+SESSION 114 --figures, start 2026-10-16T09:02:24Z
+  comparison_hourly_mae.svg: 71,801 bytes, SHA-256 e8a21a81ef6fc12754c429806ded38fc3eabb05927b280330a4b2b8e7e73e0e3
+  comparison_dailymax_mae.svg: 92,752 bytes, SHA-256 8a896f410bd2ad5e6fd6124a43b5fc7d7b748931cbde9d2a742db5623c6c5440
+  comparison_skill.svg: 59,856 bytes, SHA-256 aec5bc25ad0b50e9ecb0e55c0e6671e33f17548b3f8a9c7e69b68f3711b88d85
+  comparison_lead_band.svg: 31,102 bytes, SHA-256 9a69ddcf1a5378662846ce6b72312acd3eed5a34577b00c8e853803aa8e0171a
+  comparison_official_gap.svg: 30,400 bytes, SHA-256 3935f2269eece926913832c80927f2e38e4eb9cecdbed9d2a8f351f65c134d36
+  part1.md: 171 lines, SHA-256 45b5b4b22adaaacff89809f5094fe14ff0d8e423f3bfe97dd2ee823a860f9b64
+  part2_comparisons.md: 472 lines, SHA-256 372b86be7e434767de205f52f8fb830779618aa226e5ab6d62455a14dff66689
+--figures: done (3 s)
+
+== verify
+SESSION 114 --verify (ANALYSIS.md Part 1 against the tables), start 2026-10-16T09:03:09Z
+  numbers in Part 1: 776; re-rendered from the tables: 776; mismatches: 0; text identical: True
+  placeholders in the template: 84 (each filled from a table file); literal numbers in the template (structural: lead bands, percentiles, entry numbers, dates, constants): 80: 1 112 108.6 106.2 2026 -08 -01 2 3 -12 37 -48 4 108.2 80 10 90 13 -24 25 -36 00 06 12 18 98.10 24 0.05 108.4 155 2025 -02 -25 6 108.3 01 07 19 5 -10 -13 2, 106.13
+  em-dashes in Part 1: 0
+--verify: PASS
+
+== archive
+plan: spans 8, keep 7 (index IDs 7), move 1 (9323 bytes), DECISIONS.md 60976 bytes
+check 1 (archive starts with old archive): PASS
+check 2 (line counts: live 326 + moved 18 = original 344; archive 22354 = 22332 + 4 + 18): PASS
+check 3 (rebuild original byte for byte): PASS
+check 4 (every moved span verbatim in archive): PASS
+moved 1 spans, kept 7
+DECISIONS.md         before 60976 bytes 6529241bbea95ef157f40007bba61d92c07389837a2c7ba03c348fd6a9f8d79d
+DECISIONS.md         after  51649 bytes db221a6b260c1661b32f44f7aa4d5e052a47fa1375c2cfda3b97ae10e1731854
+DECISIONS-archive.md before 1451271 bytes 9eb1cf6726610616874730245dbf142691fc805f6e77fc0762248246131557a6
+DECISIONS-archive.md after  1460635 bytes 8fbab0ab93dfafe41ed9c529e5431fc2320fe6588d2df92286435e07376b357b
+
+== citations
+citations: 183 distinct entry numbers cited; resolved 183, unresolved 0, found in both files 0
+entries whose first opening line appears more than once: 0
+dated headings out of order in DECISIONS.md: 0

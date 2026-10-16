@@ -1,0 +1,40 @@
+Session 114: D108 and F157, the curve against AIFS, NBM, NBS and MAV, the official maximum, and the field guide
+
+D108 records the owner's acceptance of F156 and confirms his session 113
+rulings; grants his D107.7 override for an IFS pull he runs by hand later
+(script unchanged, 8 requests at once), with the IFS comparison in session
+115; and fixes, before any competitor value was scored, the choices D107.9
+left open (positions and elevation treatment, pairing, the daily-maximum
+window rule, the NBS TXN definitions, the official-maximum check on CLI and
+GHCN agreement days, the test families) and the field guide's order.
+
+F157 records the comparisons on spent years, descriptive only (D107.2). New
+script scripts/session114_comparisons.py (--check 20 of 20; gates reproduce
+session 112's curve and raw GFS figures at 12 of 12 airports, one of its
+formal tests exactly, and the record's elevation constants). Tables in
+data/processed/session114_comparisons/, five comparison_*.svg figures.
+
+Hourly: the curve beats MAV at 3 of 4 airports and loses to NBS, the NBM
+station forecast, at all 5 it covers; against AIFS it is better at 4 of 12
+and worse at 3, and against the NBM grid better at 2 of 5 and worse at 3.
+Daily maximum: better than AIFS at 9 of 12 (resting partly on AIFS's
+6-hourly steps), the NBM grid at 2 of 5, MAV at 4 of 4, and NBS at none;
+worse than no competitor. The NWS climate report's maximum (CLI) sits
++0.27 to +0.50 degrees C above our hourly-report maximum at the four US
+airports, almost all from continuous against hourly readings rather than
+the day window.
+
+ANALYSIS.md Part 1 rewritten in the owner's order (labelled as chosen after
+session 112's results), every number checked against its table by script;
+Part 2 gains Tables E1 to E9; Part 3 gains candidates 6 and 7.
+
+Review corrections before commit: the short version gives AIFS's outcomes
+claim airports first and carries the 6-hourly caveat for the daily maximum;
+the position caveat now covers AIFS as well as the NBM grid at every
+development airport, with distances; Table D1's Benjamini-Hochberg column
+(session 112) corrected from dm_tests.csv, 39 rejections; F157.7 and STATUS
+updated to match.
+
+F156 archived; Live index D93, D103, D105, D106, D107, D108, F157;
+citations resolved; DECISIONS.md under 80,000 bytes. STATUS.md overwritten;
+next is the owner's IFS pull, then planning session 115.
