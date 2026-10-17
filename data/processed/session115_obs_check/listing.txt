@@ -1,0 +1,156 @@
+EDDM (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2023-08-15T13:00Z obs    19.0 gfs   29.609 resid  -10.609 nbrs [30.0, 31.0, 19.0, 21.0, 21.0] flags d
+   2 2021-06-29T16:00Z obs    13.0 gfs   23.517 resid  -10.517 nbrs [24.0, 23.0, 13.0, 14.0, 14.0] flags d
+   3 2023-02-15T12:00Z obs    -1.0 gfs    9.341 resid  -10.341 nbrs [-2.0, -2.0, -1.0, 0.0, 0.0] flags d
+   4 2023-02-15T11:00Z obs    -2.0 gfs    8.247 resid  -10.247 nbrs [-2.0, -2.0, -2.0, -1.0, 0.0] flags d
+   5 2026-05-31T13:00Z obs    16.0 gfs   26.214 resid  -10.214 nbrs [29.0, 29.0, 16.0, 17.0, 19.0] flags d
+   6 2023-02-15T14:00Z obs     0.0 gfs   10.024 resid  -10.024 nbrs [-1.0, 0.0, 0.0, 1.0, 0.0] flags d
+   7 2023-02-15T13:00Z obs     0.0 gfs    9.883 resid   -9.883 nbrs [-2.0, -1.0, 0.0, 0.0, 1.0] flags -
+   8 2024-07-06T15:00Z obs    28.0 gfs   18.184 resid   +9.816 nbrs [30.0, 31.0, 28.0, 19.0, 18.0] flags -
+   9 2023-02-14T13:00Z obs     0.0 gfs    9.541 resid   -9.541 nbrs [-1.0, 0.0, 0.0, 0.0, 0.0] flags -
+  10 2023-02-14T14:00Z obs     0.0 gfs    9.443 resid   -9.443 nbrs [0.0, 0.0, 0.0, 0.0, 0.0] flags -
+EDDM: out-of-range hours: 0
+
+KORD (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2026-03-15T23:00Z obs    2.22 gfs   14.378 resid  -12.158 nbrs [16.67, 3.89, 2.22, 3.33, 1.67] flags d
+   2 2026-07-27T20:00Z obs   22.22 gfs   33.435 resid  -11.215 nbrs [23.89, 22.22, 22.22, 22.22, 23.89] flags d
+   3 2026-07-27T19:00Z obs   22.22 gfs   33.388 resid  -11.168 nbrs [27.78, 23.89, 22.22, 22.22, 22.22] flags d
+   4 2022-08-29T20:00Z obs   21.67 gfs   32.749 resid  -11.079 nbrs [22.22, 21.67, 21.67, 24.44, 27.22] flags d
+   5 2022-08-29T19:00Z obs   21.67 gfs   32.269 resid  -10.599 nbrs [29.44, 22.22, 21.67, 21.67, 24.44] flags d
+   6 2026-03-16T00:00Z obs    3.33 gfs   13.887 resid  -10.557 nbrs [3.89, 2.22, 3.33, 1.67, 1.11] flags d
+   7 2026-03-15T22:00Z obs    3.89 gfs   14.298 resid  -10.408 nbrs [15.56, 16.67, 3.89, 2.22, 3.33] flags d
+   8 2026-03-16T01:00Z obs    1.67 gfs   12.034 resid  -10.364 nbrs [2.22, 3.33, 1.67, 1.11, 1.11] flags d
+   9 2025-03-19T22:00Z obs     5.0 gfs   15.242 resid  -10.242 nbrs [4.44, 4.44, 5.0, 5.56, 4.44] flags d
+  10 2025-03-19T21:00Z obs    4.44 gfs   14.446 resid  -10.006 nbrs [4.44, 4.44, 4.44, 5.0, 5.56] flags d
+KORD: out-of-range hours: 0
+
+CYYZ (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2025-04-28T01:00Z obs    27.0 gfs    9.791 resid  +17.209 nbrs [17.0, 15.0, 27.0, 11.0, 11.0] flags bd
+   2 2026-03-10T19:00Z obs    18.0 gfs    7.516 resid  +10.484 nbrs [18.0, 18.0, 18.0, 17.0, 11.0] flags d
+   3 2026-03-10T20:00Z obs    17.0 gfs    6.846 resid  +10.154 nbrs [18.0, 18.0, 17.0, 11.0, 10.0] flags d
+   4 2026-03-10T18:00Z obs    18.0 gfs    8.589 resid   +9.411 nbrs [18.0, 18.0, 18.0, 18.0, 17.0] flags -
+   5 2021-08-26T21:00Z obs    23.0 gfs   32.294 resid   -9.294 nbrs [31.0, 31.0, 23.0, 24.0, 26.0] flags -
+   6 2023-04-06T00:00Z obs     4.0 gfs   13.037 resid   -9.037 nbrs [6.0, 5.0, 4.0, 5.0, 6.0] flags -
+   7 2026-03-10T16:00Z obs    18.0 gfs    8.979 resid   +9.021 nbrs [13.0, 16.0, 18.0, 18.0, 18.0] flags -
+   8 2023-04-06T02:00Z obs     6.0 gfs   14.989 resid   -8.989 nbrs [4.0, 5.0, 6.0, 7.0, 9.0] flags -
+   9 2026-03-10T17:00Z obs    18.0 gfs    9.029 resid   +8.971 nbrs [16.0, 18.0, 18.0, 18.0, 18.0] flags -
+  10 2023-04-06T01:00Z obs     5.0 gfs   13.936 resid   -8.936 nbrs [5.0, 4.0, 5.0, 6.0, 7.0] flags -
+CYYZ: out-of-range hours: 0
+
+ZGSZ (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2024-02-29T07:00Z obs    13.0 gfs   21.098 resid   -8.098 nbrs [17.0, 15.0, 13.0, 13.0, 13.0] flags -
+   2 2024-02-29T08:00Z obs    13.0 gfs   20.960 resid   -7.960 nbrs [15.0, 13.0, 13.0, 13.0, 14.0] flags -
+   3 2023-08-10T05:00Z obs    25.0 gfs   32.535 resid   -7.535 nbrs [32.0, 29.0, 25.0, 27.0, 27.0] flags -
+   4 2024-02-29T09:00Z obs    13.0 gfs   20.327 resid   -7.327 nbrs [13.0, 13.0, 13.0, 14.0, 14.0] flags -
+   5 2025-04-15T08:00Z obs    33.0 gfs   25.783 resid   +7.217 nbrs [34.0, 33.0, 33.0, 28.0, 27.0] flags -
+   6 2021-09-14T06:00Z obs    24.0 gfs   31.172 resid   -7.172 nbrs [33.0, 32.0, 24.0, 25.0, 26.0] flags -
+   7 2021-09-16T09:00Z obs    24.0 gfs   30.901 resid   -6.901 nbrs [34.0, 32.0, 24.0, 25.0, 26.0] flags -
+   8 2026-01-22T12:00Z obs    10.0 gfs   16.471 resid   -6.471 nbrs [11.0, 11.0, 10.0, 10.0, 10.0] flags -
+   9 2025-07-31T06:00Z obs    25.0 gfs   31.415 resid   -6.415 nbrs [30.0, 29.0, 25.0, 28.0, 28.0] flags -
+  10 2026-07-25T07:00Z obs    36.0 gfs   29.683 resid   +6.317 nbrs [34.0, 35.0, 36.0, 36.0, 24.0] flags -
+ZGSZ: out-of-range hours: 0
+
+ZUCK (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2026-07-27T10:00Z obs    39.0 gfs   27.197 resid  +11.803 nbrs [40.0, 38.0, 39.0, 35.0, 32.0] flags d
+   2 2021-05-02T10:00Z obs    35.0 gfs   25.082 resid   +9.918 nbrs [36.0, 35.0, 35.0, 33.0, 32.0] flags -
+   3 2022-07-27T06:00Z obs    27.0 gfs   36.622 resid   -9.622 nbrs [27.0, 27.0, 27.0, 28.0, 29.0] flags -
+   4 2024-09-02T12:00Z obs    25.0 gfs   34.571 resid   -9.571 nbrs [35.0, 32.0, 25.0, 27.0, 28.0] flags -
+   5 2021-05-02T11:00Z obs    33.0 gfs   23.547 resid   +9.453 nbrs [35.0, 35.0, 33.0, 32.0, 31.0] flags -
+   6 2024-09-11T09:00Z obs    26.0 gfs   35.361 resid   -9.361 nbrs [37.0, 27.0, 26.0, 28.0, 28.0] flags -
+   7 2024-09-06T11:00Z obs    25.0 gfs   33.984 resid   -8.984 nbrs [26.0, 26.0, 25.0, 25.0, 26.0] flags -
+   8 2022-07-27T05:00Z obs    27.0 gfs   35.974 resid   -8.974 nbrs [28.0, 27.0, 27.0, 27.0, 28.0] flags -
+   9 2021-07-21T09:00Z obs    25.0 gfs   33.816 resid   -8.816 nbrs [34.0, 29.0, 25.0, 27.0, 25.0] flags -
+  10 2021-03-30T08:00Z obs    20.0 gfs   28.777 resid   -8.777 nbrs [20.0, 21.0, 20.0, 20.0, 20.0] flags -
+ZUCK: out-of-range hours: 0
+
+NZWN (claim): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2024-01-21T05:00Z obs    29.0 gfs   21.226 resid   +7.774 nbrs [28.0, 28.0, 29.0, 23.0, 22.0] flags -
+   2 2023-12-23T01:00Z obs    24.0 gfs   16.370 resid   +7.630 nbrs [23.0, 24.0, 24.0, 23.0, 22.0] flags -
+   3 2023-12-23T00:00Z obs    24.0 gfs   16.528 resid   +7.472 nbrs [23.0, 23.0, 24.0, 24.0, 23.0] flags -
+   4 2024-01-22T04:00Z obs    29.0 gfs   21.684 resid   +7.316 nbrs [28.0, 29.0, 29.0, 28.0, 24.0] flags -
+   5 2024-12-21T02:00Z obs    23.0 gfs   15.731 resid   +7.269 nbrs [23.0, 23.0, 23.0, 21.0, 17.0] flags -
+   6 2021-12-15T00:00Z obs    26.0 gfs   18.850 resid   +7.150 nbrs [22.0, 24.0, 26.0, 24.0, 23.0] flags -
+   7 2024-01-22T03:00Z obs    29.0 gfs   22.115 resid   +6.885 nbrs [25.0, 28.0, 29.0, 29.0, 28.0] flags -
+   8 2024-01-22T05:00Z obs    28.0 gfs   21.139 resid   +6.861 nbrs [29.0, 29.0, 28.0, 24.0, 24.0] flags -
+   9 2022-12-10T03:00Z obs    22.0 gfs   15.153 resid   +6.847 nbrs [21.0, 21.0, 22.0, 20.0, 19.0] flags -
+  10 2023-12-23T02:00Z obs    23.0 gfs   16.156 resid   +6.844 nbrs [24.0, 24.0, 23.0, 22.0, 20.0] flags -
+NZWN: out-of-range hours: 0
+
+EGLC (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2022-03-28T10:00Z obs     6.0 gfs   12.849 resid   -6.849 nbrs [5.0, 6.0, 6.0, 8.0, 10.0] flags -
+   2 2023-06-12T13:00Z obs    22.0 gfs   28.834 resid   -6.834 nbrs [26.0, 26.0, 22.0, 26.0, 28.0] flags -
+   3 2026-03-04T14:00Z obs     9.0 gfs   15.808 resid   -6.808 nbrs [8.0, 9.0, 9.0, 9.0, 9.0] flags -
+   4 2026-03-04T15:00Z obs     9.0 gfs   15.797 resid   -6.797 nbrs [9.0, 9.0, 9.0, 9.0, 9.0] flags -
+   5 2024-07-05T14:00Z obs    22.0 gfs   15.208 resid   +6.792 nbrs [19.0, 21.0, 22.0, 21.0, 21.0] flags -
+   6 2023-05-13T12:00Z obs    12.0 gfs   18.751 resid   -6.751 nbrs [11.0, 12.0, 12.0, 13.0, 13.0] flags -
+   7 2023-02-08T12:00Z obs     0.0 gfs    6.748 resid   -6.748 nbrs [-1.0, 0.0, 0.0, 4.0, 8.0] flags -
+   8 2026-07-21T14:00Z obs    20.0 gfs   26.698 resid   -6.698 nbrs [20.0, 20.0, 20.0, 21.0, 21.0] flags -
+   9 2025-08-16T14:00Z obs    20.0 gfs   26.611 resid   -6.611 nbrs [20.0, 20.0, 20.0, 20.0, 20.0] flags -
+  10 2022-03-28T11:00Z obs     8.0 gfs   14.587 resid   -6.587 nbrs [6.0, 6.0, 8.0, 10.0, 12.0] flags -
+EGLC: out-of-range hours: 0
+
+LFPG (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2025-06-25T19:00Z obs    30.0 gfs   20.634 resid   +9.366 nbrs [34.0, 33.0, 30.0, 20.0, 20.0] flags -
+   2 2026-06-27T20:00Z obs    31.0 gfs   21.665 resid   +9.335 nbrs [35.0, 34.0, 31.0, 23.0, 22.0] flags -
+   3 2026-06-23T12:00Z obs    29.0 gfs   37.813 resid   -8.813 nbrs [29.0, 28.0, 29.0, 31.0, 33.0] flags -
+   4 2026-06-27T19:00Z obs    34.0 gfs   25.383 resid   +8.617 nbrs [36.0, 35.0, 34.0, 31.0, 23.0] flags -
+   5 2023-07-08T21:00Z obs    28.0 gfs   19.412 resid   +8.588 nbrs [31.0, 29.0, 28.0, 27.0, 24.0] flags -
+   6 2023-07-08T20:00Z obs    29.0 gfs   20.656 resid   +8.344 nbrs [32.0, 31.0, 29.0, 28.0, 27.0] flags -
+   7 2026-06-20T20:00Z obs    29.0 gfs   20.699 resid   +8.301 nbrs [32.0, 30.0, 29.0, 26.0, 25.0] flags -
+   8 2026-06-23T11:00Z obs    28.0 gfs   36.279 resid   -8.279 nbrs [28.0, 29.0, 28.0, 29.0, 31.0] flags -
+   9 2023-07-08T22:00Z obs    27.0 gfs   18.825 resid   +8.175 nbrs [29.0, 28.0, 27.0, 24.0, 23.0] flags -
+  10 2025-02-04T13:00Z obs     0.0 gfs    7.862 resid   -7.862 nbrs [-1.0, 0.0, 0.0, 1.0, 1.0] flags -
+LFPG: out-of-range hours: 0
+
+KDSM (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2023-09-19T21:00Z obs   17.78 gfs   32.906 resid  -15.126 nbrs [24.44, 22.78, 17.78, 17.78, 17.78] flags d
+   2 2023-09-19T22:00Z obs   17.78 gfs   31.817 resid  -14.037 nbrs [22.78, 17.78, 17.78, 17.78, 17.22] flags d
+   3 2023-09-19T23:00Z obs   17.78 gfs   30.319 resid  -12.538 nbrs [17.78, 17.78, 17.78, 17.22, 18.89] flags d
+   4 2026-03-15T14:00Z obs    1.67 gfs   13.926 resid  -12.256 nbrs [3.33, 1.67, 1.67, 1.11, 1.11] flags d
+   5 2025-03-19T15:00Z obs    3.33 gfs   15.351 resid  -12.021 nbrs [4.44, 3.89, 3.33, 3.33, 3.33] flags d
+   6 2023-07-27T19:00Z obs    30.0 gfs   41.977 resid  -11.977 nbrs [31.67, 30.56, 30.0, 31.11, 30.0] flags d
+   7 2023-08-25T19:00Z obs   28.33 gfs   40.126 resid  -11.796 nbrs [31.11, 30.56, 28.33, 28.89, 28.33] flags d
+   8 2026-03-15T13:00Z obs    1.67 gfs   13.403 resid  -11.733 nbrs [4.44, 3.33, 1.67, 1.67, 1.11] flags d
+   9 2023-08-25T21:00Z obs   28.33 gfs   40.055 resid  -11.725 nbrs [28.33, 28.89, 28.33, 32.22, 32.22] flags d
+  10 2023-08-25T20:00Z obs   28.89 gfs   40.401 resid  -11.511 nbrs [30.56, 28.33, 28.89, 28.33, 32.22] flags d
+KDSM: out-of-range hours: 0
+
+YSDU (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2022-01-11T03:00Z obs    19.0 gfs   33.913 resid  -14.913 nbrs [30.0, 30.0, 19.0, 24.0, 25.0] flags d
+   2 2025-01-15T07:00Z obs    21.0 gfs   35.660 resid  -14.660 nbrs [37.0, 34.0, 21.0, 25.0, 25.0] flags d
+   3 2024-11-11T03:00Z obs    19.0 gfs   33.027 resid  -14.027 nbrs [22.0, 20.0, 19.0, 19.0, 19.0] flags d
+   4 2024-11-11T04:00Z obs    19.0 gfs   32.422 resid  -13.422 nbrs [20.0, 19.0, 19.0, 19.0, 19.0] flags d
+   5 2021-12-08T04:00Z obs    17.0 gfs   29.626 resid  -12.626 nbrs [27.0, 22.0, 17.0, 17.0, 17.0] flags d
+   6 2024-02-15T06:00Z obs    20.0 gfs   32.514 resid  -12.514 nbrs [34.0, 32.0, 20.0, 21.0, 21.0] flags d
+   7 2024-11-11T05:00Z obs    19.0 gfs   31.172 resid  -12.172 nbrs [19.0, 19.0, 19.0, 19.0, 19.0] flags d
+   8 2024-11-11T02:00Z obs    20.0 gfs   32.075 resid  -12.075 nbrs [21.0, 22.0, 20.0, 19.0, 19.0] flags d
+   9 2024-03-02T02:00Z obs    22.0 gfs   33.790 resid  -11.790 nbrs [27.0, 22.0, 22.0, 22.0, 22.0] flags d
+  10 2025-01-02T05:00Z obs    24.0 gfs   35.483 resid  -11.483 nbrs [34.0, 30.0, 24.0, 25.0, 27.0] flags d
+YSDU: out-of-range hours: 0
+
+KRNO (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2024-07-22T00:00Z obs   38.89 gfs   26.425 resid  +12.465 nbrs [38.89, 38.89, 38.89, 32.22, 31.11] flags d
+   2 2025-11-27T18:00Z obs    1.67 gfs   13.659 resid  -11.989 nbrs [-1.11, 0.56, 1.67, 3.89, 6.11] flags d
+   3 2024-12-01T19:00Z obs   -2.78 gfs    9.196 resid  -11.976 nbrs [-4.44, -3.89, -2.78, -0.56, 1.67] flags d
+   4 2024-12-01T18:00Z obs   -3.89 gfs    7.932 resid  -11.822 nbrs [-5.0, -4.44, -3.89, -2.78, -0.56] flags d
+   5 2024-12-02T18:00Z obs   -2.78 gfs    8.879 resid  -11.659 nbrs [-5.0, -3.89, -2.78, 0.56, 4.44] flags d
+   6 2024-12-02T17:00Z obs   -3.89 gfs    7.650 resid  -11.540 nbrs [-4.44, -5.0, -3.89, -2.78, 0.56] flags d
+   7 2025-11-27T19:00Z obs    3.89 gfs   15.331 resid  -11.441 nbrs [0.56, 1.67, 3.89, 6.11, 6.67] flags d
+   8 2025-11-27T21:00Z obs    6.67 gfs   18.087 resid  -11.417 nbrs [3.89, 6.11, 6.67, 8.89, 11.11] flags d
+   9 2025-11-27T17:00Z obs    0.56 gfs   11.954 resid  -11.394 nbrs [-1.67, -1.11, 0.56, 1.67, 3.89] flags d
+  10 2025-12-14T17:00Z obs   -0.56 gfs   10.829 resid  -11.389 nbrs [-3.89, -3.33, -0.56, 2.78, 6.11] flags d
+KRNO: out-of-range hours: 0
+
+KSFO (dev): the 10 largest |residual| hours (obs minus median raw GFS); values at h-2, h-1, h, h+1, h+2
+   1 2022-06-21T22:00Z obs   36.67 gfs   27.474 resid   +9.197 nbrs [33.33, 35.0, 36.67, 34.44, 33.33] flags -
+   2 2026-07-22T00:00Z obs   32.78 gfs   23.754 resid   +9.026 nbrs [25.56, 24.44, 32.78, 31.11, 28.89] flags -
+   3 2022-06-22T03:00Z obs    30.0 gfs   21.353 resid   +8.647 nbrs [32.78, 31.67, 30.0, 26.67, 26.67] flags -
+   4 2022-06-10T20:00Z obs   32.22 gfs   23.676 resid   +8.544 nbrs [22.78, 24.44, 32.22, 27.78, 25.56] flags -
+   5 2022-06-22T06:00Z obs   27.22 gfs   18.676 resid   +8.544 nbrs [26.67, 26.67, 27.22, 25.56, 24.44] flags -
+   6 2026-06-12T03:00Z obs   26.67 gfs   18.143 resid   +8.527 nbrs [27.78, 26.67, 26.67, 18.89, 17.78] flags -
+   7 2021-04-28T22:00Z obs   27.78 gfs   19.435 resid   +8.345 nbrs [21.67, 24.44, 27.78, 24.44, 22.22] flags -
+   8 2022-06-22T02:00Z obs   31.67 gfs   23.362 resid   +8.308 nbrs [33.33, 32.78, 31.67, 30.0, 26.67] flags -
+   9 2024-10-06T23:00Z obs   36.67 gfs   28.364 resid   +8.306 nbrs [28.33, 30.56, 36.67, 34.44, 31.67] flags -
+  10 2024-07-03T03:00Z obs   26.67 gfs   18.373 resid   +8.297 nbrs [27.78, 28.89, 26.67, 21.67, 20.56] flags -
+KSFO: out-of-range hours: 0
+

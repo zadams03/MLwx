@@ -1,0 +1,107 @@
+Session 115 top_residuals.csv (D109.5)
+output top_residuals.csv
+run 2026-10-17T20:39:22Z; python 3.12.2; numpy 2.5.2
+script scripts/session115_obs_check.py SHA-256 cc4fffdc673cd3dce9e95d099846b3040f4f53b6781c8fbd99f3fea73b64ff86
+no network access; nothing valid after 2026-07-31T23:00 UTC read (D109.3); flag and count only (D109.6)
+
+inputs:
+  data/raw/iem_asos_EDDM_2021-03-24_2021-12-31_routine.csv  05b8aa1cf572e4884bc88c67f2a02c61ec547808c541cb8451c715dc0c4f2730
+  data/raw/iem_asos_EDDM_2022-01-01_2022-12-31_routine.csv  df7f6fa488ac88046ab2d8139ce0731ff5548b60b5b225ea9cf8dfbd3ff672fb
+  data/raw/iem_asos_EDDM_2023-01-01_2023-12-31_routine.csv  bbaaf733489ac104e71a09e02e0e99146ace762f5cff2af663596fe00ed740a3
+  data/raw/iem_asos_EDDM_2024-01-01_2024-12-31_routine.csv  c5d7083b4879ed744cd6c201e89486d25d9961d70fae1313d07dc19ac23cc513
+  data/raw/iem_asos_EDDM_2025-01-01_2025-12-31_routine.csv  55e519193252a65275d051bcbd46f8bd654d7e17cb4a3123d8457b69dcdca795
+  data/raw/iem_asos_EDDM_2026-01-01_2026-07-31_routine.csv  c576901b77ad6cbfe29e66202fe0fdd67c50aa16a4bf61f2f46f7b0556885cb4
+  MLwx-stagec/stagec_claim_f000_024_EDDM.csv.gz (SHA-256 checked by the record's loader against 9d9e38201d0a...)  9d9e38201d0aa63ae0da0a20c64254c172f57993df0d99dd767a567a5418c84d
+  MLwx-stagec/stagec_claim_f025_048_EDDM.csv.gz (SHA-256 checked by the record's loader against b5600c13948f...)  b5600c13948fd7ad6bd6411366b3676211b68dd332e37c3a409262eac3457c7b
+  data/raw/iem_asos_ORD_2021-03-24_2021-12-31_routine.csv  9b10bdcd5de2790fe5c72d1393555182ed03bf0352f8ac53b0ed4cf9e04eac88
+  data/raw/iem_asos_ORD_2022-01-01_2022-12-31_routine.csv  5080c48a2da3021296e66304b64d215220a7e747ae8f0eadb3d49a5d461a868a
+  data/raw/iem_asos_ORD_2023-01-01_2023-12-31_routine.csv  55ab6fed7e6105b29a02c133cfe818d85d73cd07048210a3afaddf79a515cf7a
+  data/raw/iem_asos_ORD_2024-01-01_2024-12-31_routine.csv  46bfd93a2921cf12237cddfd1afe463c1a94bb86a231f5f882abcd7c7771e525
+  data/raw/iem_asos_ORD_2025-01-01_2025-12-31_routine.csv  c26d9e7819d98044e55ec88766af162e2be0bf0cd362f7dd1c3437de7272aaae
+  data/raw/iem_asos_ORD_2026-01-01_2026-07-31_routine.csv  e776547f5e26b6e90a2666f051098a874d33fa13f9bcbf76eadf8a109968c146
+  MLwx-stagec/stagec_claim_f000_024_KORD.csv.gz (SHA-256 checked by the record's loader against 51c69aa5b204...)  51c69aa5b204f7991ae7522fd850b5b3c4715f017ed4ee2f1b4269a2d4a515ad
+  MLwx-stagec/stagec_claim_f025_048_KORD.csv.gz (SHA-256 checked by the record's loader against 2252e3ffb732...)  2252e3ffb73294e31b4aba1e605f204f70ccc80cbbcb701f79173e0940770662
+  data/raw/iem_asos_CYYZ_2021-03-24_2021-12-31_routine.csv  4f51e7828d0c745f3012c311e83ee488b599584f33958353846668e140449981
+  data/raw/iem_asos_CYYZ_2022-01-01_2022-12-31_routine.csv  a58752516e7b18894bbb089420ff12727f6eac0b02d1c63d3c0a8ae8076a47b4
+  data/raw/iem_asos_CYYZ_2023-01-01_2023-12-31_routine.csv  35275aad3b82bf4aecb21a4f9efd9dec3947267503561e416c5ebb9dd4ebc226
+  data/raw/iem_asos_CYYZ_2024-01-01_2024-12-31_routine.csv  2db0fa135d5926f5115052f5107aa5bc2b681116262ec6a091388ab2e433971f
+  data/raw/iem_asos_CYYZ_2025-01-01_2025-12-31_routine.csv  2e6fc0bc5b3c81f3f99c1a6d290addfa5ed23249967568540290409370f738d7
+  data/raw/iem_asos_CYYZ_2026-01-01_2026-07-31_routine.csv  c5f17d5607e5ec33c502e2c7f9ebf9e001408d10bfba22331ed3000cba15e37b
+  MLwx-stagec/stagec_claim_f000_024_CYYZ.csv.gz (SHA-256 checked by the record's loader against 899e54777fdf...)  899e54777fdff5f8ac0b6cc78b15ebea6340a072b23c5acf6c39486c139c25d7
+  MLwx-stagec/stagec_claim_f025_048_CYYZ.csv.gz (SHA-256 checked by the record's loader against ab631d6e4375...)  ab631d6e43750071e9b7878cb24127269aae5a3831d1234a299c8a0ab2054b44
+  data/raw/iem_asos_ZGSZ_2021-03-24_2021-12-31_routine.csv  ce8209b635aa6ee6cb45e4b532ff3788335e22b6ffde2f5a7474490b84a97fb3
+  data/raw/iem_asos_ZGSZ_2022-01-01_2022-12-31_routine.csv  a5b04de0adc52b8643cea81d085921bdcbddced44c6d4a266682aae0fe6a7d63
+  data/raw/iem_asos_ZGSZ_2023-01-01_2023-12-31_routine.csv  bb0a7c3649007991689a5c67237f8af3271520d662dd7f4c1259277e3dc7bb38
+  data/raw/iem_asos_ZGSZ_2024-01-01_2024-12-31_routine.csv  417e21ba0a7f4fa4483d19212931a0d749cfc3aa3db19254b0e586db5826cc21
+  data/raw/iem_asos_ZGSZ_2025-01-01_2025-12-31_routine.csv  35658952c6c7f042310357081f3ca7ff75634a3e0b7cea9902a5a09db8240518
+  data/raw/iem_asos_ZGSZ_2026-01-01_2026-07-31_routine.csv  42df9da690f9a4a1437f7f2114ea4492cca786ebd7a43a652b0864e556113fd6
+  MLwx-stagec/stagec_claim_f000_024_ZGSZ.csv.gz (SHA-256 checked by the record's loader against 1a83bb1ba7b7...)  1a83bb1ba7b7c2ed389244fd3362c32e6a641847b3b074680d00a84a858de011
+  MLwx-stagec/stagec_claim_f025_048_ZGSZ.csv.gz (SHA-256 checked by the record's loader against b70b5f4c648f...)  b70b5f4c648fa6e5971084e8993e99fa2d2fffd7394e6e7b262c06aa6d2df0f5
+  data/raw/iem_asos_ZUCK_2021-03-24_2021-12-31_routine.csv  28bf73b7a01d9059090f329e321091de8a14a3316a926dd73acd5bd203ef3fbd
+  data/raw/iem_asos_ZUCK_2022-01-01_2022-12-31_routine.csv  a5773c1852b037326801dc21a4bc1cd521622d0e56f5123b4f7f9da8dc84c3a4
+  data/raw/iem_asos_ZUCK_2023-01-01_2023-12-31_routine.csv  aadfc68dd1641fa293f6de88daf522cfc0b90b1d028007937c50734921be40bf
+  data/raw/iem_asos_ZUCK_2024-01-01_2024-12-31_routine.csv  56d7f4b94a8c46683b813969d0158e063e4510912000ddf70a4f7eae2efe8295
+  data/raw/iem_asos_ZUCK_2025-01-01_2025-12-31_routine.csv  1b4fbfa53baf6f01a498573aaf839d65b8ea426d5f3de3890a0dbab985bbf4cf
+  data/raw/iem_asos_ZUCK_2026-01-01_2026-07-31_routine.csv  d1b9204bdc1e774a88bf7419389333e3224eb5b63d24401c165d8ff16ff49f07
+  MLwx-stagec/stagec_claim_f000_024_ZUCK.csv.gz (SHA-256 checked by the record's loader against 1be74331235c...)  1be74331235cd973b919db7aa8a587b7065eaf154e95f08f03dbf62ac0a89379
+  MLwx-stagec/stagec_claim_f025_048_ZUCK.csv.gz (SHA-256 checked by the record's loader against 35e85af2c47d...)  35e85af2c47df13afd0fbd8279aadd330157072bb8d1f17f800515619296b096
+  data/raw/iem_asos_NZWN_2021-03-24_2021-12-31_routine.csv  4498935f1cd5c45e56ef31313141b617328ba4219d7f7dfd280d48573c97dc80
+  data/raw/iem_asos_NZWN_2022-01-01_2022-12-31_routine.csv  db624195db0a16997b58049c76098a0cbc173efc59db4898ad33be3fc3b086ef
+  data/raw/iem_asos_NZWN_2023-01-01_2023-12-31_routine.csv  d96c87278200f0136d6aa58b384a2e29021893c68f142f8034070ec11ed3eed6
+  data/raw/iem_asos_NZWN_2024-01-01_2024-12-31_routine.csv  1b2d484ff897cc49587a3d11d6a7a0a22bf8eec317259353341d213e489249dd
+  data/raw/iem_asos_NZWN_2025-01-01_2025-12-31_routine.csv  df8c6083f6d2dc3338e5d6bb23494385b9326a62956b58b52efbe1efbe11257c
+  data/raw/iem_asos_NZWN_2026-01-01_2026-07-31_routine.csv  375a102a85d662afdd3cc4a84d4636dc58518cf8b7293d5983bbc65f0ecb2d8b
+  MLwx-stagec/stagec_claim_f000_024_NZWN.csv.gz (SHA-256 checked by the record's loader against f5c7a598cef5...)  f5c7a598cef58190e593d74cd961fd15912d9fd3ce196f149092807215a92e74
+  MLwx-stagec/stagec_claim_f025_048_NZWN.csv.gz (SHA-256 checked by the record's loader against 4db435054034...)  4db4350540342b4a01502731a0daf5b943a6e619a0893ee6bf12ca6ade2f3fc0
+  data/raw/iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv  4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19
+  data/raw/iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv  30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16
+  data/raw/iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv  92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e
+  data/raw/iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv  20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f
+  data/raw/iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv  8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb
+  data/raw/iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv  0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233
+  MLwx-stagec/stagec_dev_EGLC.csv.gz (SHA-256 checked by the record's loader against af8848e091c7...)  af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_f025_048_EGLC.csv.gz (SHA-256 checked by the record's loader against 947bf2f0920e...)  947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9
+  data/raw/iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv  4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23
+  data/raw/iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv  5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5
+  data/raw/iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv  d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223
+  data/raw/iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv  648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24
+  data/raw/iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv  ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df
+  data/raw/iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv  580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c
+  MLwx-stagec/stagec_dev_LFPG.csv.gz (SHA-256 checked by the record's loader against 5b113123c764...)  5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_f025_048_LFPG.csv.gz (SHA-256 checked by the record's loader against 04dbd411dbd6...)  04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35
+  data/raw/iem_asos_DSM_2021-03-24_2021-12-31_routine.csv  8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7
+  data/raw/iem_asos_DSM_2022-01-01_2022-12-31_routine.csv  94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407
+  data/raw/iem_asos_DSM_2023-01-01_2023-12-31_routine.csv  0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649
+  data/raw/iem_asos_DSM_2024-01-01_2024-12-31_routine.csv  ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be
+  data/raw/iem_asos_DSM_2025-01-01_2025-12-31_routine.csv  82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6
+  data/raw/iem_asos_DSM_2026-01-01_2026-07-31_routine.csv  0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de
+  MLwx-stagec/stagec_dev_KDSM.csv.gz (SHA-256 checked by the record's loader against 17461736cd23...)  17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_f025_048_KDSM.csv.gz (SHA-256 checked by the record's loader against bd2d80c01211...)  bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3
+  data/raw/iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv  af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f
+  data/raw/iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv  01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352
+  data/raw/iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv  948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d
+  data/raw/iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv  1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a
+  data/raw/iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv  cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff
+  data/raw/iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv  db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1
+  MLwx-stagec/stagec_dev_YSDU.csv.gz (SHA-256 checked by the record's loader against 57a11a4f0025...)  57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_f025_048_YSDU.csv.gz (SHA-256 checked by the record's loader against b801fcc2d9e2...)  b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac
+  data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv  0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c
+  data/raw/iem_asos_RNO_2022-01-01_2022-12-31_routine.csv  3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155
+  data/raw/iem_asos_RNO_2023-01-01_2023-12-31_routine.csv  fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a
+  data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv  88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a
+  data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv  4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b
+  data/raw/iem_asos_RNO_2026-01-01_2026-07-31_routine.csv  9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515
+  MLwx-stagec/stagec_dev_KRNO.csv.gz (SHA-256 checked by the record's loader against 6e2d0779f6b5...)  6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_f025_048_KRNO.csv.gz (SHA-256 checked by the record's loader against 3ca1d4ff8933...)  3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58
+  data/raw/iem_asos_SFO_2021-03-24_2021-12-31_routine.csv  8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003
+  data/raw/iem_asos_SFO_2022-01-01_2022-12-31_routine.csv  7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618
+  data/raw/iem_asos_SFO_2023-01-01_2023-12-31_routine.csv  06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221
+  data/raw/iem_asos_SFO_2024-01-01_2024-12-31_routine.csv  dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9
+  data/raw/iem_asos_SFO_2025-01-01_2025-12-31_routine.csv  c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307
+  data/raw/iem_asos_SFO_2026-01-01_2026-07-31_routine.csv  cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382
+  MLwx-stagec/stagec_dev_KSFO.csv.gz (SHA-256 checked by the record's loader against 11fa6385f05c...)  11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  MLwx-stagec/stagec_dev_f025_048_KSFO.csv.gz (SHA-256 checked by the record's loader against 2e355c0146e1...)  2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b
+
+rows 120 (header excluded)
+file SHA-256 40c8dca6a7c9fba048a02b435c99d5291ec334b72265f2fe77ce9b53c0e08dd2
+descriptive only: no score of any kind (D109.6)

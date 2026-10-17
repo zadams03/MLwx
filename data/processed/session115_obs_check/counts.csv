@@ -1,0 +1,66 @@
+airport,group,check,usable_hours,untested_hours,untested_reason,untested_pairs,flagged_hours,rate_per_10000_usable_hours
+EDDM,claim,a,46928,0,every hour with a value can be tested,,0,0.0
+EDDM,claim,b,46928,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 11, h+1 11 (an hour can be in both)",22,0,0.0
+EDDM,claim,c,46928,0,every hour with a value can be tested,,118,25.1449
+EDDM,claim,d,46928,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,6,1.2786
+EDDM,claim,any,46928,,union: an hour is counted once if any check flags it,,124,26.4235
+KORD,claim,a,46890,0,every hour with a value can be tested,,0,0.0
+KORD,claim,b,46890,74,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 39, h+1 39 (an hour can be in both)",70,0,0.0
+KORD,claim,c,46890,0,every hour with a value can be tested,,0,0.0
+KORD,claim,d,46890,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,10,2.1327
+KORD,claim,any,46890,,union: an hour is counted once if any check flags it,,10,2.1327
+CYYZ,claim,a,46861,0,every hour with a value can be tested,,0,0.0
+CYYZ,claim,b,46861,42,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 23, h+1 23 (an hour can be in both)",38,1,0.2134
+CYYZ,claim,c,46861,0,every hour with a value can be tested,,24,5.1215
+CYYZ,claim,d,46861,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,3,0.6402
+CYYZ,claim,any,46861,,union: an hour is counted once if any check flags it,,27,5.7617
+ZGSZ,claim,a,46925,0,every hour with a value can be tested,,0,0.0
+ZGSZ,claim,b,46925,24,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 12, h+1 12 (an hour can be in both)",24,0,0.0
+ZGSZ,claim,c,46925,0,every hour with a value can be tested,,24,5.1145
+ZGSZ,claim,d,46925,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,0,0.0
+ZGSZ,claim,any,46925,,union: an hour is counted once if any check flags it,,24,5.1145
+ZUCK,claim,a,46926,0,every hour with a value can be tested,,0,0.0
+ZUCK,claim,b,46926,15,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 8, h+1 8 (an hour can be in both)",14,0,0.0
+ZUCK,claim,c,46926,0,every hour with a value can be tested,,283,60.3077
+ZUCK,claim,d,46926,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,1,0.2131
+ZUCK,claim,any,46926,,union: an hour is counted once if any check flags it,,284,60.5208
+NZWN,claim,a,46857,0,every hour with a value can be tested,,0,0.0
+NZWN,claim,b,46857,47,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 24, h+1 24 (an hour can be in both)",45,0,0.0
+NZWN,claim,c,46857,0,every hour with a value can be tested,,80,17.0732
+NZWN,claim,d,46857,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,0,0.0
+NZWN,claim,any,46857,,union: an hour is counted once if any check flags it,,80,17.0732
+EGLC,dev,a,46900,0,every hour with a value can be tested,,0,0.0
+EGLC,dev,b,46900,46,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 23, h+1 23 (an hour can be in both)",46,0,0.0
+EGLC,dev,c,46900,0,every hour with a value can be tested,,108,23.0277
+EGLC,dev,d,46900,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,0,0.0
+EGLC,dev,any,46900,,union: an hour is counted once if any check flags it,,108,23.0277
+LFPG,dev,a,46804,0,every hour with a value can be tested,,0,0.0
+LFPG,dev,b,46804,171,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 86, h+1 86 (an hour can be in both)",170,0,0.0
+LFPG,dev,c,46804,0,every hour with a value can be tested,,29,6.1961
+LFPG,dev,d,46804,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,0,0.0
+LFPG,dev,any,46804,,union: an hour is counted once if any check flags it,,29,6.1961
+KDSM,dev,a,46932,0,every hour with a value can be tested,,0,0.0
+KDSM,dev,b,46932,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 11, h+1 11 (an hour can be in both)",22,0,0.0
+KDSM,dev,c,46932,0,every hour with a value can be tested,,0,0.0
+KDSM,dev,d,46932,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,25,5.3269
+KDSM,dev,any,46932,,union: an hour is counted once if any check flags it,,25,5.3269
+YSDU,dev,a,46467,0,every hour with a value can be tested,,0,0.0
+YSDU,dev,b,46467,565,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 288, h+1 288 (an hour can be in both)",550,0,0.0
+YSDU,dev,c,46467,0,every hour with a value can be tested,,0,0.0
+YSDU,dev,d,46467,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,25,5.3802
+YSDU,dev,any,46467,,union: an hour is counted once if any check flags it,,25,5.3802
+KRNO,dev,a,46834,0,every hour with a value can be tested,,0,0.0
+KRNO,dev,b,46834,50,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 26, h+1 26 (an hour can be in both)",47,0,0.0
+KRNO,dev,c,46834,0,every hour with a value can be tested,,0,0.0
+KRNO,dev,d,46834,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,36,7.6867
+KRNO,dev,any,46834,,union: an hour is counted once if any check flags it,,36,7.6867
+KSFO,dev,a,46908,0,every hour with a value can be tested,,0,0.0
+KSFO,dev,b,46908,52,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 27, h+1 27 (an hour can be in both)",50,0,0.0
+KSFO,dev,c,46908,0,every hour with a value can be tested,,0,0.0
+KSFO,dev,d,46908,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,0,0.0
+KSFO,dev,any,46908,,union: an hour is counted once if any check flags it,,0,0.0
+ALL12,all,a,562232,0,every hour with a value can be tested,,0,0.0
+ALL12,all,b,562232,1130,sum over airports,1098,1,0.0178
+ALL12,all,c,562232,0,every hour with a value can be tested,,666,11.8456
+ALL12,all,d,562232,0,no raw GFS value at that hour in the stage C rows at leads 3 to 48,,106,1.8853
+ALL12,all,any,562232,,union: an hour is counted once if any check flags it,,772,13.731
