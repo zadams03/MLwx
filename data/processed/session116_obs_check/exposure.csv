@@ -1,0 +1,256 @@
+airport,group,check,usable_hours,flagged_hours,tables,target_hours_before_2024_08_01,target_hours_from_2024_08_01,target_rows_before,target_rows_from,usable_days_whose_max_hour_is_flagged_before,usable_days_whose_max_hour_is_flagged_from,days_status
+EDDM,claim,all,46928,,stage C,29410,17518,225472,134304,1224,730,computed
+EDDM,claim,a,46928,0,stage C,0,0,0,0,0,0,computed
+EDDM,claim,b,46928,0,stage C,0,0,0,0,0,0,computed
+EDDM,claim,c,46928,118,stage C,25,93,192,714,1,2,computed
+EDDM,claim,any,46928,118,stage C,25,93,192,714,1,2,computed
+KORD,claim,all,46890,,stage C,29404,17486,225423,134062,1225,726,computed
+KORD,claim,a,46890,0,stage C,0,0,0,0,0,0,computed
+KORD,claim,b,46890,0,stage C,0,0,0,0,0,0,computed
+KORD,claim,c,46890,0,stage C,0,0,0,0,0,0,computed
+KORD,claim,any,46890,0,stage C,0,0,0,0,0,0,computed
+CYYZ,claim,all,46861,,stage C,29354,17507,225040,134219,1220,728,computed
+CYYZ,claim,a,46861,0,stage C,0,0,0,0,0,0,computed
+CYYZ,claim,b,46861,1,stage C,0,1,0,7,0,1,computed
+CYYZ,claim,c,46861,24,stage C,24,0,184,0,1,0,computed
+CYYZ,claim,any,46861,25,stage C,24,1,184,7,1,1,computed
+ZGSZ,claim,all,46925,,stage C,29407,17518,225445,134304,1222,730,computed
+ZGSZ,claim,a,46925,0,stage C,0,0,0,0,0,0,computed
+ZGSZ,claim,b,46925,0,stage C,0,0,0,0,0,0,computed
+ZGSZ,claim,c,46925,24,stage C,24,0,184,0,1,0,computed
+ZGSZ,claim,any,46925,24,stage C,24,0,184,0,1,0,computed
+ZUCK,claim,all,46926,,stage C,29407,17519,225445,134312,1222,730,computed
+ZUCK,claim,a,46926,0,stage C,0,0,0,0,0,0,computed
+ZUCK,claim,b,46926,0,stage C,0,0,0,0,0,0,computed
+ZUCK,claim,c,46926,283,stage C,124,159,953,1217,2,5,computed
+ZUCK,claim,any,46926,283,stage C,124,159,953,1217,2,5,computed
+NZWN,claim,all,46857,,stage C,29342,17515,224953,134281,1217,729,computed
+NZWN,claim,a,46857,0,stage C,0,0,0,0,0,0,computed
+NZWN,claim,b,46857,0,stage C,0,0,0,0,0,0,computed
+NZWN,claim,c,46857,80,stage C,27,53,208,406,0,1,computed
+NZWN,claim,any,46857,80,stage C,27,53,208,406,0,1,computed
+EGLC,dev,all,46900,,stage C,29390,17510,225320,134243,1222,730,computed
+EGLC,dev,a,46900,0,stage C,0,0,0,0,0,0,computed
+EGLC,dev,b,46900,0,stage C,0,0,0,0,0,0,computed
+EGLC,dev,c,46900,108,stage C,58,50,444,383,2,2,computed
+EGLC,dev,any,46900,108,stage C,58,50,444,383,2,2,computed
+LFPG,dev,all,46804,,stage C,29333,17471,224875,133941,1221,729,computed
+LFPG,dev,a,46804,0,stage C,0,0,0,0,0,0,computed
+LFPG,dev,b,46804,0,stage C,0,0,0,0,0,0,computed
+LFPG,dev,c,46804,29,stage C,0,29,0,222,0,2,computed
+LFPG,dev,any,46804,29,stage C,0,29,0,222,0,2,computed
+KDSM,dev,all,46932,,stage C,29415,17517,225507,134297,1226,729,computed
+KDSM,dev,a,46932,0,stage C,0,0,0,0,0,0,computed
+KDSM,dev,b,46932,0,stage C,0,0,0,0,0,0,computed
+KDSM,dev,c,46932,0,stage C,0,0,0,0,0,0,computed
+KDSM,dev,any,46932,0,stage C,0,0,0,0,0,0,computed
+YSDU,dev,all,46467,,stage C,29086,17381,222998,133251,1209,723,computed
+YSDU,dev,a,46467,0,stage C,0,0,0,0,0,0,computed
+YSDU,dev,b,46467,0,stage C,0,0,0,0,0,0,computed
+YSDU,dev,c,46467,0,stage C,0,0,0,0,0,0,computed
+YSDU,dev,any,46467,0,stage C,0,0,0,0,0,0,computed
+KRNO,dev,all,46834,,stage C,29328,17506,224845,134213,1220,728,computed
+KRNO,dev,a,46834,0,stage C,0,0,0,0,0,0,computed
+KRNO,dev,b,46834,0,stage C,0,0,0,0,0,0,computed
+KRNO,dev,c,46834,0,stage C,0,0,0,0,0,0,computed
+KRNO,dev,any,46834,0,stage C,0,0,0,0,0,0,computed
+KSFO,dev,all,46908,,stage C,29407,17501,225450,134175,1225,727,computed
+KSFO,dev,a,46908,0,stage C,0,0,0,0,0,0,computed
+KSFO,dev,b,46908,0,stage C,0,0,0,0,0,0,computed
+KSFO,dev,c,46908,0,stage C,0,0,0,0,0,0,computed
+KSFO,dev,any,46908,0,stage C,0,0,0,0,0,0,computed
+EFHK,product,all,46920,,product,29406,17514,225440,134273,1224,730,computed
+EFHK,product,a,46920,0,product,0,0,0,0,0,0,computed
+EFHK,product,b,46920,0,product,0,0,0,0,0,0,computed
+EFHK,product,c,46920,307,product,246,61,1884,468,9,4,computed
+EFHK,product,any,46920,307,product,246,61,1884,468,9,4,computed
+EHAM,product,all,46824,,product,29350,17474,225011,133967,1222,729,computed
+EHAM,product,a,46824,0,product,0,0,0,0,0,0,computed
+EHAM,product,b,46824,0,product,0,0,0,0,0,0,computed
+EHAM,product,c,46824,170,product,144,26,1104,199,4,1,computed
+EHAM,product,any,46824,170,product,144,26,1104,199,4,1,computed
+EPWA,product,all,46857,,product,29350,17507,225009,134221,1219,729,computed
+EPWA,product,a,46857,0,product,0,0,0,0,0,0,computed
+EPWA,product,b,46857,0,product,0,0,0,0,0,0,computed
+EPWA,product,c,46857,240,product,181,59,1385,453,4,3,computed
+EPWA,product,any,46857,240,product,181,59,1385,453,4,3,computed
+FACT,product,all,45531,,product,29189,16342,223780,125295,1210,618,computed
+FACT,product,a,45531,0,product,0,0,0,0,0,0,computed
+FACT,product,b,45531,0,product,0,0,0,0,0,0,computed
+FACT,product,c,45531,24,product,24,0,184,0,1,0,computed
+FACT,product,any,45531,24,product,24,0,184,0,1,0,computed
+KATL,product,all,46895,,product,29399,17496,225384,134133,1224,728,computed
+KATL,product,a,46895,0,product,0,0,0,0,0,0,computed
+KATL,product,b,46895,0,product,0,0,0,0,0,0,computed
+KATL,product,c,46895,0,product,0,0,0,0,0,0,computed
+KATL,product,any,46895,0,product,0,0,0,0,0,0,computed
+KAUS,product,all,46843,,product,29373,17470,225185,133930,1222,727,computed
+KAUS,product,a,46843,0,product,0,0,0,0,0,0,computed
+KAUS,product,b,46843,0,product,0,0,0,0,0,0,computed
+KAUS,product,c,46843,0,product,0,0,0,0,0,0,computed
+KAUS,product,any,46843,0,product,0,0,0,0,0,0,computed
+KBKF,product,all,46412,,product,29300,17112,224633,131199,1214,685,computed
+KBKF,product,a,46412,0,product,0,0,0,0,0,0,computed
+KBKF,product,b,46412,0,product,0,0,0,0,0,0,computed
+KBKF,product,c,46412,0,product,0,0,0,0,0,0,computed
+KBKF,product,any,46412,0,product,0,0,0,0,0,0,computed
+KDAL,product,all,46911,,product,29413,17498,225493,134149,1225,728,computed
+KDAL,product,a,46911,0,product,0,0,0,0,0,0,computed
+KDAL,product,b,46911,0,product,0,0,0,0,0,0,computed
+KDAL,product,c,46911,0,product,0,0,0,0,0,0,computed
+KDAL,product,any,46911,0,product,0,0,0,0,0,0,computed
+KHOU,product,all,46892,,product,29401,17491,225399,134097,1223,727,computed
+KHOU,product,a,46892,0,product,0,0,0,0,0,0,computed
+KHOU,product,b,46892,1,product,0,1,0,8,0,0,computed
+KHOU,product,c,46892,0,product,0,0,0,0,0,0,computed
+KHOU,product,any,46892,1,product,0,1,0,8,0,0,computed
+KLAX,product,all,46899,,product,29414,17485,225499,134052,1225,725,computed
+KLAX,product,a,46899,0,product,0,0,0,0,0,0,computed
+KLAX,product,b,46899,0,product,0,0,0,0,0,0,computed
+KLAX,product,c,46899,0,product,0,0,0,0,0,0,computed
+KLAX,product,any,46899,0,product,0,0,0,0,0,0,computed
+KLGA,product,all,46897,,product,29401,17496,225400,134135,1225,728,computed
+KLGA,product,a,46897,0,product,0,0,0,0,0,0,computed
+KLGA,product,b,46897,0,product,0,0,0,0,0,0,computed
+KLGA,product,c,46897,0,product,0,0,0,0,0,0,computed
+KLGA,product,any,46897,0,product,0,0,0,0,0,0,computed
+KMIA,product,all,46887,,product,29395,17492,225351,134102,1225,727,computed
+KMIA,product,a,46887,0,product,0,0,0,0,0,0,computed
+KMIA,product,b,46887,0,product,0,0,0,0,0,0,computed
+KMIA,product,c,46887,0,product,0,0,0,0,0,0,computed
+KMIA,product,any,46887,0,product,0,0,0,0,0,0,computed
+KSEA,product,all,46890,,product,29389,17501,225305,134174,1225,727,computed
+KSEA,product,a,46890,0,product,0,0,0,0,0,0,computed
+KSEA,product,b,46890,0,product,0,0,0,0,0,0,computed
+KSEA,product,c,46890,0,product,0,0,0,0,0,0,computed
+KSEA,product,any,46890,0,product,0,0,0,0,0,0,computed
+LEMD,product,all,46837,,product,29328,17509,224840,134236,1218,730,computed
+LEMD,product,a,46837,0,product,0,0,0,0,0,0,computed
+LEMD,product,b,46837,0,product,0,0,0,0,0,0,computed
+LEMD,product,c,46837,0,product,0,0,0,0,0,0,computed
+LEMD,product,any,46837,0,product,0,0,0,0,0,0,computed
+LFPB,product,all,46351,,product,28908,17443,221627,133733,1186,720,computed
+LFPB,product,a,46351,0,product,0,0,0,0,0,0,computed
+LFPB,product,b,46351,0,product,0,0,0,0,0,0,computed
+LFPB,product,c,46351,114,product,37,77,284,591,1,4,computed
+LFPB,product,any,46351,114,product,37,77,284,591,1,4,computed
+LIMC,product,all,46682,,product,29260,17422,224327,133572,1218,727,computed
+LIMC,product,a,46682,0,product,0,0,0,0,0,0,computed
+LIMC,product,b,46682,0,product,0,0,0,0,0,0,computed
+LIMC,product,c,46682,111,product,24,87,184,668,0,3,computed
+LIMC,product,any,46682,111,product,24,87,184,668,0,3,computed
+LLBG,product,all,46801,,product,29342,17459,224949,133850,1217,726,computed
+LLBG,product,a,46801,0,product,0,0,0,0,0,0,computed
+LLBG,product,b,46801,0,product,0,0,0,0,0,0,computed
+LLBG,product,c,46801,0,product,0,0,0,0,0,0,computed
+LLBG,product,any,46801,0,product,0,0,0,0,0,0,computed
+LTAC,product,all,46904,,product,29408,17496,225455,134136,1223,729,computed
+LTAC,product,a,46904,0,product,0,0,0,0,0,0,computed
+LTAC,product,b,46904,0,product,0,0,0,0,0,0,computed
+LTAC,product,c,46904,0,product,0,0,0,0,0,0,computed
+LTAC,product,any,46904,0,product,0,0,0,0,0,0,computed
+LTFM,product,all,46904,,product,29404,17500,225425,134164,1223,729,computed
+LTFM,product,a,46904,0,product,0,0,0,0,0,0,computed
+LTFM,product,b,46904,0,product,0,0,0,0,0,0,computed
+LTFM,product,c,46904,129,product,104,25,797,191,2,2,computed
+LTFM,product,any,46904,129,product,104,25,797,191,2,2,computed
+OEJN,product,all,46927,,product,29410,17517,225468,134296,1222,730,computed
+OEJN,product,a,46927,0,product,0,0,0,0,0,0,computed
+OEJN,product,b,46927,0,product,0,0,0,0,0,0,computed
+OEJN,product,c,46927,0,product,0,0,0,0,0,0,computed
+OEJN,product,any,46927,0,product,0,0,0,0,0,0,computed
+OPKC,product,all,42508,,product,25370,17138,194457,131360,848,711,computed
+OPKC,product,a,42508,0,product,0,0,0,0,0,0,computed
+OPKC,product,b,42508,0,product,0,0,0,0,0,0,computed
+OPKC,product,c,42508,0,product,0,0,0,0,0,0,computed
+OPKC,product,any,42508,0,product,0,0,0,0,0,0,computed
+RCSS,product,all,43442,,product,29371,14071,225170,107923,1221,568,computed
+RCSS,product,a,43442,0,product,0,0,0,0,0,0,computed
+RCSS,product,b,43442,0,product,0,0,0,0,0,0,computed
+RCSS,product,c,43442,24,product,24,0,184,0,1,0,computed
+RCSS,product,any,43442,24,product,24,0,184,0,1,0,computed
+RJTT,product,all,46893,,product,29373,17520,225185,134320,1221,730,computed
+RJTT,product,a,46893,0,product,0,0,0,0,0,0,computed
+RJTT,product,b,46893,0,product,0,0,0,0,0,0,computed
+RJTT,product,c,46893,24,product,24,0,184,0,0,0,computed
+RJTT,product,any,46893,24,product,24,0,184,0,0,0,computed
+RKPK,product,all,46827,,product,29365,17462,225123,133873,1221,727,computed
+RKPK,product,a,46827,0,product,0,0,0,0,0,0,computed
+RKPK,product,b,46827,2,product,2,0,15,0,0,0,computed
+RKPK,product,c,46827,0,product,0,0,0,0,0,0,computed
+RKPK,product,any,46827,2,product,2,0,15,0,0,0,computed
+RKSI,product,all,46879,,product,29361,17518,225093,134304,1219,730,computed
+RKSI,product,a,46879,0,product,0,0,0,0,0,0,computed
+RKSI,product,b,46879,0,product,0,0,0,0,0,0,computed
+RKSI,product,c,46879,24,product,24,0,184,0,0,0,computed
+RKSI,product,any,46879,24,product,24,0,184,0,0,0,computed
+RPLL,product,all,46769,,product,29261,17508,224326,134227,1217,729,computed
+RPLL,product,a,46769,0,product,0,0,0,0,0,0,computed
+RPLL,product,b,46769,0,product,0,0,0,0,0,0,computed
+RPLL,product,c,46769,0,product,0,0,0,0,0,0,computed
+RPLL,product,any,46769,0,product,0,0,0,0,0,0,computed
+SAEZ,product,all,46809,,product,29321,17488,224785,134073,1218,727,computed
+SAEZ,product,a,46809,0,product,0,0,0,0,0,0,computed
+SAEZ,product,b,46809,1,product,1,0,7,0,1,0,computed
+SAEZ,product,c,46809,0,product,0,0,0,0,0,0,computed
+SAEZ,product,any,46809,1,product,1,0,7,0,1,0,computed
+SBGR,product,all,46909,,product,29389,17520,225310,134320,1222,729,computed
+SBGR,product,a,46909,0,product,0,0,0,0,0,0,computed
+SBGR,product,b,46909,0,product,0,0,0,0,0,0,computed
+SBGR,product,c,46909,0,product,0,0,0,0,0,0,computed
+SBGR,product,any,46909,0,product,0,0,0,0,0,0,computed
+UUWW,product,all,46888,,product,29369,17519,225156,134312,1221,730,computed
+UUWW,product,a,46888,0,product,0,0,0,0,0,0,computed
+UUWW,product,b,46888,0,product,0,0,0,0,0,0,computed
+UUWW,product,c,46888,431,product,202,229,1548,1757,11,13,computed
+UUWW,product,any,46888,431,product,202,229,1548,1757,11,13,computed
+WMKK,product,all,46883,,product,29367,17516,225138,134289,1220,730,computed
+WMKK,product,a,46883,0,product,0,0,0,0,0,0,computed
+WMKK,product,b,46883,0,product,0,0,0,0,0,0,computed
+WMKK,product,c,46883,0,product,0,0,0,0,0,0,computed
+WMKK,product,any,46883,0,product,0,0,0,0,0,0,computed
+WSSS,product,all,46894,,product,29376,17518,225208,134305,1222,730,computed
+WSSS,product,a,46894,0,product,0,0,0,0,0,0,computed
+WSSS,product,b,46894,0,product,0,0,0,0,0,0,computed
+WSSS,product,c,46894,0,product,0,0,0,0,0,0,computed
+WSSS,product,any,46894,0,product,0,0,0,0,0,0,computed
+ZBAA,product,all,46884,,product,29366,17518,225131,134304,1220,730,computed
+ZBAA,product,a,46884,0,product,0,0,0,0,0,0,computed
+ZBAA,product,b,46884,0,product,0,0,0,0,0,0,computed
+ZBAA,product,c,46884,0,product,0,0,0,0,0,0,computed
+ZBAA,product,any,46884,0,product,0,0,0,0,0,0,computed
+ZGGG,product,all,46893,,product,29374,17519,225193,134312,1222,730,computed
+ZGGG,product,a,46893,0,product,0,0,0,0,0,0,computed
+ZGGG,product,b,46893,0,product,0,0,0,0,0,0,computed
+ZGGG,product,c,46893,24,product,24,0,184,0,1,0,computed
+ZGGG,product,any,46893,24,product,24,0,184,0,1,0,computed
+ZHHH,product,all,46926,,product,29407,17519,225445,134312,1222,730,computed
+ZHHH,product,a,46926,0,product,0,0,0,0,0,0,computed
+ZHHH,product,b,46926,0,product,0,0,0,0,0,0,computed
+ZHHH,product,c,46926,178,product,126,52,966,399,3,1,computed
+ZHHH,product,any,46926,178,product,126,52,966,399,3,1,computed
+ZSPD,product,all,46883,,product,29365,17518,225124,134304,1219,730,computed
+ZSPD,product,a,46883,0,product,0,0,0,0,0,0,computed
+ZSPD,product,b,46883,0,product,0,0,0,0,0,0,computed
+ZSPD,product,c,46883,0,product,0,0,0,0,0,0,computed
+ZSPD,product,any,46883,0,product,0,0,0,0,0,0,computed
+ZSQD,product,all,46924,,product,29406,17518,225437,134304,1222,730,computed
+ZSQD,product,a,46924,0,product,0,0,0,0,0,0,computed
+ZSQD,product,b,46924,0,product,0,0,0,0,0,0,computed
+ZSQD,product,c,46924,0,product,0,0,0,0,0,0,computed
+ZSQD,product,any,46924,0,product,0,0,0,0,0,0,computed
+ZUUU,product,all,46923,,product,29405,17518,225430,134304,1221,730,computed
+ZUUU,product,a,46923,0,product,0,0,0,0,0,0,computed
+ZUUU,product,b,46923,0,product,0,0,0,0,0,0,computed
+ZUUU,product,c,46923,0,product,0,0,0,0,0,0,computed
+ZUUU,product,any,46923,0,product,0,0,0,0,0,0,computed
+MMMX,other,all,28950,,none,,,,,99,5,computed
+MMMX,other,a,28950,0,none,,,,,0,0,computed
+MMMX,other,b,28950,0,none,,,,,0,0,computed
+MMMX,other,c,28950,0,none,,,,,0,0,computed
+MMMX,other,any,28950,0,none,,,,,0,0,computed
+VILK,other,all,42284,,none,,,,,,,not computed: STOP: Asia/Kolkata is not a whole number of hours from UTC on 2021-03-23
+VILK,other,a,42284,0,none,,,,,,,not computed: STOP: Asia/Kolkata is not a whole number of hours from UTC on 2021-03-23
+VILK,other,b,42284,0,none,,,,,,,not computed: STOP: Asia/Kolkata is not a whole number of hours from UTC on 2021-03-23
+VILK,other,c,42284,0,none,,,,,,,not computed: STOP: Asia/Kolkata is not a whole number of hours from UTC on 2021-03-23
+VILK,other,any,42284,0,none,,,,,,,not computed: STOP: Asia/Kolkata is not a whole number of hours from UTC on 2021-03-23

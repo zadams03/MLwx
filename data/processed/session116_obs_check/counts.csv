@@ -1,0 +1,221 @@
+airport,group,check,usable_hours,untested_hours,untested_reason,untested_pairs,flagged_hours,rate_per_10000_usable_hours,runs_i_no_dew_point,runs_ii_dew_point_varies,runs_iii_saturated,runs_iv_suspect
+EDDM,claim,a,46928,0,every hour with a value can be tested,,0,0.0,,,,
+EDDM,claim,b,46928,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 11, h+1 missing 11 (an hour can be in both)",22,0,0.0,,,,
+EDDM,claim,c,46928,0,every hour with a value can be tested,,118,25.1449,0,4,0,0
+EDDM,claim,any,46928,,"union of (a), (b) and (c): an hour is counted once",,118,25.1449,,,,
+KORD,claim,a,46890,0,every hour with a value can be tested,,0,0.0,,,,
+KORD,claim,b,46890,74,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 39, h+1 missing 39 (an hour can be in both)",70,0,0.0,,,,
+KORD,claim,c,46890,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KORD,claim,any,46890,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+CYYZ,claim,a,46861,0,every hour with a value can be tested,,0,0.0,,,,
+CYYZ,claim,b,46861,42,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 23, h+1 missing 23 (an hour can be in both)",38,1,0.2134,,,,
+CYYZ,claim,c,46861,0,every hour with a value can be tested,,24,5.1215,0,0,1,0
+CYYZ,claim,any,46861,,"union of (a), (b) and (c): an hour is counted once",,25,5.3349,,,,
+ZGSZ,claim,a,46925,0,every hour with a value can be tested,,0,0.0,,,,
+ZGSZ,claim,b,46925,24,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 12, h+1 missing 12 (an hour can be in both)",24,0,0.0,,,,
+ZGSZ,claim,c,46925,0,every hour with a value can be tested,,24,5.1145,0,1,0,0
+ZGSZ,claim,any,46925,,"union of (a), (b) and (c): an hour is counted once",,24,5.1145,,,,
+ZUCK,claim,a,46926,0,every hour with a value can be tested,,0,0.0,,,,
+ZUCK,claim,b,46926,15,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 8, h+1 missing 8 (an hour can be in both)",14,0,0.0,,,,
+ZUCK,claim,c,46926,0,every hour with a value can be tested,,283,60.3077,0,7,3,0
+ZUCK,claim,any,46926,,"union of (a), (b) and (c): an hour is counted once",,283,60.3077,,,,
+NZWN,claim,a,46857,0,every hour with a value can be tested,,0,0.0,,,,
+NZWN,claim,b,46857,47,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 24, h+1 missing 24 (an hour can be in both)",45,0,0.0,,,,
+NZWN,claim,c,46857,0,every hour with a value can be tested,,80,17.0732,0,3,0,0
+NZWN,claim,any,46857,,"union of (a), (b) and (c): an hour is counted once",,80,17.0732,,,,
+EGLC,dev,a,46900,0,every hour with a value can be tested,,0,0.0,,,,
+EGLC,dev,b,46900,46,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 23, h+1 missing 23 (an hour can be in both)",46,0,0.0,,,,
+EGLC,dev,c,46900,0,every hour with a value can be tested,,108,23.0277,0,3,0,1
+EGLC,dev,any,46900,,"union of (a), (b) and (c): an hour is counted once",,108,23.0277,,,,
+LFPG,dev,a,46804,0,every hour with a value can be tested,,0,0.0,,,,
+LFPG,dev,b,46804,171,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 86, h+1 missing 86 (an hour can be in both)",170,0,0.0,,,,
+LFPG,dev,c,46804,0,every hour with a value can be tested,,29,6.1961,0,1,0,0
+LFPG,dev,any,46804,,"union of (a), (b) and (c): an hour is counted once",,29,6.1961,,,,
+KDSM,dev,a,46932,0,every hour with a value can be tested,,0,0.0,,,,
+KDSM,dev,b,46932,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 11, h+1 missing 11 (an hour can be in both)",22,0,0.0,,,,
+KDSM,dev,c,46932,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KDSM,dev,any,46932,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+YSDU,dev,a,46467,0,every hour with a value can be tested,,0,0.0,,,,
+YSDU,dev,b,46467,565,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 288, h+1 missing 288 (an hour can be in both)",550,0,0.0,,,,
+YSDU,dev,c,46467,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+YSDU,dev,any,46467,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KRNO,dev,a,46834,0,every hour with a value can be tested,,0,0.0,,,,
+KRNO,dev,b,46834,50,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 26, h+1 missing 26 (an hour can be in both)",47,0,0.0,,,,
+KRNO,dev,c,46834,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KRNO,dev,any,46834,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KSFO,dev,a,46908,0,every hour with a value can be tested,,0,0.0,,,,
+KSFO,dev,b,46908,52,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 27, h+1 missing 27 (an hour can be in both)",50,0,0.0,,,,
+KSFO,dev,c,46908,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KSFO,dev,any,46908,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+EFHK,product,a,46920,0,every hour with a value can be tested,,0,0.0,,,,
+EFHK,product,b,46920,38,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 19, h+1 missing 19 (an hour can be in both)",38,0,0.0,,,,
+EFHK,product,c,46920,0,every hour with a value can be tested,,307,65.4305,0,9,0,0
+EFHK,product,any,46920,,"union of (a), (b) and (c): an hour is counted once",,307,65.4305,,,,
+EHAM,product,a,46824,0,every hour with a value can be tested,,0,0.0,,,,
+EHAM,product,b,46824,215,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 108, h+1 missing 108 (an hour can be in both)",213,0,0.0,,,,
+EHAM,product,c,46824,0,every hour with a value can be tested,,170,36.3062,0,6,0,0
+EHAM,product,any,46824,,"union of (a), (b) and (c): an hour is counted once",,170,36.3062,,,,
+EPWA,product,a,46857,0,every hour with a value can be tested,,0,0.0,,,,
+EPWA,product,b,46857,56,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 28, h+1 missing 28 (an hour can be in both)",56,0,0.0,,,,
+EPWA,product,c,46857,0,every hour with a value can be tested,,240,51.2197,0,9,0,0
+EPWA,product,any,46857,,"union of (a), (b) and (c): an hour is counted once",,240,51.2197,,,,
+FACT,product,a,45531,0,every hour with a value can be tested,,0,0.0,,,,
+FACT,product,b,45531,984,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 522, h+1 missing 522 (an hour can be in both)",891,0,0.0,,,,
+FACT,product,c,45531,0,every hour with a value can be tested,,24,5.2711,0,1,0,0
+FACT,product,any,45531,,"union of (a), (b) and (c): an hour is counted once",,24,5.2711,,,,
+KATL,product,a,46895,0,every hour with a value can be tested,,0,0.0,,,,
+KATL,product,b,46895,73,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 37, h+1 missing 37 (an hour can be in both)",72,0,0.0,,,,
+KATL,product,c,46895,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KATL,product,any,46895,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KAUS,product,a,46843,0,every hour with a value can be tested,,0,0.0,,,,
+KAUS,product,b,46843,125,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 63, h+1 missing 63 (an hour can be in both)",124,0,0.0,,,,
+KAUS,product,c,46843,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KAUS,product,any,46843,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KBKF,product,a,46412,0,every hour with a value can be tested,,0,0.0,,,,
+KBKF,product,b,46412,499,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 276, h+1 missing 276 (an hour can be in both)",422,0,0.0,,,,
+KBKF,product,c,46412,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KBKF,product,any,46412,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KDAL,product,a,46911,0,every hour with a value can be tested,,0,0.0,,,,
+KDAL,product,b,46911,49,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 25, h+1 missing 25 (an hour can be in both)",48,0,0.0,,,,
+KDAL,product,c,46911,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KDAL,product,any,46911,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KHOU,product,a,46892,0,every hour with a value can be tested,,0,0.0,,,,
+KHOU,product,b,46892,75,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 38, h+1 missing 38 (an hour can be in both)",74,1,0.2133,,,,
+KHOU,product,c,46892,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KHOU,product,any,46892,,"union of (a), (b) and (c): an hour is counted once",,1,0.2133,,,,
+KLAX,product,a,46899,0,every hour with a value can be tested,,0,0.0,,,,
+KLAX,product,b,46899,64,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 33, h+1 missing 33 (an hour can be in both)",61,0,0.0,,,,
+KLAX,product,c,46899,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KLAX,product,any,46899,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KLGA,product,a,46897,0,every hour with a value can be tested,,0,0.0,,,,
+KLGA,product,b,46897,79,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 40, h+1 missing 40 (an hour can be in both)",78,0,0.0,,,,
+KLGA,product,c,46897,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KLGA,product,any,46897,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KMIA,product,a,46887,0,every hour with a value can be tested,,0,0.0,,,,
+KMIA,product,b,46887,87,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 44, h+1 missing 44 (an hour can be in both)",85,0,0.0,,,,
+KMIA,product,c,46887,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KMIA,product,any,46887,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+KSEA,product,a,46890,0,every hour with a value can be tested,,0,0.0,,,,
+KSEA,product,b,46890,83,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 42, h+1 missing 42 (an hour can be in both)",82,0,0.0,,,,
+KSEA,product,c,46890,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+KSEA,product,any,46890,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+LEMD,product,a,46837,0,every hour with a value can be tested,,0,0.0,,,,
+LEMD,product,b,46837,72,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 36, h+1 missing 36 (an hour can be in both)",72,0,0.0,,,,
+LEMD,product,c,46837,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+LEMD,product,any,46837,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+LFPB,product,a,46351,0,every hour with a value can be tested,,0,0.0,,,,
+LFPB,product,b,46351,167,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 88, h+1 missing 88 (an hour can be in both)",155,0,0.0,,,,
+LFPB,product,c,46351,0,every hour with a value can be tested,,114,24.5949,0,4,0,0
+LFPB,product,any,46351,,"union of (a), (b) and (c): an hour is counted once",,114,24.5949,,,,
+LIMC,product,a,46682,0,every hour with a value can be tested,,0,0.0,,,,
+LIMC,product,b,46682,415,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 210, h+1 missing 210 (an hour can be in both)",408,0,0.0,,,,
+LIMC,product,c,46682,0,every hour with a value can be tested,,111,23.7779,0,3,1,0
+LIMC,product,any,46682,,"union of (a), (b) and (c): an hour is counted once",,111,23.7779,,,,
+LLBG,product,a,46801,0,every hour with a value can be tested,,0,0.0,,,,
+LLBG,product,b,46801,100,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 50, h+1 missing 50 (an hour can be in both)",100,0,0.0,,,,
+LLBG,product,c,46801,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+LLBG,product,any,46801,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+LTAC,product,a,46904,0,every hour with a value can be tested,,0,0.0,,,,
+LTAC,product,b,46904,54,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 27, h+1 missing 27 (an hour can be in both)",54,0,0.0,,,,
+LTAC,product,c,46904,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+LTAC,product,any,46904,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+LTFM,product,a,46904,0,every hour with a value can be tested,,0,0.0,,,,
+LTFM,product,b,46904,51,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 26, h+1 missing 26 (an hour can be in both)",50,0,0.0,,,,
+LTFM,product,c,46904,0,every hour with a value can be tested,,129,27.503,0,5,0,0
+LTFM,product,any,46904,,"union of (a), (b) and (c): an hour is counted once",,129,27.503,,,,
+OEJN,product,a,46927,0,every hour with a value can be tested,,0,0.0,,,,
+OEJN,product,b,46927,16,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 8, h+1 missing 8 (an hour can be in both)",16,0,0.0,,,,
+OEJN,product,c,46927,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+OEJN,product,any,46927,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+OPKC,product,a,42508,0,every hour with a value can be tested,,0,0.0,,,,
+OPKC,product,b,42508,3353,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 1772, h+1 missing 1772 (an hour can be in both)",3039,0,0.0,,,,
+OPKC,product,c,42508,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+OPKC,product,any,42508,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+RCSS,product,a,43442,0,every hour with a value can be tested,,0,0.0,,,,
+RCSS,product,b,43442,600,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 452, h+1 missing 452 (an hour can be in both)",253,0,0.0,,,,
+RCSS,product,c,43442,0,every hour with a value can be tested,,24,5.5246,0,0,0,1
+RCSS,product,any,43442,,"union of (a), (b) and (c): an hour is counted once",,24,5.5246,,,,
+RJTT,product,a,46893,0,every hour with a value can be tested,,0,0.0,,,,
+RJTT,product,b,46893,10,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 5, h+1 missing 5 (an hour can be in both)",10,0,0.0,,,,
+RJTT,product,c,46893,0,every hour with a value can be tested,,24,5.118,0,1,0,0
+RJTT,product,any,46893,,"union of (a), (b) and (c): an hour is counted once",,24,5.118,,,,
+RKPK,product,a,46827,0,every hour with a value can be tested,,0,0.0,,,,
+RKPK,product,b,46827,178,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 89, h+1 missing 89 (an hour can be in both)",177,2,0.4271,,,,
+RKPK,product,c,46827,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+RKPK,product,any,46827,,"union of (a), (b) and (c): an hour is counted once",,2,0.4271,,,,
+RKSI,product,a,46879,0,every hour with a value can be tested,,0,0.0,,,,
+RKSI,product,b,46879,32,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 16, h+1 missing 16 (an hour can be in both)",31,0,0.0,,,,
+RKSI,product,c,46879,0,every hour with a value can be tested,,24,5.1196,0,0,1,0
+RKSI,product,any,46879,,"union of (a), (b) and (c): an hour is counted once",,24,5.1196,,,,
+RPLL,product,a,46769,0,every hour with a value can be tested,,0,0.0,,,,
+RPLL,product,b,46769,290,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 145, h+1 missing 145 (an hour can be in both)",290,0,0.0,,,,
+RPLL,product,c,46769,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+RPLL,product,any,46769,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+SAEZ,product,a,46809,0,every hour with a value can be tested,,0,0.0,,,,
+SAEZ,product,b,46809,211,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 108, h+1 missing 108 (an hour can be in both)",205,1,0.2136,,,,
+SAEZ,product,c,46809,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+SAEZ,product,any,46809,,"union of (a), (b) and (c): an hour is counted once",,1,0.2136,,,,
+SBGR,product,a,46909,0,every hour with a value can be tested,,0,0.0,,,,
+SBGR,product,b,46909,16,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 8, h+1 missing 8 (an hour can be in both)",16,0,0.0,,,,
+SBGR,product,c,46909,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+SBGR,product,any,46909,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+UUWW,product,a,46888,0,every hour with a value can be tested,,0,0.0,,,,
+UUWW,product,b,46888,18,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 9, h+1 missing 9 (an hour can be in both)",18,0,0.0,,,,
+UUWW,product,c,46888,0,every hour with a value can be tested,,431,91.9212,0,15,0,0
+UUWW,product,any,46888,,"union of (a), (b) and (c): an hour is counted once",,431,91.9212,,,,
+WMKK,product,a,46883,0,every hour with a value can be tested,,0,0.0,,,,
+WMKK,product,b,46883,25,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 13, h+1 missing 13 (an hour can be in both)",24,0,0.0,,,,
+WMKK,product,c,46883,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+WMKK,product,any,46883,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+WSSS,product,a,46894,0,every hour with a value can be tested,,0,0.0,,,,
+WSSS,product,b,46894,12,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 6, h+1 missing 6 (an hour can be in both)",12,0,0.0,,,,
+WSSS,product,c,46894,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+WSSS,product,any,46894,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ZBAA,product,a,46884,0,every hour with a value can be tested,,0,0.0,,,,
+ZBAA,product,b,46884,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 11, h+1 missing 11 (an hour can be in both)",22,0,0.0,,,,
+ZBAA,product,c,46884,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+ZBAA,product,any,46884,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ZGGG,product,a,46893,0,every hour with a value can be tested,,0,0.0,,,,
+ZGGG,product,b,46893,14,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 7, h+1 missing 7 (an hour can be in both)",14,0,0.0,,,,
+ZGGG,product,c,46893,0,every hour with a value can be tested,,24,5.118,0,1,0,0
+ZGGG,product,any,46893,,"union of (a), (b) and (c): an hour is counted once",,24,5.118,,,,
+ZHHH,product,a,46926,0,every hour with a value can be tested,,0,0.0,,,,
+ZHHH,product,b,46926,15,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 8, h+1 missing 8 (an hour can be in both)",14,0,0.0,,,,
+ZHHH,product,c,46926,0,every hour with a value can be tested,,178,37.9321,0,5,1,0
+ZHHH,product,any,46926,,"union of (a), (b) and (c): an hour is counted once",,178,37.9321,,,,
+ZSPD,product,a,46883,0,every hour with a value can be tested,,0,0.0,,,,
+ZSPD,product,b,46883,22,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 11, h+1 missing 11 (an hour can be in both)",22,0,0.0,,,,
+ZSPD,product,c,46883,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+ZSPD,product,any,46883,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ZSQD,product,a,46924,0,every hour with a value can be tested,,0,0.0,,,,
+ZSQD,product,b,46924,26,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 13, h+1 missing 13 (an hour can be in both)",26,0,0.0,,,,
+ZSQD,product,c,46924,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+ZSQD,product,any,46924,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ZUUU,product,a,46923,0,every hour with a value can be tested,,0,0.0,,,,
+ZUUU,product,b,46923,26,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 13, h+1 missing 13 (an hour can be in both)",26,0,0.0,,,,
+ZUUU,product,c,46923,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+ZUUU,product,any,46923,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+MMMX,other,a,28950,0,every hour with a value can be tested,,0,0.0,,,,
+MMMX,other,b,28950,12917,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 7984, h+1 missing 7984 (an hour can be in both)",8387,0,0.0,,,,
+MMMX,other,c,28950,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+MMMX,other,any,28950,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+VILK,other,a,42284,0,every hour with a value can be tested,,0,0.0,,,,
+VILK,other,b,42284,2912,"a neighbour hour (h-1 or h+1) missing or off the series: h-1 missing 1586, h+1 missing 1586 (an hour can be in both)",2537,0,0.0,,,,
+VILK,other,c,42284,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+VILK,other,any,42284,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ALL_12,the 12 of F158,a,562232,0,every hour with a value can be tested,,0,0.0,,,,
+ALL_12,the 12 of F158,b,562232,1130,a neighbour hour (h-1 or h+1) missing or off the series: sum over the airports,1098,1,0.0178,,,,
+ALL_12,the 12 of F158,c,562232,0,every hour with a value can be tested,,666,11.8456,0,19,4,1
+ALL_12,the 12 of F158,any,562232,,"union of (a), (b) and (c): an hour is counted once",,667,11.8634,,,,
+ALL_37,the 37 product airports,a,1724198,0,every hour with a value can be tested,,0,0.0,,,,
+ALL_37,the 37 product airports,b,1724198,8172,a neighbour hour (h-1 or h+1) missing or off the series: sum over the airports,7298,4,0.0232,,,,
+ALL_37,the 37 product airports,c,1724198,0,every hour with a value can be tested,,1800,10.4396,0,59,3,1
+ALL_37,the 37 product airports,any,1724198,,"union of (a), (b) and (c): an hour is counted once",,1804,10.4628,,,,
+ALL_2,MMMX and VILK,a,71234,0,every hour with a value can be tested,,0,0.0,,,,
+ALL_2,MMMX and VILK,b,71234,15829,a neighbour hour (h-1 or h+1) missing or off the series: sum over the airports,10924,0,0.0,,,,
+ALL_2,MMMX and VILK,c,71234,0,every hour with a value can be tested,,0,0.0,0,0,0,0
+ALL_2,MMMX and VILK,any,71234,,"union of (a), (b) and (c): an hour is counted once",,0,0.0,,,,
+ALL_51,all 51,a,2357664,0,every hour with a value can be tested,,0,0.0,,,,
+ALL_51,all 51,b,2357664,25131,a neighbour hour (h-1 or h+1) missing or off the series: sum over the airports,19320,5,0.0212,,,,
+ALL_51,all 51,c,2357664,0,every hour with a value can be tested,,2466,10.4595,0,78,7,2
+ALL_51,all 51,any,2357664,,"union of (a), (b) and (c): an hour is counted once",,2471,10.4807,,,,

@@ -1,0 +1,158 @@
+SESSION 116 SUMMARY (D110, F159): the observation plausibility check at all 51 airports, with a dew point cross-check of every stuck run
+Flag and count only. Nothing in data/raw/ or any existing processed file changed; no value removed, replaced or filled; no model, error metric or score. No forecast value read (tables: valid time, lead, observation only). Nothing valid after 2026-07-31T23:00 UTC read; MLwx-live, the live log and the IFS hand pull not touched. No network. Nothing committed.
+Checks (all PASS):
+  Step 0 preflight PASS (306 of 306 raw files; 270 match their .meta SHA-256, 36 development files record none; s115 script, 74 product tables match)
+  Step 1 D110 byte-equal (diff and cmp), 0 em-dashes, added to Live index
+  Step 2 --check 27 of 27 PASS; --gate 12 of 12 PASS (hours, usable hours, untested counts equal session 115's)
+  Step 3 --flag PASS; Step 4 --exposure PASS (12 airports' exposure equals session 115's exposure.csv, 48 of 48 rows)
+  Step 5 F159 recorded; archive step: nothing to move; --citations 188 resolved, 0 unresolved, 0 doubled, 0 out of order
+  DECISIONS.md 72,317 bytes (under 80,000); scope-list check: no breach
+Headline numbers (51 airports, 2,357,664 usable hours):
+  (a) out of range 0; (b) spike 5 hours (CYYZ, KHOU, RKPK x2, SAEZ); (c) stuck 2,466 hours in 87 runs; union 2,471 (10.5 per 10,000). 28 of 51 airports have no flag.
+  D110.4 classes of the 87 runs: (i) no dew point 0; (ii) varies 78 (2,236 h); (iii) saturated 7 (179 h); (iv) suspect 2 (51 h: EGLC 2021-12-17, RCSS 2021-10-24).
+  Highest (c): UUWW 431 h (91.9 per 10,000), EFHK 307, ZUCK 283, EPWA 240, ZHHH 178, EHAM 170.
+  Exposure: all 2,471 flagged hours are target hours (1,469 before, 1,002 from 2024-08-01; 0.10 % and 0.12 %). Daily maxima set by a flagged hour: 89 of 94,882 usable days (12 airports 7 + 13; 37 airports 38 + 31; MMMX 0 of 104; VILK not computed, UTC+5:30).
+Readings for the owner (readings, not rulings):
+  SAEZ 58.0 C (2021-08-25T01Z, between 9.0 and 4.0) is a bad value that passed (a)'s 60.0 bound and sets the 2021-08-24 daily maximum; CYYZ, RKPK x2 and KHOU spikes also look like bad reports.
+  (c) reads mostly as weather: all at whole-degree airports (38 of 51 report whole degrees; none of the 13 US airports has a run), dew point moved in 91 % of stuck hours, 7 saturated runs read as fog; the 2 suspect runs cannot be told from steady damp weather.
+  (b) is the only check that fired on likely faults. A cleaning rule is the owner's decision; if proposed it is chosen on the 6 development airports only (flags there: EGLC (c) 108 h, LFPG (c) 29 h).
+Open items: (1) the table reader also used each row's lead (a row label) to keep D109.5's target definition; the prompt said valid time and observation only: please confirm. (2) MMMX has 28,950 usable hours and 104 usable days: seen, not examined. (3) D108.7 and D109.2 still say IFS is session 116; D110.2 makes it 117. (4) An ad hoc whole-degree count (not scripted, nothing written) supports the (c) reading.
+Not done: check (d) at the 39, the live log, any rule. Next: review and commit; decide on a cleaning rule; session 117 is IFS.
+================================================================================
+CHECKPOINTS (session 116, appended one line per step; the summary is added at the top at the end of the session)
+
+Step 0 | Preflight | PASS
+  git status: only docs/sessions/session-116.md and data/processed/session113/work/ untracked (neither touched). HEAD is "Session 115: D109 and F158, an observation plausibility check at the 12 stage C airports" = first line of docs/commits/commit-115.txt.
+  Live index lists 9 entries (D93, D103, D105, D106, D107, D108, D109, F157, F158). No D110 or F159 in either DECISIONS file. None of this session's new paths exists.
+  51 airports from data/processed/session91_pull_airports.csv (6 claim batch, 6 development, 39 new); the 45 non-development airports match session90_airports.csv (iem_id), 0 mismatches. The 6 development airports: EGLC, KDSM (iem DSM), KRNO (RNO), KSFO (SFO), LFPG, YSDU.
+  Raw IEM routine files: 306 of 306 present (51 airports x 6 pieces), none missing. SHA-256 of each recorded in data/processed/session116_obs_check/*.meta.txt. Against the .meta.txt: 270 files record a sha256 and all 270 match; 36 files (the 6 development airports) record none (reported, as session 115 found; not a stop).
+  scripts/session115_obs_check.py SHA-256 = cc4fffdc673cd3dce9e95d099846b3040f4f53b6781c8fbd99f3fea73b64ff86 = the value in session115_obs_check/flags.csv.meta.txt.
+  37 product airports' tables in ../MLwx-live-build/tables/: 74 of 74 files match data/processed/session111_new_tables.csv.
+  numpy 2.5.2, python 3.12.2. DECISIONS.md 61,396 bytes.
+
+Step 1 | Record D110 | PASS
+  D110 block (20 lines, 4,476 bytes) copied from docs/sessions/session-116.md lines 46 to 65 with sed, appended to DECISIONS.md after a blank line; diff and cmp against the appended tail: byte-equal. All earlier bytes of DECISIONS.md unchanged (cmp). Em-dashes in the block: 0. D110 added to the Live index (F159 is added at step 5). DECISIONS.md changed.
+
+Step 2 | Script, self-checks and gate | PASS
+  scripts/session116_obs_check51.py written (new). Imported read only and unchanged from scripts/session115_obs_check.py (after a SHA-256 check): build_hourly, check_a, check_b, check_c, raw_files, local_days, day_max, hour_index, table_files, thresholds, window and SPLIT constants, AIRPORTS, GROUP, IEM_ID, TZNAME, fmt, tstr, now_utc, versions; through it session 97's write_new, csv_text, check_valid, check_obs_time, parse_time, GuardError. From src/mlwx/observations.py: ReportSet, parse_reports, new_stats, finite_float.
+  New code here: dew_series (dew point of the report ReportSet.nearest chose), classify_run (D110.4), stuck_runs, checks_abc, load_airports (the 51 airports, groups, time zones added to s115.TZNAME so s115.local_days is reused), the three-column table reader (target_rows_from_lines, read_target_rows, targets_of), days_of, the exposure counts, the gate against session 115's files, the self-checks and the output writers.
+  --check: 27 of 27 PASS (four classes and their order, under-half, exactly-half, over-half with gaps, one-degree variation, saturated, suspect; dew point from the same report as the temperature in 5 synthetic cases; stuck-run extraction; union without (d); the three-column reader and its date guard; half-hour time zone gives "not computed"; the guard refuses 2026-08-01T00:00 in check_valid and in the dew series).
+  --gate: PASS at 12 of 12 airports. Checks (a), (b), (c) give exactly the hours of session115_obs_check/flags.csv for those checks; usable hours equal counts.csv (EDDM 46,928 ... KSFO 46,908; total 562,232); check (b)'s untested hours and pairs equal counts.csv's. Session 115's flags.csv and counts.csv matched the file SHA-256 in their .meta.txt. 561,903 of the 562,232 usable hours at the 12 airports have a dew point.
+  Judgement call to report: to apply D109.5's definition of a target (a row at leads 3 to 48 with an observation) the table reader also uses each row's lead, a row label, not a forecast value. Other columns are parsed by the csv module as text and discarded unused.
+
+Step 3 | Flag (--flag) | PASS
+  Gate re-run inside --flag: 12 of 12 PASS. Wrote data/processed/session116_obs_check/flags.csv (2,471 flagged hours, union of a, b, c), stuck_runs.csv (87 runs), counts.csv (220 rows: 51 airports and 4 group sums x 4 checks), each with a .meta.txt (inputs with SHA-256, run time 2026-10-17T21:22Z, script SHA-256 bf0ea5da...).
+  All 51 airports: usable 2,357,664 hours; (a) 0; (b) 5; (c) 2,466; union 2,471 (10.48 per 10,000). Runs 87: class i 0, ii 78, iii 7, iv 2.
+
+Step 4 | Exposure (--exposure) | PASS
+  Gate re-run inside --exposure: 12 of 12 PASS. Recomputed flagged hours equal flags.csv at 51 of 51 airports. Exposure at the 12 airports (checks a, b, c and the 'all' denominators) equals session 115's exposure.csv at 48 of 48 airport/check rows (target hours and rows, usable days whose maximum is set by a flagged hour). Wrote exposure.csv (255 rows) and listing.txt, each with a .meta.txt (inputs with SHA-256, including the 98 table files read for valid time, lead and observation only).
+  Targets: at the 12 airports every flagged hour (667) is a target hour (282 before and 385 from 2024-08-01); at the 37 product airports 1,804 of 1,804 (1,187 before, 617 from); MMMX and VILK have no tables.
+  Usable days whose maximum-setting hour is flagged (union of a, b, c): 12 airports 7 before and 13 from (of 14,653 and 8,739 usable days); 37 airports 38 before and 31 from (of 44,766 and 26,620); MMMX 0 and 0 (of 99 and 5); VILK not computed (Asia/Kolkata is UTC+5:30, F153).
+  Daily maxima set by a (b) spike hour: CYYZ local day 2025-04-27 (F158) and SAEZ local day 2021-08-24 (58.0 C at 2021-08-25T01:00Z between 9.0 and 4.0, dew point 4.0).
+  Ad hoc count for the readings (not part of the script, nothing written): 38 of 51 airports report 90 percent or more of their hourly values in whole degrees; all 2,466 stuck-run hours are at 20 of those 38. The other 13 airports are the US airports (11 to 12 percent whole-degree values, tenths of a degree from degrees F) and have no stuck hours.
+
+Descriptive listing (listing.txt, copied):
+Out-of-range and spike hours (checks (a) and (b)): values at h-2, h-1, [h], h+1, h+2, and the dew point at h
+  CYYZ 2025-04-28T01:00Z flags b(1h) values [17.0, 15.0, 27.0, 11.0, 11.0] dew -4.0
+  KHOU 2026-04-23T15:00Z flags b(1h) values [21.67, 23.33, 2.5, 26.11, 27.22] dew 2.11
+  RKPK 2021-09-13T03:00Z flags b(1h) values [27.0, 27.0, 11.0, 27.0, 27.0] dew 5.0
+  RKPK 2022-03-03T07:00Z flags b(1h) values [14.0, 15.0, 1.0, 13.0, 12.0] dew -10.0
+  SAEZ 2021-08-25T01:00Z flags b(1h) values [8.0, 9.0, 58.0, 4.0, 7.0] dew 4.0
+  5 hours
+
+Stuck runs in class (iv) suspect: id, start, end, length, temperature, dew point, hours with a dew point
+  EGLC-1 2021-12-17T19:00Z to 2021-12-18T21:00Z 27 h temp 8.0 dew 7.0 (27 of 27)
+  RCSS-1 2021-10-24T01:00Z to 2021-10-25T00:00Z 24 h temp 21.0 dew 18.0 (24 of 24)
+  2 runs
+
+Stuck runs by class, per airport (i no dew point / ii varies / iii saturated / iv suspect), and run lengths
+  EDDM  claim    0/4/0/0  runs 4, hours 118, longest 36
+  CYYZ  claim    0/0/1/0  runs 1, hours 24, longest 24
+  ZGSZ  claim    0/1/0/0  runs 1, hours 24, longest 24
+  ZUCK  claim    0/7/3/0  runs 10, hours 283, longest 40
+  NZWN  claim    0/3/0/0  runs 3, hours 80, longest 29
+  EGLC  dev      0/3/0/1  runs 4, hours 108, longest 31
+  LFPG  dev      0/1/0/0  runs 1, hours 29, longest 29
+  EFHK  product  0/9/0/0  runs 9, hours 307, longest 48
+  EHAM  product  0/6/0/0  runs 6, hours 170, longest 34
+  EPWA  product  0/9/0/0  runs 9, hours 240, longest 33
+  FACT  product  0/1/0/0  runs 1, hours 24, longest 24
+  LFPB  product  0/4/0/0  runs 4, hours 114, longest 37
+  LIMC  product  0/3/1/0  runs 4, hours 111, longest 38
+  LTFM  product  0/5/0/0  runs 5, hours 129, longest 27
+  RCSS  product  0/0/0/1  runs 1, hours 24, longest 24
+  RJTT  product  0/1/0/0  runs 1, hours 24, longest 24
+  RKSI  product  0/0/1/0  runs 1, hours 24, longest 24
+  UUWW  product  0/15/0/0  runs 15, hours 431, longest 41
+  ZGGG  product  0/1/0/0  runs 1, hours 24, longest 24
+  ZHHH  product  0/5/1/0  runs 6, hours 178, longest 48
+
+Per airport: usable hours; flagged hours a/b/c/union; union rate per 10,000; stuck runs by class i/ii/iii/iv; union hours that are target hours before/from 2024-08-01; usable days whose maximum-setting hour is flagged before/from (of usable days before/from)
+  EDDM   claim           46928 a 0 b 0 c 118 u 118 rate  25.1449  runs 0/4/0/0  targets 25/93  days 1/2 of 1224/730
+  KORD   claim           46890 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/726
+  CYYZ   claim           46861 a 0 b 1 c  24 u  25 rate   5.3349  runs 0/0/1/0  targets 24/1  days 1/1 of 1220/728
+  ZGSZ   claim           46925 a 0 b 0 c  24 u  24 rate   5.1145  runs 0/1/0/0  targets 24/0  days 1/0 of 1222/730
+  ZUCK   claim           46926 a 0 b 0 c 283 u 283 rate  60.3077  runs 0/7/3/0  targets 124/159  days 2/5 of 1222/730
+  NZWN   claim           46857 a 0 b 0 c  80 u  80 rate  17.0732  runs 0/3/0/0  targets 27/53  days 0/1 of 1217/729
+  EGLC   dev             46900 a 0 b 0 c 108 u 108 rate  23.0277  runs 0/3/0/1  targets 58/50  days 2/2 of 1222/730
+  LFPG   dev             46804 a 0 b 0 c  29 u  29 rate   6.1961  runs 0/1/0/0  targets 0/29  days 0/2 of 1221/729
+  KDSM   dev             46932 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1226/729
+  YSDU   dev             46467 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1209/723
+  KRNO   dev             46834 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1220/728
+  KSFO   dev             46908 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/727
+  EFHK   product         46920 a 0 b 0 c 307 u 307 rate  65.4305  runs 0/9/0/0  targets 246/61  days 9/4 of 1224/730
+  EHAM   product         46824 a 0 b 0 c 170 u 170 rate  36.3062  runs 0/6/0/0  targets 144/26  days 4/1 of 1222/729
+  EPWA   product         46857 a 0 b 0 c 240 u 240 rate  51.2197  runs 0/9/0/0  targets 181/59  days 4/3 of 1219/729
+  FACT   product         45531 a 0 b 0 c  24 u  24 rate   5.2711  runs 0/1/0/0  targets 24/0  days 1/0 of 1210/618
+  KATL   product         46895 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1224/728
+  KAUS   product         46843 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1222/727
+  KBKF   product         46412 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1214/685
+  KDAL   product         46911 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/728
+  KHOU   product         46892 a 0 b 1 c   0 u   1 rate   0.2133  runs 0/0/0/0  targets 0/1  days 0/0 of 1223/727
+  KLAX   product         46899 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/725
+  KLGA   product         46897 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/728
+  KMIA   product         46887 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/727
+  KSEA   product         46890 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1225/727
+  LEMD   product         46837 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1218/730
+  LFPB   product         46351 a 0 b 0 c 114 u 114 rate  24.5949  runs 0/4/0/0  targets 37/77  days 1/4 of 1186/720
+  LIMC   product         46682 a 0 b 0 c 111 u 111 rate  23.7779  runs 0/3/1/0  targets 24/87  days 0/3 of 1218/727
+  LLBG   product         46801 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1217/726
+  LTAC   product         46904 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1223/729
+  LTFM   product         46904 a 0 b 0 c 129 u 129 rate   27.503  runs 0/5/0/0  targets 104/25  days 2/2 of 1223/729
+  OEJN   product         46927 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1222/730
+  OPKC   product         42508 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 848/711
+  RCSS   product         43442 a 0 b 0 c  24 u  24 rate   5.5246  runs 0/0/0/1  targets 24/0  days 1/0 of 1221/568
+  RJTT   product         46893 a 0 b 0 c  24 u  24 rate    5.118  runs 0/1/0/0  targets 24/0  days 0/0 of 1221/730
+  RKPK   product         46827 a 0 b 2 c   0 u   2 rate   0.4271  runs 0/0/0/0  targets 2/0  days 0/0 of 1221/727
+  RKSI   product         46879 a 0 b 0 c  24 u  24 rate   5.1196  runs 0/0/1/0  targets 24/0  days 0/0 of 1219/730
+  RPLL   product         46769 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1217/729
+  SAEZ   product         46809 a 0 b 1 c   0 u   1 rate   0.2136  runs 0/0/0/0  targets 1/0  days 1/0 of 1218/727
+  SBGR   product         46909 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1222/729
+  UUWW   product         46888 a 0 b 0 c 431 u 431 rate  91.9212  runs 0/15/0/0  targets 202/229  days 11/13 of 1221/730
+  WMKK   product         46883 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1220/730
+  WSSS   product         46894 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1222/730
+  ZBAA   product         46884 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1220/730
+  ZGGG   product         46893 a 0 b 0 c  24 u  24 rate    5.118  runs 0/1/0/0  targets 24/0  days 1/0 of 1222/730
+  ZHHH   product         46926 a 0 b 0 c 178 u 178 rate  37.9321  runs 0/5/1/0  targets 126/52  days 3/1 of 1222/730
+  ZSPD   product         46883 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1219/730
+  ZSQD   product         46924 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1222/730
+  ZUUU   product         46923 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets 0/0  days 0/0 of 1221/730
+  MMMX   other           28950 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets -/-  days 0/0 of 99/5
+  VILK   other           42284 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets -/-  days -/- of -/-
+  ALL_12 the 12 of F1   562232 a 0 b 1 c 666 u 667 rate  11.8634  runs 0/19/4/1  targets (group sum, see exposure.csv)  days (group sum, see exposure.csv)
+  ALL_37 the 37 produ  1724198 a 0 b 4 c1800 u1804 rate  10.4628  runs 0/59/3/1  targets (group sum, see exposure.csv)  days (group sum, see exposure.csv)
+  ALL_2  MMMX and VIL    71234 a 0 b 0 c   0 u   0 rate      0.0  runs 0/0/0/0  targets (group sum, see exposure.csv)  days (group sum, see exposure.csv)
+  ALL_51 all 51        2357664 a 0 b 5 c2466 u2471 rate  10.4807  runs 0/78/7/2  targets (group sum, see exposure.csv)  days (group sum, see exposure.csv)
+
+Step 5 | F159 | PASS
+  F159 (header plus 9 bullets, 16 lines) appended to DECISIONS.md and added to the Live index. 0 em-dashes. Numbers in F159 taken from counts.csv, exposure.csv, stuck_runs.csv and listing.txt.
+
+End of session | STATUS, archive, checks | done
+  STATUS.md overwritten as a current-only snapshot; last line is the "Next planning session" text given in the session prompt. 0 em-dashes.
+  Archive step: D110 and F159 are in the Live index (D110.9's list: D93, D103, D105, D106, D107, D108, D109, D110, F157, F158, F159). `archive_decisions.py --apply --session 116`: plan spans 11, keep 11, move 0; "nothing to move; no file written". DECISIONS-archive.md unchanged (1,460,635 bytes).
+  `archive_decisions.py --citations`: 188 distinct entry numbers cited, resolved 188, unresolved 0, found in both files 0; entries appearing more than once 0; dated headings out of order 0.
+  DECISIONS.md size: 72,317 bytes (limit 80,000, D93.9): not a finding; headroom 7,683 bytes. It was 61,396 at the start: D110 added 4,477 bytes (block and separator), F159 and the two index lines the rest (10,921 bytes in all).
+  Re-read of what this session changed: D110 is byte-equal in place after F159 was appended; no earlier DECISIONS byte changed (git diff shows additions only, 39 lines). SPEC.md not changed. Nothing in the changed text disagrees with the record. One note: D108.7 and D109.2 still say IFS is session 116; D110.2 moves it to session 117 and STATUS says 117.
+  The script's SHA-256 (bf0ea5da...) is the one recorded in every .meta.txt of this session; the script was not edited after the first real run.
+  Scope-list check against the session prompt: changed or new files are DECISIONS.md, STATUS.md, scripts/session116_obs_check51.py, data/processed/session116_obs_check/ (10 files), notes/session-116-output.txt. DECISIONS-archive.md unchanged. Untracked and not mine: docs/sessions/session-116.md and data/processed/session113/work/ (not read, moved or touched). No scope breach. No file in data/raw/ or existing in data/processed/ changed (git status shows no tracked file modified except DECISIONS.md and STATUS.md).
+  Nothing was committed, added or pushed.

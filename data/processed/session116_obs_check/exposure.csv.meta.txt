@@ -1,0 +1,423 @@
+Session 116 exposure.csv (D110.5)
+output exposure.csv
+run 2026-10-17T21:25:46Z; python 3.12.2; numpy 2.5.2
+script scripts/session116_obs_check51.py SHA-256 bf0ea5daefb700af68a70018016f7a61babc3dce45b21dd1fe60f2e5022df8aa
+no network access; nothing valid after 2026-07-31T23:00 UTC read (D110.3); flag and count only (D110.8)
+
+inputs:
+  data/raw/iem_asos_EDDM_2021-03-24_2021-12-31_routine.csv  05b8aa1cf572e4884bc88c67f2a02c61ec547808c541cb8451c715dc0c4f2730
+  data/raw/iem_asos_EDDM_2022-01-01_2022-12-31_routine.csv  df7f6fa488ac88046ab2d8139ce0731ff5548b60b5b225ea9cf8dfbd3ff672fb
+  data/raw/iem_asos_EDDM_2023-01-01_2023-12-31_routine.csv  bbaaf733489ac104e71a09e02e0e99146ace762f5cff2af663596fe00ed740a3
+  data/raw/iem_asos_EDDM_2024-01-01_2024-12-31_routine.csv  c5d7083b4879ed744cd6c201e89486d25d9961d70fae1313d07dc19ac23cc513
+  data/raw/iem_asos_EDDM_2025-01-01_2025-12-31_routine.csv  55e519193252a65275d051bcbd46f8bd654d7e17cb4a3123d8457b69dcdca795
+  data/raw/iem_asos_EDDM_2026-01-01_2026-07-31_routine.csv  c576901b77ad6cbfe29e66202fe0fdd67c50aa16a4bf61f2f46f7b0556885cb4
+  data/raw/iem_asos_ORD_2021-03-24_2021-12-31_routine.csv  9b10bdcd5de2790fe5c72d1393555182ed03bf0352f8ac53b0ed4cf9e04eac88
+  data/raw/iem_asos_ORD_2022-01-01_2022-12-31_routine.csv  5080c48a2da3021296e66304b64d215220a7e747ae8f0eadb3d49a5d461a868a
+  data/raw/iem_asos_ORD_2023-01-01_2023-12-31_routine.csv  55ab6fed7e6105b29a02c133cfe818d85d73cd07048210a3afaddf79a515cf7a
+  data/raw/iem_asos_ORD_2024-01-01_2024-12-31_routine.csv  46bfd93a2921cf12237cddfd1afe463c1a94bb86a231f5f882abcd7c7771e525
+  data/raw/iem_asos_ORD_2025-01-01_2025-12-31_routine.csv  c26d9e7819d98044e55ec88766af162e2be0bf0cd362f7dd1c3437de7272aaae
+  data/raw/iem_asos_ORD_2026-01-01_2026-07-31_routine.csv  e776547f5e26b6e90a2666f051098a874d33fa13f9bcbf76eadf8a109968c146
+  data/raw/iem_asos_CYYZ_2021-03-24_2021-12-31_routine.csv  4f51e7828d0c745f3012c311e83ee488b599584f33958353846668e140449981
+  data/raw/iem_asos_CYYZ_2022-01-01_2022-12-31_routine.csv  a58752516e7b18894bbb089420ff12727f6eac0b02d1c63d3c0a8ae8076a47b4
+  data/raw/iem_asos_CYYZ_2023-01-01_2023-12-31_routine.csv  35275aad3b82bf4aecb21a4f9efd9dec3947267503561e416c5ebb9dd4ebc226
+  data/raw/iem_asos_CYYZ_2024-01-01_2024-12-31_routine.csv  2db0fa135d5926f5115052f5107aa5bc2b681116262ec6a091388ab2e433971f
+  data/raw/iem_asos_CYYZ_2025-01-01_2025-12-31_routine.csv  2e6fc0bc5b3c81f3f99c1a6d290addfa5ed23249967568540290409370f738d7
+  data/raw/iem_asos_CYYZ_2026-01-01_2026-07-31_routine.csv  c5f17d5607e5ec33c502e2c7f9ebf9e001408d10bfba22331ed3000cba15e37b
+  data/raw/iem_asos_ZGSZ_2021-03-24_2021-12-31_routine.csv  ce8209b635aa6ee6cb45e4b532ff3788335e22b6ffde2f5a7474490b84a97fb3
+  data/raw/iem_asos_ZGSZ_2022-01-01_2022-12-31_routine.csv  a5b04de0adc52b8643cea81d085921bdcbddced44c6d4a266682aae0fe6a7d63
+  data/raw/iem_asos_ZGSZ_2023-01-01_2023-12-31_routine.csv  bb0a7c3649007991689a5c67237f8af3271520d662dd7f4c1259277e3dc7bb38
+  data/raw/iem_asos_ZGSZ_2024-01-01_2024-12-31_routine.csv  417e21ba0a7f4fa4483d19212931a0d749cfc3aa3db19254b0e586db5826cc21
+  data/raw/iem_asos_ZGSZ_2025-01-01_2025-12-31_routine.csv  35658952c6c7f042310357081f3ca7ff75634a3e0b7cea9902a5a09db8240518
+  data/raw/iem_asos_ZGSZ_2026-01-01_2026-07-31_routine.csv  42df9da690f9a4a1437f7f2114ea4492cca786ebd7a43a652b0864e556113fd6
+  data/raw/iem_asos_ZUCK_2021-03-24_2021-12-31_routine.csv  28bf73b7a01d9059090f329e321091de8a14a3316a926dd73acd5bd203ef3fbd
+  data/raw/iem_asos_ZUCK_2022-01-01_2022-12-31_routine.csv  a5773c1852b037326801dc21a4bc1cd521622d0e56f5123b4f7f9da8dc84c3a4
+  data/raw/iem_asos_ZUCK_2023-01-01_2023-12-31_routine.csv  aadfc68dd1641fa293f6de88daf522cfc0b90b1d028007937c50734921be40bf
+  data/raw/iem_asos_ZUCK_2024-01-01_2024-12-31_routine.csv  56d7f4b94a8c46683b813969d0158e063e4510912000ddf70a4f7eae2efe8295
+  data/raw/iem_asos_ZUCK_2025-01-01_2025-12-31_routine.csv  1b4fbfa53baf6f01a498573aaf839d65b8ea426d5f3de3890a0dbab985bbf4cf
+  data/raw/iem_asos_ZUCK_2026-01-01_2026-07-31_routine.csv  d1b9204bdc1e774a88bf7419389333e3224eb5b63d24401c165d8ff16ff49f07
+  data/raw/iem_asos_NZWN_2021-03-24_2021-12-31_routine.csv  4498935f1cd5c45e56ef31313141b617328ba4219d7f7dfd280d48573c97dc80
+  data/raw/iem_asos_NZWN_2022-01-01_2022-12-31_routine.csv  db624195db0a16997b58049c76098a0cbc173efc59db4898ad33be3fc3b086ef
+  data/raw/iem_asos_NZWN_2023-01-01_2023-12-31_routine.csv  d96c87278200f0136d6aa58b384a2e29021893c68f142f8034070ec11ed3eed6
+  data/raw/iem_asos_NZWN_2024-01-01_2024-12-31_routine.csv  1b2d484ff897cc49587a3d11d6a7a0a22bf8eec317259353341d213e489249dd
+  data/raw/iem_asos_NZWN_2025-01-01_2025-12-31_routine.csv  df8c6083f6d2dc3338e5d6bb23494385b9326a62956b58b52efbe1efbe11257c
+  data/raw/iem_asos_NZWN_2026-01-01_2026-07-31_routine.csv  375a102a85d662afdd3cc4a84d4636dc58518cf8b7293d5983bbc65f0ecb2d8b
+  data/raw/iem_asos_EGLC_2021-03-24_2021-12-31_routine.csv  4377435dd5a9235008170f74de8843c31b3287f9af910a1fab6460604d467f19
+  data/raw/iem_asos_EGLC_2022-01-01_2022-12-31_routine.csv  30d094361622a543ec45d479b082955b13a09d5cad7da1ecddadf08570680b16
+  data/raw/iem_asos_EGLC_2023-01-01_2023-12-31_routine.csv  92adf5e0bcfd391f59be4faf304933d89269a42b1c74d9696d0b6a4a3269868e
+  data/raw/iem_asos_EGLC_2024-01-01_2024-12-31_routine.csv  20d6611ca7470c2cc185eb4ef920c60e4521c6a354aaaa3ddd2a86caa4f15d8f
+  data/raw/iem_asos_EGLC_2025-01-01_2025-12-31_routine.csv  8e6cd236596728af9eeb792330483dc05f79d3ad6d70758ebf2b7d26d2d797bb
+  data/raw/iem_asos_EGLC_2026-01-01_2026-07-31_routine.csv  0f72df770b5894b1e2d36365516c2598daae8a224ae1f1f39cfab9f760156233
+  data/raw/iem_asos_LFPG_2021-03-24_2021-12-31_routine.csv  4133f5a36a2090d989846438647ee398e2f24b2113c821eebea81319e2996f23
+  data/raw/iem_asos_LFPG_2022-01-01_2022-12-31_routine.csv  5bfce78bf92b9afa56a287140a4101b2ae6dc6917c169f2226e4c38d3cad07c5
+  data/raw/iem_asos_LFPG_2023-01-01_2023-12-31_routine.csv  d3bb09cf47fc6aa9c4592864d232073c3079f691debb2dbcdc5920601e144223
+  data/raw/iem_asos_LFPG_2024-01-01_2024-12-31_routine.csv  648a323289ad4c5eb2a7746026c8d58a38d88f41d822c1377809c488bcd50e24
+  data/raw/iem_asos_LFPG_2025-01-01_2025-12-31_routine.csv  ea155d6d7860999d55b785c6cf760b17c5cc61cf9d07ba4ebc400991966037df
+  data/raw/iem_asos_LFPG_2026-01-01_2026-07-31_routine.csv  580b4b8b6aed2d4649596144f3857150b33d80932e63bbcdf067c8bb8ba8e18c
+  data/raw/iem_asos_DSM_2021-03-24_2021-12-31_routine.csv  8aa427d29918f48f84b46621f78fb5f0f3fa9091d5a56a7726f205ebb0d1c3b7
+  data/raw/iem_asos_DSM_2022-01-01_2022-12-31_routine.csv  94f3266428df919063c7dc2a1099953183ef76b69534707d067654ccfbb65407
+  data/raw/iem_asos_DSM_2023-01-01_2023-12-31_routine.csv  0132488a3b094b09588cdf064aa42cd0ee215092f2ba3ef36512ee50b4c1d649
+  data/raw/iem_asos_DSM_2024-01-01_2024-12-31_routine.csv  ec9ae6bef2de0e7ab1d5e1df7d2dce262f6b24be46cffea2d4176ebf2d9502be
+  data/raw/iem_asos_DSM_2025-01-01_2025-12-31_routine.csv  82367bb80f9b6572b14dafcb3198db9ecce5ce446596bab4634c381273ac04f6
+  data/raw/iem_asos_DSM_2026-01-01_2026-07-31_routine.csv  0cda6f8b70517e2bd35a778bacdd12a0e615613ac495915a2dc61899aeda17de
+  data/raw/iem_asos_YSDU_2021-03-24_2021-12-31_routine.csv  af5adc9a77e0ae94d9aa937fa58fdb401d93f37fece8eba5e31df0384a5b866f
+  data/raw/iem_asos_YSDU_2022-01-01_2022-12-31_routine.csv  01318a8d5553c6da7b5dfad0c669371e5fb84589197ff61859815e25fb900352
+  data/raw/iem_asos_YSDU_2023-01-01_2023-12-31_routine.csv  948ef9954099ae66f66babd7e050d444936a1e40b6a45fdb3cb943bb6fed9d7d
+  data/raw/iem_asos_YSDU_2024-01-01_2024-12-31_routine.csv  1735ab484edf42d5d0b6649715fe4dde12447ccfe4aad2d074e5bab18173492a
+  data/raw/iem_asos_YSDU_2025-01-01_2025-12-31_routine.csv  cc51217f95d4123849c68714bb67f4f859302076662118802b5bc27be4f1cbff
+  data/raw/iem_asos_YSDU_2026-01-01_2026-07-31_routine.csv  db96c28778314b20bf54938c33121293d1d8c2f04466490c4ef5cc6943be60c1
+  data/raw/iem_asos_RNO_2021-03-24_2021-12-31_routine.csv  0c05c9e29a19db128aa8322af60d80b684e0207a659220e278b32d5023b54c9c
+  data/raw/iem_asos_RNO_2022-01-01_2022-12-31_routine.csv  3d34607c7f1ad581ca816650ec5a1e0ae26646b4e9fbe4e067ff909fdcab3155
+  data/raw/iem_asos_RNO_2023-01-01_2023-12-31_routine.csv  fd6d12b7ec8f10beea332207f421f8c1be20adb3055a18c2c6b32cf3b6901b3a
+  data/raw/iem_asos_RNO_2024-01-01_2024-12-31_routine.csv  88416b6dd59773c544990fa4e9b5371785866284f7efe07292a6ffcf2f869a0a
+  data/raw/iem_asos_RNO_2025-01-01_2025-12-31_routine.csv  4e2d34691c063494f358790fe786bb34ba6c95e062bfb0e6e0bb40ca9668d63b
+  data/raw/iem_asos_RNO_2026-01-01_2026-07-31_routine.csv  9d59972725efc58aef4be3be095c78aa80f2b1e3928aac5cc446a0a83be7c515
+  data/raw/iem_asos_SFO_2021-03-24_2021-12-31_routine.csv  8ded2ce07a94b33a53071f07445e362a614a69e382bd50bf4d87edd582c73003
+  data/raw/iem_asos_SFO_2022-01-01_2022-12-31_routine.csv  7edd2c3914579d5bf25762f1b3f22e45d51994fb8aaf236c46a4ae45be087618
+  data/raw/iem_asos_SFO_2023-01-01_2023-12-31_routine.csv  06a8a0f0f064218df3fa9166e6737b3c7d261415b561a94335f6819072f46221
+  data/raw/iem_asos_SFO_2024-01-01_2024-12-31_routine.csv  dabceb63b10262a0cb764a910d64aef7d3c91046597acdf2cc67220c9bda03a9
+  data/raw/iem_asos_SFO_2025-01-01_2025-12-31_routine.csv  c3b46411b6ad07f060a186eb2cbb19210a0ba96cd868c9ed613544e807319307
+  data/raw/iem_asos_SFO_2026-01-01_2026-07-31_routine.csv  cd4cfc8d9591dbef98070126dbc6176a3155bdcbed58980af05e1865cca6a382
+  data/raw/iem_asos_EFHK_2021-03-24_2021-12-31_routine.csv  3d44025fa5ac45f7e6396132ab60094ad73b63bf66f20923507b63f5b3cce359
+  data/raw/iem_asos_EFHK_2022-01-01_2022-12-31_routine.csv  258ac243458f823354ed8bf365c15e2be20e316a5b0da111f8b1b9d31c60c673
+  data/raw/iem_asos_EFHK_2023-01-01_2023-12-31_routine.csv  2d0be8999fdc927fad0a2366f304ee800c2b6a6929f08b267c13e7841219b64b
+  data/raw/iem_asos_EFHK_2024-01-01_2024-12-31_routine.csv  cfb44c3b130491983d4c079cc5d8451f4f28da311607e40bc1f9f6dca3923194
+  data/raw/iem_asos_EFHK_2025-01-01_2025-12-31_routine.csv  f746ac03c45f743fb491982ef26bd501adffa9b558019461256c416d9d470268
+  data/raw/iem_asos_EFHK_2026-01-01_2026-07-31_routine.csv  1bf929074e926e81a58304cb4619492c9e34fb3e1f785f921cef04861d1382a7
+  data/raw/iem_asos_EHAM_2021-03-24_2021-12-31_routine.csv  46aa4f7fd602f2e76be1ee0a645651f306d1521049a5098bfdb7faa520ded02f
+  data/raw/iem_asos_EHAM_2022-01-01_2022-12-31_routine.csv  2aea9edf0ea2cc785b400ee57ad8fab9f045c51c20b2ff221272587fc307cdb4
+  data/raw/iem_asos_EHAM_2023-01-01_2023-12-31_routine.csv  8eb539c2a209f2dd9df79e7024d315c671e5b89f313d63b8bf08461be57b46cd
+  data/raw/iem_asos_EHAM_2024-01-01_2024-12-31_routine.csv  5dbb21e57c1dfb73b04af1b8410d72a1264b4d53b3f222511e353ba17dfe4426
+  data/raw/iem_asos_EHAM_2025-01-01_2025-12-31_routine.csv  96498936db900f80c769396c9dafea72546cc079972630718088b9dff85468ce
+  data/raw/iem_asos_EHAM_2026-01-01_2026-07-31_routine.csv  514db1c2d2888b62473bcc5411c03b3f52044b90f7b78e8ead5381341f920de0
+  data/raw/iem_asos_EPWA_2021-03-24_2021-12-31_routine.csv  bd25be19c3dbdf5662cdc3bc2bacc53ab4de69d3b58516f8cd64cba1fd992e13
+  data/raw/iem_asos_EPWA_2022-01-01_2022-12-31_routine.csv  a61b2aee3b7fc94cb0bacdd67cfc48f1924e8963ea0d798f05ab0ed89ad8ce65
+  data/raw/iem_asos_EPWA_2023-01-01_2023-12-31_routine.csv  57dd59b142335b6737537793b96136fc7113e6b584d1d798b8ce4e5e97b7d94d
+  data/raw/iem_asos_EPWA_2024-01-01_2024-12-31_routine.csv  c9270b31e0787126e89e326f4c626a29f57f1ef187b3768298b518abd8f99ffd
+  data/raw/iem_asos_EPWA_2025-01-01_2025-12-31_routine.csv  22e759cc643ee2e11b4a973f0213f54862671d04e15842cc84f349919411b01e
+  data/raw/iem_asos_EPWA_2026-01-01_2026-07-31_routine.csv  c479ca94144003f137f97e3b0c685f2a0be73d4efd8b62053f1a1a1461911a21
+  data/raw/iem_asos_FACT_2021-03-24_2021-12-31_routine.csv  a1e8c16b21645df98e3a4c33113a4bf44898272804a641bbe4a535ccc316c793
+  data/raw/iem_asos_FACT_2022-01-01_2022-12-31_routine.csv  44ad8b0260340fcf5f16365b832b1c49c5ea4183d6ecef88f06042cd1525bc48
+  data/raw/iem_asos_FACT_2023-01-01_2023-12-31_routine.csv  673542c32f8dd3ff4d570fcb71356e25321b80a7d2a33343a7fe8e3dab25cb95
+  data/raw/iem_asos_FACT_2024-01-01_2024-12-31_routine.csv  a4fcdbf1f5fabd18e9071013bd1e12de9db60f56bf5786d039a9ec9387d9a486
+  data/raw/iem_asos_FACT_2025-01-01_2025-12-31_routine.csv  6019499e7281c79bdba060567a8d277d95e18c71d1ff68625bf7f9d7791812fe
+  data/raw/iem_asos_FACT_2026-01-01_2026-07-31_routine.csv  249dbfc3306aae5bcbac680e4b694911bbb9a24359ca4312ec0265dde70f6905
+  data/raw/iem_asos_ATL_2021-03-24_2021-12-31_routine.csv  dd1e62d122f2df259c8966359b18a3b20d9ce251cab1a5ea373edbcc76e8cfa7
+  data/raw/iem_asos_ATL_2022-01-01_2022-12-31_routine.csv  382b488cccbeea8d04d0d4d499cad74570c950545e7ceaf2dd5ff0aae9aa97c1
+  data/raw/iem_asos_ATL_2023-01-01_2023-12-31_routine.csv  f5b8553bb0a204c45670d728206fa48061cb61113e84e6649cdae67b084378f0
+  data/raw/iem_asos_ATL_2024-01-01_2024-12-31_routine.csv  51592bd9b39611b462f3c8a5e4303a49019c35b8262c0a1a0648dd8e3d97e8c9
+  data/raw/iem_asos_ATL_2025-01-01_2025-12-31_routine.csv  755457ee4107c264be9deb7bc18974038c70dfc2111f1fad3cdf0df810682898
+  data/raw/iem_asos_ATL_2026-01-01_2026-07-31_routine.csv  52445b7ffbf7f8452bc1ca7709ab384ea314f25e5049c16f62add34ec09a707e
+  data/raw/iem_asos_AUS_2021-03-24_2021-12-31_routine.csv  45d6f7f2b18667465d7b3212b1b1e6067821e848761549560ac0d41aa8b9750c
+  data/raw/iem_asos_AUS_2022-01-01_2022-12-31_routine.csv  155e23899a7ce949f3b03c96cdd06e9bb28305e738b49aa8d1f401a8e5e7a516
+  data/raw/iem_asos_AUS_2023-01-01_2023-12-31_routine.csv  652b53cb4830af8a8ad2bc7da2cbc4fca01de58787f52805a385c97450f76c9b
+  data/raw/iem_asos_AUS_2024-01-01_2024-12-31_routine.csv  edea903ad80c957b080a1e0d67bd744405a75f86b31f8275309d4a3c1527a6c8
+  data/raw/iem_asos_AUS_2025-01-01_2025-12-31_routine.csv  82b7a9569656c21e0e8e5d40d4e0db7fcd1fb88da4119dae4168057094cad76c
+  data/raw/iem_asos_AUS_2026-01-01_2026-07-31_routine.csv  dffb03cf0d8434ab71a955133c0945c007254051387c054a1f6fe7ee93ec1ec1
+  data/raw/iem_asos_BKF_2021-03-24_2021-12-31_routine.csv  58672efe877022acb944a4e4f43fab26b5bed297f741ef11ecaca8ed92e63f98
+  data/raw/iem_asos_BKF_2022-01-01_2022-12-31_routine.csv  a240e0ef93b7f6c3de49d820571e2d11c350eea254ccf5da425061eb4ff16e4f
+  data/raw/iem_asos_BKF_2023-01-01_2023-12-31_routine.csv  ef988cf5f8a41196a8e377b95089692b17bd1160e1ea4bef6bda88b3fa1f306f
+  data/raw/iem_asos_BKF_2024-01-01_2024-12-31_routine.csv  0a8895e29ae5fd50df0b4834fb85c0883ee30948f5c3d049b69b0d169289dda8
+  data/raw/iem_asos_BKF_2025-01-01_2025-12-31_routine.csv  67f1beff5dd02297453252b5af72a4f2ba111a4e5fa5d0723ca7a005031bd9e5
+  data/raw/iem_asos_BKF_2026-01-01_2026-07-31_routine.csv  8730d7a142a72ebb7ad202b47dbdd8f080326cebc263fb78db5b2d9b75909c2b
+  data/raw/iem_asos_DAL_2021-03-24_2021-12-31_routine.csv  7b705cacbde10f883fec5b01598baec627e5a7b00bc438e40de2241eb233d9ba
+  data/raw/iem_asos_DAL_2022-01-01_2022-12-31_routine.csv  23f6886b24d8ef79ae918223915a98403400fa789e624b8d78b0a5a9815b7285
+  data/raw/iem_asos_DAL_2023-01-01_2023-12-31_routine.csv  87b1882e06c64013af48ef006498ff10e368f5996d21f0792ff46b6c187bf83d
+  data/raw/iem_asos_DAL_2024-01-01_2024-12-31_routine.csv  2a8bd8afd11406daaf7fd346f363276fad7f7ad3d11fc8146d3083ed42e3938f
+  data/raw/iem_asos_DAL_2025-01-01_2025-12-31_routine.csv  0e1be5e4a1fbe15bf27c23510de7f638f6c3ad31bbc39dd550d76b78a5dad30d
+  data/raw/iem_asos_DAL_2026-01-01_2026-07-31_routine.csv  5f10078bb38e76cd055314881a2427606e71b03e243397e517cfec2dec530db0
+  data/raw/iem_asos_HOU_2021-03-24_2021-12-31_routine.csv  65d1f8ec7524061f3a25bc273760610d4d46f96f773ebda3ae4d0a09ed4f0fe6
+  data/raw/iem_asos_HOU_2022-01-01_2022-12-31_routine.csv  17ffddeb35fa75264f60f7ea640bfc93d5c7323081f2a64bfa1dc41b04376e09
+  data/raw/iem_asos_HOU_2023-01-01_2023-12-31_routine.csv  6e1917ed46bb2fd48438ee8a5326f2fa6a42afb76d8f79848563bd7d0486c1a2
+  data/raw/iem_asos_HOU_2024-01-01_2024-12-31_routine.csv  ada4e2c4cf9179e3f34d8f7a1ef58f4248d40738818929bcc49d323502f86442
+  data/raw/iem_asos_HOU_2025-01-01_2025-12-31_routine.csv  4c73731d83d2251e492baa8dd85539e928d6ac6182d1f3da3e8b758c95f878fd
+  data/raw/iem_asos_HOU_2026-01-01_2026-07-31_routine.csv  79dfce240ac85b932327ee6568496e5504ada0b1c19227a87d0e5025ed72fc6c
+  data/raw/iem_asos_LAX_2021-03-24_2021-12-31_routine.csv  2212ee40966838a1ca1610d704c0fe58ce2f16475964b2298f99c87b3306a75a
+  data/raw/iem_asos_LAX_2022-01-01_2022-12-31_routine.csv  53a2480f28c6003104fbce52bcc551e6219860fc5c23d1d73392360909cc1feb
+  data/raw/iem_asos_LAX_2023-01-01_2023-12-31_routine.csv  e071c1370b349bb7b83f2260ccf92955ff1f99c8aa43ccde5192f5f191afb778
+  data/raw/iem_asos_LAX_2024-01-01_2024-12-31_routine.csv  1abf15763e775ab469c777f252a3d80780fa61648abb84e681c77d05be0d5d07
+  data/raw/iem_asos_LAX_2025-01-01_2025-12-31_routine.csv  db821b6da25d07e0cb9b4668a0c38c173aa61ad9de1215564890fe967cc537aa
+  data/raw/iem_asos_LAX_2026-01-01_2026-07-31_routine.csv  989705e2c27da7dc00de2c5ee542d0c7a9138f1057f6d5eaefa163c40daa2388
+  data/raw/iem_asos_LGA_2021-03-24_2021-12-31_routine.csv  564512e4cbccc02658abeddc00d5488e8fff44b591bd24e5e79ff1b86e78a20a
+  data/raw/iem_asos_LGA_2022-01-01_2022-12-31_routine.csv  90f5a7b987bcc94f56fe22d37f167ac9130cf72bf858c9c2b99a80a2b8ba4db7
+  data/raw/iem_asos_LGA_2023-01-01_2023-12-31_routine.csv  fcad9a6438dee9a5f3ac04611822aa89fbd87c8311cf0d3af71efa2f357e73e5
+  data/raw/iem_asos_LGA_2024-01-01_2024-12-31_routine.csv  ced6562298dc3844c6032ed4c47ddf40eedbb6022834298aa7d3bc6395186988
+  data/raw/iem_asos_LGA_2025-01-01_2025-12-31_routine.csv  8475ab80eb2795064dcc3e38a84d7d0dd14dbc62fdad73d66b00424d2afc631d
+  data/raw/iem_asos_LGA_2026-01-01_2026-07-31_routine.csv  74cc9cf34dcc07d862c1961fb06690704a6469e5dd6bcba1191c9c89de4d9f26
+  data/raw/iem_asos_MIA_2021-03-24_2021-12-31_routine.csv  5d9ab5df284228ea5332292a75cddbf1d8a5edbc76ef15c6f5c999f127596908
+  data/raw/iem_asos_MIA_2022-01-01_2022-12-31_routine.csv  4fa4f28593d982d80ad7db3d7f99bbcf5cd5247dcf6aac304d0c92dbbc0adcdf
+  data/raw/iem_asos_MIA_2023-01-01_2023-12-31_routine.csv  ce7884569845bef3bf3891233395138376022df591e56100b82028e7800727f4
+  data/raw/iem_asos_MIA_2024-01-01_2024-12-31_routine.csv  358950575e96ddda7870bb760a4b7b240602e415d12aa65f4291e326d111796d
+  data/raw/iem_asos_MIA_2025-01-01_2025-12-31_routine.csv  1c8a91a935a1b8156327c507a69e02c2af41fe367a130be869a03c38a25a2adc
+  data/raw/iem_asos_MIA_2026-01-01_2026-07-31_routine.csv  e0616e1aa01988527135f8971cbc584c6bcbce21ccba63489fc21ccdd7ad6362
+  data/raw/iem_asos_SEA_2021-03-24_2021-12-31_routine.csv  b7a411b84001851184fb6e64b521cd674e71c4db8c43947b771fdc1fc4014bee
+  data/raw/iem_asos_SEA_2022-01-01_2022-12-31_routine.csv  efb270f4c768902d1dcf1403878ff1e29424881b9a3a891058aa4f27652acb33
+  data/raw/iem_asos_SEA_2023-01-01_2023-12-31_routine.csv  08dec86377cc3bdb8f254077d7a91efa2bf50d373306556fe3a499b384a0e90e
+  data/raw/iem_asos_SEA_2024-01-01_2024-12-31_routine.csv  575e52d1518814bf9e6c21223db7b374f806320e8d584a8b16e25a0a77c3eb32
+  data/raw/iem_asos_SEA_2025-01-01_2025-12-31_routine.csv  d77c45ae7f8947493f82ef71c94c1a4e45e4fe6d8b7b063fe533a8ef55031e01
+  data/raw/iem_asos_SEA_2026-01-01_2026-07-31_routine.csv  f0badca1989a5a637263a6480e9561377807a533fa33ab66a25310448e801897
+  data/raw/iem_asos_LEMD_2021-03-24_2021-12-31_routine.csv  3301d9b937305f8d9430fb46c58bf03e145391fe4736850a3da6424c77b12281
+  data/raw/iem_asos_LEMD_2022-01-01_2022-12-31_routine.csv  decace6bae161d4abf63142b4831a931aa640de100274d11ff08fdeecb58e432
+  data/raw/iem_asos_LEMD_2023-01-01_2023-12-31_routine.csv  eebaac304783a03b9347f6ce7b36a9f7237b2ec22f7d1b50263cd023f876b51c
+  data/raw/iem_asos_LEMD_2024-01-01_2024-12-31_routine.csv  154617ce70db846dda5e4512e3c9098f7dbdce9d912fb326a28cdcd148a0da4b
+  data/raw/iem_asos_LEMD_2025-01-01_2025-12-31_routine.csv  35e27b3fe0122a991d56349da7692a136adbfe726b3a692118498c4d2ad190bb
+  data/raw/iem_asos_LEMD_2026-01-01_2026-07-31_routine.csv  eb8b6daf9db59caecf01cbc72562688cddb767297c8dfbfa581093f95c9c3c8d
+  data/raw/iem_asos_LFPB_2021-03-24_2021-12-31_routine.csv  5c9723ab2bfb0bb223b445f9f119957e7772e838d77fbd21e90236d01a941959
+  data/raw/iem_asos_LFPB_2022-01-01_2022-12-31_routine.csv  78496e4bc7e3ba33fa76e152bf0d1e5b1e6b2ad8557ba223779ca245fc5510f2
+  data/raw/iem_asos_LFPB_2023-01-01_2023-12-31_routine.csv  032b83ae0178f06239c7d3c012ca98965793dfb6b8b4db49081290fad7499fb8
+  data/raw/iem_asos_LFPB_2024-01-01_2024-12-31_routine.csv  6cbc89ca5ffcb499ac27a43ec2b3d20c63bb35220325c021ef4c0dc77589fc9b
+  data/raw/iem_asos_LFPB_2025-01-01_2025-12-31_routine.csv  c18060db4ef8f05faa46b6830ce135e60f1309e6f810390a1ea9bac6d8cd672a
+  data/raw/iem_asos_LFPB_2026-01-01_2026-07-31_routine.csv  2b07c243742ca9eb404c36591981b5ca6adab07625652a3746f30150e993a2f8
+  data/raw/iem_asos_LIMC_2021-03-24_2021-12-31_routine.csv  8ddadd9db87b51ac3bd2ca6344d7809dcdc33011a71173155a3d54342817f638
+  data/raw/iem_asos_LIMC_2022-01-01_2022-12-31_routine.csv  62914274d1a05020d471ef2e335e53421176c84a6678652524c5b55bc23f55cc
+  data/raw/iem_asos_LIMC_2023-01-01_2023-12-31_routine.csv  2e3537bbe834c22f66d81ad99c06f0dabbb943c2cbde43a2632bfd77f6977a33
+  data/raw/iem_asos_LIMC_2024-01-01_2024-12-31_routine.csv  44299fa219e04c68ca37c4ae2eac0734493276dd3c2494d18e526b397f9e9ef6
+  data/raw/iem_asos_LIMC_2025-01-01_2025-12-31_routine.csv  96fa3f75d60dd08f12faaeef723024745ed2fde01a7f38d0f8d21e6c8980de36
+  data/raw/iem_asos_LIMC_2026-01-01_2026-07-31_routine.csv  cda5d2c763614d96636f058f0ac0ec751d0b4c0573f6467c8e82afdc54c94e28
+  data/raw/iem_asos_LLBG_2021-03-24_2021-12-31_routine.csv  05b5a186689b062c32883daba7d1b7158b2409e6db9f3f2dfe7235b571657dbc
+  data/raw/iem_asos_LLBG_2022-01-01_2022-12-31_routine.csv  df505df437d1f5a7b32c8292773cc513cf56e8dd9055803a9b0bcee7745ae647
+  data/raw/iem_asos_LLBG_2023-01-01_2023-12-31_routine.csv  7fea8d66162727e86dac3882f09dc2790f86fe1868ffe1869803de9afd47582a
+  data/raw/iem_asos_LLBG_2024-01-01_2024-12-31_routine.csv  925fa36221ebe2e2d1d10eca23bb8cd64f063d78c65c7ea359c9a05d11cfbf5b
+  data/raw/iem_asos_LLBG_2025-01-01_2025-12-31_routine.csv  14bbefc22592d0581bfa7256200742f44da76254a52822f3cb99e807953a2f71
+  data/raw/iem_asos_LLBG_2026-01-01_2026-07-31_routine.csv  c839f5f1ddb85eab561cb06d1b22d7f1479f01cd8607e5f703a119d97c566335
+  data/raw/iem_asos_LTAC_2021-03-24_2021-12-31_routine.csv  91d4ad170304d054920c36fe1167fca10ded7d6342643d74fee0e3bd1ec6e043
+  data/raw/iem_asos_LTAC_2022-01-01_2022-12-31_routine.csv  db5e32ba4b2619aa6fcafe1d9dc713bf10d0f5fc1d3248a6ebd03ce982cb0953
+  data/raw/iem_asos_LTAC_2023-01-01_2023-12-31_routine.csv  3c61e2d4047699dd2c06d099cc170a11ca06c5cb7aeb36e328ad4fa55c49d179
+  data/raw/iem_asos_LTAC_2024-01-01_2024-12-31_routine.csv  f11dcfa84a061f53871d1e5877f9530a5065763d7b7ea85a79a3440300a7a094
+  data/raw/iem_asos_LTAC_2025-01-01_2025-12-31_routine.csv  0710ca44a4f0c780f3f0da7ed2609fd4a89b015a00f2eac2ea03f8ff6065e94f
+  data/raw/iem_asos_LTAC_2026-01-01_2026-07-31_routine.csv  2b30dbcaf5417c6b962c2b1e32c7b51de4c8d1233d1d31a36a26305a88d68a88
+  data/raw/iem_asos_LTFM_2021-03-24_2021-12-31_routine.csv  e9d8144c49cb841c65768197ad8ba8b75c04b05f907b9b2ea4016185a11e8e9a
+  data/raw/iem_asos_LTFM_2022-01-01_2022-12-31_routine.csv  a7f910b8f45a433ed1f60585ce081e31785ad6d826a13bfb468909f123973fee
+  data/raw/iem_asos_LTFM_2023-01-01_2023-12-31_routine.csv  cbf805386ffbec6dc11eb6b0551205506d1c439c59a5e132275c4c9cf650a6b5
+  data/raw/iem_asos_LTFM_2024-01-01_2024-12-31_routine.csv  64d2dded244e97874d672e943201603f360ac6a44fa83ab7f8e0869c9080d10f
+  data/raw/iem_asos_LTFM_2025-01-01_2025-12-31_routine.csv  1048a15bf9f93ea725d0be5b2b36362ad84cf7e8e096278a5ed7e9bbc6cfbe34
+  data/raw/iem_asos_LTFM_2026-01-01_2026-07-31_routine.csv  03a23776b46b9d48f526753672e695d956b077a77823645d8f7f246ea9222de8
+  data/raw/iem_asos_OEJN_2021-03-24_2021-12-31_routine.csv  71517d7b0aa4b5d578c5a3212bca61f02a7319a6e3352da0f92fd60a401325e1
+  data/raw/iem_asos_OEJN_2022-01-01_2022-12-31_routine.csv  29ef3440b0e639fb6055c0d0f5ab7efc4351c54199fd9f1f52f98a7dad53c64d
+  data/raw/iem_asos_OEJN_2023-01-01_2023-12-31_routine.csv  f2fdcd409bef4b96d48a30355803ae01920026c9608c3af95079d844e33564dc
+  data/raw/iem_asos_OEJN_2024-01-01_2024-12-31_routine.csv  e7e38778b8964680ea1e4d482861c77f9e5ec5a693b3c9bb0272fed4f500da65
+  data/raw/iem_asos_OEJN_2025-01-01_2025-12-31_routine.csv  86a870ee4c811a8aa56865dbaa06f64b41fabfdbf0dd7e8916faf063b8cf52d0
+  data/raw/iem_asos_OEJN_2026-01-01_2026-07-31_routine.csv  43e211954c3083d347f334a79eca544ca603fbd20fb8d71a13531387437c3874
+  data/raw/iem_asos_OPKC_2021-03-24_2021-12-31_routine.csv  430860df2e2e49fc4ee992f32f1e667336741d87ad0b0b42be6d48c46caa2a15
+  data/raw/iem_asos_OPKC_2022-01-01_2022-12-31_routine.csv  2df1b687259e3d0223edf81eb430037b1e4f4e9ba0afb4deba5d0dc25fed0177
+  data/raw/iem_asos_OPKC_2023-01-01_2023-12-31_routine.csv  94119a56738ee198875d3d506dcf692ffe773b6e925cc85c479d6725c69cd723
+  data/raw/iem_asos_OPKC_2024-01-01_2024-12-31_routine.csv  fa112a1bb9850f236732c9838958bcbc6ea8e9133452b5584d1d9eeddcc4e7af
+  data/raw/iem_asos_OPKC_2025-01-01_2025-12-31_routine.csv  2fc46b91fc5dbd47adeb3e2b2e5ef0d952b17392a1527e11ddcd9259c0aa6370
+  data/raw/iem_asos_OPKC_2026-01-01_2026-07-31_routine.csv  34f62d65a2a2de4788cc3dbf4ff745b01243bd3f98ac6e6f02f240486f2e073e
+  data/raw/iem_asos_RCSS_2021-03-24_2021-12-31_routine.csv  2c5b58a8ca6dbd37994fb4036617c541481632a2cdcb7d8ae5a0c6a71cd8c0f2
+  data/raw/iem_asos_RCSS_2022-01-01_2022-12-31_routine.csv  be23c43b91645512c075651d59f6cf15892b5d9b2e653ee69d20b62c3c7e9f55
+  data/raw/iem_asos_RCSS_2023-01-01_2023-12-31_routine.csv  e9b9dcd4cc9d15f09d0cd617c4b9b742850b74888acaef1220b04e3008708bb3
+  data/raw/iem_asos_RCSS_2024-01-01_2024-12-31_routine.csv  edaf5138081c463e1f450c8c7806a215a9a0f894557cfb1f6df4bf47cfc55421
+  data/raw/iem_asos_RCSS_2025-01-01_2025-12-31_routine.csv  1e23c552ef2a2dfffe4791eea7f651e8cba8f530bf0ed8266b73691e965ef53b
+  data/raw/iem_asos_RCSS_2026-01-01_2026-07-31_routine.csv  76b34525b16104a3ae793153619a97126f4e17dc802ff684eb8d1956f48191ff
+  data/raw/iem_asos_RJTT_2021-03-24_2021-12-31_routine.csv  67d8a001536394b4e34073bc7159b18b209382320a53e11dea803a3c213c5b43
+  data/raw/iem_asos_RJTT_2022-01-01_2022-12-31_routine.csv  9cdb254b82887d5010370a0afef1679e454819373e074ca806ba9138da8b9ad7
+  data/raw/iem_asos_RJTT_2023-01-01_2023-12-31_routine.csv  893486587ffe238069f3a6b480d3bfe08f6f7c5bf182a31cb728c72c6b9d722f
+  data/raw/iem_asos_RJTT_2024-01-01_2024-12-31_routine.csv  14b6411509bc58d3fab128a7bc625a8bc18b671ea68c5b56adfe4ada31c67d91
+  data/raw/iem_asos_RJTT_2025-01-01_2025-12-31_routine.csv  2dcd498a480b6668fe0f391774f2cad953f025c643c3670553e60ecd489d9d98
+  data/raw/iem_asos_RJTT_2026-01-01_2026-07-31_routine.csv  04f36ab0172a7e31b35bca438a2627bbbc3e5266f586e1c6f2329a73de6af873
+  data/raw/iem_asos_RKPK_2021-03-24_2021-12-31_routine.csv  97d8637d581ba5c0cf8c372eecab3dcb42a696998c8f2957513d9652a917cbd9
+  data/raw/iem_asos_RKPK_2022-01-01_2022-12-31_routine.csv  5a09e1cd853dd5400486bfcac66386ebac8310243ef7666fbc659e3b649bdce0
+  data/raw/iem_asos_RKPK_2023-01-01_2023-12-31_routine.csv  eb54ab377d828931d86cc41fc8a0033b8f6a133252c0c5dcb48cfe11d06350ce
+  data/raw/iem_asos_RKPK_2024-01-01_2024-12-31_routine.csv  6ce2547c9637b5bf6bdc187e17ced74cf201e6c7b3724df6397820649bc14f91
+  data/raw/iem_asos_RKPK_2025-01-01_2025-12-31_routine.csv  f8a357110362533bbd863cbf64668e962105b716787a57fb3c913d5be9deab4b
+  data/raw/iem_asos_RKPK_2026-01-01_2026-07-31_routine.csv  7576213cb0ba638a1feadeca3dd9c6d0698b27131213ba5dea86e0f9ec47f2df
+  data/raw/iem_asos_RKSI_2021-03-24_2021-12-31_routine.csv  746eeadac05bac7dabedef4fbe7d12b22e2811aa5ac9aaddfb51251899756b50
+  data/raw/iem_asos_RKSI_2022-01-01_2022-12-31_routine.csv  daf50abaca57f7be2ca01945c728931ae352d0e62a6c90b34ef3586c36314eb9
+  data/raw/iem_asos_RKSI_2023-01-01_2023-12-31_routine.csv  3d615312071f78d180f7312413c650909524b0fada51a50a88933f6f8e6b83b9
+  data/raw/iem_asos_RKSI_2024-01-01_2024-12-31_routine.csv  fe7042f9c2cec188d259fa777d7b77e298b69bd2de4d8195551a6df4c9047c25
+  data/raw/iem_asos_RKSI_2025-01-01_2025-12-31_routine.csv  e034aff2daf8117d66c2667abd4caa2f8946b90bd4d05abda548c6e809c39711
+  data/raw/iem_asos_RKSI_2026-01-01_2026-07-31_routine.csv  3dbdf2a4246f1b8744f979db4df7a251c2dc5616bb88d1c4a420b39f7a30adf3
+  data/raw/iem_asos_RPLL_2021-03-24_2021-12-31_routine.csv  651e273ed08ddbf5c21ee14206ac2f8b82727a900ebac44d81647da67d4f5bb7
+  data/raw/iem_asos_RPLL_2022-01-01_2022-12-31_routine.csv  b728a2da3ce661d1afcf9325f1766d06b278a8c8c2f708d09f31c4efc6977806
+  data/raw/iem_asos_RPLL_2023-01-01_2023-12-31_routine.csv  2e74cbc950ea9ee4e43b3ae7482d6e1485cdc24b115e407ae1e34555f8568ec1
+  data/raw/iem_asos_RPLL_2024-01-01_2024-12-31_routine.csv  ec438d13727b6eccbd753cec0e3d2ad43b6f699249b54302d2653cd4fdafe36c
+  data/raw/iem_asos_RPLL_2025-01-01_2025-12-31_routine.csv  610d9bdc3094e70a306fdc308737b8cfd401ba620992574426e9344196d20d52
+  data/raw/iem_asos_RPLL_2026-01-01_2026-07-31_routine.csv  78516645c05cb7a9282865085bf9662ef622e37f8a36a5a536a73396e8e3a1ea
+  data/raw/iem_asos_SAEZ_2021-03-24_2021-12-31_routine.csv  9731f855b005fe359e4b020ac82f1cd1d298235b7ca8227b24bee9bf9153f6f9
+  data/raw/iem_asos_SAEZ_2022-01-01_2022-12-31_routine.csv  f75c0a245f4aa91bee798d7f000f7338ef0f92011fd93b48e7b68476945a9651
+  data/raw/iem_asos_SAEZ_2023-01-01_2023-12-31_routine.csv  dde6c2126d59ba9067e66fa86d8cc63432a8234f98f8ab588fcf37312ab7d659
+  data/raw/iem_asos_SAEZ_2024-01-01_2024-12-31_routine.csv  e9f05cba3e8dfcd34da79a26cc42b433a26286a10e49e30c43360b6103ff0d4c
+  data/raw/iem_asos_SAEZ_2025-01-01_2025-12-31_routine.csv  d118de445d7951b70a8331a20d57c3ac5f588ef1ba27dd63a3282cc20c1f1e12
+  data/raw/iem_asos_SAEZ_2026-01-01_2026-07-31_routine.csv  1d627a0664e04e8dce57d43c59c3d735df1928bb8359e8f63b383b1f4aed89b0
+  data/raw/iem_asos_SBGR_2021-03-24_2021-12-31_routine.csv  d9fb5d43dc15b4044af537eea67de9e019057db237b38d86474ed31b8abe4f3b
+  data/raw/iem_asos_SBGR_2022-01-01_2022-12-31_routine.csv  82f483d0b70b9326156a77762fc657f6eef50100548495035d17009840295329
+  data/raw/iem_asos_SBGR_2023-01-01_2023-12-31_routine.csv  62677f812ab3008e2309f7b7684d683f20d3eb30d4496976a69bf7ff66f7b3f1
+  data/raw/iem_asos_SBGR_2024-01-01_2024-12-31_routine.csv  abb1a031f92695c82baa92ce408a51f2684433857c83674b0e2743759b4ff40c
+  data/raw/iem_asos_SBGR_2025-01-01_2025-12-31_routine.csv  4c48676016671f4bfaf1365f4f789d081597f7e71f0a75960b3ca2fb57edede4
+  data/raw/iem_asos_SBGR_2026-01-01_2026-07-31_routine.csv  e423fa2403ce17dd9a0312bb409dfad266b9702eab44902101d2976d460be0e9
+  data/raw/iem_asos_UUWW_2021-03-24_2021-12-31_routine.csv  99b4bace47ecf77132f9944fe4b6a328f62d5fcb5cf6d7bd7c6f3b4da3ee7c10
+  data/raw/iem_asos_UUWW_2022-01-01_2022-12-31_routine.csv  5682d537f7980291fa6e9d926a4da6d363f294495a857c3d44a3ce073f487f15
+  data/raw/iem_asos_UUWW_2023-01-01_2023-12-31_routine.csv  9fc393d0a0b00669a155c3ac1f6f46808a1b5e33cf990c9fea39a746aaa376a3
+  data/raw/iem_asos_UUWW_2024-01-01_2024-12-31_routine.csv  871f3ac87e6f9ee8d5fcb03dc98160f3cf16d9522afbfa69e622088272f56f1d
+  data/raw/iem_asos_UUWW_2025-01-01_2025-12-31_routine.csv  2736af2ae5e4df5cf866a7eca4b271a6d64d611569f629638582d554011655d5
+  data/raw/iem_asos_UUWW_2026-01-01_2026-07-31_routine.csv  fdc77eb4e296f6c888116b7e4e509f09d201243019d14d8199374bb53b2ba2ff
+  data/raw/iem_asos_WMKK_2021-03-24_2021-12-31_routine.csv  6b8dd4035ec7edea7be413241431d9c550cfc7d38c09a51e7d1ccea1c7e4efb5
+  data/raw/iem_asos_WMKK_2022-01-01_2022-12-31_routine.csv  c956d9e634998c3376b3655411bca1fe780e544e96ce6d278df16759c98d6c0a
+  data/raw/iem_asos_WMKK_2023-01-01_2023-12-31_routine.csv  2dd7c62f1084d79b638876aabc192d9ce028fc45db4d4b978dd2cc46978e011f
+  data/raw/iem_asos_WMKK_2024-01-01_2024-12-31_routine.csv  ba5fe584c7f843c788862e89a1cb22fb817716568ac833a8b8a39041aa98d856
+  data/raw/iem_asos_WMKK_2025-01-01_2025-12-31_routine.csv  956ac04de2b8c7fac31d09bac7523405806a6dc52e9116ba41b691037e6b41dd
+  data/raw/iem_asos_WMKK_2026-01-01_2026-07-31_routine.csv  8fc51416615c8d0b5f23feee8c9a4452452c337d49d9576d82f1eef07dd2109b
+  data/raw/iem_asos_WSSS_2021-03-24_2021-12-31_routine.csv  57dc3e9fedd858afe3dab3ca86ce86c713e642fc6e2c385969b27a40e7f24068
+  data/raw/iem_asos_WSSS_2022-01-01_2022-12-31_routine.csv  8058958386fc5e20c949e65214067da58cf194ebff870378d5e8635b70345959
+  data/raw/iem_asos_WSSS_2023-01-01_2023-12-31_routine.csv  fd8e4ef237427b0e258b409cadec348d5b71a68078f009fc7f9f68f114d74379
+  data/raw/iem_asos_WSSS_2024-01-01_2024-12-31_routine.csv  26a2934310c003e5a6f8c8c13f184d18889c00b6f740869ccf594a8f66daa2e5
+  data/raw/iem_asos_WSSS_2025-01-01_2025-12-31_routine.csv  e53296fa84409b5b93b6750dc7e3b57ddde71b4a310f5d207c470b22d88aa6c6
+  data/raw/iem_asos_WSSS_2026-01-01_2026-07-31_routine.csv  5e513a2538a4012d0242881f97553fec0758ec97e239d26fb43bf25233c58965
+  data/raw/iem_asos_ZBAA_2021-03-24_2021-12-31_routine.csv  a4a9b2ee0bd089719ad90f1e798557590256ec113aa391f0dd49a39fc6225d2d
+  data/raw/iem_asos_ZBAA_2022-01-01_2022-12-31_routine.csv  30e5c0cc4a355db97c74fb7dc89efeb3cebdcbe7f5ac8704daf24c053f50b9ab
+  data/raw/iem_asos_ZBAA_2023-01-01_2023-12-31_routine.csv  b0c6068415041254efff4b7b206d7a478428cb9a526246aa9fa3702a14a49ab4
+  data/raw/iem_asos_ZBAA_2024-01-01_2024-12-31_routine.csv  01abf12c10269b109bedd1d64d841a3193fd7e8cfba24d87d849ac930e215c93
+  data/raw/iem_asos_ZBAA_2025-01-01_2025-12-31_routine.csv  d2921ed9e0398b4c7edd4ed0472c1324a3186cec46d5e03ffe44150052a1afc9
+  data/raw/iem_asos_ZBAA_2026-01-01_2026-07-31_routine.csv  0da8130a5b3888112fad82f7ac91cbe8d956f84d9e9d03bce2e96de4ee18197f
+  data/raw/iem_asos_ZGGG_2021-03-24_2021-12-31_routine.csv  e971cfdb616040bd37c05d97372afd314ca96368a36b8f4d73f15929c225cb10
+  data/raw/iem_asos_ZGGG_2022-01-01_2022-12-31_routine.csv  6258cab8dd9b97fb9710c0f65d5f6fcabaa1e04f742d247c873bcae352496b49
+  data/raw/iem_asos_ZGGG_2023-01-01_2023-12-31_routine.csv  53cb411b4a3fb784e0567cf14e35ad42b850a569ae2cfd347d93a088f21f5be4
+  data/raw/iem_asos_ZGGG_2024-01-01_2024-12-31_routine.csv  94d9c182f68eccdafbed80b8beb124b295bdbe9622a2f54ac6f4ffd70ea490ca
+  data/raw/iem_asos_ZGGG_2025-01-01_2025-12-31_routine.csv  2701cafcf535aed43461e452ecb07e4e24b0df47130da3dfab4bec8136de123d
+  data/raw/iem_asos_ZGGG_2026-01-01_2026-07-31_routine.csv  79cadf012d223a44e21336cd66ccb42bbf8d82d3d8e3f9760e903c7b5a6e790d
+  data/raw/iem_asos_ZHHH_2021-03-24_2021-12-31_routine.csv  c25c015a8b27cfb233713115441dc325d79d505c3023070fd05ffecff0443752
+  data/raw/iem_asos_ZHHH_2022-01-01_2022-12-31_routine.csv  8e924a73a6e09ee7a28a546e174ad2983e8d0e6decfdc334c79bb407236e6505
+  data/raw/iem_asos_ZHHH_2023-01-01_2023-12-31_routine.csv  67fe2e2a83c51215a3ad34e629eee10a78e201feff273c3945ee9fbb7a37c651
+  data/raw/iem_asos_ZHHH_2024-01-01_2024-12-31_routine.csv  29cb64d318a1084fcd97c3bec4c4fe7560d6b422a1f24c25e5e3410fd2895969
+  data/raw/iem_asos_ZHHH_2025-01-01_2025-12-31_routine.csv  4922955d74c065182aeb7d5d1d0dc1c531467c62b93bcf1d8fff82aa2e1e6f04
+  data/raw/iem_asos_ZHHH_2026-01-01_2026-07-31_routine.csv  c2373db050f4cbf85c7d8a78f8f69fde6bd5c6d848df3d4aacfb1b13d8fda39a
+  data/raw/iem_asos_ZSPD_2021-03-24_2021-12-31_routine.csv  d4c501c3f86b797ce70399b8c1fe69b1ac72a0b15a307ddad04bcb0fa9c7c325
+  data/raw/iem_asos_ZSPD_2022-01-01_2022-12-31_routine.csv  089ad9c6c949629f6838d6b41c11873ae9ac031125459170bc5c2a3bb2f774f8
+  data/raw/iem_asos_ZSPD_2023-01-01_2023-12-31_routine.csv  2edba69f84afbea44f6e911c44cb428f1c6f10038c2ed282395b925dd92dc91b
+  data/raw/iem_asos_ZSPD_2024-01-01_2024-12-31_routine.csv  f98016db66248deac9fdba1fdfd59be1edc23639e40b6e7a3f225baddf4349ce
+  data/raw/iem_asos_ZSPD_2025-01-01_2025-12-31_routine.csv  fc1748dcdd3a68cd8c8e6e2bbba8ac6606e779dd064b3551453c278ac21cfbb0
+  data/raw/iem_asos_ZSPD_2026-01-01_2026-07-31_routine.csv  5f3f78dce8700eaf2d883314fd97df5a1b84399b7d0a9a899d6daad9e6074d7f
+  data/raw/iem_asos_ZSQD_2021-03-24_2021-12-31_routine.csv  535d31d18b6db2fca77a5680297dd31ad6e6a6b57b6ddcaaa2676a9ec4cf5e10
+  data/raw/iem_asos_ZSQD_2022-01-01_2022-12-31_routine.csv  21b9ad4f1761d068e4d85cc240969f7ce75ceb7d73755ef49c14252231a11019
+  data/raw/iem_asos_ZSQD_2023-01-01_2023-12-31_routine.csv  b6020efc2c704b0ff040a6d69c57739bf84c097285346ba1cd620010e00209af
+  data/raw/iem_asos_ZSQD_2024-01-01_2024-12-31_routine.csv  4b6b9fee9beda79b4d746f01411b35a1285cf021aba961376950646881560cd2
+  data/raw/iem_asos_ZSQD_2025-01-01_2025-12-31_routine.csv  92a47c869dfc49a8f52c5150991ca42c2e66f0e22f69b781bb37f95996d14a1d
+  data/raw/iem_asos_ZSQD_2026-01-01_2026-07-31_routine.csv  82b0fc39791c8241bbdd92a9710a180fc48d119f33cd3a45f50f5376c6cdd594
+  data/raw/iem_asos_ZUUU_2021-03-24_2021-12-31_routine.csv  e81297502e1508fe30e1cc25e4497f948bc6e06f9cd3c8be053c7efb83041327
+  data/raw/iem_asos_ZUUU_2022-01-01_2022-12-31_routine.csv  d6e6d3c165a60f8e8e76a7f208ab5279c54bd959df5f1a5535144d0bba5bcebe
+  data/raw/iem_asos_ZUUU_2023-01-01_2023-12-31_routine.csv  6e14cffbc04685714c9e7e0ac7626d7590b6e1ad56a54daf87e69022d989d65f
+  data/raw/iem_asos_ZUUU_2024-01-01_2024-12-31_routine.csv  9f19e7ae1436f7696f84157cd39e3f12d2aa7d8d7b164e1b1f40da3f84620254
+  data/raw/iem_asos_ZUUU_2025-01-01_2025-12-31_routine.csv  40ff5b2c344bdbaccee1c96927f9557a48607c29faecca59249f39d64c7973fd
+  data/raw/iem_asos_ZUUU_2026-01-01_2026-07-31_routine.csv  c96d0178cc2ba9e9661f8787f775c24a3c6adb1a9c5d64cfffcf19018c879bd0
+  data/raw/iem_asos_MMMX_2021-03-24_2021-12-31_routine.csv  80b7853497d539177b0efc714e2f3590ff46d734364bf6b5acc7400652a009e3
+  data/raw/iem_asos_MMMX_2022-01-01_2022-12-31_routine.csv  6debb21c5865a321e726986c86d1b6a7cac65f0cd76a3c72dca1f16acfc5a312
+  data/raw/iem_asos_MMMX_2023-01-01_2023-12-31_routine.csv  8a0e1a452993c0ddce4a758f2a03d18215af96a71d56ce6a0df29ab137a4005c
+  data/raw/iem_asos_MMMX_2024-01-01_2024-12-31_routine.csv  8357de0b53deba7c6fa387cd20e21c93e05ed9a6e87d7755aa5a099d420392f1
+  data/raw/iem_asos_MMMX_2025-01-01_2025-12-31_routine.csv  699752580086dc7a65a9037e60204c16d6f1a84420ee2c8892125da92015a97b
+  data/raw/iem_asos_MMMX_2026-01-01_2026-07-31_routine.csv  70a8c2d0b40038e30385f447d4c32edf7be156f377a68714f26e5d0edf1407f1
+  data/raw/iem_asos_VILK_2021-03-24_2021-12-31_routine.csv  c647fb827620c40b631a073d09e26cfdf225fbbc4888911e086980db7d396f1a
+  data/raw/iem_asos_VILK_2022-01-01_2022-12-31_routine.csv  fef8a614eeae4d55eef2fb4b34d45d9d43dd34d2253db74d5ed86499df34ede0
+  data/raw/iem_asos_VILK_2023-01-01_2023-12-31_routine.csv  8fa65bbcf35de2370805734fa1253f2152df5fb75d25717e96f4d5b8cafcc599
+  data/raw/iem_asos_VILK_2024-01-01_2024-12-31_routine.csv  5b21142f8dfd718711356d2fe065b046523cfcc2a555c0eedbd1ba4e261b6294
+  data/raw/iem_asos_VILK_2025-01-01_2025-12-31_routine.csv  010bf8427b664a834249662ee65410170897c56f0ca5536d4ce510c674dd544b
+  data/raw/iem_asos_VILK_2026-01-01_2026-07-31_routine.csv  5527412fb89acb93665e19fa68a9cded7086686ad7ecd9acf6c96f9b8a6abcc9
+  data/processed/session91_pull_airports.csv  cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+  data/processed/session90_airports.csv  b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+  MLwx-stagec/stagec_claim_f000_024_EDDM.csv.gz (recorded 9d9e38201d0a...)  9d9e38201d0aa63ae0da0a20c64254c172f57993df0d99dd767a567a5418c84d
+  MLwx-stagec/stagec_claim_f025_048_EDDM.csv.gz (recorded b5600c13948f...)  b5600c13948fd7ad6bd6411366b3676211b68dd332e37c3a409262eac3457c7b
+  MLwx-stagec/stagec_claim_f000_024_KORD.csv.gz (recorded 51c69aa5b204...)  51c69aa5b204f7991ae7522fd850b5b3c4715f017ed4ee2f1b4269a2d4a515ad
+  MLwx-stagec/stagec_claim_f025_048_KORD.csv.gz (recorded 2252e3ffb732...)  2252e3ffb73294e31b4aba1e605f204f70ccc80cbbcb701f79173e0940770662
+  MLwx-stagec/stagec_claim_f000_024_CYYZ.csv.gz (recorded 899e54777fdf...)  899e54777fdff5f8ac0b6cc78b15ebea6340a072b23c5acf6c39486c139c25d7
+  MLwx-stagec/stagec_claim_f025_048_CYYZ.csv.gz (recorded ab631d6e4375...)  ab631d6e43750071e9b7878cb24127269aae5a3831d1234a299c8a0ab2054b44
+  MLwx-stagec/stagec_claim_f000_024_ZGSZ.csv.gz (recorded 1a83bb1ba7b7...)  1a83bb1ba7b7c2ed389244fd3362c32e6a641847b3b074680d00a84a858de011
+  MLwx-stagec/stagec_claim_f025_048_ZGSZ.csv.gz (recorded b70b5f4c648f...)  b70b5f4c648fa6e5971084e8993e99fa2d2fffd7394e6e7b262c06aa6d2df0f5
+  MLwx-stagec/stagec_claim_f000_024_ZUCK.csv.gz (recorded 1be74331235c...)  1be74331235cd973b919db7aa8a587b7065eaf154e95f08f03dbf62ac0a89379
+  MLwx-stagec/stagec_claim_f025_048_ZUCK.csv.gz (recorded 35e85af2c47d...)  35e85af2c47df13afd0fbd8279aadd330157072bb8d1f17f800515619296b096
+  MLwx-stagec/stagec_claim_f000_024_NZWN.csv.gz (recorded f5c7a598cef5...)  f5c7a598cef58190e593d74cd961fd15912d9fd3ce196f149092807215a92e74
+  MLwx-stagec/stagec_claim_f025_048_NZWN.csv.gz (recorded 4db435054034...)  4db4350540342b4a01502731a0daf5b943a6e619a0893ee6bf12ca6ade2f3fc0
+  MLwx-stagec/stagec_dev_EGLC.csv.gz (recorded af8848e091c7...)  af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_f025_048_EGLC.csv.gz (recorded 947bf2f0920e...)  947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9
+  MLwx-stagec/stagec_dev_LFPG.csv.gz (recorded 5b113123c764...)  5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_f025_048_LFPG.csv.gz (recorded 04dbd411dbd6...)  04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35
+  MLwx-stagec/stagec_dev_KDSM.csv.gz (recorded 17461736cd23...)  17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_f025_048_KDSM.csv.gz (recorded bd2d80c01211...)  bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3
+  MLwx-stagec/stagec_dev_YSDU.csv.gz (recorded 57a11a4f0025...)  57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_f025_048_YSDU.csv.gz (recorded b801fcc2d9e2...)  b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac
+  MLwx-stagec/stagec_dev_KRNO.csv.gz (recorded 6e2d0779f6b5...)  6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_f025_048_KRNO.csv.gz (recorded 3ca1d4ff8933...)  3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58
+  MLwx-stagec/stagec_dev_KSFO.csv.gz (recorded 11fa6385f05c...)  11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  MLwx-stagec/stagec_dev_f025_048_KSFO.csv.gz (recorded 2e355c0146e1...)  2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b
+  tables/onboard_f000_024_EFHK.csv.gz (recorded bf447d2dd284...)  bf447d2dd28444b9112d39d707d3b1988d3a24deb16ce60e916fb2f90695157c
+  tables/onboard_f025_048_EFHK.csv.gz (recorded 133053da1c3b...)  133053da1c3b745908880c7102a0f211ac991cffa0583263ec95193208ef5124
+  tables/onboard_f000_024_EHAM.csv.gz (recorded c4de5f7e8ec4...)  c4de5f7e8ec438020151e810306a6424d7a1e0034e612ad358c3667d513cd282
+  tables/onboard_f025_048_EHAM.csv.gz (recorded ef63db00e186...)  ef63db00e186a8805fb31f53df638ed81502bd3df707b33a49be99cf05a72ea3
+  tables/onboard_f000_024_EPWA.csv.gz (recorded 853e38f2ce91...)  853e38f2ce9165e62478a784b61fa942817c604f99b24f36697b3c733990d81f
+  tables/onboard_f025_048_EPWA.csv.gz (recorded ea146673227f...)  ea146673227ff25e288903c7ed34dca3e33f02cf46136eda24c8addb5ca2d419
+  tables/onboard_f000_024_FACT.csv.gz (recorded 218c13db539a...)  218c13db539a484dca3345cd05471f7f6c713934653ea0f98c67e25cf1c9a680
+  tables/onboard_f025_048_FACT.csv.gz (recorded 78561df93289...)  78561df9328924c5e7152f5839d2b280220afb215c918a20c0631bd39f27aee6
+  tables/onboard_f000_024_KATL.csv.gz (recorded 2de81ad74176...)  2de81ad74176fa9f920c43a0dadf30ba3002247cd07e45b7f5e0442ebb56ad46
+  tables/onboard_f025_048_KATL.csv.gz (recorded dd0793db5cd1...)  dd0793db5cd1a51c53794c144065d66fd1f7164aaaa92e23cbca627f6cb9ef8c
+  tables/onboard_f000_024_KAUS.csv.gz (recorded 5608b37213b4...)  5608b37213b4642efef6c6f4b61c48682da61fbf04a84fa801fbb317e313f03c
+  tables/onboard_f025_048_KAUS.csv.gz (recorded 306fb58c8a15...)  306fb58c8a15735e392df9a1733a7447d57285f987e56f4430a97ecb360df1d6
+  tables/onboard_f000_024_KBKF.csv.gz (recorded bb7fed660cf2...)  bb7fed660cf26e584584bd94ff76505fe34fc7019fb4d6c085bede699fb2ff8d
+  tables/onboard_f025_048_KBKF.csv.gz (recorded 3856706ebe6d...)  3856706ebe6d014b9a04483d419c0027434c5a536ae6b45a62d2eff2f50d6dc4
+  tables/onboard_f000_024_KDAL.csv.gz (recorded 7d7a0b82dd4e...)  7d7a0b82dd4e3ea656135bc3c6357ed15d0b49f6236c1f04f8f753b2b7cffd1d
+  tables/onboard_f025_048_KDAL.csv.gz (recorded 3f9a3de0ba56...)  3f9a3de0ba56f42e8d3e86e37740a6fc6a778fe57cf7efd30afcb5184e4d19c2
+  tables/onboard_f000_024_KHOU.csv.gz (recorded 81f4c679ed1f...)  81f4c679ed1f9fb05b5ad76723b66d916b61f2d84182120ca43effcb15366fbe
+  tables/onboard_f025_048_KHOU.csv.gz (recorded bfb2376f08b3...)  bfb2376f08b34fd963c797b2d5f75d9191eed2fb4a71d5ccb5de23e1f4c7e2c3
+  tables/onboard_f000_024_KLAX.csv.gz (recorded 7a3faf7de137...)  7a3faf7de137fdfbf35fc0efe288f3ee283569ab3058fda8d5bcc65b4852c6ce
+  tables/onboard_f025_048_KLAX.csv.gz (recorded 117a66d6ffa9...)  117a66d6ffa9c47758e3e1376f9b69663e5723f07ed2b0424575d54cf224dd81
+  tables/onboard_f000_024_KLGA.csv.gz (recorded 6be112944777...)  6be112944777908bba5e5ff5e4cd2538a3d73c703458fd95753b4d1681d11a72
+  tables/onboard_f025_048_KLGA.csv.gz (recorded c79a4792bc58...)  c79a4792bc58d20ca8a956334610126c75f472d69435eb95c87424ad8ac7342f
+  tables/onboard_f000_024_KMIA.csv.gz (recorded 662d727162d6...)  662d727162d64aeddcb08f0f6506da13164d0f08de2af2df7fe6f13b5a7a3a6f
+  tables/onboard_f025_048_KMIA.csv.gz (recorded b4e08023c63c...)  b4e08023c63c607d855ac166f5d0f732f7c1df63570555534657ddc03d4b080f
+  tables/onboard_f000_024_KSEA.csv.gz (recorded 903a4b130e50...)  903a4b130e5096d6b75d4ea802772ce80507bb379ca72dc94d6212bd9bc9f4c9
+  tables/onboard_f025_048_KSEA.csv.gz (recorded 62ef574ddb9f...)  62ef574ddb9f82681cb9c084c8404235a523eab931f6aaf9b20b5da90df183c9
+  tables/onboard_f000_024_LEMD.csv.gz (recorded 3df8e03c3344...)  3df8e03c3344833b47900dbda27b3f1581566e4403636629b34125dc99857fb3
+  tables/onboard_f025_048_LEMD.csv.gz (recorded cae2fccaddb0...)  cae2fccaddb09c3800f37aae00ffd64647bc0d9605fe3874f87970d45a8874e7
+  tables/onboard_f000_024_LFPB.csv.gz (recorded 1beffa75d338...)  1beffa75d3383c323977e2a3f17881235d0a0b782bbe53844075b394bfad23ec
+  tables/onboard_f025_048_LFPB.csv.gz (recorded 8ee0120fe1b0...)  8ee0120fe1b0ff6b8b11a4322b54db1b506010ef32f920b2369b0b2959d1eede
+  tables/onboard_f000_024_LIMC.csv.gz (recorded 51b5ab312832...)  51b5ab31283237a98f2e0e1b23077ebc83128c723ef54fb12c6a502cd1bfd031
+  tables/onboard_f025_048_LIMC.csv.gz (recorded 737ee420bf0e...)  737ee420bf0e95267c32a73187cea9b1f721e70a4469c1dd1fba33062d0a3e49
+  tables/onboard_f000_024_LLBG.csv.gz (recorded 6bac3096e762...)  6bac3096e762ee6ae26bf6634c3570c9b8ee0dcdd7ef5689d31ea80ad424efe8
+  tables/onboard_f025_048_LLBG.csv.gz (recorded c77166d6d380...)  c77166d6d380df4ad050f8778fd7d77de812a93ea34e7c772227a814594d564d
+  tables/onboard_f000_024_LTAC.csv.gz (recorded 2b7137eceed4...)  2b7137eceed421b915189911071445fd083b32c35f85084c7e93a13605612590
+  tables/onboard_f025_048_LTAC.csv.gz (recorded 662ac61b074c...)  662ac61b074c1a741aec22bc1c17f05430b0113a82f0167c7838174e39e0b8ae
+  tables/onboard_f000_024_LTFM.csv.gz (recorded 7f126edc95c3...)  7f126edc95c33fad8e2c7208a2913f33359b882d690690142607e4d1732e2464
+  tables/onboard_f025_048_LTFM.csv.gz (recorded 47938b78abab...)  47938b78abab9555e3c568aaa7b883828267290c3c9041685cb978ea802a99c0
+  tables/onboard_f000_024_OEJN.csv.gz (recorded 0df97ef286d9...)  0df97ef286d9e56f5baaa0add6a38e5e5f9de4be50b37732f842b498160b5811
+  tables/onboard_f025_048_OEJN.csv.gz (recorded 3dbecb8a6271...)  3dbecb8a627177af4f50734eec8585486095ca5c705383b75d2c1fa74bde29c5
+  tables/onboard_f000_024_OPKC.csv.gz (recorded 7e845481c1b6...)  7e845481c1b614689eef38b366b0dc2b24c754221da4145a227b6bee030daa3b
+  tables/onboard_f025_048_OPKC.csv.gz (recorded 200011fe7229...)  200011fe7229cca9ea09b127ff3fcad67802235e3140d6a4b40345058a90bada
+  tables/onboard_f000_024_RCSS.csv.gz (recorded c7a2d6b1293b...)  c7a2d6b1293b112ad9b8872ef3d0a56ab6434a22c79cfab401bd6b85c2ce34f2
+  tables/onboard_f025_048_RCSS.csv.gz (recorded 47a8b6aca275...)  47a8b6aca2756885b55b6e8348fc4e097d4b6f457416c1d0f158610275a25635
+  tables/onboard_f000_024_RJTT.csv.gz (recorded d95f41fde17b...)  d95f41fde17b1429c73267e80a568b828c511d18b55120a83ab62abb2ddcf3ad
+  tables/onboard_f025_048_RJTT.csv.gz (recorded b705c7d38633...)  b705c7d386332cf2eefa5eae08fe390b0b97326bfbcdcc2cea12bd2dc29c856c
+  tables/onboard_f000_024_RKPK.csv.gz (recorded 7470ea1bc81b...)  7470ea1bc81bba62478f44e402f0f2cac8433a6bba85a39d85ed56b195ffab82
+  tables/onboard_f025_048_RKPK.csv.gz (recorded a30b83ace6a4...)  a30b83ace6a485092da62b502ca40978714ff735bbcabfcf44c9bc6270d87a04
+  tables/onboard_f000_024_RKSI.csv.gz (recorded bf546da67532...)  bf546da675328259bd883d46081d8de1e81aabf882ec4a30a4c30d642678d5bb
+  tables/onboard_f025_048_RKSI.csv.gz (recorded 81caf50cbeb0...)  81caf50cbeb0b64b9101579c5911c12c42d93221ff63944e510b6fa09d6c922c
+  tables/onboard_f000_024_RPLL.csv.gz (recorded 61e4fefdf853...)  61e4fefdf8539e681267b883a9f3405cd4d9b65f101d1f632f8a51d3cd914fa4
+  tables/onboard_f025_048_RPLL.csv.gz (recorded 25e2fc2e6c46...)  25e2fc2e6c464d809751db5b6656403945d3788b117bf282654157565c6f3f54
+  tables/onboard_f000_024_SAEZ.csv.gz (recorded 930646cc9068...)  930646cc90685bc1c24700826c0642437219d8c9d24f20e8711c87aab4fc9a35
+  tables/onboard_f025_048_SAEZ.csv.gz (recorded 7395116993cb...)  7395116993cbed6e339459eb9bfd9b75c3d3a29fca5c30bc13339faf9e00b372
+  tables/onboard_f000_024_SBGR.csv.gz (recorded cc68cf8ea0b5...)  cc68cf8ea0b597e438b1cbb39c50b2a8debb23177ec222722e299439709c748c
+  tables/onboard_f025_048_SBGR.csv.gz (recorded 5d3254365588...)  5d32543655883519dfbefd68998fd516b1f85036c0f39dec6e0691374b9aef28
+  tables/onboard_f000_024_UUWW.csv.gz (recorded aaaf450c03f4...)  aaaf450c03f47947d4eb693ee6a35dd27d751553af65083384440e52eaceee37
+  tables/onboard_f025_048_UUWW.csv.gz (recorded 9b4e45674687...)  9b4e45674687707a75cd1bb7fc9c2ea970668c013ab3e6bb9436a3739b1ad0c4
+  tables/onboard_f000_024_WMKK.csv.gz (recorded edf738d8bc90...)  edf738d8bc909238102b3cf90a3a3edecb968309a3ba21e6ee396c0c3b65b329
+  tables/onboard_f025_048_WMKK.csv.gz (recorded 1b1209fcd2f1...)  1b1209fcd2f14b992be04a6602de24fe35a7f014733d2bd96426bfe7f38f4562
+  tables/onboard_f000_024_WSSS.csv.gz (recorded 043ac1fb7388...)  043ac1fb738874299eb512f54ebba9a09cfbb8d0474a63be57a9c268f77a836a
+  tables/onboard_f025_048_WSSS.csv.gz (recorded 7280ca426412...)  7280ca4264128812bee2f18708c6303988e054c87bfbd5bf69d1f70f4f914370
+  tables/onboard_f000_024_ZBAA.csv.gz (recorded 4073359afde6...)  4073359afde648dab93613b82ba45d830ef11736fc207f62c6191dc077191d79
+  tables/onboard_f025_048_ZBAA.csv.gz (recorded 386ed809eadd...)  386ed809eadde26fa00da1f247de0cd5c576c6b1996f4bfb9177a5d84742b87e
+  tables/onboard_f000_024_ZGGG.csv.gz (recorded 7addfb6c888e...)  7addfb6c888ecefafe2d253cb51cae531b075f08ad213d0bf046cef023fbd8bc
+  tables/onboard_f025_048_ZGGG.csv.gz (recorded 7e809a13c848...)  7e809a13c8487db0c10085b80a0cf3b7f8f16748733c9c1559ee57bcf1d56395
+  tables/onboard_f000_024_ZHHH.csv.gz (recorded 585fd48481ff...)  585fd48481ff0e67361e5250d2cb67a2fe1c47a2852e9fac49b2da2a271a7b1a
+  tables/onboard_f025_048_ZHHH.csv.gz (recorded d70864516e93...)  d70864516e93fddb36109d2352ef7e9973812d152d53a94fe964829af0171cf6
+  tables/onboard_f000_024_ZSPD.csv.gz (recorded 46c751959ed2...)  46c751959ed2b2b8e50ac8e08ff304f3b142cf272b4564a0e25e9fd5d04cc127
+  tables/onboard_f025_048_ZSPD.csv.gz (recorded 678e2e1499be...)  678e2e1499be1c4d3a15f77a9c58949d123cd66e539c1caa988e673a8ffad90c
+  tables/onboard_f000_024_ZSQD.csv.gz (recorded 9048df5e1062...)  9048df5e10628a3b4aa8e522885197660ec5274bfbcfec25fa783d228f78a7ca
+  tables/onboard_f025_048_ZSQD.csv.gz (recorded 6a54589e7305...)  6a54589e7305e40487cf8c6ce596355d4a2ae26fad3dceeb68e92620da446158
+  tables/onboard_f000_024_ZUUU.csv.gz (recorded c427c885cdfc...)  c427c885cdfc50367d95081065f27537a0ea7b7630561ffe0eb848947afd6ee2
+  tables/onboard_f025_048_ZUUU.csv.gz (recorded 3b281f816b33...)  3b281f816b33407ad3f2f599d32654e32b39c2fb044716716ecd5405c408f36b
+  scripts/session115_obs_check.py  cc4fffdc673cd3dce9e95d099846b3040f4f53b6781c8fbd99f3fea73b64ff86
+
+file SHA-256 e2d5d06769841ac0b3fc8c802f4b87ff302184f5a9aabd8c80e3befd361e2a63
+rows 255 (header excluded)
+thresholds (D109.4, unchanged): range -60.0 to 60.0; spike 10.0; stuck run 24; differences rounded to 6 decimals before the comparison; check (d) is not run (D110.3)
+D110.4 classes: i no dew point (fewer than half the run's hours have a finite dew point); ii dew point varies; iii saturated (all equal, equal to the run's temperature); iv suspect (all equal, different from the run's temperature)
+check 'all' rows hold the denominators (usable hours; target hours and rows; usable days); the other rows hold the flagged counts in the same columns
+target = a table row at leads 3 to 48 with an observation (D109.5 as session 115 counted it); only the valid time, the lead and the observation column of a table are used; split by the row's valid time (days: local date)
+usable day = D82.8 (usable hours at least the day's hours minus 2), every local day wholly inside the window; its maximum hour(s) = every hour that attains the day's maximum
+tables 'none' = no stage C or product table (MMMX, VILK): target columns blank; days_status says if a day could not be computed (blank day columns)

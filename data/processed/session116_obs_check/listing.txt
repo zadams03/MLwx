@@ -1,0 +1,34 @@
+Out-of-range and spike hours (checks (a) and (b)): values at h-2, h-1, [h], h+1, h+2, and the dew point at h
+  CYYZ 2025-04-28T01:00Z flags b(1h) values [17.0, 15.0, 27.0, 11.0, 11.0] dew -4.0
+  KHOU 2026-04-23T15:00Z flags b(1h) values [21.67, 23.33, 2.5, 26.11, 27.22] dew 2.11
+  RKPK 2021-09-13T03:00Z flags b(1h) values [27.0, 27.0, 11.0, 27.0, 27.0] dew 5.0
+  RKPK 2022-03-03T07:00Z flags b(1h) values [14.0, 15.0, 1.0, 13.0, 12.0] dew -10.0
+  SAEZ 2021-08-25T01:00Z flags b(1h) values [8.0, 9.0, 58.0, 4.0, 7.0] dew 4.0
+  5 hours
+
+Stuck runs in class (iv) suspect: id, start, end, length, temperature, dew point, hours with a dew point
+  EGLC-1 2021-12-17T19:00Z to 2021-12-18T21:00Z 27 h temp 8.0 dew 7.0 (27 of 27)
+  RCSS-1 2021-10-24T01:00Z to 2021-10-25T00:00Z 24 h temp 21.0 dew 18.0 (24 of 24)
+  2 runs
+
+Stuck runs by class, per airport (i no dew point / ii varies / iii saturated / iv suspect), and run lengths
+  EDDM  claim    0/4/0/0  runs 4, hours 118, longest 36
+  CYYZ  claim    0/0/1/0  runs 1, hours 24, longest 24
+  ZGSZ  claim    0/1/0/0  runs 1, hours 24, longest 24
+  ZUCK  claim    0/7/3/0  runs 10, hours 283, longest 40
+  NZWN  claim    0/3/0/0  runs 3, hours 80, longest 29
+  EGLC  dev      0/3/0/1  runs 4, hours 108, longest 31
+  LFPG  dev      0/1/0/0  runs 1, hours 29, longest 29
+  EFHK  product  0/9/0/0  runs 9, hours 307, longest 48
+  EHAM  product  0/6/0/0  runs 6, hours 170, longest 34
+  EPWA  product  0/9/0/0  runs 9, hours 240, longest 33
+  FACT  product  0/1/0/0  runs 1, hours 24, longest 24
+  LFPB  product  0/4/0/0  runs 4, hours 114, longest 37
+  LIMC  product  0/3/1/0  runs 4, hours 111, longest 38
+  LTFM  product  0/5/0/0  runs 5, hours 129, longest 27
+  RCSS  product  0/0/0/1  runs 1, hours 24, longest 24
+  RJTT  product  0/1/0/0  runs 1, hours 24, longest 24
+  RKSI  product  0/0/1/0  runs 1, hours 24, longest 24
+  UUWW  product  0/15/0/0  runs 15, hours 431, longest 41
+  ZGGG  product  0/1/0/0  runs 1, hours 24, longest 24
+  ZHHH  product  0/5/1/0  runs 6, hours 178, longest 48
