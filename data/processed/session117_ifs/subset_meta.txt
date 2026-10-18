@@ -1,0 +1,17 @@
+Session 117 --subset (scripts/session117_ifs_guide.py): the mx2t3 subset of D111.4 on common days.
+Computed by this script, not by session 114's script (owner's ruling, session 117 Step 4). Descriptive
+only: no formal test. 7-day block bootstrap (F125.3), seed 117, 10,000 resamples, airports claim first.
+Days: D98.10's days paired for IFS (session 114's day records) that also have an mx2t3 value and every
+other forecast scored here. Truth: our hourly-report maximum (D82.8).
+
+written at  : 2026-10-18T18:46:36Z
+packages    : python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2
+session 114 script SHA-256 : 5ff60d328b2a0489de4173c989a5a9a8472b6bdb5ce6cc4c70d7bd543b2ddc52 (checked before import)
+gate        : 294 of 294 values equal session 114's tables exactly
+window coverage: EDDM 0 of 277 days lack a window, KORD 0 of 274 days lack a window, CYYZ 0 of 274 days lack a window, ZGSZ 0 of 277 days lack a window, ZUCK 0 of 277 days lack a window, NZWN 0 of 274 days lack a window, EGLC 0 of 277 days lack a window, LFPG 0 of 276 days lack a window, KDSM 0 of 275 days lack a window, YSDU 0 of 272 days lack a window, KRNO 0 of 274 days lack a window, KSFO 0 of 274 days lack a window
+inputs (SHA-256):
+  session114_comparisons/dailymax_ifs.csv  e10964942c5ecbb3f5ea5edd96cab4f55c35f5afdf7a6f4d47232119482ce06a
+  session114_comparisons/dailymax_ifs_skill.csv  be6e3d3a947cd0252811ca7f35d89db643dea0bff56182053eb44ad7f82bcb1f
+outputs (SHA-256, rows):
+  dailymax_ifs_mx2t3_subset.csv  6703847f034174a595f78f9e10247dc4d02f1243eb6ab10a2cb96104a2758882  180
+  dailymax_ifs_mx2t3_subset_skill.csv  8f9cc7409bc034c82a27ae7833913b3cae7d19aef4805a4d9ee385e8bed30f65  180

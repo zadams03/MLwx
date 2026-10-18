@@ -1,0 +1,382 @@
+SESSION 117 SUMMARY (D111, F160): the owner's IFS pull checked, and the curve against ECMWF IFS on spent years
+Descriptive only (D107.2). Nothing valid after 2026-07-31T23:00 UTC read; nothing from the 37 airports, MLwx-live or 2026-27; no network; nothing committed.
+Checks (all PASS):
+  Step 0 preflight and pull check PASS: 15 of 15 files match meta SHA-256 and rows; kept + gaps = expected in 72 of 72 month-param cells; 0 duplicate messages; log 9 runs, 87 HTTP 503 retries, each chunk written once
+  Step 1 D111 byte-equal (diff, cmp), 0 em-dashes, added to the Live index
+  Step 2 --match (trial folder) PASS: 2,103 non-IFS rows equal the committed match_counts.csv apart from 232 NBS txn_window labels ("pending (Step 6)")
+  Step 3 --hourly ifs and Step 4 --dailymax ifs: done (exit 0, seed 114); --subset gate 294 of 294 equal session 114's tables exactly, then scored (seed 117)
+  Step 5 --render, --verify PASS: re-rendered from HEAD identical (0 of 14,242 number mismatches), 48 of 48 independent cell checks, diff holds only the allowed edits, 0 em-dashes
+  Step 6 F160 recorded (18 lines); archive: 3 moved, checks 1-4 PASS; --citations 189 resolved, 0 unresolved, 0 doubled, 0 out of order
+  DECISIONS.md 68,775 bytes (under 80,000); scope-list check: no breach
+Headline numbers (claim airports first; skill = 1 - MAE curve / MAE IFS):
+  Hourly: curve beats IFS at 12 of 12 (BH): claim +6.3 % EDDM to +32.1 % ZGSZ; dev +7.5 % YSDU to +44.7 % KRNO. Raw GFS's MAE below IFS's at 5 of 12.
+  Daily max (IFS's 3-hourly steps, D111.4): 12 of 12 (BH): claim +12.5 % EDDM to +50.0 % NZWN; dev +13.0 % KDSM to +61.1 % KRNO. Sampled at IFS's steps the curve still wins at 12 of 12.
+  mx2t3 (272 to 277 days per airport, descriptive): beats IFS's step maximum at 12 of 12 (by 3 to 21 %); the curve beats mx2t3 at 10 of 12 (not KDSM, KSFO; 5 intervals span 0).
+  Pull: mx2t3 failed the check ("max_2t") exactly 2025-02-25T06Z to 2026-02-11T06Z; owner's items (1), (2) confirmed, (3) corrected: gaps = units in 25 of 36 months only.
+Owner's rulings in chat (Step 4): the mx2t3 subset recomputed by session117_ifs_guide.py --subset behind an exact gate; ANALYSIS.md line 5 and line 812 also edited (beyond the prompt's list).
+Readings for the owner (readings, not rulings):
+  IFS is the weakest competitor in the field guide and changes no standing; it reads cold (+0.39 to +1.15 C mean error at 10 of 12), and its 0.4 degree months are far worse at KRNO and KSFO.
+  An mx2t3 rerun would add about 350 days and could narrow the daily-maximum gap, but looks unlikely to reverse it; it needs its own entry (it changes session 113's check).
+Open items:
+  (1) Session 114's --verify now fails on Part 1 (its template says "pending"); its part1.md and part2_comparisons.md are out of date. (2) No IFS figure.
+  (3) Session 114's subdaily_max does not check window completeness (0 of 3,301 days affected); its F156_4 has no IFS entry. (4) The preflight did not list the 16 pull files (taken as expected).
+  (5) Pull log: runs 2, 3, 5 and 6 have no closing line; the log cannot say which was the pkill. Exit codes are not logged; they are inferred from the script.
+Next: review and commit; the owner groups the MLwx folders (D111.7); then the direction brainstorm.
+================================================================================
+CHECKPOINTS (session 117, appended one line per step; the summary is added at the top at the end of the session)
+
+Step 0 | Preflight and the pull check | PASS
+  git status: untracked only docs/sessions/session-117.md and the 16 files of the owner's IFS pull in data/processed/session113/ (ifs_<12 airports>.csv.gz, ifs_gaps.csv, ifs_manifest.csv.gz, ifs_meta.txt, ifs_terrain.csv); data/processed/session113/work/ exists and is empty (git does not list it; not touched). Note: the prompt's preflight line names only the session file and work/; the 16 pull files are the D108.2 pull this session checks, so this was read as expected, not a failure. Reported for the owner.
+  HEAD 42e6ecb "Session 116: D110 and F159, ..." = first line of docs/commits/commit-116.txt.
+  Live index lists 11 entries (D93, D103, D105, D106, D107, D108, D109, D110, F157, F158, F159). No D111 or F160 in either DECISIONS file. None of this session's new paths exists. session114_comparisons/ holds no file containing "ifs" except the 9 AIFS files (aifs).
+  scripts/session113_comparison_pull.py SHA-256 2023b0b0...b958 = S113_SCRIPT_SHA256 in session 114's script. git diff --stat 8ad82d4 -- scripts/session114_comparisons.py: empty.
+  Pull files: 15 of 15 files listed in ifs_meta.txt match their SHA-256 and row count (ifs_terrain.csv: SHA-256, no count listed). Override text "D108.2: owner's override of D107.7's 24-hour limit for the IFS pull": names D108.2. Airports: D107.5's 12 (claim then dev order). Windows: claim 2024-08-01T00Z to 2026-07-31T18Z, dev 2023-08-01T00Z to 2026-07-31T18Z, 12 of 12 = D107.5.
+  Expected cycle-steps (steps 3 to 48 by 3, valid on or before 2026-07-31T23Z) from 2023-08-01T00: 70,080 in 36 months. kept + gaps = expected in 72 of 72 month-parameter cells (2t, mx2t3). Gaps by reason: "*" not listed 48 (counts for both params); mx2t3 no message 29,888 (detail "0 index lines"); mx2t3 failed check 22,480 (detail "shortName max_2t", every one). Totals equal the meta file (messages 87,696; gaps 52,416; value rows 1,438,272).
+  Owner's item (1) CONFIRMED: 2024-02 has 1,856 cycle-steps and 1,808 2t messages; the 48 gaps are "not listed" (the files are absent from the archive listing): cycles 2024-02-28T06Z, 12Z and 18Z, 16 steps each (F156.4's "3 missing, one day in 2024-02").
+  Owner's item (2) CONFIRMED from the rows (label columns only): 23,376 messages valid in cycles before 2024-08-01 carry 12 value rows each (EGLC, LFPG, KDSM, YSDU, KRNO, KSFO x sets gfs and iem); 64,320 messages from 2024-08-01 carry 18 (those 12 plus EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN, set iem only). Every manifest message has value rows and every value row's message is in the manifest.
+  Owner's item (3) CORRECTED: in the log's chunk lines, "units" is the number of (cycle, step) files planned in the month and "gaps" the number of gap rows written (one per missing or rejected message, or one "*" row for a file not listed, standing for both its messages). It is not a check. gaps = units holds in 25 of 36 months only, the months where every file lost exactly one message (its mx2t3: no message, or failed check; in 2024-02, 48 "*" rows replace 48 mx2t3 rows). It does not hold in the 11 months where mx2t3 was kept (2024-09, 2024-11 to 2025-02, 2026-02 to 2026-07; 2026-03 to 07 have 0 gaps). What holds in every month: messages + gap rows + "*" rows = 2 x units (36 of 36).
+  mx2t3 per month (kept / no message / failed check): 2023-08 to 2024-08 0 / all / 0 (2024-02 also 48 not listed); 2024-09 96 / 1,824 / 0 (6 cycles kept, 2024-09-17T12Z to 2024-09-18T18Z); 2024-10 0 / 1,984 / 0; 2024-11 1,200 / 720 / 0 (kept from 2024-11-12T06Z); 2024-12 and 2025-01 all kept; 2025-02 1,552 / 0 / 240 (kept to 2025-02-25T00Z, failed from 2025-02-25T06Z); 2025-03 to 2026-01 0 / 0 / all; 2026-02 1,120 / 0 / 672 (failed to 2026-02-11T06Z, kept from 2026-02-11T12Z); 2026-03 to 2026-07 all kept. Total kept 17,664 messages. The planning chat's reading is CONFIRMED with two details: no message up to 2024-11-12T00Z apart from the 6 cycles of 2024-09-17/18 (kept); failed check exactly 2025-02-25T06Z to 2026-02-11T06Z, with no kept message inside that span. This agrees with D111.4's description (not materially different), so the session goes on.
+  Manifest: 0 duplicate (cycle, step, param); 0 duplicate message ids; 0 (cycle, step, param) both kept and in gaps; 0 cycle-steps outside the expected set; 0 duplicate gap rows.
+  Pull log (~/mlwx-ifs-pull.log, 165 lines, read only; nothing copied into the repo but these counts). 9 runs by "run start" line. Errors: 87 failed attempts, all HTTP 503, 0 other. End times are not logged; given as start + last logged elapsed. Exit codes are not logged; given from the script's exit paths.
+    run 1 start 2026-10-16T16:22:39Z, ends about 2026-10-17T03:55Z (11.55 h), exit 2 ("chunks failed 3 times"), 34 x 503, 26 chunks written, 26 of 36 done.
+    run 2 start 2026-10-17T09:14:25Z, no closing line (stopped from outside), 22 x 503, 0 chunks.
+    run 3 start 2026-10-17T14:42:51Z, no closing line, 1 x 503, 0 chunks.
+    run 4 start 2026-10-17T15:10:56Z, "STOP: workers must be 8, 16 or 32" before any request, exit 1, 0 chunks.
+    run 5 start 2026-10-17T17:55:49Z, no closing line, 3 x 503, 0 chunks.
+    run 6 start 2026-10-17T21:45:45Z, no closing line, 1 x 503, 0 chunks.
+    run 7 start 2026-10-17T22:08:49Z, ends about 2026-10-18T03:35Z (5.43 h), exit 2, 18 x 503, 5 chunks (2025-03 to 2025-07), 31 of 36.
+    run 8 start 2026-10-18T08:48:06Z, ends about 2026-10-18T11:51Z (3.05 h), exit 2, 8 x 503, 4 chunks (2024-10, 2024-12, 2025-01, 2025-02), 35 of 36.
+    run 9 start 2026-10-18T16:10:38Z, ends about 2026-10-18T16:16Z (meta written 16:15:52Z), exit 0, 0 errors, 1 chunk (2024-09), 36 of 36; terrain, merge and the 4 checks (72 of 72 cells; latest valid 2026-07-31T21:00Z; 0 of 5,753,088 values outside -70 to 60 C; 20 of 20 re-fetches identical); work/ifs deleted.
+    Every run printed "gate: NOT PULLED (owner decides)" followed by the override text: the gate row is unchanged and the D108.2 override lifts it (the script's own route).
+  Stopped runs: runs 2, 3, 5 and 6 have no closing line; the log cannot say which one was the owner's pkill. None of them logged a finished chunk. Each of the 36 chunks has exactly one completion line (none written twice); the sums of the 36 chunk lines (units 70,080; value rows 1,438,272; messages 87,696; gaps 52,416) equal the merged files; the script deletes a partial chunk file before rewriting it and writes the done marker last. No sign of a run stopped mid-write.
+  python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, matplotlib 3.11.2 (all import). DECISIONS.md 72,317 bytes.
+  Full per-month table (expected, kept, gaps by reason, per param; units vs messages vs gap rows): appended at the end of this file (Step 0 detail).
+
+Step 1 | Record D111 | PASS
+  D111 block (14 lines, 3,981 bytes) copied with sed from docs/sessions/session-117.md lines 49 to 62, appended to DECISIONS.md after a blank line; diff and cmp against the appended tail: byte-equal. Em-dashes in the block: 0. D111 added to the Live index (after D110). Files changed: DECISIONS.md.
+
+Step 2 | Match (--match --trial-dir data/processed/session117_ifs/) | PASS
+  Run 2026-10-18T18:18:45Z, 96 s, exit 0, "--match: PASS". Wrote data/processed/session117_ifs/match_counts.csv (2,958 rows, SHA-256 c118ba5eed14332cbbf4fc469924481d8d26268895b2518aab78d1c05303c102). The new folder held only this file. Nothing in session114_comparisons/ written.
+  Gate: the 2,103 non-IFS rows equal the committed session114_comparisons/match_counts.csv row for row, in order, in every column but txn_window (columns identical). txn_window: 1,871 rows equal; 232 NBS daily rows differ only there: the new file has "pending (Step 6)" (what --match writes), the committed file the labels --docs filled (v4.1 20, v4.2 50, v4.3 70, v5.0 25 rows "12Z (current day) to 06Z (next day) (documentation)"; v5.0.14 45 "definition not found"; 22 "no run"). The 855 IFS rows are new.
+  IFS cycles with 2 m temperature per test year (loader): claim 2024-25 1,460, 2025-26 1,460; dev 2023-24 1,461, 2024-25 1,460, 2025-26 1,460, at 12 of 12 airports; equal to the pull's 2t cycles in the manifest (1,461 / 1,460 / 1,460; 2023-24 is 1,464 less the 3 not-listed cycles of 2024-02-28). F156.4 has no IFS entry: the script's F156_4 dict has no "ifs" key, so its cycle-count STOP is skipped (want None, printed "F156.4: None"), and its "pairs must exist" check runs on the loader's own counts instead; it passed. Values read per airport: 2 m temperature 46,656 (claim) and 70,032 (dev); maximum field 17,664.
+  IFS paired hourly rows (2024-25 / 2025-26; dev 2023-24 / 2024-25 / 2025-26): EDDM 23,360 / 23,288 (46,648); KORD 23,360 / 23,208 (46,568); CYYZ 23,328 / 23,288 (46,616); ZGSZ 23,360 / 23,288 (46,648); ZUCK 23,360 / 23,296 (46,656); NZWN 23,360 / 23,280 (46,640); EGLC 23,376 / 23,344 / 23,280 (70,000); LFPG 23,344 / 23,288 / 23,176 (69,808); KDSM 23,368 / 23,360 / 23,288 (70,016); YSDU 23,216 / 23,240 / 23,064 (69,520); KRNO 23,360 / 23,352 / 23,272 (69,984); KSFO 23,376 / 23,352 / 23,280 (70,008).
+  Unpaired scored rows by reason: "valid time not one of the source's steps" (leads not a multiple of 3) 87,318 to 87,480 claim, 130,223 to 131,295 dev; "no run at this cycle" 138 at each dev airport (the 3 not-listed cycles x 46 leads). IFS values without a scored row of ours ("our row not scored"): EDDM 8, KORD 88, CYYZ 40, ZGSZ 8, ZUCK 0, NZWN 16, EGLC 32, LFPG 224, KDSM 16, YSDU 512, KRNO 48, KSFO 24. None filled.
+  D98.10 days paired (2024-25 / 2025-26; dev 2023-24 / 2024-25 / 2025-26): EDDM 365 / 364 (729); KORD 365 / 361 (726); CYYZ 364 / 364 (728); ZGSZ 365 / 364 (729); ZUCK 365 / 364 (729); NZWN 365 / 363 (728); EGLC 365 / 365 / 364 (1,094); LFPG 365 / 365 / 363 (1,093); KDSM 366 / 365 / 364 (1,095); YSDU 362 / 363 / 359 (1,084); KRNO 365 / 365 / 363 (1,093); KSFO 366 / 364 / 363 (1,093). Unpaired: observed maximum not usable (D82.8) KORD 3, CYYZ 1, NZWN 1, LFPG 1, YSDU 10, KRNO 2, KSFO 2; no run at this cycle EGLC 1, LFPG 1, YSDU 1.
+  Every-cycle days paired: claim 2,901 (KORD) to 2,916 (EDDM); dev 3,798 (YSDU), 3,989 (KRNO, KSFO), 4,373 to 4,377 (EGLC, LFPG, KDSM). Unpaired by reason: day ends after the limit 4 to 7 per airport; no run 2 or 3 (dev); observed maximum not usable 4 to 36.
+  D98.10 days with an mx2t3 value: --match does not count them (it pairs on the primary maximum only). Counted from Step 4's dailymax_ifs.csv (forecast comp2, n per test year); reported under Step 4.
+
+Step 3 | Hourly (--hourly --source ifs) | PASS
+  Run 2026-10-18T18:21:18Z, 54 s, exit 0, seed 114; python 3.12.2, numpy 2.5.2, lightgbm 4.7.0, matplotlib 3.11.2. Wrote to data/processed/session114_comparisons/ (new files only): hourly_ifs.csv 168 rows a499e177661cec8911da291cdc5432e128a5b254ab4c5730c6ecd9e3f4f71b47; hourly_ifs_skill.csv 168 rows 49cb62a943a64b4dd92b99f8ce073a33795e9eee806b7500322b6c3c3dd7c906; hourly_ifs_breakdown.csv 840 rows dc3b608ef57ea612e4aefbe01295a863454790d7ecabb7458d0e63bfe2c77690; hourly_ifs_dm.csv 12 rows e45d2e796d5846f79b3a19da2edff0f1fc08c9a51e5297972aeec9d220f1df5a.
+  Latency (not adjusted for): IFS archive write time minus cycle, median 7.21 to 7.92 h (range 6.45 to 37.31); GFS 3.74 to 3.81 h.
+  Pooled, on IFS's paired rows: n; MAE IFS [95 %] / curve [95 %] / raw GFS / linear MOS; mean error IFS / curve; skill curve vs IFS [95 %]; skill raw GFS vs IFS; DM mean daily diff, p, BH:
+    EDDM: n 46,648; MAE IFS 1.42 [1.36, 1.48] / curve 1.33 [1.27, 1.39] / raw GFS 1.80 / linear MOS 1.43; ME IFS -0.08 / curve +0.03; skill curve vs IFS +6.3 % [+1.2, +10.7]; raw GFS vs IFS -26.5 %; DM -0.092 [-0.157, -0.017] over 730 days, p 1.4e-02, BH rejected
+    KORD: n 46,568; MAE IFS 1.39 [1.32, 1.47] / curve 1.18 [1.13, 1.24] / raw GFS 1.33 / linear MOS 1.21; ME IFS +0.79 / curve -0.05; skill curve vs IFS +15.2 % [+10.9, +19.3]; raw GFS vs IFS +4.3 %; DM -0.211 [-0.277, -0.146] over 730 days, p 1.2e-09, BH rejected
+    CYYZ: n 46,616; MAE IFS 1.35 [1.27, 1.44] / curve 1.14 [1.09, 1.20] / raw GFS 1.48 / linear MOS 1.20; ME IFS +0.81 / curve -0.00; skill curve vs IFS +15.5 % [+11.9, +19.1]; raw GFS vs IFS -9.0 %; DM -0.210 [-0.270, -0.153] over 730 days, p 3.5e-12, BH rejected
+    ZGSZ: n 46,648; MAE IFS 1.31 [1.26, 1.37] / curve 0.89 [0.86, 0.93] / raw GFS 1.15 / linear MOS 0.94; ME IFS +0.98 / curve -0.00; skill curve vs IFS +32.1 % [+27.9, +36.0]; raw GFS vs IFS +12.2 %; DM -0.422 [-0.489, -0.354] over 730 days, p 2.4e-33, BH rejected
+    ZUCK: n 46,656; MAE IFS 1.32 [1.24, 1.40] / curve 1.10 [1.04, 1.15] / raw GFS 1.47 / linear MOS 1.18; ME IFS +0.39 / curve +0.01; skill curve vs IFS +16.9 % [+12.3, +21.3]; raw GFS vs IFS -11.3 %; DM -0.221 [-0.292, -0.154] over 730 days, p 1.6e-09, BH rejected
+    NZWN: n 46,640; MAE IFS 0.94 [0.91, 0.97] / curve 0.78 [0.76, 0.81] / raw GFS 1.16 / linear MOS 0.83; ME IFS +0.42 / curve +0.01; skill curve vs IFS +16.6 % [+12.8, +20.2]; raw GFS vs IFS -23.3 %; DM -0.156 [-0.194, -0.117] over 730 days, p 4.1e-15, BH rejected
+    EGLC (dev): n 70,000; MAE IFS 1.17 [1.13, 1.22] / curve 0.83 [0.81, 0.86] / raw GFS 1.04 / linear MOS 0.84; ME IFS +0.72 / curve +0.00; skill curve vs IFS +29.0 % [+25.4, +32.2]; raw GFS vs IFS +11.7 %; DM -0.339 [-0.390, -0.288] over 1096 days, p 2.0e-36, BH rejected
+    LFPG (dev): n 69,808; MAE IFS 1.28 [1.23, 1.33] / curve 0.96 [0.93, 0.99] / raw GFS 1.24 / linear MOS 1.00; ME IFS +0.92 / curve -0.01; skill curve vs IFS +25.1 % [+21.8, +28.4]; raw GFS vs IFS +3.4 %; DM -0.322 [-0.376, -0.271] over 1096 days, p 2.7e-31, BH rejected
+    KDSM (dev): n 70,016; MAE IFS 1.50 [1.44, 1.56] / curve 1.30 [1.26, 1.35] / raw GFS 1.88 / linear MOS 1.43; ME IFS +0.49 / curve -0.02; skill curve vs IFS +13.0 % [+9.6, +16.4]; raw GFS vs IFS -25.5 %; DM -0.196 [-0.255, -0.140] over 1096 days, p 5.8e-11, BH rejected
+    YSDU (dev): n 69,520; MAE IFS 1.34 [1.30, 1.38] / curve 1.24 [1.20, 1.27] / raw GFS 1.52 / linear MOS 1.33; ME IFS -0.05 / curve -0.01; skill curve vs IFS +7.5 % [+4.7, +10.3]; raw GFS vs IFS -13.3 %; DM -0.101 [-0.140, -0.062] over 1096 days, p 6.3e-07, BH rejected
+    KRNO (dev): n 69,984; MAE IFS 2.20 [2.07, 2.33] / curve 1.21 [1.16, 1.28] / raw GFS 2.23 / linear MOS 1.41; ME IFS +1.15 / curve -0.01; skill curve vs IFS +44.7 % [+41.7, +47.4]; raw GFS vs IFS -1.4 %; DM -0.983 [-1.091, -0.872] over 1096 days, p 2.5e-63, BH rejected
+    KSFO (dev): n 70,008; MAE IFS 1.30 [1.22, 1.38] / curve 1.00 [0.96, 1.05] / raw GFS 1.29 / linear MOS 1.14; ME IFS +0.44 / curve -0.07; skill curve vs IFS +23.0 % [+18.5, +27.0]; raw GFS vs IFS +1.0 %; DM -0.298 [-0.366, -0.230] over 1096 days, p 1.6e-16, BH rejected
+  Formal test family 'ifs hourly' (curve against IFS): Benjamini-Hochberg at 0.05 rejects 12 of 12, every one with the curve's errors smaller (mean daily difference -0.092 EDDM to -0.983 KRNO).
+  Per test year (IFS / curve MAE, skill curve vs IFS):
+    EDDM: 2024-25 1.41 / 1.31 (+6.7 %); 2025-26 1.43 / 1.35 (+5.9 %)
+    KORD: 2024-25 1.44 / 1.15 (+20.4 %); 2025-26 1.34 / 1.21 (+9.6 %)
+    CYYZ: 2024-25 1.32 / 1.16 (+11.5 %); 2025-26 1.39 / 1.12 (+19.4 %)
+    ZGSZ: 2024-25 1.40 / 0.91 (+34.9 %); 2025-26 1.23 / 0.87 (+28.9 %)
+    ZUCK: 2024-25 1.36 / 1.14 (+16.2 %); 2025-26 1.27 / 1.05 (+17.5 %)
+    NZWN: 2024-25 0.93 / 0.79 (+14.8 %); 2025-26 0.95 / 0.78 (+18.4 %)
+    EGLC: 2023-24 1.45 / 0.79 (+45.4 %); 2024-25 1.11 / 0.87 (+21.5 %); 2025-26 0.96 / 0.84 (+12.5 %)
+    LFPG: 2023-24 1.31 / 0.93 (+29.0 %); 2024-25 1.27 / 1.02 (+20.0 %); 2025-26 1.26 / 0.93 (+26.3 %)
+    KDSM: 2023-24 1.58 / 1.34 (+15.3 %); 2024-25 1.45 / 1.24 (+14.9 %); 2025-26 1.47 / 1.34 (+8.8 %)
+    YSDU: 2023-24 1.35 / 1.27 (+6.2 %); 2024-25 1.35 / 1.24 (+8.2 %); 2025-26 1.31 / 1.20 (+8.2 %)
+    KRNO: 2023-24 2.64 / 1.25 (+52.5 %); 2024-25 1.99 / 1.24 (+38.0 %); 2025-26 1.96 / 1.15 (+41.0 %)
+    KSFO: 2023-24 1.63 / 0.99 (+39.3 %); 2024-25 1.19 / 1.03 (+12.9 %); 2025-26 1.09 / 0.98 (+9.4 %)
+  Grid and elevation segments (hourly_ifs_breakdown.csv, condition 'elevation'; D108.3). Labels: 'no elevation treatment' = the 0.4 degree grid (cycles to 2024-01-31) plus the Ni 1439 0.25 degree grid (2024-02-01 and 02-02, 8 cycles), development airports only; the tables do not split these two grids, so the 0.4 degree rows are this label less at most 8 cycles. 'elevation-adjusted, terrain from a later date' = 2024-02-03 to 2024-12-02 (2024-12-03 terrain). 'elevation-adjusted' = from 2024-12-03. Rows, MAE IFS / curve / raw GFS, ME IFS:
+    EDDM: elevation-adjusted, terrain from a later date: 7,936, 1.37 / 1.45 / 1.69, ME -0.54; elevation-adjusted: 38,712, 1.43 / 1.31 / 1.82, ME +0.02
+    KORD: elevation-adjusted, terrain from a later date: 7,936, 1.24 / 0.95 / 1.15, ME +0.84; elevation-adjusted: 38,632, 1.43 / 1.23 / 1.37, ME +0.79
+    CYYZ: elevation-adjusted, terrain from a later date: 7,928, 1.09 / 0.96 / 1.11, ME +0.44; elevation-adjusted: 38,688, 1.41 / 1.18 / 1.55, ME +0.89
+    ZGSZ: elevation-adjusted, terrain from a later date: 7,936, 1.47 / 0.87 / 1.08, ME +1.24; elevation-adjusted: 38,712, 1.28 / 0.90 / 1.17, ME +0.92
+    ZUCK: elevation-adjusted, terrain from a later date: 7,936, 1.32 / 1.17 / 1.39, ME +0.42; elevation-adjusted: 38,720, 1.32 / 1.08 / 1.48, ME +0.39
+    NZWN: elevation-adjusted, terrain from a later date: 7,936, 0.91 / 0.72 / 1.20, ME +0.52; elevation-adjusted: 38,704, 0.95 / 0.80 / 1.15, ME +0.40
+    EGLC: no elevation treatment: 11,872, 1.55 / 0.78 / 0.88, ME +1.43; elevation-adjusted, terrain from a later date: 19,424, 1.31 / 0.80 / 1.05, ME +0.93; elevation-adjusted: 38,704, 0.99 / 0.87 / 1.08, ME +0.39
+    LFPG: no elevation treatment: 11,848, 1.12 / 0.87 / 1.00, ME +0.73; elevation-adjusted, terrain from a later date: 19,392, 1.42 / 1.01 / 1.33, ME +1.03; elevation-adjusted: 38,568, 1.26 / 0.96 / 1.26, ME +0.92
+    KDSM: no elevation treatment: 11,872, 1.36 / 1.30 / 1.70, ME +0.21; elevation-adjusted, terrain from a later date: 19,432, 1.63 / 1.27 / 2.14, ME +0.81; elevation-adjusted: 38,712, 1.48 / 1.32 / 1.81, ME +0.42
+    YSDU: no elevation treatment: 11,808, 1.51 / 1.30 / 1.51, ME +0.44; elevation-adjusted, terrain from a later date: 19,296, 1.27 / 1.24 / 1.55, ME -0.25; elevation-adjusted: 38,416, 1.32 / 1.22 / 1.50, ME -0.10
+    KRNO: no elevation treatment: 11,872, 3.32 / 1.43 / 2.28, ME +2.74; elevation-adjusted, terrain from a later date: 19,424, 1.91 / 1.17 / 2.11, ME +0.73; elevation-adjusted: 38,688, 2.00 / 1.17 / 2.27, ME +0.87
+    KSFO: no elevation treatment: 11,872, 2.03 / 1.03 / 1.39, ME +1.90; elevation-adjusted, terrain from a later date: 19,440, 1.33 / 1.10 / 1.31, ME -0.15; elevation-adjusted: 38,696, 1.06 / 0.95 / 1.25, ME +0.29
+  Version segments (48r1 / 49r1 from 2024-11-13 / 50r1 from 2026-05-13), rows and MAE IFS / curve:
+    EDDM: 48r1 6,656, 1.39 / 1.39; 49r1 34,936, 1.39 / 1.34; 50r1 5,056, 1.69 / 1.21
+    KORD: 48r1 6,656, 1.30 / 0.93; 49r1 34,872, 1.44 / 1.22; 50r1 5,040, 1.22 / 1.25
+    CYYZ: 48r1 6,648, 1.14 / 0.98; 49r1 34,912, 1.39 / 1.18; 50r1 5,056, 1.40 / 1.13
+    ZGSZ: 48r1 6,656, 1.53 / 0.84; 49r1 34,936, 1.31 / 0.90; 50r1 5,056, 1.03 / 0.91
+    ZUCK: 48r1 6,656, 1.42 / 1.23; 49r1 34,944, 1.28 / 1.06; 50r1 5,056, 1.46 / 1.15
+    NZWN: 48r1 6,656, 0.89 / 0.72; 49r1 34,936, 0.97 / 0.79; 50r1 5,048, 0.84 / 0.82
+    EGLC: 48r1 30,016, 1.42 / 0.79; 49r1 34,928, 0.99 / 0.85; 50r1 5,056, 1.02 / 0.97
+    LFPG: 48r1 29,984, 1.31 / 0.95; 49r1 34,800, 1.24 / 0.96; 50r1 5,024, 1.39 / 0.99
+    KDSM: 48r1 30,024, 1.54 / 1.29; 49r1 34,936, 1.48 / 1.32; 50r1 5,056, 1.41 / 1.29
+    YSDU: 48r1 29,840, 1.37 / 1.26; 49r1 34,656, 1.35 / 1.23; 50r1 5,024, 1.09 / 1.13
+    KRNO: 48r1 30,016, 2.43 / 1.24; 49r1 34,920, 2.11 / 1.24; 50r1 5,048, 1.39 / 0.86
+    KSFO: 48r1 30,032, 1.61 / 1.07; 49r1 34,928, 1.08 / 0.96; 50r1 5,048, 1.00 / 0.88
+
+Step 4 | Daily maximum (--dailymax --source ifs) | PASS (the mx2t3 common-day part: see the end of this step)
+  Run 2026-10-18T18:23:14Z, 53 s, exit 0, seed 114. Wrote to data/processed/session114_comparisons/ (new files only): dailymax_ifs.csv 252 rows e10964942c5ecbb3f5ea5edd96cab4f55c35f5afdf7a6f4d47232119482ce06a; dailymax_ifs_skill.csv 252 rows be6e3d3a947cd0252811ca7f35d89db643dea0bff56182053eb44ad7f82bcb1f; dailymax_ifs_breakdown.csv 576 rows 9943d24260ac595e969709b578ad3af02217bbf2cce0abf6f86686ce3943c381; dailymax_ifs_dm.csv 12 rows 64e9f04af2a9ba440827db0e7b7f58353095b2b688dd5fe4202e2604fce124df; dailymax_ifs_every_cycle.csv 288 rows 4815681654b9afba472d9917150a7df3bb353dbae57df9398be71b98ca1ea27e.
+  One numpy RuntimeWarning 'All-NaN slice encountered' (nanpercentile in session 112's interval function): it comes from the 6 development airports' 2023-24 mx2t3 cells, which hold no day (mx2t3 does not exist then); those rows are written with empty n and MAE and nan intervals (dailymax_ifs.csv comp2 2023-24, dailymax_ifs_skill.csv curve vs comp2 2023-24 n 0). No other empty cell.
+  Primary (D111.4: IFS's maximum = highest of its 3-hourly steps inside the local day, '3-hourly steps'), D98.10's days, pooled: days; MAE IFS [95 %] / curve [95 %] / curve at IFS's steps / raw GFS; ME IFS / curve; skill curve vs IFS [95 %]; skill curve at IFS's steps vs IFS [95 %]; DM:
+    EDDM: 729 days; MAE IFS 1.42 [1.32, 1.53] / curve 1.25 [1.13, 1.39] / curve at steps 1.36 / raw GFS 1.79; ME IFS +0.50 / curve +0.13; skill curve vs IFS +12.5 % [+4.4, +19.2]; curve at steps vs IFS +4.8 % [-3.4, +11.6]; DM -0.178 [-0.278, -0.061] over 729 days, p 1.8e-03, BH rejected
+    KORD: 726 days; MAE IFS 1.38 [1.28, 1.48] / curve 1.09 [1.02, 1.17] / curve at steps 1.18 / raw GFS 1.16; ME IFS +0.97 / curve +0.18; skill curve vs IFS +20.9 % [+14.5, +26.7]; curve at steps vs IFS +14.7 % [+8.1, +20.7]; DM -0.289 [-0.387, -0.190] over 726 days, p 1.4e-08, BH rejected
+    CYYZ: 728 days; MAE IFS 1.46 [1.35, 1.58] / curve 1.04 [0.96, 1.12] / curve at steps 1.12 / raw GFS 1.34; ME IFS +1.15 / curve +0.12; skill curve vs IFS +28.7 % [+23.2, +34.3]; curve at steps vs IFS +23.5 % [+18.5, +28.8]; DM -0.419 [-0.524, -0.324] over 728 days, p 5.6e-16, BH rejected
+    ZGSZ: 729 days; MAE IFS 1.65 [1.54, 1.75] / curve 0.91 [0.85, 0.97] / curve at steps 0.99 / raw GFS 1.52; ME IFS +1.47 / curve +0.25; skill curve vs IFS +44.6 % [+40.0, +49.2]; curve at steps vs IFS +39.9 % [+35.3, +44.4]; DM -0.736 [-0.850, -0.626] over 729 days, p 1.4e-34, BH rejected
+    ZUCK: 729 days; MAE IFS 1.50 [1.38, 1.62] / curve 1.17 [1.09, 1.25] / curve at steps 1.29 / raw GFS 1.37; ME IFS +0.50 / curve +0.16; skill curve vs IFS +21.9 % [+14.9, +28.7]; curve at steps vs IFS +14.2 % [+6.9, +21.1]; DM -0.328 [-0.455, -0.212] over 729 days, p 2.2e-07, BH rejected
+    NZWN: 728 days; MAE IFS 1.48 [1.39, 1.58] / curve 0.74 [0.69, 0.79] / curve at steps 0.80 / raw GFS 1.70; ME IFS +1.40 / curve +0.17; skill curve vs IFS +50.0 % [+46.4, +53.6]; curve at steps vs IFS +46.1 % [+42.4, +49.8]; DM -0.741 [-0.835, -0.656] over 728 days, p 2.3e-57, BH rejected
+    EGLC (dev): 1,094 days; MAE IFS 1.04 [0.98, 1.10] / curve 0.84 [0.79, 0.90] / curve at steps 0.90 / raw GFS 0.95; ME IFS +0.56 / curve +0.05; skill curve vs IFS +19.0 % [+12.9, +24.5]; curve at steps vs IFS +13.6 % [+7.5, +19.2]; DM -0.198 [-0.262, -0.129] over 1094 days, p 2.0e-08, BH rejected
+    LFPG (dev): 1,093 days; MAE IFS 1.23 [1.16, 1.30] / curve 0.96 [0.90, 1.02] / curve at steps 1.05 / raw GFS 1.20; ME IFS +0.89 / curve +0.01; skill curve vs IFS +22.0 % [+15.4, +28.1]; curve at steps vs IFS +14.4 % [+8.0, +20.3]; DM -0.270 [-0.360, -0.181] over 1093 days, p 6.0e-09, BH rejected
+    KDSM (dev): 1,095 days; MAE IFS 1.41 [1.32, 1.49] / curve 1.22 [1.15, 1.29] / curve at steps 1.29 / raw GFS 1.73; ME IFS +0.70 / curve -0.03; skill curve vs IFS +13.0 % [+6.7, +19.4]; curve at steps vs IFS +8.3 % [+1.8, +14.5]; DM -0.183 [-0.284, -0.090] over 1095 days, p 3.9e-04, BH rejected
+    YSDU (dev): 1,084 days; MAE IFS 1.61 [1.52, 1.71] / curve 1.03 [0.96, 1.10] / curve at steps 1.13 / raw GFS 1.09; ME IFS +1.40 / curve +0.14; skill curve vs IFS +36.4 % [+31.2, +40.9]; curve at steps vs IFS +29.7 % [+24.5, +34.3]; DM -0.587 [-0.687, -0.485] over 1084 days, p 3.6e-29, BH rejected
+    KRNO (dev): 1,093 days; MAE IFS 2.44 [2.20, 2.68] / curve 0.95 [0.88, 1.02] / curve at steps 1.10 / raw GFS 1.55; ME IFS +2.32 / curve +0.16; skill curve vs IFS +61.1 % [+56.8, +64.7]; curve at steps vs IFS +54.9 % [+50.2, +58.8]; DM -1.491 [-1.720, -1.261] over 1093 days, p 4.0e-33, BH rejected
+    KSFO (dev): 1,093 days; MAE IFS 1.57 [1.47, 1.68] / curve 1.21 [1.12, 1.30] / curve at steps 1.33 / raw GFS 1.66; ME IFS +0.98 / curve +0.23; skill curve vs IFS +23.3 % [+16.8, +28.8]; curve at steps vs IFS +15.5 % [+8.4, +21.4]; DM -0.367 [-0.471, -0.253] over 1093 days, p 3.3e-10, BH rejected
+  Formal test family 'ifs daily maximum' (the curve's D98.10 maximum against IFS's 3-hourly-step maximum): BH at 0.05 rejects 12 of 12, all with the curve's errors smaller.
+  Sampled at IFS's steps (as F157.7(2) for AIFS): the curve's maximum read only at IFS's 3-hourly steps still beats IFS's at 12 of 12; sampling costs the curve EDDM +9 %, KORD +8 %, CYYZ +7 %, ZGSZ +9 %, ZUCK +10 %, NZWN +8 %, EGLC +7 %, LFPG +10 %, KDSM +5 %, YSDU +10 %, KRNO +16 %, KSFO +10 % in MAE.
+  D98.10 days with an mx2t3 value (Step 2's count; forecast comp2 in dailymax_ifs.csv, 2024-25 / 2025-26, all): EDDM 107 / 170 / 277; KORD 106 / 168 / 274; CYYZ 105 / 169 / 274; ZGSZ 107 / 170 / 277; ZUCK 107 / 170 / 277; NZWN 106 / 168 / 274; EGLC 107 / 170 / 277; LFPG 107 / 169 / 276; KDSM 106 / 169 / 275; YSDU 105 / 167 / 272; KRNO 106 / 168 / 274; KSFO 106 / 168 / 274. Development airports 2023-24: 0 (no mx2t3).
+  mx2t3 (descriptive, D111.4 second): MAE on its own days, and the curve on exactly those days (from dailymax_ifs_skill.csv, curve vs comp2: MAE_curve = (1 - skill) x MAE_mx2t3), all test years:
+    EDDM: 277 days; mx2t3 1.40 [1.19, 1.64], ME +0.20; skill curve vs mx2t3 +10.8 % [-2.6, +20.6] on 277 days; curve on those days 1.25
+    KORD: 274 days; mx2t3 1.27 [1.11, 1.44], ME +0.52; skill curve vs mx2t3 +4.6 % [-9.7, +17.4] on 274 days; curve on those days 1.21
+    CYYZ: 274 days; mx2t3 1.40 [1.23, 1.59], ME +0.90; skill curve vs mx2t3 +18.9 % [+8.3, +28.4] on 274 days; curve on those days 1.13
+    ZGSZ: 277 days; mx2t3 1.13 [1.02, 1.24], ME +0.85; skill curve vs mx2t3 +19.9 % [+10.3, +30.1] on 277 days; curve on those days 0.90
+    ZUCK: 277 days; mx2t3 1.33 [1.17, 1.49], ME -0.02; skill curve vs mx2t3 +12.7 % [+0.3, +26.1] on 277 days; curve on those days 1.16
+    NZWN: 274 days; mx2t3 1.31 [1.15, 1.47], ME +1.19; skill curve vs mx2t3 +41.2 % [+32.8, +48.7] on 274 days; curve on those days 0.77
+    EGLC: 277 days; mx2t3 0.88 [0.78, 1.01], ME +0.03; skill curve vs mx2t3 +4.6 % [-6.8, +14.8] on 277 days; curve on those days 0.84
+    LFPG: 276 days; mx2t3 1.13 [1.00, 1.27], ME +0.75; skill curve vs mx2t3 +18.2 % [+3.1, +31.4] on 276 days; curve on those days 0.93
+    KDSM: 275 days; mx2t3 1.25 [1.10, 1.40], ME +0.11; skill curve vs mx2t3 -7.5 % [-22.9, +5.3] on 275 days; curve on those days 1.35
+    YSDU: 272 days; mx2t3 1.33 [1.14, 1.53], ME +0.97; skill curve vs mx2t3 +21.6 % [+10.1, +31.5] on 272 days; curve on those days 1.04
+    KRNO: 274 days; mx2t3 1.60 [1.34, 1.92], ME +1.30; skill curve vs mx2t3 +35.6 % [+24.0, +45.8] on 274 days; curve on those days 1.03
+    KSFO: 274 days; mx2t3 1.16 [1.05, 1.27], ME +0.71; skill curve vs mx2t3 -3.4 % [-20.1, +10.6] on 274 days; curve on those days 1.20
+  Every cycle (descriptive), IFS / curve MAE by cycle hour (first lead of the local day):
+    EDDM: 00z 1.57 / 1.45 (n 729, lead 22-23); 06z 1.58 / 1.37 (n 729, lead 16-17); 12z 1.53 / 1.31 (n 729, lead 10-11); 18z 1.42 / 1.25 (n 729, lead 4-5)
+    KORD: 00z 1.38 / 1.09 (n 726, lead 5-6); 06z 1.68 / 1.30 (n 725, lead 23-24); 12z 1.60 / 1.24 (n 725, lead 17-18); 18z 1.50 / 1.16 (n 725, lead 11-12)
+    CYYZ: 00z 1.46 / 1.04 (n 728, lead 4-5); 06z 1.58 / 1.21 (n 727, lead 22-23); 12z 1.60 / 1.16 (n 727, lead 16-17); 18z 1.55 / 1.11 (n 727, lead 10-11)
+    ZGSZ: 00z 1.63 / 0.99 (n 729, lead 16); 06z 1.68 / 0.97 (n 729, lead 10); 12z 1.65 / 0.91 (n 729, lead 4); 18z 1.70 / 1.04 (n 728, lead 22)
+    ZUCK: 00z 1.56 / 1.25 (n 729, lead 16); 06z 1.58 / 1.20 (n 729, lead 10); 12z 1.50 / 1.17 (n 729, lead 4); 18z 1.57 / 1.31 (n 728, lead 22)
+    NZWN: 00z 1.46 / 0.73 (n 728, lead 11-12); 06z 1.48 / 0.74 (n 728, lead 5-6); 12z 1.46 / 0.78 (n 727, lead 23-24); 18z 1.46 / 0.78 (n 727, lead 17-18)
+    EGLC: 00z 1.11 / 0.97 (n 1095, lead 23-24); 06z 1.11 / 0.91 (n 1094, lead 17-18); 12z 1.07 / 0.88 (n 1094, lead 11-12); 18z 1.04 / 0.84 (n 1094, lead 5-6)
+    LFPG: 00z 1.34 / 1.07 (n 1094, lead 22-23); 06z 1.32 / 1.08 (n 1093, lead 16-17); 12z 1.32 / 0.99 (n 1093, lead 10-11); 18z 1.23 / 0.96 (n 1093, lead 4-5)
+    KDSM: 00z 1.41 / 1.22 (n 1095, lead 5-6); 06z 1.62 / 1.49 (n 1093, lead 23-24); 12z 1.57 / 1.41 (n 1093, lead 17-18); 18z 1.50 / 1.32 (n 1093, lead 11-12)
+    YSDU: 00z 1.64 / 1.06 (n 1085, lead 13-14); 06z 1.61 / 1.03 (n 1084, lead 7-8); 12z 1.88 / 1.28 (n 546, lead 25-26); 18z 1.68 / 1.12 (n 1083, lead 19-20)
+    KRNO: 00z 2.44 / 0.95 (n 1093, lead 7-8); 06z 1.91 / 0.89 (n 714, lead 25-26); 12z 2.47 / 1.01 (n 1091, lead 19-20); 18z 2.50 / 0.97 (n 1091, lead 13-14)
+    KSFO: 00z 1.57 / 1.21 (n 1093, lead 7-8); 06z 1.59 / 1.35 (n 714, lead 25-26); 12z 1.60 / 1.27 (n 1091, lead 19-20); 18z 1.59 / 1.24 (n 1091, lead 13-14)
+  Does the script's output hold the mx2t3 subset on common days? In part only. It holds mx2t3's MAE on its own days and the curve against mx2t3 on exactly those days (skill row curve vs comp2, so the curve's MAE there follows). It does not hold IFS's 3-hourly steps, the curve at IFS's steps or raw GFS on the mx2t3 days: their rows are on all paired days. The written tables are aggregates (no per-day rows), so the missing part cannot be computed from them. Stopped here and asked the owner how to proceed (CLAUDE.md: stop when the prompt's method cannot be followed).
+  Owner's ruling (asked in chat at this point): option 1 with a gate. scripts/session117_ifs_guide.py --subset imports session 114's script read only (SHA-256 5ff60d32...dc52, equal to the file at 8ad82d4), rebuilds the D98.10 day records with its own functions, and must first reproduce Step 4's mx2t3 rows exactly; then scores on the common days, descriptive, seed 117, 10,000 resamples, no formal test; outputs in data/processed/session117_ifs/. Computed by session117_ifs_guide.py, not by session 114's script.
+  --subset run 2026-10-18T18:45:50Z, 46 s, exit 0. Gate: 294 of 294 values equal session 114's dailymax_ifs.csv and dailymax_ifs_skill.csv exactly (repr strings; per airport and test year: mx2t3 days, MAE, mean error; curve vs mx2t3 days and skill, which fixes the curve's MAE on those days; IFS steps days and MAE). Window coverage: 0 of 3,301 mx2t3 days lack one of the run's 3-hour windows that fit inside the local day (session 114's subdaily_max does not check this; its docstring says it should; here it makes no difference). Every mx2t3 day has every other forecast (common days = mx2t3 days).
+  Wrote dailymax_ifs_mx2t3_subset.csv (180 rows, 6703847f034174a595f78f9e10247dc4d02f1243eb6ab10a2cb96104a2758882), dailymax_ifs_mx2t3_subset_skill.csv (180 rows, 8f9cc7409bc034c82a27ae7833913b3cae7d19aef4805a4d9ee385e8bed30f65), subset_meta.txt.
+  mx2t3 subset, all test years, same days: days; MAE mx2t3 [95 %] / IFS steps / curve / curve at IFS steps / raw GFS; skill curve vs mx2t3 [95 %]; skill IFS steps vs mx2t3 [95 %]; skill curve vs IFS steps [95 %]:
+    EDDM: 277; 1.40 [1.19, 1.65] / 1.49 / 1.25 / 1.39 / 1.82; +10.8 % [-2.4, +20.9]; -6.5 % [-12.7, -0.8]; +16.2 % [+5.4, +24.9]
+    KORD: 274; 1.27 [1.12, 1.45] / 1.38 / 1.21 / 1.29 / 1.29; +4.6 % [-8.9, +17.5]; -8.2 % [-13.0, -3.8]; +11.8 % [-0.5, +23.6]
+    CYYZ: 274; 1.40 [1.24, 1.59] / 1.55 / 1.13 / 1.19 / 1.44; +18.9 % [+8.9, +28.3]; -11.0 % [-14.0, -7.7]; +26.9 % [+17.2, +35.5]
+    ZGSZ: 277; 1.13 [1.02, 1.23] / 1.36 / 0.90 / 0.97 / 1.43; +19.9 % [+9.8, +29.3]; -20.8 % [-24.7, -17.1]; +33.7 % [+24.9, +41.8]
+    ZUCK: 277; 1.33 [1.18, 1.50] / 1.37 / 1.16 / 1.26 / 1.27; +12.7 % [+0.8, +25.9]; -3.4 % [-6.8, +0.3]; +15.6 % [+4.3, +27.7]
+    NZWN: 274; 1.31 [1.15, 1.47] / 1.50 / 0.77 / 0.82 / 1.67; +41.2 % [+32.8, +48.7]; -14.6 % [-17.2, -12.6]; +48.7 % [+41.7, +55.0]
+    EGLC: 277; 0.88 [0.78, 1.01] / 0.96 / 0.84 / 0.89 / 0.98; +4.6 % [-6.8, +14.6]; -8.6 % [-14.9, -2.3]; +12.2 % [+1.7, +21.5]
+    LFPG: 276; 1.13 [1.00, 1.27] / 1.26 / 0.93 / 1.00 / 1.25; +18.2 % [+3.4, +31.5]; -11.5 % [-15.2, -8.0]; +26.7 % [+13.2, +38.6]
+    KDSM: 275; 1.25 [1.09, 1.39] / 1.35 / 1.35 / 1.37 / 1.60; -7.5 % [-22.9, +5.4]; -7.8 % [-13.8, -3.0]; +0.2 % [-14.6, +13.3]
+    YSDU: 272; 1.33 [1.13, 1.52] / 1.58 / 1.04 / 1.21 / 1.06; +21.6 % [+8.9, +30.2]; -19.0 % [-23.6, -14.6]; +34.1 % [+23.4, +41.5]
+    KRNO: 274; 1.60 [1.34, 1.91] / 1.92 / 1.03 / 1.15 / 1.69; +35.6 % [+24.4, +45.9]; -19.7 % [-24.2, -15.6]; +46.2 % [+37.0, +54.6]
+    KSFO: 274; 1.16 [1.05, 1.27] / 1.34 / 1.20 / 1.36 / 1.54; -3.4 % [-20.5, +10.5]; -15.3 % [-19.4, -11.0]; +10.3 % [-3.1, +21.5]
+  On the same days mx2t3's MAE is below IFS's 3-hourly-step maximum's at 12 of 12; the curve's MAE is below mx2t3's at 10 of 12 (descriptive; no test).
+
+Step 5 | The field guide (scripts/session117_ifs_guide.py --render, --verify) | PASS
+  scripts/session117_ifs_guide.py written (new): modes --subset (Step 4, owner's ruling), --render, --verify. --render and --verify read only the IFS tables (session117_ifs/match_counts.csv IFS rows; session114_comparisons/hourly_ifs*.csv and dailymax_ifs*.csv; session117_ifs/dailymax_ifs_mx2t3_subset*.csv) and git HEAD's ANALYSIS.md (git show, read only). No committed session 114 table was needed for the wording (the "worse than no competitor" tail is kept because IFS's daily family has no airport where the curve is worse). Em-dashes in the script: 0 (the counter uses chr(0x2014)). py_compile left scripts/__pycache__/session117_ifs_guide.cpython-312.pyc (gitignored folder); I deleted that one file.
+  --render 2026-10-18T18:47:12Z on the committed text (checked equal to HEAD first). ANALYSIS.md 1,323 lines before, 1,638 after; SHA-256 0acd3c8bfa8825c77564f94267d31e7f0ab36cc370f877ccd86f21ac8d32754f. Edits: header sentence (line 5, owner's ruling: "ECMWF IFS was added by session 117 (D111, finding F160), from the owner's pull (D108.2)."); item 1's sentence ("Against ECMWF IFS it is better at 12 of 12 hourly and at 12 of 12 for the daily maximum (IFS's maximum: the highest of its 3-hourly steps, D111.4)."); the 24 pending cells of Tables 2a and 2b (IFS / curve, * where BH rejects); item 4's two formal-test lines (hourly "better than ECMWF IFS at 12 of 12"; daily "ECMWF IFS (the highest of its 3-hourly steps, D111.4) at 12 of 12"); Part 2's intro phrase (line 812, owner's ruling: "ECMWF IFS: Tables E10 to E16 (session 117, D111)."); new text after Table E9: an IFS paragraph (pull, script, positions, grids, elevation labels, versions, D111.4, D111.6, latency) and Tables E10 (pairs), E11 (hourly), E11b (grid and elevation labels and versions), E11c (lead bands), E12 (hourly formal tests), E13 (daily maximum, "3-hourly steps"), E14 (its formal tests), E15 (every cycle), E16 (mx2t3 subset, labelled as computed by session117_ifs_guide.py --subset, seed 117).
+  --verify 2026-10-18T18:47:13Z: PASS. (1) re-rendered from HEAD's ANALYSIS.md and the tables: text identical; 14,242 number tokens, 0 mismatches. (2) independent checks: 24 IFS cells of Tables 2a and 2b and 24 pooled rows of E11 and E13, 48 of 48 equal their tables. (3) diff against HEAD by kind: header sentence 1 line, item 1 sentence 1, pending cells 24, formal-test lines 2, Part 2 intro phrase 1, inserted after Table E9 315; no other change. (4) em-dashes in the 344 edited or inserted lines 0 (whole file 0).
+  Session 114's --verify (read only, run to see the effect): FAIL, as expected: its Part 1 template still has "pending (D108.2)", so Part 1 no longer equals it (818 number tokens against 783 re-rendered; 757 mismatches after the shift). session114_comparisons/part1.md and part2_comparisons.md also still show IFS as pending. Not changed (out of scope); open item.
+  No figure made (session 114's figures exclude IFS): open item.
+
+Step 6 | F160 | PASS
+  F160 appended to DECISIONS.md (18 lines, 11 items, 0 em-dashes; checked with cmp after appending; one wording fix in F160.7 afterwards: the exact row range). F160 added to the Live index. DECISIONS.md 84,343 bytes before the archive step.
+
+End of session | STATUS, archive step, checks | PASS
+  STATUS.md overwritten as a current-only snapshot; closed: the cleaning-rule question (D111.2), the table-reader lead question (D111.1), IFS's daily maximum rule (D111.4). Last line: "**Next planning session:** Review session 117 and commit. Then the owner groups the MLwx folders under one parent folder by hand (D111.7, the planning chat's checklist); then the direction brainstorm in a new chat." 0 em-dashes.
+  Live index set to D111.8's: D93, D103, D105, D106, D107, D108, D110, D111, F157, F160 (D109, F158, F159 removed; D111, F160 added).
+  python3 scripts/archive_decisions.py --apply --session 117: plan spans 13, keep 10, move 3 (15,308 bytes); checks 1 to 4 PASS (archive starts with old archive; line counts live 383 + moved 51 = 434, archive 22,408 = 22,353 + 4 + 51; rebuild byte for byte; every moved span verbatim). DECISIONS.md 84,095 -> 68,775 bytes (SHA-256 56b332f603bbd409b8dd7f2e324ddf017a40012415f53a0bca2803a434c1fbeb); DECISIONS-archive.md 1,460,635 -> 1,475,992 bytes (2abe0736952b5252d4d59e232d1aa7f63fcc7dbc7b9f49ce19a8f409bd4e770a); git diff of the archive: 54 lines added, 0 removed.
+  python3 scripts/archive_decisions.py --citations: 189 distinct entry numbers cited; resolved 189, unresolved 0, in both files 0; entries whose first line appears more than once 0; dated headings out of order 0.
+  D111 still byte-equal to the prompt's block in DECISIONS.md after the archive step; F160 is the last entry.
+  DECISIONS.md size: 68,775 bytes, under 80,000 (D93.9).
+  Consistency re-read (only what this session changed): D111.4's "no message up to 2024-11" leaves out 6 kept cycles on 2024-09-17/18 (96 messages); recorded in F160.2, not a material difference. D111.5's "non-IFS rows must equal" holds except the txn_window labels, which the prompt anticipated. D111.8's list equals the Live index. STATUS agrees with F160. SPEC not changed; nothing in SPEC, STATUS or DECISIONS disagrees with the rest of the record otherwise.
+  Scope-list check (git status --porcelain against the prompt's scope): modified ANALYSIS.md, DECISIONS.md, DECISIONS-archive.md, STATUS.md (in scope); new data/processed/session114_comparisons/{hourly,dailymax}_ifs*.csv, 9 files, every name contains "ifs", no existing file there changed (in scope); new data/processed/session117_ifs/ (match_counts.csv, dailymax_ifs_mx2t3_subset.csv, dailymax_ifs_mx2t3_subset_skill.csv, subset_meta.txt) (in scope); new scripts/session117_ifs_guide.py, notes/session-117-output.txt (in scope). Untracked and not made by this session: docs/sessions/session-117.md and the 16 data/processed/session113/ifs_* files (the owner's pull). data/processed/session113/work/ still empty, untouched. Ignored: scripts/__pycache__/ (pre-existing; the one .pyc py_compile made was deleted). No scope breach.
+  Not committed. Waiting for the owner's review.
+
+================================================================================
+STEP 0 DETAIL: the pull check's full per-month table (from the manifest and gap file; no value read)
+files: 15 of 15 match SHA-256 and rows
+override names D108.2: True
+airports equal D107.5's 12: True
+windows equal D107.5's (dev from 2023-08-01T00, claim from 2024-08-01T00, to 2026-07-31T18): True
+kept + gaps == expected: 72 of 72 month-param cells (expected units 70080)
+gap reasons (param, reason, detail): {('mx2t3', 'no message', '0 index lines'): 29888, ('*', 'not listed', ''): 48, ('mx2t3', 'failed check', 'shortName max_2t'): 22480}
+not listed: 48 cycle-steps in cycles {'2024-02-28T06:00Z': 16, '2024-02-28T12:00Z': 16, '2024-02-28T18:00Z': 16}
+mx2t3 kept span: ('2024-09-17T12:00Z', '2026-07-31T18:00Z', 17664)
+mx2t3 failed-check span: ('2025-02-25T06:00Z', '2026-02-11T06:00Z', 22480)
+mx2t3 no-message span: ('2023-08-01T00:00Z', '2024-11-12T00:00Z', 29888)
+mx2t3 kept cycles before first failed check (2025-02-25T06:00Z): 6816; kept after last failed (2026-02-11T06:00Z): 10848; kept inside failed span: 0
+mx2t3 no-message after first kept (2024-09-17T12:00Z): 3472
+manifest: 87696 rows; duplicate (cycle, step, param): 0; duplicate msg ids: 0
+gaps: duplicate (cycle, step, param): 0; in both manifest and gaps: 0
+manifest cycle-steps outside the expected set: 0
+rows per message (from 2024-08-01?, rows): {(True, 18): 64320, (False, 12): 23376}
+  from 2024-08-01=True: 64320 messages carry 18 (airport, set) pairs: ['CYYZ', 'EDDM', 'EGLC', 'KDSM', 'KORD', 'KRNO', 'KSFO', 'LFPG', 'NZWN', 'YSDU', 'ZGSZ', 'ZUCK'] sets ['gfs', 'iem']
+  from 2024-08-01=False: 23376 messages carry 12 (airport, set) pairs: ['EGLC', 'KDSM', 'KRNO', 'KSFO', 'LFPG', 'YSDU'] sets ['gfs', 'iem']
+messages in manifest without value rows: 0; value-row msgs not in manifest: 0
+
+month,param,expected,kept,gap:failed check,gap:no message,gap:not listed,kept+gaps==expected
+2023-08,2t,1984,1984,0,0,0,True
+2023-08,mx2t3,1984,0,0,1984,0,True
+2023-09,2t,1920,1920,0,0,0,True
+2023-09,mx2t3,1920,0,0,1920,0,True
+2023-10,2t,1984,1984,0,0,0,True
+2023-10,mx2t3,1984,0,0,1984,0,True
+2023-11,2t,1920,1920,0,0,0,True
+2023-11,mx2t3,1920,0,0,1920,0,True
+2023-12,2t,1984,1984,0,0,0,True
+2023-12,mx2t3,1984,0,0,1984,0,True
+2024-01,2t,1984,1984,0,0,0,True
+2024-01,mx2t3,1984,0,0,1984,0,True
+2024-02,2t,1856,1808,0,0,48,True
+2024-02,mx2t3,1856,0,0,1808,48,True
+2024-03,2t,1984,1984,0,0,0,True
+2024-03,mx2t3,1984,0,0,1984,0,True
+2024-04,2t,1920,1920,0,0,0,True
+2024-04,mx2t3,1920,0,0,1920,0,True
+2024-05,2t,1984,1984,0,0,0,True
+2024-05,mx2t3,1984,0,0,1984,0,True
+2024-06,2t,1920,1920,0,0,0,True
+2024-06,mx2t3,1920,0,0,1920,0,True
+2024-07,2t,1984,1984,0,0,0,True
+2024-07,mx2t3,1984,0,0,1984,0,True
+2024-08,2t,1984,1984,0,0,0,True
+2024-08,mx2t3,1984,0,0,1984,0,True
+2024-09,2t,1920,1920,0,0,0,True
+2024-09,mx2t3,1920,96,0,1824,0,True
+2024-10,2t,1984,1984,0,0,0,True
+2024-10,mx2t3,1984,0,0,1984,0,True
+2024-11,2t,1920,1920,0,0,0,True
+2024-11,mx2t3,1920,1200,0,720,0,True
+2024-12,2t,1984,1984,0,0,0,True
+2024-12,mx2t3,1984,1984,0,0,0,True
+2025-01,2t,1984,1984,0,0,0,True
+2025-01,mx2t3,1984,1984,0,0,0,True
+2025-02,2t,1792,1792,0,0,0,True
+2025-02,mx2t3,1792,1552,240,0,0,True
+2025-03,2t,1984,1984,0,0,0,True
+2025-03,mx2t3,1984,0,1984,0,0,True
+2025-04,2t,1920,1920,0,0,0,True
+2025-04,mx2t3,1920,0,1920,0,0,True
+2025-05,2t,1984,1984,0,0,0,True
+2025-05,mx2t3,1984,0,1984,0,0,True
+2025-06,2t,1920,1920,0,0,0,True
+2025-06,mx2t3,1920,0,1920,0,0,True
+2025-07,2t,1984,1984,0,0,0,True
+2025-07,mx2t3,1984,0,1984,0,0,True
+2025-08,2t,1984,1984,0,0,0,True
+2025-08,mx2t3,1984,0,1984,0,0,True
+2025-09,2t,1920,1920,0,0,0,True
+2025-09,mx2t3,1920,0,1920,0,0,True
+2025-10,2t,1984,1984,0,0,0,True
+2025-10,mx2t3,1984,0,1984,0,0,True
+2025-11,2t,1920,1920,0,0,0,True
+2025-11,mx2t3,1920,0,1920,0,0,True
+2025-12,2t,1984,1984,0,0,0,True
+2025-12,mx2t3,1984,0,1984,0,0,True
+2026-01,2t,1984,1984,0,0,0,True
+2026-01,mx2t3,1984,0,1984,0,0,True
+2026-02,2t,1792,1792,0,0,0,True
+2026-02,mx2t3,1792,1120,672,0,0,True
+2026-03,2t,1984,1984,0,0,0,True
+2026-03,mx2t3,1984,1984,0,0,0,True
+2026-04,2t,1920,1920,0,0,0,True
+2026-04,mx2t3,1920,1920,0,0,0,True
+2026-05,2t,1984,1984,0,0,0,True
+2026-05,mx2t3,1984,1984,0,0,0,True
+2026-06,2t,1920,1920,0,0,0,True
+2026-06,mx2t3,1920,1920,0,0,0,True
+2026-07,2t,1920,1920,0,0,0,True
+2026-07,mx2t3,1920,1920,0,0,0,True
+
+month,units,messages,gap_rows,messages+gap_rows,2*units,gap_rows==units
+2023-08,1984,1984,1984,3968,3968,True
+2023-09,1920,1920,1920,3840,3840,True
+2023-10,1984,1984,1984,3968,3968,True
+2023-11,1920,1920,1920,3840,3840,True
+2023-12,1984,1984,1984,3968,3968,True
+2024-01,1984,1984,1984,3968,3968,True
+2024-02,1856,1808,1856,3664,3712,True
+2024-03,1984,1984,1984,3968,3968,True
+2024-04,1920,1920,1920,3840,3840,True
+2024-05,1984,1984,1984,3968,3968,True
+2024-06,1920,1920,1920,3840,3840,True
+2024-07,1984,1984,1984,3968,3968,True
+2024-08,1984,1984,1984,3968,3968,True
+2024-09,1920,2016,1824,3840,3840,False
+2024-10,1984,1984,1984,3968,3968,True
+2024-11,1920,3120,720,3840,3840,False
+2024-12,1984,3968,0,3968,3968,False
+2025-01,1984,3968,0,3968,3968,False
+2025-02,1792,3344,240,3584,3584,False
+2025-03,1984,1984,1984,3968,3968,True
+2025-04,1920,1920,1920,3840,3840,True
+2025-05,1984,1984,1984,3968,3968,True
+2025-06,1920,1920,1920,3840,3840,True
+2025-07,1984,1984,1984,3968,3968,True
+2025-08,1984,1984,1984,3968,3968,True
+2025-09,1920,1920,1920,3840,3840,True
+2025-10,1984,1984,1984,3968,3968,True
+2025-11,1920,1920,1920,3840,3840,True
+2025-12,1984,1984,1984,3968,3968,True
+2026-01,1984,1984,1984,3968,3968,True
+2026-02,1792,2912,672,3584,3584,False
+2026-03,1984,3968,0,3968,3968,False
+2026-04,1920,3840,0,3840,3840,False
+2026-05,1984,3968,0,3968,3968,False
+2026-06,1920,3840,0,3840,3840,False
+2026-07,1920,3840,0,3840,3840,False
+
+mx2t3 per month: 2023-08: kept 0, no message 1984
+mx2t3 per month: 2023-09: kept 0, no message 1920
+mx2t3 per month: 2023-10: kept 0, no message 1984
+mx2t3 per month: 2023-11: kept 0, no message 1920
+mx2t3 per month: 2023-12: kept 0, no message 1984
+mx2t3 per month: 2024-01: kept 0, no message 1984
+mx2t3 per month: 2024-02: kept 0, no message 1808, not listed 48
+mx2t3 per month: 2024-03: kept 0, no message 1984
+mx2t3 per month: 2024-04: kept 0, no message 1920
+mx2t3 per month: 2024-05: kept 0, no message 1984
+mx2t3 per month: 2024-06: kept 0, no message 1920
+mx2t3 per month: 2024-07: kept 0, no message 1984
+mx2t3 per month: 2024-08: kept 0, no message 1984
+mx2t3 per month: 2024-09: kept 96, no message 1824
+mx2t3 per month: 2024-10: kept 0, no message 1984
+mx2t3 per month: 2024-11: kept 1200, no message 720
+mx2t3 per month: 2024-12: kept 1984
+mx2t3 per month: 2025-01: kept 1984
+mx2t3 per month: 2025-02: kept 1552, failed check 240
+mx2t3 per month: 2025-03: kept 0, failed check 1984
+mx2t3 per month: 2025-04: kept 0, failed check 1920
+mx2t3 per month: 2025-05: kept 0, failed check 1984
+mx2t3 per month: 2025-06: kept 0, failed check 1920
+mx2t3 per month: 2025-07: kept 0, failed check 1984
+mx2t3 per month: 2025-08: kept 0, failed check 1984
+mx2t3 per month: 2025-09: kept 0, failed check 1920
+mx2t3 per month: 2025-10: kept 0, failed check 1984
+mx2t3 per month: 2025-11: kept 0, failed check 1920
+mx2t3 per month: 2025-12: kept 0, failed check 1984
+mx2t3 per month: 2026-01: kept 0, failed check 1984
+mx2t3 per month: 2026-02: kept 1120, failed check 672
+mx2t3 per month: 2026-03: kept 1984
+mx2t3 per month: 2026-04: kept 1920
+mx2t3 per month: 2026-05: kept 1984
+mx2t3 per month: 2026-06: kept 1920
+mx2t3 per month: 2026-07: kept 1920
+
+mx2t3 kept cycles by month and cycle hour: [(('2024-09', '00'), 1), (('2024-09', '06'), 1), (('2024-09', '12'), 2), (('2024-09', '18'), 2), (('2024-11', '00'), 18), (('2024-11', '06'), 19), (('2024-11', '12'), 19), (('2024-11', '18'), 19), (('2024-12', '00'), 31), (('2024-12', '06'), 31), (('2024-12', '12'), 31), (('2024-12', '18'), 31), (('2025-01', '00'), 31), (('2025-01', '06'), 31), (('2025-01', '12'), 31), (('2025-01', '18'), 31), (('2025-02', '00'), 25), (('2025-02', '06'), 24), (('2025-02', '12'), 24), (('2025-02', '18'), 24), (('2026-02', '00'), 17), (('2026-02', '06'), 17), (('2026-02', '12'), 18), (('2026-02', '18'), 18), (('2026-03', '00'), 31), (('2026-03', '06'), 31), (('2026-03', '12'), 31), (('2026-03', '18'), 31), (('2026-04', '00'), 30), (('2026-04', '06'), 30), (('2026-04', '12'), 30), (('2026-04', '18'), 30), (('2026-05', '00'), 31), (('2026-05', '06'), 31), (('2026-05', '12'), 31), (('2026-05', '18'), 31), (('2026-06', '00'), 30), (('2026-06', '06'), 30), (('2026-06', '12'), 30), (('2026-06', '18'), 30), (('2026-07', '00'), 31), (('2026-07', '06'), 31), (('2026-07', '12'), 31), (('2026-07', '18'), 31)]
+mx2t3 failed-check cycles by month and cycle hour: [(('2025-02', '00'), 3), (('2025-02', '06'), 4), (('2025-02', '12'), 4), (('2025-02', '18'), 4), (('2025-03', '00'), 31), (('2025-03', '06'), 31), (('2025-03', '12'), 31), (('2025-03', '18'), 31), (('2025-04', '00'), 30), (('2025-04', '06'), 30), (('2025-04', '12'), 30), (('2025-04', '18'), 30), (('2025-05', '00'), 31), (('2025-05', '06'), 31), (('2025-05', '12'), 31), (('2025-05', '18'), 31), (('2025-06', '00'), 30), (('2025-06', '06'), 30), (('2025-06', '12'), 30), (('2025-06', '18'), 30), (('2025-07', '00'), 31), (('2025-07', '06'), 31), (('2025-07', '12'), 31), (('2025-07', '18'), 31), (('2025-08', '00'), 31), (('2025-08', '06'), 31), (('2025-08', '12'), 31), (('2025-08', '18'), 31), (('2025-09', '00'), 30), (('2025-09', '06'), 30), (('2025-09', '12'), 30), (('2025-09', '18'), 30), (('2025-10', '00'), 31), (('2025-10', '06'), 31), (('2025-10', '12'), 31), (('2025-10', '18'), 31), (('2025-11', '00'), 30), (('2025-11', '06'), 30), (('2025-11', '12'), 30), (('2025-11', '18'), 30), (('2025-12', '00'), 31), (('2025-12', '06'), 31), (('2025-12', '12'), 31), (('2025-12', '18'), 31), (('2026-01', '00'), 31), (('2026-01', '06'), 31), (('2026-01', '12'), 31), (('2026-01', '18'), 31), (('2026-02', '00'), 11), (('2026-02', '06'), 11), (('2026-02', '12'), 10), (('2026-02', '18'), 10)]

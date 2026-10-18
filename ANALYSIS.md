@@ -2,7 +2,7 @@
 
 Session 112, under DECISIONS D106 (finding F155), and session 114, under D107 and D108 (finding F157), which
 added the comparisons with other forecasts and the official daily maximum and rewrote Part 1. Data: the 12 airports
-of D103.4, spent years only (nothing valid on or after 2026-08-01). ECMWF IFS is pending (D108.2).
+of D103.4, spent years only (nothing valid on or after 2026-08-01). ECMWF IFS was added by session 117 (D111, finding F160), from the owner's pull (D108.2).
 
 **Status (D106.2, D107, D108).** Descriptive only (SPEC 2.5, as F96). This changes no verdict, model, setting, rule, bar or
 table, and nothing in D73, D77.6 or D105.5. It is not stage C's look: the look script's `--look` mode was not
@@ -61,7 +61,7 @@ slightly. Ranges run across the six claim airports unless named. Per-airport det
   station forecast, at 5 of 5. For the daily maximum it beats AIFS at 9 of
   12 (AIFS's maximum is the highest of four 6-hourly values; read at the same steps the curve's is
   worse at 6 of 12) and MAV at 4 of 4, and no test separates it from
-  NBS at 5 of 5. ECMWF IFS is pending (D108.2).
+  NBS at 5 of 5. Against ECMWF IFS it is better at 12 of 12 hourly and at 12 of 12 for the daily maximum (IFS's maximum: the highest of its 3-hourly steps, D111.4).
 
 ### 2. How accurate it is x hours out
 
@@ -132,45 +132,45 @@ beats it by +2.6 % (KORD) to +7.3 % (EDDM) hourly at the claim airports. AIFS co
 
 | airport | curve | raw GFS | linear MOS | AIFS | NBM grid | NBS | MAV | ECMWF IFS |
 |---|---|---|---|---|---|---|---|---|
-| EDDM | 1.33 | 1.79 | 1.43 | 1.21 / 1.28 | - | - | - | pending (D108.2) |
-| KORD | 1.19 | 1.34 | 1.22 | 1.12 / 1.26 * | 1.05 / 1.16 * | 1.06 / 1.21 * | 1.36 / 1.21 * | pending (D108.2) |
-| CYYZ (sea) | 1.14 | 1.47 | 1.20 | 1.17 / 1.18 | 1.05 / 1.12 * | 1.07 / 1.15 * | - | pending (D108.2) |
-| ZGSZ (sea) | 0.90 | 1.16 | 0.94 | 0.96 / 0.89 | - | - | - | pending (D108.2) |
-| ZUCK | 1.09 | 1.46 | 1.17 | 1.06 / 1.10 | - | - | - | pending (D108.2) |
-| NZWN (sea) | 0.79 | 1.16 | 0.83 | 1.06 / 0.79 * | - | - | - | pending (D108.2) |
-| EGLC (dev) | 0.84 | 1.04 | 0.85 | 1.13 / 0.87 * | - | - | - | pending (D108.2) |
-| LFPG (dev) | 0.95 | 1.23 | 1.00 | 1.11 / 0.95 * | - | - | - | pending (D108.2) |
-| KDSM (dev) | 1.30 | 1.88 | 1.43 | 1.08 / 1.35 * | 1.21 / 1.27 * | 1.16 / 1.32 * | 1.45 / 1.32 * | pending (D108.2) |
-| YSDU (dev) | 1.23 | 1.52 | 1.32 | 1.12 / 1.19 * | - | - | - | pending (D108.2) |
-| KRNO (dev) | 1.21 | 2.22 | 1.41 | 1.60 / 1.10 * | 1.44 / 1.19 * | 1.17 / 1.22 * | 1.16 / 1.23 * | pending (D108.2) |
-| KSFO (dev) (sea) | 1.00 | 1.29 | 1.14 | 0.94 / 0.96 | 1.40 / 0.99 * | 0.92 / 1.01 * | 1.06 / 1.01 * | pending (D108.2) |
+| EDDM | 1.33 | 1.79 | 1.43 | 1.21 / 1.28 | - | - | - | 1.42 / 1.33 * |
+| KORD | 1.19 | 1.34 | 1.22 | 1.12 / 1.26 * | 1.05 / 1.16 * | 1.06 / 1.21 * | 1.36 / 1.21 * | 1.39 / 1.18 * |
+| CYYZ (sea) | 1.14 | 1.47 | 1.20 | 1.17 / 1.18 | 1.05 / 1.12 * | 1.07 / 1.15 * | - | 1.35 / 1.14 * |
+| ZGSZ (sea) | 0.90 | 1.16 | 0.94 | 0.96 / 0.89 | - | - | - | 1.31 / 0.89 * |
+| ZUCK | 1.09 | 1.46 | 1.17 | 1.06 / 1.10 | - | - | - | 1.32 / 1.10 * |
+| NZWN (sea) | 0.79 | 1.16 | 0.83 | 1.06 / 0.79 * | - | - | - | 0.94 / 0.78 * |
+| EGLC (dev) | 0.84 | 1.04 | 0.85 | 1.13 / 0.87 * | - | - | - | 1.17 / 0.83 * |
+| LFPG (dev) | 0.95 | 1.23 | 1.00 | 1.11 / 0.95 * | - | - | - | 1.28 / 0.96 * |
+| KDSM (dev) | 1.30 | 1.88 | 1.43 | 1.08 / 1.35 * | 1.21 / 1.27 * | 1.16 / 1.32 * | 1.45 / 1.32 * | 1.50 / 1.30 * |
+| YSDU (dev) | 1.23 | 1.52 | 1.32 | 1.12 / 1.19 * | - | - | - | 1.34 / 1.24 * |
+| KRNO (dev) | 1.21 | 2.22 | 1.41 | 1.60 / 1.10 * | 1.44 / 1.19 * | 1.17 / 1.22 * | 1.16 / 1.23 * | 2.20 / 1.21 * |
+| KSFO (dev) (sea) | 1.00 | 1.29 | 1.14 | 0.94 / 0.96 | 1.40 / 0.99 * | 0.92 / 1.01 * | 1.06 / 1.01 * | 1.30 / 1.00 * |
 
 **Table 2b. Daily maximum** (D98.10's days; truth our hourly-report maximum; each competitor's own maximum: AIFS the
 highest of its 6-hourly steps, NBM TMAX, NBS TXN, MAV X, windows as labelled in Part 2).
 
 | airport | curve | raw GFS | linear MOS | AIFS | NBM grid | NBS | MAV | ECMWF IFS |
 |---|---|---|---|---|---|---|---|---|
-| EDDM | 1.25 | 1.79 | 1.37 | 1.21 / 1.12 | - | - | - | pending (D108.2) |
-| KORD | 1.09 | 1.16 | 1.10 | 1.43 / 1.12 * | 1.14 / 1.09 | 1.12 / 1.09 | 1.47 / 1.09 * | pending (D108.2) |
-| CYYZ (sea) | 1.04 | 1.34 | 1.13 | 1.39 / 1.08 * | 1.21 / 1.04 * | 1.16 / 1.04 | - | pending (D108.2) |
-| ZGSZ (sea) | 0.91 | 1.52 | 1.07 | 1.23 / 0.92 * | - | - | - | pending (D108.2) |
-| ZUCK | 1.17 | 1.37 | 1.30 | 1.32 / 1.20 | - | - | - | pending (D108.2) |
-| NZWN (sea) | 0.74 | 1.70 | 0.83 | 1.80 / 0.72 * | - | - | - | pending (D108.2) |
-| EGLC (dev) | 0.84 | 0.95 | 0.89 | 0.98 / 0.91 | - | - | - | pending (D108.2) |
-| LFPG (dev) | 0.96 | 1.20 | 1.05 | 1.45 / 0.91 * | - | - | - | pending (D108.2) |
-| KDSM (dev) | 1.22 | 1.73 | 1.46 | 1.43 / 1.24 * | 1.30 / 1.22 | 1.23 / 1.22 | 1.57 / 1.22 * | pending (D108.2) |
-| YSDU (dev) | 1.03 | 1.09 | 1.11 | 1.48 / 0.97 * | - | - | - | pending (D108.2) |
-| KRNO (dev) | 0.95 | 1.55 | 0.99 | 1.40 / 0.82 * | 0.93 / 0.95 | 0.97 / 0.95 | 1.12 / 0.95 * | pending (D108.2) |
-| KSFO (dev) (sea) | 1.21 | 1.66 | 1.39 | 1.45 / 1.17 * | 1.87 / 1.21 * | 1.19 / 1.21 | 1.41 / 1.21 * | pending (D108.2) |
+| EDDM | 1.25 | 1.79 | 1.37 | 1.21 / 1.12 | - | - | - | 1.42 / 1.25 * |
+| KORD | 1.09 | 1.16 | 1.10 | 1.43 / 1.12 * | 1.14 / 1.09 | 1.12 / 1.09 | 1.47 / 1.09 * | 1.38 / 1.09 * |
+| CYYZ (sea) | 1.04 | 1.34 | 1.13 | 1.39 / 1.08 * | 1.21 / 1.04 * | 1.16 / 1.04 | - | 1.46 / 1.04 * |
+| ZGSZ (sea) | 0.91 | 1.52 | 1.07 | 1.23 / 0.92 * | - | - | - | 1.65 / 0.91 * |
+| ZUCK | 1.17 | 1.37 | 1.30 | 1.32 / 1.20 | - | - | - | 1.50 / 1.17 * |
+| NZWN (sea) | 0.74 | 1.70 | 0.83 | 1.80 / 0.72 * | - | - | - | 1.48 / 0.74 * |
+| EGLC (dev) | 0.84 | 0.95 | 0.89 | 0.98 / 0.91 | - | - | - | 1.04 / 0.84 * |
+| LFPG (dev) | 0.96 | 1.20 | 1.05 | 1.45 / 0.91 * | - | - | - | 1.23 / 0.96 * |
+| KDSM (dev) | 1.22 | 1.73 | 1.46 | 1.43 / 1.24 * | 1.30 / 1.22 | 1.23 / 1.22 | 1.57 / 1.22 * | 1.41 / 1.22 * |
+| YSDU (dev) | 1.03 | 1.09 | 1.11 | 1.48 / 0.97 * | - | - | - | 1.61 / 1.03 * |
+| KRNO (dev) | 0.95 | 1.55 | 0.99 | 1.40 / 0.82 * | 0.93 / 0.95 | 0.97 / 0.95 | 1.12 / 0.95 * | 2.44 / 0.95 * |
+| KSFO (dev) (sea) | 1.21 | 1.66 | 1.39 | 1.45 / 1.17 * | 1.87 / 1.21 * | 1.19 / 1.21 | 1.41 / 1.21 * | 1.57 / 1.21 * |
 
 - **Formal tests, hourly:** the curve is better than AIFS at 4 of 12 airports
   (NZWN, EGLC, LFPG, KRNO) and worse at 3 (KORD, KDSM, YSDU); better than the NBM grid at 2
   (KRNO, KSFO) and worse at 3 (KORD, CYYZ, KDSM); worse than NBS at 5 of
   5; better than MAV at 3 (KORD, KDSM, KSFO) and worse at 1
-  (KRNO).
+  (KRNO); better than ECMWF IFS at 12 of 12.
 - **Formal tests, daily maximum:** better than AIFS at 9 of 12, the NBM grid at
   2 of 5 (CYYZ, KSFO), NBS at 0 of 5, MAV at
-  4 of 4; worse than no competitor at any airport.
+  4 of 4, ECMWF IFS (the highest of its 3-hourly steps, D111.4) at 12 of 12; worse than no competitor at any airport.
 - **Read with care.** AIFS's maximum comes from 6-hourly steps; sampled at the same steps the curve's maximum is
   -41 % (EDDM) to +46 % (NZWN) against AIFS at the claim airports (worse at 6 of 12). At the development
   airports both AIFS and the NBM grid are read at GFS's own position (D108.3), not the airport's; that position's
@@ -809,7 +809,7 @@ it is the warmth left over from the previous afternoon, not that day's peak. The
 
 ### D107.9 and D108: comparisons (session 114)
 
-Descriptive only (D107.2). Rules fixed before any score in D107.9 and D108. Positions: raw GFS's own (the positions file's `gfs` set at the development airports, IEM's at the claim airports). AIFS adjusted for height as GFS is (7.429 degrees C per km, its own terrain with the same four weights); the NBM grid has no terrain field (no elevation treatment); NBS and MAV as issued. Pairs by valid time; NBS 01/07/13/19 UTC runs pair with the cycle one hour earlier (one hour more data), and where both run sets exist the same cycle's run is used. Truth: our hourly-report maximum (D82.8). Intervals: 7-day block bootstrap, seed 114 (10,000 resamples headline, 2,000 cells). Formal tests: Diebold-Mariano, one family per competitor and output, Benjamini-Hochberg at 0.05 across its airports. ECMWF IFS: pending (D108.2), not pulled yet. Script `scripts/session114_comparisons.py`; tables `data/processed/session114_comparisons/`; full log `notes/session-114-output.txt`. Latency (not adjusted for, D108.4(f)): AIFS: archive write time minus cycle, median 5.14 to 5.27 h over the cycle hours (range 5.07 to 30.93); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f)); NBM grid archive write time minus cycle, median 0.81 to 1.07 h over the cycle hours (range 0.62 to 44.77); may be later than public release; NBS and MAV: documented time only.
+Descriptive only (D107.2). Rules fixed before any score in D107.9 and D108. Positions: raw GFS's own (the positions file's `gfs` set at the development airports, IEM's at the claim airports). AIFS adjusted for height as GFS is (7.429 degrees C per km, its own terrain with the same four weights); the NBM grid has no terrain field (no elevation treatment); NBS and MAV as issued. Pairs by valid time; NBS 01/07/13/19 UTC runs pair with the cycle one hour earlier (one hour more data), and where both run sets exist the same cycle's run is used. Truth: our hourly-report maximum (D82.8). Intervals: 7-day block bootstrap, seed 114 (10,000 resamples headline, 2,000 cells). Formal tests: Diebold-Mariano, one family per competitor and output, Benjamini-Hochberg at 0.05 across its airports. ECMWF IFS: Tables E10 to E16 (session 117, D111). Script `scripts/session114_comparisons.py`; tables `data/processed/session114_comparisons/`; full log `notes/session-114-output.txt`. Latency (not adjusted for, D108.4(f)): AIFS: archive write time minus cycle, median 5.14 to 5.27 h over the cycle hours (range 5.07 to 30.93); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f)); NBM grid archive write time minus cycle, median 0.81 to 1.07 h over the cycle hours (range 0.62 to 44.77); may be later than public release; NBS and MAV: documented time only.
 
 **Table E1. Paired rows and days per source, airport and test year** (`match_counts.csv`, which also has every unpaired row and day by reason, cycle hour, version and run set).
 
@@ -1279,6 +1279,321 @@ Maximum fields and their windows: AIFS none (highest of its 6-hourly steps, labe
 | KSFO (dev) (sea) | MAV pairs | raw_gfs | 1088, 1.91, +1.35 | 1088, 1.91 |
 
 Truth windows: CLI is midnight to midnight local standard time from continuous readings; the forecasts are for the civil local day. Every score against CLI is descriptive.
+
+**ECMWF IFS (session 117, D111).** Pulled by the owner by hand (D108.2, D111.3) and checked before any value was read (F160). Compared by session 114's script unchanged (D108.7, D111.5): `--match` in `data/processed/session117_ifs/`, `--hourly` and `--dailymax` in `data/processed/session114_comparisons/` (`*_ifs*.csv`), seed 114; the mx2t3 subset (Table E16) by `scripts/session117_ifs_guide.py --subset`, seed 117. Positions as raw GFS's (D108.3). Grids: 0.4 degree to 2024-01-31 and a 0.25 degree grid with Ni 1439 on 2024-02-01 and 02-02, both with no elevation treatment (development airports only, labelled "no elevation treatment"); 0.25 degree from 2024-02-03, adjusted for height as GFS is with IFS's 2024-12-03 terrain (labelled "terrain from a later date" from 2024-02-03 to 2024-12-02, "elevation-adjusted" after). Versions 48r1, 49r1 (from 2024-11-13), 50r1 (from 2026-05-13). Daily maximum (D111.4): primary the highest of IFS's 3-hourly steps inside the local day ("3-hourly steps"); mx2t3, the highest of its 3-hour windows wholly inside the local day, is descriptive and exists only from 2024-11-12 to 2025-02-25 and from 2026-02-11 (plus six cycles on 2024-09-17 and 18). Scoring IFS here spends its test years at these 12 airports (D111.6). Latency: ECMWF IFS: archive write time minus cycle, median 7.21 to 7.92 h over the cycle hours (range 6.45 to 37.31); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f)).
+
+**Table E10. ECMWF IFS: paired rows and days per airport and test year** (`data/processed/session117_ifs/match_counts.csv`, IFS rows; every unpaired row and day by reason, cycle hour and version).
+
+| airport | test year | paired hourly rows | paired D98.10 days | paired every-cycle days |
+|---|---|---|---|---|
+| EDDM | 2024-25 | 23,360 | 365 | 1,460 |
+| EDDM | 2025-26 | 23,288 | 364 | 1,456 |
+| KORD | 2024-25 | 23,360 | 365 | 1,460 |
+| KORD | 2025-26 | 23,208 | 361 | 1,441 |
+| CYYZ (sea) | 2024-25 | 23,328 | 364 | 1,456 |
+| CYYZ (sea) | 2025-26 | 23,288 | 364 | 1,453 |
+| ZGSZ (sea) | 2024-25 | 23,360 | 365 | 1,460 |
+| ZGSZ (sea) | 2025-26 | 23,288 | 364 | 1,455 |
+| ZUCK | 2024-25 | 23,360 | 365 | 1,460 |
+| ZUCK | 2025-26 | 23,296 | 364 | 1,455 |
+| NZWN (sea) | 2024-25 | 23,360 | 365 | 1,460 |
+| NZWN (sea) | 2025-26 | 23,280 | 363 | 1,450 |
+| EGLC (dev) | 2023-24 | 23,376 | 365 | 1,461 |
+| EGLC (dev) | 2024-25 | 23,344 | 365 | 1,460 |
+| EGLC (dev) | 2025-26 | 23,280 | 364 | 1,456 |
+| LFPG (dev) | 2023-24 | 23,344 | 365 | 1,461 |
+| LFPG (dev) | 2024-25 | 23,288 | 365 | 1,460 |
+| LFPG (dev) | 2025-26 | 23,176 | 363 | 1,452 |
+| KDSM (dev) | 2023-24 | 23,368 | 366 | 1,461 |
+| KDSM (dev) | 2024-25 | 23,360 | 365 | 1,460 |
+| KDSM (dev) | 2025-26 | 23,288 | 364 | 1,453 |
+| YSDU (dev) | 2023-24 | 23,216 | 362 | 1,274 |
+| YSDU (dev) | 2024-25 | 23,240 | 363 | 1,269 |
+| YSDU (dev) | 2025-26 | 23,064 | 359 | 1,255 |
+| KRNO (dev) | 2023-24 | 23,360 | 365 | 1,332 |
+| KRNO (dev) | 2024-25 | 23,352 | 365 | 1,334 |
+| KRNO (dev) | 2025-26 | 23,272 | 363 | 1,323 |
+| KSFO (dev) (sea) | 2023-24 | 23,376 | 366 | 1,336 |
+| KSFO (dev) (sea) | 2024-25 | 23,352 | 364 | 1,330 |
+| KSFO (dev) (sea) | 2025-26 | 23,280 | 363 | 1,323 |
+
+Unpaired, all airports together: daily max, D98.10 days, no run at this cycle: 3; daily max, D98.10 days, observed maximum not usable (D82.8): 20; daily max, every cycle, day ends after 2026-07-31T23:00 UTC (nothing after it is read): 67; daily max, every cycle, no run at this cycle: 16; daily max, every cycle, observed maximum not usable (D82.8): 76; hourly, competitor value our row not scored (no observation or incomplete features): 1,016; hourly, no run at this cycle: 828; hourly, valid time not one of the source's steps: 1,310,924.
+
+**Table E11. ECMWF IFS, hourly: MAE [95 %] on IFS's paired rows, per test year and pooled** (`hourly_ifs.csv`, `hourly_ifs_skill.csv`; breakdowns in `hourly_ifs_breakdown.csv`). Skill = 1 - MAE(a) / MAE(b), percent.
+
+| airport | test year | n | IFS | curve | raw GFS | linear MOS | skill curve vs IFS [95 %] | skill raw GFS vs IFS |
+|---|---|---|---|---|---|---|---|---|
+| EDDM | 2024-25 | 23,360 | 1.41 [1.32, 1.50] | 1.31 [1.23, 1.41] | 1.75 | 1.40 | +6.7 [-0.3, +13.5] | -24.2 |
+| EDDM | 2025-26 | 23,288 | 1.43 [1.35, 1.51] | 1.35 [1.28, 1.43] | 1.85 | 1.46 | +5.9 [-1.5, +11.9] | -28.8 |
+| EDDM | all | 46,648 | 1.42 [1.36, 1.48] | 1.33 [1.27, 1.39] | 1.80 | 1.43 | +6.3 [+1.2, +10.7] | -26.5 |
+| KORD | 2024-25 | 23,360 | 1.44 [1.34, 1.55] | 1.15 [1.08, 1.23] | 1.35 | 1.17 | +20.4 [+14.7, +25.7] | +6.7 |
+| KORD | 2025-26 | 23,208 | 1.34 [1.25, 1.45] | 1.21 [1.13, 1.30] | 1.32 | 1.25 | +9.6 [+3.5, +16.0] | +1.6 |
+| KORD | all | 46,568 | 1.39 [1.32, 1.47] | 1.18 [1.13, 1.24] | 1.33 | 1.21 | +15.2 [+10.9, +19.3] | +4.3 |
+| CYYZ (sea) | 2024-25 | 23,328 | 1.32 [1.21, 1.43] | 1.16 [1.09, 1.24] | 1.49 | 1.22 | +11.5 [+6.3, +16.4] | -13.0 |
+| CYYZ (sea) | 2025-26 | 23,288 | 1.39 [1.29, 1.52] | 1.12 [1.05, 1.21] | 1.46 | 1.19 | +19.4 [+14.3, +24.6] | -5.2 |
+| CYYZ (sea) | all | 46,616 | 1.35 [1.27, 1.44] | 1.14 [1.09, 1.20] | 1.48 | 1.20 | +15.5 [+11.9, +19.1] | -9.0 |
+| ZGSZ (sea) | 2024-25 | 23,360 | 1.40 [1.33, 1.48] | 0.91 [0.86, 0.96] | 1.16 | 0.97 | +34.9 [+29.7, +39.9] | +16.9 |
+| ZGSZ (sea) | 2025-26 | 23,288 | 1.23 [1.15, 1.31] | 0.87 [0.82, 0.92] | 1.14 | 0.90 | +28.9 [+23.0, +35.3] | +6.9 |
+| ZGSZ (sea) | all | 46,648 | 1.31 [1.26, 1.37] | 0.89 [0.86, 0.93] | 1.15 | 0.94 | +32.1 [+27.9, +36.0] | +12.2 |
+| ZUCK | 2024-25 | 23,360 | 1.36 [1.22, 1.50] | 1.14 [1.06, 1.23] | 1.49 | 1.20 | +16.2 [+7.6, +23.1] | -9.3 |
+| ZUCK | 2025-26 | 23,296 | 1.27 [1.19, 1.36] | 1.05 [0.99, 1.10] | 1.44 | 1.16 | +17.5 [+12.9, +22.9] | -13.4 |
+| ZUCK | all | 46,656 | 1.32 [1.24, 1.40] | 1.10 [1.04, 1.15] | 1.47 | 1.18 | +16.9 [+12.3, +21.3] | -11.3 |
+| NZWN (sea) | 2024-25 | 23,360 | 0.93 [0.88, 0.98] | 0.79 [0.75, 0.83] | 1.16 | 0.85 | +14.8 [+9.6, +20.0] | -24.4 |
+| NZWN (sea) | 2025-26 | 23,280 | 0.95 [0.91, 1.00] | 0.78 [0.74, 0.81] | 1.16 | 0.80 | +18.4 [+13.9, +23.6] | -22.1 |
+| NZWN (sea) | all | 46,640 | 0.94 [0.91, 0.97] | 0.78 [0.76, 0.81] | 1.16 | 0.83 | +16.6 [+12.8, +20.2] | -23.3 |
+| EGLC (dev) | 2023-24 | 23,376 | 1.45 [1.39, 1.51] | 0.79 [0.76, 0.83] | 1.02 | 0.79 | +45.4 [+42.4, +48.0] | +29.9 |
+| EGLC (dev) | 2024-25 | 23,344 | 1.11 [1.04, 1.16] | 0.87 [0.82, 0.92] | 1.05 | 0.88 | +21.5 [+15.1, +26.5] | +4.9 |
+| EGLC (dev) | 2025-26 | 23,280 | 0.96 [0.91, 1.01] | 0.84 [0.79, 0.89] | 1.04 | 0.85 | +12.5 [+7.9, +16.8] | -8.3 |
+| EGLC (dev) | all | 70,000 | 1.17 [1.13, 1.22] | 0.83 [0.81, 0.86] | 1.04 | 0.84 | +29.0 [+25.4, +32.2] | +11.7 |
+| LFPG (dev) | 2023-24 | 23,344 | 1.31 [1.20, 1.40] | 0.93 [0.87, 0.98] | 1.23 | 0.95 | +29.0 [+23.2, +34.1] | +5.9 |
+| LFPG (dev) | 2024-25 | 23,288 | 1.27 [1.18, 1.35] | 1.02 [0.96, 1.08] | 1.25 | 1.05 | +20.0 [+13.6, +25.1] | +1.6 |
+| LFPG (dev) | 2025-26 | 23,176 | 1.26 [1.18, 1.35] | 0.93 [0.89, 0.98] | 1.23 | 1.00 | +26.3 [+20.0, +31.6] | +2.6 |
+| LFPG (dev) | all | 69,808 | 1.28 [1.23, 1.33] | 0.96 [0.93, 0.99] | 1.24 | 1.00 | +25.1 [+21.8, +28.4] | +3.4 |
+| KDSM (dev) | 2023-24 | 23,368 | 1.58 [1.47, 1.70] | 1.34 [1.26, 1.40] | 2.05 | 1.52 | +15.3 [+9.8, +21.5] | -29.7 |
+| KDSM (dev) | 2024-25 | 23,360 | 1.45 [1.37, 1.54] | 1.24 [1.18, 1.28] | 1.78 | 1.36 | +14.9 [+9.4, +20.8] | -22.5 |
+| KDSM (dev) | 2025-26 | 23,288 | 1.47 [1.37, 1.58] | 1.34 [1.26, 1.43] | 1.82 | 1.41 | +8.8 [+2.3, +14.5] | -24.1 |
+| KDSM (dev) | all | 70,016 | 1.50 [1.44, 1.56] | 1.30 [1.26, 1.35] | 1.88 | 1.43 | +13.0 [+9.6, +16.4] | -25.5 |
+| YSDU (dev) | 2023-24 | 23,216 | 1.35 [1.29, 1.43] | 1.27 [1.22, 1.33] | 1.52 | 1.36 | +6.2 [+0.9, +11.5] | -12.6 |
+| YSDU (dev) | 2024-25 | 23,240 | 1.35 [1.29, 1.42] | 1.24 [1.18, 1.31] | 1.56 | 1.31 | +8.2 [+3.6, +13.1] | -15.7 |
+| YSDU (dev) | 2025-26 | 23,064 | 1.31 [1.24, 1.38] | 1.20 [1.14, 1.26] | 1.46 | 1.32 | +8.2 [+3.8, +12.2] | -11.4 |
+| YSDU (dev) | all | 69,520 | 1.34 [1.30, 1.38] | 1.24 [1.20, 1.27] | 1.52 | 1.33 | +7.5 [+4.7, +10.3] | -13.3 |
+| KRNO (dev) | 2023-24 | 23,360 | 2.64 [2.39, 2.91] | 1.25 [1.17, 1.35] | 2.04 | 1.37 | +52.5 [+48.5, +56.1] | +22.6 |
+| KRNO (dev) | 2024-25 | 23,352 | 1.99 [1.85, 2.16] | 1.24 [1.13, 1.35] | 2.36 | 1.46 | +38.0 [+33.7, +42.3] | -18.4 |
+| KRNO (dev) | 2025-26 | 23,272 | 1.96 [1.79, 2.16] | 1.15 [1.07, 1.26] | 2.28 | 1.40 | +41.0 [+35.2, +46.1] | -16.5 |
+| KRNO (dev) | all | 69,984 | 2.20 [2.07, 2.33] | 1.21 [1.16, 1.28] | 2.23 | 1.41 | +44.7 [+41.7, +47.4] | -1.4 |
+| KSFO (dev) (sea) | 2023-24 | 23,376 | 1.63 [1.49, 1.78] | 0.99 [0.93, 1.05] | 1.29 | 1.12 | +39.3 [+33.5, +44.6] | +21.0 |
+| KSFO (dev) (sea) | 2024-25 | 23,352 | 1.19 [1.06, 1.30] | 1.03 [0.94, 1.13] | 1.24 | 1.19 | +12.9 [+7.7, +17.9] | -4.8 |
+| KSFO (dev) (sea) | 2025-26 | 23,280 | 1.09 [1.02, 1.16] | 0.98 [0.91, 1.07] | 1.33 | 1.10 | +9.4 [+3.9, +14.6] | -22.9 |
+| KSFO (dev) (sea) | all | 70,008 | 1.30 [1.22, 1.38] | 1.00 [0.96, 1.05] | 1.29 | 1.14 | +23.0 [+18.5, +27.0] | +1.0 |
+
+**Table E11b. ECMWF IFS, hourly, by grid and elevation label and by IFS version: rows, MAE of IFS / the curve / raw GFS, IFS's mean error, and the curve's skill against IFS, percent [95 %]** (`hourly_ifs_breakdown.csv`, conditions `elevation` and `version`). The table does not split the 0.4 degree grid from the 8 cycles on the Ni 1439 grid; both are "no elevation treatment".
+
+| airport | segment | rows | IFS / curve / raw GFS | IFS mean error | skill curve vs IFS [95 %] |
+|---|---|---|---|---|---|
+| EDDM | 0.25 degree, elevation-adjusted, terrain from a later date | 7,936 | 1.37 / 1.45 / 1.69 | -0.54 | -5.5 [-20.1, +7.2] |
+| EDDM | 0.25 degree, elevation-adjusted | 38,712 | 1.43 / 1.31 / 1.82 | +0.02 | +8.7 [+3.4, +13.4] |
+| EDDM | 48r1 | 6,656 | 1.39 / 1.39 / 1.68 | -0.70 | -0.2 [-14.6, +12.7] |
+| EDDM | 49r1 | 34,936 | 1.39 / 1.34 / 1.78 | +0.02 | +3.7 [-1.7, +9.1] |
+| EDDM | 50r1 | 5,056 | 1.69 / 1.21 / 2.05 | +0.07 | +28.1 [+21.5, +32.0] |
+| KORD | 0.25 degree, elevation-adjusted, terrain from a later date | 7,936 | 1.24 / 0.95 / 1.15 | +0.84 | +23.0 [+13.2, +31.8] |
+| KORD | 0.25 degree, elevation-adjusted | 38,632 | 1.43 / 1.23 / 1.37 | +0.79 | +13.8 [+9.0, +18.8] |
+| KORD | 48r1 | 6,656 | 1.30 / 0.93 / 1.16 | +0.96 | +28.3 [+19.6, +35.6] |
+| KORD | 49r1 | 34,872 | 1.44 / 1.22 / 1.36 | +0.88 | +15.1 [+9.7, +20.0] |
+| KORD | 50r1 | 5,040 | 1.22 / 1.25 / 1.37 | -0.03 | -2.5 [-9.3, +5.6] |
+| CYYZ (sea) | 0.25 degree, elevation-adjusted, terrain from a later date | 7,928 | 1.09 / 0.96 / 1.11 | +0.44 | +12.1 [+4.3, +20.0] |
+| CYYZ (sea) | 0.25 degree, elevation-adjusted | 38,688 | 1.41 / 1.18 / 1.55 | +0.89 | +16.1 [+12.0, +19.9] |
+| CYYZ (sea) | 48r1 | 6,648 | 1.14 / 0.98 / 1.16 | +0.49 | +14.0 [+5.4, +22.8] |
+| CYYZ (sea) | 49r1 | 34,912 | 1.39 / 1.18 / 1.46 | +0.86 | +15.2 [+10.9, +19.5] |
+| CYYZ (sea) | 50r1 | 5,056 | 1.40 / 1.13 / 1.98 | +0.88 | +19.4 [+7.3, +29.4] |
+| ZGSZ (sea) | 0.25 degree, elevation-adjusted, terrain from a later date | 7,936 | 1.47 / 0.87 / 1.08 | +1.24 | +41.2 [+30.6, +49.8] |
+| ZGSZ (sea) | 0.25 degree, elevation-adjusted | 38,712 | 1.28 / 0.90 / 1.17 | +0.92 | +29.9 [+26.0, +34.1] |
+| ZGSZ (sea) | 48r1 | 6,656 | 1.53 / 0.84 / 1.06 | +1.35 | +44.7 [+33.4, +53.3] |
+| ZGSZ (sea) | 49r1 | 34,936 | 1.31 / 0.90 / 1.18 | +0.99 | +31.6 [+27.3, +35.8] |
+| ZGSZ (sea) | 50r1 | 5,056 | 1.03 / 0.91 / 1.10 | +0.41 | +12.4 [+3.9, +21.2] |
+| ZUCK | 0.25 degree, elevation-adjusted, terrain from a later date | 7,936 | 1.32 / 1.17 / 1.39 | +0.42 | +11.5 [-3.2, +22.7] |
+| ZUCK | 0.25 degree, elevation-adjusted | 38,720 | 1.32 / 1.08 / 1.48 | +0.39 | +18.0 [+13.5, +22.8] |
+| ZUCK | 48r1 | 6,656 | 1.42 / 1.23 / 1.45 | +0.51 | +13.3 [-3.3, +25.3] |
+| ZUCK | 49r1 | 34,944 | 1.28 / 1.06 / 1.46 | +0.43 | +16.8 [+11.5, +21.9] |
+| ZUCK | 50r1 | 5,056 | 1.46 / 1.15 / 1.50 | -0.06 | +21.7 [+10.2, +34.5] |
+| NZWN (sea) | 0.25 degree, elevation-adjusted, terrain from a later date | 7,936 | 0.91 / 0.72 / 1.20 | +0.52 | +21.6 [+14.8, +28.6] |
+| NZWN (sea) | 0.25 degree, elevation-adjusted | 38,704 | 0.95 / 0.80 / 1.15 | +0.40 | +15.6 [+11.3, +19.5] |
+| NZWN (sea) | 48r1 | 6,656 | 0.89 / 0.72 / 1.17 | +0.44 | +18.9 [+10.9, +26.3] |
+| NZWN (sea) | 49r1 | 34,936 | 0.97 / 0.79 / 1.18 | +0.46 | +18.0 [+13.8, +22.0] |
+| NZWN (sea) | 50r1 | 5,048 | 0.84 / 0.82 / 1.01 | +0.17 | +2.1 [-11.2, +11.6] |
+| EGLC (dev) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,872 | 1.55 / 0.78 / 0.88 | +1.43 | +49.9 [+46.4, +53.2] |
+| EGLC (dev) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,424 | 1.31 / 0.80 / 1.05 | +0.93 | +38.9 [+35.1, +42.2] |
+| EGLC (dev) | 0.25 degree, elevation-adjusted | 38,704 | 0.99 / 0.87 / 1.08 | +0.39 | +12.3 [+8.6, +15.9] |
+| EGLC (dev) | 48r1 | 30,016 | 1.42 / 0.79 / 0.99 | +1.13 | +44.2 [+41.3, +46.7] |
+| EGLC (dev) | 49r1 | 34,928 | 0.99 / 0.85 / 1.02 | +0.48 | +13.8 [+9.9, +17.7] |
+| EGLC (dev) | 50r1 | 5,056 | 1.02 / 0.97 / 1.39 | -0.13 | +4.8 [-3.6, +12.5] |
+| LFPG (dev) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,848 | 1.12 / 0.87 / 1.00 | +0.73 | +21.9 [+13.3, +30.1] |
+| LFPG (dev) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,392 | 1.42 / 1.01 / 1.33 | +1.03 | +28.4 [+22.1, +34.0] |
+| LFPG (dev) | 0.25 degree, elevation-adjusted | 38,568 | 1.26 / 0.96 / 1.26 | +0.92 | +24.2 [+19.5, +28.7] |
+| LFPG (dev) | 48r1 | 29,984 | 1.31 / 0.95 / 1.21 | +0.92 | +27.2 [+22.1, +32.1] |
+| LFPG (dev) | 49r1 | 34,800 | 1.24 / 0.96 / 1.18 | +0.91 | +22.7 [+17.8, +27.5] |
+| LFPG (dev) | 50r1 | 5,024 | 1.39 / 0.99 / 1.76 | +1.02 | +28.9 [+14.7, +41.5] |
+| KDSM (dev) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,872 | 1.36 / 1.30 / 1.70 | +0.21 | +4.4 [-3.7, +11.5] |
+| KDSM (dev) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,432 | 1.63 / 1.27 / 2.14 | +0.81 | +21.9 [+15.8, +27.3] |
+| KDSM (dev) | 0.25 degree, elevation-adjusted | 38,712 | 1.48 / 1.32 / 1.81 | +0.42 | +10.6 [+5.7, +15.2] |
+| KDSM (dev) | 48r1 | 30,024 | 1.54 / 1.29 / 1.99 | +0.63 | +16.3 [+11.1, +21.6] |
+| KDSM (dev) | 49r1 | 34,936 | 1.48 / 1.32 / 1.74 | +0.41 | +10.7 [+5.6, +15.7] |
+| KDSM (dev) | 50r1 | 5,056 | 1.41 / 1.29 / 2.20 | +0.25 | +8.5 [-1.9, +17.8] |
+| YSDU (dev) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,808 | 1.51 / 1.30 / 1.51 | +0.44 | +14.2 [+7.4, +21.4] |
+| YSDU (dev) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,296 | 1.27 / 1.24 / 1.55 | -0.25 | +2.6 [-3.5, +8.6] |
+| YSDU (dev) | 0.25 degree, elevation-adjusted | 38,416 | 1.32 / 1.22 / 1.50 | -0.10 | +7.6 [+4.2, +10.6] |
+| YSDU (dev) | 48r1 | 29,840 | 1.37 / 1.26 / 1.53 | +0.00 | +7.7 [+2.9, +12.3] |
+| YSDU (dev) | 49r1 | 34,656 | 1.35 / 1.23 / 1.53 | -0.07 | +8.8 [+5.3, +12.0] |
+| YSDU (dev) | 50r1 | 5,024 | 1.09 / 1.13 / 1.33 | -0.19 | -4.2 [-14.0, +3.4] |
+| KRNO (dev) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,872 | 3.32 / 1.43 / 2.28 | +2.74 | +56.8 [+52.7, +60.5] |
+| KRNO (dev) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,424 | 1.91 / 1.17 / 2.11 | +0.73 | +38.8 [+32.4, +45.6] |
+| KRNO (dev) | 0.25 degree, elevation-adjusted | 38,688 | 2.00 / 1.17 / 2.27 | +0.87 | +41.4 [+37.4, +45.0] |
+| KRNO (dev) | 48r1 | 30,016 | 2.43 / 1.24 / 2.12 | +1.54 | +49.0 [+44.5, +52.7] |
+| KRNO (dev) | 49r1 | 34,920 | 2.11 / 1.24 / 2.42 | +0.93 | +41.1 [+36.9, +44.9] |
+| KRNO (dev) | 50r1 | 5,048 | 1.39 / 0.86 / 1.52 | +0.38 | +38.5 [+32.0, +43.5] |
+| KSFO (dev) (sea) | 0.4 degree and Ni 1439 grids, no elevation treatment | 11,872 | 2.03 / 1.03 / 1.39 | +1.90 | +49.5 [+43.8, +54.3] |
+| KSFO (dev) (sea) | 0.25 degree, elevation-adjusted, terrain from a later date | 19,440 | 1.33 / 1.10 / 1.31 | -0.15 | +17.7 [+12.2, +22.9] |
+| KSFO (dev) (sea) | 0.25 degree, elevation-adjusted | 38,696 | 1.06 / 0.95 / 1.25 | +0.29 | +10.7 [+6.3, +14.8] |
+| KSFO (dev) (sea) | 48r1 | 30,032 | 1.61 / 1.07 / 1.35 | +0.61 | +33.6 [+27.4, +38.6] |
+| KSFO (dev) (sea) | 49r1 | 34,928 | 1.08 / 0.96 / 1.27 | +0.27 | +10.7 [+6.1, +15.0] |
+| KSFO (dev) (sea) | 50r1 | 5,048 | 1.00 / 0.88 / 1.09 | +0.61 | +12.5 [-0.2, +23.8] |
+
+**Table E11c. ECMWF IFS, hourly skill of the curve against IFS by lead band, percent [95 %]** (`hourly_ifs_breakdown.csv`).
+
+| airport | 3-12 | 13-24 | 25-36 | 37-48 |
+|---|---|---|---|---|
+| EDDM | +6.3 [+0.2, +11.5] | +6.6 [+1.4, +11.0] | +7.1 [+1.8, +11.6] | +5.4 [+0.5, +9.7] |
+| KORD | +17.9 [+13.4, +22.1] | +16.2 [+11.7, +20.6] | +13.7 [+9.0, +18.5] | +13.7 [+8.3, +18.9] |
+| CYYZ (sea) | +16.0 [+12.1, +19.8] | +17.9 [+14.0, +21.8] | +15.1 [+11.1, +18.9] | +13.4 [+9.1, +17.6] |
+| ZGSZ (sea) | +35.1 [+31.4, +38.7] | +34.9 [+31.0, +38.7] | +30.7 [+26.3, +35.1] | +28.1 [+23.5, +32.4] |
+| ZUCK | +16.8 [+11.9, +21.3] | +19.8 [+15.1, +23.9] | +17.2 [+12.2, +21.8] | +13.7 [+8.3, +18.9] |
+| NZWN (sea) | +21.7 [+17.9, +25.3] | +18.7 [+14.7, +22.4] | +15.0 [+10.9, +18.6] | +11.2 [+7.0, +14.9] |
+| EGLC (dev) | +32.6 [+28.9, +35.9] | +29.7 [+26.2, +33.0] | +28.0 [+24.3, +31.5] | +26.0 [+22.0, +29.8] |
+| LFPG (dev) | +28.2 [+24.7, +31.9] | +26.1 [+22.6, +29.8] | +24.4 [+20.8, +28.0] | +22.3 [+18.7, +25.8] |
+| KDSM (dev) | +14.1 [+10.5, +17.8] | +15.8 [+12.4, +19.4] | +12.2 [+8.0, +15.9] | +10.6 [+6.6, +14.4] |
+| YSDU (dev) | +6.8 [+3.6, +9.9] | +8.2 [+5.4, +11.2] | +8.1 [+5.2, +10.9] | +7.0 [+4.0, +9.9] |
+| KRNO (dev) | +48.0 [+44.9, +50.7] | +45.5 [+42.3, +48.4] | +43.7 [+40.5, +46.6] | +41.7 [+38.4, +44.8] |
+| KSFO (dev) (sea) | +27.0 [+22.8, +30.7] | +24.1 [+19.5, +28.1] | +21.3 [+16.6, +25.4] | +19.8 [+15.0, +24.2] |
+
+**Table E12. ECMWF IFS, formal tests, hourly** (`hourly_ifs_dm.csv`). Daily mean of |e_curve| - |e_IFS| (negative: the curve's errors are smaller), Newey-West at 7 lags; Benjamini-Hochberg at 0.05 across the 12 airports.
+
+| family | airport | days | mean daily difference [95 %] | DM statistic | p-value | BH at 0.05 |
+|---|---|---|---|---|---|---|
+| ifs hourly | EDDM | 730 | -0.092 [-0.157, -0.017] | -2.46 | 1.4e-02 | rejected |
+| ifs hourly | KORD | 730 | -0.211 [-0.277, -0.146] | -6.08 | 1.2e-09 | rejected |
+| ifs hourly | CYYZ (sea) | 730 | -0.210 [-0.270, -0.153] | -6.96 | 3.5e-12 | rejected |
+| ifs hourly | ZGSZ (sea) | 730 | -0.422 [-0.489, -0.354] | -12.03 | 2.4e-33 | rejected |
+| ifs hourly | ZUCK | 730 | -0.221 [-0.292, -0.154] | -6.03 | 1.6e-09 | rejected |
+| ifs hourly | NZWN (sea) | 730 | -0.156 [-0.194, -0.117] | -7.85 | 4.1e-15 | rejected |
+| ifs hourly | EGLC (dev) | 1,096 | -0.339 [-0.390, -0.288] | -12.61 | 2.0e-36 | rejected |
+| ifs hourly | LFPG (dev) | 1,096 | -0.322 [-0.376, -0.271] | -11.64 | 2.7e-31 | rejected |
+| ifs hourly | KDSM (dev) | 1,096 | -0.196 [-0.255, -0.140] | -6.55 | 5.8e-11 | rejected |
+| ifs hourly | YSDU (dev) | 1,096 | -0.101 [-0.140, -0.062] | -4.98 | 6.3e-07 | rejected |
+| ifs hourly | KRNO (dev) | 1,096 | -0.983 [-1.091, -0.872] | -16.80 | 2.5e-63 | rejected |
+| ifs hourly | KSFO (dev) (sea) | 1,096 | -0.298 [-0.366, -0.230] | -8.25 | 1.6e-16 | rejected |
+
+**Table E13. ECMWF IFS, daily maximum (D98.10's days): MAE [95 %] on IFS's paired days, per test year and pooled** (`dailymax_ifs.csv`, `dailymax_ifs_skill.csv`; breakdowns by cycle hour, season and version in `dailymax_ifs_breakdown.csv`). IFS's maximum: the highest of its 3-hourly steps inside the local day ("3-hourly steps", D111.4). Skill = 1 - MAE(a) / MAE(b), percent.
+
+| airport | test year | days | IFS's maximum (3-hourly steps) | curve (D98.10) | curve at IFS's steps | raw GFS | skill curve vs IFS [95 %] | skill curve at IFS's steps vs IFS [95 %] |
+|---|---|---|---|---|---|---|---|---|
+| EDDM | 2024-25 | 365 | 1.47 [1.31, 1.68] | 1.27 [1.08, 1.49] | 1.37 | 1.79 | +14.1 [+4.1, +23.2] | +7.0 [-3.5, +16.1] |
+| EDDM | 2025-26 | 364 | 1.37 [1.26, 1.48] | 1.23 [1.09, 1.40] | 1.34 | 1.79 | +10.7 [-3.0, +20.2] | +2.5 [-11.2, +12.0] |
+| EDDM | all | 729 | 1.42 [1.32, 1.53] | 1.25 [1.13, 1.39] | 1.36 | 1.79 | +12.5 [+4.4, +19.2] | +4.8 [-3.4, +11.6] |
+| KORD | 2024-25 | 365 | 1.46 [1.32, 1.60] | 1.07 [0.96, 1.19] | 1.16 | 1.18 | +26.9 [+18.0, +34.4] | +20.2 [+11.7, +27.5] |
+| KORD | 2025-26 | 361 | 1.30 [1.18, 1.46] | 1.12 [1.03, 1.22] | 1.19 | 1.15 | +14.1 [+4.8, +22.9] | +8.5 [-1.5, +17.6] |
+| KORD | all | 726 | 1.38 [1.28, 1.48] | 1.09 [1.02, 1.17] | 1.18 | 1.16 | +20.9 [+14.5, +26.7] | +14.7 [+8.1, +20.7] |
+| CYYZ (sea) | 2024-25 | 364 | 1.44 [1.28, 1.64] | 1.06 [0.95, 1.18] | 1.12 | 1.38 | +26.5 [+17.8, +34.4] | +22.2 [+14.2, +29.9] |
+| CYYZ (sea) | 2025-26 | 364 | 1.48 [1.35, 1.63] | 1.03 [0.92, 1.15] | 1.11 | 1.30 | +30.9 [+23.3, +37.7] | +24.8 [+18.0, +31.0] |
+| CYYZ (sea) | all | 728 | 1.46 [1.35, 1.58] | 1.04 [0.96, 1.12] | 1.12 | 1.34 | +28.7 [+23.2, +34.3] | +23.5 [+18.5, +28.8] |
+| ZGSZ (sea) | 2024-25 | 365 | 1.81 [1.66, 1.94] | 0.91 [0.82, 0.99] | 0.97 | 1.52 | +49.9 [+43.1, +55.7] | +46.2 [+39.7, +51.8] |
+| ZGSZ (sea) | 2025-26 | 364 | 1.49 [1.36, 1.63] | 0.92 [0.83, 0.99] | 1.01 | 1.52 | +38.2 [+31.6, +45.2] | +32.1 [+25.7, +39.2] |
+| ZGSZ (sea) | all | 729 | 1.65 [1.54, 1.75] | 0.91 [0.85, 0.97] | 0.99 | 1.52 | +44.6 [+40.0, +49.2] | +39.9 [+35.3, +44.4] |
+| ZUCK | 2024-25 | 365 | 1.53 [1.35, 1.73] | 1.19 [1.08, 1.33] | 1.34 | 1.40 | +22.0 [+9.6, +31.7] | +12.8 [-0.7, +22.7] |
+| ZUCK | 2025-26 | 364 | 1.47 [1.33, 1.61] | 1.15 [1.05, 1.25] | 1.24 | 1.34 | +21.8 [+13.4, +30.6] | +15.7 [+7.3, +24.4] |
+| ZUCK | all | 729 | 1.50 [1.38, 1.62] | 1.17 [1.09, 1.25] | 1.29 | 1.37 | +21.9 [+14.9, +28.7] | +14.2 [+6.9, +21.1] |
+| NZWN (sea) | 2024-25 | 365 | 1.47 [1.35, 1.61] | 0.75 [0.68, 0.83] | 0.79 | 1.70 | +48.9 [+43.1, +54.4] | +46.1 [+40.6, +51.6] |
+| NZWN (sea) | 2025-26 | 363 | 1.49 [1.36, 1.64] | 0.73 [0.66, 0.80] | 0.81 | 1.70 | +51.2 [+47.0, +55.8] | +46.1 [+41.7, +51.0] |
+| NZWN (sea) | all | 728 | 1.48 [1.39, 1.58] | 0.74 [0.69, 0.79] | 0.80 | 1.70 | +50.0 [+46.4, +53.6] | +46.1 [+42.4, +49.8] |
+| EGLC (dev) | 2023-24 | 365 | 1.21 [1.11, 1.30] | 0.79 [0.72, 0.86] | 0.87 | 0.90 | +35.1 [+26.9, +41.7] | +28.5 [+20.3, +35.2] |
+| EGLC (dev) | 2024-25 | 365 | 0.96 [0.86, 1.05] | 0.87 [0.78, 0.97] | 0.92 | 0.93 | +9.1 [-2.9, +18.1] | +4.1 [-8.0, +13.1] |
+| EGLC (dev) | 2025-26 | 364 | 0.94 [0.85, 1.05] | 0.86 [0.75, 0.99] | 0.90 | 1.01 | +8.5 [-3.5, +19.2] | +4.2 [-7.8, +14.3] |
+| EGLC (dev) | all | 1,094 | 1.04 [0.98, 1.10] | 0.84 [0.79, 0.90] | 0.90 | 0.95 | +19.0 [+12.9, +24.5] | +13.6 [+7.5, +19.2] |
+| LFPG (dev) | 2023-24 | 365 | 1.26 [1.11, 1.40] | 0.92 [0.83, 1.01] | 1.03 | 1.11 | +26.8 [+15.6, +35.8] | +18.1 [+8.4, +26.3] |
+| LFPG (dev) | 2024-25 | 365 | 1.15 [1.04, 1.25] | 1.06 [0.96, 1.19] | 1.13 | 1.27 | +7.4 [-6.5, +17.3] | +1.5 [-11.9, +11.5] |
+| LFPG (dev) | 2025-26 | 363 | 1.28 [1.15, 1.39] | 0.89 [0.81, 0.97] | 0.99 | 1.21 | +30.6 [+19.8, +39.0] | +22.4 [+11.1, +31.1] |
+| LFPG (dev) | all | 1,093 | 1.23 [1.16, 1.30] | 0.96 [0.90, 1.02] | 1.05 | 1.20 | +22.0 [+15.4, +28.1] | +14.4 [+8.0, +20.3] |
+| KDSM (dev) | 2023-24 | 366 | 1.64 [1.48, 1.79] | 1.20 [1.08, 1.29] | 1.30 | 2.08 | +26.8 [+18.0, +36.1] | +20.5 [+11.7, +29.2] |
+| KDSM (dev) | 2024-25 | 365 | 1.29 [1.16, 1.44] | 1.16 [1.07, 1.26] | 1.22 | 1.56 | +10.0 [-1.6, +21.2] | +5.3 [-5.8, +16.7] |
+| KDSM (dev) | 2025-26 | 364 | 1.29 [1.15, 1.44] | 1.31 [1.17, 1.46] | 1.34 | 1.55 | -1.6 [-13.9, +9.2] | -4.3 [-17.7, +6.3] |
+| KDSM (dev) | all | 1,095 | 1.41 [1.32, 1.49] | 1.22 [1.15, 1.29] | 1.29 | 1.73 | +13.0 [+6.7, +19.4] | +8.3 [+1.8, +14.5] |
+| YSDU (dev) | 2023-24 | 362 | 1.77 [1.62, 1.94] | 1.01 [0.91, 1.13] | 1.11 | 1.04 | +43.0 [+33.8, +50.7] | +37.1 [+28.4, +44.3] |
+| YSDU (dev) | 2024-25 | 363 | 1.66 [1.50, 1.85] | 1.12 [1.01, 1.27] | 1.19 | 1.13 | +32.4 [+24.1, +39.7] | +28.6 [+20.2, +35.9] |
+| YSDU (dev) | 2025-26 | 359 | 1.41 [1.29, 1.54] | 0.95 [0.86, 1.05] | 1.10 | 1.09 | +32.7 [+24.1, +40.2] | +21.6 [+12.3, +30.0] |
+| YSDU (dev) | all | 1,084 | 1.61 [1.52, 1.71] | 1.03 [0.96, 1.10] | 1.13 | 1.09 | +36.4 [+31.2, +40.9] | +29.7 [+24.5, +34.3] |
+| KRNO (dev) | 2023-24 | 365 | 3.77 [3.31, 4.27] | 1.01 [0.90, 1.15] | 1.19 | 1.77 | +73.1 [+69.1, +76.5] | +68.4 [+64.1, +71.7] |
+| KRNO (dev) | 2024-25 | 365 | 1.71 [1.49, 1.95] | 0.98 [0.85, 1.12] | 1.10 | 1.55 | +42.7 [+35.1, +49.4] | +35.9 [+28.4, +42.7] |
+| KRNO (dev) | 2025-26 | 363 | 1.83 [1.59, 2.15] | 0.85 [0.75, 0.97] | 1.01 | 1.34 | +53.6 [+45.8, +60.7] | +44.9 [+35.9, +52.9] |
+| KRNO (dev) | all | 1,093 | 2.44 [2.20, 2.68] | 0.95 [0.88, 1.02] | 1.10 | 1.55 | +61.1 [+56.8, +64.7] | +54.9 [+50.2, +58.8] |
+| KSFO (dev) (sea) | 2023-24 | 366 | 2.05 [1.84, 2.27] | 1.20 [1.08, 1.34] | 1.30 | 1.81 | +41.2 [+33.3, +47.8] | +36.5 [+28.1, +43.4] |
+| KSFO (dev) (sea) | 2024-25 | 364 | 1.35 [1.21, 1.48] | 1.17 [1.03, 1.32] | 1.31 | 1.61 | +12.9 [+3.3, +22.0] | +2.9 [-8.6, +12.5] |
+| KSFO (dev) (sea) | 2025-26 | 363 | 1.33 [1.22, 1.45] | 1.25 [1.08, 1.44] | 1.39 | 1.57 | +6.0 [-5.1, +16.7] | -4.4 [-16.5, +6.5] |
+| KSFO (dev) (sea) | all | 1,093 | 1.57 [1.47, 1.68] | 1.21 [1.12, 1.30] | 1.33 | 1.66 | +23.3 [+16.8, +28.8] | +15.5 [+8.4, +21.4] |
+
+**Table E14. ECMWF IFS, formal tests, daily maximum** (`dailymax_ifs_dm.csv`). Daily mean of |e_curve| - |e_IFS| (negative: the curve's errors are smaller), Newey-West at 7 lags; Benjamini-Hochberg at 0.05 across the 12 airports. IFS's maximum: the highest of its 3-hourly steps (D111.4).
+
+| family | airport | days | mean daily difference [95 %] | DM statistic | p-value | BH at 0.05 |
+|---|---|---|---|---|---|---|
+| ifs daily maximum | EDDM | 729 | -0.178 [-0.278, -0.061] | -3.12 | 1.8e-03 | rejected |
+| ifs daily maximum | KORD | 726 | -0.289 [-0.387, -0.190] | -5.67 | 1.4e-08 | rejected |
+| ifs daily maximum | CYYZ (sea) | 728 | -0.419 [-0.524, -0.324] | -8.10 | 5.6e-16 | rejected |
+| ifs daily maximum | ZGSZ (sea) | 729 | -0.736 [-0.850, -0.626] | -12.27 | 1.4e-34 | rejected |
+| ifs daily maximum | ZUCK | 729 | -0.328 [-0.455, -0.212] | -5.18 | 2.2e-07 | rejected |
+| ifs daily maximum | NZWN (sea) | 728 | -0.741 [-0.835, -0.656] | -15.96 | 2.3e-57 | rejected |
+| ifs daily maximum | EGLC (dev) | 1,094 | -0.198 [-0.262, -0.129] | -5.61 | 2.0e-08 | rejected |
+| ifs daily maximum | LFPG (dev) | 1,093 | -0.270 [-0.360, -0.181] | -5.82 | 6.0e-09 | rejected |
+| ifs daily maximum | KDSM (dev) | 1,095 | -0.183 [-0.284, -0.090] | -3.54 | 3.9e-04 | rejected |
+| ifs daily maximum | YSDU (dev) | 1,084 | -0.587 [-0.687, -0.485] | -11.21 | 3.6e-29 | rejected |
+| ifs daily maximum | KRNO (dev) | 1,093 | -1.491 [-1.720, -1.261] | -11.99 | 4.0e-33 | rejected |
+| ifs daily maximum | KSFO (dev) (sea) | 1,093 | -0.367 [-0.471, -0.253] | -6.28 | 3.3e-10 | rejected |
+
+**Table E15. ECMWF IFS, daily maximum from every cycle, by cycle hour: IFS / curve MAE (first lead of the local day)** (`dailymax_ifs_every_cycle.csv`, with intervals and the curve sampled at IFS's steps). IFS's maximum: 3-hourly steps (D111.4).
+
+| airport | 00z | 06z | 12z | 18z |
+|---|---|---|---|---|
+| EDDM | 1.57 / 1.45 (lead 22-23) | 1.58 / 1.37 (lead 16-17) | 1.53 / 1.31 (lead 10-11) | 1.42 / 1.25 (lead 4-5) |
+| KORD | 1.38 / 1.09 (lead 5-6) | 1.68 / 1.30 (lead 23-24) | 1.60 / 1.24 (lead 17-18) | 1.50 / 1.16 (lead 11-12) |
+| CYYZ (sea) | 1.46 / 1.04 (lead 4-5) | 1.58 / 1.21 (lead 22-23) | 1.60 / 1.16 (lead 16-17) | 1.55 / 1.11 (lead 10-11) |
+| ZGSZ (sea) | 1.63 / 0.99 (lead 16) | 1.68 / 0.97 (lead 10) | 1.65 / 0.91 (lead 4) | 1.70 / 1.04 (lead 22) |
+| ZUCK | 1.56 / 1.25 (lead 16) | 1.58 / 1.20 (lead 10) | 1.50 / 1.17 (lead 4) | 1.57 / 1.31 (lead 22) |
+| NZWN (sea) | 1.46 / 0.73 (lead 11-12) | 1.48 / 0.74 (lead 5-6) | 1.46 / 0.78 (lead 23-24) | 1.46 / 0.78 (lead 17-18) |
+| EGLC (dev) | 1.11 / 0.97 (lead 23-24) | 1.11 / 0.91 (lead 17-18) | 1.07 / 0.88 (lead 11-12) | 1.04 / 0.84 (lead 5-6) |
+| LFPG (dev) | 1.34 / 1.07 (lead 22-23) | 1.32 / 1.08 (lead 16-17) | 1.32 / 0.99 (lead 10-11) | 1.23 / 0.96 (lead 4-5) |
+| KDSM (dev) | 1.41 / 1.22 (lead 5-6) | 1.62 / 1.49 (lead 23-24) | 1.57 / 1.41 (lead 17-18) | 1.50 / 1.32 (lead 11-12) |
+| YSDU (dev) | 1.64 / 1.06 (lead 13-14) | 1.61 / 1.03 (lead 7-8) | 1.88 / 1.28 (lead 25-26) | 1.68 / 1.12 (lead 19-20) |
+| KRNO (dev) | 2.44 / 0.95 (lead 7-8) | 1.91 / 0.89 (lead 25-26) | 2.47 / 1.01 (lead 19-20) | 2.50 / 0.97 (lead 13-14) |
+| KSFO (dev) (sea) | 1.57 / 1.21 (lead 7-8) | 1.59 / 1.35 (lead 25-26) | 1.60 / 1.27 (lead 19-20) | 1.59 / 1.24 (lead 13-14) |
+
+**Table E16. ECMWF IFS's mx2t3 maximum on its own days (descriptive, D111.4): MAE on exactly the same days** (`data/processed/session117_ifs/dailymax_ifs_mx2t3_subset.csv` and `_skill.csv`, computed by `scripts/session117_ifs_guide.py --subset`, not by session 114's script; seed 117; no formal test). Days: D98.10's days paired for IFS that have an mx2t3 value (none in 2023-24). mx2t3: the highest of its 3-hour windows wholly inside the local day. Skill = 1 - MAE(a) / MAE(b), percent.
+
+| airport | test year | days | mx2t3 | IFS (3-hourly steps) | curve (D98.10) | curve at IFS's steps | raw GFS | skill curve vs mx2t3 [95 %] | skill IFS steps vs mx2t3 [95 %] |
+|---|---|---|---|---|---|---|---|---|---|
+| EDDM | 2024-25 | 107 | 1.65 [1.26, 2.24] | 1.63 | 1.60 | 1.73 | 1.74 | +3.5 [-19.1, +20.7] | +1.4 [-8.9, +9.7] |
+| EDDM | 2025-26 | 170 | 1.23 [1.06, 1.41] | 1.40 | 1.03 | 1.18 | 1.87 | +16.9 [+0.9, +28.4] | -13.1 [-18.5, -8.6] |
+| EDDM | all | 277 | 1.40 [1.19, 1.65] | 1.49 | 1.25 | 1.39 | 1.82 | +10.8 [-2.4, +20.9] | -6.5 [-12.7, -0.8] |
+| KORD | 2024-25 | 106 | 1.18 [0.91, 1.48] | 1.32 | 1.16 | 1.24 | 1.29 | +1.9 [-25.6, +27.7] | -11.9 [-17.3, -7.2] |
+| KORD | 2025-26 | 168 | 1.33 [1.13, 1.52] | 1.41 | 1.25 | 1.32 | 1.29 | +6.1 [-10.7, +18.7] | -6.2 [-13.5, +0.0] |
+| KORD | all | 274 | 1.27 [1.12, 1.45] | 1.38 | 1.21 | 1.29 | 1.29 | +4.6 [-8.9, +17.5] | -8.2 [-13.0, -3.8] |
+| CYYZ (sea) | 2024-25 | 105 | 1.14 [0.91, 1.30] | 1.24 | 0.93 | 0.93 | 0.97 | +18.4 [-1.4, +33.9] | -9.1 [-12.9, -5.9] |
+| CYYZ (sea) | 2025-26 | 169 | 1.56 [1.35, 1.81] | 1.75 | 1.26 | 1.35 | 1.73 | +19.1 [+5.7, +30.2] | -11.8 [-16.2, -7.6] |
+| CYYZ (sea) | all | 274 | 1.40 [1.24, 1.59] | 1.55 | 1.13 | 1.19 | 1.44 | +18.9 [+8.9, +28.3] | -11.0 [-14.0, -7.7] |
+| ZGSZ (sea) | 2024-25 | 107 | 1.18 [1.00, 1.34] | 1.41 | 0.94 | 0.99 | 1.29 | +20.2 [-0.9, +34.5] | -19.4 [-26.6, -12.3] |
+| ZGSZ (sea) | 2025-26 | 170 | 1.10 [0.97, 1.22] | 1.34 | 0.88 | 0.95 | 1.52 | +19.7 [+9.5, +32.1] | -21.7 [-26.3, -17.7] |
+| ZGSZ (sea) | all | 277 | 1.13 [1.02, 1.23] | 1.36 | 0.90 | 0.97 | 1.43 | +19.9 [+9.8, +29.3] | -20.8 [-24.7, -17.1] |
+| ZUCK | 2024-25 | 107 | 0.98 [0.87, 1.11] | 0.99 | 1.07 | 1.18 | 1.12 | -9.6 [-30.1, +7.8] | -0.7 [-7.0, +5.5] |
+| ZUCK | 2025-26 | 170 | 1.54 [1.36, 1.77] | 1.61 | 1.21 | 1.32 | 1.36 | +21.7 [+9.7, +37.6] | -4.5 [-8.7, -0.1] |
+| ZUCK | all | 277 | 1.33 [1.18, 1.50] | 1.37 | 1.16 | 1.26 | 1.27 | +12.7 [+0.8, +25.9] | -3.4 [-6.8, +0.3] |
+| NZWN (sea) | 2024-25 | 106 | 1.69 [1.44, 1.89] | 1.91 | 0.93 | 0.93 | 2.03 | +44.9 [+28.9, +56.6] | -12.8 [-16.3, -10.4] |
+| NZWN (sea) | 2025-26 | 168 | 1.07 [0.91, 1.23] | 1.24 | 0.67 | 0.76 | 1.44 | +37.4 [+29.4, +45.2] | -16.4 [-20.0, -13.6] |
+| NZWN (sea) | all | 274 | 1.31 [1.15, 1.47] | 1.50 | 0.77 | 0.82 | 1.67 | +41.2 [+32.8, +48.7] | -14.6 [-17.2, -12.6] |
+| EGLC (dev) | 2024-25 | 107 | 0.75 [0.64, 0.90] | 0.88 | 0.66 | 0.71 | 0.70 | +11.5 [-6.6, +29.1] | -18.3 [-24.5, -10.6] |
+| EGLC (dev) | 2025-26 | 170 | 0.97 [0.84, 1.16] | 1.01 | 0.96 | 1.00 | 1.15 | +1.3 [-12.9, +12.8] | -4.0 [-11.9, +3.3] |
+| EGLC (dev) | all | 277 | 0.88 [0.78, 1.01] | 0.96 | 0.84 | 0.89 | 0.98 | +4.6 [-6.8, +14.6] | -8.6 [-14.9, -2.3] |
+| LFPG (dev) | 2024-25 | 107 | 0.88 [0.73, 1.04] | 0.96 | 1.08 | 1.12 | 1.22 | -23.0 [-48.0, -2.7] | -8.6 [-16.7, -1.3] |
+| LFPG (dev) | 2025-26 | 169 | 1.29 [1.14, 1.47] | 1.46 | 0.83 | 0.93 | 1.27 | +36.0 [+22.7, +47.4] | -12.7 [-17.0, -9.1] |
+| LFPG (dev) | all | 276 | 1.13 [1.00, 1.27] | 1.26 | 0.93 | 1.00 | 1.25 | +18.2 [+3.4, +31.5] | -11.5 [-15.2, -8.0] |
+| KDSM (dev) | 2024-25 | 106 | 1.29 [1.02, 1.50] | 1.35 | 1.39 | 1.41 | 1.49 | -7.5 [-35.8, +12.5] | -4.9 [-11.7, +1.6] |
+| KDSM (dev) | 2025-26 | 169 | 1.23 [1.03, 1.41] | 1.35 | 1.32 | 1.34 | 1.67 | -7.6 [-27.3, +8.2] | -9.6 [-18.8, -2.4] |
+| KDSM (dev) | all | 275 | 1.25 [1.09, 1.39] | 1.35 | 1.35 | 1.37 | 1.60 | -7.5 [-22.9, +5.4] | -7.8 [-13.8, -3.0] |
+| YSDU (dev) | 2024-25 | 105 | 1.90 [1.60, 2.16] | 2.19 | 1.30 | 1.46 | 1.10 | +31.4 [+17.0, +41.0] | -15.7 [-21.5, -10.9] |
+| YSDU (dev) | 2025-26 | 167 | 0.97 [0.85, 1.09] | 1.19 | 0.88 | 1.04 | 1.04 | +9.5 [-10.1, +23.8] | -23.1 [-29.7, -15.5] |
+| YSDU (dev) | all | 272 | 1.33 [1.13, 1.52] | 1.58 | 1.04 | 1.21 | 1.06 | +21.6 [+8.9, +30.2] | -19.0 [-23.6, -14.6] |
+| KRNO (dev) | 2024-25 | 106 | 2.19 [1.86, 2.59] | 2.51 | 1.48 | 1.59 | 2.23 | +32.4 [+15.6, +44.8] | -14.5 [-18.0, -10.4] |
+| KRNO (dev) | 2025-26 | 168 | 1.23 [0.92, 1.54] | 1.55 | 0.75 | 0.87 | 1.35 | +39.3 [+19.9, +51.8] | -25.5 [-35.1, -19.6] |
+| KRNO (dev) | all | 274 | 1.60 [1.34, 1.91] | 1.92 | 1.03 | 1.15 | 1.69 | +35.6 [+24.4, +45.9] | -19.7 [-24.2, -15.6] |
+| KSFO (dev) (sea) | 2024-25 | 106 | 1.22 [1.06, 1.41] | 1.38 | 1.11 | 1.21 | 1.51 | +8.5 [-6.7, +21.8] | -13.3 [-18.2, -5.9] |
+| KSFO (dev) (sea) | 2025-26 | 168 | 1.13 [1.00, 1.28] | 1.31 | 1.25 | 1.45 | 1.55 | -11.4 [-38.0, +9.6] | -16.6 [-22.4, -11.2] |
+| KSFO (dev) (sea) | all | 274 | 1.16 [1.05, 1.27] | 1.34 | 1.20 | 1.36 | 1.54 | -3.4 [-20.5, +10.5] | -15.3 [-19.4, -11.0] |
+
+The mx2t3 days and their mx2t3 and curve figures equal session 114's tables exactly (`--subset`'s gate, `subset_meta.txt`); IFS's steps, the curve at IFS's steps and raw GFS are rescored on the same days here.
 
 ---
 

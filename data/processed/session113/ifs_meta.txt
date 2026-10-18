@@ -1,0 +1,33 @@
+Provenance (SPEC 2.3, D47, D107.6). Do not edit the data files.
+
+source      : ifs
+written by  : scripts/session113_comparison_pull.py --pull ifs
+written at  : 2026-10-18T16:15:52Z
+pulled      : 2026-10-16T16:33:21Z to 2026-10-18T16:15:23Z
+airports    : EDDM KORD CYYZ ZGSZ ZUCK NZWN EGLC LFPG KDSM YSDU KRNO KSFO
+windows     : EDDM 2024-08-01T00:00Z to 2026-07-31T18:00Z; KORD 2024-08-01T00:00Z to 2026-07-31T18:00Z; CYYZ 2024-08-01T00:00Z to 2026-07-31T18:00Z; ZGSZ 2024-08-01T00:00Z to 2026-07-31T18:00Z; ZUCK 2024-08-01T00:00Z to 2026-07-31T18:00Z; NZWN 2024-08-01T00:00Z to 2026-07-31T18:00Z; EGLC 2023-08-01T00:00Z to 2026-07-31T18:00Z; LFPG 2023-08-01T00:00Z to 2026-07-31T18:00Z; KDSM 2023-08-01T00:00Z to 2026-07-31T18:00Z; YSDU 2023-08-01T00:00Z to 2026-07-31T18:00Z; KRNO 2023-08-01T00:00Z to 2026-07-31T18:00Z; KSFO 2023-08-01T00:00Z to 2026-07-31T18:00Z
+columns     : airport, position_set, grid, cycle, step, valid_utc, param, window_start_utc, window_end_utc, v1, v2, v3, v4, units, msg
+values      : v1..v4 at the four points of positions_<source>_<grid>.csv (same order), full precision, in the message's own units (K); window_* only for maximum fields
+rows        : value rows 1438272; messages 87696; gaps 52416
+gaps        : * not listed 48; mx2t3 failed check 22480; mx2t3 no message 29888
+terrain     : ifs_terrain.csv
+packages    : python 3.12.2; eccodes 2.48.0; numpy 2.5.2; requests 2.34.2
+versions    : 0.4 degree to 2024-01-31 (grid 0p4), 0.25 degree from 2024-02-01; IFS cycles per probe.csv (48r1 from 2023-06-27, 49r1, 50r1 with dates as documented there)
+requests    : at most 8 at once; owner's override: D108.2: owner's override of D107.7's 24-hour limit for the IFS pull
+
+files (SHA-256, rows):
+  ifs_EDDM.csv.gz  339464b47a67ca88f2ee678caacb70374c7ccca9cf2475509255ae5e8171c23b  64320
+  ifs_KORD.csv.gz  24ba48d142e989b30dd803c1038a4e7f28cc8875015bbc2fbca7d937bc57c0dc  64320
+  ifs_CYYZ.csv.gz  416108e01bf78da8b5cff2b30e7e909f4c1baf45fcfe78e425e9586d9f2052dd  64320
+  ifs_ZGSZ.csv.gz  98f03e0c4f350853a5cab2b8db54f6b9181ac568bd5671dc856bdaef0e1578d6  64320
+  ifs_ZUCK.csv.gz  77dec3d654ea39f8cb5bfdeb65439a16b2828b9a758b2e22b357f377f734a5ae  64320
+  ifs_NZWN.csv.gz  75aa92d5cb56595f19ca0e2a0ee6f48c86bff7c39e1589eb19a1faf13ae4eff6  64320
+  ifs_EGLC.csv.gz  5aac1453c3aa0e40ea9a679f6c1cd22c6aa84cc45a1e564e241b58fe3b8c6855  175392
+  ifs_LFPG.csv.gz  69c41aba98c4dd4163a5a66b7a24803ed4b818dadd1f3536dafea0191a3e16ed  175392
+  ifs_KDSM.csv.gz  2417dcbf35adc2ef3942606efae4829c8f90454f4a8389cec5f22ed015b5a8ed  175392
+  ifs_YSDU.csv.gz  889071576d0fc1c235bc5c6e4a915bbd15c77cf7424c510b1a571ec69ad293a7  175392
+  ifs_KRNO.csv.gz  b437d92a1b9eb7568487db07da919e25a8bd0b5e99e4521f77ddd59b109c78ce  175392
+  ifs_KSFO.csv.gz  f2aedf162fb71393556f77e27a1a0f017a88b2960b5723037efc5d304c781bec  175392
+  ifs_manifest.csv.gz  e4b7979fac03aa0c6a395d666f683fb6b396ef0077f3dd7c9f0cc11c81f5c101  87696
+  ifs_gaps.csv  e79fc21c649e66422c39a9203c1ad63728a502dca4805023b1ca7ad7078ef685  52416
+  ifs_terrain.csv  09180e02ccc001d597938a26bdeb9878efea6dda0d2b6cb706ba0ee38e0812b3  
