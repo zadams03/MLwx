@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 18 October 2026, after session 117._
+_Last updated: 19 October 2026, after session 118._
 
 ---
 
@@ -41,8 +41,13 @@ the daily maximum (D82.2).
   it acts on any value (D110.7).
 - **Stage G, live product v1: live with 49 airports (D105.2, D105.3,
   F154.2).** Public repo zadams03/MLwx-live, page at
-  https://zadams03.github.io/MLwx-live/. Models `gfs-models-49`, one
-  hourly schedule (:40 UTC).
+  https://zadams03.github.io/MLwx-live/. Deployed: MLwx `d6ca3e4`, models
+  `gfs-models-49`, one hourly schedule (:40 UTC). Audited to 2026-10-19
+  (F161): no cycle lost, no silent push failure, one stale checkout on
+  17 Oct that pushed nothing; GitHub ran 39 of 150 schedule slots, issue
+  lag median 5.6 h. **Fixes in the template, awaiting the owner's redeploy
+  (D112.6, D112.8):** checkout of the latest main, a push that fails the
+  job unless it lands, no "latest only" input, schedule :15 and :40.
 - **A pre-registered test of the live forecasts (D105.5).** Locked. No
   accuracy figure is computed or shown until its look (D103.2, D105.6).
 - Stages D, E, F and H follow stage G.
@@ -63,16 +68,21 @@ the daily maximum (D82.2).
   from 2025-02-25T06Z to 2026-02-11T06Z (GRIB short name `max_2t`; whether
   it is the same quantity was not checked). A rerun would add about 350
   days; it needs its own entry, since it changes session 113's check.
+- **F161's readings (F161.10).** Every run commits (the state's
+  `last_run`), so overlapping runs always conflict on the state file;
+  six actions are forced from Node.js 20 to 24; `setup-python` "3.12"
+  floats (runs used 3.12.15). Whether the :15 and :40 schedule shortens
+  the issue lag is seen after the redeploy; an outside scheduler only if
+  it does not (D112.6(d)).
+- **Tests in the venv (F161.1).** `pytest` is not in `.venv`; the suite
+  runs as `python3 -m unittest discover -s tests` (181 tests). The health
+  check (D112.2) may record this.
 - **Session 114's own checks after IFS (F160.9(4)).** Session 114's
   `--verify` now fails on Part 1 (its template still says "pending"), and
   `session114_comparisons/part1.md` and `part2_comparisons.md` are out of
   date. No IFS figure exists (session 114's figures exclude IFS). Its
   `subdaily_max` does not check that every window is present (no effect
   here), and its `F156_4` has no IFS entry.
-- **Edits beyond the prompt's list (session 117, owner's ruling in
-  chat).** ANALYSIS.md's header sentence (line 5) and Part 2's intro phrase
-  (line 812) were also changed; the mx2t3 subset was computed by the new
-  script with an exact-reproduction gate. Recorded in F160.
 - **MMMX coverage (F159.8).** 28,950 usable hours (of about 49,000) and
   104 usable days. Seen, not examined.
 - **Project health check (D109.8).** The repo uses a root layout (`docs/`,
@@ -102,9 +112,17 @@ the daily maximum (D82.2).
 - **Recorded values in scripts (D98.2).** Held as constants and checked by
   a test, never found by searching DECISIONS text.
 - **Laptop sleep (D86.5)**: unchanged.
+- **Until the redeploy (D112.8):** no manual run of MLwx-live between :35
+  and :55 past the hour, and "latest only" left unticked. At the redeploy
+  the owner copies the whole template with `MLWX_COMMIT` and `MODELS_TAG`
+  unchanged (`d6ca3e4...`, `gfs-models-49`).
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 117 and commit. Then the owner groups the MLwx folders under one parent folder by hand (D111.7, the planning chat's checklist); then the direction brainstorm in a new chat.
+**Next planning session:** Review session 118 and commit; then the owner
+redeploys MLwx-live from the template (D112.8), one step at a time. Then
+D112.2's order: the IFS close-out (the reading-fault check and the mx2t3
+rerun), the project health check (audit, then fixes, ending with the
+README update), then the longer-term plan.

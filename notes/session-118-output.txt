@@ -1,0 +1,131 @@
+# Session 118 output
+
+## Summary
+
+- Done: D112 recorded; MLwx-live audited read-only (clone, gh runs and logs, one page fetch); template workflow fixed (D112.6); push test; F161; STATUS; archive step. No error computed (D105.6); nothing pushed; no workflow triggered.
+- Owner rulings in chat: the Step 2 stop (header item 5 differs, comment only) accepted as harmless, in F161.2; the Step 0 test run by unittest accepted.
+- Checks: Step 0 PASS (181 tests OK by unittest; prompt's pytest -q not usable, see F161.1). Step 1 PASS (D112 byte-equal, 0 em-dashes). Step 2 FAIL then ruled harmless (owner). Step 3 PASS (50 of 50 runs, 29 of 29 cycles, push outcomes add up). Step 5 PASS (YAML parses; diff only the changes; push test (i) 0, (ii) 1, (iii) 1, (iv) 0, in bash -e and GitHub's flags). Step 6 PASS (F161, 0 em-dashes). Citations: 191 resolved, 0 unresolved, 0 in both, 0 repeated, 0 out of order: PASS. Scope: no breach: PASS.
+- Deployed: MLWX_COMMIT d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb, MODELS_TAG gfs-models-49. Clone HEAD 5d61948 (2026-10-19T17:46:30Z).
+- 1. Cycles lost: 0 of 29 (2026-10-12T12z to 2026-10-19T12z); leads complete in 29 of 29.
+- 2. Issued twice: 2026-10-17T18z by runs 39075664773 (on main) and 39075798597 (never pushed). Files changed after add: 0.
+- 3. Stale checkout: 1, run 39075798597 (the 17 Oct failure): queued behind the 22:35Z manual run, checked out 3635dac though main was ceddce8, re-issued 18z, rebase conflict, job red, no page.
+- 4. Silent push failures: 0 (49 of 50 pushed first try; the other ended red).
+- 5. "Latest only": once, first run 38301336881 (12 Oct 20:00Z); skipped 12 Oct 00z and 06z, both before the test start.
+- 6. Scheduled runs 39 of 150 slots (26 %); 5 to 7 per full day vs 24. Gaps median 3.20 h, p90 5.65 h, max 6.98 h, none over 20 h. Issue lag median 5.57 h, min 4.47, max 8.98.
+- 7. Page matches the log (2026-10-19 12z, issued 17:44 UTC, 49 airports).
+- 8. Readings: every run commits (state last_run), so overlapping runs always conflict on the state; Node.js 20 deprecation on six actions; setup-python floats (3.12.15); gh startedAt equals createdAt.
+- Template: ref: main; push must land or the job fails before the page; latest_only input removed; cron "15,40 * * * *"; header updated. Control: the old step exits 0 when every push is rejected.
+- Size: DECISIONS.md 79,428 bytes, under 80,000 but 572 bytes short of it (finding for the next planning session).
+- Open: deploy/mlwx-live/README.md line 65 still says ":40 hourly" (out of scope); D112 changes D105.2 and D105.4 without saying "amends"; the venv has no pytest.
+- Next: owner review and commit; then the redeploy from the whole template (D112.8).
+
+## Checkpoints
+
+Step 0 (start state): PASS, with one note. git status --porcelain shows only "?? docs/sessions/session-118.md". No session118_* file under scripts/, data/processed/ or notes/. gh auth status: logged in to github.com as zadams03 (scopes gist, read:org, repo, workflow). HEAD 5df783a. Tests: the prompt's literal "pytest -q" resolves to /opt/anaconda3/bin/pytest, whose Python has no lightgbm or eccodes (10 collection errors; it also collects scripts/session*_test.py); the project venv (.venv, Python 3.12.2, recreated 2026-10-18 20:55 after the folder move) has no pytest. The suite run as earlier sessions ran it, "python3 -m unittest discover -s tests" in the venv: Ran 181 tests, OK. Taken as the check passing (181 tests, as F160 and STATUS say); reported as a reading. Files changed: notes/session-118-output.txt.
+Step 1 (D112): PASS. The D112 block (16 lines, from the prompt's fenced block, lines 72 to 87) appended to DECISIONS.md after one blank line; the file's last 16 lines equal the block (diff and cmp: byte-equal); 0 em-dashes in it. Live index: D112 added after D111 (D112.10: removed none; F161 added at Step 6). Files changed: DECISIONS.md, notes/session-118-output.txt.
+Step 2 (clone and template gate): FAIL, session stopped here. Clone of https://github.com/zadams03/MLwx-live in /tmp/s118/live at 2026-10-19T21:10:46Z: HEAD 5d61948c7af66595507fe23db3bba4e506fb000b, committer time 2026-10-19T17:46:30Z ("Cycles issued by the run of 2026-10-19T17:46Z"), 52 commits. Deployed MLWX_COMMIT d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb, MODELS_TAG gfs-models-49. diff of the template against the deployed .github/workflows/live.yml shows the two SET-AT-DEPLOY lines (33-34) AND one more difference: the header comment's item 5 (template lines 9-10 "commits the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and snapshot file is written once and never edited);" against deployed line 9 "commits the log files and the tracker state (the log is written once and never edited);"). Every non-comment line, the obs line included, is equal. The gate says stop if any other line differs, so no later step was run. Files changed: notes/session-118-output.txt.
+Owner's ruling at the Step 2 stop (in chat): the comment-only difference (header item 5) is accepted as harmless; every non-comment line matches, the obs line included, so the deployed workflow behaves exactly like the template. It came from the session 111 redeploy copying the commit line but not the matching comment. Recorded in F161.2 as an owner ruling, with both texts; the redeploy after this session copies the whole template. The Step 0 test run (python3 -m unittest discover -s tests, 181 tests OK) is accepted, recorded as a reading in F161. Carry on from Step 3.
+Step 3 (audit script): PASS. scripts/session118_live_audit.py written and run: python3 scripts/session118_live_audit.py --clone /tmp/s118/live --work /tmp/s118. Inputs: the clone (HEAD 5d61948, 2026-10-19T17:46:30Z); gh run list (50 runs, fetched 2026-10-19T21:29:49Z, /tmp/s118/runs.json); gh run view --log for all 50 runs (50 of 50 available, /tmp/s118/runlogs/, parsed by the script, never printed); the page, fetched once at 2026-10-19T21:34Z (/tmp/s118/page.html). Output: data/processed/session118_runs.csv (50 rows), data/processed/session118_cycles.csv (29 rows, 2026-10-12T12z to 2026-10-19T12z, the latest available at the HEAD time by the runner's cycle + 4 h 10 min rule). Checks: a row per run 50 = 50; a row per cycle 29 = 29; push outcomes add up (49 pushed + 1 not pushed = 50 logs); PASS. Log files read only for airport, cycle, lead, issued, code commit, model SHA-256 and GFS version (csv.reader by column index); snapshot files counted by lines, never parsed; no observation compared with any forecast; no difference computed (D105.6). Two choices made while writing (readings): (1) gh's startedAt equals createdAt for all 50 runs, so the prompt's "main head at startedAt" cannot see a queue; the script also records the job's real start (the first log line) and, from the checkout step's own log, the remote main the fetch saw and the commit checked out; (2) a scheduled run's delay is measured to the latest slot of the schedule in force (v1: 04:10, 10:10, 16:10, 22:10 until 526fe80 at 2026-10-13T19:19:09Z; then :40 hourly), and flagged ambiguous when an earlier slot had no run (so it may belong to that slot) or the delay exceeds 60 min. Files changed: scripts/session118_live_audit.py, data/processed/session118_runs.csv, data/processed/session118_cycles.csv, notes/session-118-output.txt.
+
+Script summary (as printed):
+  clone HEAD 5d61948 at 2026-10-19T17:46:30Z; runs 50, rows 50, logs 50, missing 0
+  cycles 2026-10-12T12z to 2026-10-19T12z: 29 rows; logged 29; not logged 0; added once, never changed 29; leads complete 29; snapshots 22
+  issue claims in run logs 30; cycles claimed by more than one run 1; log/ or obs/ changes after add 0
+  stale checkout: by startedAt 0, by job start 1, by log 1
+  push outcomes: not pushed: rebase conflict 1; pushed 49; silent push failures 0
+  latest_only true: [38301336881]
+  audit cutoff (run list fetched) 2026-10-19T21:29:49Z; scheduled runs per UTC day (slots in force): 10-12 0 (1), 10-13 4 (8), 10-14 5 (24), 10-15 6 (24), 10-16 6 (24), 10-17 7 (24), 10-18 7 (24), 10-19 4 (21); total 39 of 150 slots
+  delay to the latest slot (a minimum; ambiguous 39 of 39): median 34.4 min, max 288.9; gaps between runs: median 3.20 h, p90 5.65 h, max 6.98 h, over 20 h 0; last run to cutoff 3.76 h
+  gaps from the hourly schedule on (2026-10-13T19:19:09Z): median 3.13 h, p90 5.55 h, max 6.54 h; runs queued behind another [39075798597]
+  issue lag: median 5.57 h, min 4.47 h, max 8.98 h over 29 cycles
+  page: latest line ('2026-10-19 12', '2026-10-19 17:44'), airport lines 49, shown [('2026-10-19 12', '2026-10-19 17:44')]; log latest 2026-10-19 12 issued 2026-10-19 17:44: MATCH
+  checks (a row per run, a row per cycle, push outcomes add up): PASS
+
+Step 4 (findings): done (answers below). Files changed: notes/session-118-output.txt.
+
+### Step 4 answers
+
+1. Cycle lost? No. 29 of 29 cycles from 2026-10-12T12z to 2026-10-19T12z have a log file, each added once by one commit and never changed; 2254 rows and 49 airports from 2026-10-13T18z (552 rows, 12 airports for the 5 cycles before, as D105.5(d)); leads 3 to 48 complete for every airport in 29 of 29; the cycle column matches the file name in 29 of 29. The state's stop list has one entry, 2026-10-12T06z (tracker order, before the test start). 2026-10-12T00z is neither logged nor stop-listed: it left the 24-hour window before the second run (both before 12z, see 5).
+2. Issued twice, or a file changed? One cycle was issued by two runs: 2026-10-17T18z, by manual run 39075664773 (issued 22:35Z, pushed ceddce8, the file on main) and by scheduled run 39075798597 (stale checkout, see 3), whose commit a444461 was never pushed: its rebase stopped on conflicts and the job failed. Only one file exists for the cycle, added once (ceddce8). In the whole history 0 log/ or obs/ files were modified, deleted or renamed after being added. So D105.5(a)'s condition holds; the second issue left no trace on main.
+3. Stale checkout? One run: 39075798597 (scheduled, created 22:37:02Z, queued behind 39075664773, which ran 22:35:04 to 22:37:51Z). Its job started 22:37:55Z; its checkout step's fetch saw remote main at ceddce8 (pushed 22:37:39Z by the manual run) and then forced origin/main back to the run's headSha 3635dac ("+ ceddce8...3635dac ... (forced update)"), so it worked from the log and state before 18z was issued. Its runner issued 2026-10-17T18z again (2254 rows, "issued 1 ... already done 3"), committed a444461, the push was rejected (non-fast-forward), git pull --rebase hit CONFLICT (add/add) in log/2026/10/gfs_2026101718.csv and CONFLICT (content) in state/tracker_gfs.json, and the step ended with exit 1. The page steps did not run (no "Reported success!"), so nothing from it was published or pushed. It was the only run created while another was running (49 of 50 not queued). By gh's startedAt the count is 0 (startedAt equals createdAt for all 50 runs).
+4. Silent push failure? No. 49 of 50 runs pushed on the first try (0 rejected pushes among them) and every pushed commit is on main; the one run that did not push (39075798597) ended red. Runs that ended green with an issued cycle and no commit on main: 0.
+5. "Latest only"? Used once, on the very first run, manual 38301336881 (2026-10-12T20:00Z): it issued 2026-10-12T12z only, passing over 00z and 06z of 12 Oct. The next run (scheduled 38339486350, 2026-10-13T02:58Z) marked 06z "tracker order" and, under the runner before D104.4, ended with exit 3 (the job's only other failure; its page was published first). 00z had left the 24-hour window. Both are before the test start (2026-10-12T12z). The other 10 manual runs had it unticked ("false"); scheduled runs carry no input. No cycle from 12z on was skipped.
+6. Cadence and issue lag. Scheduled runs: 39 of 150 schedule slots up to the audit cutoff (26 %). Per UTC day (runs of slots): 12 Oct 0 of 1 (v1), 13 Oct 4 of 8 (v1 to 19:19Z, then hourly), 14 Oct 5 of 24, 15 Oct 6 of 24, 16 Oct 6 of 24, 17 Oct 7 of 24, 18 Oct 7 of 24, 19 Oct 4 of 21 (to 21:29Z). Delay to the latest slot (a minimum, since all 39 are ambiguous: each followed at least one slot with no run): median 34.4 min, max 288.9 min (run 38339486350 against the v1 22:10 slot). Gaps between consecutive runs of any trigger: median 3.20 h, 90th percentile 5.65 h, max 6.98 h (12 Oct 20:00 to 13 Oct 02:58); from the hourly schedule on: median 3.13 h, p90 5.55 h, max 6.54 h; none over 20 h. At the cutoff no run had happened for 3.76 h (last 17:44Z). Issue lag (issued minus cycle) over 29 cycles: median 5.57 h, minimum 4.47 h (2026-10-16T18z), maximum 8.98 h (2026-10-12T18z); the earliest possible is 4.17 h (cycle + 4 h 10 min). Per-cycle values in session118_cycles.csv.
+7. Page against the log? Match. The page shows "Latest cycle issued: 2026-10-19 12z", and all 49 airport status lines show cycle 2026-10-19 12z, issued 2026-10-19 17:44 UTC; the log's latest cycle is 2026-10-19T12z with issued 2026-10-19T17:44Z (one value in all 2254 rows).
+8. Anything else (open questions, not fixed).
+  (1) GitHub ran about a quarter of the hourly slots; lateness, not loss, is the cost (D112.4). D112.6(d) adds a second slot per hour; whether GitHub honours more of them is unknown until after the redeploy.
+  (2) Every run commits and pushes, even when it issues nothing (20 of the 49 pushes issued no cycle), because the state file's last_run changes each run. So "nothing new to commit" never happens, and any two overlapping runs always conflict on state/tracker_gfs.json. Harmless with D112.6(a) and (b), but the history holds a commit per run.
+  (3) The 17 Oct sequence: manual runs at 20:36, 21:28 and 22:01Z issued nothing (18z was not available until 22:10Z); the 22:35Z manual run overlapped the 22:40 slot and caused the stale run. D112.8's interim rule covers this.
+  (4) gh's startedAt equals createdAt for every run, so a queued run's real start shows only in its log.
+  (5) Every run warns that Node.js 20 is deprecated and that actions/cache@v4, actions/checkout@v4, actions/configure-pages@v5, actions/deploy-pages@v4, actions/setup-python@v5 and actions/upload-artifact@v4 are forced to run on Node.js 24. Not a fault now; a later action-version update may be needed.
+  (6) setup-python "3.12" floats: all 50 runs used CPython 3.12.15 (the local venv is 3.12.2). Not a logged-value change by itself; noted for D105.5(k).
+  (7) Seen and as expected: snapshots exist from 2026-10-14T06z (22 of 29), the first cycle after the redeploy a888e3d (D105.7); each added once; 252 to 1,192 lines, counted only. Code commits in the log follow the deploys: 0f89f01 (5 cycles), e37c86d (2), d6ca3e4 (22); model manifest 16485f384c81... for the 12-airport cycles, 484590bf6c87... from 2026-10-13T18z; GFS version v16 in all 29.
+Step 5 (template fixes): PASS. deploy/mlwx-live/.github/workflows/live.yml edited for D112.6 (a) to (d) and the header comment; 0 em-dashes in the file. (a) "ref: main" added to this repo's checkout. (b) The push: up to 3 tries, "git pull --rebase" between them; a failed rebase runs "git rebase --abort" and ends the loop; then "git fetch origin main", and the step exits 1 with a message unless local HEAD equals origin/main; the step is before the page steps. (c) The latest_only input removed ("workflow_dispatch:" stays, no inputs); in the runner step the "--latest-only" line removed, with the "args" variable it set (the line args="" and "$args" on the runner line), which had no other use. (d) One schedule line, cron "15,40 * * * *". Header: the schedule sentence, item 1 (latest commit of main even after a queue), item 5 (push, and the job fails before the page if the push did not land) and item 7 ("the next hourly run" became "the next run"). Checks: YAML parses with PyYAML 6.0.1 (/opt/anaconda3/bin/python -I, Python 3.11.13; the venv has no PyYAML): on = {schedule: [{cron: "15,40 * * * *"}], workflow_dispatch: None}, 13 steps as before, checkout with {ref: main, fetch-depth: 0}, MLWX_COMMIT and MODELS_TAG still SET-AT-DEPLOY. diff against the original (copy at /tmp/s118/live.yml.orig) shows only these changes (below).
+Push test (/tmp/s118/pushtest_run.sh, repos under /tmp/s118/pushtest/): the commit step's run block extracted with PyYAML (23 lines) and run with "bash -e" in clone A of a bare repo seeded with log/ and state/; clone A writes a new log file, an obs/ file and a state change, as the runner does. Repeated with GitHub's own shell flags (bash --noprofile --norc -eo pipefail): same results.
+  (i) B pushed a non-conflicting commit first: exit 0, A's HEAD equals the remote main, no rebase in progress; A's log and obs files and B's file all on main. PASS.
+  (ii) B pushed a conflicting change (same state and log files) first: exit 1, rebase aborted (message printed, no rebase in progress). PASS.
+  (iii) pre-receive hook rejects every push: 3 push attempts, exit 1. PASS.
+  (iv) nothing to commit: "nothing new to commit", exit 0, HEAD equals remote main. PASS.
+  Control (the original template's step, /tmp/s118/pushtest_orig.sh, bash -e): (iii) exits 0 with nothing pushed (fault 2 confirmed); (ii) exits 1 but leaves the rebase in progress.
+Files changed: deploy/mlwx-live/.github/workflows/live.yml, notes/session-118-output.txt.
+
+Template diff (original, then edited):
+3c3,4
+< # Every hour at 40 minutes past (UTC), and by hand. A run with nothing new to issue only republishes the page.
+---
+> # Every hour at 15 and 40 minutes past (UTC), and by hand (D112.6). A run with nothing new to issue only
+> # republishes the page.
+5c6,7
+< #   1. checks out this repo (the log and the tracker state) and the MLwx code at ONE pinned commit;
+---
+> #   1. checks out the latest commit of this repo's main (the log and the tracker state), even if the run
+> #      waited in the queue, and the MLwx code at ONE pinned commit;
+10c12,13
+< #      snapshot file is written once and never edited);
+---
+> #      snapshot file is written once and never edited), and pushes them; if the push did not land on main
+> #      (a failed rebase is aborted), the job fails here and the page is not published;
+13c16
+< #      waiting (exit code 2) is not a failure; the next hourly run tries again.
+---
+> #      waiting (exit code 2) is not a failure; the next run tries again.
+23c26
+<     - cron: "40 * * * *"      # every hour at :40 UTC
+---
+>     - cron: "15,40 * * * *"   # every hour at :15 and :40 UTC
+25,29d27
+<     inputs:
+<       latest_only:
+<         description: "Only the latest available cycle (no catching up)"
+<         type: boolean
+<         default: false
+62a61
+>           ref: main
+104,106c103
+<           args=""
+<           if [ "${{ inputs.latest_only }}" = "true" ]; then args="--latest-only"; fi
+<           python -m mlwx.runner --root . --models models --commit "$MLWX_COMMIT" $args
+---
+>           python -m mlwx.runner --root . --models models --commit "$MLWX_COMMIT"
+120c117,124
+<             for i in 1 2 3; do git push && break; git pull --rebase; done
+---
+>             for i in 1 2 3; do
+>               if git push; then break; fi
+>               if ! git pull --rebase; then
+>                 git rebase --abort || true
+>                 echo "The rebase onto origin/main failed and was aborted."
+>                 break
+>               fi
+>             done
+121a126,131
+>           git fetch origin main
+>           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+>             echo "The push did not land: local HEAD $(git rev-parse HEAD) is not origin/main $(git rev-parse origin/main)."
+>             echo "Failing the job before the page is published."
+>             exit 1
+>           fi
+Step 6 (F161): PASS. F161 appended to DECISIONS.md under "## 2026-10-19: Session 118 finding: the live runs audited, and the workflow fixes": bold lead and F161.1 to F161.12 (16 lines of text, 19 with the separator), 0 em-dashes; appended text checked with cmp. One correction after appending: F161.8 first read "4 to 7 per UTC day against 24 hourly slots"; corrected to "5 to 7 per UTC day on the five full hourly days (14 to 18 Oct, 24 slots each)" (the 4 was 19 Oct, a part day). Live index: F161 added after F160. Files changed: DECISIONS.md, notes/session-118-output.txt.
+
+End of session: done, stopped for review. (1) Real output: Step 3's script summary and Step 5's push test above. (2) STATUS.md overwritten as a current-only snapshot (19 Oct, after session 118): stage G's line records the deployed values, F161's audit and that the fixes are in the template awaiting the owner's redeploy (D112.6, D112.8); open questions: F161's readings and the venv test note added; the settled session 117 "edits beyond the list" item removed (F160 accepted, D112.1); the prompt's "concurrency and cron items" are not in the STATUS left by session 117, so nothing was dropped for them; carried items: D112.8's interim rule added; ends with the prompt's "Next planning session" line; 0 em-dashes. (3) Archive: Live index D93, D103, D105, D106, D107, D108, D110, D111, D112, F157, F160, F161 (D112.10: removed none). python3 scripts/archive_decisions.py --apply --session 118: "plan: spans 12, keep 12 (index IDs 12), move 0 (0 bytes), DECISIONS.md 79428 bytes; apply: nothing to move; no file written". DECISIONS-archive.md unchanged (1,475,992 bytes). (4) --citations: 191 distinct entry numbers cited; resolved 191, unresolved 0, found in both files 0; repeated opening lines 0; dated headings out of order 0. DECISIONS.md 79,428 bytes: under 80,000 (D93.9) but within 572 bytes of it; the next session's entries will cross it unless the next D entry archives something. Scope: git status --porcelain shows M DECISIONS.md, M STATUS.md, M deploy/mlwx-live/.github/workflows/live.yml, ?? data/processed/session118_cycles.csv, ?? data/processed/session118_runs.csv, ?? notes/session-118-output.txt, ?? scripts/session118_live_audit.py, and the owner's ?? docs/sessions/session-118.md; all on the list; no breach. Temporary work (not in the repo): /tmp/s118/ (live/ the clone, runs.json, runlogs/ 50 logs, page.html, live.yml.orig, F161.txt, pushtest_run.sh, pushtest_orig.sh, pushtest/ scratch repos), /tmp/s118_D112.txt, /tmp/s118_D112_appended.txt, /tmp/s118_DECISIONS_before.md.
+Consistency re-read (only what changed; report only, nothing fixed): (a) D105.4 says "the hourly schedule is kept" and D105.2 records a job "failing only on runner exit code 3"; D112.6(b) and (d) change both at the redeploy, without saying "amends D105.2 / D105.4". (b) deploy/mlwx-live/README.md line 65 still says "every hour at 40 minutes past, UTC" (not in this session's scope). (c) The runner's --latest-only flag stays (D112.6(c)) and tests/test_live.py and tests/test_onboard.py use it; consistent. (d) STATUS, D112 and F161 agree on the deployed values and the interim rule.

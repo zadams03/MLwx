@@ -1,16 +1,19 @@
 # MLwx-live: issue every new GFS cycle (DECISIONS D103.7 to D103.9).
 #
-# Every hour at 40 minutes past (UTC), and by hand. A run with nothing new to issue only republishes the page.
+# Every hour at 15 and 40 minutes past (UTC), and by hand (D112.6). A run with nothing new to issue only
+# republishes the page.
 # Each run:
-#   1. checks out this repo (the log and the tracker state) and the MLwx code at ONE pinned commit;
+#   1. checks out the latest commit of this repo's main (the log and the tracker state), even if the run
+#      waited in the queue, and the MLwx code at ONE pinned commit;
 #   2. installs the pinned requirements;
 #   3. gets the frozen models (one Release asset, D103.5), checked against the manifest SHA-256 held in the code;
 #   4. runs the runner: every cycle of the past 24 hours that has arrived and is not yet logged, in time order;
 #   5. commits the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and
-#      snapshot file is written once and never edited);
+#      snapshot file is written once and never edited), and pushes them; if the push did not land on main
+#      (a failed rebase is aborted), the job fails here and the page is not published;
 #   6. publishes the static page to GitHub Pages;
 #   7. fails the job (so the owner is told) if any cycle issued nothing (exit code 3). A cycle still
-#      waiting (exit code 2) is not a failure; the next hourly run tries again.
+#      waiting (exit code 2) is not a failure; the next run tries again.
 #
 # This is a template: a commit cannot hold its own hash. The two values marked SET-AT-DEPLOY below
 # (MLWX_COMMIT and MODELS_TAG) are set by the owner at each deploy, and the deployed values are recorded
@@ -20,13 +23,8 @@ name: live
 
 on:
   schedule:
-    - cron: "40 * * * *"      # every hour at :40 UTC
+    - cron: "15,40 * * * *"   # every hour at :15 and :40 UTC
   workflow_dispatch:
-    inputs:
-      latest_only:
-        description: "Only the latest available cycle (no catching up)"
-        type: boolean
-        default: false
 
 env:
   MLWX_REPO: zadams03/MLwx
@@ -60,6 +58,7 @@ jobs:
       - name: Check out this repo (the log and the state)
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Check out the MLwx code at the pinned commit
@@ -101,9 +100,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
           set +e
-          args=""
-          if [ "${{ inputs.latest_only }}" = "true" ]; then args="--latest-only"; fi
-          python -m mlwx.runner --root . --models models --commit "$MLWX_COMMIT" $args
+          python -m mlwx.runner --root . --models models --commit "$MLWX_COMMIT"
           echo "code=$?" >> "$GITHUB_OUTPUT"
           exit 0
 
@@ -117,7 +114,20 @@ jobs:
             echo "nothing new to commit"
           else
             git commit -m "Cycles issued by the run of $(date -u +%Y-%m-%dT%H:%MZ)"
-            for i in 1 2 3; do git push && break; git pull --rebase; done
+            for i in 1 2 3; do
+              if git push; then break; fi
+              if ! git pull --rebase; then
+                git rebase --abort || true
+                echo "The rebase onto origin/main failed and was aborted."
+                break
+              fi
+            done
+          fi
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "The push did not land: local HEAD $(git rev-parse HEAD) is not origin/main $(git rev-parse origin/main)."
+            echo "Failing the job before the page is published."
+            exit 1
           fi
 
       - name: Prepare the page

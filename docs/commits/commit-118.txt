@@ -1,0 +1,34 @@
+Session 118: audit of MLwx-live's runs, and the workflow fixes (D112, F161)
+
+D112 records the owner's decisions from the direction brainstorm after
+session 117: F160 accepted; the order of the next work (this session and
+the redeploy, then the IFS close-out, then the project health check
+ending with a README update, then the longer-term plan); the design note
+for the IFS reading-fault check; what a late run costs (a cycle is lost
+only if no run happens between cycle + 4 h 10 min and cycle + 24 h); the
+audit; the workflow fixes; and the redeploy with its interim rule.
+
+F161 audits MLwx-live read-only from 2026-10-12 to 2026-10-19 (a fresh
+clone, gh run lists and all 50 run logs, one fetch of the page). No
+error was computed (D105.6). 29 of 29 cycles from 2026-10-12T12z were
+logged, each file added once and never changed; no silent push failure;
+one stale checkout (the 17 Oct failure, run 39075798597), which re-issued
+2026-10-17T18z but pushed nothing; "latest only" was used once, on the
+first run, before the test start. GitHub ran 39 of 150 schedule slots
+(26 %); issue lag median 5.57 h, max 8.98 h; the page matches the log.
+
+The template workflow (deploy/mlwx-live/.github/workflows/live.yml) now
+checks out the latest main, fails the job before the page is published
+unless the push landed (a failed rebase is aborted), drops the
+latest_only input, and runs at :15 and :40 each hour. The commit step was
+tested in scratch repos in four cases; the old step exits 0 when every
+push is rejected, the new one exits 1.
+
+Owner rulings in session: the template gate's comment-only difference
+(header item 5) is harmless (F161.2); the test suite runs by unittest
+(181 tests OK), since the venv has no pytest (F161.1).
+
+New: scripts/session118_live_audit.py, data/processed/session118_runs.csv,
+data/processed/session118_cycles.csv, notes/session-118-output.txt,
+docs/sessions/session-118.md. Edited: DECISIONS.md (79,428 bytes, nothing
+archived), STATUS.md, the template workflow.
