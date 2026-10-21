@@ -1,0 +1,291 @@
+file,line,path,result,resolved_from
+RESULTS.md,4,SPEC.md,exists,root
+RESULTS.md,4,DECISIONS.md,exists,root
+RESULTS.md,6,SPEC.md,exists,root
+RESULTS.md,7,SPEC.md,exists,root
+RESULTS.md,278,SPEC.md,exists,root
+RESULTS.md,488,SPEC.md,exists,root
+ANALYSIS.md,19,scripts/session112_analysis.py,exists,root
+ANALYSIS.md,19,data/processed/session112_analysis/,exists,root
+ANALYSIS.md,20,analyse_meta.txt,exists,by name: data/processed/session112_analysis/analyse_meta.txt
+ANALYSIS.md,20,contrib_meta.txt,exists,by name: data/processed/session112_analysis/contrib_meta.txt
+ANALYSIS.md,20,figures/analysis/,exists,root
+ANALYSIS.md,21,../MLwx-stagec/analysis112/,exists,"root, outside the repo"
+ANALYSIS.md,22,meta.txt,MISSING,
+ANALYSIS.md,22,refs_meta.txt,MISSING,
+ANALYSIS.md,22,notes/session-112-output.txt,exists,root
+ANALYSIS.md,23,scripts/session114_comparisons.py,exists,root
+ANALYSIS.md,23,data/processed/session114_comparisons/,exists,root
+ANALYSIS.md,24,part1.md,exists,by name: data/processed/session114_comparisons/part1.md
+ANALYSIS.md,24,part2_comparisons.md,exists,by name: data/processed/session114_comparisons/part2_comparisons.md
+ANALYSIS.md,24,figures/analysis/comparison_*.svg,exists,root (glob)
+ANALYSIS.md,25,notes/session-114-output.txt,exists,root
+ANALYSIS.md,25,data/processed/session113/,exists,root
+ANALYSIS.md,104,hourly_breakdowns.csv,exists,by name: data/processed/session112_analysis/hourly_breakdowns.csv
+ANALYSIS.md,104,hourly_ranges.csv,exists,by name: data/processed/session112_analysis/hourly_ranges.csv
+ANALYSIS.md,104,dailymax_every_cycle.csv,exists,by name: data/processed/session112_analysis/dailymax_every_cycle.csv
+ANALYSIS.md,104,dailymax_ranges.csv,exists,by name: data/processed/session112_analysis/dailymax_ranges.csv
+ANALYSIS.md,105,dailymax_whole_day_leads.csv,exists,by name: data/processed/session112_analysis/dailymax_whole_day_leads.csv
+ANALYSIS.md,105,hourly_ranges_fan.svg,exists,by name: figures/analysis/hourly_ranges_fan.svg
+ANALYSIS.md,105,dailymax_by_cycle_hour.svg,exists,by name: figures/analysis/dailymax_by_cycle_hour.svg
+ANALYSIS.md,218,comparison_hourly_mae.svg,exists,by name: figures/analysis/comparison_hourly_mae.svg
+ANALYSIS.md,218,comparison_dailymax_mae.svg,exists,by name: figures/analysis/comparison_dailymax_mae.svg
+ANALYSIS.md,218,comparison_skill.svg,exists,by name: figures/analysis/comparison_skill.svg
+ANALYSIS.md,219,comparison_lead_band.svg,exists,by name: figures/analysis/comparison_lead_band.svg
+ANALYSIS.md,219,comparison_official_gap.svg,exists,by name: figures/analysis/comparison_official_gap.svg
+ANALYSIS.md,241,hourly_headline.csv,exists,by name: data/processed/session112_analysis/hourly_headline.csv
+ANALYSIS.md,242,hourly_error_box.svg,exists,by name: figures/analysis/hourly_error_box.svg
+ANALYSIS.md,242,hourly_abs_error_ecdf.svg,exists,by name: figures/analysis/hourly_abs_error_ecdf.svg
+ANALYSIS.md,260,hourly_curve_skill.csv,exists,by name: data/processed/session112_analysis/hourly_curve_skill.csv
+ANALYSIS.md,278,hourly_headline.csv,exists,by name: data/processed/session112_analysis/hourly_headline.csv
+ANALYSIS.md,314,hourly_conditional_bias.csv,exists,by name: data/processed/session112_analysis/hourly_conditional_bias.csv
+ANALYSIS.md,314,hourly_conditional_bias.svg,exists,by name: figures/analysis/hourly_conditional_bias.svg
+ANALYSIS.md,335,hourly_breakdowns.csv,exists,by name: data/processed/session112_analysis/hourly_breakdowns.csv
+ANALYSIS.md,336,hourly_mae_by_lead.svg,exists,by name: figures/analysis/hourly_mae_by_lead.svg
+ANALYSIS.md,336,hourly_me_by_lead.svg,exists,by name: figures/analysis/hourly_me_by_lead.svg
+ANALYSIS.md,337,hourly_mae_by_local_hour.svg,exists,by name: figures/analysis/hourly_mae_by_local_hour.svg
+ANALYSIS.md,337,hourly_me_by_local_hour.svg,exists,by name: figures/analysis/hourly_me_by_local_hour.svg
+ANALYSIS.md,337,hourly_mae_by_month.svg,exists,by name: figures/analysis/hourly_mae_by_month.svg
+ANALYSIS.md,338,hourly_me_by_month.svg,exists,by name: figures/analysis/hourly_me_by_month.svg
+ANALYSIS.md,338,hourly_regimes.svg,exists,by name: figures/analysis/hourly_regimes.svg
+ANALYSIS.md,378,bin_edges.csv,exists,by name: data/processed/session112_analysis/bin_edges.csv
+ANALYSIS.md,400,dailymax_headline.csv,exists,by name: data/processed/session112_analysis/dailymax_headline.csv
+ANALYSIS.md,400,dailymax_curve_skill.csv,exists,by name: data/processed/session112_analysis/dailymax_curve_skill.csv
+ANALYSIS.md,400,dailymax_error_box.svg,exists,by name: figures/analysis/dailymax_error_box.svg
+ANALYSIS.md,401,dailymax_error_hist.svg,exists,by name: figures/analysis/dailymax_error_hist.svg
+ANALYSIS.md,473,dailymax_every_cycle.csv,exists,by name: data/processed/session112_analysis/dailymax_every_cycle.csv
+ANALYSIS.md,473,dailymax_whole_day_leads.csv,exists,by name: data/processed/session112_analysis/dailymax_whole_day_leads.csv
+ANALYSIS.md,473,dailymax_by_cycle_hour.svg,exists,by name: figures/analysis/dailymax_by_cycle_hour.svg
+ANALYSIS.md,498,dailymax_extremes.csv,exists,by name: data/processed/session112_analysis/dailymax_extremes.csv
+ANALYSIS.md,499,dailymax_extremes.svg,exists,by name: figures/analysis/dailymax_extremes.svg
+ANALYSIS.md,517,dailymax_decomposition.csv,exists,by name: data/processed/session112_analysis/dailymax_decomposition.csv
+ANALYSIS.md,518,dailymax_decomposition.svg,exists,by name: figures/analysis/dailymax_decomposition.svg
+ANALYSIS.md,537,dailymax_peak_hour.csv,exists,by name: data/processed/session112_analysis/dailymax_peak_hour.csv
+ANALYSIS.md,538,dailymax_peak_hour_hist.csv,exists,by name: data/processed/session112_analysis/dailymax_peak_hour_hist.csv
+ANALYSIS.md,538,dailymax_peak_hour.svg,exists,by name: figures/analysis/dailymax_peak_hour.svg
+ANALYSIS.md,557,dailymax_edge.csv,exists,by name: data/processed/session112_analysis/dailymax_edge.csv
+ANALYSIS.md,557,dailymax_edge_of_day.svg,exists,by name: figures/analysis/dailymax_edge_of_day.svg
+ANALYSIS.md,578,dailymax_ranges.csv,exists,by name: data/processed/session112_analysis/dailymax_ranges.csv
+ANALYSIS.md,578,dailymax_ranges_fan.svg,exists,by name: figures/analysis/dailymax_ranges_fan.svg
+ANALYSIS.md,595,hourly_ranges.csv,exists,by name: data/processed/session112_analysis/hourly_ranges.csv
+ANALYSIS.md,596,hourly_ranges_fan.svg,exists,by name: figures/analysis/hourly_ranges_fan.svg
+ANALYSIS.md,615,shape_diurnal_range.csv,exists,by name: data/processed/session112_analysis/shape_diurnal_range.csv
+ANALYSIS.md,615,smoothness.csv,exists,by name: data/processed/session112_analysis/smoothness.csv
+ANALYSIS.md,615,run_to_run_hourly.csv,exists,by name: data/processed/session112_analysis/run_to_run_hourly.csv
+ANALYSIS.md,615,run_to_run_dailymax.csv,exists,by name: data/processed/session112_analysis/run_to_run_dailymax.csv
+ANALYSIS.md,616,shape_range_smoothness.svg,exists,by name: figures/analysis/shape_range_smoothness.svg
+ANALYSIS.md,616,run_to_run_hourly.svg,exists,by name: figures/analysis/run_to_run_hourly.svg
+ANALYSIS.md,639,hourly_breakdowns.csv,exists,by name: data/processed/session112_analysis/hourly_breakdowns.csv
+ANALYSIS.md,640,drift_by_days_since_start.svg,exists,by name: figures/analysis/drift_by_days_since_start.svg
+ANALYSIS.md,640,b_over_time.svg,exists,by name: figures/analysis/b_over_time.svg
+ANALYSIS.md,641,b_summary.csv,exists,by name: data/processed/session112_analysis/b_summary.csv
+ANALYSIS.md,696,contrib_shares.csv,exists,by name: data/processed/session112_analysis/contrib_shares.csv
+ANALYSIS.md,696,contrib_shares.svg,exists,by name: figures/analysis/contrib_shares.svg
+ANALYSIS.md,696,contrib_vs_temperature.svg,exists,by name: figures/analysis/contrib_vs_temperature.svg
+ANALYSIS.md,696,contrib_vs_cloud.svg,exists,by name: figures/analysis/contrib_vs_cloud.svg
+ANALYSIS.md,713,contrib_vs_cloud.svg,exists,by name: figures/analysis/contrib_vs_cloud.svg
+ANALYSIS.md,713,contrib_vs_temperature.svg,exists,by name: figures/analysis/contrib_vs_temperature.svg
+ANALYSIS.md,717,limits.csv,exists,by name: data/processed/session112_analysis/limits.csv
+ANALYSIS.md,739,dm_tests.csv,exists,by name: data/processed/session112_analysis/dm_tests.csv
+ANALYSIS.md,739,dm_tests.svg,exists,by name: figures/analysis/dm_tests.svg
+ANALYSIS.md,801,figures/analysis/zuck_case_2026101306.svg,exists,root
+ANALYSIS.md,803,obs/,MISSING,
+ANALYSIS.md,808,dailymax_edge_of_day.svg,exists,by name: figures/analysis/dailymax_edge_of_day.svg
+ANALYSIS.md,812,scripts/session114_comparisons.py,exists,root
+ANALYSIS.md,812,data/processed/session114_comparisons/,exists,root
+ANALYSIS.md,812,notes/session-114-output.txt,exists,root
+ANALYSIS.md,814,match_counts.csv,exists,by name: data/processed/session114_comparisons/match_counts.csv; data/processed/session117_ifs/match_counts.csv
+ANALYSIS.md,882,hourly_<source>.csv,pattern,
+ANALYSIS.md,882,hourly_<source>_skill.csv,pattern,
+ANALYSIS.md,882,hourly_<source>_breakdown.csv,pattern,
+ANALYSIS.md,974,hourly_<source>_breakdown.csv,pattern,
+ANALYSIS.md,974,comparison_lead_band.svg,exists,by name: figures/analysis/comparison_lead_band.svg
+ANALYSIS.md,1005,hourly_<source>_dm.csv,pattern,
+ANALYSIS.md,1036,dailymax_<source>.csv,pattern,
+ANALYSIS.md,1036,dailymax_<source>_skill.csv,pattern,
+ANALYSIS.md,1036,dailymax_<source>_breakdown.csv,pattern,
+ANALYSIS.md,1128,dailymax_nbs_txn_not_found.csv,exists,by name: data/processed/session114_comparisons/dailymax_nbs_txn_not_found.csv
+ANALYSIS.md,1130,dailymax_<source>_dm.csv,pattern,
+ANALYSIS.md,1161,dailymax_<source>_every_cycle.csv,pattern,
+ANALYSIS.md,1192,txn_windows.csv,exists,by name: data/processed/session114_comparisons/txn_windows.csv
+ANALYSIS.md,1204,official_gap.csv,exists,by name: data/processed/session114_comparisons/official_gap.csv
+ANALYSIS.md,1224,official_scores.csv,exists,by name: data/processed/session114_comparisons/official_scores.csv
+ANALYSIS.md,1283,data/processed/session117_ifs/,exists,root
+ANALYSIS.md,1283,data/processed/session114_comparisons/,exists,root
+ANALYSIS.md,1283,*_ifs*.csv,MISSING,
+ANALYSIS.md,1285,data/processed/session117_ifs/match_counts.csv,exists,root
+ANALYSIS.md,1322,hourly_ifs.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs.csv
+ANALYSIS.md,1322,hourly_ifs_skill.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs_skill.csv
+ANALYSIS.md,1322,hourly_ifs_breakdown.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs_breakdown.csv
+ANALYSIS.md,1369,hourly_ifs_breakdown.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs_breakdown.csv
+ANALYSIS.md,1440,hourly_ifs_breakdown.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs_breakdown.csv
+ANALYSIS.md,1457,hourly_ifs_dm.csv,exists,by name: data/processed/session114_comparisons/hourly_ifs_dm.csv
+ANALYSIS.md,1474,dailymax_ifs.csv,exists,by name: data/processed/session114_comparisons/dailymax_ifs.csv
+ANALYSIS.md,1474,dailymax_ifs_skill.csv,exists,by name: data/processed/session114_comparisons/dailymax_ifs_skill.csv
+ANALYSIS.md,1474,dailymax_ifs_breakdown.csv,exists,by name: data/processed/session114_comparisons/dailymax_ifs_breakdown.csv
+ANALYSIS.md,1521,dailymax_ifs_dm.csv,exists,by name: data/processed/session114_comparisons/dailymax_ifs_dm.csv
+ANALYSIS.md,1538,dailymax_ifs_every_cycle.csv,exists,by name: data/processed/session114_comparisons/dailymax_ifs_every_cycle.csv
+ANALYSIS.md,1555,data/processed/session117_ifs/dailymax_ifs_mx2t3_subset.csv,exists,root
+ANALYSIS.md,1555,_skill.csv,MISSING,
+ANALYSIS.md,1596,subset_meta.txt,exists,by name: data/processed/session117_ifs/subset_meta.txt
+README.md,23,DECISIONS.md,exists,root
+README.md,24,DECISIONS-archive.md,exists,root
+README.md,25,SPEC.md,exists,root
+README.md,31,figures/stagec_headline.svg,exists,root
+README.md,45,figures/stagec_mae_by_lead.svg,exists,root
+README.md,57,figures/headline_mae.svg,exists,root
+README.md,103,figures/skill_intervals.svg,exists,root
+README.md,109,RESULTS.md,exists,root
+README.md,240,README.md,exists,root
+README.md,241,RESULTS.md,exists,root
+README.md,242,scripts/session98b_figures.py,exists,root
+README.md,242,scripts/session108_figures.py,exists,root
+README.md,242,figures/,exists,root
+README.md,243,SPEC.md,exists,root
+README.md,244,DECISIONS.md,exists,root
+README.md,245,DECISIONS-archive.md,exists,root
+README.md,246,STATUS.md,exists,root
+README.md,247,scripts/README.md,exists,root
+README.md,248,tests/README.md,exists,root
+README.md,249,data/README.md,exists,root
+README.md,250,requirements.txt,exists,root
+README.md,251,.github/,exists,root
+README.md,253,docs/README.md,exists,root
+README.md,254,notes/README.md,exists,root
+README.md,255,CLAUDE.md,exists,root
+README.md,264,requirements.txt,exists,root
+README.md,275,requirements.txt,exists,root
+README.md,285,requirements.txt,exists,root
+README.md,288,data/raw/,exists,root
+README.md,289,.meta.txt,MISSING,
+README.md,292,data/raw/grib,MISSING,
+README.md,295,data/raw/diagnostics/,exists,root
+README.md,296,session37/session37_pull_manifest.csv,MISSING,
+README.md,297,session76/session76_pull_manifest.csv,MISSING,
+README.md,298,session37_grib_pull.py,exists,by name: scripts/session37_grib_pull.py
+README.md,299,session40_grib_pull.py,exists,by name: scripts/session40_grib_pull.py
+README.md,300,session49_upper_air_pull.py,exists,by name: scripts/session49_upper_air_pull.py
+README.md,303,data/README.md,exists,root
+README.md,307,scripts/README.md,exists,root
+README.md,310,scripts/README.md,exists,root
+README.md,319,CLAUDE.md,exists,root
+README.md,322,docs/README.md,exists,root
+README.md,323,notes/README.md,exists,root
+README.md,337,data/raw/,exists,root
+README.md,338,data/processed/,exists,root
+README.md,356,data/raw/diagnostics/,exists,root
+README.md,365,data/processed/session85_competitor_points.csv,exists,root
+README.md,371,api/1/mos.json,MISSING,
+README.md,373,data/raw/iem_mos/session85/,exists,root
+scripts/README.md,5,sessionNN_*.py,pattern,
+scripts/README.md,6,session-NN.md,pattern,
+scripts/README.md,6,../docs/sessions/,exists,folder
+scripts/README.md,7,../notes/README.md,exists,folder
+scripts/README.md,17,session97_stagec_cv.py,exists,folder
+scripts/README.md,17,session62_reserved_confirm.py,exists,folder
+scripts/README.md,24,session39_sealed_test.py,exists,folder
+scripts/README.md,25,session48_reserved_year.py,exists,folder
+scripts/README.md,26,session60_combine_design.py,exists,folder
+scripts/README.md,27,session62_reserved_confirm.py,exists,folder
+scripts/README.md,28,session77_ksfo_looks.py,exists,folder
+scripts/README.md,29,session86_forward_build.py,exists,folder
+scripts/README.md,30,session87_forward_competitors.py,exists,folder
+scripts/README.md,31,session87_forward_score.py,exists,folder
+scripts/README.md,41,session03_pull.py,exists,folder
+scripts/README.md,41,session10_pull.py,exists,folder
+scripts/README.md,41,session15_pull.py,exists,folder
+scripts/README.md,41,session20_pull.py,exists,folder
+scripts/README.md,41,session26_pull.py,exists,folder
+scripts/README.md,42,session04_model.py,exists,folder
+scripts/README.md,42,session05_model.py,exists,folder
+scripts/README.md,42,session11_model.py,exists,folder
+scripts/README.md,42,session16_model.py,exists,folder
+scripts/README.md,42,session22_model.py,exists,folder
+scripts/README.md,42,session27_model.py,exists,folder
+scripts/README.md,43,session07_test.py,exists,folder
+scripts/README.md,43,session13_test.py,exists,folder
+scripts/README.md,43,session18_test.py,exists,folder
+scripts/README.md,43,session24_test.py,exists,folder
+scripts/README.md,43,session29_test.py,exists,folder
+scripts/README.md,45,session37_grib_pull.py,exists,folder
+scripts/README.md,45,session40_grib_pull.py,exists,folder
+scripts/README.md,46,session37_decode.py,exists,folder
+scripts/README.md,46,session40_decode.py,exists,folder
+scripts/README.md,47,session37_elevation_fix.py,exists,folder
+scripts/README.md,48,session38_join.py,exists,folder
+scripts/README.md,48,session38_cv.py,exists,folder
+scripts/README.md,49,session39_sealed_test.py,exists,folder
+scripts/README.md,51,session48_reserved_year.py,exists,folder
+scripts/README.md,52,session49_upper_air_pull.py,exists,folder
+scripts/README.md,52,session51_moisture_pull.py,exists,folder
+scripts/README.md,52,session53_pressure_pull.py,exists,folder
+scripts/README.md,52,session55_radiation_pull.py,exists,folder
+scripts/README.md,52,session57_precip_pull.py,exists,folder
+scripts/README.md,53,session50_e1_experiment.py,exists,folder
+scripts/README.md,53,session52_e2_experiment.py,exists,folder
+scripts/README.md,53,session54_e3_experiment.py,exists,folder
+scripts/README.md,53,session56_e4_experiment.py,exists,folder
+scripts/README.md,53,session58_e5_experiment.py,exists,folder
+scripts/README.md,54,session60_combine_design.py,exists,folder
+scripts/README.md,54,session61_combine_sweep.py,exists,folder
+scripts/README.md,55,session63_reserved_year_build.py,exists,folder
+scripts/README.md,56,session62_reserved_confirm.py,exists,folder
+scripts/README.md,58,session76_verify.py,exists,folder
+scripts/README.md,58,session76_grib_pull.py,exists,folder
+scripts/README.md,58,session76_obs_om_pull.py,exists,folder
+scripts/README.md,58,session76_build.py,exists,folder
+scripts/README.md,59,session77_ksfo_rehearsal.py,exists,folder
+scripts/README.md,60,session77_ksfo_looks.py,exists,folder
+scripts/README.md,62,session83_confidence_intervals.py,exists,folder
+scripts/README.md,63,session85_nbm_mos_comparison.py,exists,folder
+scripts/README.md,65,session81_freeze_forward_models.py,exists,folder
+scripts/README.md,66,session86_forward_build.py,exists,folder
+scripts/README.md,67,session87_forward_competitors.py,exists,folder
+scripts/README.md,67,session87_forward_score.py,exists,folder
+scripts/README.md,69,session91_grib_pull.py,exists,folder
+scripts/README.md,70,session92_verify_chunk.py,exists,folder
+scripts/README.md,71,session95_check_release.py,exists,folder
+scripts/README.md,72,session96_stagec_table.py,exists,folder
+scripts/README.md,73,session97_stagec_cv.py,exists,folder
+scripts/README.md,75,session98b_figures.py,exists,folder
+scripts/README.md,75,../figures/,exists,folder
+scripts/README.md,76,session108_figures.py,exists,folder
+scripts/README.md,76,../figures/,exists,folder
+scripts/README.md,97,archive_decisions.py,exists,folder
+scripts/README.md,99,../.github/workflows/stagec-grib-pull.yml,exists,folder
+scripts/README.md,100,session91_grib_pull.py,exists,folder
+scripts/README.md,100,session92_verify_chunk.py,exists,folder
+data/README.md,4,.meta.txt,MISSING,
+data/README.md,9,iem_asos_<station>_<dates>_routine.csv,pattern,
+data/README.md,15,openmeteo_previousruns_*.json,MISSING,
+data/README.md,17,features/,MISSING,
+data/README.md,19,diagnostics/,MISSING,
+data/README.md,23,iem_mos/,MISSING,
+data/README.md,28,diagnostics/,MISSING,
+data/README.md,33,session63_reserved_confirm_grid.csv,exists,by name: data/processed/session63_reserved_confirm_grid.csv
+data/README.md,34,session97_stagec_cv_scores.csv,exists,by name: data/processed/session97_stagec_cv_scores.csv
+data/README.md,40,session81/,MISSING,
+data/README.md,42,manifest.json,exists,by name: data/models/session81/manifest.json
+data/README.md,59,processed/session95_pull_inventory.csv,exists,folder
+data/README.md,60,MLwx-pull/,MISSING,
+data/README.md,62,MLwx-stagec/,MISSING,
+data/README.md,65,processed/session96_stagec_dev_table.meta.txt,exists,folder
+data/README.md,66,MLwx-pull-f025-048/,MISSING,
+data/README.md,68,MLwx-stagec/,MISSING,
+docs/README.md,8,sessions/,exists,folder
+docs/README.md,9,commits/,exists,folder
+docs/README.md,12,sessions/session-NN.md,pattern,
+docs/README.md,12,sessions/,exists,folder
+docs/README.md,15,../CLAUDE.md,exists,folder
+docs/README.md,16,../notes/README.md,exists,folder
+docs/README.md,18,commits/commit-NN.txt,pattern,
+docs/README.md,18,commits/,exists,folder
+docs/README.md,25,PROJECT-INSTRUCTIONS.md,exists,folder
+docs/README.md,28,HANDOVER-richer-features.md,exists,folder
+notes/README.md,6,session-NN-output.txt,pattern,
+notes/README.md,7,session-07-check-output.txt,exists,folder
+notes/README.md,8,session-50-e1-experiment-output.txt,exists,folder
+notes/README.md,10,session-NN.md,pattern,
+notes/README.md,10,../docs/sessions/,exists,folder
+notes/README.md,11,audit-session-*.md,exists,folder (glob)
+notes/README.md,14,session-34-archive-manifest.md,exists,folder

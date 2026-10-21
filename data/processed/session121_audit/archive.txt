@@ -1,0 +1,22 @@
+D: 115 entries, highest D115, missing from 1..115: 0 []
+F: 164 entries, highest F164, missing from 1..164: 0 []
+DECISIONS.md: 8 dated headings, out of order 0
+  D numbers in file order: 6, falls 0 []
+  F numbers in file order: 2, falls 0 []
+DECISIONS-archive.md: 212 dated headings, out of order 9
+  line 13703: 2026-09-12 after 2026-09-23
+  line 14696: 2026-09-23 after 2026-09-24
+  line 15044: 2026-09-24 after 2026-09-26
+  line 16118: 2026-08-16 after 2026-09-27
+  line 17139: 2026-09-11 after 2026-09-29
+  line 20917: 2026-09-27 after 2026-10-11
+  line 21534: 2026-10-03 after 2026-10-11
+  line 22414: 2026-10-14 after 2026-10-17
+  line 22479: 2026-10-16 after 2026-10-17
+  D numbers in file order: 109, falls 10 [(58, 49), (65, 63), (68, 67), (70, 59), (75, 17), (96, 95), (95, 47), (99, 82), (109, 106), (110, 108)]
+  F numbers in file order: 162, falls 8 [(11, 5), (88, 85), (109, 94), (114, 111), (119, 110), (126, 7), (146, 139), (159, 157)]
+opening lines doubled across both files: 0
+Live index: 8 listed ['D93', 'D103', 'D105', 'D112', 'D114', 'D115', 'F163', 'F164']
+entries present in DECISIONS.md: 8 ['D93', 'D103', 'D105', 'D112', 'D114', 'F163', 'D115', 'F164']
+listed but not present: []; present but not listed: []
+DECISIONS.md bytes: 44140; DECISIONS-archive.md bytes: 1536565

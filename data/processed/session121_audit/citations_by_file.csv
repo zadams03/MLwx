@@ -1,0 +1,13 @@
+file,references,sub_item_references,resolved,unresolved,excluded_table_labels
+SPEC.md,427,94,427,0,0
+STATUS.md,88,58,88,0,0
+DECISIONS.md,358,227,358,0,0
+RESULTS.md,245,80,245,0,0
+ANALYSIS.md,145,105,145,0,1
+README.md,100,48,100,0,0
+scripts/README.md,110,17,110,0,0
+data/README.md,26,6,26,0,0
+docs/README.md,2,2,2,0,0
+notes/README.md,4,2,4,0,0
+CLAUDE.md,12,11,12,0,0
+docs/PROJECT-INSTRUCTIONS.md,24,14,24,0,0

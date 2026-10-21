@@ -1,0 +1,36 @@
+Session 121: health check audit part 2 (the record), D115 and F164
+
+D115 records the owner's decisions after session 120: F163 accepted;
+the hand upload is the standard for Project knowledge, with the planning
+chat listing each changed file and its repo byte size (amends D93.15(b));
+the archive sits at Project knowledge's root; session 121's scope; what
+the planning chat saw in Project knowledge on 2026-10-21; a candidate for
+the longer-term plan (does the curve's correction predict raw GFS's
+revision for the same valid hour in the next cycle); and the Live index
+changes.
+
+The record was audited read-only. Every citation in 12 files was checked
+(1,754 references, all resolving once F164 was written). SPEC 3.4's two
+markers are present once each, and the span between them (lines 252 to
+283) now has a recorded SHA-256 for later edits to check against; stage
+B's three guard-check modes pass. STATUS, DECISIONS, RESULTS (20 of 20
+sampled numbers equal their entries), ANALYSIS (text only), the READMEs,
+CLAUDE, PROJECT-INSTRUCTIONS and the Project-knowledge sync were checked
+against the entries.
+
+The register (notes/session-121-register.csv) has 109 rows: OK 63,
+cosmetic 17, stale 28, wrong 1, blocks 0. The wrong row is RM05: README
+section 9 says no ECMWF data is committed, but data/processed/session113/
+holds IFS and AIFS values with other sources' values, and their terms
+have not been read. Most stale rows share one cause: SPEC, RESULTS, the
+READMEs and CLAUDE were last edited before stage G went live. F164.9
+proposes the fix grouping: F163.10's six groups with this register's
+rows, plus the record text, the owner's size check of four Project
+copies, and data credits ahead of the README update.
+
+One limits breach is recorded (F164.8): a single read-only `gh repo view`
+request in Step 6, which changed nothing.
+
+Archive step: D108, D111, D113, F157, F160, F161 and F162 moved to the
+archive. DECISIONS.md is 44,140 bytes; all 199 cited entry numbers
+resolve; 181 tests pass. STATUS.md overwritten.

@@ -1,0 +1,8 @@
+start marker '**3.4 The airport table.**': 1 occurrence(s), at line start [252]
+end marker 'Notes on the table:': 1 occurrence(s), at line start [283]
+span: lines 252 to 283 inclusive (32 lines), 2050 bytes, each line followed by a newline
+span SHA-256: a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9
+table 1: 6 rows, 8 columns (row widths [8]), codes ['EGLC', 'LFPG', 'DSM', 'YSDU', 'RNO', 'SFO']
+  header: ['station code', 'airport', 'stage', 'target hour (UTC)', 'IEM network', 'latitude', 'longitude', 'elevation']
+table 2: 6 rows, 9 columns (row widths [9]), codes ['EGLC', 'LFPG', 'DSM', 'YSDU', 'RNO', 'SFO']
+  header: ['station code', 'grid latitude', 'grid longitude', 'grid elevation', 'distance from airport', 'height mismatch', 'reports at', 'also files at', 'pairing offset']
