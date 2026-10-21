@@ -1,0 +1,9 @@
+airports,code_commit,cycle,cycle_column_matches,gfs_version,issue_lag_hours,issued,leads_3_48_complete,log_added_once_never_changed,log_commits,log_present,model_sha256,rows,runs_claiming_issue,snapshot_added_once_never_changed,snapshot_present,snapshot_rows,stop_reason
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-19T12z,True,v16,5.73,2026-10-19T17:44Z,True,True,A:5d61948@2026-10-19T17:46:30Z,True,484590bf6c87,2254,39296664200,False,True,1177,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-19T18z,True,v16,4.43,2026-10-19T22:26Z,True,True,A:667a285@2026-10-19T22:28:27Z,True,484590bf6c87,2254,39334891052,False,True,1177,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-20T00z,True,v16,6.53,2026-10-20T06:32Z,True,True,A:898f5c3@2026-10-20T06:34:55Z,True,484590bf6c87,2254,39380907106,False,True,1177,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-20T06z,True,v16,6.07,2026-10-20T12:04Z,True,True,A:3d78058@2026-10-20T12:06:07Z,True,484590bf6c87,2254,39419426002,False,True,1179,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-20T12z,True,v16,5.48,2026-10-20T17:29Z,True,True,A:42a80c3@2026-10-20T17:33:44Z,True,484590bf6c87,2254,39466470308,False,True,1182,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-20T18z,True,v16,5.18,2026-10-20T23:11Z,True,True,A:a795b01@2026-10-20T23:13:12Z,True,484590bf6c87,2254,39513292546,False,True,1182,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-21T00z,True,v16,6.57,2026-10-21T06:34Z,True,True,A:0ddedb6@2026-10-21T06:36:08Z,True,484590bf6c87,2254,39556153546,False,True,1181,
+49,d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb,2026-10-21T06z,True,v16,6.35,2026-10-21T12:21Z,True,True,A:adc73c3@2026-10-21T12:24:02Z,True,484590bf6c87,2254,39598876618,False,True,1178,

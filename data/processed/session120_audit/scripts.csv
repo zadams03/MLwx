@@ -1,0 +1,146 @@
+file,frozen,mode_parser,modes,check_modes,reads_decisions_or_spec,network,cache,forward_2026_27,sha256,check_mode_runs
+.github/workflows/stagec-grib-pull.yml,no,workflow,,,no,no,no,no,4e0e73cbb410c995d9d0ffed00cf87414ddb114749bd25330b07e1d8c89ef5d0,
+deploy/mlwx-live/.github/workflows/live.yml,no,workflow,,,no,no,no,no,554f8ff5d3c201c7ae809ebd8bd0529e5be7652e0cc1a8e1fa16ea51b2acf84c,
+scripts/archive_decisions.py,no,argparse,--plan --apply --citations --session --out --root,,yes,no,no,no,25813993a0991171a19f4137988fa71c704160f6d24926abf4740c8cdcb911e8,--citations: run in Step 5; --plan: run in Step 5
+scripts/session01_checks.py,no,none,,,no,no,no,no,e1313fb2f7b3774406e6779280ce6dd0f36a1a02505d31dee36b007cd37bcd0d,(whole script): run in Step 5
+scripts/session03_checks.py,no,none,,,no,no,no,no,4514c00dfbf823449ed073f08fb3508225d622af800536770f319dbad55f66fb,(whole script): run in Step 5
+scripts/session03_pull.py,no,none,,,no,yes,no,no,7f63b004c66d2f79f76a0f11a79da1b2ff2dfb5410c06d092666bbb0b95454fe,
+scripts/session04_model.py,no,none,,,no,no,no,no,cae0533156aeba2e81e2b80253d57ba8f9414bb7e2b7c566d657d5c0ec248def,
+scripts/session05_model.py,no,none,,,no,no,no,no,5ac867096dbf8aae6ba57f7640d4c407be0bd8cd7c20e209b04ba537dd77e330,
+scripts/session07_test.py,no,none,,,no,no,no,no,4ae042b432b1e849c83b4b3bec0cf4cf6b84441bf49173acdad7d7dec56c7252,
+scripts/session08_checks.py,no,none,,,no,no,no,no,81160ffee2a692762a19fbe25d943a3a501396887541c59a72ab4e02ce911a3d,(whole script): run in Step 5
+scripts/session100_structure_cv.py,no,argparse,--gate --score --meta --run-times,--gate,no,no,no,yes,67e709ea0925d84b4e257c44c5a95211f46a5ff5443408d7c526dbffb28d6957,--gate: run in Step 5
+scripts/session103_bias_drift_cv.py,no,argparse,--check --gate --score --meta --run-times,--check --gate,no,no,no,no,56460a0a3eb91f4ab1d427f3ad1631e1e7b58c692be8e8e4b48829c90d0c0e83,--check: run in Step 5; --gate: run in Step 5
+scripts/session104_curve_cv.py,no,argparse,--gate --score --meta --run-times --fit-counts,--gate,no,no,no,yes,6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb,--gate: run in Step 5
+scripts/session104_pull_check.py,no,argparse,--release --download --months --totals --negative --inventory,,no,yes,no,no,fabd0cbeddc97029e4ea46e2247aad3f42edaf9d57bddb0fff9c5c132669b19f,(whole script): not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session104_stagec_table_f025_048.py,no,argparse,--inputs --equiv --build --gate --records,--gate,no,no,no,yes,77457e262aae6388495ebebac64c730bc82d82675a3802d89fbd5f7f09fc2222,--gate: run in Step 5
+scripts/session105_dailymax_cv.py,no,argparse,--gate --score --meta --run-times --fit-counts,--gate,no,no,no,yes,90c059ec5dc92d7653cd0e1d57aedc229fe85299bdfbb87c0399e07c9a54ddda,--gate: run in Step 5
+scripts/session106_claim_look.py,no,argparse,--gate --look --guard-check --meta --confirm-look --airports,--gate --guard-check,no,no,no,no,5e046acffc6eb28619d1883c8b93b6ff97bc3305addade56be5ab30af169281a,--guard-check: run in Step 5; --gate: run in Step 5
+scripts/session106_claim_table.py,no,argparse,--equiv --build --sanity --records,,no,no,no,yes,ac5c67eba453b8a14883bbe3d7d34384823872013037e7ad7d035a72617cff96,
+scripts/session108_figures.py,no,none,,,no,yes,no,no,dc42002b124024c43c1e5d1e35030d99f4a3c90acd1fafa842f6d376cc7e558c,
+scripts/session109_gates.py,no,argparse,--gate-a --trial --gate-b --gate-c --gate-d,--gate-a --gate-b --gate-c --gate-d,no,no,no,yes,8ac5a567fb4356db61136db4db7783eae381500a2f0314ad9d5a08cee726f59b,--gate-a: run in Step 5; --gate-b: run in Step 5; --gate-c: not run: needs the network outside Steps 8 and 9 (D114.5); --gate-d: not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session10_checks.py,no,none,,,no,yes,no,no,7fd65ee78950fdf17190750beb00ef99667a178c951011872690535da55e1350,(whole script): run in Step 5
+scripts/session10_pull.py,no,none,,,no,yes,no,no,748ad12e9acedb0f8fe60a968b3a378dd13bd77e670933c9d80e127234bb1a6d,
+scripts/session112_analysis.py,no,argparse,--regen --refs --check --analyse --contrib --zuck --zuck-file --trial-dir,--check,no,yes,no,no,bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab,--check: run in Step 5
+scripts/session113_comparison_pull.py,no,argparse,--check --probe --cost --pull --latency --tmp --source --workers --override,--check,yes,yes,no,yes,2023b0b017ffdfea63013924e43bdeae897f358cba5a4bd516f9663914dbb958,--check: run in Step 5
+scripts/session114_comparisons.py,no,argparse,--check --gate --match --hourly --dailymax --docs --official --figures --verify --source --trial-dir,--check --gate --verify,no,yes,no,yes,5ff60d328b2a0489de4173c989a5a9a8472b6bdb5ce6cc4c70d7bd543b2ddc52,--check: run in Step 5; --gate: run in Step 5; --verify: run in Step 5
+scripts/session115_obs_check.py,no,argparse,--check --gate --flag --exposure,--check --gate,no,no,no,yes,cc4fffdc673cd3dce9e95d099846b3040f4f53b6781c8fbd99f3fea73b64ff86,--check: run in Step 5; --gate: run in Step 5
+scripts/session116_obs_check51.py,no,argparse,--check --gate --flag --exposure,--check --gate,no,no,no,yes,bf0ea5daefb700af68a70018016f7a61babc3dce45b21dd1fe60f2e5022df8aa,--check: run in Step 5; --gate: run in Step 5
+scripts/session117_ifs_guide.py,no,argparse,--subset --render --verify,--verify,no,no,no,no,963e05ce5e1bef227b1aa242fed745b7d7fa604e7d5b30eb0b50357d84fa8b5f,--verify: run in Step 5
+scripts/session118_live_audit.py,no,argparse,--clone --work,,no,yes,no,no,3817a2f178196caf162f934999fa32ccf1bc4c4756cbc1f59730beece9be595f,
+scripts/session119_ifs_check.py,no,argparse,--gate --decode --tests,--gate,no,no,no,yes,33e16a2592403316b2e1280126ebbdd84e2c544ba0c40da4d84287fbcc56b338,--gate: run in Step 5; --decode: not run: needs the network outside Steps 8 and 9 (D114.5) (Step 9 imports its functions instead)
+scripts/session11_model.py,no,none,,,no,no,no,no,d5484092eaa9976e9cbcde7dd725c595b4084857e2947de34e4fa139453d781c,
+scripts/session13_test.py,no,none,,,no,no,no,no,751b24f57ea40b292e9d51630924914e2b0b9c36d72ad5b81e5e76653f0493d7,
+scripts/session14_checks.py,no,none,,,no,no,no,no,9adf52642cc685770a3bc7ae14ea872e4d9a88272cdc283a6687f66ddf144e00,(whole script): run in Step 5
+scripts/session14_pull.py,no,none,,,no,yes,no,no,550ffb197cb1a91c587961de04f61e468ba5a88015cec6382ec49ddb28ce8eeb,
+scripts/session15_checks.py,no,none,,,no,yes,no,no,a6e2c08de1c4e82d5fa95361fddcdc73d2df51d69adf06facd92f6373dcd6bbf,"(whole script): not run: reads a file valid on or after 2026-08-01 (D114.4) (the DSM 2026-08-05 to 15 files, D73.10)"
+scripts/session15_pull.py,no,none,,,no,yes,no,no,16b72e15ce0c29f2f58129e11cb8f73d02d39c35b9e30d3478da2209bfd2ce24,
+scripts/session16_model.py,no,none,,,no,no,no,no,6c3cd1d48198766ec00461b4b724a71c4c501c879900b8d8b6933ac9c53921f7,
+scripts/session18_test.py,no,none,,,no,no,no,no,a83f5bb474a4d813dc2aefe365e048c2d14d872d0dc01a83bd88182f557cb72e,
+scripts/session19_checks.py,no,none,,,no,no,no,no,0abd0589db2d2942d615b83e2be18e7766b69d9d2a1d1cf31879864fce66ff93,(whole script): run in Step 5
+scripts/session19_pull.py,no,none,,,no,yes,no,no,019637f28c67f491f69109d463ecd1a9fa7971171388f502d0160fcd8920d811,
+scripts/session20_checks.py,no,none,,,no,yes,no,no,75528c2a546e354e569eaebf4795a6646080deb8443c27a411859be49e179b20,(whole script): run in Step 5
+scripts/session20_pull.py,no,none,,,no,yes,no,no,e3ed5301591ea8dff36024b7c61d662e0b0d971a87792b7989544c188a869515,
+scripts/session22_model.py,no,none,,,no,no,no,no,3c801f0ee3cb900f1f0e5985a09ecfed0f1d0d441bb1a41daa3a37a45c4c2c47,
+scripts/session24_test.py,no,none,,,no,no,no,no,6a4d52637ccda5d464450948ffbe2ad580da74060e4f2c1fdbf5af1be0948760,
+scripts/session25_checks.py,no,none,,,no,no,no,no,6904b8b62faabab2954ab1d55eef9c5cc3fa04f829f383d7398d1fa44a3bd51c,(whole script): run in Step 5
+scripts/session25_pull.py,no,none,,,no,yes,no,no,d48287dee61b4c5bd4d842830d4c5b968f3a904a342601986533597a7e9e7b47,
+scripts/session26_checks.py,no,none,,,no,yes,no,no,23e7c3161cd4ed86f1c0b5469ad6b96f455c447c0d8b9e531447c203e980dbfd,(whole script): run in Step 5
+scripts/session26_pull.py,no,none,,,no,yes,no,no,c3e96dae062b65f093398ee1ba7fcdbf48f1aaa59b5eec7920258719f1c4a92f,
+scripts/session27_model.py,no,none,,,no,no,no,no,8c6ec014f1b89daa665e5ad4ecae7165bed9aad93a448743b6a42f6d6952cc79,
+scripts/session29_test.py,no,none,,,no,no,no,no,2a18635c003b0bbbdea7579c8f583f081378edbec817cd2697cd06112f2b1753,
+scripts/session31_checks.py,no,none,,,no,no,no,no,208e8238aa1b9c5902409d46a356408480d7cf7d9143d24916ca81d1d1d7ce50,(whole script): run in Step 5
+scripts/session31_pull.py,no,none,,,no,yes,no,no,5673212ef86dae45547f9e7e02c2fda1c19a002c93f9fe6cb52dd5d029934d40,
+scripts/session32_pull.py,no,none,,,no,yes,no,no,5c2e98f6d4d41708ec95f6a8853a82a3aff93c83b502110bae0d57388b7793c1,
+scripts/session32_scout.py,no,none,,,no,no,no,no,234f8723eb7f18cb2505e568651f5279b8583520a36f5c80e7361eee393ff2d5,
+scripts/session33_cv.py,no,none,,,no,no,no,no,03e885c2e79caf193ebf15216e9a6e70e8cdb7b78e6361da629e08de033637b7,
+scripts/session36_grib_pull.py,no,none,,,no,yes,no,no,a7a69f498fb32c85821ae54f8f100a7208eb4a2a2908d2bb2d46c2c2c2f005b7,
+scripts/session36_validate.py,no,none,,,no,no,no,no,7ee91bf0aa9fecfafeaeaa4065a8541094fa411afb96ce2b8579f1f98985d5d4,
+scripts/session37_decode.py,no,none,,,no,no,no,no,b76ffb74a032cc57b296b42aff05708b6a43f0ca8c15126bc29a48273767819e,
+scripts/session37_elevation_fix.py,no,none,,,no,yes,no,no,9246a8eb895d7f11953fa19102cb1a3397f4800f20f913c4836e2a001c6084e2,
+scripts/session37_grib_pull.py,no,none,,,no,yes,yes,no,19390b0e40d18d1548f03c4a4a757dafb869d483234bee44c70aae0fa1c968fd,
+scripts/session38_cloud_diagnostic.py,no,none,,,no,no,no,no,98324be25c434ca476995d91105f67ffa6311f2debd71e08dc05ac30d5c1b64b,
+scripts/session38_cv.py,no,none,,,no,no,no,no,37face5f95bec62546318318118eff7878a5c9b40251af9d39ae57c78522ad9f,
+scripts/session38_join.py,no,none,,,no,no,no,no,11fe55d46c1b9906e0b617c8094c9bfcefb31dbc69539f74b2611b2efddb044e,
+scripts/session38_sanity.py,no,none,,,no,no,no,no,5c70eec73737a4748a62a161caed27c1c8a794a46f87295b43c2d493e1073b8c,
+scripts/session39_sealed_test.py,yes,none,,,no,no,no,no,375e4eb69bb06c006a97a4474abce0a6027670123093dc0df3cb5bc0c9da5fca,(whole script): not run: frozen script with no guard or gate mode (D114.4)
+scripts/session40_decode.py,no,none,,,no,no,no,no,855356f79d22bee1c3b71fb8c79b3ab170583b7f5fc554251970e1f333492ab8,
+scripts/session40_grib_pull.py,no,none,,,no,yes,yes,no,3995ee4fea198f7e9c90a8ff5b34d1dd3a9e7ac4d0b0aa84574b288705554801,
+scripts/session41_verify.py,no,none,,,no,no,no,no,d4497bd0d3cb52ee69a9353075d85ef29fe3ab26c8b319d2ac1c42f4dbc2157a,(whole script): not run: runs frozen session39_sealed_test.py's functions outside a guard or gate mode (D114.4)
+scripts/session42_scoring_check.py,no,none,,,no,no,no,no,68d1dc6def4ba83e91844ca2242d83facc06a7b9609d230a9753b7a617c57c0e,(whole script): not run: runs frozen session39_sealed_test.py's functions outside a guard or gate mode (D114.4)
+scripts/session46_backtest.py,no,none,,,yes,no,no,no,d85d6797b49d8220a1151a260cdcb38ee31b3e5c6ed390a69c16ca435dc8d315,
+scripts/session47_availability_probe.py,no,none,,,no,yes,no,no,a30d81ee3d26ffc99af3f23edb77ca7386273430cd26c70e373e40bd1fb15bb0,
+scripts/session48_reserved_year.py,yes,none,,,no,no,no,no,df36fa5af79b60911fb489e65f9d04c747241a1ab130ff2f1d5ce25edaf131e0,"(module, imported by tests): not run: frozen script with no guard or gate mode (D114.4); its guard is exercised by tests/test_guards.py (Step 6)"
+scripts/session49_upper_air_pull.py,no,none,,,no,yes,no,no,ba956f9683655d6b22e582814042242a26e0d4985c5c463e6309629992d52c3c,
+scripts/session50_e1_experiment.py,no,none,,,no,no,no,no,51de22431e7efb8d6adf8a393eaf421b8b985e6d5cbb39e1c586cecba1cfa5b1,
+scripts/session51_moisture_pull.py,no,none,,,no,yes,no,no,b25584b6f89990107e28b22117a3bfac8ffa2fbd964be79a548bfaa6acc21631,
+scripts/session52_e2_experiment.py,no,none,,,no,no,no,no,55d299e8cc3610e8e8d917b0a33bdb7dde10cd2d22cba1db381efb9ba3844932,
+scripts/session53_pressure_pull.py,no,none,,,no,yes,no,no,7fbea0fbc6ceb4f04b303350f7948ea5330c94b47600885a2eb6354972dc4997,
+scripts/session54_e3_experiment.py,no,none,,,no,no,no,no,8e57825d8509801c39d3935998310a8af1e6785e5bf3a872a04bd5b3b26fa964,
+scripts/session55_radiation_pull.py,no,none,,,no,yes,no,no,8bf69b263297f165b703c6bd9bf0a13c6dd721eab81bbfadca4145864d21510f,
+scripts/session56_e4_experiment.py,no,none,,,no,no,no,no,2d1586212b1bdf161ee8689053af6ec55177b31d83902a0c825723c878b3d756,
+scripts/session57_precip_pull.py,no,none,,,no,yes,no,no,46f2cdbf45dd484996fa49cb833183aef035e5fb921b4a243935acd2cab12131,
+scripts/session58_e5_experiment.py,no,none,,,no,no,no,no,cf8d07d4b5f86b21cefbf6efe7ace406e2c697489dfea775ba308d348e777f99,
+scripts/session60_combine_design.py,yes,none,,,no,no,no,no,0328d08063b618922ce99704f604ff8abdae0c812fab2dd09f02c8f53e66cc7b,(whole script): not run: frozen script with no guard or gate mode (D114.4)
+scripts/session61_combine_sweep.py,no,none,,,no,no,no,no,3e7bb3a9f6730c99fbb9a54fe7b3241dfe930b8590780305778d800d802a63d3,
+scripts/session62_reserved_confirm.py,yes,sys.argv,--confirm,,no,no,no,no,9f8af9afa754220ec525481b8640f6f4808f036bcabcfbecadac80331fdc80b4,"--confirm: not run: a look, not a check; not run: frozen script with no guard or gate mode (D114.4)"
+scripts/session63_join_equivalence_check.py,no,none,,,no,no,no,no,becf36f39ff917b69cef85dff7f7a214db865df6d9a119e828fc58d305a76331,(whole script): run in Step 5
+scripts/session63_reserved_year_build.py,no,none,,,no,no,no,no,e10f3dff36cb68053b607eae0eba529841804fcedcaa54c15f43940037db5771,
+scripts/session63_wiring_scratch_check.py,no,none,,,no,no,no,no,73c34b7cef25578e8b6a55fbb1c32c24ee8465742697f72aaf9bc28eba8812d7,(whole script): run in Step 5
+scripts/session70_fold_table_station.py,no,argparse,--write,,no,no,no,no,a0594d83802d767c9b6e86f063ffd1ddac1c7206156394191742554722cac839,
+scripts/session70_grib_manifests.py,no,argparse,--write --out-dir,,yes,no,yes,no,424a913e060f63f1b3f4668ac4ee1843faef5bdcc2226ecd8bfce69a817ee751,
+scripts/session71_ldtr_pull.py,no,sys.argv,--plan,,no,yes,yes,no,57cd8c7e65d9632d5ea2b3d4c064c0ceaff46f3d93384af8f7872086f4c14afc,
+scripts/session71_ldtr_rebuild.py,no,none,,,no,no,yes,no,e7d4f7518f9322995c33817cacdada043ddd2832265d085edc3c45804c392a08,
+scripts/session71_original_functions_check.py,no,none,,,no,no,no,no,dd3635b002a5d8d2468131adeea10e9d82a97f7a8c3a5a879b504d15333fea14,(whole script): not run: needs cache (D114.6)
+scripts/session71_sample.py,no,none,,,no,yes,yes,no,79a9b0a94449bf4a8ad2325ba06b2653e3a49b1449b5490e46522b45c08566ce,
+scripts/session72_build.py,no,none,,,yes,no,yes,no,b71d4b646f566a5545b328e455783f7058ebc40d79c4ff45f5487d200fef828d,
+scripts/session72_ldtr_pull.py,no,argparse,--plan --pull --manifest --workers,,yes,yes,yes,no,db0d9c72afa3d75520728dac6ba23b0fd1618a122f45e2f79cc3bde9730166be,
+scripts/session73_compare.py,no,none,,,no,no,no,no,69794aea88c4127bdf2d06204d131b7214f79e42dc8d325c7bd0c9ab516f61be,
+scripts/session73_fit_score.py,no,sys.argv,--compare-runs --run --seal,,yes,no,no,no,d5113d89ea2c3476dc2d92bfbd47c2086c42615828a22741168f4e07c5b1e62f,
+scripts/session74_diagnose.py,no,sys.argv,--repeat --report --run,,no,no,no,no,7ca79233a4b7e53c260b9ede1f8ab140c46ed49bcd95df5383d0580adf50d0d8,
+scripts/session75_order_spread.py,no,sys.argv,--anchors --repeat --report --spread,,no,no,no,no,4e81fb3f2fec25bb94632e141e1a7ec7c88b73ac03173955dcd15cf9efa84311,
+scripts/session76_build.py,no,none,,,no,no,no,no,cb8a54f92e4b3a232ebf1c7828d212a10147d8def2d63d7e75dd40230d90b348,
+scripts/session76_grib_pull.py,no,argparse,--pull --workers,,no,yes,no,no,2e0501c001432c546312146cf09f296725467edda30efd5ee67591c44171e0d9,
+scripts/session76_obs_om_pull.py,no,none,,,no,yes,no,yes,8842d784c1ebf97ffd83fe5b9205d9095c0c839e4b48d2a8c82f45136074ff52,
+scripts/session76_verify.py,no,none,,,no,yes,no,no,8593923ad23971d1ef4d7171aef31b0619fe91d2bc294c04f91ae83993135719,(whole script): not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session76b_cache.py,no,none,,,no,no,yes,no,79aa85d71257279cc7d5ff07400b0a378d4c3bf85d16260f6d8d80865084db11,
+scripts/session76b_check_a.py,no,none,,,no,no,no,no,63add2411b4187d9892fffc24624e97ecb5bfc83ee541f7d7d97f28a5e200039,(whole script): not run: needs cache (D114.6)
+scripts/session76b_check_b.py,no,none,,,no,no,no,no,c497d35d8cb166b55cf05b3947a053721ec7009dd184d8b47349b1fc06dad1e9,(whole script): not run: needs cache (D114.6)
+scripts/session76b_land_pull.py,no,none,,,no,yes,no,no,4a0fb2ac6e3926f45534de5a44a1bc08b48cebd468844a98e44cb34c4da32346,
+scripts/session77_ksfo_looks.py,yes,sys.argv,--dry-run --run-looks,,no,no,no,yes,e4ec113b0dcbc936550b382ffbcdd55d3049878c8b13d74cd83e867a6b3247c1,"--dry-run, --run-looks: not run: a look, not a check; not run: frozen script with no guard or gate mode (D114.4)"
+scripts/session77_ksfo_rehearsal.py,no,sys.argv,--counts --rehearse --repeat,,no,no,no,no,0bc8d354148a6f25cbe84679bbc0b31711e8f3c2dc052318d89afb5d10b675b0,
+scripts/session81_freeze_forward_models.py,no,sys.argv,--build --freeze --gate,--gate,no,no,no,yes,9a18a14ec42510300c376552ebc5bc83e15bf457f7c55bc6acb071e6d45e69f6,--gate: run in Step 5
+scripts/session82_source_probe.py,no,none,,,no,yes,no,yes,9e4af74820a3cc964d943ee4ded186436d92cd697fd43c157c7d29e6ec20e077,
+scripts/session83_confidence_intervals.py,no,sys.argv,--quiet,,no,no,no,yes,5c27631b1018088e5cde7362c04c8e73630c881f0babf2e6b6cf5ba2ee39227f,
+scripts/session83_icon_route_check.py,no,none,,,no,yes,no,no,ce491e5b55e53adcab2cb411a1c65dd1f70974d87b08ece9cfdc2cf6b1cd3329,(whole script): not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session85_nbm_mos_comparison.py,no,sys.argv,--compare --gate --pull,--gate,no,yes,no,yes,870377bb8ffbe009d3b4162b3f555a58e619596a6d75d06a70b93ac7eadc999d,--gate: run in Step 5
+scripts/session86_forward_build.py,yes,argparse,--guard-check --gate --build --period --first-v17-cycle --no-v17 --decision --workers,--guard-check --gate,yes,yes,no,yes,da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125,--guard-check: run in Step 5; --gate: not run: needs the network outside Steps 8 and 9 (D114.5); not run: stage B's frozen scripts run in offline guard modes only (Step 5); --build: not run: reads a file valid on or after 2026-08-01 (D114.4)
+scripts/session87_forward_competitors.py,yes,argparse,--guard-check --gate --fetch --period --first-v17-cycle --no-v17 --decision,--guard-check --gate,yes,yes,no,yes,8f176562954b5b43bdf110bc292f5b04d6d728d2295df9a178d5a5ff5b23d55c,--guard-check: run in Step 5; --gate: not run: needs the network outside Steps 8 and 9 (D114.5); not run: stage B's frozen scripts run in offline guard modes only (Step 5); --fetch: not run: reads a file valid on or after 2026-08-01 (D114.4)
+scripts/session87_forward_score.py,yes,argparse,--guard-check --gate --score --period --first-v17-cycle --no-v17 --rows-sha256 --points-sha256 --nbm-versions --mav-versions --decision,--guard-check --gate,yes,no,no,yes,5a6f32c505a5c0a39577a05f2ac82bfac31994f600fe6edbba3f1e936171de6a,--guard-check: run in Step 5; --gate: not run: stage B's frozen scripts run in offline guard modes only (Step 5); --score: not run: reads a file valid on or after 2026-08-01 (D114.4)
+scripts/session88_competitor_probe.py,no,none,,,no,yes,no,no,e168a0c8d07bade5e27e8539bc7704bae9eed078f87832f8a814a7a56368c214,
+scripts/session89_stage_c_scoping.py,no,argparse,--meta --docs --repro --speed --grib --obs --budget-gb --limit-dates --date-step --stride --spent-gb,,yes,yes,no,no,0d65bd5ff6bdd8df74d658b89d40cf15a1e2ef4081a186fe98c9d75b1d705fab,
+scripts/session90_airport_check.py,no,argparse,--collect --decide --state,,no,yes,no,no,c55bab8dc736c2d43a66d640892038e19b2cb517cf5dc2f812e6c9eba6310a8d,"--collect, --decide: not run: needs the network outside Steps 8 and 9 (D114.5)"
+scripts/session91_grib_pull.py,no,argparse,--positions --plan --chunk --gate --guard-check --month --dates --hours --out --workers --budget-bytes --spot-check --extract,--gate --guard-check --spot-check,yes,yes,no,yes,557e88326aa410b150502619e2c5dd28ab22e89c19a46eb797b90bfe117b1675,--guard-check: run in Step 5; --gate (chunk 2023-01): run in Step 5; --spot-check: not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session92_verify_chunk.py,no,argparse,--dir --month --hours --ranges --gate,--gate,no,no,no,no,7b59a5c2cfd1b15c8e8c1e769b5b1336735adef151b43eb4487c302a4a18af6a,"verify, every month, MLwx-pull (0-24): run in Step 5; verify, every month, MLwx-pull-f025-048 (25-48): run in Step 5; --gate (2023-01): run in Step 5"
+scripts/session93_diagnose.py,no,argparse,--release --diagnose,,no,yes,no,no,fbaf73a130eb071992a7c65f03c579d926a305da0a67ebb7fb7c5bf4a89a9581,
+scripts/session94_fallback_gate.py,no,none,,,no,no,no,no,0aa3b713ef37f4c9614d60340fbe39f93a55d908fb84438bce362b98ee4f50c8,(whole script): not run: needs the network outside Steps 8 and 9 (D114.5)
+scripts/session95_check_release.py,no,argparse,--release --download --months --totals --negative --gate --inventory --raw --listing,--gate,yes,yes,no,yes,32c3ed772745b930fa00f06cd9dd300decb45c743e173bec725004c8c24f2af0,--gate: run in Step 5
+scripts/session96_stagec_table.py,no,argparse,--inputs --test-rt --build --gate --records --guard-check --out --station,--gate --guard-check,yes,no,no,yes,40b63d006a3de4b4b796476c6b2408700bc9200a508feda804a187531b666eee,--gate: run in Step 5; --guard-check: run in Step 5
+scripts/session97_stagec_cv.py,no,argparse,--folds --gate --score --guard-check --meta --airports --out-dir --out,--gate --guard-check,yes,no,no,yes,987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91,--guard-check: run in Step 5; --gate: run in Step 5
+scripts/session98b_figures.py,no,none,,,no,yes,no,no,49a31e717950a6dfbf3e6c0d5b7aa6858ee7694b40fdff696d277782c32d5ddf,
+src/mlwx/__init__.py,no,none,,,no,no,no,no,fb02410baa063a8d09857851938984e2ddc8426790ad527d7240b8ed5e4e9496,
+src/mlwx/baseline.py,no,none,,,no,no,no,no,a9f939cd9a117ad1306415d189e60a9c495703cbc74e2fcd3d48252a9d39bd06,
+src/mlwx/config.py,no,none,,,no,yes,no,yes,ad1d8a4e0640be3c471cfb818b6472302e95077108ae88d323ff864b30176bdc,
+src/mlwx/dailymax.py,no,none,,,no,no,no,no,fce6bd63a8167ebac28c98f60d5cd281140caac1fd1363ca551f266851b6754c,
+src/mlwx/features.py,no,none,,,no,no,no,no,d3ff52f51028dff278f19ab4f133632e7b2f2c01a2020ab7ee752aa33820fbd6,
+src/mlwx/gfs.py,no,none,,,no,yes,no,no,3242955cabb73bfb668d975327cc5c72ff82fd1edf3b4ba23ef6919440c6f5f6,
+src/mlwx/observations.py,no,none,,,no,yes,no,yes,a0d95d515ecf23209c3a4b0f7e79a05299f30717228399067549d65569c6e6dc,
+src/mlwx/onboard.py,no,argparse,sub:row airports sub:tables --out airports sub:counts --tables --current --csv airports sub:fit --tables --out --jobs airports sub:run --tables --out --jobs airports sub:add-rows airports,,no,no,no,no,7aa22e73aee1b8e9486ad7ce48e016e77d0d83e04f86cf0aefe2a6ba653c36e2,
+src/mlwx/page.py,no,none,,,no,no,no,no,da5da1830538638e71621bb4af0a5fa6e5d8c77b63d28d3fd5dd065781635561,
+src/mlwx/prediction_log.py,no,none,,,no,no,no,no,5a47b9b50fb683e5bda2797d080c0d0decae8eb3c329fc9fd4bfcd052c90ae26,
+src/mlwx/records.py,no,none,,,no,no,no,no,73dfa8a856e1915ee8cf097fcbdb32cd89b3860df451fbad9d58491396333112,
+src/mlwx/refit.py,no,argparse,--tables --new-tables --out --info --check-only airports,--check-only,no,no,no,no,a8f738d79a2455a2ddf07a73d3d06cb3c35f6a5eb99049d72c03571b59c36488,--check-only: run in Step 5
+src/mlwx/runner.py,no,argparse,--root --models --model --now --latest-only --commit,,no,no,no,no,cd26615c9cee5f8e12c717507dc9254b98910e2a2a9c95c750017703dbc74ae4,
+src/mlwx/state.py,no,none,,,no,no,no,no,e1afcb6d235752549b589cdecfa515aca80d14d3162cd274e3d4fa8793014d92,
+src/mlwx/tables.py,no,none,,,no,no,no,no,ef71388f94ed28a706363be64671378426f2ed2907acef6e2b2826a0edead64a,
+src/mlwx/tracker.py,no,none,,,no,no,no,no,90474cfa4420eb461d6351927adb6e62359cfed25651acc15c73cb5ea3b8ce0a,

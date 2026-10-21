@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 20 October 2026, after session 119._
+_Last updated: 21 October 2026, after session 120._
 
 ---
 
@@ -31,7 +31,8 @@ the daily maximum (D82.2).
   (D113.6, F162): no fault mark shows at any of five tests (height,
   position, timing, product changes, decoding), so IFS's cold error is
   recorded as the model's, as read under D108.3, and F160 stands. The
-  mx2t3 rerun is dropped (D113.5).
+  mx2t3 rerun is dropped (D113.5). T5's two extra fetches
+  on the main 0.25 degree grid's first and last 00z dates (F163.9): no mark.
 - **Observation plausibility check (D109, D110, F158, F159): done.** No
   cleaning rule is adopted for the historical observations (D111.2). A
   spike and range guard for live observations comes later, as a stage G
@@ -46,6 +47,12 @@ the daily maximum (D82.2).
   with MLwx `d6ca3e4` and models `gfs-models-49` unchanged; manual run
   39488813037 green and its push landed. Audited to 2026-10-19 (F161): no
   cycle lost, no silent push failure.
+- **Project health check (D112.2 item 3, D114).** Session 120 audited the
+  code (F163): 55 register rows (`notes/session-120-register.csv`), OK
+  31, cosmetic 8, stale 16, none wrong or blocking. The layout matches
+  D91.3 plus four traced additions (D114.2 answers D109.8). Next: session
+  121 audits the record (D114.3), then fix sessions from both registers,
+  the README update last.
 - **A pre-registered test of the live forecasts (D105.5, amended by
   D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
   shown until its look (D103.2, D105.6).
@@ -58,33 +65,31 @@ the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **F162's readings (F162.9).** No reading fault was found. IFS is coldest
-  in the evening and at night and least cold near local midday; its
-  elevation treatment reduces the cold error rather than causing it. T5
-  checked one message on the main 0.25 degree grid; two more fetches would
-  cover that grid's first and last 00z dates, if the owner wants them.
-  Session choices where D113.6 was open (T4's 20-day window and its
-  reading of "no step") are listed in `notes/session-119-output.txt`.
-- **F161's readings (F161.10).** Every run commits (the state's
-  `last_run`), so overlapping runs always conflict on the state file;
-  six actions are forced from Node.js 20 to 24; `setup-python` "3.12"
-  floats (runs used 3.12.15). Whether the :15 and :40 schedule shortens
-  the issue lag is seen now that the redeploy is done; an outside
-  scheduler only if it does not (D112.6(d)).
-- **Tests in the venv (F161.1).** `pytest` is not in `.venv`; the suite
-  runs as `python3 -m unittest discover -s tests` (181 tests). The health
-  check (D112.2) may record this.
-- **Session 114's own checks after IFS (F160.9(4)).** Session 114's
-  `--verify` now fails on Part 1 (its template still says "pending"), and
-  `session114_comparisons/part1.md` and `part2_comparisons.md` are out of
-  date. No IFS figure exists (session 114's figures exclude IFS). Its
-  `subdaily_max` does not check that every window is present (no effect
-  here), and its `F156_4` has no IFS entry.
+- **F163's grouping of fixes (F163.10, the output file).** (1) Small code
+  fixes, plus D98.2 constants for session 92, 95 and 96's `--gate` and
+  the SHA-256 of frozen session 39, 48 and 60 (one ruling). (2) Session
+  114's outputs: its Part 1 template with IFS, `part1.md` and
+  `part2_comparisons.md` (write-once files), an IFS figure (rulings).
+  (3) MLwx-live: README text (template l.65 to 68, and the deployed v1
+  README), actions to their Node.js 24 majors, pinning Python 3.12.15, no
+  commit when only `last_run` changes; an entry under D105.5(k) first,
+  then a redeploy. (4) Cache checks when the drive is attached. (5)
+  Rulings only: pytest or unittest (pytest is not in `.venv`); whether
+  stage B's session 86 `--gate` (cannot run as it stands, D96.3) needs
+  anything before period A; the outside scheduler later.
+- **F163.11's readings.** Session 96's `--gate` and session 117's
+  `--verify` cannot be re-run as they stand (new; not in D98.2). Session
+  63's two check scripts rewrite their committed notes outputs when run.
+  Session 109's Gate A takes 29.4 min.
+- **Issue lag after the redeploy (F163.8).** About one day of the :15 and
+  :40 schedule: 4 scheduled runs in 43 slots, issue lag 5.18 to 6.57 h.
+  Too little to judge; re-measured in the MLwx-live fix session (D112.6(d)).
+- **Session 114's own checks after IFS (F160.9(4), pinned in F163.7).**
+  `--verify` fails on Part 1 (template says "pending"); `part1.md` and
+  `part2_comparisons.md` out of date; no IFS figure; `subdaily_max`
+  (no effect) and `F156_4` (no IFS entry). Fix sessions (1) and (2).
 - **MMMX coverage (F159.8).** 28,950 usable hours (of about 49,000) and
   104 usable days. Seen, not examined.
-- **Project health check (D109.8).** The repo uses a root layout (`docs/`,
-  `notes/`, DECISIONS at the root), not the `research/` and `audit/`
-  layout recorded in D90.5. Examined in the planned health-check session.
 - F157's readings (F157.7): AIFS's daily-maximum result rests partly on
   its 6-hourly sampling; at the development airports AIFS and the NBM grid
   are read at GFS's position, 1.8 to 8.5 km from the airport (D108.3); NBS
@@ -114,7 +119,5 @@ the daily maximum (D82.2).
 
 ## Next
 
-**Next planning session:** Review session 119 and commit. If F162 shows a
-fault mark, the owner rules under D112.3 first. Then the project health
-check's audit (D112.2 item 3), then its fixes, ending with the README
-update.
+**Next planning session:** Review session 120 and commit; then plan
+session 121, the audit of the record (D114.3).

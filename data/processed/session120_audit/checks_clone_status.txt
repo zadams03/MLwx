@@ -1,0 +1,2 @@
+ M notes/session63-join-equivalence-check-output.txt
+ M notes/session63-wiring-scratch-check-output.txt

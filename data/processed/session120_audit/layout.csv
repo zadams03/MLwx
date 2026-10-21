@@ -1,0 +1,24 @@
+item,tracked_files,result,entry
+.github,2,in D91.3 (present at 5adf971),D91.3
+.gitignore,1,in D91.3 (present at 5adf971),D91.3
+ANALYSIS.md,1,added after D91.3 (36b54a4 session 112),D106.14 (ANALYSIS.md at the repo root)
+CLAUDE.md,1,in D91.3 (present at 5adf971),D91.3
+DECISIONS-archive.md,1,in D91.3 (present at 5adf971),D91.3
+DECISIONS.md,1,in D91.3 (present at 5adf971),D91.3
+LICENSE,1,in D91.3 (present at 5adf971),D91.3
+README.md,1,in D91.3 (present at 5adf971),D91.3
+RESULTS.md,1,in D91.3 (present at 5adf971),D91.3
+SPEC.md,1,in D91.3 (present at 5adf971),D91.3
+STATUS.md,1,in D91.3 (present at 5adf971),D91.3
+data,1918,in D91.3 (present at 5adf971),D91.3
+deploy,4,added after D91.3 (0f89f01 session 109),"D103.11 (the live repo's files, written but not deployed), F152.10, D104.5"
+docs,176,in D91.3 (present at 5adf971),D91.3
+figures,37,in D91.3 (present at 5adf971),D91.3
+notes,130,in D91.3 (present at 5adf971),D91.3
+requirements.txt,1,in D91.3 (present at 5adf971),D91.3
+scripts,128,in D91.3 (present at 5adf971),D91.3
+src,17,added after D91.3 (0f89f01 session 109),"D90.12 (a src/ package only at stage G), D103.3 (src/mlwx/)"
+tests,6,added after D91.3 (fcbe761 session 101),"D90.12, D95.8 (the tests folder)"
+docs/sessions,126,added after D91.3 (0880e4c session 98c),D92.2 (the layout of docs/)
+docs/commits,47,added after D91.3 (0880e4c session 98c),D92.2 (the layout of docs/)
+figures/analysis,33,added after D91.3 (36b54a4 session 112),"D106.14, F155.9"

@@ -1,0 +1,14 @@
+file,size,covers
+tests/test_guards.py,"4 classes, 13 tests","leakage guards: session97 2026-27 guard, session86 check_gate_date, session48 reserved year, session91 pull guards"
+tests/test_record.py,"5 classes, 11 tests","archive_decisions (plan, apply, citations on real files, D93.9 size), F139 headline, F143 baseline rows, F122.4 EGLC gate, record lookups (session91 constant, session87 F122.5 pattern)"
+tests/test_stagec.py,"16 classes, 27 tests","stage C: pull constant, daily maximum rules (D98.10), tracker long leads, claim look assignment and bar, claim persistence, table and elevation constants, figure constants"
+tests/test_live.py,"21 test classes, 112 tests","src/mlwx: config, idx, guards, fetch, http, features, tables, observations, baseline, tracker, dailymax, prediction log, state, runner, snapshot, page, records, recorded constants, refit"
+tests/test_onboard.py,"4 test classes, 18 tests","src/mlwx/onboard: rules, rows, counts, new trackers"
+(none),no test,"deploy/mlwx-live/.github/workflows/live.yml (the commit step was tested once in scratch repos, F161.11; not in tests/)"
+(none),no test,the stagec-grib-pull workflow (.github/workflows/stagec-grib-pull.yml)
+(none),no test,session92_verify_chunk.py's checks (run on real months in Step 5 only)
+(none),no test,stage B's session87 --guard-check modes as unit tests (run in Step 5; session86's date guard is tested)
+(none),no test,the descriptive scripts of sessions 112 to 119 (their own --check modes run in Step 5; no unit test)
+(none),no test,"ANALYSIS.md against its tables (session114 and 117 --verify only; both fail as they stand, Step 5)"
+(none),no test,session118_live_audit.py
+(none),no test,src/mlwx/__init__.py (no code to test)

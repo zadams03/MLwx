@@ -1,0 +1,26 @@
+Session 120: project health check, audit part 1 (the code)
+
+Records D114 (owner decisions, planning chat): F162 accepted; the layout
+baseline for the health check is D91.3, which replaced D90.5, so D109.8 is
+answered as a reading; the health check's plan (session 120 audits the
+code, session 121 the record, then fix sessions, README last); the audit's
+read-only limits, network and register format.
+
+Records F163: a routine, read-only audit of MLwx and MLwx-live. Nothing was
+fixed. The register has 55 rows: OK 31, cosmetic 8, stale 16, wrong 0,
+blocks 0. The layout matches D91.3, with every later item traced. The 48
+old-path files are all record files and text only. All frozen scripts with
+a recorded SHA-256 match it, and stage B's guard modes still run after the
+folder move. Of 77 check modes, 44 pass, 7 fail and 26 were not run (cache,
+network, 2026-27 or frozen). Every failure is a known or explained stale
+check: session 114's --verify (IFS still pending in its template), sessions
+92, 95 and 96's gates (D98.2), session 117's --verify, session 63's join
+check (F108) and session 91's gate (needs its test chunk). MLwx-live's
+workflow matches the template; its READMEs are stale; six actions need
+Node.js 24 majors. T5's two extra fetches show no fault mark. The fixes are
+grouped into proposed sessions in the output file.
+
+New files: scripts/session120_audit.py, data/processed/session120_audit/,
+notes/session-120-output.txt, notes/session-120-register.csv,
+docs/sessions/session-120.md and this message. DECISIONS.md and STATUS.md
+updated; nothing archived (DECISIONS.md 74,992 bytes).
