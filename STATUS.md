@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 19 October 2026, after session 118._
+_Last updated: 20 October 2026, after session 119._
 
 ---
 
@@ -25,15 +25,13 @@ the daily maximum (D82.2).
   E1 to E16 (IFS in E10 to E16) and the candidates for later. Spent by these
   scores (D107.3, D108.5, D111.6): AIFS's and IFS's test years at the 12
   airports; NBM's, NBS's and MAV's at their airports.
-- **ECMWF IFS (D111, F160).** The owner's hand pull was checked (every
-  file, count and gap reconciled; 87 HTTP 503 retries, no chunk written
-  twice). The curve beats IFS at 12 of 12 airports hourly (claim airports
-  +6.3 % EDDM to +32.1 % ZGSZ) and for the daily maximum (IFS's 3-hourly
-  steps, D111.4; claim +12.5 % EDDM to +50.0 % NZWN); Benjamini-Hochberg
-  rejects at 12 of 12 in both families. IFS changes no standing in the field
-  guide. mx2t3, on the days it exists, beats IFS's step maximum at 12 of 12
-  and loses to the curve at 10 of 12 (descriptive, computed by
-  `scripts/session117_ifs_guide.py --subset`).
+- **ECMWF IFS (D111, F160; closed by D113, F162).** The curve beats IFS at
+  12 of 12 airports hourly and for the daily maximum (IFS's 3-hourly steps,
+  D111.4). IFS changes no standing in the field guide. The reading check
+  (D113.6, F162): no fault mark shows at any of five tests (height,
+  position, timing, product changes, decoding), so IFS's cold error is
+  recorded as the model's, as read under D108.3, and F160 stands. The
+  mx2t3 rerun is dropped (D113.5).
 - **Observation plausibility check (D109, D110, F158, F159): done.** No
   cleaning rule is adopted for the historical observations (D111.2). A
   spike and range guard for live observations comes later, as a stage G
@@ -41,15 +39,16 @@ the daily maximum (D82.2).
   it acts on any value (D110.7).
 - **Stage G, live product v1: live with 49 airports (D105.2, D105.3,
   F154.2).** Public repo zadams03/MLwx-live, page at
-  https://zadams03.github.io/MLwx-live/. Deployed: MLwx `d6ca3e4`, models
-  `gfs-models-49`, one hourly schedule (:40 UTC). Audited to 2026-10-19
-  (F161): no cycle lost, no silent push failure, one stale checkout on
-  17 Oct that pushed nothing; GitHub ran 39 of 150 schedule slots, issue
-  lag median 5.6 h. **Fixes in the template, awaiting the owner's redeploy
-  (D112.6, D112.8):** checkout of the latest main, a push that fails the
-  job unless it lands, no "latest only" input, schedule :15 and :40.
-- **A pre-registered test of the live forecasts (D105.5).** Locked. No
-  accuracy figure is computed or shown until its look (D103.2, D105.6).
+  https://zadams03.github.io/MLwx-live/. Redeployed by the owner on
+  2026-10-20 (D113.2): MLwx-live commit `0d77fb0`, the workflow copied
+  whole from the template (checkout of the latest main, a push that fails
+  the job unless it lands, no "latest only" input, schedule :15 and :40),
+  with MLwx `d6ca3e4` and models `gfs-models-49` unchanged; manual run
+  39488813037 green and its push landed. Audited to 2026-10-19 (F161): no
+  cycle lost, no silent push failure.
+- **A pre-registered test of the live forecasts (D105.5, amended by
+  D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
+  shown until its look (D103.2, D105.6).
 - Stages D, E, F and H follow stage G.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
@@ -59,21 +58,19 @@ the daily maximum (D82.2).
 
 ## Open questions (live)
 
-- **F160's readings (F160.9).** IFS read this way runs cold (mean error
-  +0.39 to +1.15 C at 10 of 12 airports), and its 0.4 degree months with no
-  height treatment are far worse at KRNO and KSFO; part of its deficit may
-  be the open-data product and the reading method (not examined). Raw GFS's
-  MAE is below IFS's at 5 of 12 hourly and 8 of 12 for the maximum.
-- **An mx2t3 rerun (F160.9(3)).** mx2t3 failed the pull's identity check
-  from 2025-02-25T06Z to 2026-02-11T06Z (GRIB short name `max_2t`; whether
-  it is the same quantity was not checked). A rerun would add about 350
-  days; it needs its own entry, since it changes session 113's check.
+- **F162's readings (F162.9).** No reading fault was found. IFS is coldest
+  in the evening and at night and least cold near local midday; its
+  elevation treatment reduces the cold error rather than causing it. T5
+  checked one message on the main 0.25 degree grid; two more fetches would
+  cover that grid's first and last 00z dates, if the owner wants them.
+  Session choices where D113.6 was open (T4's 20-day window and its
+  reading of "no step") are listed in `notes/session-119-output.txt`.
 - **F161's readings (F161.10).** Every run commits (the state's
   `last_run`), so overlapping runs always conflict on the state file;
   six actions are forced from Node.js 20 to 24; `setup-python` "3.12"
   floats (runs used 3.12.15). Whether the :15 and :40 schedule shortens
-  the issue lag is seen after the redeploy; an outside scheduler only if
-  it does not (D112.6(d)).
+  the issue lag is seen now that the redeploy is done; an outside
+  scheduler only if it does not (D112.6(d)).
 - **Tests in the venv (F161.1).** `pytest` is not in `.venv`; the suite
   runs as `python3 -m unittest discover -s tests` (181 tests). The health
   check (D112.2) may record this.
@@ -112,17 +109,12 @@ the daily maximum (D82.2).
 - **Recorded values in scripts (D98.2).** Held as constants and checked by
   a test, never found by searching DECISIONS text.
 - **Laptop sleep (D86.5)**: unchanged.
-- **Until the redeploy (D112.8):** no manual run of MLwx-live between :35
-  and :55 past the hour, and "latest only" left unticked. At the redeploy
-  the owner copies the whole template with `MLWX_COMMIT` and `MODELS_TAG`
-  unchanged (`d6ca3e4...`, `gfs-models-49`).
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 118 and commit; then the owner
-redeploys MLwx-live from the template (D112.8), one step at a time. Then
-D112.2's order: the IFS close-out (the reading-fault check and the mx2t3
-rerun), the project health check (audit, then fixes, ending with the
-README update), then the longer-term plan.
+**Next planning session:** Review session 119 and commit. If F162 shows a
+fault mark, the owner rules under D112.3 first. Then the project health
+check's audit (D112.2 item 3), then its fixes, ending with the README
+update.

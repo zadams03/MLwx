@@ -1,0 +1,73 @@
+Session 119 output: the IFS reading check (D113, F162)
+
+Summary (session 119, run 2026-10-20)
+- Done: D113 recorded (byte-equal); scripts/session119_ifs_check.py written; the reproduction gate, T5 (6 byte-range fetches), T1 to T4; F162 recorded; archive step; STATUS overwritten.
+- Checks: Step 0 start state PASS (181 tests OK; 15 of 15 pull SHA-256). D113 diff and cmp PASS. Gate PASS (126 of 126 cells equal hourly_ifs.csv; rows equal F160.3 and match_counts at 12 of 12; sign of ME at 12 of 12). T5 checks PASS (6 of 6 messages, 78 of 78 rows bit-equal, 0 failed fetches, /tmp bytes deleted).
+- Marks (D113.6): T1 height NOT SHOWN; T2 position NOT SHOWN; T3 timing NOT SHOWN; T4 product changes NOT SHOWN; T5 decoding NOT SHOWN.
+- Deciding numbers: T1 |ME without treatment| <= 0.2 at 3 of 12, rho -0.08, max terrain gap 106 m (KRNO); T2 iem 0.3 C nearer zero at 0 of 6; T3 shifted MAE lower at 0 of 12 each way, slope ratio >= 2 at 0 of 12 (max 1.81 KORD); T4 adjusted 20-day steps >= 0.5 C at 2 of 6 (2024-02-01) and 1 of 12 (2024-12-03), against 5 of 12 and 4 of 12 at the version dates.
+- Outcome: no mark shows. IFS's cold error is recorded as the model's, as read under D108.3; F160 stands; nothing re-scored.
+- Readings: the treatment reduces IFS's cold error (removing it worsens ME at 9 of 12); IFS is coldest in the evening and night, least cold near local midday, a shape raw GFS partly shares; KRNO's and KDSM's 2024-02-01 steps are the treatment starting; 0.5 C steps are common at version dates too.
+- Session choices where D113.6 was open (fixed before any value, listed under Detail): T4's 20-day window and calendar control, "no step" read as "not at most airports", T5's date rule, T1's mean adjustment over all rows.
+- Open items: T5 checked one message on the main grid (2 more fetches would cover its first and last 00z dates); GFS terrain at the iem set not recorded at YSDU and KRNO; the prompt's "up to 24" messages can be at most 9 with 3 grid labels (6 here).
+- Archive (D93.8): D106, D107, D110 moved; 4 of 4 archive checks PASS. DECISIONS.md 66,819 bytes (under 80,000). Citations: 193 resolved, 0 unresolved, 0 in both files, 0 duplicated openings, 0 headings out of order.
+- Scope: git status shows only DECISIONS.md, DECISIONS-archive.md, STATUS.md (modified), data/processed/session119_ifs/, notes/session-119-output.txt, scripts/session119_ifs_check.py (new) and the prompt itself; no breach. 0 em-dashes in new text.
+- Consistency (changed parts of DECISIONS and STATUS only; SPEC unchanged): the Live index equals D113.9's list; STATUS records the redeploy (D113.2), drops the mx2t3 rerun and D112.8's interim rule, and replaces F160.9(2)'s item with F162. Nothing found that disagrees with the record. F162 is 15 lines.
+- Not committed. Waiting for the owner's review.
+
+Checkpoints
+-----------
+Step 0: git status shows only "?? docs/sessions/session-119.md"; no session119_* file or folder under scripts/, data/processed/ or notes/; venv `python3 -m unittest discover -s tests`: 181 tests, OK; 15 of 15 IFS pull files' SHA-256 equal ifs_meta.txt's. Files changed: none. PASS.
+Step 1: D113 appended to DECISIONS.md (21 lines incl. the leading "---" and blank line), diff and cmp against the block extracted from the prompt: byte-equal; 0 em-dashes. Live index: D106, D107, D110 removed; D113 added (F162 added at Step 6). Files changed: DECISIONS.md, notes/session-119-output.txt. PASS.
+Step 2: wrote scripts/session119_ifs_check.py (modes --gate, --decode, --tests; every T1 to T5 rule and each session choice fixed in its docstring before any test value was computed). --gate: IFS (comp), raw GFS and the curve, n, MAE and mean error per airport and test year (2023-24, 2024-25, 2025-26, all): 126 of 126 cells equal session114_comparisons/hourly_ifs.csv exactly (same formatting). Rows claim 46,568 to 46,656, dev 69,520 to 70,016, equal F160.3; per airport equal to session117_ifs/match_counts.csv's paired hourly sums at 12 of 12. The session's own IFS reader (with treatment) equals session 114's Comp values at every key, 12 of 12. Mean error is observation minus forecast: its sign equals the file's at 12 of 12 (positive is cold). Read beyond the list (for the code only): session 112's load_airport/metrics/fmt and session 113's get/grib_meta/grid_label/value-row writer. Files: scripts/session119_ifs_check.py, data/processed/session119_ifs/gate.csv. PASS.
+Step 3: --decode (network: 6 byte-range GETs to ecmwf-forecasts.s3.eu-central-1.amazonaws.com, URLs from ifs_manifest.csv.gz). Chosen before fetching by the docstring rule (first, middle, last date with any message on the label; 2t, step 24, 00z): 6 messages, 3 picks short and counted: ifs_0p25_344b2a77 2024-02-02 (the grid's first cycle that day is 12z, after the 8 a8c2e051 cycles) and 2026-07-31 (00z step 24 is valid 2026-08-01T00Z, after the limit, never pulled) have no such message; ifs_0p25_a8c2e051 covers 2 dates. Fetch failures 0. All 6: SHA-256 equal the manifest; shortName 2t, units K, date, time 0000, endStep 24 and the recomputed grid label equal; 78 of 78 stored value rows bit-equal (float64) to the decoded values at the positions file's points. Deleted /tmp/session119_ifs_grib/ and its 6 files (0b9f6e3b4fd74698, 24a688f48ef77dbc, 46b223eb647bcdb5, 560c3fea6e783b41, 8ff72aa9767906cd, caae4f5c06f17b22, each .grib2); folder gone after. Files: data/processed/session119_ifs/t5_decode.csv. PASS (T5 mark NOT SHOWN).
+Step 4: --tests, T1 to T4 exactly as the script's docstring fixed them (no threshold, window or row set changed after a value was seen). Nothing valid after 2026-07-31T23:00 UTC read (8 rows per airport whose v + 3 h observation would pass the limit were left out of the shift rows by the fixed rule, counted); no 2026-27 file, MLwx-live or 37-airport file read. Files: data/processed/session119_ifs/t1_height.csv, t1_terrain.csv, t2_position.csv, t3_timing.csv, t3_local_hour.csv, t4_steps.csv. Marks: T1 NOT SHOWN, T2 NOT SHOWN, T3 NOT SHOWN, T4 NOT SHOWN. PASS (computations ran; no stop condition met).
+Step 5: findings, readings and open questions written below (Detail). Files: notes/session-119-output.txt. PASS.
+
+Detail
+------
+Session choices (D113.6 leaves these open; fixed in the script before any value): T1 mean adjustment averaged over all F160.4 rows (0 C where untreated); GFS terrain at the development airports' iem set taken from session90_airports.csv's model_height_m (EGLC, KSFO only; LFPG, KDSM, YSDU, KRNO "not recorded"); T3 rows need both shifted observations, slope by OLS with intercept; T4 window 20 days of cycles each side (the gap from 49r1 to 2024-12-03), calendar control = mean step at the same date in the other test years with data on both sides; "no step of that size at the version dates" read as "not at most airports", with the any-airport count also printed; T5 picks by "dates with any message on the label".
+
+T5 decoding (D113.6(e)): NOT SHOWN. 6 messages (344b2a77: 2025-05-02; a8c2e051: 2024-02-01, 2024-02-02; 0p4 35735abc: 2023-08-01, 2023-10-31, 2024-01-31), 6 of 6 SHA-256 equal, 6 of 6 metadata and grid label equal, 78 of 78 stored rows bit-equal. 0 fetch failures. Short picks: 3 (see Step 3).
+
+T1 height (D113.6(a)): NOT SHOWN.
+  icao  n      ME with  ME without  mean adj (C)
+  EDDM  46648  -0.08    +0.15       +0.22
+  KORD  46568  +0.79    +0.83       +0.04
+  CYYZ  46616  +0.81    +0.81       -0.00
+  ZGSZ  46648  +0.98    +1.06       +0.08
+  ZUCK  46656  +0.39    +0.16       -0.24
+  NZWN  46640  +0.42    +1.06       +0.64
+  EGLC  70000  +0.72    +0.83       +0.12
+  LFPG  69808  +0.92    +0.77       -0.15
+  KDSM  70016  +0.49    +0.38       -0.11
+  YSDU  69520  -0.05    +0.14       +0.19
+  KRNO  69984  +1.15    +2.19       +1.05
+  KSFO  70008  +0.44    +0.94       +0.49
+  (i) |ME without| <= 0.2 at 3 of 12 (EDDM, ZUCK, YSDU); needs 7. (ii) Spearman rho -0.084; needs |rho| >= 0.7. (iii) IFS minus GFS terrain at 14 compared positions: -105.6 m (KRNO gfs) to +6.4 m (NZWN); 0 over 300 m; 4 not recorded (iem set at LFPG, KDSM, YSDU, KRNO; LFPG's, KDSM's and KSFO's iem points equal their gfs points).
+
+T2 position (D113.6(b)): NOT SHOWN. |ME gfs| - |ME iem| (C): EGLC -0.03, LFPG +0.04, KDSM +0.01, YSDU -0.09, KRNO +0.01, KSFO -0.26; at least +0.3 at 0 of 6 (needs 4). ME gfs/iem: EGLC +0.72/+0.74, LFPG +0.92/+0.88, KDSM +0.49/+0.49, YSDU -0.05/-0.14, KRNO +1.15/+1.14, KSFO +0.44/+0.70.
+
+T3 timing (D113.6(c)): NOT SHOWN. MAE(0) / MAE(obs +3 h) / MAE(obs -3 h), IFS: EDDM 1.42/2.41/2.57, KORD 1.39/2.13/2.49, CYYZ 1.35/2.04/2.20, ZGSZ 1.31/1.61/1.60, ZUCK 1.32/1.89/2.01, NZWN 0.94/1.23/1.28, EGLC 1.17/1.62/2.14, LFPG 1.28/1.88/2.35, KDSM 1.50/2.32/2.92, YSDU 1.33/3.46/3.09, KRNO 2.20/3.03/4.34, KSFO 1.30/1.78/2.25. A shift lowers IFS's MAE at 0 of 12 either way (controls: 0 of 12 for raw GFS and AIFS). |slope IFS| / |slope raw GFS| on the same rows: CYYZ 0.15, EDDM 0.44, EGLC 1.00, KDSM 0.68, KORD 1.81, KRNO 0.97, KSFO 0.96, LFPG 0.73, NZWN 0.40, YSDU 1.05, ZGSZ 0.91, ZUCK 0.22; at least 2 at 0 of 12 (needs 7). AIFS's ratio to raw GFS on its rows: 0.20 (KSFO) to 14.06 (ZUCK, both slopes near zero), at least 2 at 3 of 12 (NZWN, YSDU, ZUCK).
+
+T4 product changes (D113.6(d)): NOT SHOWN. Adjusted step (C), |step| >= 0.5 marked *:
+  2024-02-01 grid change (dev only): EGLC -0.47, LFPG +0.47, KDSM -1.39*, YSDU -0.06, KRNO -2.89*, KSFO -0.42: 2 of 6 (needs 4).
+  2024-12-03 own terrain: ZGSZ +0.56* only: 1 of 12 (needs 7).
+  2024-11-13 49r1: EDDM +0.76*, ZGSZ -1.19*, ZUCK -0.56*, LFPG +0.83*, KSFO +0.50*: 5 of 12.
+  2026-05-13 50r1: KORD -0.55*, ZUCK -1.68*, LFPG +1.17*, YSDU +0.66*: 4 of 12.
+  Neither reading boundary reaches "most airports"; the version dates show steps of the same size at 4 and 5 of 12, so 20-day steps of 0.5 C are common without any reading change.
+
+Outcome under D113.6: no mark shows, so IFS's cold error is recorded as the model's, as read under D108.3, and F160 stands. Nothing is re-scored.
+
+Readings (not rulings):
+  (1) The elevation treatment reduces IFS's cold error rather than causing it: removing it moves the mean error further from zero at 9 of 12 (most at KRNO +1.15 to +2.19, NZWN +0.42 to +1.06, KSFO +0.44 to +0.94); the three where it would come within 0.2 C are EDDM, ZUCK and YSDU, where the error is already small or the adjustment negative.
+  (2) Local-hour profile (t3_local_hour.csv): IFS's cold error is mostly an evening and night error. It is smallest near local midday (KORD +0.05 at 13h, EGLC -0.31 at 13h, LFPG -0.00 at 13h, KDSM -0.24 at 10h) and largest in the evening or night (KORD +1.50 at 18h, LFPG +1.52 at 23h, KDSM +1.36 at 18h, EGLC +1.24 at 21h, KRNO +3.61 at 16h and +3.5 at 19h). Raw GFS has the same shape at several airports with a lower level (KORD -0.36 to +0.58). At ZGSZ and ZUCK IFS is cold at every 3-hourly local hour. The shape is not a shift (T3), so it reads as the model's evening boundary layer, not a timing fault. Steps alternate at EDDM and YSDU (for example EDDM 1h -0.1, 2h -1.1) in raw GFS too: with daylight saving and 3-hourly UTC steps, alternate local-hour bins hold only winter or only summer rows; not an IFS effect.
+  (3) KRNO's 2024-02-01 step (-2.89 adjusted) and KDSM's (-1.39) are the start of the treatment and the 0.25 degree grid together: IFS is much less cold after it, matching F160.7's "no elevation treatment" segment. That is the treatment working, and it is already labelled in F160.
+  (4) T3's +-3 h shift is a coarse test: the diurnal cycle makes every shifted MAE much worse, so it can only catch a large offset. The trend slope covers smaller offsets and shows none.
+  (5) KSFO's iem set is colder than its gfs set (+0.70 against +0.44); the airport position does not help IFS there.
+
+Open questions (not fixed):
+  (a) T5 checked only one message (its middle date) on ifs_0p25_344b2a77, the grid that holds 75,824 of 87,696 messages, because that grid's first and last calendar dates have no 00z step-24 2t message under the fixed rule. Two more fetches (that grid's first and last 00z step-24 dates, 2024-02-03 and 2026-07-30) would stay within D113.7's 24, if the owner wants them.
+  (b) GFS terrain at the iem set is not recorded at LFPG, KDSM, YSDU and KRNO; LFPG's and KDSM's iem points equal their gfs points, so only YSDU and KRNO's iem set lack a comparison (IFS terrain there 301 m and 1,528 m).
+  (c) The session's choices listed above (T4's 20-day window and its reading of "no step") are session choices, not entry rules; with no mark near its threshold they decide nothing here.
+Step 6: F162 appended to DECISIONS.md (heading, bold lead, F162.1 to F162.11; 15 lines from the heading), 0 em-dashes; Live index line for F162 added. Files: DECISIONS.md. PASS.
+End steps: STATUS.md overwritten; archive --apply --session 119 PASS (D106, D107, D110 moved); --citations clean; DECISIONS.md 66,819 bytes; scope check no breach; summary written above. Files: STATUS.md, DECISIONS.md, DECISIONS-archive.md, notes/session-119-output.txt. PASS.

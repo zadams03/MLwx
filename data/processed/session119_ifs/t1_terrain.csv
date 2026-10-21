@@ -1,0 +1,19 @@
+icao,position_set,grid,ifs_terrain_m,gfs_terrain_m,difference_m,gfs_terrain_source,abs_diff_gt_300
+EDDM,iem,ifs_0p25_344b2a77,477.2030203507923,481.8464380945278,-4.643417743735483,data/processed/session90_airports.csv,no
+KORD,iem,ifs_0p25_344b2a77,210.35961813845745,212.38266163040038,-2.0230434919429285,data/processed/session90_airports.csv,no
+CYYZ,iem,ifs_0p25_344b2a77,172.77788491506288,178.9316799185282,-6.153795003465319,data/processed/session90_airports.csv,no
+ZGSZ,iem,ifs_0p25_344b2a77,12.094182753815101,20.864645310582418,-8.770462556767317,data/processed/session90_airports.csv,no
+ZUCK,iem,ifs_0p25_344b2a77,319.25767065588064,317.06980699999934,2.1878636558813014,data/processed/session90_airports.csv,no
+NZWN,iem,ifs_0p25_344b2a77,85.5368938360658,79.16768573279572,6.369208103270083,data/processed/session90_airports.csv,no
+EGLC,gfs,ifs_0p25_344b2a77,23.21443142536063,37.47,-14.25556857463937,data/raw/diagnostics/session37/session37_elevation_correction_params.csv,no
+EGLC,iem,ifs_0p25_344b2a77,19.031729546939903,33.30983259999985,-14.278103053059947,data/processed/session90_airports.csv model_height_m,no
+LFPG,gfs,ifs_0p25_344b2a77,85.28290047442286,86.15,-0.8670995255771459,data/raw/diagnostics/session37/session37_elevation_correction_params.csv,no
+LFPG,iem,ifs_0p25_344b2a77,84.5129307090085,,,not recorded,no
+KDSM,gfs,ifs_0p25_344b2a77,266.4902897402786,270.11,-3.619710259721387,data/raw/diagnostics/session37/session37_elevation_correction_params.csv,no
+KDSM,iem,ifs_0p25_344b2a77,268.6811672423809,,,not recorded,no
+YSDU,gfs,ifs_0p25_344b2a77,310.04907001244,312.12,-2.070929987560021,data/raw/diagnostics/session37/session37_elevation_correction_params.csv,no
+YSDU,iem,ifs_0p25_344b2a77,300.867966771274,,,not recorded,no
+KRNO,gfs,ifs_0p25_344b2a77,1513.517027877766,1619.08,-105.56297212223399,data/raw/diagnostics/session37/session37_elevation_correction_params.csv,no
+KRNO,iem,ifs_0p25_344b2a77,1528.289166124782,,,not recorded,no
+KSFO,gfs,ifs_0p25_344b2a77,80.9427669935699,94.47,-13.527233006430095,data/raw/diagnostics/session76/session76_elevation_correction_params.csv,no
+KSFO,iem,ifs_0p25_344b2a77,61.343156209950294,74.91462346771328,-13.57146725776299,data/processed/session90_airports.csv model_height_m,no

@@ -1,0 +1,28 @@
+Session 119: the IFS reading check, no fault found (D113, F162)
+
+D113 records the owner's decisions after session 118 and the redeploy:
+F161 accepted; the redeploy (MLwx-live 0d77fb0, MLWX_COMMIT and
+MODELS_TAG unchanged, manual run 39488813037 green, push landed); the
+ruling that the doubled 2026-10-17T18z issue has no effect on the live
+test (only the first-issued file exists); D112.6 named as amending D105.2
+and D105.4; the mx2t3 rerun dropped (F160.9(3) closed); and the IFS
+reading check, with each test's fault mark fixed before any value was
+seen. D106, D107 and D110 are archived.
+
+F162 checks whether IFS's cold error (F160.4) comes from how the open
+data was read. A reproduction gate first matched session 117's figures in
+126 of 126 cells. No fault mark shows in any of the five tests:
+- T1 height: the elevation treatment reduces IFS's cold error, it does
+  not cause it; no terrain gap over 300 m.
+- T2 position: the airport's own position changes nothing material.
+- T3 timing: a 3 h shift worsens IFS's MAE at 12 of 12 either way.
+- T4 product changes: no step at the grid or terrain dates at most
+  airports; steps of similar size occur at model-version dates.
+- T5 decoding: 6 messages re-fetched by byte range, SHA-256 equal to the
+  manifest, 78 of 78 stored values bit-equal.
+IFS's cold error is recorded as the model's, as read under D108.3; F160
+stands and nothing is re-scored. Descriptive only, on spent years.
+
+New: scripts/session119_ifs_check.py, data/processed/session119_ifs/,
+notes/session-119-output.txt, docs/sessions/session-119.md. Edited:
+DECISIONS.md (66,819 bytes), DECISIONS-archive.md, STATUS.md.
