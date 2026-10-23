@@ -1,16 +1,17 @@
 # tests/: quick offline checks (DECISIONS D90.12, D95.8)
 
 These tests use Python's standard `unittest`, plus the packages the project
-already has installed. Nothing new is installed.
+already has installed. pytest is not installed, and the suite stays on
+unittest (D116.2). Nothing new is installed.
 
 Run them from the repo root:
 
 ```
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
+.venv/bin/python -m unittest discover -s tests
 ```
 
 They make no network call, never write inside the repo (only to temporary
-folders, deleted after), and finish in seconds.
+folders, deleted after), and finish in under a minute.
 
 ## What they cover
 

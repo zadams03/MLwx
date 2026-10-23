@@ -51,7 +51,10 @@ INDEX_RE = re.compile(r"^- ([DF]\d+):")
 # a longer word or number (so 'FY27' and hex strings do not match).
 CITE_RE = re.compile(r"(?<![A-Za-z0-9_])([DF])(\d+)(?:\.\d+)?(?![A-Za-z0-9_])")
 DATED_RE = re.compile(r"^## (\d{4}-\d{2}-\d{2})")
-CITING_FILES = ["SPEC.md", "STATUS.md", "CLAUDE.md", "DECISIONS.md", "RESULTS.md"]
+CITING_FILES = ["SPEC.md", "STATUS.md", "CLAUDE.md", "DECISIONS.md", "RESULTS.md",
+                # D116.5: also ANALYSIS.md, the READMEs and the planning chat's guide.
+                "ANALYSIS.md", "README.md", "scripts/README.md", "data/README.md", "docs/README.md",
+                "notes/README.md", "tests/README.md", "docs/PROJECT-INSTRUCTIONS.md"]
 
 
 def sha(data):

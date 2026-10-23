@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 21 October 2026, after session 121._
+_Last updated: 22 October 2026, after session 122._
 
 ---
 
@@ -38,13 +38,16 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   :15 and :40. Audited to 2026-10-21T06z (F161, F163.8): no cycle lost;
   the one cycle issued twice (2026-10-17T18z) left only its first file on
   main, which the live test scores (D113.3).
-- **Project health check (D112.2 item 3, D114, D115).** Both audits are
-  done, nothing fixed. Session 120, the code (F163): 55 rows, none wrong
-  or blocking. Session 121, the record (F164): 109 rows
-  (`notes/session-121-register.csv`), OK 63, cosmetic 17, stale 28, wrong
-  1 (RM05: README's data credits), none blocking. Next: fix sessions
-  planned from both registers (F163.10, F164.9), each with its own entry;
-  the README update last (D115.7).
+- **Project health check (D112.2 item 3, D114, D115, D116).** Both
+  audits are done: session 120, the code (F163, 55 rows); session 121, the
+  record (F164, 109 rows, one wrong: RM05, README's data credits). Fix
+  groups (1) code and (2) session 114's outputs are done (D116, F165), and
+  group (8) by the owner (D116.1). Session 114's field guide is now
+  rendered and checked by `scripts/session122_analysis.py` (IFS included,
+  IFS figures `figures/analysis/comparison_*_s122.svg`); the gates of
+  sessions 92, 95 and 96 run from `scripts/session122_gates.py`. Next: the
+  remaining fix sessions, each with its own entry; the README update last
+  (D115.7).
 - **SPEC 3.4's span (S05, D115.4).** Lines 252 to 283, SHA-256
   `a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9`.
   Every later SPEC edit checks the span is unchanged.
@@ -63,34 +66,30 @@ that corrects every GFS run into an hourly curve plus the daily maximum
 
 ## Open questions (live)
 
-- **The fix-session grouping (F163.10, F164.9).** F163's groups (1) code
-  and D98.2 constants, (2) session 114's outputs, (3) MLwx-live, (4) cache
-  checks, (5) rulings only, (6) README last; with F164's rows added, and
-  three new groups: (7) the record text (SPEC, RESULTS, CLAUDE,
-  PROJECT-INSTRUCTIONS section 2, 4, 5, 9; STATUS at each overwrite); (8)
-  owner only: compare the Project copies' sizes of PROJECT-INSTRUCTIONS
-  (15,438 bytes), SPEC (79,467), CLAUDE (8,234) and RESULTS (53,023) and
-  re-upload any that differ (PK05 to PK08); (9) data credits (RM05):
+- **The remaining fix groups (F163.10, F164.9).** (3) MLwx-live: README,
+  actions, a Python pin and no last_run-only commits, with an entry under
+  D105.5(k) and a redeploy; (4) the cache checks, when the drive is
+  attached; (6) README last, with C11 (D116.9); (7) the record text (SPEC,
+  RESULTS, CLAUDE with D116.2's test command (CL05), PROJECT-INSTRUCTIONS
+  section 2, 4, 5, 9; STATUS at each overwrite); (9) data credits (RM05):
   `data/processed/session113/` commits ECMWF IFS and AIFS, NBM grid, NBS,
   MAV, CLI and GHCN-Daily values, and README section 9 says no ECMWF data
   is committed; the terms need a session allowed the network.
-- **Rulings named by F164 (group 5).** Is the goal still "private" (SP05,
+- **Rulings still open (group 5).** Is the goal still "private" (SP05,
   ST02, RM02)? A SPEC section for stage G, or a note that its design stays
   in DECISIONS (SP07)? A SPEC pointer to ANALYSIS.md (SP08)? The size
-  rule's unit, since the Project's reported size is not bytes and the
-  eight files total 1,898,480 bytes (PI07, PK10)? A test command in
-  CLAUDE.md after T02 (CL05)? An archive header line on its order (DE03)?
-- **F163.11's readings.** Session 96's `--gate` and session 117's
-  `--verify` cannot be re-run as they stand. Session 63's two check
-  scripts rewrite their committed notes outputs when run. Session 109's
-  Gate A takes 29.4 min.
+  rule's unit, since the Project's reported size is not bytes (PI07,
+  PK10)? An archive header line on its order (DE03)? Session 86's gate
+  (S06)? The outside scheduler (D112.6(d))?
+- **Readings carried (F163.11, F165.11).** Session 63's two check scripts
+  rewrite their committed notes outputs when run. Session 109's Gate A
+  takes 29.4 min. Under D116.10 a fix to a script whose SHA-256 is
+  recorded goes in a new script; the session 120 audit inventory
+  (`scripts.csv`) was not counted as such a record. Session 117's
+  `--subset` stops if session 114's script changes, by design.
 - **Issue lag after the redeploy (F163.8).** About one day of the :15 and
   :40 schedule: too little to judge; re-measured in the MLwx-live fix
   session (D115.7, D112.6(d)).
-- **Session 114's own checks after IFS (F160.9(4), F163.7).** `--verify`
-  fails on Part 1; `part1.md` and `part2_comparisons.md` out of date; no
-  IFS figure. ANALYSIS.md does not state IFS's cold reading or F162's
-  outcome (F164 row AN05). Fix groups (1) and (2).
 - **A candidate for the longer-term plan (D115.6).** Does the curve's
   correction for a valid hour predict raw GFS's revision for that hour in
   the next cycle? Descriptive, on spent stage C rows, with its rows,
@@ -118,10 +117,16 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   edited.
 - **Recorded values in scripts (D98.2).** Held as constants and checked by
   a test, never found by searching DECISIONS text.
+- **Recorded fingerprints (D116.10).** A script whose SHA-256 is recorded
+  by another script, test or meta file is not edited; a fix goes in a new
+  script that imports it. The eight frozen scripts' SHA-256 are checked by
+  `tests/test_frozen_scripts.py` (D116.4).
+- **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
+  185 tests.
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 121 and commit; then plan the first fix session from both registers (F163.10 and F164).
+**Next planning session:** Review session 122 and commit; then plan the next fix session (groups 3, 7 or 9).

@@ -19,10 +19,12 @@ Modes (docs/sessions/session-117.md, Steps 4 and 5):
              sentences, the 24 "pending (D108.2)" cells of Tables 2a and 2b, item 4's two formal-test lines,
              Part 2's "ECMWF IFS: pending (D108.2), not pulled yet." phrase (line 5 and that phrase by the
              owner's ruling), and new Tables E10 onward after Table E9. Runs only on the committed text.
-  --verify   Re-renders from the committed ANALYSIS.md (git HEAD) and compares with the file (text identical,
-             number tokens equal); checks each IFS cell of Tables 2a and 2b and each pooled row of Tables E11
-             and E13 against its table independently; counts em-dashes in the edited text; lists every
-             changed line of the diff against HEAD by kind and fails on any other change.
+  --verify   Re-renders from ANALYSIS.md at session 117's parent commit (5df783a^) and compares with the
+             file as session 117 committed it (5df783a; session 122, C09: it rebuilt from HEAD before, so it
+             could not be run again after the commit) (text identical, number tokens equal); checks each IFS
+             cell of Tables 2a and 2b and each pooled row of Tables E11 and E13 against its table
+             independently; counts em-dashes in the edited text; lists every changed line of the diff against
+             the parent by kind and fails on any other change.
 
 No figure is made (session 114's figures exclude IFS). No em-dashes in any text here (D76.6).
 """
@@ -575,6 +577,15 @@ def git_head_analysis():
     return subprocess.run(["git", "show", "HEAD:ANALYSIS.md"], cwd=ROOT, check=True, capture_output=True).stdout.decode()
 
 
+# Session 117's own commit, and its parent (C09, D116.6): --verify re-renders from the parent's ANALYSIS.md and
+# compares with the file as session 117 committed it, so it can be run again after later sessions edit the file.
+S117_COMMIT = "5df783a"
+
+
+def git_analysis_at(rev):
+    return subprocess.run(["git", "show", f"{rev}:ANALYSIS.md"], cwd=ROOT, check=True, capture_output=True).stdout.decode()
+
+
 def run_render(args):
     print(f"SESSION 117 --render (ANALYSIS.md from the IFS tables), start {now_utc()}")
     base = git_head_analysis()
@@ -597,16 +608,16 @@ NUM = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
 
 
 def run_verify(args):
-    print(f"SESSION 117 --verify (ANALYSIS.md's IFS edits against the tables and HEAD), start {now_utc()}")
-    base = git_head_analysis()
-    have = ANALYSIS.read_text(encoding="utf-8")
+    print(f"SESSION 117 --verify (ANALYSIS.md's IFS edits against the tables and {S117_COMMIT}^), start {now_utc()}")
+    base = git_analysis_at(S117_COMMIT + "^")
+    have = git_analysis_at(S117_COMMIT)
     T = Tables()
     want = render_text(base, T)
     a, b = NUM.findall(have), NUM.findall(want)
     mism = sum(x != y for x, y in zip(a, b)) + abs(len(a) - len(b))
     ident = have == want
-    print(f"  (1) re-rendered from HEAD's ANALYSIS.md and the tables: text identical {ident}; number tokens in the "
-          f"file {len(a)}, re-rendered {len(b)}, mismatches {mism}")
+    print(f"  (1) re-rendered from {S117_COMMIT}^'s ANALYSIS.md and the tables, against {S117_COMMIT}'s: text "
+          f"identical {ident}; number tokens in the file {len(a)}, re-rendered {len(b)}, mismatches {mism}")
 
     # (2) independent cell checks
     bad, n = [], 0
@@ -649,7 +660,7 @@ def run_verify(args):
     for x in bad[:10]:
         print("      MISMATCH " + x)
 
-    # (3) the diff against HEAD, by kind; (4) em-dashes in the edited text
+    # (3) the diff against the parent, by kind; (4) em-dashes in the edited text
     bl, hl = base.split("\n"), have.split("\n")
     kinds, other, edited = {}, [], []
     sm = difflib.SequenceMatcher(a=bl, b=hl, autojunk=False)
@@ -683,7 +694,7 @@ def run_verify(args):
         if k == "other":
             other.append((tag, i1 + 1, i2, j1 + 1, j2))
         kinds[k] = kinds.get(k, 0) + n_lines
-    print("  (3) diff against HEAD, changed or inserted lines by kind: " + "; ".join(f"{k}: {v}" for k, v in sorted(kinds.items())))
+    print(f"  (3) diff against {S117_COMMIT}^, changed or inserted lines by kind: " + "; ".join(f"{k}: {v}" for k, v in sorted(kinds.items())))
     exp_kinds = {"header sentence (line 5)": 1, "item 1 sentence": 1, "Tables 2a and 2b pending cells": 24,
                  "item 4 formal-test lines": 2, "Part 2 intro phrase (line 812)": 1}
     diff_ok = not other and all(kinds.get(k) == v for k, v in exp_kinds.items()) and \
@@ -692,7 +703,7 @@ def run_verify(args):
         print(f"      other changes: {other[:10]}")
     em = sum(x.count(chr(0x2014)) for x in edited)
     print(f"  (4) em-dashes in the {len(edited)} edited or inserted lines: {em}; in the whole file {have.count(chr(0x2014))} "
-          f"(HEAD {base.count(chr(0x2014))})")
+          f"({S117_COMMIT}^ {base.count(chr(0x2014))})")
     ok = ident and mism == 0 and not bad and diff_ok and em == 0
     print(f"--verify: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 2

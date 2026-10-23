@@ -20,8 +20,10 @@ labelled so; model internals and drift by days since start are in Part 2 only.
 (SHA-256 of each in `analyse_meta.txt` and `contrib_meta.txt`). Figures: `figures/analysis/`. Regenerated
 predictions, references and observations: `../MLwx-stagec/analysis112/` (outside the repo; SHA-256 in
 `meta.txt` and `refs_meta.txt`). Full run log: `notes/session-112-output.txt`. Session 114: script
-`scripts/session114_comparisons.py`; tables `data/processed/session114_comparisons/` (Part 1 and the Part 2 section
-are rendered from them, `part1.md` and `part2_comparisons.md`); figures `figures/analysis/comparison_*.svg`; log
+`scripts/session114_comparisons.py`; tables `data/processed/session114_comparisons/` (Part 1 and the Part 2
+comparisons section are rendered from them and session 117's IFS tables by `scripts/session122_analysis.py`, as
+`part1_s122.md` and `part2_comparisons_s122.md`; the earlier `part1.md` and `part2_comparisons.md` are superseded,
+D116.6, see `SUPERSEDED.md` there); figures `figures/analysis/comparison_*.svg`; log
 `notes/session-114-output.txt`. Competitor values: `data/processed/session113/` (F156).
 
 **Words used here.** *Error* is observed minus forecast, in degrees C: a positive error means the forecast was
@@ -58,7 +60,7 @@ slightly. Ranges run across the six claim airports unless named. Per-airport det
 - **Against other forecasts (formal tests, item 4):** hourly, against AIFS the curve is better at NZWN, worse
   at KORD and not separated at the other 4 claim airports; at the development airports better at
   EGLC, LFPG, KRNO and worse at KDSM, YSDU. It beats MAV at 3 of 4 and loses to NBS, the NBM
-  station forecast, at 5 of 5. For the daily maximum it beats AIFS at 9 of
+  station forecast, at 5 of 5. Against the NBM grid it is better at 2 of 5 hourly and worse at 3, and better at 2 of 5 for the daily maximum (item 4; F157.3, F157.4). For the daily maximum it beats AIFS at 9 of
   12 (AIFS's maximum is the highest of four 6-hourly values; read at the same steps the curve's is
   worse at 6 of 12) and MAV at 4 of 4, and no test separates it from
   NBS at 5 of 5. Against ECMWF IFS it is better at 12 of 12 hourly and at 12 of 12 for the daily maximum (IFS's maximum: the highest of its 3-hourly steps, D111.4).
@@ -171,6 +173,7 @@ highest of its 6-hourly steps, NBM TMAX, NBS TXN, MAV X, windows as labelled in 
 - **Formal tests, daily maximum:** better than AIFS at 9 of 12, the NBM grid at
   2 of 5 (CYYZ, KSFO), NBS at 0 of 5, MAV at
   4 of 4, ECMWF IFS (the highest of its 3-hourly steps, D111.4) at 12 of 12; worse than no competitor at any airport.
+- **ECMWF IFS reads cold:** its hourly mean error is positive at 10 of 12 airports (F160.4), and the reading check found no fault, so the cold error is the model's own, not the reading's (F162.8).
 - **Read with care.** AIFS's maximum comes from 6-hourly steps; sampled at the same steps the curve's maximum is
   -41 % (EDDM) to +46 % (NZWN) against AIFS at the claim airports (worse at 6 of 12). At the development
   airports both AIFS and the NBM grid are read at GFS's own position (D108.3), not the airport's; that position's
@@ -215,8 +218,8 @@ of 4 airports.
   fixes most of it.
 - **What the comparisons add.** The NBM station forecast (NBS) has the smaller hourly error at 5 of
   the 5 airports it covers, so local station guidance holds information the curve does not use
-  (Part 3). Figures: `comparison_hourly_mae.svg`, `comparison_dailymax_mae.svg`, `comparison_skill.svg`,
-  `comparison_lead_band.svg`, `comparison_official_gap.svg`.
+  (Part 3). Figures: `comparison_hourly_mae_s122.svg`, `comparison_dailymax_mae_s122.svg`, `comparison_skill_s122.svg`,
+  `comparison_lead_band_s122.svg`, `comparison_official_gap.svg`.
 
 ---
 
@@ -971,7 +974,7 @@ Unpaired, all airports together: AIFS daily max, D98.10 days, cycle before the s
 | MAV | KSFO (dev) (sea) | 2025-26 | 21,806 | 1.06 [0.98, 1.16] | 1.00 [0.92, 1.09] | 1.35 | 1.12 | +5.8 [+1.6, +9.9] | -27.7 |
 | MAV | KSFO (dev) (sea) | all | 65,614 | 1.06 [1.02, 1.11] | 1.01 [0.97, 1.06] | 1.30 | 1.15 | +5.0 [+1.6, +8.1] | -22.1 |
 
-**Table E2b. Hourly skill of the curve against the competitor by lead band, percent [95 %]** (`hourly_<source>_breakdown.csv`; `comparison_lead_band.svg`).
+**Table E2b. Hourly skill of the curve against the competitor by lead band, percent [95 %]** (`hourly_<source>_breakdown.csv`; `comparison_lead_band_s122.svg`).
 
 | source | airport | 3-12 | 13-24 | 25-36 | 37-48 |
 |---|---|---|---|---|---|
@@ -1280,7 +1283,7 @@ Maximum fields and their windows: AIFS none (highest of its 6-hourly steps, labe
 
 Truth windows: CLI is midnight to midnight local standard time from continuous readings; the forecasts are for the civil local day. Every score against CLI is descriptive.
 
-**ECMWF IFS (session 117, D111).** Pulled by the owner by hand (D108.2, D111.3) and checked before any value was read (F160). Compared by session 114's script unchanged (D108.7, D111.5): `--match` in `data/processed/session117_ifs/`, `--hourly` and `--dailymax` in `data/processed/session114_comparisons/` (`*_ifs*.csv`), seed 114; the mx2t3 subset (Table E16) by `scripts/session117_ifs_guide.py --subset`, seed 117. Positions as raw GFS's (D108.3). Grids: 0.4 degree to 2024-01-31 and a 0.25 degree grid with Ni 1439 on 2024-02-01 and 02-02, both with no elevation treatment (development airports only, labelled "no elevation treatment"); 0.25 degree from 2024-02-03, adjusted for height as GFS is with IFS's 2024-12-03 terrain (labelled "terrain from a later date" from 2024-02-03 to 2024-12-02, "elevation-adjusted" after). Versions 48r1, 49r1 (from 2024-11-13), 50r1 (from 2026-05-13). Daily maximum (D111.4): primary the highest of IFS's 3-hourly steps inside the local day ("3-hourly steps"); mx2t3, the highest of its 3-hour windows wholly inside the local day, is descriptive and exists only from 2024-11-12 to 2025-02-25 and from 2026-02-11 (plus six cycles on 2024-09-17 and 18). Scoring IFS here spends its test years at these 12 airports (D111.6). Latency: ECMWF IFS: archive write time minus cycle, median 7.21 to 7.92 h over the cycle hours (range 6.45 to 37.31); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f)).
+**ECMWF IFS (session 117, D111).** Pulled by the owner by hand (D108.2, D111.3) and checked before any value was read (F160). Compared by session 114's script unchanged (D108.7, D111.5): `--match` in `data/processed/session117_ifs/`, `--hourly` and `--dailymax` in `data/processed/session114_comparisons/` (`*_ifs*.csv`), seed 114; the mx2t3 subset (Table E16) by `scripts/session117_ifs_guide.py --subset`, seed 117. Positions as raw GFS's (D108.3). Grids: 0.4 degree to 2024-01-31 and a 0.25 degree grid with Ni 1439 on 2024-02-01 and 02-02, both with no elevation treatment (development airports only, labelled "no elevation treatment"); 0.25 degree from 2024-02-03, adjusted for height as GFS is with IFS's 2024-12-03 terrain (labelled "terrain from a later date" from 2024-02-03 to 2024-12-02, "elevation-adjusted" after). Versions 48r1, 49r1 (from 2024-11-13), 50r1 (from 2026-05-13). Daily maximum (D111.4): primary the highest of IFS's 3-hourly steps inside the local day ("3-hourly steps"); mx2t3, the highest of its 3-hour windows wholly inside the local day, is descriptive and exists only from 2024-11-12 to 2025-02-25 and from 2026-02-11 (plus six cycles on 2024-09-17 and 18). Scoring IFS here spends its test years at these 12 airports (D111.6). Latency: ECMWF IFS: archive write time minus cycle, median 7.21 to 7.92 h over the cycle hours (range 6.45 to 37.31); may be later than public release. GFS: archive write time minus cycle, median 3.74 to 3.81 h over the cycle hours (range 3.67 to 7.46); may be later than public release. Not adjusted for (D108.4(f)). IFS reads cold at 10 of 12 airports (F160.4), and the reading check found no fault, so the cold error is the model's own, not the reading's (F162.8).
 
 **Table E10. ECMWF IFS: paired rows and days per airport and test year** (`data/processed/session117_ifs/match_counts.csv`, IFS rows; every unpaired row and day by reason, cycle hour and version).
 

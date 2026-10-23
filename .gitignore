@@ -39,7 +39,7 @@ Thumbs.db
 .claude/
 
 # --- the large GRIB cache: the one exception to "raw data is committed" ---
-# DECISIONS D47: the ~20 GB GFS GRIB cache can be fetched again, so its bytes
+# DECISIONS D47: the ~39 GB GFS GRIB cache (D102.3) can be fetched again, so its bytes
 # are not committed. Its provenance is committed instead, as the pull
 # manifests under data/raw/diagnostics/. No trailing slash, so a cache that is
 # a symbolic link is ignored too (audit A68a-06).

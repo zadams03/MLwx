@@ -187,6 +187,48 @@ class RecordLookups(unittest.TestCase):
         self.assertEqual(self.s91.TRAINING_SET_SHA256, found[0])
         self.assertEqual(self.s91.TRAINING_SET_SHA256, sha256_of(PROCESSED / "session81_training_set.csv"))
 
+    def test_gates_use_training_set_constant(self):
+        # D116.3: scripts/session122_gates.py runs the --gate modes of sessions 92,
+        # 95 and 96 with F122.3's value from session 91's constant, and names no
+        # DECISIONS file. Importing it runs no mode and writes nothing.
+        import session122_gates as g122
+        text = g122.ConstantRecord().read_text()
+        # Session 92's gate reads DECISIONS_FILE with this pattern; the stand-in
+        # text gives it the constant.
+        src92 = (SCRIPTS / "session92_verify_chunk.py").read_text()
+        p92 = r"session81_training_set\.csv`,\s+[\d,]+ data rows,\s+SHA-256 `([0-9a-f]{64})`"
+        self.assertIn(p92, src92)
+        self.assertIn("p91.DECISIONS_FILE.read_text()", src92)
+        self.assertEqual(re.search(p92, text).group(1), self.s91.TRAINING_SET_SHA256)
+        # Session 96's gate asks session 86's lookup for the pattern the new script answers.
+        src96 = (SCRIPTS / "session96_stagec_table.py").read_text()
+        self.assertIn(f's86.expected_hash_from_decisions(r"{g122.S96_PATTERN}")', src96)
+        # Session 95's gate is run with session 92's gate swapped for --gate92.
+        src = (SCRIPTS / "session122_gates.py").read_text()
+        self.assertIn('"--gate92"', src)
+        self.assertIn("v95.run_verifier = run_verifier", src)
+        # No DECISIONS path as a string, and no read of DECISIONS_FILE (comments may name it).
+        for banned in ('"DECISIONS', "'DECISIONS", "DECISIONS_FILE.read", "read_decisions"):
+            self.assertNotIn(banned, src)
+        self.assertIn("p91.DECISIONS_FILE = ConstantRecord()", src)
+
+    def test_s122_ifs_cycles_match_f160_3(self):
+        # D116.9 (A04): session 122's IFS cycle counts equal F160.3's, in either
+        # DECISIONS file. Importing session 122's script runs no mode.
+        import session122_analysis as a122
+        text = self.s87.read_decisions_text()
+        found = re.findall(r"IFS cycles per test year: ([\d,]+) \(dev 2023-24[^)]*\), then ([\d,]+) and ([\d,]+)",
+                           text)
+        self.assertEqual(len(found), 1)
+        dev23, y24, y25 = (int(x.replace(",", "")) for x in found[0])
+        self.assertEqual(len(a122.IFS_CYCLES), 12)
+        for ic, want in a122.IFS_CYCLES.items():
+            with self.subTest(airport=ic):
+                if a122.s114.GROUP[ic] == "dev":
+                    self.assertEqual(want, {"2023-24": dev23, "2024-25": y24, "2025-26": y25})
+                else:
+                    self.assertEqual(want, {"2024-25": y24, "2025-26": y25})
+
     def test_s87_manifest_pattern_finds_f122_5_value(self):
         # The pattern in session87_forward_score.load_frozen_models.
         text = self.s87.read_decisions_text()

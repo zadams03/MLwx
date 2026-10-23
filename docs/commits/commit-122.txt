@@ -1,0 +1,30 @@
+Session 122: health check fix session 1 (code fixes and session 114's outputs; D116, F165)
+
+The first fix session of the health check (D114.3, D115.7) did fix groups
+(1) and (2) of F163.10 and F164.9. Nothing was scored. No 2026-27 value,
+MLwx-live file, GRIB cache or network was used, and no frozen script was
+edited or run.
+
+D116 records the owner's rulings. The suite stays on unittest (T02). The
+three gates that searched DECISIONS text for F122.3's SHA-256 now run from
+a new scripts/session122_gates.py with the recorded constant (C06, C07).
+The eight frozen scripts' SHA-256 values are checked by a new test (S03,
+S04). The citation check covers 13 files (CI13). Session 114's outputs are
+brought up to date with IFS by a new scripts/session122_analysis.py, which
+writes part1_s122.md, part2_comparisons_s122.md and SUPERSEDED.md beside
+the write-once originals, and four new IFS figures ending _s122.svg; the
+five old figures are unchanged (A01, A02, C08). ANALYSIS.md gets three
+text fixes and no number changes (AN02, AN03, AN05). Session 117's verify
+re-renders from its parent commit (C09).
+
+D116.10 adds a rule found during the session: a script whose SHA-256 is
+recorded by another script, a test or a meta file is not edited; the fix
+goes in a new script that imports it. Sessions 92, 95, 96 and 114 are
+byte-equal to the previous commit.
+
+Small fixes: the .gitignore cache comment, matplotlib's nine dependencies
+pinned (29 pins equal pip freeze), tests/README.md (L09, T03, T04). A03 and
+A04's checks pass with outputs byte-equal. 185 tests pass. DECISIONS.md is
+about 54 KB. Deferred: C11 and T05 (D116.9).
+
+Full output: notes/session-122-output.txt.
