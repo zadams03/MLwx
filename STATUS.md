@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 22 October 2026, after session 122._
+_Last updated: 27 October 2026, after session 123._
 
 ---
 
@@ -35,14 +35,21 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   Public repo zadams03/MLwx-live, page at
   https://zadams03.github.io/MLwx-live/. Redeployed 2026-10-20 (D113.2):
   MLwx-live `0d77fb0`, MLwx `d6ca3e4`, models `gfs-models-49`, schedule
-  :15 and :40. Audited to 2026-10-21T06z (F161, F163.8): no cycle lost;
-  the one cycle issued twice (2026-10-17T18z) left only its first file on
-  main, which the live test scores (D113.3).
+  :15 and :40. Audited to 2026-10-27T06z (F161, F163.8, F166.2): no cycle
+  lost; the one cycle issued twice (2026-10-17T18z) left only its first
+  file on main, which the live test scores (D113.3).
+- **Fix group (3), MLwx-live: prepared, not yet live (D117, F166).** The
+  template (`deploy/mlwx-live/`) now has the six actions on their first
+  Node.js 24 majors, Python pinned to 3.12.15, no commit, push or page
+  when a run's only change is `last_run.at`, and a corrected README;
+  checked by `tests/test_live_template.py`. It goes live at the owner's
+  redeploy (D117.7), with `MLWX_COMMIT` and `MODELS_TAG` unchanged. D112.8's
+  rule on manual runs holds until then.
 - **Project health check (D112.2 item 3, D114, D115, D116).** Both
   audits are done: session 120, the code (F163, 55 rows); session 121, the
   record (F164, 109 rows, one wrong: RM05, README's data credits). Fix
   groups (1) code and (2) session 114's outputs are done (D116, F165), and
-  group (8) by the owner (D116.1). Session 114's field guide is now
+  group (8) by the owner (D116.1); group (3) is prepared (D117, F166). Session 114's field guide is now
   rendered and checked by `scripts/session122_analysis.py` (IFS included,
   IFS figures `figures/analysis/comparison_*_s122.svg`); the gates of
   sessions 92, 95 and 96 run from `scripts/session122_gates.py`. Next: the
@@ -66,10 +73,12 @@ that corrects every GFS run into an hourly curve plus the daily maximum
 
 ## Open questions (live)
 
-- **The remaining fix groups (F163.10, F164.9).** (3) MLwx-live: README,
-  actions, a Python pin and no last_run-only commits, with an entry under
-  D105.5(k) and a redeploy; (4) the cache checks, when the drive is
-  attached; (6) README last, with C11 (D116.9); (7) the record text (SPEC,
+- **The redeploy of MLwx-live (D117.7).** The next owner action: copy the
+  template's workflow and README into MLwx-live, `MLWX_COMMIT` and
+  `MODELS_TAG` unchanged; the deployed values go in the next session's
+  entry.
+- **The remaining fix groups (F163.10, F164.9; order D117.2).** (7) and (9)
+  together next, then (4) the cache checks, when the drive is attached; (6) README last, with C11 (D116.9); (7) the record text (SPEC,
   RESULTS, CLAUDE with D116.2's test command (CL05), PROJECT-INSTRUCTIONS
   section 2, 4, 5, 9; STATUS at each overwrite); (9) data credits (RM05):
   `data/processed/session113/` commits ECMWF IFS and AIFS, NBM grid, NBS,
@@ -80,16 +89,15 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   in DECISIONS (SP07)? A SPEC pointer to ANALYSIS.md (SP08)? The size
   rule's unit, since the Project's reported size is not bytes (PI07,
   PK10)? An archive header line on its order (DE03)? Session 86's gate
-  (S06)? The outside scheduler (D112.6(d))?
+  (S06)? The outside scheduler (D112.6(d), D117.4): open, with F166.2's
+  figures (6.8 days of :15 and :40: 12 % of slots run; issue lag median
+  5.70 h, 90th percentile 8.40 h, max 9.20 h; no cycle lost).
 - **Readings carried (F163.11, F165.11).** Session 63's two check scripts
   rewrite their committed notes outputs when run. Session 109's Gate A
   takes 29.4 min. Under D116.10 a fix to a script whose SHA-256 is
   recorded goes in a new script; the session 120 audit inventory
   (`scripts.csv`) was not counted as such a record. Session 117's
   `--subset` stops if session 114's script changes, by design.
-- **Issue lag after the redeploy (F163.8).** About one day of the :15 and
-  :40 schedule: too little to judge; re-measured in the MLwx-live fix
-  session (D115.7, D112.6(d)).
 - **A candidate for the longer-term plan (D115.6).** Does the curve's
   correction for a valid hour predict raw GFS's revision for that hour in
   the next cycle? Descriptive, on spent stage C rows, with its rows,
@@ -122,11 +130,11 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   script that imports it. The eight frozen scripts' SHA-256 are checked by
   `tests/test_frozen_scripts.py` (D116.4).
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  185 tests.
+  195 tests.
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 122 and commit; then plan the next fix session (groups 3, 7 or 9).
+**Next planning session:** Review session 123 and commit; the owner redeploys MLwx-live (D117.7); then plan fix groups (7) and (9) together, with the rulings of D117.2.

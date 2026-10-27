@@ -60,12 +60,17 @@ It holds no forecast and no error.
 ## The other folders
 
 - `state/tracker_gfs.json`: where each bias tracker had got to (b, the last valid time applied, the
-  count). A cache; the log is the record. Updated each run.
+  count), the runs that issued nothing and why, and the last run's time and status. A cache; the log
+  is the record. Committed when anything in it changes besides the last run's time.
 - `site/` is built by each run and published with GitHub Pages; it is not committed.
-- `.github/workflows/live.yml`: the schedule (every hour at 40 minutes past, UTC; a GFS run is used
-  from about 4 hours 10 minutes after it starts), plus a manual trigger. Each run commits `log/`,
-  `obs/` and `state/`. The job fails only if a GFS run should have issued and did not (the runner's
-  exit code 3); a run still waiting for its data (code 2) is tried again the next hour.
+- `.github/workflows/live.yml`: the schedule (every hour at 15 and 40 minutes past, UTC; GitHub
+  starts scheduled runs late or skips some; a GFS run is used from about 4 hours 10 minutes after it
+  starts), plus a manual trigger. Each run checks out the latest `main`. If anything changed besides
+  the last run's time in `state/`, the run commits `log/`, `obs/` and `state/`, pushes, and publishes
+  the page; otherwise it commits nothing and leaves the page as it was, so the page's build time
+  shows the last run that changed something. The job fails if the push did not land on `main` (the
+  page is then not published), or if a GFS run should have issued and did not (the runner's exit
+  code 3); a run still waiting for its data (code 2) is tried again at the next run.
 - `requirements.txt`: the exact Python packages.
 
 ## The code

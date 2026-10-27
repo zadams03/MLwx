@@ -1,17 +1,18 @@
 # MLwx-live: issue every new GFS cycle (DECISIONS D103.7 to D103.9).
 #
-# Every hour at 15 and 40 minutes past (UTC), and by hand (D112.6). A run with nothing new to issue only
-# republishes the page.
+# Every hour at 15 and 40 minutes past (UTC), and by hand (D112.6). A run whose only change is the time in
+# the state file's last_run.at commits nothing and does not republish the page (D117.5(c)).
 # Each run:
 #   1. checks out the latest commit of this repo's main (the log and the tracker state), even if the run
 #      waited in the queue, and the MLwx code at ONE pinned commit;
 #   2. installs the pinned requirements;
 #   3. gets the frozen models (one Release asset, D103.5), checked against the manifest SHA-256 held in the code;
 #   4. runs the runner: every cycle of the past 24 hours that has arrived and is not yet logged, in time order;
-#   5. commits the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and
+#   5. if anything besides last_run.at changed (a log or snapshot file, a stop, last_run.status), commits
+#      the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and
 #      snapshot file is written once and never edited), and pushes them; if the push did not land on main
 #      (a failed rebase is aborted), the job fails here and the page is not published;
-#   6. publishes the static page to GitHub Pages;
+#   6. publishes the static page to GitHub Pages (skipped when only last_run.at changed);
 #   7. fails the job (so the owner is told) if any cycle issued nothing (exit code 3). A cycle still
 #      waiting (exit code 2) is not a failure; the next run tries again.
 #
@@ -56,29 +57,29 @@ jobs:
           esac
 
       - name: Check out this repo (the log and the state)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
 
       - name: Check out the MLwx code at the pinned commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.MLWX_REPO }}
           ref: ${{ env.MLWX_COMMIT }}
           path: mlwx
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.12.15"
 
       - name: Install the pinned requirements
         run: python -m pip install -r requirements.txt
 
       - name: Restore the models from the cache
         id: models
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: models
           key: gfs-models-${{ env.MODELS_TAG }}
@@ -104,7 +105,41 @@ jobs:
           echo "code=$?" >> "$GITHUB_OUTPUT"
           exit 0
 
+      # D117.5(c): if the only change is the time in the state file's last_run.at (no code reads it), or
+      # nothing changed, there is nothing to commit and the page is not republished.
+      - name: Decide whether anything besides last_run.at changed
+        id: changes
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          STATE = "state/tracker_gfs.json"
+
+          def without_at(text):
+              d = json.loads(text)
+              if isinstance(d.get("last_run"), dict):
+                  d["last_run"].pop("at", None)
+              return d
+
+          status = subprocess.run(["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+                                  capture_output=True, text=True, check=True).stdout
+          entries = [e for e in status.split("\0") if e]
+          if not entries:
+              commit, why = False, "nothing changed"
+          elif entries == [" M " + STATE]:
+              head = subprocess.run(["git", "show", "HEAD:" + STATE], capture_output=True, text=True, check=True).stdout
+              with open(STATE) as f:
+                  now = f.read()
+              same = without_at(head) == without_at(now)
+              commit, why = (not same), ("only last_run.at changed" if same else "the state file changed")
+          else:
+              commit, why = True, f"{len(entries)} changed path(s)"
+          print(f"{why}: {'commit, push and publish' if commit else 'no commit, no push, no page'}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"commit={'true' if commit else 'false'}\n")
+          PY
+
       - name: Commit the log and the tracker state
+        if: steps.changes.outputs.commit == 'true'
         run: |
           git config user.name "mlwx-live"
           git config user.email "mlwx-live@users.noreply.github.com"
@@ -131,16 +166,19 @@ jobs:
           fi
 
       - name: Prepare the page
-        uses: actions/configure-pages@v5
+        if: steps.changes.outputs.commit == 'true'
+        uses: actions/configure-pages@v6
 
       - name: Upload the page
-        uses: actions/upload-pages-artifact@v3
+        if: steps.changes.outputs.commit == 'true'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
       - name: Publish the page
+        if: steps.changes.outputs.commit == 'true'
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       - name: Fail the job if a cycle issued nothing (exit code 3)
         if: steps.runner.outputs.code == '3'
