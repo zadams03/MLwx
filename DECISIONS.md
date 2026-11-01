@@ -15,9 +15,10 @@ It records choices made, why they were made, open questions, and findings.
 - D114: F162 accepted, the layout baseline, and the project health check's plan and audit limits.
 - D115: F163 accepted, the Project-knowledge sync made a hand upload, and the record audit's scope.
 - D118: F166 accepted, the redeploy, rulings for fix groups 7 and 9, the scheduler closed, and the Project-knowledge sync.
+- D119: F167 accepted, how fix group 4 runs the three cache checks, and the scope of fix group 6 (the README update).
 - F163: session 120's finding (the health check's code audit: 55 register rows, none wrong or blocking; 16 stale items grouped into fix sessions).
 - F164: session 121's finding (the health check's record audit: 109 register rows, one wrong (README's data credits), none blocking; grouped into fix sessions).
-- F167: session 124's finding (fix groups 7 and 9: the record text, and README's data credits with each source's terms read; none forbids redistribution).
+- F168: session 125's finding (fix group 4: the three GRIB cache checks run in a clone against the drive; all pass).
 <!-- live-index-end -->
 
 Every entry not listed here is in DECISIONS-archive.md, unchanged and still
@@ -344,23 +345,32 @@ or after 2026-08-01 has been scored. Stage G makes no claim (D102.5).
 
 ---
 
-## 2026-11-01: Session 124 finding: fix groups (7) the record text and (9) the data credits
+## 2026-11-01: Session 125 decision: F167 accepted, fix group 4's run, and fix group 6's scope (owner, planning chat)
 
-**F167. D118 was recorded first. Each committed source's terms were read over the network, read-only, and credited in README section 9 (group 9); the record text was brought up to date in SPEC, RESULTS, CLAUDE, PROJECT-INSTRUCTIONS and the archive header (group 7). No 2026-27 value was read or scored; no MLwx-live file, model, GRIB cache or frozen script was touched; nothing under `src/`, `scripts/`, `tests/` or `data/` changed, so D105.5(k) is not engaged. Full output: `notes/session-124-output.txt`. Run 2026-11-01. Python 3.12.2.**
+**D119. Owner decisions, planning chat (after session 124's commit): F167 accepted; how fix group (4) runs the three cache checks; and the scope of fix group (6), the README update.** Written at the start of session 125, before any other edit. No 2026-27 value has been read or scored.
 
-- **F167.1 Start and D118.** HEAD bc70489, tree clean (the prompt untracked); 195 tests OK. D118 appended byte-equal (18 lines, `diff` and `cmp`), 0 em-dashes.
-- **F167.2 Inventory (Step 2(a)).** `data/processed/session113/`: 77 files, 104,715,981 bytes. IFS 12 airports (51.8 MB) and AIFS 12 (10.4 MB), from AWS `ecmwf-forecasts`; NBM grid 5 airports (37.6 MB), AWS `noaa-nbm-grib2-pds`; NBS 5 stations (2.2 MB) and MAV 4 (1.8 MB), IEM `mos.py`; CLI 4 stations (IEM `json/cli.py`); GHCN-Daily 4 US stations (USW00014933, USW00023185, USW00023234, USW00094846), NCEI Access Data Service. Sessions 114, 117 and 119 commit scores only, no source values.
-- **F167.3 Terms (Step 2(b), read 2026-11-01; 10 pages, all fetched, no mirror).**
-  | source | terms | redistribution in a public repo | credit asked |
-  |---|---|---|---|
-  | ECMWF IFS, AIFS | CC BY 4.0 plus ECMWF Terms of Use | allowed, with attribution | copyright, source, licence and disclaimer lines; "based on data and products of ECMWF" |
-  | NBM grid | NOAA NODD: "can be used as desired" | allowed | attribution requested; no implied endorsement; changed data not shown as original |
-  | NBS, MAV, CLI | IEM: public domain; NWS: public domain, with conditions | allowed | IEM credit appreciated; NWS none (no copyright claim, no endorsement, not shown as official if changed) |
-  | GHCN-Daily | no use limit stated; no WMO Resolution 40 note on either page | allowed | dataset citation (doi:10.7289/V5D21VHZ) and Menne et al. 2012 |
-  No terms forbid redistribution, so Step 3 went ahead.
-- **F167.4 README section 9 (RM05).** Read date added; NBM and MAV bullets name the session 113 files; MAV's terms stated; four new bullets (ECMWF IFS and AIFS, NBS, CLI, GHCN-Daily); ECMWF removed from "Probed only". The diff lies inside section 9 only.
-- **F167.5 SPEC (SP04 to SP08, SP10, SP11).** Claim and live airports in section 1; the goal without "private" (D118.5); an ANALYSIS.md bullet (D118.7); D105.5 in stage B; stage G's status; the closing note (D118.6); 9.6's v17 line. SPEC 3.4's span is now l.256 to l.287: 2,050 bytes, SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9, unchanged. Stage B's three `--guard-check` modes pass (temporary clone with the edited SPEC).
-- **F167.6 Other files.** RESULTS RE01, RE02 (D83.2's 51 checked), RE04 (session 84 cited as its commit names, D76 and F126), RE05: no existing number changed. CLAUDE CL03, CL04, CL05, CL07 and D116.10's rule. PROJECT-INSTRUCTIONS PI01, PI02, PI04 to PI07, PI12, PK09 to PK11; PI08's three places checked, unchanged; the invocation still equals D93.16. Archive header: the "Order." paragraph (DE03, D118.9); nothing reads or hashes those lines.
-- **F167.7 Sizes after the edits (bytes, before the archive step).** SPEC 80,648; RESULTS 53,553; CLAUDE 8,820; PROJECT-INSTRUCTIONS 16,203; the archive 1,536,723; README 26,829; ANALYSIS 164,379 (unchanged). DECISIONS and STATUS after the end steps: see the output file's summary.
-- **F167.8 Readings for the owner.** (1) ECMWF's Terms of Use also say users "are required to sign a service agreement" to receive services related to the dataset, and its open-data page keeps only the latest 12 runs; the older runs came from the AWS copy, whose page carries the same CC BY 4.0 licence. Neither limits sharing; whether the clause reaches this use is the owner's reading. (2) ECMWF asks for attribution "displayed prominently". It is in README section 9 only; `ANALYSIS.md` and the IFS and AIFS figures carry none (out of scope). (3) GHCN-Daily's subversion at the 2026-10-15 pull was not recorded (the readme read today is 3.35), so the credit names Version 3 and the access date. (4) DECISIONS names CYYZ only as "Toronto"; "Toronto Pearson" was checked against IEM's station name (LESTER B PEARSON INTL). (5) RESULTS' "since 2026-10-12" comes from D105.5(d) (the first cycle, 12z); D103 gives no date.
-- **F167.9 Not done.** Groups (4) and (6); README outside section 9 (D118.5's line 19 included); no credit line added to ANALYSIS.md or the figures. Pointer: `notes/session-124-output.txt` (Step 2's full terms table and quotes).
+- **D119.1 F167 accepted,** with its readings (F167.8). (1) ECMWF's service-agreement clause concerns ECMWF's services, not the use of the open data under CC BY 4.0; no action. (2) The prominent attribution goes into group (6) (D119.4). (3) to (5) stand as written.
+- **D119.2 Fix group (4): the cache checks (C12, D114.3, D114.6).** The drive is attached at `/Volumes/MY PASSPORT/MLwx-grib-cache/` (D102.3). Session 125 runs `session71_original_functions_check.py`, `session76b_check_a.py` and `session76b_check_b.py` as session 120 ran its checks (F163.5): from the root of a temporary clone of HEAD, outside the repo, with the venv's Python, the sibling folders linked beside it, and `data/raw/grib` in the clone a link to the drive, so any write lands in the clone. Because session 76b's two checks refuse to overwrite their outputs, the clone's four committed copies under data/rebuild/session76b/ are first moved into the temporary folder as references; the regenerated files are then compared with them by cmp. Offline. A check passes when it exits 0, every file it writes is byte-equal to its committed copy, and its printed counts equal the recorded ones (session 71 Step 5; session 76b Checks A and B). Otherwise it fails, with the first differing line and the cause if found.
+- **D119.3 A failing check is reported, not fixed.** A fix, if the owner wants one, goes in a later session and in a new script (D116.10); the three scripts and their committed outputs are not edited.
+- **D119.4 Fix group (6), the README update, last (D115.7).** Its scope: F164.9's README rows RM01, RM03, RM04, RM07, RM09, RM10, RM11; README line 19's goal wording without "private" (D118.5, RM02); C11 (a note in `scripts/README.md` that session 63's two check scripts are run only in a clone, D116.9); and one ECMWF credit line in `ANALYSIS.md` (F167.8(2)), with the IFS and AIFS figures left byte-equal.
+- **D119.5 Live index.** Removed (archived): F167, settled (its readings carried by D119.1 and D119.4). Added: D119 and F168 (F168 when it is written). After session 125: D93, D103, D105, D114, D115, D118, D119, F163, F164, F168.
+
+---
+
+## 2026-11-01: Session 125 finding: fix group (4), the cache checks
+
+**F168. D119 was recorded first. The three GRIB cache checks (C12, D114.3, D114.6) were run in a temporary clone of HEAD, read-only on the drive, offline. All three pass. Nothing was fixed or edited outside the record steps. No 2026-27 value was read or scored. Full output: `notes/session-125-output.txt`. Run 2026-11-01. Python 3.12.2, numpy 2.5.2, eccodes 2.48.0.**
+
+- **F168.1 Start and D119.** HEAD c29c488, tree clean (the prompt untracked); 195 tests OK; SPEC 3.4's span unchanged (2,050 bytes, `a02cbe9e...`). D119 appended with `sed`, byte-equal by `diff` and `cmp`, 0 em-dashes. Then, on the owner's correction, one sentence was added to D119.2 in place (the 76b write-once guard, F168.5).
+- **F168.2 The drive and the files.** `/Volumes/MY PASSPORT/MLwx-grib-cache/` with `session71/` (936 entries) and `session72/`; `data/raw/grib` in the clone was a link to it, shown as ignored only. Session 71: 378 of 378 message files and 90 of 90 idx files present. Session 76: 17,164 manifest rows before 2024-08-01, 17,150 OK and 14 FAIL; all 17,150 OK files present (12,250 in `session72/`, 4,900 in the cache root).
+- **F168.3 The results.**
+  | check | exit | seconds | printed output vs record | files it wrote vs committed | result |
+  |---|---|---|---|---|---|
+  | `session71_original_functions_check.py` | 0 | 26 | 378 of 378, 477 of 477, 477 of 477: equal (s71 output l.2841 to 2843) | writes nothing | PASS |
+  | `session76b_check_a.py` | 0 | 846 | l.165 to 225 identical by `diff` (17,150 used, 14 skipped, Check A PASS) | 2 files `cmp`-equal | PASS |
+  | `session76b_check_b.py` | 0 | 58 | l.256 to 312 identical by `diff` (1,225 of 1,225 twice; 1,205 identical rows; all tables) | 2 files `cmp`-equal | PASS |
+  Stderr was empty for all three. The clone's `git status --porcelain` was clean after check 1; after check A only the two B files, not yet regenerated, showed as deleted; it was clean after check B.
+- **F168.4 Nothing written outside the clone.** Files newer than the start marker: 0 in each of the four sibling folders and 0 on the drive. The three scripts' full SHA-256 are equal to the start values. The temporary folder was deleted, links first.
+- **F168.5 The first run of 76b failed on a guard planning missed.** Both 76b scripts stop with "exists; not overwriting" when their output files exist, and a clone of HEAD holds the committed copies. The first run stopped there with no cache file read. The owner's correction: the clone's four committed copies were moved to the temporary folder as references and the regenerated files compared by `cmp` (D119.2, amended). The method change was made only in the clone.
+- **F168.6 Readings for the owner.** (1) C12 is answered: the cache, the three scripts and their committed outputs agree, so the record and the cache do not disagree. (2) The first read of the drive hung for several minutes (`ls` of the volume, no output) and then cleared by itself; the cause was not found, so a later cache session should expect a slow start. (3) Check A took 14.1 min, under the 30-minute limit. (4) The write-once guard means the two 76b scripts can be run again only in a clone with their outputs moved; if a note is wanted, it fits group (6)'s `scripts/README.md` line for C11 (D119.4).
+- **F168.7 Not done.** No fix, no edit to a script or committed output, no group (6) work, no edit to the register.

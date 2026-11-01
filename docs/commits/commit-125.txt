@@ -1,0 +1,28 @@
+Session 125: health check fix group (4), the GRIB cache checks (D119, F168)
+
+D119 records the owner's decisions after session 124: F167 accepted with
+its readings (ECMWF's service-agreement clause needs no action; the
+prominent ECMWF attribution goes into group 6); how fix group (4) runs the
+three cache checks; that a failing check is reported, not fixed; and the
+scope of fix group (6), the README update, last. D119.2 was amended during
+the session by one sentence: session 76b's two checks refuse to overwrite
+their outputs, so the clone's committed copies are moved aside as
+references and the regenerated files compared by cmp. Planning missed
+that guard; the first run stopped on it before any cache file was read.
+
+F168: the three checks left unrun by session 120 for want of the cache
+(register row C12, D114.6) were run offline in a temporary clone of
+c29c488, with data/raw/grib linked to the drive at
+/Volumes/MY PASSPORT/MLwx-grib-cache/. All files they read were present
+(378 messages and 90 idx files for session 71; 17,150 of 17,150 OK files
+for session 76). All three pass: session71_original_functions_check
+(378/378, 477/477, 477/477, as recorded); session76b_check_a (17,150
+messages used, 14 skipped, printed output identical to the record, both
+CSVs cmp-equal); session76b_check_b (printed output identical, both CSVs
+cmp-equal). Nothing was written outside the clone: 0 newer files in the
+sibling folders or on the drive, and the three scripts' SHA-256 are
+unchanged. No 2026-27 value read or scored; no network.
+
+Record: Live index drops F167 (archived) and adds D119 and F168.
+DECISIONS.md 52,005 bytes; citations 219 of 219 resolved; SPEC 3.4's span
+unchanged; 195 tests OK. STATUS overwritten; next is fix group (6).
