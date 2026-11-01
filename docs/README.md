@@ -31,4 +31,7 @@ re-run.
   and reasoning of that time; its own text says the project's files win
   wherever they disagree with it.
 
-These files are part of the record and are not edited after the fact.
+The session prompts, the commit messages and the handover note are part of
+the record and are not edited after the fact. PROJECT-INSTRUCTIONS.md is a
+live guide; a session edits it only when its prompt says exactly what to
+change.

@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 1 November 2026, after session 125._
+_Last updated: 1 November 2026, after session 126._
 
 ---
 
@@ -44,16 +44,15 @@ daily maximum; version 1 is live and public (D103.9).
   :35 and :55 past the hour.
 - **The outside scheduler: closed for v1 (D118.4).** Reopened only by a
   new entry, if any cycle's issue lag exceeds 12 h.
-- **Project health check (D112.2 item 3, D114 to D118).** Both audits
-  done (F163, F164). Fix groups done: (1) and (2) (D116, F165), (8) by the
-  owner (D116.1), (3) live (D117, F166, D118.2), (7) the record text and
-  (9) the data credits (D118, F167), (4) the cache checks (D119, F168).
+- **Project health check (D112.2 item 3, D114 to D120): done (D120.3).**
+  Both audits done (F163, F164). All fix groups done: (1) and (2) (D116,
+  F165), (8) by the owner (D116.1), (3) live (D117, F166, D118.2), (7) the
+  record text and (9) the data credits (D118, F167), (4) the cache checks
+  (D119, F168), (6) the README update (D120, F169; documentation only).
   README section 9 credits ECMWF IFS and AIFS, the NBM grid, NBS, MAV, CLI
   and GHCN-Daily, with the terms read on 2026-11-01; none forbids
-  redistribution. The three cache checks, run in a clone against the
-  drive, all pass: session 71's check (378 of 378, 477 of 477, 477 of 477)
-  and session 76b's Checks A and B (printed output identical, four output
-  files `cmp`-equal). Left: group (6), the README update, last (D115.7).
+  redistribution. `ANALYSIS.md` carries the ECMWF credit too. The three
+  cache checks, run in a clone against the drive, all pass (F168).
 - **SPEC 3.4's span (S05, D115.4).** Lines 256 to 287, 2,050 bytes,
   SHA-256 `a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9`
   (unchanged; the lines moved because section 1 grew). Every later SPEC
@@ -78,22 +77,15 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Open questions (live)
 
-- **The last fix group (D119.4): (6), the README update, last (D115.7).**
-  Its scope: README rows RM01, RM03, RM04, RM07, RM09, RM10, RM11
-  (F164.9); README line 19's goal wording without "private" (D118.5,
-  RM02); C11 (a note in `scripts/README.md` that session 63's two check
-  scripts are run only in a clone, D116.9); and one ECMWF credit line in
-  `ANALYSIS.md` (F167.8(2)), with the IFS and AIFS figures left
-  byte-equal.
 - **Session 86's gate (S06): deferred (D118.10).** If stage B needs
   `session86_forward_build.py --gate` before period A is scored, the
   session that prepares stage B's run builds a wrapper with constants
   checked by a test, as D116.3 did; the frozen script is not edited.
 - **Readings carried (F163.11, F165.11, F168.6).** Session 63's two check
-  scripts rewrite their committed notes outputs when run. Session 76b's
-  two checks refuse to overwrite their outputs, so a rerun needs a clone
-  with those four files moved aside (D119.2). The first read of the drive
-  hung for several minutes and cleared by itself (cause not found). Session 109's Gate A
+  scripts rewrite their committed notes outputs when run (noted in
+  `scripts/README.md`, with session 76b's write-once checks). The first
+  read of the drive hung for several minutes and cleared by itself (cause
+  not found). Session 109's Gate A
   takes 29.4 min. Under D116.10 a fix to a script whose SHA-256 is
   recorded goes in a new script; the session 120 audit inventory
   (`scripts.csv`) was not counted as such a record. Session 117's
@@ -136,4 +128,4 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Next
 
-**Next planning session:** Review session 125 and commit; the planning chat syncs Project knowledge (D118.8); then plan fix group (6), the README update, last (D119.4).
+**Next planning session:** Review session 126 and commit; the planning chat syncs Project knowledge (D118.8); then plan the longer-term plan (D112.2 item 5), whose items STATUS lists.

@@ -4,6 +4,13 @@ Session 112, under DECISIONS D106 (finding F155), and session 114, under D107 an
 added the comparisons with other forecasts and the official daily maximum and rewrote Part 1. Data: the 12 airports
 of D103.4, spent years only (nothing valid on or after 2026-08-01). ECMWF IFS was added by session 117 (D111, finding F160), from the owner's pull (D108.2).
 
+ECMWF IFS and AIFS values are based on data and products of the European
+Centre for Medium-Range Weather Forecasts (ECMWF). Copyright © 2023-2026
+ECMWF, published under CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/); source www.ecmwf.int.
+Only the values at each airport's grid points are kept; see README
+section 9.
+
 **Status (D106.2, D107, D108).** Descriptive only (SPEC 2.5, as F96). This changes no verdict, model, setting, rule, bar or
 table, and nothing in D73, D77.6 or D105.5. It is not stage C's look: the look script's `--look` mode was not
 run (D101.2); the claim airports' frozen models were refitted by the look's route only to regenerate

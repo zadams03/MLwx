@@ -1,0 +1,216 @@
+SESSION 126 OUTPUT: health check fix group (6), the README update (last)
+Run 2026-11-01. Documentation only. Nothing committed.
+
+SUMMARY
+What was done: D120 recorded first (byte-equal). README sections 1, 5 and 6, scripts/README.md,
+data/README.md, docs/README.md, notes/README.md and one paragraph in ANALYSIS.md updated. F169 written,
+STATUS.md overwritten, Live index changed (D120.4), archive step run.
+Checks:
+ PASS  Step 1 start: HEAD c326483, 195 tests OK, SPEC 3.4 span a02cbe9e... (2,050 bytes), --verify PASS
+ PASS  D120 byte-equal by diff and cmp, 0 em-dashes
+ PASS  README: no "private", "is next" or ": next" left; map paths exist; one header row, 5 columns
+ PASS  scripts/README.md: every session1[0-2][0-9]_*.py (sessions 100 to 123) falls in one group; paths exist
+ PASS  F numbers cited in Step 5(b) checked against headings: none wrong, none corrected
+ PASS  README section 9 span SHA-256 e76a425d... (8,841 bytes) before and after
+ PASS  ANALYSIS.md from "## Part 1." SHA-256 ca39ff6f... (160,088 bytes) before and after
+ PASS  session122_analysis.py --verify, before and after
+ PASS  SPEC.md unchanged; 3.4 span unchanged
+ PASS  nothing under figures/, src/, tests/, deploy/ changed; scripts/ and data/ only their README
+ PASS  0 em-dashes in added lines
+ PASS  tests: 195 OK (final). One mid-session FAIL, explained below.
+ PASS  archive_decisions.py --apply --session 126: checks 1 to 4 PASS, moved 6 spans, kept 6
+ PASS  --citations: 220 cited, 220 resolved, 0 unresolved, 0 duplicates, 0 out of order
+ PASS  scope: only listed files changed (plus the untracked prompt, there at the start)
+Headline numbers: DECISIONS.md 56,981 -> 33,687 bytes after archiving (limit 80,000: OK).
+ DECISIONS-archive.md 1,566,087 -> 1,589,418 bytes. Live index: D93, D103, D105, D118, D120, F169.
+Readings for the owner:
+ 1. The one mid-session test FAIL: test_citations_real_files_resolve, "unresolved F169", after D120 was
+    appended and before F169 existed (D120.4 cites F169). It passed once F169 was written. Not a fault.
+ 2. F150 is session 107's finding (the look); the bullet "Sessions 100 to 106" cites it for the claim
+    airports' tables and look, as the prompt says. Session 106 wrote the look scripts. Not changed.
+ 3. I read "stop at the end-of-session steps" as: do the prompt's End of session items too (F169, STATUS,
+    archive, checks), then stop. Nothing is committed.
+Open items: none new. STATUS carries the longer-term plan items.
+
+CHECKPOINTS
+Step 1: start checks. HEAD c326483; tree clean apart from the prompt; 195 tests OK; SPEC 3.4 span (l.256-287) 2,050 bytes SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 (equal). README section 9 span (l.325-463) 8,841 bytes SHA-256 e76a425d493a00402ff8e1b9041818b9eb0c241cf4a85ccd99ee5039835ab751. ANALYSIS.md from '## Part 1.' (l.48) to end, 160,088 bytes, SHA-256 ca39ff6feebc6e75a3e2c73104e1289b1d682e6de7152615a6852b9e993b2e01. session122_analysis.py --verify PASS. Files changed: none. Check: PASS.
+Step 2: D120 appended to DECISIONS.md with sed (prompt lines 46-55); diff and cmp byte-equal; earlier DECISIONS.md bytes unchanged; 0 em-dashes. Files: DECISIONS.md. Check: PASS.
+Step 3: README.md sections 1 and 5 edited (stage G live line and link; "research project with a public live tool"; G bullet replaced). grep for 'private\|is next\|: next' finds none. Files: README.md. Check: PASS.
+Step 4: README.md section 6 map: figures/ row, DECISIONS.md row, ANALYSIS.md row, src/mlwx/ and deploy/mlwx-live/ rows. All linked paths exist; 1 header row; 5 columns on all 22 table lines. Files: README.md. Check: PASS.
+Step 5: scripts/README.md: new section "Scripts to run only in a clone" (session 63 outputs named: notes/session63-join-equivalence-check-output.txt and notes/session63-wiring-scratch-check-output.txt, both exist; session 76b's four files named, all exist); six bullets added; workflow template sentence added. Sessions 100 to 123 all covered. F numbers F150, F155, F157 to F166 match their headings. Files: scripts/README.md. Check: PASS.
+Step 6: data/README.md, docs/README.md, notes/README.md, ANALYSIS.md edited as specified; five data folders exist. --verify PASS; Part 1 to end hash equal. Files: those four. Check: PASS.
+Step 7: final checks as in the summary. The one deviation: the first test run after D120 failed by design (reading 1), final run 195 OK.
+End 1: F169 appended. End 2: STATUS.md overwritten. End 3: Live index changed, archive step run. End 4: citations, size and scope checks run (see summary).
+
+FULL DIFF OF THE README FILES AND ANALYSIS.md
+diff --git a/ANALYSIS.md b/ANALYSIS.md
+index 75f5201..6fd66eb 100644
+--- a/ANALYSIS.md
++++ b/ANALYSIS.md
+@@ -4,6 +4,13 @@ Session 112, under DECISIONS D106 (finding F155), and session 114, under D107 an
+ added the comparisons with other forecasts and the official daily maximum and rewrote Part 1. Data: the 12 airports
+ of D103.4, spent years only (nothing valid on or after 2026-08-01). ECMWF IFS was added by session 117 (D111, finding F160), from the owner's pull (D108.2).
+ 
++ECMWF IFS and AIFS values are based on data and products of the European
++Centre for Medium-Range Weather Forecasts (ECMWF). Copyright © 2023-2026
++ECMWF, published under CC BY 4.0
++(https://creativecommons.org/licenses/by/4.0/); source www.ecmwf.int.
++Only the values at each airport's grid points are kept; see README
++section 9.
++
+ **Status (D106.2, D107, D108).** Descriptive only (SPEC 2.5, as F96). This changes no verdict, model, setting, rule, bar or
+ table, and nothing in D73, D77.6 or D105.5. It is not stage C's look: the look script's `--look` mode was not
+ run (D101.2); the claim airports' frozen models were refitted by the look's route only to regenerate
+diff --git a/README.md b/README.md
+index 9853cce..8328b9b 100644
+--- a/README.md
++++ b/README.md
+@@ -14,9 +14,10 @@ interval lies above zero (F109, F125.6). Each claim came from a single
+ look at held-out data, with the pass rule fixed in writing first. Stage
+ C's corrected hourly curve and daily maximum, from every GFS run out to 48
+ hours, then passed their pre-registered test at 6 of 6 new airports in both
+-held-out years (F150). Stage G, the live tool, is next (D102.4).
++held-out years (F150). Stage G, the live tool, is running at 49 airports
++(D103, D105.2): https://zadams03.github.io/MLwx-live/.
+ 
+-This is a research project and a private tool. It is not an operational
++This is a research project with a public live tool. It is not an operational
+ forecast, and it must not be used for safety-critical decisions.
+ 
+ Numbers such as F109 or D82 point to entries in the project's decision
+@@ -219,10 +220,15 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
+ - **C. Hourly curve on GFS: done.** The corrected hourly curve and the
+   daily maximum passed their pre-registered test at 6 of 6 new airports
+   in both held-out years (D100, F150).
+-- **G. Live product, version 1: next** (D102.4). On GFS only, with the
+-  weather model as a setting. A daily pipeline, a prediction log that is
+-  never edited, a simple display and one-script airport onboarding. Its
+-  design, including GFS v17, is set before any build.
++- **G. Live product, version 1: live** (D103, D105.2). For every GFS
++  cycle, a corrected hourly curve at leads 3 to 48 and each local day's
++  maximum, on GFS only, with the weather model as a setting. It runs at
++  49 airports in the public repository
++  [zadams03/MLwx-live](https://github.com/zadams03/MLwx-live), with a page
++  at https://zadams03.github.io/MLwx-live/. Each forecast is written once
++  to a log that is never edited (D103.8). The forecasts are under a
++  pre-registered test (D105.5); no accuracy figure is computed or shown
++  before its look (D103.2, D105.6).
+ - **D.** Correct each other weather model on its own.
+ - **E.** Blend and stack the corrected models.
+ - **F.** An upgrade policy for when a weather model changes version,
+@@ -239,12 +245,15 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
+ |---|---|---|
+ | Start here | `README.md` | This file. |
+ | | [RESULTS.md](RESULTS.md) | The results in one place, each number cited to its entry. |
+-| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. |
++| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. figures/analysis/ holds the figures of ANALYSIS.md. |
+ | The research record | [SPEC.md](SPEC.md) | The source of truth for how the project should work. |
+-| | [DECISIONS.md](DECISIONS.md) | The append-only log of decisions (D) and findings (F). |
++| | [DECISIONS.md](DECISIONS.md) | The live log of decisions (D) and findings (F); settled entries move to the archive (D93.8). |
+ | | [DECISIONS-archive.md](DECISIONS-archive.md) | Settled entries moved out of DECISIONS.md word for word. |
+ | | [STATUS.md](STATUS.md) | A snapshot of where the project is now. |
++| | [ANALYSIS.md](ANALYSIS.md) | Descriptive analysis on spent data: a field guide, comparisons with other forecasts and ideas for later. Never a source of rules or claims (D107.2). |
+ | Code and data | [scripts/](scripts/README.md) | The code, named by the session that wrote it. |
++| | [src/mlwx/](src/mlwx/) | The live tool's code, a Python package (stage G, D103.3). |
++| | [deploy/mlwx-live/](deploy/mlwx-live/) | The template for the MLwx-live repository's files and workflow (D105.9). |
+ | | [tests/](tests/README.md) | Offline checks of the leakage guards, the archive tool and recorded figures. |
+ | | [data/](data/README.md) | Raw pulls, built tables, frozen models and rebuild checks. |
+ | | [requirements.txt](requirements.txt) | The pinned Python packages, with setup notes. |
+diff --git a/data/README.md b/data/README.md
+index 6bb1297..fd60c9e 100644
+--- a/data/README.md
++++ b/data/README.md
+@@ -33,7 +33,12 @@ Built tables and result files. Most are named by the session that wrote
+ them (for example `session63_reserved_confirm_grid.csv`, the F109
+ results, or `session97_stagec_cv_scores.csv`, stage C's build-choice
+ scores, F139). The `grib_features_*` files are the richer method's GRIB
+-feature tables (sessions 37 and 40).
++feature tables (sessions 37 and 40). Folders named by session hold one
++piece of work's outputs: for example `session112_analysis/` and
++`session114_comparisons/` (ANALYSIS.md), `session113/` (the comparison
++forecasts and official maxima on spent years, credited in the root
++README's section 9), and `session120_audit/` and `session121_audit/` (the
++health check).
+ 
+ ## models/
+ 
+diff --git a/docs/README.md b/docs/README.md
+index a7d94d7..6dc4e06 100644
+--- a/docs/README.md
++++ b/docs/README.md
+@@ -31,4 +31,7 @@ re-run.
+   and reasoning of that time; its own text says the project's files win
+   wherever they disagree with it.
+ 
+-These files are part of the record and are not edited after the fact.
++The session prompts, the commit messages and the handover note are part of
++the record and are not edited after the fact. PROJECT-INSTRUCTIONS.md is a
++live guide; a session edits it only when its prompt says exactly what to
++change.
+diff --git a/notes/README.md b/notes/README.md
+index a57b95d..0c67c2c 100644
+--- a/notes/README.md
++++ b/notes/README.md
+@@ -10,6 +10,9 @@ in the record can be traced to what a script printed.
+   `session-NN.md` in [../docs/sessions/](../docs/sessions/).
+ - **Audit reports:** `audit-session-*.md`, the four audit reports written
+   in sessions 66 to 68b and triaged in DECISIONS D62.
++- **Health check registers:** `session-120-register.csv` and
++  `session-121-register.csv`, one row per item checked by the project
++  health check's two audits (D114.7).
+ - **Other records** that DECISIONS names, such as
+   `session-34-archive-manifest.md` (D46).
+ 
+diff --git a/scripts/README.md b/scripts/README.md
+index ff569bd..1b92c6d 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -17,6 +17,22 @@ earlier ones by SHA-256 (a file fingerprint) before they import them (for
+ example, `session97_stagec_cv.py` checks `session62_reserved_confirm.py`
+ against D70.2). Renaming or editing a script would break that chain (D91.2).
+ 
++## Scripts to run only in a clone
++
++- `session63_join_equivalence_check.py` and
++  `session63_wiring_scratch_check.py` rewrite their committed output
++  files in `../notes/` each time they run:
++  `session63-join-equivalence-check-output.txt` and
++  `session63-wiring-scratch-check-output.txt`. Run them only in a
++  temporary clone; the committed notes files are not edited (C11, D116.9).
++- `session76b_check_a.py` and `session76b_check_b.py` are write-once:
++  each stops if its two output files in `../data/rebuild/session76b/`
++  already exist (`check_a_rno_decoded_values.csv`,
++  `check_a_rno_compare.csv`, `check_b_ksfo_point_temps.csv` and
++  `check_b_ksfo_monthly.csv`). To run them again, use a temporary clone,
++  move those four committed files aside, run the checks, and compare each
++  new file with its committed copy by `cmp` (D119.2, F168.5).
++
+ ## Frozen scripts: never edited
+ 
+ | script | what it is | entry |
+@@ -94,7 +110,24 @@ re-run must happen in a clean clone (D62.3, D62.6).
+   (F123, F124, F130) and stage C's scoping and airport check (F131, F132).
+ - **Sessions 91 to 98b:** stage C's pull, checks, table and
+   cross-validation (F133 to F139), and this README's figures (F140).
++- **Sessions 100 to 106:** stage C's build choices by cross-validation
++  (the model structure, the drift tracker, the curve and the daily
++  maximum), the table for forecast hours 25 to 48, and the claim
++  airports' tables and look (F150).
++- **Session 108:** the stage C figures in the root README and RESULTS.md.
++- **Session 109:** gates that check the live tool's code
++  (`../src/mlwx/`) against stage C's tables and scores (D103).
++- **Sessions 112 to 119:** the descriptive analysis in `../ANALYSIS.md`
++  and its comparisons with other forecasts (F155, F157, F160, F162), the
++  comparison pull (session 113), the observation checks (F158, F159) and
++  an audit of the live runs (session 118, F161).
++- **Sessions 120 to 123:** the project health check: two audits (F163,
++  F164) and fixes (F165, F166).
++- `../src/mlwx/`: the live tool's package (D103.3). It also holds the
++  airport onboarding and refit of sessions 110 and 111.
+ - `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.
+ 
+ The GitHub Actions workflow (`../.github/workflows/stagec-grib-pull.yml`)
+-runs `session91_grib_pull.py` and `session92_verify_chunk.py`.
++runs `session91_grib_pull.py` and `session92_verify_chunk.py`. The live tool's
++workflow template is `../deploy/mlwx-live/.github/workflows/live.yml`; it runs
++in zadams03/MLwx-live, not here (D105.9).

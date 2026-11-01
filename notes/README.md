@@ -10,6 +10,9 @@ in the record can be traced to what a script printed.
   `session-NN.md` in [../docs/sessions/](../docs/sessions/).
 - **Audit reports:** `audit-session-*.md`, the four audit reports written
   in sessions 66 to 68b and triaged in DECISIONS D62.
+- **Health check registers:** `session-120-register.csv` and
+  `session-121-register.csv`, one row per item checked by the project
+  health check's two audits (D114.7).
 - **Other records** that DECISIONS names, such as
   `session-34-archive-manifest.md` (D46).
 

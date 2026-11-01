@@ -5,8 +5,8 @@ Machine-learning correction of GFS temperature forecasts at airports.
 ## 1. In 30 seconds
 
 GFS is the US National Weather Service's global weather model. At any one
-airport it tends to make the same small temperature error again and again.
-MLwx learns that repeated error from past forecasts and past observations,
+airport it tends to make the same small temperature error repeatedly.
+MLwx learns that error from past forecasts and past observations,
 and corrects new forecasts with it. At five airports, on a reserved year,
 the selected-features method lowers the mean absolute error (MAE, the
 average size of the miss) against raw GFS by 12.2% to 21.0%, and every 95%
@@ -14,9 +14,10 @@ interval lies above zero (F109, F125.6). Each claim came from a single
 look at held-out data, with the pass rule fixed in writing first. Stage
 C's corrected hourly curve and daily maximum, from every GFS run out to 48
 hours, then passed their pre-registered test at 6 of 6 new airports in both
-held-out years (F150). Stage G, the live tool, is next (D102.4).
+held-out years (F150). Stage G, the live tool, is running at 49 airports
+(D103, D105.2): https://zadams03.github.io/MLwx-live/.
 
-This is a research project and a private tool. It is not an operational
+This is a research project with a public live tool. It is not an operational
 forecast, and it must not be used for safety-critical decisions.
 
 Numbers such as F109 or D82 point to entries in the project's decision
@@ -219,10 +220,15 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
 - **C. Hourly curve on GFS: done.** The corrected hourly curve and the
   daily maximum passed their pre-registered test at 6 of 6 new airports
   in both held-out years (D100, F150).
-- **G. Live product, version 1: next** (D102.4). On GFS only, with the
-  weather model as a setting. A daily pipeline, a prediction log that is
-  never edited, a simple display and one-script airport onboarding. Its
-  design, including GFS v17, is set before any build.
+- **G. Live product, version 1: live** (D103, D105.2). For every GFS
+  cycle, a corrected hourly curve at leads 3 to 48 and each local day's
+  maximum, on GFS only, with the weather model as a setting. It runs at
+  49 airports in the public repository
+  [zadams03/MLwx-live](https://github.com/zadams03/MLwx-live), with a page
+  at https://zadams03.github.io/MLwx-live/. Each forecast is written once
+  to a log that is never edited (D103.8). The forecasts are under a
+  pre-registered test (D105.5); no accuracy figure is computed or shown
+  before its look (D103.2, D105.6).
 - **D.** Correct each other weather model on its own.
 - **E.** Blend and stack the corrected models.
 - **F.** An upgrade policy for when a weather model changes version,
@@ -239,12 +245,15 @@ The roadmap runs as stages (SPEC 6, D72). Stages A and B run side by side.
 |---|---|---|
 | Start here | `README.md` | This file. |
 | | [RESULTS.md](RESULTS.md) | The results in one place, each number cited to its entry. |
-| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. |
+| | [figures/](figures/) | The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. figures/analysis/ holds the figures of ANALYSIS.md. |
 | The research record | [SPEC.md](SPEC.md) | The source of truth for how the project should work. |
-| | [DECISIONS.md](DECISIONS.md) | The append-only log of decisions (D) and findings (F). |
+| | [DECISIONS.md](DECISIONS.md) | The live log of decisions (D) and findings (F); settled entries move to the archive (D93.8). |
 | | [DECISIONS-archive.md](DECISIONS-archive.md) | Settled entries moved out of DECISIONS.md word for word. |
 | | [STATUS.md](STATUS.md) | A snapshot of where the project is now. |
+| | [ANALYSIS.md](ANALYSIS.md) | Descriptive analysis on spent data: a field guide, comparisons with other forecasts and ideas for later. Never a source of rules or claims (D107.2). |
 | Code and data | [scripts/](scripts/README.md) | The code, named by the session that wrote it. |
+| | [src/mlwx/](src/mlwx/) | The live tool's code, a Python package (stage G, D103.3). |
+| | [deploy/mlwx-live/](deploy/mlwx-live/) | The template for the MLwx-live repository's files and workflow (D105.9). |
 | | [tests/](tests/README.md) | Offline checks of the leakage guards, the archive tool and recorded figures. |
 | | [data/](data/README.md) | Raw pulls, built tables, frozen models and rebuild checks. |
 | | [requirements.txt](requirements.txt) | The pinned Python packages, with setup notes. |

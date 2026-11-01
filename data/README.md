@@ -33,7 +33,12 @@ Built tables and result files. Most are named by the session that wrote
 them (for example `session63_reserved_confirm_grid.csv`, the F109
 results, or `session97_stagec_cv_scores.csv`, stage C's build-choice
 scores, F139). The `grib_features_*` files are the richer method's GRIB
-feature tables (sessions 37 and 40).
+feature tables (sessions 37 and 40). Folders named by session hold one
+piece of work's outputs: for example `session112_analysis/` and
+`session114_comparisons/` (ANALYSIS.md), `session113/` (the comparison
+forecasts and official maxima on spent years, credited in the root
+README's section 9), and `session120_audit/` and `session121_audit/` (the
+health check).
 
 ## models/
 

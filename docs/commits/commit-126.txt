@@ -1,0 +1,31 @@
+Session 126: health check fix group (6), the README update (D120, F169)
+
+The last fix group of the project health check. Documentation only: no
+script, test, data file, figure, model or SPEC changed, and no network
+was used. No 2026-27 value was read or scored.
+
+README.md: section 1 now says stage G, the live tool, is running at 49
+airports, with its page link, and the goal reads "a research project with
+a public live tool" (D118.5). Section 5's stage G entry says it is live,
+names the public repository and page, the never-edited log, and the
+pre-registered live test with no accuracy figure before its look. Section
+6's map adds ANALYSIS.md, src/mlwx/, deploy/mlwx-live/ and
+figures/analysis/, and describes DECISIONS.md as the live log. Section 9
+(data credits) is byte-equal. The owner also changed "again and again"
+to "repeatedly", and "that repeated error" to "that error", in
+section 1's opening, for clarity.
+
+scripts/README.md: describes the scripts of sessions 100 to 123 and the
+live tool's package and workflow template, and adds a section on four
+check scripts to run only in a clone (session 63's two rewrite their
+notes outputs; session 76b's two are write-once).
+
+data/, docs/ and notes/ READMEs: one line each (the session output
+folders, what is not edited after the fact, and the health check
+registers). ANALYSIS.md: one ECMWF credit paragraph in its header; Part 1
+onwards is byte-equal and session 122's --verify passes before and after.
+
+Checks: 195 tests pass; SPEC 3.4's span unchanged; citations 220 of 220
+resolve; scope clean. D120 archives D114, D115, D119, F163, F164 and
+F168. Live index: D93, D103, D105, D118, D120, F169. DECISIONS.md is
+33,687 bytes. The health check is finished; next is the longer-term plan.

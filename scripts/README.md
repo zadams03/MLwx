@@ -17,6 +17,22 @@ earlier ones by SHA-256 (a file fingerprint) before they import them (for
 example, `session97_stagec_cv.py` checks `session62_reserved_confirm.py`
 against D70.2). Renaming or editing a script would break that chain (D91.2).
 
+## Scripts to run only in a clone
+
+- `session63_join_equivalence_check.py` and
+  `session63_wiring_scratch_check.py` rewrite their committed output
+  files in `../notes/` each time they run:
+  `session63-join-equivalence-check-output.txt` and
+  `session63-wiring-scratch-check-output.txt`. Run them only in a
+  temporary clone; the committed notes files are not edited (C11, D116.9).
+- `session76b_check_a.py` and `session76b_check_b.py` are write-once:
+  each stops if its two output files in `../data/rebuild/session76b/`
+  already exist (`check_a_rno_decoded_values.csv`,
+  `check_a_rno_compare.csv`, `check_b_ksfo_point_temps.csv` and
+  `check_b_ksfo_monthly.csv`). To run them again, use a temporary clone,
+  move those four committed files aside, run the checks, and compare each
+  new file with its committed copy by `cmp` (D119.2, F168.5).
+
 ## Frozen scripts: never edited
 
 | script | what it is | entry |
@@ -94,7 +110,24 @@ re-run must happen in a clean clone (D62.3, D62.6).
   (F123, F124, F130) and stage C's scoping and airport check (F131, F132).
 - **Sessions 91 to 98b:** stage C's pull, checks, table and
   cross-validation (F133 to F139), and this README's figures (F140).
+- **Sessions 100 to 106:** stage C's build choices by cross-validation
+  (the model structure, the drift tracker, the curve and the daily
+  maximum), the table for forecast hours 25 to 48, and the claim
+  airports' tables and look (F150).
+- **Session 108:** the stage C figures in the root README and RESULTS.md.
+- **Session 109:** gates that check the live tool's code
+  (`../src/mlwx/`) against stage C's tables and scores (D103).
+- **Sessions 112 to 119:** the descriptive analysis in `../ANALYSIS.md`
+  and its comparisons with other forecasts (F155, F157, F160, F162), the
+  comparison pull (session 113), the observation checks (F158, F159) and
+  an audit of the live runs (session 118, F161).
+- **Sessions 120 to 123:** the project health check: two audits (F163,
+  F164) and fixes (F165, F166).
+- `../src/mlwx/`: the live tool's package (D103.3). It also holds the
+  airport onboarding and refit of sessions 110 and 111.
 - `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.
 
 The GitHub Actions workflow (`../.github/workflows/stagec-grib-pull.yml`)
-runs `session91_grib_pull.py` and `session92_verify_chunk.py`.
+runs `session91_grib_pull.py` and `session92_verify_chunk.py`. The live tool's
+workflow template is `../deploy/mlwx-live/.github/workflows/live.yml`; it runs
+in zadams03/MLwx-live, not here (D105.9).
