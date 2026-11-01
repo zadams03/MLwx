@@ -46,19 +46,23 @@ The airports so far:
   D69). Its result is for the recipe at a sea-mixed grid point and is not
   directly comparable with the five airports above (DECISIONS D71.5).
 
+Stage C's claim was run at six further airports: Munich (EDDM), Chicago
+O'Hare (KORD), Toronto Pearson (CYYZ), Shenzhen (ZGSZ), Chongqing (ZUCK)
+and Wellington (NZWN) (section 9.5; DECISIONS D100, F150). The live
+product (stage G) runs at 49 airports (DECISIONS D103.4, D105.2).
+
 **The list is open-ended and more airports may follow.** Each airport's own
 facts — its code, its position, the forecast grid point it maps to, when it
 reports, and its target hour — live in the airport table in section 3.4.
 Everything else in this file is shared by all of them.
 
-The end goal is a private, live tool for ten or more airports that
-corrects every GFS run (four a day), as each run arrives, into an
-hourly temperature curve out to the forecast horizon, plus the daily
-maximum. The horizon is 24 hours first and 48 hours later. Then come
-a choice of which weather model is corrected, plus a blend, and
-probabilistic ranges (DECISIONS D72.1, reworded by D82.2). That is
-the destination, not the starting point. See section 6 for the
-roadmap.
+The end goal is a live tool for ten or more airports that corrects
+every GFS run (four a day), as each run arrives, into an hourly
+temperature curve out to 48 hours ahead, plus the daily maximum. Then
+come a choice of which weather model is corrected, plus a blend, and
+probabilistic ranges (DECISIONS D72.1, reworded by D82.2 and D118.5).
+Version 1 is live and public (DECISIONS D103.9, D105.2). That is the
+destination, not the starting point. See section 6 for the roadmap.
 
 ---
 
@@ -736,6 +740,11 @@ side, because both are time-critical.
   DECISIONS D77, and the comparison on the spent years is recorded in
   F127. The direction decision is recorded in DECISIONS D78.1: option (d),
   neither; the roadmap carries on as D72 sets it.
+- **Descriptive analysis on spent data.** Comparisons with other
+  forecasts, and a field guide to the current models, on spent data
+  only, are in `ANALYSIS.md` (DECISIONS D106 to D113). It is
+  descriptive: never a source of rules or claims (DECISIONS D107.2,
+  D118.7).
 - **Stage B — forward test and data collection.** Pre-register the
   2026-27 forward test of section 8's recipe on GFS, split at the GFS
   v17 go-live date (DECISIONS D72.5). For any source with no
@@ -749,7 +758,9 @@ side, because both are time-critical.
   their gates (DECISIONS D79, F129). The non-US competitor probe
   (DECISIONS D78.3) found that DWD's MOSMIX keeps only about two days of
   issues (F130); daily saves of MOSMIX_L single-station files are chosen
-  in DECISIONS D81.
+  in DECISIONS D81. A second test on 2026-27 data, of stage G's live
+  forecasts as issued, is pre-registered separately in DECISIONS D105.5;
+  neither test's result changes the other.
 - **Stage C — widen the target, on GFS only.** Correct every GFS run
   into an hourly temperature curve, plus the daily maximum, for
   forecast hours 0 to 24 first and to 48 later. Written with the
@@ -773,12 +784,16 @@ side, because both are time-critical.
   as an input where it exists. This chooses which inputs go forward.
 - **Stage F — upgrade policy.** What happens when any weather model
   changes version, starting with GFS v17.
-- **Stage G — live product, version 1.** A daily pipeline, a
-  prediction log that is never edited, a simple display, and
-  one-script airport onboarding. It comes straight after stage C, on
-  GFS only, with the weather model as a setting; its design includes
-  how it handles GFS v17. Stages D, E, F and H follow it, with their
-  scope unchanged (DECISIONS D102.4).
+- **Stage G — live product, version 1.** For every GFS cycle (four a
+  day), a corrected hourly curve at leads 3 to 48 and each local day's
+  maximum, a prediction log that is never edited, a simple page, and
+  one-script airport onboarding, on GFS only, with the weather model as
+  a setting; its design includes how it handles GFS v17 (DECISIONS
+  D102.4, D103). It is live at 49 airports, in the public repository
+  zadams03/MLwx-live (DECISIONS D103.9, D105.2). Its forecasts are
+  under the test of DECISIONS D105.5; no accuracy figure is computed or
+  shown before its look (DECISIONS D103.2, D105.6). Stages D, E, F and
+  H follow it, with their scope unchanged (DECISIONS D102.4).
 - **Stage H — probabilistic forecasts.** Ranges with stated odds,
   judged against their own bar, fixed before running.
 - **Pooling (conditional).** Combining airports into one model with
@@ -792,8 +807,9 @@ blend) is stages D and E; former stage 5 (widen the target, and the
 48-hour lead) is stage C; former stage 6 (live product) is stage G.
 
 *(Of the roadmap stages, only stage C has a section of its own (9),
-written at its lock (DECISIONS D82.5, D100); the others will not until
-the owner opens them. Stage 2 needs no section of its own,
+written at its lock (DECISIONS D82.5, D100). Stage G has none: its
+design stays in DECISIONS (D103, D105, D112.6, D117; DECISIONS D118.6).
+The others will not have one until the owner opens them. Stage 2 needs no section of its own,
 however many airports it comes to hold: the sections above are written
 per airport, so opening one means adding a row to the airport table,
 not adding a design.)*
@@ -1257,6 +1273,6 @@ the curve's -0.05, and the correction gave about a third of the gain
 (MAE: raw GFS 1.3307, baseline 1.2566, curve 1.2214).
 
 **9.6 Caveats.** All data is GFS v16; GFS v17 is stage B's and stage F's
-question. Three claim airports have sea in their grid box (CYYZ, ZGSZ,
+question, and stage G's (DECISIONS D103.10). Three claim airports have sea in their grid box (CYYZ, ZGSZ,
 NZWN). The MAE of an hourly curve or of a daily maximum is not comparable
 with sections 3 to 8's one-hour results.

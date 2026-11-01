@@ -327,6 +327,9 @@ the reasoning behind each step. The full working record is in
 The data is not covered by the code licence. It stays under its sources'
 terms. The terms below were read from each source's own page on
 2026-09-29 (F126.3), except NBM's, which were read on 2026-10-07 (D91.5).
+The terms of the sources added in session 124 (ECMWF IFS and AIFS, NBS,
+the CLI reports and GHCN-Daily), and MAV's own, were read on 2026-11-01
+(D118.12).
 
 - **Open-Meteo** (Previous Runs API, `previous-runs-api.open-meteo.com`).
   Supplied past GFS forecasts for the minimal method. Data offered under
@@ -362,7 +365,11 @@ terms. The terms below were read from each source's own page on
 - **NOAA National Blend of Models (NBM)** (read from NOAA's NBM archive on
   AWS, bucket `noaa-nbm-grib2-pds`). Supplied the 2 m temperature values
   for the comparison on the spent years, committed in
-  `data/processed/session85_competitor_points.csv` (F127.3). The AWS
+  `data/processed/session85_competitor_points.csv` (F127.3). The NBM
+  grid values at the four grid points around KDSM, KRNO, KSFO, KORD and
+  CYYZ, for the descriptive comparisons on spent years, are committed in
+  `data/processed/session113/` (`nbm_*.csv.gz`, with their manifest and
+  grid positions; D107.4). The AWS
   registry page (https://registry.opendata.aws/noaa-nbm) says NOAA
   requests attribution for unaltered NOAA data, that it is not permitted
   to state or imply endorsement by or affiliation with NOAA, and that
@@ -371,10 +378,87 @@ terms. The terms below were read from each source's own page on
 - **NWS GFS MOS (MAV), through the IEM archive** (`api/1/mos.json`).
   Supplied the MOS values at DSM for the same comparison. The 365 raw
   responses are committed unchanged in `data/raw/iem_mos/session85/`
-  (F127.3). Their own terms were not fetched.
-- **Probed only, no data committed** (F123, F124.4): ECMWF IFS and AIFS
-  open data, DWD ICON, NOAA GEFS, Google WeatherNext, and Open-Meteo
-  Single Runs. Each was checked read-only for archive depth and fields.
+  (F127.3). MAV values at KDSM, KRNO, KSFO and KORD, for the descriptive
+  comparisons on spent years, are committed in
+  `data/processed/session113/` (`mav_*.csv.gz`, with the queries;
+  D107.4), read through IEM's `cgi-bin/request/mos.py`. The IEM's
+  disclaimer (above) says its materials are in the public domain. The
+  NWS's own page says its information is in the public domain and may be
+  used for any lawful purpose, as long as you do not claim it as your
+  own, imply endorsement by or affiliation with NOAA or the NWS, or
+  change it and present it as official government material. Page:
+  https://www.weather.gov/disclaimer. No credit is required; the IEM
+  would appreciate credit to the Iowa Environmental Mesonet of Iowa
+  State University.
+- **ECMWF IFS and AIFS open data** (the AWS copy of ECMWF's open data,
+  bucket `ecmwf-forecasts`). Supplied ECMWF's 2 m temperature forecasts,
+  and its maximum 2 m temperature field, at the four grid points around
+  each of the 12 airports of D103.4, for the descriptive comparisons on
+  spent years (`ANALYSIS.md`). Committed in `data/processed/session113/`
+  (`ifs_*.csv.gz` and `aifs_*.csv.gz`, with their manifests, grid
+  positions and terrain files; D107.4). The values are decoded from
+  ECMWF's GRIB2 files and kept at full precision in kelvin; the only
+  change is that just these points and fields are kept, as CSV files.
+  The data is published under the Creative Commons Attribution 4.0
+  licence (CC BY 4.0) and ECMWF's Terms of Use: it may be shared and
+  used, also commercially, if ECMWF is credited as the source, the
+  licence is linked and any changes are stated. ECMWF gives no warranty
+  and accepts no liability for the data. Pages:
+  https://www.ecmwf.int/en/forecasts/datasets/open-data,
+  https://www.ecmwf.int/en/forecasts/datasets/aifs-machine-learning-data
+  and the terms, https://apps.ecmwf.int/datasets/licences/general/.
+  Credit, in the wording ECMWF asks for: Copyright "© 2023-2026 European
+  Centre for Medium-Range Weather Forecasts (ECMWF)". Source:
+  www.ecmwf.int. This data is published under a Creative Commons
+  Attribution 4.0 International (CC BY 4.0) licence,
+  https://creativecommons.org/licenses/by/4.0/. ECMWF does not accept
+  any liability whatsoever for any error or omission in the data, their
+  availability, or for any loss or damage arising from their use. The
+  results in `ANALYSIS.md` on these values are based on data and
+  products of the European Centre for Medium-Range Weather Forecasts
+  (ECMWF).
+- **NWS NBM station text (NBS), through the IEM archive**
+  (`cgi-bin/request/mos.py`, model NBS). Supplied the NBS values at
+  KDSM, KRNO, KSFO, KORD and CYYZ for the descriptive comparisons on
+  spent years. Committed in `data/processed/session113/`
+  (`nbs_*.csv.gz`, with the queries; D107.4), as issued in whole degrees
+  F and also converted exactly to degrees C. Terms as for MAV above: the
+  IEM's materials and the NWS's information are in the public domain,
+  under the NWS's conditions (https://www.weather.gov/disclaimer,
+  https://mesonet.agron.iastate.edu/disclaimer.php). No credit is
+  required; the IEM would appreciate credit to the Iowa Environmental
+  Mesonet of Iowa State University.
+- **NWS daily climate reports (CLI), through the IEM archive**
+  (`json/cli.py`). Supplied the official daily maximum at KDSM, KRNO,
+  KSFO and KORD (D107.8). Committed in
+  `data/processed/session113/official_cli.csv.gz`, with
+  `official_agreement.csv` (the count of days on which CLI and
+  GHCN-Daily agree). Terms as for MAV above. No credit is required; the
+  IEM would appreciate credit to the Iowa Environmental Mesonet of Iowa
+  State University.
+- **GHCN-Daily, NOAA National Centers for Environmental Information
+  (NCEI)** (Access Data Service, `www.ncei.noaa.gov/access/services/data/v1`,
+  dataset `daily-summaries`, TMAX). Supplied the cross-check of the
+  official daily maximum at four US stations: USW00014933 (KDSM),
+  USW00023185 (KRNO), USW00023234 (KSFO) and USW00094846 (KORD)
+  (D107.8). Committed in `data/processed/session113/official_ghcn.csv.gz`.
+  NCEI's page sets no limit on use or sharing; it gives no warranty and
+  asks users to cite the dataset. Neither page has a note on data
+  exchanged under WMO Resolution 40, and all four stations are US
+  stations. Pages:
+  https://www.ncei.noaa.gov/metadata/geoportal/rest/metadata/item/gov.noaa.ncdc:C00861/html
+  and https://www.ncei.noaa.gov/pub/data/ghcn/daily/readme.txt. Credit,
+  in the form NCEI asks for: Menne, M.J., I. Durre, B. Korzeniewski, S.
+  McNeill, K. Thomas, X. Yin, S. Anthony, R. Ray, R.S. Vose, B.E.
+  Gleason, and T.G. Houston, 2012: Global Historical Climatology
+  Network - Daily (GHCN-Daily), Version 3 (TMAX at the four stations above).
+  NOAA National Climatic Data Center. doi:10.7289/V5D21VHZ, accessed
+  2026-10-15. Also: Menne, M.J., I. Durre, R.S. Vose, B.E. Gleason, and
+  T.G. Houston, 2012: An overview of the Global Historical Climatology
+  Network-Daily Database. Journal of Atmospheric and Oceanic Technology,
+  29, 897-910, doi:10.1175/JTECH-D-11-00103.1.
+- **Probed only, no data committed** (F123, F124.4): DWD ICON, NOAA
+  GEFS, Google WeatherNext, and Open-Meteo Single Runs. Each was checked read-only for archive depth and fields.
   Their terms were not fetched.
 
 ## 10. Licence

@@ -46,6 +46,7 @@ except what is written down. So the governing principle is:
 | `DECISIONS.md` | The live log: only the entries in its Live index (D93.8) | The binding record, cited as (Dxx)/(Fxx). |
 | `DECISIONS-archive.md` | Every settled entry, verbatim | Still binding. In Project knowledge for search only; never read in full. |
 | `RESULTS.md` | The results narrative (all three methods) | Draws from SPEC/DECISIONS; read only when needed. |
+| `ANALYSIS.md` | Descriptive analysis on spent data: field guide, comparisons, candidates | Read only when needed. Never a source of rules (D107.2). |
 | `CLAUDE.md` | Claude Code's execution discipline | Governs sessions, not planning. |
 | `PROJECT-INSTRUCTIONS.md` | This guide: how planning chats work. Kept in docs/ | Planning side only. Claude Code edits it only when a session prompt says exactly what to change. |
 | Project **memory** | Durable reasoning and preferences | Inherited automatically by every chat. |
@@ -80,7 +81,7 @@ For each planning session:
 
 1. **Draft the next session as a file** — `docs/sessions/session-NN.md`, a self-contained prompt for Claude
    Code — **plus** a one-line invocation Zac pastes into a fresh Claude Code terminal. Never dump raw
-   instructions into chat for Zac to relay. **Deliver it straight into the repo:** the Filesystem desktop extension gives planning chats access to docs/ and notes/ by default. Load its tools with tool_search, confirm the allowed folders with list_allowed_directories, check that no file of that name already exists, then write it. If the tools aren't available, fall back to a downloadable file.
+   instructions into chat for Zac to relay. **Deliver it straight into the repo:** the planning chat asks for access to `~/Coding Projects/MLwx-all` through the linked computer and writes with its shell (D118.11). It writes only into docs/sessions/ and docs/commits/ (section 1), after checking that no file of that name exists. Reading a file this way puts its contents into the chat, so it reads only the lines it needs. If the computer is not linked, fall back to a downloadable file.
 2. **Zac runs it** in a fresh Claude Code terminal; the session stops at its end-of-session steps
    and waits.
 3. **Zac tells the planning chat the session has finished** (pasting its chat summary if useful); the planning chat reads the real output from notes/.
@@ -98,27 +99,30 @@ The invocation Zac pastes into a fresh Claude Code conversation is fixed (D93.16
 
 ## 5. Syncing Project knowledge (anti-staleness: you own this)
 
-After Zac has committed and pushed a reviewed session, **the planning chat
-copies every changed file into Project knowledge itself** (D93.15). Never
-sync before the commit: Project knowledge must match the committed repo.
+After Zac has committed and pushed a reviewed session, **the planning
+chat copies every changed file into Project knowledge itself** (D93.15(b),
+D118.8). Never sync before the push: Project knowledge must match the
+committed repo.
 
 - **Which files:** `STATUS.md` every session; `DECISIONS.md` and
   `DECISIONS-archive.md` whenever they changed (almost every session);
-  `SPEC.md`, `RESULTS.md`, `CLAUDE.md` and `docs/PROJECT-INSTRUCTIONS.md`
-  (kept in Project knowledge as `PROJECT-INSTRUCTIONS.md`) only when the
-  session edited them. `DECISIONS-archive.md` is kept in Project knowledge
-  as `claude/DECISIONS-archive.md`.
-- **How:** stage each file from the linked computer into the workspace,
-  copy it into the working directory, and write it with project_write's
-  `local_path` to the same Project-knowledge path, so its contents never
-  enter the chat. Then check the staged file's byte size against the repo
-  file's.
-- **If it fails** (the computer is not linked or asleep, or a write is
-  refused): say so plainly and give Zac the list of files to upload by
-  hand, for example *"Upload to Project knowledge: STATUS.md,
-  DECISIONS.md."*
-- **Size:** Project knowledge holds at most 2 MB. Report the total after
-  each sync; above 1.6 MB is an ACTION NEEDED item.
+  `SPEC.md`, `RESULTS.md`, `ANALYSIS.md`, `CLAUDE.md` and
+  `docs/PROJECT-INSTRUCTIONS.md` (kept as `PROJECT-INSTRUCTIONS.md`) only
+  when the session changed them. Every file sits at Project knowledge's
+  root under its own name, the archive included (D115.3).
+- **How:** clone the public MLwx repo fresh from GitHub into the chat's
+  cloud workspace, check that its HEAD is the pushed commit, copy each
+  file into the working directory, and write it with project_write's
+  `local_path` to the same path, so its contents never enter the chat.
+- **If it fails** (no network, or a write refused): say so plainly and
+  give Zac the files to upload by hand, each with its byte size in the
+  repo, for example *"Upload to Project knowledge: STATUS.md (7,683
+  bytes)."* Zac checks each size after uploading (D115.2).
+- **Size:** after the sync, read `knowledge_size` and
+  `max_knowledge_size` from project_info and report both. They share the
+  Project's own unit, which is not bytes (probably tokens, unconfirmed;
+  D115.5, D118.8). Above 80 % of the maximum (1,600,000 of 2,000,000) is
+  an ACTION NEEDED item. Repo byte totals are not used for this rule.
 
 ---
 
@@ -206,6 +210,10 @@ prompt beforehand. House style:
   identically at every airport, and are never quoted as results.
 - **Forward years.** Once any part of a forward year (e.g. 2026-27) has
   been scored, no new test may be pre-registered on it.
+- **The live test (D105.5) is locked.** No accuracy figure for the live
+  forecasts is computed or shown until its look (D103.2). Neither the
+  planning chat nor Zac computes an error from MLwx-live's log,
+  observation snapshots or page before a look (D105.6).
 - **Same features at every airport, always.** No per-airport feature selection — it is selection
   bias and it breaks the "recipe travels" result. Per-airport *patterns* are read as insight, never
   acted on as per-airport recipes.

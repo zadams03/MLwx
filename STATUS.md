@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 27 October 2026, after session 123._
+_Last updated: 1 November 2026, after session 124._
 
 ---
 
@@ -11,15 +11,15 @@ _Last updated: 27 October 2026, after session 123._
 
 Three proven methods for correcting GFS's local bias at an airport (SPEC
 5.0, 7.5, 8.7; RESULTS.md). F109 stands. Stage C's curve passed its claim
-(F150). End goal as D82.2 words it: a live tool for ten or more airports
-that corrects every GFS run into an hourly curve plus the daily maximum
-(whether "private" still fits is open, F164 row SP05).
+(F150). The end goal (D118.5): a live tool for ten or more airports that
+corrects every GFS run into an hourly curve to 48 hours ahead, plus the
+daily maximum; version 1 is live and public (D103.9).
 
 - **Stage A:** done.
 - **Stage B: the 2026-27 GFS forward test (D73, D77.6, D79; archived,
   still binding).** Pre-registered, models frozen, scripts gated. **None
   has been run.** The hold rule (D73.8) stands. Its three `--guard-check`
-  modes pass (F164.4).
+  modes pass (F167.5).
 - **Stage C: done (D100, F150).** The look is not run again (D101.2).
 - **Descriptive analysis on spent data and the comparisons (D106 to D108,
   D111; F155, F157, F160): done, ECMWF IFS included and closed (D113,
@@ -33,37 +33,39 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   (D110.7).
 - **Stage G, live product v1: live with 49 airports (D105.2, F154.2).**
   Public repo zadams03/MLwx-live, page at
-  https://zadams03.github.io/MLwx-live/. Redeployed 2026-10-20 (D113.2):
-  MLwx-live `0d77fb0`, MLwx `d6ca3e4`, models `gfs-models-49`, schedule
-  :15 and :40. Audited to 2026-10-27T06z (F161, F163.8, F166.2): no cycle
-  lost; the one cycle issued twice (2026-10-17T18z) left only its first
-  file on main, which the live test scores (D113.3).
-- **Fix group (3), MLwx-live: prepared, not yet live (D117, F166).** The
-  template (`deploy/mlwx-live/`) now has the six actions on their first
-  Node.js 24 majors, Python pinned to 3.12.15, no commit, push or page
-  when a run's only change is `last_run.at`, and a corrected README;
-  checked by `tests/test_live_template.py`. It goes live at the owner's
-  redeploy (D117.7), with `MLWX_COMMIT` and `MODELS_TAG` unchanged. D112.8's
-  rule on manual runs holds until then.
-- **Project health check (D112.2 item 3, D114, D115, D116).** Both
-  audits are done: session 120, the code (F163, 55 rows); session 121, the
-  record (F164, 109 rows, one wrong: RM05, README's data credits). Fix
-  groups (1) code and (2) session 114's outputs are done (D116, F165), and
-  group (8) by the owner (D116.1); group (3) is prepared (D117, F166). Session 114's field guide is now
-  rendered and checked by `scripts/session122_analysis.py` (IFS included,
-  IFS figures `figures/analysis/comparison_*_s122.svg`); the gates of
-  sessions 92, 95 and 96 run from `scripts/session122_gates.py`. Next: the
-  remaining fix sessions, each with its own entry; the README update last
-  (D115.7).
-- **SPEC 3.4's span (S05, D115.4).** Lines 252 to 283, SHA-256
-  `a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9`.
-  Every later SPEC edit checks the span is unchanged.
+  https://zadams03.github.io/MLwx-live/. Redeployed 2026-10-27 with fix
+  group (3) (D118.2): MLwx-live `628df88`, `MLWX_COMMIT` `d6ca3e4`,
+  `MODELS_TAG` `gfs-models-49`, schedule :15 and :40, six actions on
+  Node.js 24, Python 3.12.15, no commit or page on a run that changes only
+  `last_run.at`. The template matches the deployed workflow apart from the
+  two `SET-AT-DEPLOY` values (D105.9). Planning-chat check to 2026-11-01
+  00z: every cycle logged, none missing; the 00z cycle's issue lag was
+  about 9.4 h (D118.3). D112.8's rule on manual runs stays: none between
+  :35 and :55 past the hour.
+- **The outside scheduler: closed for v1 (D118.4).** Reopened only by a
+  new entry, if any cycle's issue lag exceeds 12 h.
+- **Project health check (D112.2 item 3, D114 to D118).** Both audits
+  done (F163, F164). Fix groups done: (1) and (2) (D116, F165), (8) by the
+  owner (D116.1), (3) live (D117, F166, D118.2), (7) the record text and
+  (9) the data credits (D118, F167). README section 9 now credits ECMWF
+  IFS and AIFS, the NBM grid, NBS, MAV, CLI and GHCN-Daily, with the terms
+  read on 2026-11-01; none forbids redistribution. Left: group (4) the
+  cache checks, then group (6) the README update, last (D115.7).
+- **SPEC 3.4's span (S05, D115.4).** Lines 256 to 287, 2,050 bytes,
+  SHA-256 `a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9`
+  (unchanged; the lines moved because section 1 grew). Every later SPEC
+  edit checks the span is unchanged.
 - **A pre-registered test of the live forecasts (D105.5, amended by
   D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
   shown until its look (D103.2, D105.6).
-- **Project knowledge (D115.2, D115.3).** The owner uploads by hand after
-  each commit; the planning chat lists each changed file with its repo
-  byte size. The archive sits at the root.
+- **Project knowledge (D118.8).** After the owner commits and pushes, the
+  planning chat clones MLwx fresh from GitHub, checks HEAD is the pushed
+  commit, and writes each changed file with project_write's `local_path`;
+  every file at the root, the archive and ANALYSIS.md included. If a
+  write fails, the owner uploads by hand from a list with repo byte sizes
+  (D115.2). Size rule: `knowledge_size` against `max_knowledge_size`
+  from project_info (one unit, not bytes); above 80 % (1,600,000 of
+  2,000,000) is ACTION NEEDED. On 2026-11-01: 668,149 of 2,000,000.
 - Stages D, E, F and H follow stage G.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
@@ -73,25 +75,18 @@ that corrects every GFS run into an hourly curve plus the daily maximum
 
 ## Open questions (live)
 
-- **The redeploy of MLwx-live (D117.7).** The next owner action: copy the
-  template's workflow and README into MLwx-live, `MLWX_COMMIT` and
-  `MODELS_TAG` unchanged; the deployed values go in the next session's
-  entry.
-- **The remaining fix groups (F163.10, F164.9; order D117.2).** (7) and (9)
-  together next, then (4) the cache checks, when the drive is attached; (6) README last, with C11 (D116.9); (7) the record text (SPEC,
-  RESULTS, CLAUDE with D116.2's test command (CL05), PROJECT-INSTRUCTIONS
-  section 2, 4, 5, 9; STATUS at each overwrite); (9) data credits (RM05):
-  `data/processed/session113/` commits ECMWF IFS and AIFS, NBM grid, NBS,
-  MAV, CLI and GHCN-Daily values, and README section 9 says no ECMWF data
-  is committed; the terms need a session allowed the network.
-- **Rulings still open (group 5).** Is the goal still "private" (SP05,
-  ST02, RM02)? A SPEC section for stage G, or a note that its design stays
-  in DECISIONS (SP07)? A SPEC pointer to ANALYSIS.md (SP08)? The size
-  rule's unit, since the Project's reported size is not bytes (PI07,
-  PK10)? An archive header line on its order (DE03)? Session 86's gate
-  (S06)? The outside scheduler (D112.6(d), D117.4): open, with F166.2's
-  figures (6.8 days of :15 and :40: 12 % of slots run; issue lag median
-  5.70 h, 90th percentile 8.40 h, max 9.20 h; no cycle lost).
+- **The remaining fix groups (D117.2).** (4) the cache checks, when the
+  drive is attached; (6) the README update last, with C11 (D116.9) and
+  README line 19's goal wording (D118.5).
+- **Readings from session 124 (F167.8).** ECMWF's Terms of Use mention a
+  service agreement for services related to the dataset; ECMWF asks for
+  attribution "displayed prominently", which is in README section 9 only
+  (`ANALYSIS.md` and the IFS and AIFS figures carry none); GHCN-Daily's
+  subversion at the pull was not recorded.
+- **Session 86's gate (S06): deferred (D118.10).** If stage B needs
+  `session86_forward_build.py --gate` before period A is scored, the
+  session that prepares stage B's run builds a wrapper with constants
+  checked by a test, as D116.3 did; the frozen script is not edited.
 - **Readings carried (F163.11, F165.11).** Session 63's two check scripts
   rewrite their committed notes outputs when run. Session 109's Gate A
   takes 29.4 min. Under D116.10 a fix to a script whose SHA-256 is
@@ -122,13 +117,12 @@ that corrects every GFS run into an hourly curve plus the daily maximum
   also sets the end of period A in the live test (D105.5(e)).
 - **lightgbm (D93.3).** New scripts may import lightgbm directly.
 - **Frozen scripts (D62.3(a), D93.8; also D70.6, D80.1)** are never
-  edited.
-- **Recorded values in scripts (D98.2).** Held as constants and checked by
-  a test, never found by searching DECISIONS text.
-- **Recorded fingerprints (D116.10).** A script whose SHA-256 is recorded
-  by another script, test or meta file is not edited; a fix goes in a new
-  script that imports it. The eight frozen scripts' SHA-256 are checked by
-  `tests/test_frozen_scripts.py` (D116.4).
+  edited. Their SHA-256 are checked by `tests/test_frozen_scripts.py`
+  (D116.4).
+- **Recorded values in scripts (D98.2)** and **recorded fingerprints
+  (D116.10)**: both now stated in CLAUDE.md.
+- **The planning chat's repo access (D118.11).** Through the linked
+  computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
   195 tests.
 - **Laptop sleep (D86.5)**: unchanged.
@@ -137,4 +131,4 @@ that corrects every GFS run into an hourly curve plus the daily maximum
 
 ## Next
 
-**Next planning session:** Review session 123 and commit; the owner redeploys MLwx-live (D117.7); then plan fix groups (7) and (9) together, with the rulings of D117.2.
+**Next planning session:** Review session 124 and commit; the planning chat syncs Project knowledge (D118.8); then fix group (4) when the drive is attached, or group (6), the README update, last.

@@ -6,8 +6,7 @@ number below is cited to the DECISIONS finding it comes from, so it can be
 checked against the original record. Where `SPEC.md` and this file ever
 disagree, `SPEC.md` is right (CLAUDE.md, SPEC section 2).
 
-Written after session 30, revised after session 44, revised after session
-65, revised after session 79, revised after session 80, revised after session 84. As of session 65, the project has **three** independently-tested,
+Written after session 30, revised after sessions 44, 65, 79, 80, 84, 101, 104, 106, 108 and 124. As of session 65, the project has **three** independently-tested,
 proven methods for correcting GFS's local bias at an airport: a minimal
 three-feature method (sections 2–4 below, the project's original result),
 a richer five-feature method using a different forecast source (section 5,
@@ -19,6 +18,9 @@ five, including Reno. A sixth airport, San Francisco (KSFO), has since
 passed the selected-features method on two pre-registered looks (DECISIONS
 F119, D71). That result is for the recipe at a sea-mixed grid point and is
 not directly comparable with the five earlier airports; see section 6.5.
+Stage C's hourly curve and daily maximum, from every GFS run, have since
+passed their pre-registered claim at six new airports in both held-out
+years (DECISIONS F150; section 7).
 All three results are real and none erases any other
 (DECISIONS D48.13, D59.3) — read together, they tell a three-chapter story
 about what the minimal method's ceiling was, what first addressed it, and
@@ -854,8 +856,8 @@ They now apply to a project with three proven methods, not one.
   are frozen, and its scripts are written and gated; it is scored only
   after each of its periods ends (DECISIONS D73, D77.6, D79). Stage C is
   done: it widens the target from one hour a day to an hourly curve from
-  every GFS run, plus the daily maximum, at 51 airports. Its GFS archive
-  pull to 24 hours ahead is complete, and its build choices are made by
+  every GFS run, plus the daily maximum. Its GFS archive pull covers 51
+  airports (DECISIONS D83.2) and is complete to 24 hours ahead, and its build choices are made by
   time-ordered cross-validation on the six development airports, never
   quoted as results (SPEC 2.5). The curve keeps the proven recipe as one
   model per airport, run time and lead; two pooled structures were tested
@@ -873,16 +875,20 @@ They now apply to a project with three proven methods, not one.
   the daily maximum (DECISIONS F150, SPEC 9.5). Almost all of the gain
   over raw GFS comes from the baseline; the drift correction helps when
   GFS's bias shifts (KORD look B) and is roughly neutral otherwise
-  (DECISIONS D102.2, descriptive). Stage G, the live tool on GFS, comes
-  next; stages D, E, F and H (other weather models, blending, upgrade
-  policy and probabilistic ranges) follow it (DECISIONS D102.4); pooling
-  is conditional.
+  (DECISIONS D102.2, descriptive). Stage G, the live tool on GFS, is
+  live: version 1 has corrected every GFS run since 2026-10-12, at 49
+  airports since 2026-10-13, with a public log and page (DECISIONS D103,
+  D105.2). A test of its forecasts as issued is pre-registered (DECISIONS
+  D105.5); no accuracy figure is computed or shown before its look
+  (DECISIONS D103.2, D105.6). Stages D, E, F and H (other weather
+  models, blending, upgrade policy and probabilistic ranges) follow it
+  (DECISIONS D102.4); pooling is conditional.
 
 ---
 
 *All figures in this file are cited to their DECISIONS.md/SPEC.md source
 and were checked against it when this file was written (session 30),
 revised (session 44, DECISIONS F95), revised again (session 65,
-DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100) and after session 108 (DECISIONS D102). SPEC.md remains the source of truth for how the project
+DECISIONS F110), and revised after session 79 (DECISIONS F120) and after session 80 (DECISIONS F121) and after session 84 (DECISIONS D76, F126) and after session 101 (DECISIONS D95) and after session 104 (DECISIONS D98) and after session 106 (DECISIONS D100) and after session 108 (DECISIONS D102) and after session 124 (DECISIONS D118). SPEC.md remains the source of truth for how the project
 works; this file is a read-only summary of results already on record
 there.*

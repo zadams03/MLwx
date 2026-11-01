@@ -52,6 +52,8 @@ Read on demand only, never routinely:
   then print only that entry's lines. Entry numbers never change, so every
   citation resolves in one of the two files.
 - **RESULTS.md**: the reader-facing summary. Never a source of truth.
+- **ANALYSIS.md**: the descriptive analysis on spent data (D106.14). Never
+  a source of truth or of rules.
 - **Earlier output files in `notes/`**: read only the lines a step needs.
 
 **PROJECT-INSTRUCTIONS.md** (in `docs/`) is the planning chat's guide.
@@ -118,7 +120,14 @@ fix it: report it in the output file as an open question. The owner decides.
 - Because the data sources are live services that can revise data, record the
   pull date and exact query with each raw file, and treat it as a fixed
   snapshot.
-- Frozen scripts are never edited (D62.3(a), restated in D93.8).
+- Frozen scripts are never edited (D62.3(a), restated in D93.8;
+  also D70.6 and D80.1). `tests/test_frozen_scripts.py` checks their SHA-256
+  (D116.4).
+- A script whose SHA-256 is recorded by another script, a test or a data
+  file's meta file is not edited; a fix goes in a new script that imports
+  it (D116.10).
+- A script never finds a recorded value by searching DECISIONS text; it
+  holds it as a constant checked by a test (D98.2).
 
 ## Writing DECISIONS entries (D93.10)
 
@@ -141,7 +150,9 @@ history without a person looking first.
 ## End of every session
 
 1. **Real output.** Run the session's checks and paste the real numbers, not
-   a description of them.
+   a description of them. Run the tests with
+   `.venv/bin/python -m unittest discover -s tests` (D116.2) and give the
+   count.
 2. **Overwrite STATUS.md** as a current-only snapshot: present state, the
    immediate next action, and live open questions. Never append this
    session's write-up to a log. It ends with a "Next planning session" line.
