@@ -634,7 +634,7 @@ session of its own. See DECISIONS D29.
 
 **They were scheduled as part of roadmap stage A** (section 6,
 DECISIONS D72.3). The confidence intervals for the results on record are
-done (DECISIONS F125; RESULTS 6.6). The comparison against operational
+done (DECISIONS F125; RESULTS.md). The comparison against operational
 post-processed forecasts is recorded in DECISIONS F127 (outcome rule
 D77.4). They change
 no earlier verdict. Stage A's own gate (DECISIONS D72.7) decides the

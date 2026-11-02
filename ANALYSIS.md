@@ -8,8 +8,8 @@ ECMWF IFS and AIFS values are based on data and products of the European
 Centre for Medium-Range Weather Forecasts (ECMWF). Copyright © 2023-2026
 ECMWF, published under CC BY 4.0
 (https://creativecommons.org/licenses/by/4.0/); source www.ecmwf.int.
-Only the values at each airport's grid points are kept; see README
-section 9.
+Only the values at each airport's grid points are kept; see README's
+data credits section.
 
 **Status (D106.2, D107, D108).** Descriptive only (SPEC 2.5, as F96). This changes no verdict, model, setting, rule, bar or
 table, and nothing in D73, D77.6 or D105.5. It is not stage C's look: the look script's `--look` mode was not

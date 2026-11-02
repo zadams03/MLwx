@@ -1,21 +1,29 @@
 # scripts/: the project's code
 
+This folder holds all of the project's code, one script per job, named by the session that
+wrote it. A reader will care most about the scripts behind the headline results. The tables
+below list them by result. They include the one-look tests, the cross-validation that chose
+how the hourly curve is built, the claim look, and the scripts that draw the figures. Some
+scripts are **frozen**. Each carries a test whose rules were fixed in writing first, so it is
+never edited: that way the test stays exactly as it was fixed. A test checks the SHA-256 (a
+file fingerprint) of every frozen script. The map of sessions to scripts, and the scripts to
+run only in a clone, are kept as an index for auditors, with their record numbers.
+
 ## How the scripts are named and run
 
-A script named `sessionNN_*.py` was written in session NN. That session's
-prompt is `session-NN.md` in [../docs/sessions/](../docs/sessions/), and its saved
-output is in [../notes/](../notes/README.md). Run a script from the repo
-root with the project's own Python:
+A script named `sessionNN_*.py` was written in session NN. That session's prompt is
+`session-NN.md` in [../docs/sessions/](../docs/sessions/), and its saved output is in
+[../notes/](../notes/README.md). Run a script from the repo root with the project's own
+Python:
 
 ```
 .venv/bin/python scripts/<name>.py
 ```
 
-The names and paths are kept as they are. The record (DECISIONS, SPEC and
-the saved outputs) cites the scripts by path, and later scripts check
-earlier ones by SHA-256 (a file fingerprint) before they import them (for
-example, `session97_stagec_cv.py` checks `session62_reserved_confirm.py`
-against D70.2). Renaming or editing a script would break that chain (D91.2).
+The names and paths are kept as they are. The record (DECISIONS, SPEC and the saved outputs)
+cites the scripts by path, and later scripts check earlier ones by SHA-256 before they import
+them (for example, `session97_stagec_cv.py` checks `session62_reserved_confirm.py` against its
+recorded fingerprint). Renaming or editing a script would break that chain.
 
 ## Scripts to run only in a clone
 
@@ -90,6 +98,7 @@ re-run must happen in a clean clone (D62.3, D62.6).
 | **This README** | | |
 | `session98b_figures.py` | draws the SVG figures in `../figures/` | F140 |
 | `session108_figures.py` | draws stage C's two descriptive figures in `../figures/` from session 107's files | F150, D102.6 |
+| `session127_readme_figures.py` | draws the five figures of the root README and RESULTS.md in `../figures/readme/` from committed result files only; modes `--gate` and `--draw` | D121.5 |
 
 ## Everything else
 
@@ -131,3 +140,14 @@ The GitHub Actions workflow (`../.github/workflows/stagec-grib-pull.yml`)
 runs `session91_grib_pull.py` and `session92_verify_chunk.py`. The live tool's
 workflow template is `../deploy/mlwx-live/.github/workflows/live.yml`; it runs
 in zadams03/MLwx-live, not here (D105.9).
+
+## Where these facts come from
+
+"D" numbers are entries in [../DECISIONS.md](../DECISIONS.md) or its
+[archive](../DECISIONS-archive.md). The map and the section on scripts to run only in a clone
+above keep their own record numbers, as an index for auditors.
+
+| fact in the opening sections | where it is recorded |
+|---|---|
+| Scripts are never renamed or edited, because the record cites them by path and later scripts check earlier ones | D91.2 |
+| `session97_stagec_cv.py` checks `session62_reserved_confirm.py` against its recorded fingerprint | D70.2 |

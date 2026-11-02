@@ -22826,3 +22826,33 @@ re-scored.
 - **F168.5 The first run of 76b failed on a guard planning missed.** Both 76b scripts stop with "exists; not overwriting" when their output files exist, and a clone of HEAD holds the committed copies. The first run stopped there with no cache file read. The owner's correction: the clone's four committed copies were moved to the temporary folder as references and the regenerated files compared by `cmp` (D119.2, amended). The method change was made only in the clone.
 - **F168.6 Readings for the owner.** (1) C12 is answered: the cache, the three scripts and their committed outputs agree, so the record and the cache do not disagree. (2) The first read of the drive hung for several minutes (`ls` of the volume, no output) and then cleared by itself; the cause was not found, so a later cache session should expect a slow start. (3) Check A took 14.1 min, under the 30-minute limit. (4) The write-once guard means the two 76b scripts can be run again only in a clone with their outputs moved; if a note is wanted, it fits group (6)'s `scripts/README.md` line for C11 (D119.4).
 - **F168.7 Not done.** No fix, no edit to a script or committed output, no group (6) work, no edit to the register.
+
+---
+
+## Moved by session 127 (D93.8)
+---
+
+## 2026-11-01: Session 126 decision: F168 accepted, fix group 6 (the README update), and the end of the health check (owner, planning chat)
+
+**D120. Owner decisions, planning chat (after session 125's commit): F168 accepted; session 126 runs fix group (6), the README update, which ends the project health check; and Live index changes.** Written at the start of session 126, before any other edit. No 2026-27 value has been read or scored.
+
+- **D120.1 F168 accepted,** with its readings (F168.6). (4) is done in this session; (2) and (3) are carried in STATUS.
+- **D120.2 Session 126's scope.** D119.4's items, plus F168.6(4): a note in `scripts/README.md` that session 76b's two checks are write-once, so a rerun uses a clone with their four outputs moved aside and compares by `cmp` (D119.2). README line 19 reads "This is a research project with a public live tool." README section 9 is not edited (F167.4). No script, test, data file, figure or SPEC is edited, and no network is used. No logged value, model or live file changes, so D105.5(k) is not engaged.
+- **D120.3 The health check ends with this session (D114.3, D115.7).** The next planning step is the longer-term plan (D112.2 item 5).
+- **D120.4 Live index.** Removed (archived): D114, D115, D119, F163, F164 and F168, which are settled (D115.6's candidate and F168.6's readings are carried in STATUS and `scripts/README.md`). Added: D120 and F169 (F169 when it is written). After session 126: D93, D103, D105, D118, D120, F169.
+
+---
+
+## 2026-11-01: Session 126 finding: fix group (6), the README update, and the end of the health check
+
+**F169. D120 was recorded first. Fix group (6) was done in documentation only: README, `scripts/README.md`, `data/README.md`, `docs/README.md`, `notes/README.md` and one paragraph in `ANALYSIS.md`. No script, test, data file, figure, model or SPEC changed, no network was used, and no 2026-27 value was read or scored. Full output: `notes/session-126-output.txt`. Run 2026-11-01.**
+
+- **F169.1 Start and D120.** HEAD c326483, tree clean (the prompt untracked); 195 tests OK; SPEC 3.4's span unchanged (2,050 bytes, `a02cbe9e...`); `session122_analysis.py --verify` PASS. D120 appended with `sed`, byte-equal by `diff` and `cmp`, 0 em-dashes.
+- **F169.2 README.md (RM01, RM02, RM03, RM04).** Section 1: stage G is live at 49 airports with the page link; line 19 reads "a research project with a public live tool". Section 5: the G bullet says live, names the public repository and page, the write-once log (D103.8) and the pre-registered test (D105.5). Section 6's map: the `figures/` row names `figures/analysis/`; the DECISIONS.md row says "live log"; rows added for ANALYSIS.md, `src/mlwx/` and `deploy/mlwx-live/`. Every path in the map exists; one header row; 5 columns on every line. The old wording ("private", "is next", ": next") is gone from the file.
+- **F169.3 scripts/README.md (RM07, C11, F168.6(4)).** New section "Scripts to run only in a clone", with session 63's two outputs named (`session63-join-equivalence-check-output.txt`, `session63-wiring-scratch-check-output.txt`, both in `notes/`) and session 76b's four write-once files named. Five new bullets for sessions 100 to 106, 108, 109, 112 to 119 and 120 to 123, and one for `../src/mlwx/`; one sentence on the workflow template. Every `session1[0-2][0-9]_*.py` script (19 sessions' worth, 100 to 123) falls in one group.
+- **F169.4 F numbers cited in the new bullets, checked against the headings.** F150 (session 107, the look; its scripts are session 106's), F155 (112), F157 (114), F158 (115), F159 (116), F160 (117), F161 (118), F162 (119), F163 (120), F164 (121), F165 (122), F166 (123). None was wrong, so none was corrected.
+- **F169.5 The other three READMEs and ANALYSIS.md (RM09, RM10, RM11, F167.8(2)).** `data/README.md`: one sentence on the session-named folders under `processed/` (all five exist). `docs/README.md`: the closing sentence is limited to the prompts, commit messages and handover note, and says PROJECT-INSTRUCTIONS.md is a live guide. `notes/README.md`: a bullet for the two health check registers. `ANALYSIS.md`: the ECMWF credit paragraph after the first paragraph.
+- **F169.6 Checks.** README section 9's span (lines 325 to 463, 8,841 bytes) SHA-256 `e76a425d...` before and after: equal. `ANALYSIS.md` from `## Part 1.` to the end (160,088 bytes) SHA-256 `ca39ff6f...` before and after: equal. `session122_analysis.py --verify` PASS again. `git diff --quiet SPEC.md` true; 3.4's span hash unchanged. Nothing under `figures/`, `src/`, `tests/`, `deploy/` changed; under `scripts/` and `data/` only the two README files. 0 em-dashes in the added lines.
+- **F169.7 One test failed in the middle of the session, by design.** After D120 was appended, `test_citations_real_files_resolve` failed with "unresolved F169", because D120.4 cites F169 before it is written. It passes once F169 is in the file (see the output file for the final count).
+- **F169.8 Readings for the owner.** (1) The health check is finished: both audits and all nine fix groups are done (D120.3). (2) The next step is the longer-term plan (D112.2 item 5). (3) The new README bullets summarise by script name, not by a full read of each script; the F numbers were checked, the one-line descriptions come from the prompt.
+- **F169.9 Not done.** No fix beyond group (6)'s listed items; no edit to README section 9, to Part 1 or Part 2 of ANALYSIS.md, or to any script, test, data file or figure; nothing committed.

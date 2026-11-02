@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 1 November 2026, after session 126._
+_Last updated: 2 November 2026, after session 127._
 
 ---
 
@@ -15,6 +15,16 @@ Three proven methods for correcting GFS's local bias at an airport (SPEC
 corrects every GFS run into an hourly curve to 48 hours ahead, plus the
 daily maximum; version 1 is live and public (D103.9).
 
+- **The documents have two audiences (D121.4, F170).** README.md, RESULTS.md
+  and the READMEs in `scripts/`, `data/`, `docs/` and `notes/` are written
+  for people: plain language, no D, F or SPEC numbers in their running text,
+  and a closing "Where these numbers come from" table. Kept as exceptions:
+  README's data credits body, byte-equal (F167.4), and `scripts/README.md`'s
+  per-session map and its clone section. SPEC, DECISIONS, the archive,
+  ANALYSIS.md and `notes/` are the record and keep their form; STATUS,
+  CLAUDE and `docs/PROJECT-INSTRUCTIONS.md` are working files. The new
+  figures are in `figures/readme/`, drawn by
+  `scripts/session127_readme_figures.py` from committed result files only.
 - **Stage A:** done.
 - **Stage B: the 2026-27 GFS forward test (D73, D77.6, D79; archived,
   still binding).** Pre-registered, models frozen, scripts gated. **None
@@ -49,14 +59,14 @@ daily maximum; version 1 is live and public (D103.9).
   F165), (8) by the owner (D116.1), (3) live (D117, F166, D118.2), (7) the
   record text and (9) the data credits (D118, F167), (4) the cache checks
   (D119, F168), (6) the README update (D120, F169; documentation only).
-  README section 9 credits ECMWF IFS and AIFS, the NBM grid, NBS, MAV, CLI
-  and GHCN-Daily, with the terms read on 2026-11-01; none forbids
-  redistribution. `ANALYSIS.md` carries the ECMWF credit too. The three
-  cache checks, run in a clone against the drive, all pass (F168).
+  README's data credits section credits ECMWF IFS and AIFS, the NBM grid,
+  NBS, MAV, CLI and GHCN-Daily, with the terms read on 2026-11-01; none
+  forbids redistribution. `ANALYSIS.md` carries the ECMWF credit too and
+  points to that section by name. The three cache checks, run in a clone
+  against the drive, all pass (F168).
 - **SPEC 3.4's span (S05, D115.4).** Lines 256 to 287, 2,050 bytes,
   SHA-256 `a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9`
-  (unchanged; the lines moved because section 1 grew). Every later SPEC
-  edit checks the span is unchanged.
+  (unchanged). Every later SPEC edit checks the span is unchanged.
 - **A pre-registered test of the live forecasts (D105.5, amended by
   D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
   shown until its look (D103.2, D105.6).
@@ -67,7 +77,31 @@ daily maximum; version 1 is live and public (D103.9).
   write fails, the owner uploads by hand from a list with repo byte sizes
   (D115.2). Size rule: `knowledge_size` against `max_knowledge_size`
   from project_info (one unit, not bytes); above 80 % (1,600,000 of
-  2,000,000) is ACTION NEEDED. On 2026-11-01: 668,149 of 2,000,000.
+  2,000,000) is ACTION NEEDED. On 2026-11-01: 668,149 of 2,000,000. Session
+  127 adds a new script, a new test, five SVG files (about 114 KB) and
+  rewritten documents (README.md and RESULTS.md grew by about 27 KB).
+- **The longer-term plan (D121.2, D121.3).** In this order: (1) session
+  127, the rewrite (done); (2) the MOSMIX saver (D81.2 to D81.5), in its
+  own session; (3) one session for three small items: Gates C and D in
+  `scripts/session109_gates.py` (F154.9(4)), by a new script under D116.10;
+  rows at the airport's own position (iem set) for AIFS and the NBM grid at
+  the development airports, descriptive; and D115.6's question, with its
+  rows, pairing and statistics fixed in its own entry first; (4) stage H on
+  GFS, with its build choices on the development airports (D89); whether
+  to pre-register a range test on 2026-27 is decided early, while no
+  2026-27 value has been scored (SPEC 2.5); (5) stage D, starting with
+  AIFS, then stage E; whether raw AIFS goes straight into the GFS model as
+  inputs is decided when stage D is planned (D72.2(b)); (6) WeatherNext
+  stays deferred (D107.4). A GFS v17 Service Change Notice goes ahead of
+  all of these: one session for the live tool's v17 handling (D103.10) and
+  for preparing stage B's scoring (D73.4, D118.10). Stage B and the live
+  test are scored only when their periods end (D73.8, D105.5).
+- **Rulings on ANALYSIS.md's Part 3 (D121.3).** Candidate 6 (station
+  guidance where it exists) is parked to stage E; any use first needs an
+  owner's ruling on the same-at-every-airport rule (SPEC 2.5). Candidate 7:
+  the daily maximum's target (D82.8) is not changed; an official-figure
+  maximum at US airports may be added later only as a separate, labelled
+  output, by its own entry.
 - Stages D, E, F and H follow stage G.
 - **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
   are lost, which is accepted.
@@ -90,17 +124,12 @@ daily maximum; version 1 is live and public (D103.9).
   recorded goes in a new script; the session 120 audit inventory
   (`scripts.csv`) was not counted as such a record. Session 117's
   `--subset` stops if session 114's script changes, by design.
-- **A candidate for the longer-term plan (D115.6).** Does the curve's
-  correction for a valid hour predict raw GFS's revision for that hour in
-  the next cycle? Descriptive, on spent stage C rows, with its rows,
-  pairing and statistics fixed in its own entry before any value is
-  computed.
-- **The longer-term plan (D112.2 item 5).** Stage B's timing; stages D,
-  E, F and H; ANALYSIS.md's Part 3 candidates 6 and 7 (F157.7); rows at
-  the airport's own position (iem set) for the gridded sources at the
-  development airports; Gates C and D in `scripts/session109_gates.py`
-  (F154.9(4)); WeatherNext, deferred until the owner's access is granted
-  (D107.4); whether to build a MOSMIX saver; and D115.6's candidate.
+- **Readings from session 127 (F170.8).** `tests/README.md` does not yet
+  list `tests/test_session127_figures.py` (out of scope for session 127).
+  The older figures reused in RESULTS.md carry record numbers in their own
+  text. Figure (c) says the live test's rules were written on 14 October
+  2026 and its forecasts logged from 12 October 2026: the lock came after the
+  first cycles and before any scoring.
 - **MMMX coverage (F159.8).** 28,950 usable hours and 104 usable days.
   Seen, not examined.
 
@@ -121,11 +150,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  195 tests.
+  206 tests.
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 126 and commit; the planning chat syncs Project knowledge (D118.8); then plan the longer-term plan (D112.2 item 5), whose items STATUS lists.
+**Next planning session:** Review session 127 and commit; the planning chat syncs Project knowledge (D118.8); then plan the MOSMIX saver (D121.2 item 2).

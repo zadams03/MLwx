@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title id="title">How much lower the error is than raw GFS</title>
+<desc id="desc">Per cent by which the corrected forecast's mean absolute error is lower than raw GFS, first value 2024-25 and second value 2025-26. hourly curve: EDDM 24.83 and 26.96; KORD 14.39 and 8.22; CYYZ 22.04 and 23.48; ZGSZ 21.63 and 23.09; ZUCK 23.91 and 27.07; NZWN 31.71 and 32.99. daily maximum: EDDM 29.14 and 31.44; KORD 9.32 and 2.59; CYYZ 23.19 and 21.22; ZGSZ 40.31 and 39.63; ZUCK 14.84 and 14.14; NZWN 55.74 and 57.21.</desc>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#8fc3e6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#0072B2" stroke-width="2.4"/></pattern></defs>
+<rect x="0" y="0" width="800" height="800" fill="#ffffff"/>
+<text x="20.00" y="30.00" font-size="17" text-anchor="start" fill="#1a1a1a" font-weight="bold">How much lower the corrected forecast's error is than raw GFS</text>
+<text x="20.00" y="52.00" font-size="12" text-anchor="start" fill="#4d4d4d" font-weight="normal">Six new airports, two held-out years. A longer bar is a bigger improvement.</text>
+<rect x="20" y="66" width="16" height="12" fill="#0072B2"/>
+<text x="42.00" y="76.00" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">first year (2024-25)</text>
+<rect x="200" y="66" width="16" height="12" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="222.00" y="76.00" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">second year (2025-26)</text>
+<rect x="400" y="64" width="22" height="16" fill="none" stroke="#D55E00" stroke-width="2" stroke-dasharray="4 2"/>
+<text x="430.00" y="76.00" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">smallest margin in the panel</text>
+<text x="20.00" y="98.00" font-size="11" text-anchor="start" fill="#4d4d4d" font-weight="normal">Error means mean absolute error: the average size of the miss in degrees. Per cent lower = 100 x (1 - corrected error / raw GFS error).</text>
+<text x="20.00" y="124.00" font-size="14" text-anchor="start" fill="#1a1a1a" font-weight="bold">Hourly curve, 3 to 48 hours ahead</text>
+<line x1="175.00" y1="132.00" x2="175.00" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="175.00" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">0</text>
+<line x1="267.50" y1="132.00" x2="267.50" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="267.50" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">10</text>
+<line x1="360.00" y1="132.00" x2="360.00" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="360.00" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">20</text>
+<line x1="452.50" y1="132.00" x2="452.50" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="452.50" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">30</text>
+<line x1="545.00" y1="132.00" x2="545.00" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="545.00" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">40</text>
+<line x1="637.50" y1="132.00" x2="637.50" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="637.50" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">50</text>
+<line x1="730.00" y1="132.00" x2="730.00" y2="372.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="730.00" y="388.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">60</text>
+<line x1="175.00" y1="132.00" x2="175.00" y2="372.00" stroke="#1a1a1a" stroke-width="1"/>
+<text x="452.50" y="406.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">per cent lower than raw GFS</text>
+<text x="165.00" y="155.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Munich (EDDM)</text>
+<rect x="175.00" y="137.00" width="229.64" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="412.64" y="148.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">24.8</text>
+<rect x="175.00" y="153.00" width="249.37" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="432.37" y="164.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">27.0</text>
+<text x="165.00" y="195.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Chicago O'Hare (KORD)</text>
+<rect x="175.00" y="177.00" width="133.11" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="316.11" y="188.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">14.4</text>
+<rect x="175.00" y="193.00" width="76.00" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<rect x="172.00" y="190.00" width="82.00" height="19" fill="none" stroke="#D55E00" stroke-width="2" stroke-dasharray="4 2"/>
+<text x="261.00" y="204.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="bold">8.2  smallest</text>
+<text x="165.00" y="235.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Toronto Pearson (CYYZ)</text>
+<rect x="175.00" y="217.00" width="203.86" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="386.86" y="228.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">22.0</text>
+<rect x="175.00" y="233.00" width="217.23" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="400.23" y="244.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">23.5</text>
+<text x="165.00" y="275.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Shenzhen (ZGSZ)</text>
+<rect x="175.00" y="257.00" width="200.10" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="383.10" y="268.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">21.6</text>
+<rect x="175.00" y="273.00" width="213.56" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="396.56" y="284.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">23.1</text>
+<text x="165.00" y="315.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Chongqing (ZUCK)</text>
+<rect x="175.00" y="297.00" width="221.20" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="404.20" y="308.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">23.9</text>
+<rect x="175.00" y="313.00" width="250.40" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="433.40" y="324.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">27.1</text>
+<text x="165.00" y="355.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Wellington (NZWN)</text>
+<rect x="175.00" y="337.00" width="293.33" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="476.33" y="348.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">31.7</text>
+<rect x="175.00" y="353.00" width="305.16" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="488.16" y="364.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">33.0</text>
+<text x="20.00" y="454.00" font-size="14" text-anchor="start" fill="#1a1a1a" font-weight="bold">Daily maximum temperature</text>
+<line x1="175.00" y1="462.00" x2="175.00" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="175.00" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">0</text>
+<line x1="267.50" y1="462.00" x2="267.50" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="267.50" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">10</text>
+<line x1="360.00" y1="462.00" x2="360.00" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="360.00" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">20</text>
+<line x1="452.50" y1="462.00" x2="452.50" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="452.50" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">30</text>
+<line x1="545.00" y1="462.00" x2="545.00" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="545.00" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">40</text>
+<line x1="637.50" y1="462.00" x2="637.50" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="637.50" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">50</text>
+<line x1="730.00" y1="462.00" x2="730.00" y2="702.00" stroke="#d9d9d9" stroke-width="1"/>
+<text x="730.00" y="718.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">60</text>
+<line x1="175.00" y1="462.00" x2="175.00" y2="702.00" stroke="#1a1a1a" stroke-width="1"/>
+<text x="452.50" y="736.00" font-size="11" text-anchor="middle" fill="#4d4d4d" font-weight="normal">per cent lower than raw GFS</text>
+<text x="165.00" y="485.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Munich (EDDM)</text>
+<rect x="175.00" y="467.00" width="269.51" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="452.51" y="478.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">29.1</text>
+<rect x="175.00" y="483.00" width="290.79" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="473.79" y="494.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">31.4</text>
+<text x="165.00" y="525.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Chicago O'Hare (KORD)</text>
+<rect x="175.00" y="507.00" width="86.18" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="269.18" y="518.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">9.3</text>
+<rect x="175.00" y="523.00" width="23.95" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<rect x="172.00" y="520.00" width="29.95" height="19" fill="none" stroke="#D55E00" stroke-width="2" stroke-dasharray="4 2"/>
+<text x="208.95" y="534.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="bold">2.6  smallest</text>
+<text x="165.00" y="565.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Toronto Pearson (CYYZ)</text>
+<rect x="175.00" y="547.00" width="214.54" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="397.54" y="558.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">23.2</text>
+<rect x="175.00" y="563.00" width="196.30" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="379.30" y="574.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">21.2</text>
+<text x="165.00" y="605.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Shenzhen (ZGSZ)</text>
+<rect x="175.00" y="587.00" width="372.86" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="555.86" y="598.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">40.3</text>
+<rect x="175.00" y="603.00" width="366.55" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="549.55" y="614.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">39.6</text>
+<text x="165.00" y="645.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Chongqing (ZUCK)</text>
+<rect x="175.00" y="627.00" width="137.29" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="320.29" y="638.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">14.8</text>
+<rect x="175.00" y="643.00" width="130.80" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="313.80" y="654.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">14.1</text>
+<text x="165.00" y="685.00" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">Wellington (NZWN)</text>
+<rect x="175.00" y="667.00" width="515.64" height="13" fill="#0072B2" stroke="#0072B2" stroke-width="1"/>
+<text x="698.64" y="678.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">55.7</text>
+<rect x="175.00" y="683.00" width="529.16" height="13" fill="url(#hatch)" stroke="#0072B2" stroke-width="1"/>
+<text x="712.16" y="694.00" font-size="11.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">57.2</text>
+<text x="20.00" y="776.00" font-size="11" text-anchor="start" fill="#4d4d4d" font-weight="normal">Hourly: every hour from 3 to 48 hours ahead. Daily maximum: the day's highest value on the curve. All data is GFS version 16.</text>
+<text x="20.00" y="792.00" font-size="11" text-anchor="start" fill="#4d4d4d" font-weight="normal">Against persistence (repeating the latest observed value for that hour of the day) the margins were larger in every case.</text>
+</svg>

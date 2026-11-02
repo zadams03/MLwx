@@ -1,0 +1,33 @@
+Session 127: the reader-facing documents in plain language, with new figures (D121, F170)
+
+README.md, RESULTS.md and the four folder READMEs are rewritten for
+people: plain language, no D, F or SPEC citations in their running text,
+and a closing "Where these numbers come from" table in each (D121.4). The
+record (SPEC, DECISIONS, the archive, ANALYSIS, notes) keeps its form and
+stays public as the audit trail. Nothing was fitted, scored or fetched;
+no 2026-27 value was read or scored; no logged value, model or live file
+changed.
+
+README.md: leads with the live tool and a headline figure; the idea, the
+results at the six new airports (smallest margin first), how it works,
+how the results were kept honest, how it compares, the live tool,
+limitations and what comes next. The data credits body is byte-equal, now
+under an unnumbered heading. RESULTS.md: the full plain story of the
+three one-hour methods (with F109's caveats and KSFO's framing), the
+hourly curve and daily maximum, the comparisons, the analysis and the
+tests still to come.
+
+New: scripts/session127_readme_figures.py draws five figures into
+figures/readme/ from committed result files only, each value gated
+against the record (gain over raw GFS, how it works, the
+lock-then-look timeline, hourly and daily-maximum comparisons).
+tests/test_session127_figures.py adds 11 tests. SPEC.md and ANALYSIS.md
+each change one pointer; SPEC 3.4's span and ANALYSIS from Part 1 are
+byte-equal, and session 122's --verify passes.
+
+D121 also records the longer-term order (next: the MOSMIX saver), parks
+candidate 6 to stage E, and keeps the daily maximum's target (candidate
+7). Checks: 206 tests pass; citations 218 of 218 resolve; all 41 earlier
+figures unchanged; 0 broken links; scope clean. D121 archives D120 and
+F169. Live index: D93, D103, D105, D118, D121, F170. DECISIONS.md is
+37,646 bytes.

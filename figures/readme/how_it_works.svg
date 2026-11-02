@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="640" viewBox="0 0 800 640" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title id="title">How the corrected forecast is made</title>
+<desc id="desc">Diagram of five steps: the GFS forecast for the airport, the features read from it, one model per airport, run time and forecast hour, the running correction for drifting bias, and the corrected hourly curve with the day's maximum read off it.</desc>
+<defs></defs>
+<rect x="0" y="0" width="800" height="640" fill="#ffffff"/>
+<text x="20.00" y="30.00" font-size="17" text-anchor="start" fill="#1a1a1a" font-weight="bold">How a corrected forecast is made</text>
+<text x="20.00" y="52.00" font-size="12" text-anchor="start" fill="#4d4d4d" font-weight="normal">The same five steps run at every airport, for every GFS forecast.</text>
+<rect x="20" y="74.00" width="760" height="84" rx="8" fill="#f3f4f6" stroke="#4d4d4d" stroke-width="1"/>
+<circle cx="54" cy="116.00" r="16" fill="#0072B2"/>
+<text x="54.00" y="121.00" font-size="15" text-anchor="middle" fill="#ffffff" font-weight="bold">1</text>
+<text x="88.00" y="104.00" font-size="15" text-anchor="start" fill="#1a1a1a" font-weight="bold">GFS forecast for the airport</text>
+<text x="88.00" y="126.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">GFS is the US national weather model. Four times a day we take its forecast</text>
+<text x="88.00" y="144.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">for the spot where the airport is.</text>
+<line x1="54.00" y1="160.00" x2="54.00" y2="178.00" stroke="#4d4d4d" stroke-width="2"/>
+<polygon points="48,176.00 60,176.00 54,184.00" fill="#4d4d4d"/>
+<rect x="20" y="186.00" width="760" height="84" rx="8" fill="#f3f4f6" stroke="#4d4d4d" stroke-width="1"/>
+<circle cx="54" cy="228.00" r="16" fill="#0072B2"/>
+<text x="54.00" y="233.00" font-size="15" text-anchor="middle" fill="#ffffff" font-weight="bold">2</text>
+<text x="88.00" y="216.00" font-size="15" text-anchor="start" fill="#1a1a1a" font-weight="bold">Features read from that forecast</text>
+<text x="88.00" y="238.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">Temperature, cloud, wind, moisture, how fast the air cools with height,</text>
+<text x="88.00" y="256.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">sunshine and pressure change, and the time of year.</text>
+<line x1="54.00" y1="272.00" x2="54.00" y2="290.00" stroke="#4d4d4d" stroke-width="2"/>
+<polygon points="48,288.00 60,288.00 54,296.00" fill="#4d4d4d"/>
+<rect x="20" y="298.00" width="760" height="84" rx="8" fill="#f3f4f6" stroke="#4d4d4d" stroke-width="1"/>
+<circle cx="54" cy="340.00" r="16" fill="#0072B2"/>
+<text x="54.00" y="345.00" font-size="15" text-anchor="middle" fill="#ffffff" font-weight="bold">3</text>
+<text x="88.00" y="328.00" font-size="15" text-anchor="start" fill="#1a1a1a" font-weight="bold">One model per airport, run time and forecast hour</text>
+<text x="88.00" y="350.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">Each model has learned, from past forecasts and what was then observed,</text>
+<text x="88.00" y="368.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">how GFS is usually wrong at that airport. It predicts that error.</text>
+<line x1="54.00" y1="384.00" x2="54.00" y2="402.00" stroke="#4d4d4d" stroke-width="2"/>
+<polygon points="48,400.00 60,400.00 54,408.00" fill="#4d4d4d"/>
+<rect x="20" y="410.00" width="760" height="84" rx="8" fill="#f3f4f6" stroke="#4d4d4d" stroke-width="1"/>
+<circle cx="54" cy="452.00" r="16" fill="#0072B2"/>
+<text x="54.00" y="457.00" font-size="15" text-anchor="middle" fill="#ffffff" font-weight="bold">4</text>
+<text x="88.00" y="440.00" font-size="15" text-anchor="start" fill="#1a1a1a" font-weight="bold">A running correction for drifting bias</text>
+<text x="88.00" y="462.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">A running average of the model's recent misses is added, so the forecast</text>
+<text x="88.00" y="480.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">follows slow shifts in GFS's bias. It uses only misses already observed.</text>
+<line x1="54.00" y1="496.00" x2="54.00" y2="514.00" stroke="#4d4d4d" stroke-width="2"/>
+<polygon points="48,512.00 60,512.00 54,520.00" fill="#4d4d4d"/>
+<rect x="20" y="522.00" width="760" height="84" rx="8" fill="#e8f1f8" stroke="#0072B2" stroke-width="2"/>
+<circle cx="54" cy="564.00" r="16" fill="#0072B2"/>
+<text x="54.00" y="569.00" font-size="15" text-anchor="middle" fill="#ffffff" font-weight="bold">5</text>
+<text x="88.00" y="552.00" font-size="15" text-anchor="start" fill="#1a1a1a" font-weight="bold">The corrected hourly curve</text>
+<text x="88.00" y="574.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">A corrected temperature for every hour from 3 to 48 hours ahead.</text>
+<text x="88.00" y="592.00" font-size="12.5" text-anchor="start" fill="#1a1a1a" font-weight="normal">Each day's highest value on the curve is the daily maximum.</text>
+<text x="20.00" y="626.00" font-size="11" text-anchor="start" fill="#4d4d4d" font-weight="normal">The models are trained once on past years and then frozen; only the running correction in step 4 keeps updating.</text>
+</svg>

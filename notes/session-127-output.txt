@@ -1,0 +1,832 @@
+SESSION 127 OUTPUT: SUMMARY (run 2026-11-02; HEAD fbfca79; nothing committed)
+WHAT WAS DONE: README.md, RESULTS.md and the four folder READMEs rewritten for people (plain language; no D, F or SPEC numbers in running text; a closing "Where these numbers come from" table in each). Kept as exceptions: README's credits body (byte-equal) and scripts/README.md's map and clone section. D121 recorded first. Five new SVG figures drawn into figures/readme/ by the new scripts/session127_readme_figures.py. Two one-line pointers (SPEC, ANALYSIS). F170 written, STATUS overwritten, archive step run (D120 and F169 moved). Nothing fitted, scored or fetched; no 2026-27 value read; no live file read.
+CHECKS
+ PASS  Step 1: HEAD fbfca79, 195 tests OK, SPEC 3.4 span a02cbe9e..., session122_analysis.py --verify.
+ PASS  Step 2: D121 byte-equal to the prompt by diff and cmp; 0 em-dashes.
+ DONE  Step 3: inventory 301 items (README 114, RESULTS 187); carried 295, dropped 6 (each with its reason below).
+ PASS  Step 4: --gate PASS for all five figures; two draws into mktemp -d byte-equal; a second draw into figures/readme refused; each figure looked at on a white and a dark page (headless Chrome; no rsvg-convert or cairosvg, nothing installed).
+ PASS  Step 5 and 6: README credits body SHA-256 = Step 1's; every number in the new running text (README 21, RESULTS 449) is in the record; F109's five caveats and KSFO's framing carried; no accuracy figure for the live tool.
+ PASS  Step 7 and 8: folder READMEs (no fact dropped); git diff SPEC.md is one line; SPEC 3.4 span unchanged; ANALYSIS.md Part 1 to end SHA-256 = Step 1's; --verify PASS.
+ PASS  All 41 earlier files under figures/ unchanged (SHA-256). Running-text citation grep: 0 matches in all six files. 75 links and image paths, 0 broken.
+ FAIL* Sources tables: 120 rows checked against the entries and files they cite; 119 PASS, 1 FAIL by the automatic check: README's "8.2% to 33.0% hourly" (33.0 is F150.2's 32.99 rounded; the row names 32.99). *Reviewed by hand and accepted; the owner may prefer "about 33%" or "32.99%".
+ PASS  --citations: 218 of 218 resolve, 0 doubled, 0 out of order. 0 em-dashes in added lines and new files.
+ PASS  Tests: 206 OK (195 plus 11 new).
+HEADLINE NUMBERS (all copied from the record): six new airports pass at 6 of 6, both outputs, both years; smallest margins +8.2% hourly and +2.6% daily maximum (Chicago O'Hare, second year; 8.216 and 2.589); margins over raw GFS 8.2% to 33.0% hourly, 2.6% to 57.2% daily; the best one-hour method 12.2% to 21.0%. README 480 to 535 lines; RESULTS 894 to 1,094. Script SHA-256 347a4f5e45392c343231ef8d6792432ed4541ccb1c56e2b9ffc5d2fc851592d9; figure SHA-256 in the Step 4 checkpoint and F170.6.
+SCOPE AND SIZE: git status --porcelain = the scope list plus the untracked prompt: no breach. DECISIONS.md 37,646 bytes after the archive step (limit 80,000): not a finding.
+READINGS FOR THE OWNER: (1) The timeline figure says the live test's rules were written on 14 Oct 2026 and forecasts logged from 12 Oct 2026, the order D105.5 records. (2) README says, from git, that the claim's rules were committed hours before the look (commit edb51d4 19:07 +0100; look from 20:45 UTC). (3) RESULTS reuses older figures that carry record numbers in their own text (said in its sources section). (4) README keeps F109's caveats in one paragraph; the five-airport tables are in RESULTS only. (5) RESULTS gives the comparisons' counts in a table; the full Tables 2a and 2b stay in ANALYSIS.md. (6) The README's heading "Data credits and terms" lost its number, so data/README.md's link now ends #data-credits-and-terms.
+OPEN ITEMS (reported, not fixed): tests/README.md does not list the new test (out of scope); ANALYSIS.md Table 2c (official-maximum scores) is not reproduced in RESULTS (its readings are); Step 4's first draw of the timeline figure had an overlapping footnote and was redrawn before anything was recorded (see the Step 4 checkpoint).
+
+== CHECKPOINTS ==
+
+Step 1 | Start checks. HEAD fbfca79; git status: only docs/sessions/session-127.md untracked. Tests: 195 OK (45.2 s). SPEC 3.4 span (lines 256 to 287, 2,050 bytes) SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 = recorded. session122_analysis.py --verify: PASS (8720 numbers compared, 0 em-dashes).
+  Recorded for Step 9: README section 9 body (lines 335 to 472, the line after "## 9." to the line before "## 10.", 138 lines, 8,812 bytes) SHA-256 a33a4e17031cba98c9ad55f758cad47f295b3b7b55c0f0607b15e2b385be5647. (Cross-check: with the heading line, lines 334 to 472, 8,841 bytes, SHA-256 e76a425d493a00402ff8e1b9041818b9eb0c241cf4a85ccd99ee5039835ab751 = F169.6's value; so the body is unchanged since session 126.)
+  ANALYSIS.md from "## Part 1." (line 55) to the end: 160,088 bytes, SHA-256 ca39ff6feebc6e75a3e2c73104e1289b1d682e6de7152615a6852b9e993b2e01 (= F169.6).
+  figures/: 41 files; list of SHA-256 recorded below ("FIGURES AT STEP 1"). SHA-256 of that list: cdb8d2ab39990c27d4a4747baad7dc2e6570977e8e5c8fb39e9f820a03cd06c7.
+  Check: PASS.
+Step 2 | D121 recorded. Lines 93 to 105 of docs/sessions/session-127.md (the fenced block) were appended to DECISIONS.md with sed after one blank line. Checks: diff of the block against the last 13 lines of DECISIONS.md: equal; cmp: equal; whole file equals (old file + one blank line + block) by cmp; 0 em-dashes in the block. DECISIONS.md is now 37,865 bytes. Expected: test_citations_real_files_resolve will say "unresolved F170" until F170 is written (as F169.7). Check: PASS.
+Step 3 | Inventory (read only, before anything was written). README.md: 114 items; RESULTS.md: 187 items; total 301. Table rows are one item per row (taken from the files by script); prose is one item per claim or number group. The full list is under "STEP 3 INVENTORY" below; each item's disposition (carried or dropped) is in "STEP 3 DISPOSITIONS", added after Steps 5 and 6. Files changed: none besides this file. Check: count reported (PASS).
+
+Step 9 | Final checks (all run after the last edit to the documents).
+  - README's credits body SHA-256 a33a4e17031cba98c9ad55f758cad47f295b3b7b55c0f0607b15e2b385be5647 = Step 1's: PASS.
+  - ANALYSIS.md from "## Part 1." (line 55): 160,088 bytes, SHA-256 ca39ff6feebc6e75a3e2c73104e1289b1d682e6de7152615a6852b9e993b2e01 = Step 1's: PASS. session122_analysis.py --verify: PASS.
+  - git diff SPEC.md: one line changed (1 insertion, 1 deletion); 3.4's span (lines 256 to 287) SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 unchanged: PASS.
+  - Every file under figures/ at Step 1: all 41 SHA-256 equal to the Step 1 list (diff of the two lists is empty); figures/ now has 46 files (the 5 new ones): PASS.
+  - Running text holds no D or F number and no SPEC citation (grep -E '\b[DF][0-9]+(\.[0-9]+)?(\([a-z]\))?\b|SPEC [0-9]|SPEC section|section 9|RESULTS [0-9]' on each file's lines before its sources table): README.md lines 1 to 333: 0 matches; RESULTS.md lines 1 to 1032: 0; data/README.md lines 1 to 73: 0; docs/README.md lines 1 to 35: 0; notes/README.md lines 1 to 21: 0; scripts/README.md opening (before its clone section): 0; README after its sources table (licence): 0. README's credits body is the exception and is byte-equal. PASS.
+  - Relative links and image paths in the six files: 75 checked, 0 broken (including ../README.md#data-credits-and-terms): PASS.
+  - Sources tables, each row's numbers and dates found in the cited entry or file (script in this session's scratch folder; results in "SOURCES TABLE CHECK" below): 120 rows (README 46, RESULTS 53, data 12, notes 5, docs 2, scripts 2); 119 PASS; 1 FAIL by the automatic check: README's row "margins from 8.2% to 33.0% hourly": 33.0 is F150.2's 32.99 rounded to one decimal, and the row names 32.99; reviewed by hand and accepted (listed as FAIL here, as the check reports it).
+  - python3 scripts/archive_decisions.py --citations: 218 distinct entry numbers cited, 218 resolved, 0 unresolved, 0 doubled, 0 out of order: PASS.
+  - Em-dashes: 0 in the 1,541 added lines of tracked files (git diff -U0), 0 in each new file (script, test, five SVG files, this output file): PASS. (Sanity: the old RESULTS.md had 81 lines with one; the rewrite has none.)
+  - Tests: .venv/bin/python -m unittest discover -s tests: 206 tests OK (195 plus the new 11). The one ResourceWarning printed is from tests/test_onboard.py, which is not changed.
+  - Line counts: README.md 480 before, 535 after; RESULTS.md 894 before, 1,094 after.
+End | End of session. F170 written (12 lines) and appended to DECISIONS.md. STATUS.md overwritten as a current snapshot (documents have two audiences, D121.4; the order of the longer-term plan, D121.2, and the rulings of D121.3 replace the open question; the other live items are kept; ends with the required Next planning session line). Archive step: D121 and F170 added to the Live index and D120 and F169 removed from it (D121.7); python3 scripts/archive_decisions.py --apply --session 127: 4 of 4 internal checks PASS, 2 spans moved (5,486 bytes), 6 kept; the Live index is now D93, D103, D105, D118, D121, F170. DECISIONS.md is 37,646 bytes (before the archive step 43,140; limit 80,000, D93.9: not a finding). Scope list check: git status --porcelain shows exactly the scope list (DECISIONS.md, DECISIONS-archive.md, STATUS.md, README.md, RESULTS.md, scripts/README.md, data/README.md, docs/README.md, notes/README.md, SPEC.md, ANALYSIS.md, scripts/session127_readme_figures.py, tests/test_session127_figures.py, figures/readme/, notes/session-127-output.txt) plus docs/sessions/session-127.md, the prompt, untracked since before the session: no scope breach. Nothing committed.
+
+== FIGURES AT STEP 1 (shasum -a 256, find figures -type f | sort) ==
+ad4fc2ec929d51bc26429fd72ae9bc1f036d5e448a80a1303d46d0d97877eac5  figures/analysis/b_over_time.svg
+8a896f410bd2ad5e6fd6124a43b5fc7d7b748931cbde9d2a742db5623c6c5440  figures/analysis/comparison_dailymax_mae.svg
+b6d47f036363a187d51121d666eb9335fb40c351dc64eacba7142f38b0b912f3  figures/analysis/comparison_dailymax_mae_s122.svg
+e8a21a81ef6fc12754c429806ded38fc3eabb05927b280330a4b2b8e7e73e0e3  figures/analysis/comparison_hourly_mae.svg
+72dcfb03ded8f129374d167765f4be325408e46b63ff3269f6930e7b797f9598  figures/analysis/comparison_hourly_mae_s122.svg
+9a69ddcf1a5378662846ce6b72312acd3eed5a34577b00c8e853803aa8e0171a  figures/analysis/comparison_lead_band.svg
+192d89382aa065d9420a36b40543f4bf3d2a38764a5a545afd4280535669d6a2  figures/analysis/comparison_lead_band_s122.svg
+3935f2269eece926913832c80927f2e38e4eb9cecdbed9d2a8f351f65c134d36  figures/analysis/comparison_official_gap.svg
+aec5bc25ad0b50e9ecb0e55c0e6671e33f17548b3f8a9c7e69b68f3711b88d85  figures/analysis/comparison_skill.svg
+2c7b2d63856aacd0a606cd5cd751f3c05fc50bf6caded2ab3ff5c1630680d977  figures/analysis/comparison_skill_s122.svg
+3a70ce275f80c478e883f7488ca70b7e1b135176d8754b8f55244551050dc407  figures/analysis/contrib_shares.svg
+09f2ddc4b0c86523ac504e84a48f871b56ca2ce69115bf2842fe34cb25c17245  figures/analysis/contrib_vs_cloud.svg
+a4e78797cfebc3cd98ad7befb14296c6ed6e7b7396265207d69c6a3ac0923efe  figures/analysis/contrib_vs_temperature.svg
+d248036ff6130fbfe3d837850476feabcbe9fe538405a80161c82977e0a7ac9c  figures/analysis/dailymax_by_cycle_hour.svg
+febedb28fb4e4e6beddb41a5b116218cc56f1a556b7d284a8397140c43bb0fe8  figures/analysis/dailymax_decomposition.svg
+5e919e582492f14c8b2551847746d6494fae8f446061e63d1b954dd6856423b4  figures/analysis/dailymax_edge_of_day.svg
+0c2056097a7fdff1ef652219677d5a5e8c75e95e0ad6e32e693f2bfe1b32f171  figures/analysis/dailymax_error_box.svg
+e4e27f1884dace1c990a23710c106d6a59366ed05950129675133eedd961cc81  figures/analysis/dailymax_error_hist.svg
+681bded9cccd29efac28a76e7c5683558fbdb3760839c8126ba2d2e315805495  figures/analysis/dailymax_extremes.svg
+df1703888dddde3bdbd2992d616a987c6752a916e2329fb3203d2898185b8920  figures/analysis/dailymax_peak_hour.svg
+3eecf7fa54a73589976d659d96fff137c77b075e9716859c031e2eb451fa9b41  figures/analysis/dailymax_ranges_fan.svg
+a93df97c45b735bdc8ce9f612feaa1ef05a137326cab3fb9b2fc4f0cd69df7eb  figures/analysis/dm_tests.svg
+b3546f3fa85211d31c778045ba7b5d034e55f5e2d00a861cb8f79696ce72cfc7  figures/analysis/drift_by_days_since_start.svg
+439bf20e5e8de0548743c30837b02bd012412d63e347394123244abb08af838b  figures/analysis/hourly_abs_error_ecdf.svg
+6c0bea247e0a4adfe088d327a4f4465192e43e8eecfacad4c78d07eb01fa8443  figures/analysis/hourly_conditional_bias.svg
+c6e6e2907d53a9fa8651da091135ed18390db8552b14baa6782e97598c118776  figures/analysis/hourly_error_box.svg
+e5e76908fa25a2f4fcbe25bededc0ebe240f2ad808883397b92a5f31f3ea5b94  figures/analysis/hourly_mae_by_lead.svg
+a967dc8616c1e42415eccfd8f8c0e0e0b086531619460366c33d80fb6a6d7b76  figures/analysis/hourly_mae_by_local_hour.svg
+66b40acd94936e4fb80f250df26455f748d9021d6d147f6cdad6109b5d357778  figures/analysis/hourly_mae_by_month.svg
+795c5dcf5cef2fbbc3ff4714558fc84bcae6ddde36319cd543e4cc95129805a5  figures/analysis/hourly_me_by_lead.svg
+4784ffe4ff29877c2dd9ced3857dcf8647163cc0fd657d86f42e5c9f9801138b  figures/analysis/hourly_me_by_local_hour.svg
+4d8c721b991c08eea88871d8291c4e95137867d757945a871030214aa4331209  figures/analysis/hourly_me_by_month.svg
+5d1d0077ac842114fa325621c19c16df4d41f59e6ba873d00b55aca3625e60f6  figures/analysis/hourly_ranges_fan.svg
+7a7dedd5f7c9577c20d46bdbde3edba0c915f9ceda9e154b94376e6709e3e31b  figures/analysis/hourly_regimes.svg
+ef4ca54d5b9d24e36c9c01ec3518ee7f3a5f1977b8dec361a0c920b9d7beaae3  figures/analysis/run_to_run_hourly.svg
+4bee572e0f6401095f5890ff33f5fbe79bfff1243bdd7c49194eb27e5401a09c  figures/analysis/shape_range_smoothness.svg
+4147d41219fd93a8f3c239e5b01a4de67efe9cb9cb9de7499536c88507f0f1ae  figures/analysis/zuck_case_2026101306.svg
+2bb18ab1a7abfae99ed8c2e5c4dde94e5533e03721250f685e2d3dc3b0111d5c  figures/headline_mae.svg
+bac12c278d6af65e149c8cabb20b3dc8bd40948dd44a158e1a521e6384ab4bfe  figures/skill_intervals.svg
+14dc9372c605ab5123564efc4c08c6961ea4142a3cf1ff5b7928ad8713ee296d  figures/stagec_headline.svg
+1721cd2164a86d36de72fbedc93dd7fc4b5a2ba111087d5ab04522fb08742ee3  figures/stagec_mae_by_lead.svg
+
+== STEP 3 INVENTORY ==
+README.md inventory (current file at HEAD; line | item | citation it carries now)
+R001 | L1-3 | Title and one-line description: machine-learning correction of GFS temperature forecasts at airports | none
+R002 | L7-9 | GFS is the US National Weather Service's global weather model; at one airport it makes the same small temperature error repeatedly; MLwx learns that error from past forecasts and observations and corrects new forecasts | none
+R003 | L10-13 | At five airports, on a reserved year, the selected-features method lowers MAE against raw GFS by 12.2% to 21.0%, every 95% interval above zero | F109, F125.6
+R004 | L13-14 | Each claim came from a single look at held-out data, with the pass rule fixed in writing first | none (SPEC 2.4, 5.0 implied)
+R005 | L14-17 | Stage C's corrected hourly curve and daily maximum, from every GFS run out to 48 hours, passed the pre-registered test at 6 of 6 new airports in both held-out years | F150
+R006 | L17-18 | Stage G, the live tool, is running at 49 airports; page link https://zadams03.github.io/MLwx-live/ | D103, D105.2
+R007 | L20-21 | Research project with a public live tool; not an operational forecast; not for safety-critical decisions | none
+R008 | L23-26 | Explains that D, F and SPEC numbers point into DECISIONS.md, its archive and SPEC.md | none
+R009 | L32-35 | Figure stagec_headline.svg (grouped bars, raw GFS MAE and the curve's MAE, six airports, two years, two outputs) and caption: the curve has a lower MAE than raw GFS in both years, both outputs | F150
+R010 | L37-40 | Stage C tested on six new airports (EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) in two held-out years; hourly curve at leads 3 to 48 and daily maximum had to beat raw GFS and persistence in both years; passed at 6 of 6 for each output | SPEC 9.5, F150
+R011 | L41-42 | Smallest margins at KORD, look B, against raw GFS: +8.2% hourly, +2.6% daily maximum | F150
+R012 | L42-44 | Almost all of the gain over raw GFS comes from the baseline; drift correction helps when GFS's bias shifts and is roughly neutral otherwise | D102.2, descriptive
+R013 | L46-49 | Figure stagec_mae_by_lead.svg and caption: MAE by forecast hour, per airport, pooled over four runs a day, descriptive | D100.8
+R014 | L51 | Caveat: all data is GFS v16 | D100.10
+R015 | L51-52 | Caveat: the build choices were made on six other airports | D82.6
+R016 | L52-53 | Caveat: CYYZ, ZGSZ and NZWN have sea in their grid box | F132.3
+R017 | L53-54 | Caveat: the MAE of an hourly curve or daily maximum is not comparable with the one-hour results | D100.10
+R018 | L58-61 | Figure headline_mae.svg and caption: selected-features method has a lower MAE than raw GFS at EGLC, LFPG, DSM, YSDU, RNO on the reserved year 2024-08-01 to 2025-07-31 | F109
+R019 | L63 | The method is B+D,L,R,T | SPEC 8
+R020 | L63-64 | Each airport judged once on the reserved year 2024-08-01 to 2025-07-31; MAE in degrees C | F109
+R021 | L64-66 | Definition: skill = 1 - model MAE / reference MAE; positive means the model beats the reference; persistence is the lazy guess that tomorrow equals today | none
+R022 | L66-68 | Brackets are 95% intervals from a moving-block bootstrap (7-day blocks, 10,000 resamples) | D75.2, F125.6
+R023 | L72 | Five-airport table row (raw GFS MAE, model MAE, skill over raw GFS [95%], skill over persistence [95%]): EGLC (London City) ; 1.2362 ; 1.0008 ; +19.0% [+12.6, +24.2] ; +55.0% [+48.5, +61.2] | F109, F125.6
+R024 | L73 | Five-airport table row (raw GFS MAE, model MAE, skill over raw GFS [95%], skill over persistence [95%]): LFPG (Paris CDG) ; 1.4091 ; 1.2369 ; +12.2% [+6.8, +17.6] ; +51.0% [+43.0, +57.5] | F109, F125.6
+R025 | L74 | Five-airport table row (raw GFS MAE, model MAE, skill over raw GFS [95%], skill over persistence [95%]): DSM (Des Moines) ; 1.7043 ; 1.4123 ; +17.1% [+7.4, +27.0] ; +65.6% [+60.8, +70.3] | F109, F125.6
+R026 | L75 | Five-airport table row (raw GFS MAE, model MAE, skill over raw GFS [95%], skill over persistence [95%]): YSDU (Dubbo) ; 1.4897 ; 1.2643 ; +15.1% [+7.9, +22.3] ; +51.7% [+44.9, +57.9] | F109, F125.6
+R027 | L76 | Five-airport table row (raw GFS MAE, model MAE, skill over raw GFS [95%], skill over persistence [95%]): RNO (Reno) ; 1.6135 ; 1.2742 ; +21.0% [+13.2, +28.5] ; +53.8% [+46.3, +60.4] | F109, F125.6
+R028 | L78-79 | Every interval lies above zero, against both references, at all five airports | F125.6
+R029 | L79-82 | "Raw GFS" is the GFS 2 m temperature after the project's fixed elevation adjustment | SPEC 5.2, D48.10
+R030 | L80-82 | Persistence is scored only on days with a previous-day observation, so its day count can be a few days smaller | F125.6, F125.8
+R031 | L86 | The minimal method fails at Reno (-3.1% against raw GFS) | F82
+R032 | L87-89 | Minimal method's margins over raw GFS at DSM +6.3% [-4.2, +14.8], YSDU +3.3% [-4.9, +11.1], RNO -3.1% [-13.4, +8.1] have intervals that include zero | F125.4
+R033 | L90-91 | KSFO (San Francisco) passes both of its pre-registered looks | F119, D71
+R034 | L91-92 | KSFO headline is look A: 1.2576 against 1.4263, +11.83% over raw GFS | D71.2
+R035 | L92-95 | KSFO not directly comparable with the five airports: grid point partly over the sea; its check against Open-Meteo failed, explained by a difference between the sources | D69, D71.5; RESULTS 6.5
+R036 | L96-98 | The intervals describe one test year only: day-to-day sampling within that year, not year-to-year variation | F125.9
+R037 | L98-99 | The airports share each year's weather, so the five intervals are not independent | F125.9
+R038 | L99 | The intervals are descriptive and change no verdict | D75.2
+R039 | L100 | Both held-out years are now spent at every airport | D59.5, D71.1
+R040 | L101-102 | The 2026-27 forward test is pre-registered and its models are frozen; it has not been scored | D73, F122, D73.8
+R041 | L104-107 | Figure skill_intervals.svg and caption: skill with 95% interval over raw GFS and over persistence, five airports; black line is zero | F125.6
+R042 | L109-110 | Pointer to RESULTS.md (section 6.6 for the intervals) for full tables, caveats and the other two methods' intervals | RESULTS 6.6
+R043 | L114-117 | Pre-registered, one-look evaluation: pass bar fixed in writing before a held-out year is opened; each method looks at each held-out year only once; richer and selected methods judged this way | SPEC 2.4, 5.0, F94, F109
+R044 | L118-120 | A failure reported honestly: minimal method failed at Reno; richer method built, locked, given its own single look, and passed; both results stand | F82, F94, D48.13
+R045 | L121-125 | Benchmarked against operational products on spent years: NWS MOS and NBM; against NBM the outcome was MIXED, the model's MAE lower at 1 of 4 airport-looks; the direction decision followed | F127, D78.1
+R046 | L126-128 | Data engineering: stage C's pull read GFS GRIB2 files by byte range on GitHub Actions: 65 months, 195,600 files, 1,932,528 messages, published as Release files | D84.4, F134, D87, F137
+R047 | L128-131 | A 13-check verifier ran on each month before it was published, except 2022-01 (checked afterwards); all 65 months downloaded and checked again | D84.4, F134, D87, F137
+R048 | L132-134 | Leakage control: split by time only, never at random; guards in code refuse rows from held-out or future years | SPEC 2.1, D89.3, F139.5
+R049 | L135-138 | Reproducibility: packages pinned, raw pulls committed with pull date and exact query, inputs checked by SHA-256, repeat runs give byte-for-byte equal output | SPEC 2.3, F138, F139.5
+R050 | L139-140 | The same recipe at every airport; nothing is tuned per airport | SPEC 2.5
+R051 | L144-152 | Flowchart: hourly airport observations (IEM) and GFS forecasts (GRIB2 from NOAA on AWS) matched at the airport's grid point, features built, LightGBM learns the residual, corrected forecast = GFS + predicted residual, scored against raw GFS and persistence on a held-out year | none
+R052 | L154-155 | LightGBM is a gradient-boosted tree model, a standard tool for table-shaped data | none
+R053 | L155-157 | The approach is a form of Model Output Statistics (MOS), the decades-old technique of learning a weather model's local error from past forecasts and observations | none
+R054 | L159-161 | Target: the temperature at one fixed hour a day, chosen per airport to fall at local solar noon | SPEC 4.1
+R055 | L161-162 | Daylight saving is ignored, so the hour stays fixed all year | none
+R056 | L162-164 | The model learns the residual (observed minus GFS forecast); corrected forecast is GFS plus the predicted residual | SPEC 4.2
+R057 | L165-168 | Stage C's target: every whole hour 3 to 48 hours ahead from each GFS run; one model per airport, run hour and lead, plus a running correction for drifting bias; daily maximum read off the curve | SPEC 9.1, 9.3
+R058 | L170-172 | Three methods tested against the same frozen pass bar: beat both raw GFS and persistence on MAE over the held-out period | SPEC 5.3
+R059 | L174-178 | Minimal method: three features (GFS forecast temperature and two season terms); Open-Meteo Previous Runs API; passes at EGLC, LFPG, DSM, YSDU, fails at RNO | SPEC 1 to 6; F16, F30, F47, F64, F82
+R060 | L178-181 | Richer 5-feature method: adds cloud cover and 10 m wind speed; reads GFS 0.25 degree GRIB2 from NOAA's public archive on AWS; passes at all five airports, Reno included | SPEC 7; F94
+R061 | L182-187 | Selected-features method: richer method plus four features from a staged, time-ordered search (moisture, lapse rate, shortwave radiation, pressure tendency); passes at all five on the reserved year; the default recipe | SPEC 8, 8.7; F109
+R062 | L186-187 | The selected method also passes at KSFO on two looks | F119
+R063 | L190-191 | Splits by time only; every model trained only on data from before its own held-out period | SPEC 2.1a
+R064 | L192-193 | Minimal and richer methods: train 2021-03-24 to 2025-07-31, test the sealed year 2025-08-01 to 2026-07-31 | SPEC 4.3, 7.2
+R065 | L194-195 | Selected method: train 2021-03-24 to 2024-07-31, test the reserved year 2024-08-01 to 2025-07-31 | SPEC 8.3, D51
+R066 | L196-198 | KSFO: look A trains 2021-03-24 to 2024-07-31 and tests 2024-25; look B trains 2021-03-24 to 2025-07-31 and tests 2025-26 | SPEC 8.5, D70.3
+R067 | L199-200 | The bar is fixed in writing before any held-out data is opened; each method looks at each held-out year only once | SPEC 2.4, 5.0
+R068 | L201 | Missing data is dropped and counted, never filled | SPEC 2.2
+R069 | L202-203 | The same features and the same model settings at every airport; nothing tuned per airport | SPEC 2.5, D21.4
+R070 | L204-206 | A result is a claim only if from held-out data used once; build choices are made by cross-validation on other data and never quoted as results | SPEC 2.5
+R071 | L210 | The roadmap runs as stages; stages A and B run side by side | SPEC 6, D72
+R072 | L212-215 | Stage A done: probe of other weather models' data, confidence intervals, comparison with NWS MOS and NBM (band MIXED), the direction decision | F123, F124, F125, F127, D78.1
+R073 | L216-219 | Stage B pre-registered, not yet run: 2026-27 GFS forward test pre-registered, models frozen, build/fetch/scoring scripts exist and passed gates; each period scored only after it has ended | D73, F122, F128, F129, D73.8
+R074 | L220-222 | Stage C done: curve and daily maximum passed at 6 of 6 new airports in both held-out years | D100, F150
+R075 | L223-231 | Stage G live: every GFS cycle, corrected hourly curve at leads 3 to 48 and each local day's maximum, GFS only, weather model as a setting; 49 airports; public repo zadams03/MLwx-live and page; each forecast written once to a log never edited; under a pre-registered test; no accuracy figure computed or shown before its look | D103, D105.2, D103.8, D105.5, D103.2, D105.6
+R076 | L232 | Stage D: correct each other weather model on its own | none
+R077 | L233 | Stage E: blend and stack the corrected models | none
+R078 | L234-235 | Stage F: an upgrade policy for when a weather model changes version, starting with GFS v17 | none
+R079 | L236 | Stage H: probabilistic forecasts, ranges with stated odds | none
+R080 | L237-240 | New airports ongoing; stage C's claim judged on six new airports drawn by a fixed rule, all six passed; pooling (one model across airports) is conditional | D82.7, F150
+R081 | L246 | Repository map row (group, entry, what it is): Start here ; `README.md` ; This file. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R082 | L247 | Repository map row (group, entry, what it is):  ; [RESULTS.md](RESULTS.md) ; The results in one place, each number cited to its entry. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R083 | L248 | Repository map row (group, entry, what it is):  ; [figures/](figures/) ; The figures in this file, drawn by `scripts/session98b_figures.py` and `scripts/session108_figures.py`. figures/analysis/ holds the figures of ANALYSIS.md. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R084 | L249 | Repository map row (group, entry, what it is): The research record ; [SPEC.md](SPEC.md) ; The source of truth for how the project should work. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R085 | L250 | Repository map row (group, entry, what it is):  ; [DECISIONS.md](DECISIONS.md) ; The live log of decisions (D) and findings (F); settled entries move to the archive (D93.8). | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R086 | L251 | Repository map row (group, entry, what it is):  ; [DECISIONS-archive.md](DECISIONS-archive.md) ; Settled entries moved out of DECISIONS.md word for word. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R087 | L252 | Repository map row (group, entry, what it is):  ; [STATUS.md](STATUS.md) ; A snapshot of where the project is now. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R088 | L253 | Repository map row (group, entry, what it is):  ; [ANALYSIS.md](ANALYSIS.md) ; Descriptive analysis on spent data: a field guide, comparisons with other forecasts and ideas for later. Never a source of rules or claims (D107.2). | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R089 | L254 | Repository map row (group, entry, what it is): Code and data ; [scripts/](scripts/README.md) ; The code, named by the session that wrote it. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R090 | L255 | Repository map row (group, entry, what it is):  ; [src/mlwx/](src/mlwx/) ; The live tool's code, a Python package (stage G, D103.3). | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R091 | L256 | Repository map row (group, entry, what it is):  ; [deploy/mlwx-live/](deploy/mlwx-live/) ; The template for the MLwx-live repository's files and workflow (D105.9). | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R092 | L257 | Repository map row (group, entry, what it is):  ; [tests/](tests/README.md) ; Offline checks of the leakage guards, the archive tool and recorded figures. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R093 | L258 | Repository map row (group, entry, what it is):  ; [data/](data/README.md) ; Raw pulls, built tables, frozen models and rebuild checks. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R094 | L259 | Repository map row (group, entry, what it is):  ; [requirements.txt](requirements.txt) ; The pinned Python packages, with setup notes. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R095 | L260 | Repository map row (group, entry, what it is):  ; [.github/](.github/) ; The GitHub Actions workflow for stage C's GRIB pull. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R096 | L261 | Repository map row (group, entry, what it is):  ; `.gitignore` ; Files kept out of the repository. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R097 | L262 | Repository map row (group, entry, what it is): How the work was run ; [docs/](docs/README.md) ; Session prompts, commit messages and the planning guide. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R098 | L263 | Repository map row (group, entry, what it is):  ; [notes/](notes/README.md) ; Each session's saved output, and audit reports. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R099 | L264 | Repository map row (group, entry, what it is):  ; [CLAUDE.md](CLAUDE.md) ; The standing rules for the AI coding sessions. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R100 | L265 | Repository map row (group, entry, what it is):  ; [LICENSE](LICENSE) ; The MIT licence for the code. | mixed: figures row names two scripts; DECISIONS row D93.8; ANALYSIS row D107.2; src row D103.3; deploy row D105.9
+R101 | L267-269 | Record files sit at the root and scripts are named by session number because scripts read the record files there and the record cites scripts by path | D91.2
+R102 | L273-275 | Reproducing lists what can be checked by reading; the one exception is the libomp check run in session 98b | F140
+R103 | L277-286 | Python 3.12.2 on macOS (arm64); venv and pip commands; versions pinned in requirements.txt (lightgbm 4.7.0, numpy 2.5.2); eccodes brings the ecCodes GRIB library | none
+R104 | L287-294 | libomp: brew install libomp; session 98b with Homebrew libomp 23.1.3 reproduced F109's six recorded MAEs exactly and EGLC scores byte-equal; older scripts keep a harmless loader workaround | F140
+R105 | L295-296 | Run scripts with .venv/bin/python; the system Python has no LightGBM | none
+R106 | L297-299 | Small raw pulls committed under data/raw/, each with a .meta.txt giving pull date and exact query | SPEC 2.3
+R107 | L300-310 | The bulk GRIB cache is not committed: gitignored data/raw/grib, about 39 GB, on an external drive; only finished scripts from sessions 37 to 89 read it; committed pull manifests give URL and byte range; pull scripts fetch single messages from bucket noaa-gfs-bdp-pds by byte range | D102.3
+R108 | L311-312 | Stage C's data lives outside the repo: the Release files and the development table; see data/README.md | none
+R109 | L313-317 | Not verifiable from the repo: the full run order of all scripts is not in one place; no session has re-fetched the cache from scratch; scripts/README.md lists scripts behind each headline result | none
+R110 | L318-321 | Frozen scripts are never edited; list in scripts/README.md; some write to fixed committed output files so a re-run must be in a clean clone | D62.3(a), D62.3, D62.6
+R111 | L325-332 | How this was built: the owner planned, decided, wrote every prompt and reviewed every change; Claude Code wrote the code under CLAUDE.md, one scoped session at a time; every change committed by hand; docs/ and notes/ hold the working record | none
+R112 | L334-471 | Data credits and terms (11 source entries and the probed-only entry): kept byte-equal | F126.3, D91.5, D118.12, F132.4, D83.5(c), F137, D107.4, F127.3, D107.8, F123, F124.4
+R113 | L473-478 | Licence: code under MIT; no warranty; research use only, not operational or safety-critical; the licence does not change the data's terms in section 9 | none
+R114 | L480 | Author: Zachary Adams | none
+
+RESULTS.md inventory (current file at HEAD; line | item | citation it carries now)
+S001 | L1-7 | Standalone technical summary; draws only on facts recorded in SPEC and DECISIONS; computes nothing new; where SPEC and this file disagree SPEC is right | CLAUDE.md, SPEC 2
+S002 | L9 | Revision history: written after session 30, revised after sessions 44, 65, 79, 80, 84, 101, 104, 106, 108 and 124 | none
+S003 | L9-14 | As of session 65 the project has three independently tested proven methods: minimal three-feature (sections 2 to 4), richer five-feature (section 5), selected-features (section 6) | none
+S004 | L15-17 | Minimal method passes at four of five airports and fails at Reno; richer and selected pass at all five including Reno | none
+S005 | L17-20 | KSFO has passed the selected-features method on two pre-registered looks; not directly comparable with the five earlier airports (section 6.5) | F119, D71
+S006 | L21-23 | Stage C's hourly curve and daily maximum passed their pre-registered claim at six new airports in both held-out years | F150
+S007 | L24-27 | All three results are real and none erases any other; a three-chapter story | D48.13, D59.3
+S008 | L27-30 | Language kept plain; jargon defined at first use | none
+S009 | L36-38 | GFS is the US National Weather Service's global forecast model; good at physics but at any one place makes the same small mistakes over and over | none
+S010 | L39-40 | That repeated predictable error is called bias | none
+S011 | L40-44 | MOS-style bias correction: learn GFS's bias at one airport from several years of past forecasts and observations and correct new forecasts; MOS is decades old, not novel | none
+S012 | L44-47 | What the project tests: how far a minimal version travels across very different places and how much a richer version buys once the minimal one hits a wall | none
+S013 | L49-51 | At each airport a model learns the residual (observed minus forecast) from a small set of inputs and never sees the future it predicts | none
+S014 | L51-54 | Judged against two baselines (raw GFS and persistence) under a rehearse-then-single-sealed-test discipline with a frozen qualitative pass/fail bar fixed before any test year is opened | none
+S015 | L54-57 | Minimal method passes at four of five; richer and selected methods each pass at all five | SPEC 7, F94, SPEC 8, F109
+S016 | L57-60 | Reno, the one failure of the minimal method, is itself a finding; later passes there are further findings, not corrections | none
+S017 | L66-70 | Target: temperature at one fixed hour a day, at each airport's local solar noon (daylight, stable well-observed time, clear of dawn/dusk swings) | SPEC 4.1
+S018 | L70-71 | Daylight saving ignored; each airport's target is one fixed UTC hour all year | none
+S019 | L71-75 | EGLC and LFPG share 12:00 UTC by deliberate design (London's local noon; Paris's is nearer 11:00 UTC) so the comparison changes only location | D26
+S020 | L75-77 | DSM 18:00 UTC, Dubbo 02:00 UTC, Reno 20:00 UTC: each takes its own local-solar-noon hour | D27, D33, D37, D42
+S021 | L79-83 | LightGBM predicts the residual (observed minus GFS forecast at the target hour); corrected = forecast + predicted residual | SPEC 4.2
+S022 | L83-89 | Exactly three features: forecast_temp_c, season_sin = sin(2*pi*year_fraction), season_cos = cos(2*pi*year_fraction) | D19
+S023 | L91-95 | No hour-of-day feature (hour is fixed); no recent-observation feature (so the model corrects the forecast and is not a persistence model in disguise) | none
+S024 | L95-101 | Fixed settings at every airport: LightGBM objective=regression_l1, n_estimators=300, learning_rate=0.05, num_leaves=15, min_child_samples=40, random_state=42, deterministic=True, n_jobs=1 | D44.4, D21.4
+S025 | L103-104 | Nothing is tuned per airport; only the airport's data and target hour change | none
+S026 | L106-111 | Training window 2021-03-24 to 2025-07-31, split for rehearsal into inner-training (2021-03-24 to 2024-07-31) and a validation year (2024-08-01 to 2025-07-31) | D13, D18
+S027 | L112-115 | Sealed test window 2025-08-01 to 2026-07-31, opened exactly once per airport after the method is locked in writing | D21, D31, D35, D39, D44
+S028 | L116-118 | Splitting is always by time, never random | SPEC 2.1a
+S029 | L120-125 | Each day's forecast at the target hour is paired with the nearest scheduled report; none within 15 minutes means the day is dropped and counted, never filled; offset 5 to 10 minutes except LFPG and Dubbo (on the hour) | D14, SPEC 2.2
+S030 | L128-131 | One shared archive gap of 492 hours, 2023-12-30 00:00 to 2024-01-19 11:00 UTC, at every airport, inside the training window, dropped and counted | SPEC 3.2
+S031 | L132-139 | Forecast model string pinned to gfs_global, not gfs_seamless; at DSM the two differ by up to 12.3 degC on some hours | F40, D16
+S032 | L140-145 | Per-airport target hour: only EGLC and LFPG make the clean 'only location changed' comparison; others change location and hour together | none
+S033 | L147-151 | The bar: an airport passes if its corrected MAE is lower than both raw GFS and persistence over its own sealed year; qualitative, no numeric margin, ever; the honest margin is always reported | SPEC 5, D22
+S034 | L152-154 | Section 5 uses the identical bar and discipline on a different forecast source | none
+S035 | L160-162 | Finding: the recipe passes at four airports across three continents and two hemispheres, unmodified, and fails at the fifth as its advance prediction said | none
+S036 | L166 | Minimal-method table row (region, target hour UTC, test days, raw GFS MAE, corrected MAE, skill vs raw, skill vs persistence, verdict): EGLC (London City) ; Western Europe, N ; 12:00 ; 363 ; 1.242 ; 1.040 ; +16.3% ; +50.4% ; PASS | F16 / F30 / F47 / F64 / F82
+S037 | L167 | Minimal-method table row (region, target hour UTC, test days, raw GFS MAE, corrected MAE, skill vs raw, skill vs persistence, verdict): LFPG (Paris CDG) ; Western Europe, N ; 12:00 ; 363 ; 1.396 ; 1.208 ; +13.5% ; +47.5% ; PASS | F16 / F30 / F47 / F64 / F82
+S038 | L168 | Minimal-method table row (region, target hour UTC, test days, raw GFS MAE, corrected MAE, skill vs raw, skill vs persistence, verdict): DSM (Des Moines) ; N. America interior, N ; 18:00 ; 365 ; 1.815 ; 1.700 ; +6.3% ; +57.5% ; PASS | F16 / F30 / F47 / F64 / F82
+S039 | L169 | Minimal-method table row (region, target hour UTC, test days, raw GFS MAE, corrected MAE, skill vs raw, skill vs persistence, verdict): YSDU (Dubbo) ; Australia, S ; 02:00 ; 347 ; 1.251 ; 1.210 ; +3.3% ; +54.7% ; PASS | F16 / F30 / F47 / F64 / F82
+S040 | L170 | Minimal-method table row (region, target hour UTC, test days, raw GFS MAE, corrected MAE, skill vs raw, skill vs persistence, verdict): RNO (Reno) ; N. America mountain, N ; 20:00 ; 365 ; 1.414 ; 1.458 ; −3.1% ; +41.4% ; FAIL | F16 / F30 / F47 / F64 / F82
+S041 | L172-174 | Skill = 1 - corrected/reference; positive means the correction beats the reference | none
+S042 | L174-176 | Sources: EGLC F16, CDG F30, DSM F47, Dubbo F64, Reno F82 | F16, F30, F47, F64, F82
+S043 | L176-178 | All five test years are the same shared twelve months (2025-08-01 to 2026-07-31), not five independent draws of weather | SPEC 4.3, D13
+S044 | L178-181 | Reno's raw-GFS figure 1.414 is Open-Meteo's; section 5's later method with a GRIB source passes at Reno too | none
+S045 | L183-186 | Every airport beats persistence comfortably (41 to 58% better); the raw-GFS half decides each verdict | none
+S046 | L192-197 | Finding 1: four passes across three continents and two hemispheres; same unmodified method passed at EGLC, CDG, DSM and Dubbo; nothing retuned between airports | none
+S047 | L199-206 | Finding 2: forecast temperature's share of the model's learning differs by airport: EGLC 51.8%, CDG 38.2%, DSM 43.4%, Dubbo 45.3%, Reno 39.1%; EGLC warm-end shape, CDG calendar, DSM both, Dubbo one local season | F16, F30, F47, F64, F82
+S048 | L208-214 | Finding 3: Dubbo's bias peaks in its own local summer; season features are a position in the calendar year, so the model re-derives which part of the year matters | F61
+S049 | L216-220 | Finding 4: Reno's error is close to a near-constant offset (station warmer than GFS on about 68% of training days against 45 to 52% elsewhere) under large day-to-day scatter | F79
+S050 | L221-224 | In-sample apparent improvement 25.0% against -3.1% out of sample: the signature of overfitting a signal that is mostly noise | none
+S051 | L225-228 | DSM is hard-but-structured and passes; Reno is moderate-but-mostly-random and fails | none
+S052 | L228-232 | The Reno outcome was written down in advance, before its sealed year was opened | D44.12
+S053 | L232-237 | This finding stands unchanged; section 5 was built to test whether Reno's ceiling was a limit of the minimal feature set | none
+S054 | L239-243 | Finding 5: all five airports share one test year and it was not neutral everywhere | F46, F48, F65
+S055 | L244-249 | Climatology bias: +0.773 degC EGLC, +0.918 CDG, +0.172 DSM; the test year was warm in western Europe specifically | F48
+S056 | L249-255 | The two European margins were flattered by one warm European summer; rehearsal and sealed both positive at the four passing airports is partial two-year evidence, not an independent second year | none
+S057 | L255-257 | The same one-shared-year limitation applies to section 5's richer method | none
+S058 | L259-264 | Finding 6: margin over raw GFS across the four passes ranges 3.3% to 16.3% (skill 0.033 to 0.163); over the mean-bias reference 2.3% to 15.7%, falling EGLC 15.7, CDG 13.0, DSM 3.4, Dubbo 2.3 | F16, F30, F47, F64
+S059 | L265-268 | These are real, repeatable but modest wins; the project's value so far is a calibrated understanding of where the method works | none
+S060 | L274-281 | Act two: a second method, five features and a different forecast source, built, validated, locked, tested once on the identical bar, passes at every airport including Reno; both results real | D48, F85 to F94, D49, D48.13
+S061 | L285-290 | Motivation: Reno's near-constant bias under large scatter; do cloud cover and 10 m wind speed give the model enough real structure | F81, F85
+S062 | L292-295 | Everything else unchanged: airports, target hours, split dates, 15-minute pairing rule, frozen bar | SPEC 7.2
+S063 | L297-303 | Features: the three plus cloud_cover and wind_speed_10m; a 3-feature (refit on the new source) and a 5-feature variant fitted at every airport | D48.4
+S064 | L304-309 | Forecast source: GFS 0.25 degree GRIB2 from AWS noaa-gfs-bdp-pds, a genuine archived past forecast at a fixed lead (no look-ahead); bilinear-interpolated to the airport's grid point | SPEC 2.1b, F89
+S065 | L310-314 | Elevation correction: fixed lapse rate 7.429 degC/km, fit once, never refit, temperature only, a constant per airport; GFS terrain can differ from the real elevation, negligible at four airports but 275 m at Reno | D48.3, F90
+S066 | L314-319 | Cloud cover and wind used as GRIB reports them; the 275 m gap and SPEC 3.4's 1 m Reno figure describe two different grids, not a contradiction | F91, D49
+S067 | L320-322 | Training window 2021-03-24 to 2025-07-31, restricted to GFS v16 | D48.7, F89
+S068 | L323-325 | Same LightGBM settings as the minimal method; nothing tuned between the 3- and 5-feature variants | D21.4
+S069 | L329-332 | Validation: GRIB temperature matched Open-Meteo within 0.062 degC on identical rows after elevation correction | F89, F90
+S070 | L332-336 | Cloud cover and wind speed matched Open-Meteo's over the overlap, with an explainable disagreement in fast-changing partly-cloudy conditions | F90, F91
+S071 | L336-339 | Blocked cross-validation: the 5-feature model beat the 3-feature model and both beat raw GFS at all five airports, including LFPG and Reno | F86, F87, F91
+S072 | L343-350 | The complete recipe was frozen before the sealed year was opened; a row-count guard tripped on its first run (a guard-specification error, not data), corrected before any model fit or result seen; frozen script run once unchanged | D48, F92, F93, D48.13
+S073 | L357 | Richer-method table row (5-feature MAE, raw GFS (GRIB) MAE, persistence MAE, 3-feature MAE, skill vs raw, vs persistence, vs 3-feature, n days, verdict): EGLC ; 1.000 ; 1.254 ; 2.096 ; 1.037 ; +20.2% ; +52.3% ; +3.5% ; 364 ; PASS | F94
+S074 | L358 | Richer-method table row (5-feature MAE, raw GFS (GRIB) MAE, persistence MAE, 3-feature MAE, skill vs raw, vs persistence, vs 3-feature, n days, verdict): LFPG ; 1.156 ; 1.382 ; 2.300 ; 1.177 ; +16.4% ; +49.7% ; +1.8% ; 364 ; PASS | F94
+S075 | L359 | Richer-method table row (5-feature MAE, raw GFS (GRIB) MAE, persistence MAE, 3-feature MAE, skill vs raw, vs persistence, vs 3-feature, n days, verdict): DSM ; 1.636 ; 1.733 ; 4.003 ; 1.694 ; +5.6% ; +59.1% ; +3.4% ; 365 ; PASS | F94
+S076 | L360 | Richer-method table row (5-feature MAE, raw GFS (GRIB) MAE, persistence MAE, 3-feature MAE, skill vs raw, vs persistence, vs 3-feature, n days, verdict): YSDU ; 1.179 ; 1.317 ; 2.669 ; 1.283 ; +10.5% ; +55.8% ; +8.2% ; 356 ; PASS | F94
+S077 | L361 | Richer-method table row (5-feature MAE, raw GFS (GRIB) MAE, persistence MAE, 3-feature MAE, skill vs raw, vs persistence, vs 3-feature, n days, verdict): RNO ; 1.346 ; 1.512 ; 2.490 ; 1.455 ; +11.0% ; +45.9% ; +7.5% ; 365 ; PASS | F94
+S078 | L363-364 | Raw GFS (GRIB) is the elevation-adjusted GRIB temperature | SPEC 5.2, D48.10
+S079 | L366-370 | Persistence scored only on days with a previous-day observation; re-scoring every rung on the common day set gave identical verdicts at all five; the minimal method scores every rung on one common day set | F94 Task 2, D21.8
+S080 | L372-377 | The 5-vs-3 column is the clearest evidence the extra features help (identical GRIB temperature); the 5-feature model wins at every airport | F94
+S081 | L384-388 | Reno: 5-feature MAE 1.346 against raw GFS (GRIB) 1.512, +11.0%; beats persistence (2.490) by 45.9%; matches the pre-registered expectation | D48.12, F94
+S082 | L389-395 | Lead with the 5-vs-3 number at Reno: 1.346 against 1.455, +7.5% | F94
+S083 | L396-403 | The +11.0% is somewhat flattered: GRIB raw baseline at Reno (1.512) is worse than Open-Meteo's (1.414, F82) because one fixed elevation constant is less accurate there | SPEC 7.2, F89, F90, F82
+S084 | L404-408 | Against an Open-Meteo-quality baseline (1.414) the margin is roughly +4.8% (1 - 1.346/1.414), still a genuine pass | none
+S085 | L409-417 | The 3-feature model's Reno pass (1.455, +3.8%) is largely the baseline artifact: 1.455 is about the minimal method's failing 1.458; what changed is the two extra features | F82, F79
+S086 | L418-421 | The other four airports carry no such caveat: GRIB elevation constants under half a degree (EGLC +0.249, LFPG -0.170, DSM -0.111, YSDU +0.246) | D48.3
+S087 | L423-427 | One-sentence honest version: cloud and wind add genuine skill at Reno (+7.5% over the 3-feature model) and the 5-feature model passes; the failure was a limit of the minimal feature set, not of the data source | none
+S088 | L431-445 | LFPG: on the short 1.5-year window the richer method never beat raw GFS; on the full ~4.4-year GRIB window 3-feature +3.3%, 5-feature +5.3% (CV), then +16.4% and +1.8% 5-vs-3 on the sealed test; the short window was the binding constraint | F86, F87, F91, F94
+S089 | L449-458 | Arc: minimal method's ceiling at Reno; richer information plus a longer GRIB window breaks it; 5 of 5 pass, the first such result; every pre-registered expectation matched; guard mis-specification caught before any result | F94, D48.12, F92, F93
+S090 | L460-466 | Honest magnitude: the 5-vs-3 margin ranges +1.8% (LFPG) to +8.2% (YSDU); largest where real structure remains (YSDU, Reno), slight where three features suffice (LFPG) | F94
+S091 | L466-476 | Raw GFS (GRIB) is not raw GFS (Open-Meteo): close but not identical, and different elevation handling; section 5's vs-raw margins are not comparable airport for airport with section 3's; the 5-vs-3 column is the fair basis | SPEC 5.2, D48.10
+S092 | L482-492 | Act three: five candidate feature families tested one at a time on the 5-feature GRIB baseline, swept by a mechanical rule, locked once, confirmed once on a reserved year; passes at all five including Reno | D51 to D59, D59.3
+S093 | L496-507 | Availability probe: 27 candidate variables across five further families (radiation, upper-air/vertical structure, moisture, pressure/synoptic, precipitation) present at the project's lead back to the v16 floor | F97
+S094 | L511-516 | The year 2024-08-01 to 2025-07-31 was reserved and locked out of every feature experiment in code | D51
+S095 | L516-521 | Each family tested on three other non-reserved folds; the owner reviewed each family's grid and decided what to adopt | F98 to F105, D52 to D56
+S096 | L521-525 | All five families' derived feature adopted: moisture (dew-point depression), lapse rate, shortwave radiation, pressure tendency, precipitation | D52 to D56
+S097 | L525-527 | Two raw variables parked, not adopted: Reno's raw pressure-level temperatures and relative humidity | D52, D53
+S098 | L527-534 | Seven candidates swept on a pre-registered ladder with a leave-one-out rule, a correlated-feature safeguard and a joint sanity check; the rule dropped precipitation; neither parked option adopted; set = baseline + moisture, lapse rate, radiation, pressure tendency | D57, F106, D58
+S099 | L533-536 | The owner confirmed the set unchanged; it was run once against the reserved year: the single authorised look | D58, F109
+S100 | L540-543 | B+D,L,R,T passes the frozen bar at all five airports on the reserved year | F109
+S101 | L547 | Selected-method table row (raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw GFS, vs persistence, vs B): EGLC ; 1.2362 ; 2.2259 ; 1.0861 ; 1.0008 ; +19.04% ; +55.04% ; +7.85% | F109
+S102 | L548 | Selected-method table row (raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw GFS, vs persistence, vs B): LFPG ; 1.4091 ; 2.5233 ; 1.3285 ; 1.2369 ; +12.22% ; +50.98% ; +6.89% | F109
+S103 | L549 | Selected-method table row (raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw GFS, vs persistence, vs B): DSM ; 1.7043 ; 4.1081 ; 1.4402 ; 1.4123 ; +17.13% ; +65.62% ; +1.94% | F109
+S104 | L550 | Selected-method table row (raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw GFS, vs persistence, vs B): YSDU ; 1.4897 ; 2.5775 ; 1.3030 ; 1.2643 ; +15.13% ; +50.95% ; +2.97% | F109
+S105 | L551 | Selected-method table row (raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw GFS, vs persistence, vs B): RNO ; 1.6135 ; 2.7563 ; 1.4272 ; 1.2742 ; +21.03% ; +53.77% ; +10.72% | F109
+S106 | L553-554 | Raw GFS (GRIB) is the elevation-adjusted GRIB temperature | SPEC 5.2, D48.10
+S107 | L556-561 | Persistence scored only on days with a previous-day observation (pre-registered day basis); EGLC missing 1 day and YSDU 5 | D58 item 6, F109, audit-68b item 3
+S108 | L563-566 | Secondary read: airport-averaged MAE 1.2377 against plain B's 1.3170, +6.02% | F109
+S109 | L566-568 | No ranking among airports; DSM's margin over B (+1.94%) was the expected weaker case; RNO's margin over B (+10.72%) was not pre-registered | D58 item 7, F96, F106
+S110 | L574 | Caveat (a): one year only, judged once | SPEC 5.3, D59.3
+S111 | L576-582 | Caveat (b): first look at the selected set on 2024-25, but plain B was already scored on that year descriptively; the feature-selection choices never touched 2024-25 | F96, D58 item 8, D59.3
+S112 | L583-585 | Caveat (c): this section's margins are on 2024-25 and section 5's on 2025-26; not a like-for-like comparison | D59.3
+S113 | L586 | Caveat (d): DSM's margin over B is small (+1.94%) | D59.3
+S114 | L587-588 | Caveat (e): RNO's margin over B (+10.72%) was not pre-registered and is descriptive only | D59.3
+S115 | L590-593 | The selected method is the default recipe for future airport or pooling work; every new airport needs its own lock and test, looks fixed in writing before held-out values are read | D59.3, SPEC 5.0, 6, D71.6
+S116 | L597-603 | Why KSFO: the owner chose to test the frozen recipe at a new airport, the cheapest truly out-of-sample test left; first coastal airport, a harder type; target hour 20:00 UTC, local standard noon, same hour and lead as Reno | D66.1, D67.1, D59.5
+S117 | L605-610 | The gate failed: after elevation adjustment GRIB ran 3.326 degC colder than Open-Meteo on average, most in summer, against a bar of under 1.0 degC | F116
+S118 | L610-616 | Follow-up: pipeline exact (pointed at Reno it rebuilt Reno's record with no difference); 37.5% of the blend's weight at KSFO on two sea points that run colder in summer; Open-Meteo uses a finer 0.11 degree GFS product; gate recorded failed, explained by a difference between sources, no override, recipe kept | F117, D69
+S119 | L618-626 | Rehearsal on the 2022-23 and 2023-24 folds (not 2024-25, a look); a pipeline check, not a gate; B+D,L,R,T beat raw GFS and persistence on both; column-order band 0.0377 degC; recipe, looks, bar, band and frozen script locked before any held-out value was read | D67.4, F118, F118.7, D70
+S120 | L628-634 | Two pre-registered looks, each judged separately: look A trains 2021-03-24..2024-07-31 and tests 2024-25 (replica of F109's fold); look B trains to 2025-07-31 and tests 2025-26 (training includes 2024-25 by design); 'KSFO passes' only if both pass; run once together | D67.3, D70.3, F119
+S121 | L640 | KSFO table row (n test, raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw, vs persistence, vs B): A (2024-25) ; 364 ; 1.4263 ; 1.5113 ; 1.3534 ; 1.2576 ; +11.83% ; +16.79% ; +7.08% | F119.3
+S122 | L641 | KSFO table row (n test, raw GFS (GRIB) MAE, persistence MAE, B MAE, selected MAE, vs raw, vs persistence, vs B): B (2025-26) ; 365 ; 1.7321 ; 1.7172 ; 1.4654 ; 1.3830 ; +20.16% ; +19.46% ; +5.62% | F119.3
+S123 | L643-646 | Raw GFS (GRIB) is elevation-adjusted (+0.6944 degC); persistence scored on test days with a previous-day observation: 363 of 364 in look A, 365 of 365 in look B | SPEC 5.2, D70.4, F119.3
+S124 | L648-653 | Both looks pass, matching the pre-registered expectation 'pass in both years'; the owner accepted; margin over B above the column-order band in both looks: 0.0958 and 0.0824 degC against 0.0377 | D70.8, F119, D71.1, D70.5, F119.3
+S125 | L655-657 | The headline is look A's +11.83% over raw GFS (1.2576 vs 1.4263), the smallest of the four bar margins | D71.2
+S126 | L658-662 | Look B's raw-GFS year was unusually poor (1.7321 against look A 1.4263 and rehearsal folds 1.4423 and 1.3061); persistence (1.7172) edged raw GFS, so persistence was the binding half: +19.46% (0.3342 degC) against +20.16% (0.3491 degC); always quote +20.16% with this | F118.5, D71.3
+S127 | L663-672 | KSFO's bias is not stable year to year: mean-bias reference worse than raw GFS in both looks (A 1.5000 vs 1.4263; B 1.7747 vs 1.7321) but better on both rehearsal folds (1.3833 vs 1.4423; 1.2500 vs 1.3061); training means +0.3638 degC (1,223 rows) and +0.1847 degC (1,587 rows) imply a 2024-25 mean(obs - raw GFS) near -0.42 against about +0.36 before; arithmetic on recorded values, insight only | F118.5, F119.3, D71.4
+S128 | L674-681 | Framing carried by every write-up: KSFO is for the recipe at a sea-mixed grid point (37.5% sea weight); not directly comparable with the five earlier airports whose gates passed; gate recorded failed, explained by a difference between sources; look B's training includes 2024-25; KSFO's margins are not added to 6.3's table or its +6.02% read | D71.5, F117.3, D69, D70.3
+S129 | L685-689 | Stage A asked for confidence intervals on every result on record; computed in session 83 | SPEC 5.4, D72.3, D75.2, F125
+S130 | L689-691 | Every recorded MAE was recomputed and had to equal its recorded figure; all 17 airport-results passed | F125.2
+S131 | L691-695 | Tables give d (reference MAE minus model MAE, degC) and skill (%) against raw GFS and persistence; 95% intervals from a moving-block bootstrap, 7-day blocks, 10,000 resamples, seed 83 | D75.2, F125.3
+S132 | L702 | CI row, minimal method: EGLC ; raw GFS ; 363 ; +0.202 [+0.096, +0.298] ; +16.3 [+8.5, +22.1] ; yes | F125.4
+S133 | L703 | CI row, minimal method: EGLC ; persistence ; 363 ; +1.056 [+0.830, +1.262] ; +50.4 [+43.0, +56.3] ; yes | F125.4
+S134 | L704 | CI row, minimal method: LFPG ; raw GFS ; 363 ; +0.188 [+0.070, +0.301] ; +13.5 [+5.5, +20.3] ; yes | F125.4
+S135 | L705 | CI row, minimal method: LFPG ; persistence ; 363 ; +1.092 [+0.847, +1.291] ; +47.5 [+39.8, +53.2] ; yes | F125.4
+S136 | L706 | CI row, minimal method: DSM ; raw GFS ; 365 ; +0.115 [−0.071, +0.287] ; +6.3 [−4.2, +14.8] ; no | F125.4
+S137 | L707 | CI row, minimal method: DSM ; persistence ; 365 ; +2.303 [+1.862, +2.823] ; +57.5 [+51.5, +62.8] ; yes | F125.4
+S138 | L708 | CI row, minimal method: YSDU ; raw GFS ; 347 ; +0.041 [−0.058, +0.146] ; +3.3 [−4.9, +11.1] ; no | F125.4
+S139 | L709 | CI row, minimal method: YSDU ; persistence ; 347 ; +1.458 [+1.135, +1.842] ; +54.7 [+47.1, +61.3] ; yes | F125.4
+S140 | L710 | CI row, minimal method: RNO ; raw GFS ; 365 ; −0.044 [−0.179, +0.127] ; −3.1 [−13.4, +8.1] ; no | F125.4
+S141 | L711 | CI row, minimal method: RNO ; persistence ; 365 ; +1.032 [+0.750, +1.344] ; +41.4 [+32.4, +49.7] ; yes | F125.4
+S142 | L713 | Raw GFS in the minimal-method table is Open-Meteo's | SPEC 5.2
+S143 | L719 | CI row, richer method: EGLC ; raw GFS ; 364 ; +0.254 [+0.151, +0.347] ; +20.2 [+13.7, +25.0] ; yes | F125.5
+S144 | L720 | CI row, richer method: EGLC ; persistence ; 363 ; +1.096 [+0.872, +1.302] ; +52.3 [+45.2, +57.8] ; yes | F125.5
+S145 | L721 | CI row, richer method: LFPG ; raw GFS ; 364 ; +0.226 [+0.114, +0.332] ; +16.4 [+8.9, +22.6] ; yes | F125.5
+S146 | L722 | CI row, richer method: LFPG ; persistence ; 363 ; +1.144 [+0.904, +1.342] ; +49.7 [+42.5, +55.5] ; yes | F125.5
+S147 | L723 | CI row, richer method: DSM ; raw GFS ; 365 ; +0.098 [−0.078, +0.266] ; +5.6 [−4.8, +14.6] ; no | F125.5
+S148 | L724 | CI row, richer method: DSM ; persistence ; 365 ; +2.367 [+1.924, +2.855] ; +59.1 [+53.4, +64.1] ; yes | F125.5
+S149 | L725 | CI row, richer method: YSDU ; raw GFS ; 356 ; +0.138 [+0.033, +0.251] ; +10.5 [+2.6, +18.2] ; yes | F125.5
+S150 | L726 | CI row, richer method: YSDU ; persistence ; 347 ; +1.504 [+1.169, +1.891] ; +56.3 [+49.1, +62.9] ; yes | F125.5
+S151 | L727 | CI row, richer method: RNO ; raw GFS ; 365 ; +0.166 [−0.017, +0.396] ; +11.0 [−1.3, +22.6] ; no | F125.5
+S152 | L728 | CI row, richer method: RNO ; persistence ; 365 ; +1.144 [+0.874, +1.436] ; +45.9 [+38.4, +52.7] ; yes | F125.5
+S153 | L734 | CI row, selected method: EGLC ; raw GFS ; 364 ; +0.235 [+0.146, +0.312] ; +19.0 [+12.6, +24.2] ; yes | F125.6
+S154 | L735 | CI row, selected method: EGLC ; persistence ; 363 ; +1.224 [+0.995, +1.479] ; +55.0 [+48.5, +61.2] ; yes | F125.6
+S155 | L736 | CI row, selected method: LFPG ; raw GFS ; 365 ; +0.172 [+0.090, +0.263] ; +12.2 [+6.8, +17.6] ; yes | F125.6
+S156 | L737 | CI row, selected method: LFPG ; persistence ; 365 ; +1.286 [+1.016, +1.548] ; +51.0 [+43.0, +57.5] ; yes | F125.6
+S157 | L738 | CI row, selected method: DSM ; raw GFS ; 365 ; +0.292 [+0.118, +0.491] ; +17.1 [+7.4, +27.0] ; yes | F125.6
+S158 | L739 | CI row, selected method: DSM ; persistence ; 365 ; +2.696 [+2.263, +3.228] ; +65.6 [+60.8, +70.3] ; yes | F125.6
+S159 | L740 | CI row, selected method: YSDU ; raw GFS ; 360 ; +0.225 [+0.111, +0.354] ; +15.1 [+7.9, +22.3] ; yes | F125.6
+S160 | L741 | CI row, selected method: YSDU ; persistence ; 355 ; +1.333 [+1.077, +1.598] ; +51.7 [+44.9, +57.9] ; yes | F125.6
+S161 | L742 | CI row, selected method: RNO ; raw GFS ; 365 ; +0.339 [+0.190, +0.532] ; +21.0 [+13.2, +28.5] ; yes | F125.6
+S162 | L743 | CI row, selected method: RNO ; persistence ; 365 ; +1.482 [+1.190, +1.807] ; +53.8 [+46.3, +60.4] ; yes | F125.6
+S163 | L750 | CI row, KSFO: A (2024-25) ; raw GFS ; 364 ; +0.169 [+0.032, +0.295] ; +11.8 [+2.4, +20.0] ; yes | F125.7
+S164 | L751 | CI row, KSFO: A (2024-25) ; persistence ; 363 ; +0.255 [+0.058, +0.453] ; +16.9 [+4.1, +28.2] ; yes | F125.7
+S165 | L752 | CI row, KSFO: B (2025-26) ; raw GFS ; 365 ; +0.349 [+0.198, +0.508] ; +20.2 [+12.7, +26.8] ; yes | F125.7
+S166 | L753 | CI row, KSFO: B (2025-26) ; persistence ; 365 ; +0.334 [+0.047, +0.581] ; +19.5 [+2.9, +31.7] ; yes | F125.7
+S167 | L755-756 | Raw GFS in the last three tables is the elevation-adjusted GRIB temperature | SPEC 5.2
+S168 | L758-763 | Day-set note: where the persistence set is smaller the model's MAE differs slightly from the recorded figure (F94 YSDU 1.1650 vs 1.179; F109 YSDU 1.2446 vs 1.2643) | F125.8
+S169 | L766 | Reading: against persistence every interval lies above zero in every table | none
+S170 | L767-769 | Reading: against raw GFS the minimal method's intervals include zero at DSM, YSDU and RNO (RNO's point estimate is below zero); the richer method's include zero at DSM and RNO | F125.4, F125.5
+S171 | L770-772 | Reading: for the selected method every interval is above zero against both references at all five airports, and at KSFO in both looks | F125.6, F125.7
+S172 | L775-776 | With every use: intervals describe day-to-day sampling within one test year, not year-to-year variation | F125.9, D75.2, F96
+S173 | L777-778 | With every use: the five airports share each test year's weather, so intervals are not independent | F125.9
+S174 | L779-780 | With every use: intervals are descriptive, reuse spent years and change no verdict | D75.2
+S175 | L782-788 | KSFO framing repeated at the end of 6.6 | D71.5
+S176 | L797-817 | Reno's richer-features question is answered; upper-air information was tried and partly adopted (lapse_rate_t2_t850 adopted; three raw pressure-level temperatures tested and not adopted); a genuine terrain descriptor beyond the fixed elevation correction is untested and parked | F98, D52, D57, D58, D72.9
+S177 | L797-806 | Section 5.4's caveat stands: part of Reno's headline margin reflects a weaker raw-GFS baseline under GRIB, and the pass remains real | none
+S178 | L818-837 | Each method rests on one year (KSFO two looks); no untouched held-out year remains at any of the six airports; a further independent test needs a new airport or the live forward year 2026-27 | D59.5, D71.1, D51, F94, F109
+S179 | L838-851 | Cross-method margin comparisons need care: different raw series (Open-Meteo vs GRIB), different elevation handling (matters at Reno), and the selected method's margins are on a different year | SPEC 5.2, D48.10, 5.4, 6.4(c)
+S180 | L852-858 | Roadmap: stage A done (probe, confidence intervals, comparison with NBM and NWS MOS); stage B runs (pre-registered, models frozen, scripts gated, scored only after each period ends) | D72, D82, F127, D78.1, D73, D77.6, D79
+S181 | L858-865 | Stage C: pull covers 51 airports and is complete to 24 hours ahead; build choices by time-ordered cross-validation on six development airports, never quoted as results; one model per airport, run time and lead; two pooled structures tested and not adopted | D83.2, SPEC 2.5, D94, F143
+S182 | L865-868 | Drift correction (running average of the curve's own recent errors) adopted; curve to 48 hours; daily maximum read off the curve with a fixed way of being scored | D97, F146, D98, F147
+S183 | L868-871 | Two ways to improve the daily maximum tested and not adopted; stage C locked and its claim pre-registered on six new airports before any held-out data was read | D99, F148, D100
+S184 | L871-878 | Look run once: both outputs pass at 6 of 6 new airports in both years; smallest margins KORD look B against raw GFS: +8.2 percent hourly and +2.6 percent daily maximum; gain mostly from the baseline; drift correction helps when GFS's bias shifts (KORD look B) and is roughly neutral otherwise | F150, SPEC 9.5, D102.2
+S185 | L878-883 | Stage G live: v1 has corrected every GFS run since 2026-10-12, at 49 airports since 2026-10-13, with a public log and page; a test of its forecasts as issued is pre-registered; no accuracy figure computed or shown before its look | D103, D105.2, D105.5, D103.2, D105.6
+S186 | L883-885 | Stages D, E, F and H (other weather models, blending, upgrade policy, probabilistic ranges) follow; pooling is conditional | D102.4
+S187 | L889-894 | Footnote: figures cited to their source and checked when written; revision history (sessions 30, 44, 65, 79, 80, 84, 101, 104, 106, 108, 124); SPEC remains the source of truth; a read-only summary | F95, F110, F120, F121, D76, F126, D95, D98, D100, D102, D118
+Step 4 | Figure script and figures. Files created: scripts/session127_readme_figures.py, tests/test_session127_figures.py, figures/readme/ (5 SVG files). Standard library only; 35 input files, each SHA-256 held as a constant and checked before reading; modes --gate and --draw OUTDIR; write-once.
+  --gate: PASS for all five figures: (a) 24 margins over raw GFS equal F150.2 at 2 decimals, KORD look B equals SPEC 9.5 at 3 decimals (8.216, 2.589) and is the smallest in each output, the claim counts 6 and 6 from the verdicts file; (b) no data values; (c) dates held as constants and checked against D100, F150 and D105 by the test; (d) and (e) 50 plotted pairs each (raw GFS 12, AIFS 12, ECMWF IFS 12, NBM grid 5, NBS 5, MAV 4), each pair at 2 decimals and its formal-test star equal to ANALYSIS.md Table 2a's and 2b's cell, and each plotted per cent equal to 1 - curve / other forecast. No cell was missing; no substitute was computed.
+  --draw into two mktemp -d folders: all five files byte-equal. --draw figures/readme: written; a second run there is refused (exit 2, "figures are written once").
+  Note: the first draw into figures/readme had the timeline figure's footnote overlapping its lower boxes (seen when rendered). Before anything was recorded, I removed my own five new files and the empty folder, raised that figure's height in the script, and redrew; the draws above are the final ones. The earlier draw's files were never used.
+  Converter: rsvg-convert and cairosvg are absent; nothing was installed. Each figure was rendered by headless Google Chrome (already on the machine) as an image on a white and on a dark (#0d1117) page, at 800 px wide, and looked at. All five are legible on both; each draws its own white card.
+  SHA-256 (script): 347a4f5e45392c343231ef8d6792432ed4541ccb1c56e2b9ffc5d2fc851592d9
+  SHA-256 (figures): stagec_gain.svg 83fb93a04dd5779c69a4101eff46c8a3a12093ebfdf47cad5c2a9f16d5caaae6; how_it_works.svg a06f4aae1bdcfb1b17b6f1a8563ae5a9da39e857d5673d489b326e92e6fc6bbd; lock_then_look.svg 6ae9291f21efacc094c9e38e8545725f3b8d76e22857c4dadde592e5e8b217b6; compare_hourly.svg 9015a38dabe550f530319e71ebd6436cd0cc1a187b8dab1174650f9dfb38ef7d; compare_dailymax.svg 99f324d710143c340b592a5ce9cf723e075100e53360c60fdff634e6a29adc70.
+  tests/test_session127_figures.py: 11 tests OK (constants equal files; verdicts constant equals F150.4; two session 112 constants equal analyse_meta.txt; F150.2 and SPEC 9.5 constants equal their entries; Table 2a and 2b constants equal ANALYSIS.md; dates equal D100, F150, D105; --gate passes; alt text; the committed figures equal a fresh build; overwrite refused). 0 em-dashes in the script and the SVG files.
+  Check: PASS.
+Step 5 | README.md rewritten (480 lines before, 535 after; 27,673 bytes before, 35,241 after). Shape followed as suggested, in this order: title, one plain sentence, live page link and the not-operational warning, figure (a); the idea in plain words (with the four terms); headline results (the hourly curve and daily maximum at six new airports, smallest margin first, then the range; the earlier one-hour results with D59.3's caveats in one paragraph and KSFO's framing in one bullet); how it works with figure (b); how the results were kept honest with figure (c); how it compares with figure (d) (where the curve leads and where it trails); the live tool; limitations; what comes next; repository map; reproducing; how this was built; where these numbers come from (46 rows); data credits and terms (heading lost its number; body byte-equal); licence (last sentence now says "the data credits section"). Changes from the suggested shape: the earlier-results part is a short subsection of Headline results, with D59.3's caveats and KSFO's framing, because D121.6 requires them wherever F109's result is given; "limitations" and "what comes next" are separate sections; the README text names no stage letters. README opens "Learning where a weather model keeps going wrong at an airport": the owner's own words "repeatedly" and "that error" are kept in "The idea in plain words". No D, F or SPEC citation is in the running text (grep: 0). Files changed: README.md. Check: README's credits body SHA-256 a33a4e17031cba98c9ad55f758cad47f295b3b7b55c0f0607b15e2b385be5647 equals Step 1's (PASS). Note: while the sources table was written, three wordings were corrected before the file was saved, so that they went no further than the record (the MOS comparison is said only for the NBM, which is what F127 records; "no formal test finds the curve worse" for the daily maximum; git history says "committed", not "saved to the public history").
+Step 6 | RESULTS.md rewritten (894 lines before, 1,094 after; 53,553 bytes before, 72,680 after). Twelve sections: what the project is and how a result is judged; the minimal method and Reno; the richer method; the selected-features method (F109 with all five D59.3 caveats (a) to (e) in 4.4, repeated by pointer under the interval table that carries F109's intervals); San Francisco (D71.5's framing in section 5 and repeated under its interval table); the confidence intervals (all four tables, 34 rows); the hourly curve and daily maximum (F150's full margin table, all 48 bar halves; Chicago's three MAEs); the comparisons with other forecasts (the one-hour NBM and MOS comparison, the full-curve comparisons, figures (d) and (e) with the caption notes the prompt asks for, the official maximum); what the descriptive analysis found (Part 1 in plain words, and the seven candidates for later with D121.3's rulings on 6 and 7); the live tool and the two tests still to come (no accuracy figure); limitations; what comes next; where these numbers come from (53 rows). Figures reused: figures/headline_mae.svg, skill_intervals.svg, stagec_headline.svg, stagec_mae_by_lead.svg and figures/analysis/hourly_mae_by_lead.svg (they carry their own record numbers in their text; the sources section says so), plus the new stagec_gain, compare_hourly and compare_dailymax. Read beyond the Read first list: ANALYSIS.md Part 3 (lines 1610 to 1648), for the candidates list that the step asks for. Files changed: RESULTS.md. Check: Step 3's RESULTS items all carried or dropped (see STEP 3 DISPOSITIONS); every number in the running text of README and RESULTS (21 and 449) is found in the record (stricter whole-number match, 0 misses); 0 citations in running text.
+Step 7 | Folder READMEs. scripts/README.md: new plain opening paragraph, "How the scripts are named and run" in plain words with its two citations moved to a closing "Where these facts come from" table; the "Scripts to run only in a clone" section, the frozen-scripts table, the key-scripts table and the "Everything else" map are unchanged in content, with one new row added to the "This README" group of the key-scripts table for scripts/session127_readme_figures.py. data/README.md, docs/README.md, notes/README.md: plain wording; every inline citation moved to a closing sources table; no fact dropped (each fact of the old text is in the new text); data/README.md's link now reads ../README.md#data-credits-and-terms (resolves). Files changed: scripts/README.md, data/README.md, docs/README.md, notes/README.md. Check: PASS.
+Step 8 | Two pointers. SPEC.md: "RESULTS 6.6" replaced by "RESULTS.md" in the sentence "done (DECISIONS F125; RESULTS.md)."; nothing else. ANALYSIS.md: "see README\nsection 9." replaced by "see README's\ndata credits section." (that paragraph only rewrapped). Files changed: SPEC.md (1 line), ANALYSIS.md (2 lines). Check: PASS (git diff shows exactly these).
+
+== STEP 3 DISPOSITIONS (C = carried into the new text, D = dropped, with the reason) ==
+Totals: 301 items; carried 295 (README 111 of 114, RESULTS 184 of 187); dropped 6 (R008, R019, R071, S002, S042, S187).
+README.md items
+R001 | C | README title and opening
+R002 | C | README 'The idea in plain words'
+R003 | C | README 'The earlier results' (the range 12.2% to 21.0%; every 95% range above zero); table rows in RESULTS 4.3 and 6
+R004 | C | README 'How the results were kept honest' (one look, rule first)
+R005 | C | README 'Headline results'
+R006 | C | README opening and 'The live tool'
+R007 | C | README opening (warning box)
+R008 | D | The key to D, F and SPEC numbers is not needed: the running text has none. README's last section says where each number comes from.
+R009 | C | README opens with the new figure (a), stagec_gain.svg; the old grouped-bar figure stagec_headline.svg moved to RESULTS 7.3
+R010 | C | README 'Headline results' (six airports named by city and code; the pass rule)
+R011 | C | README 'Headline results' (smallest margins first, +8.2% and +2.6%)
+R012 | C | README 'Headline results' (gain from the trained models; running correction helps when bias shifts)
+R013 | C | moved to RESULTS 7.4 (figure stagec_mae_by_lead.svg and its caption); README keeps the sentence only
+R014 | C | README 'Limitations'; RESULTS 7.5
+R015 | C | README 'Headline results' (never used to choose any setting) and 'Limitations'; RESULTS 7.1 and 7.5
+R016 | C | README 'Limitations'; RESULTS 7.5
+R017 | C | README 'Limitations'; RESULTS 7.5
+R018 | C | moved to RESULTS 4.3 (figure headline_mae.svg and its caption); README gives the range in one sentence
+R019 | D | The label B+D,L,R,T is an internal name; README says 'the best method'. RESULTS section 4 keeps the label with its explanation.
+R020 | C | README 'The earlier results'; RESULTS 4.3
+R021 | C | README terms list; RESULTS 'Words used here'
+R022 | C | README 'The earlier results' (what a 95% range shows); block size and resamples in RESULTS 'Words used here' and 6
+R023 | C | RESULTS 4.3 (MAE columns) and 6 (skill with 95% range); README keeps only the range, 12.2% (Paris) to 21.0% (Reno)
+R024 | C | RESULTS 4.3 (MAE columns) and 6 (skill with 95% range); README keeps only the range, 12.2% (Paris) to 21.0% (Reno)
+R025 | C | RESULTS 4.3 (MAE columns) and 6 (skill with 95% range); README keeps only the range, 12.2% (Paris) to 21.0% (Reno)
+R026 | C | RESULTS 4.3 (MAE columns) and 6 (skill with 95% range); README keeps only the range, 12.2% (Paris) to 21.0% (Reno)
+R027 | C | RESULTS 4.3 (MAE columns) and 6 (skill with 95% range); README keeps only the range, 12.2% (Paris) to 21.0% (Reno)
+R028 | C | README 'The earlier results'; RESULTS 6
+R029 | C | README terms ('Raw GFS'); RESULTS 'Words used here'
+R030 | C | RESULTS 4.3 (persistence day basis); README does not repeat this table detail
+R031 | C | README 'The earlier results'; RESULTS 2.2
+R032 | C | RESULTS 6 (the three rows and 'How to read these tables'); README does not repeat these three ranges
+R033 | C | README 'The earlier results'; RESULTS 5
+R034 | C | RESULTS 5 (1.2576 against 1.4263, +11.83%); README says only that KSFO passed, with its framing
+R035 | C | README 'The earlier results' (37.5% sea weight, failed check, not directly comparable); RESULTS 5
+R036 | C | README 'The earlier results' caveats paragraph; RESULTS 6
+R037 | C | README 'The earlier results' caveats paragraph; RESULTS 6
+R038 | C | RESULTS 6 ('descriptive, change no verdict'); README keeps the first two statements and omits this one
+R039 | C | README 'Limitations' (one test year at a time); RESULTS 11
+R040 | C | README 'The live tool' last bullet; RESULTS 10
+R041 | C | moved to RESULTS 6 (figure skill_intervals.svg and its caption)
+R042 | C | README ('RESULTS.md has the full tables and every caveat'; no section number)
+R043 | C | README 'How the results were kept honest'
+R044 | C | README 'The earlier results' (the failure at Reno) and 'kept honest' ('Failures are reported')
+R045 | C | README 'How it compares' last paragraph (mixed, 1 of 4); RESULTS 8.1
+R046 | C | README 'Reproducing' (65 months, 195,600 files, 1,932,528 messages)
+R047 | C | README 'Reproducing' (13-check verifier; 2022-01 checked afterwards)
+R048 | C | README 'How the results were kept honest' (time order only; code guards)
+R049 | C | README 'Reproducing' (pinned packages, pull dates and queries, SHA-256, repeat runs byte-equal)
+R050 | C | README 'How it works' (same recipe at every airport)
+R051 | C | README figure (b) and 'How it works' bullets (observations from IEM); GFS GRIB2 source in 'Reproducing'; RESULTS 3.1
+R052 | C | README 'How it works' (LightGBM)
+R053 | C | README 'The idea in plain words' (Model Output Statistics)
+R054 | C | README 'How it works' (the one-hour target at local solar noon)
+R055 | C | README 'How it works' (daylight saving ignored)
+R056 | C | README 'How it works' (the target is the error)
+R057 | C | README 'Headline results' and figure (b); RESULTS 7.1
+R058 | C | README 'Headline results' (the pass rule) and 'The earlier results' (three methods, each judged once); RESULTS 1
+R059 | C | README 'The earlier results' (simplest method, passed at four, failed at Reno); RESULTS 2
+R060 | C | RESULTS 3 (README says three methods were tried and gives the best one's result)
+R061 | C | README 'The earlier results' ('added more inputs from GFS'); RESULTS 4
+R062 | C | README 'The earlier results' (San Francisco passed on two looks); RESULTS 5
+R063 | C | README 'How the results were kept honest' (time order; models trained on earlier data only); RESULTS 2.1
+R064 | C | RESULTS 2.1 (training and sealed windows); README does not repeat the dates
+R065 | C | README 'The earlier results' (the held-out year); RESULTS 4.3 (training to 2024-07-31)
+R066 | C | RESULTS 5 (the two looks' windows); README does not repeat the dates
+R067 | C | README 'How the results were kept honest' (rules first, one look)
+R068 | C | README 'How it works' (missing data dropped and counted)
+R069 | C | README 'How it works' (same recipe; nothing tuned for a single airport)
+R070 | C | README 'How the results were kept honest' (choices and claims kept apart)
+R071 | D | The stage labels (A to H) are internal names. README 'What comes next' and RESULTS 12 give the plan in plain words.
+R072 | C | RESULTS 6 (intervals) and 8.1 (comparison with MOS and NBM, mixed); README 'How it compares'; the probe of other models' data is credited in README's data credits
+R073 | C | README 'The live tool' last bullet; RESULTS 10
+R074 | C | README 'Headline results'
+R075 | C | README 'The live tool'; RESULTS 10
+R076 | C | README 'What comes next' (item 4); RESULTS 12
+R077 | C | README 'What comes next' (item 4); RESULTS 12
+R078 | C | README 'What comes next' (the GFS version 17 sentence); RESULTS 12
+R079 | C | README 'What comes next' (item 3); RESULTS 12
+R080 | C | README 'Headline results' (drawn at random by a rule written in advance); RESULTS 7.2; 'pooling is conditional' in RESULTS 12 only
+R081 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R082 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R083 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R084 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R085 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R086 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R087 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R088 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R089 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R090 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R091 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R092 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R093 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R094 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R095 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R096 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R097 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R098 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R099 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R100 | C | README 'Repository map' (the row is kept, in plain words, with no record numbers; the figures row also names the new script and folder)
+R101 | C | README 'Repository map' closing sentence
+R102 | C | README 'Reproducing' opening
+R103 | C | README 'Reproducing' (Python setup)
+R104 | C | README 'Reproducing' (libomp)
+R105 | C | README 'Reproducing' (run scripts with .venv/bin/python)
+R106 | C | README 'Reproducing' (small raw pulls and .meta.txt)
+R107 | C | README 'Reproducing' (the bulk GRIB cache)
+R108 | C | README 'Reproducing' (the hourly curve's data lives outside the repo)
+R109 | C | README 'Reproducing' (not verifiable from the repo)
+R110 | C | README 'Reproducing' (frozen scripts)
+R111 | C | README 'How this was built'
+R112 | C | README 'Data credits and terms': body byte-equal (heading lost its number)
+R113 | C | README 'Licence' (last sentence now says 'the data credits section')
+R114 | C | README 'Licence' (Author line)
+
+RESULTS.md items
+S001 | C | RESULTS opening paragraphs (record, nothing recomputed, SPEC wins)
+S002 | D | The revision history is in git; it is not part of the story for a reader.
+S003 | C | RESULTS 1 'The story in one page'
+S004 | C | RESULTS 1 'The story in one page'
+S005 | C | RESULTS 1 and 5
+S006 | C | RESULTS 1 and 7
+S007 | C | RESULTS 1 (all results are real, none erases another)
+S008 | C | RESULTS 'Words used here' (terms defined at first use)
+S009 | C | RESULTS 1 (GFS, bias)
+S010 | C | RESULTS 1 (GFS, bias)
+S011 | C | RESULTS 1 (MOS-style correction; what the project tests)
+S012 | C | RESULTS 1 (MOS-style correction; what the project tests)
+S013 | C | RESULTS 1 (the residual)
+S014 | C | RESULTS 1 'How a result is judged'
+S015 | C | RESULTS 1 'The story in one page'; 2.3 finding 4
+S016 | C | RESULTS 1 'The story in one page'; 2.3 finding 4
+S017 | C | RESULTS 2.1 'The target'
+S018 | C | RESULTS 2.1 'The target'
+S019 | C | RESULTS 2.1 (London City and Paris at 12:00 UTC by design; the other three hours)
+S020 | C | RESULTS 2.1 (London City and Paris at 12:00 UTC by design; the other three hours)
+S021 | C | RESULTS 2.1 'What is learned'
+S022 | C | RESULTS 2.1 (three inputs; no hour or recent-observation input)
+S023 | C | RESULTS 2.1 (three inputs; no hour or recent-observation input)
+S024 | C | RESULTS 2.1 (the fixed settings; nothing tuned per airport)
+S025 | C | RESULTS 2.1 (the fixed settings; nothing tuned per airport)
+S026 | C | RESULTS 2.1 'The split'
+S027 | C | RESULTS 2.1 'The split'
+S028 | C | RESULTS 2.1 'The split' (time, never random)
+S029 | C | RESULTS 2.1 'Pairing an observation to a forecast'
+S030 | C | RESULTS 2.1 'Data hygiene' (492-hour gap)
+S031 | C | RESULTS 2.1 'Data hygiene' (gfs_global pin; 12.3 degrees C at Des Moines)
+S032 | C | RESULTS 2.1 (only London City and Paris make the clean comparison)
+S033 | C | RESULTS 1 'How a result is judged' (the bar)
+S034 | C | RESULTS 3 opening and 3.1
+S035 | C | RESULTS 2.2
+S036 | C | RESULTS 2.2 table row
+S037 | C | RESULTS 2.2 table row
+S038 | C | RESULTS 2.2 table row
+S039 | C | RESULTS 2.2 table row
+S040 | C | RESULTS 2.2 table row
+S041 | C | RESULTS 'Words used here' (skill); 2.2
+S042 | D | The per-airport source list (F16, F30, F47, F64, F82) now lives in the sources table at the end, not in the running text.
+S043 | C | RESULTS 2.2 and 2.3 finding 5
+S044 | C | RESULTS 2.2 (Reno's 1.414 is Open-Meteo's)
+S045 | C | RESULTS 2.2 (41% to 58% better than persistence)
+S046 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S047 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S048 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S049 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S050 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S051 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S052 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S053 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S054 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S055 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S056 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S057 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S058 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S059 | C | RESULTS 2.3, findings 1 to 6 (finding numbers match: 46 to 48 are findings 1 to 3, 49 to 53 finding 4, 54 to 57 finding 5, 58 and 59 finding 6)
+S060 | C | RESULTS 3 opening
+S061 | C | RESULTS 3.1
+S062 | C | RESULTS 3.1
+S063 | C | RESULTS 3.1
+S064 | C | RESULTS 3.1
+S065 | C | RESULTS 3.1
+S066 | C | RESULTS 3.1
+S067 | C | RESULTS 3.1
+S068 | C | RESULTS 3.1
+S069 | C | RESULTS 3.2
+S070 | C | RESULTS 3.2
+S071 | C | RESULTS 3.2
+S072 | C | RESULTS 3.3 (the lock; the guard error)
+S073 | C | RESULTS 3.3 table row
+S074 | C | RESULTS 3.3 table row
+S075 | C | RESULTS 3.3 table row
+S076 | C | RESULTS 3.3 table row
+S077 | C | RESULTS 3.3 table row
+S078 | C | RESULTS 3.3 (the note under the table and the 5-against-3 evidence)
+S079 | C | RESULTS 3.3 (the note under the table and the 5-against-3 evidence)
+S080 | C | RESULTS 3.3 (the note under the table and the 5-against-3 evidence)
+S081 | C | RESULTS 3.4
+S082 | C | RESULTS 3.4
+S083 | C | RESULTS 3.4
+S084 | C | RESULTS 3.4
+S085 | C | RESULTS 3.4
+S086 | C | RESULTS 3.4
+S087 | C | RESULTS 3.4
+S088 | C | RESULTS 3.5
+S089 | C | RESULTS 3.6
+S090 | C | RESULTS 3.6
+S091 | C | RESULTS 3.6
+S092 | C | RESULTS 4 opening
+S093 | C | RESULTS 4.1
+S094 | C | RESULTS 4.2
+S095 | C | RESULTS 4.2
+S096 | C | RESULTS 4.2
+S097 | C | RESULTS 4.2
+S098 | C | RESULTS 4.2
+S099 | C | RESULTS 4.2
+S100 | C | RESULTS 4.3
+S101 | C | RESULTS 4.3 table row
+S102 | C | RESULTS 4.3 table row
+S103 | C | RESULTS 4.3 table row
+S104 | C | RESULTS 4.3 table row
+S105 | C | RESULTS 4.3 table row
+S106 | C | RESULTS 4.3 (notes under the table; the 'audit-68b item 3' label, an internal reference, is not repeated)
+S107 | C | RESULTS 4.3 (notes under the table; the 'audit-68b item 3' label, an internal reference, is not repeated)
+S108 | C | RESULTS 4.3 (notes under the table; the 'audit-68b item 3' label, an internal reference, is not repeated)
+S109 | C | RESULTS 4.3 (notes under the table; the 'audit-68b item 3' label, an internal reference, is not repeated)
+S110 | C | RESULTS 4.4 caveats (a) to (e)
+S111 | C | RESULTS 4.4 caveats (a) to (e)
+S112 | C | RESULTS 4.4 caveats (a) to (e)
+S113 | C | RESULTS 4.4 caveats (a) to (e)
+S114 | C | RESULTS 4.4 caveats (a) to (e)
+S115 | C | RESULTS 4.4 (default recipe; every new airport needs its own lock)
+S116 | C | RESULTS 5 'Why San Francisco'
+S117 | C | RESULTS 5 'The gate failed' and the three findings
+S118 | C | RESULTS 5 'The gate failed' and the three findings
+S119 | C | RESULTS 5 'Rehearsal and lock'
+S120 | C | RESULTS 5 'Two looks, not one'
+S121 | C | RESULTS 5 table row
+S122 | C | RESULTS 5 table row
+S123 | C | RESULTS 5 (notes under the table; 'Both looks pass')
+S124 | C | RESULTS 5 (notes under the table; 'Both looks pass')
+S125 | C | RESULTS 5 'How to read it'
+S126 | C | RESULTS 5 'How to read it'
+S127 | C | RESULTS 5 'How to read it'
+S128 | C | RESULTS 5 'Framing' and the repeat under 6's San Francisco table
+S129 | C | RESULTS 6 opening
+S130 | C | RESULTS 6 opening
+S131 | C | RESULTS 6 opening
+S132 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S133 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S134 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S135 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S136 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S137 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S138 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S139 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S140 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S141 | C | RESULTS 6, minimal method table row (the minus sign is now a hyphen)
+S142 | C | RESULTS 6 (raw GFS is Open-Meteo's)
+S143 | C | RESULTS 6, richer method table row
+S144 | C | RESULTS 6, richer method table row
+S145 | C | RESULTS 6, richer method table row
+S146 | C | RESULTS 6, richer method table row
+S147 | C | RESULTS 6, richer method table row
+S148 | C | RESULTS 6, richer method table row
+S149 | C | RESULTS 6, richer method table row
+S150 | C | RESULTS 6, richer method table row
+S151 | C | RESULTS 6, richer method table row
+S152 | C | RESULTS 6, richer method table row
+S153 | C | RESULTS 6, selected method table row
+S154 | C | RESULTS 6, selected method table row
+S155 | C | RESULTS 6, selected method table row
+S156 | C | RESULTS 6, selected method table row
+S157 | C | RESULTS 6, selected method table row
+S158 | C | RESULTS 6, selected method table row
+S159 | C | RESULTS 6, selected method table row
+S160 | C | RESULTS 6, selected method table row
+S161 | C | RESULTS 6, selected method table row
+S162 | C | RESULTS 6, selected method table row
+S163 | C | RESULTS 6, San Francisco table row
+S164 | C | RESULTS 6, San Francisco table row
+S165 | C | RESULTS 6, San Francisco table row
+S166 | C | RESULTS 6, San Francisco table row
+S167 | C | RESULTS 6 (raw GFS is the elevation-adjusted GRIB temperature)
+S168 | C | RESULTS 6 'A note on the day sets'
+S169 | C | RESULTS 6 'How to read these tables'
+S170 | C | RESULTS 6 'How to read these tables'
+S171 | C | RESULTS 6 'How to read these tables'
+S172 | C | RESULTS 6 'Statements that go with every use'
+S173 | C | RESULTS 6 'Statements that go with every use'
+S174 | C | RESULTS 6 'Statements that go with every use'
+S175 | C | RESULTS 5 'Framing' and the repeat under 6's San Francisco table
+S176 | C | RESULTS 11 first bullet (upper-air tried and partly adopted; the Reno caveat by pointer to 3.4)
+S177 | C | RESULTS 11 first bullet (upper-air tried and partly adopted; the Reno caveat by pointer to 3.4)
+S178 | C | RESULTS 11 second bullet
+S179 | C | RESULTS 11 third bullet
+S180 | C | RESULTS 6, 8.1 and 10 (stage A's intervals and comparison; stage B's forward test)
+S181 | C | RESULTS 7.1
+S182 | C | RESULTS 7.1
+S183 | C | RESULTS 7.1
+S184 | C | RESULTS 7.3 and 7.4
+S185 | C | RESULTS 10
+S186 | C | RESULTS 12
+S187 | D | The revision history is in git; 'SPEC is the source of truth' is carried in the opening paragraphs.
+
+== SOURCES TABLE CHECK (status | file | claim | cited | note) ==
+PASS | README.md | Six new airports drawn at random by a fixed rule, with their strata | D82.7 | 
+PASS | README.md | Models trained only on data before 1 August 2024, then frozen | D100.3(c), SPEC 9.5 | 
+PASS | README.md | The two held-out years, 1 Aug 2024 to 31 Jul 2025 and 1 Aug 2025 to 31 Jul 2026 | D100.4 | 
+PASS | README.md | The pass bar: lower MAE than raw GFS and than persistence, in both years | D100.5, SPEC 9.5 | 
+PASS | README.md | Passed at 6 of 6 airports, both outputs, both years | F150 (title and F150.1), SPEC 9.5, `data/processed/session107_claim_verdicts.csv | 
+PASS | README.md | Smallest margins +8.2% hourly and +2.6% daily maximum (Chicago, second year; 8.216 and 2.589) | F150, SPEC 9.5 | 
+FAIL | README.md | Margins over raw GFS from 8.2% to 33.0% hourly and from 2.6% to 57.2% daily (smallest 8.22 and 2.59, largest 3 | F150.2 | not found in cited text: ['33.0']
+PASS | README.md | Margins over persistence larger in every case | F150.2 | 
+PASS | README.md | Most of the gain from the trained models; the running correction helps when bias shifts, neutral otherwise (de | D102.2, D100.8, SPEC 9.5 | 
+PASS | README.md | The figure of the gain over raw GFS (24 values) | F150.2; drawn by `scripts/session127_readme_figures.py` from `data/processed/ses | 
+PASS | README.md | The timeline's dates: rules 11 Oct 2026, look 11 Oct 2026, live test rules 14 Oct 2026, first live cycle 12 Oc | D100 (heading), F150.4, D105 (heading), D105.5(d), D105.5(e) | 
+PASS | README.md | The rules were committed before the look was run | Git history: commit `edb51d4`, 11 Oct 2026 19:07 (+0100, which is 18:07 UTC); th | checked by git log (commit edb51d4 2026-10-11 19:07 +0100; F150.4 run 20:45 UTC)
+PASS | README.md | The simplest method passed at four airports and failed at Reno | F16, F30, F47, F64, F82; RESULTS.md | no number to find; the cited entry or file exists
+PASS | README.md | The best one-hour method: 12.2% (Paris) to 21.0% (Reno) lower MAE than raw GFS; every 95% range above zero | F109, F125.6 | 
+PASS | README.md | The held-out year of the best method, 1 Aug 2024 to 31 Jul 2025 | D51, F109 | 
+PASS | README.md | The caveats on F109's result: one year; plain five-input version already scored on it; a different year from t | D59.3 (a) to (e), F109 | 
+PASS | README.md | San Francisco: two looks, 37.5% sea weight, failed check, not directly comparable | F119, D71.5, F117.3, D69 | 
+PASS | README.md | The 95% ranges describe one year, are not independent, and are descriptive | F125.9, D75.2 | 
+PASS | README.md | The comparisons: AIFS, NBM grid, NBS, MAV and ECMWF IFS counts (formal tests, hourly and daily maximum) | ANALYSIS.md Part 1, item 1 and item 4 (Tables 2a and 2b); F157.3, F157.4, F160.9 | 
+PASS | README.md | The curve's error 11% (Chicago) to 32% (Wellington) lower hourly than raw GFS, 6% (Chicago) to 56% (Wellington | ANALYSIS.md Part 1, item 1 | 
+PASS | README.md | AIFS's maximum is the highest of its 6-hourly values; at those steps the curve is worse at 6 of 12 | ANALYSIS.md Part 1, item 4 ("Read with care"); F157.7(2) | 
+PASS | README.md | AIFS and the NBM grid read at GFS's grid point at the development airports | D108.3, F157.7(3) | 
+PASS | README.md | Comparison years are used up for those forecasts at those airports | D107.3 | 
+PASS | README.md | The earlier one-hour comparison against the NBM: mixed, 1 of 4 | F127, D78.1 | 
+PASS | README.md | The figures of the comparisons (50 dots each) | ANALYSIS.md Tables 2a and 2b; `data/processed/session114_comparisons/` and `data | 
+PASS | README.md | The live tool: 49 airports (12 plus 37), the hourly curve to 48 hours, the daily maximum | D103.2, D103.4, D105.5(d), F153.6 | 
+PASS | README.md | Running since 12 October 2026, at 49 airports since 13 October | D105.2, D105.3 | 
+PASS | README.md | It checks twice an hour and fills in missed runs from the past 24 hours | D103.9, D118.2 | 
+PASS | README.md | The log is written once and never edited; the models are frozen | D103.8, D103.5 | 
+PASS | README.md | No accuracy figure is computed or shown for the live tool | D103.2, D105.6 | 
+PASS | README.md | The live test is pre-registered, scored after each period ends, to 31 July 2027 | D105.5 | 
+PASS | README.md | The 2026-27 forward test is pre-registered, with frozen models, not scored | D73, F122, D73.8 | 
+PASS | README.md | GFS version 16 only; version 17 not retrained and marked not validated | D100.10, D103.10 | 
+PASS | README.md | Sea in the grid box at Toronto, Shenzhen and Wellington | F132.3, D100.10 | 
+PASS | README.md | Hourly and daily-maximum errors are not comparable with one-hour results | D100.10, SPEC 9.6 | 
+PASS | README.md | The daily maximum's mean error +0.12 (Toronto) to +0.25 (Shenzhen) degrees C | ANALYSIS.md Part 1, item 1 and item 3 | 
+PASS | README.md | Eight of 12 airports report whole degrees; the 0.25 degree floor | ANALYSIS.md Part 1, item 6 | 
+PASS | README.md | The order of the longer-term plan | D121.2, D121.3 | 
+PASS | README.md | The rules of the method: time-split only, bar fixed first, one look, missing data dropped and counted, same re | SPEC 2.1a, 2.2, 2.4, 2.5, 5.0, 5.3 | 
+PASS | README.md | The five steps in the diagram, and the target | SPEC 9.1, 9.3, 4.2 | 
+PASS | README.md | The one-hour target at local solar noon, daylight saving ignored | SPEC 4.1 | 
+PASS | README.md | The data pull: 65 months, 195,600 files, 1,932,528 messages, a 13-check verifier | D84.4, F134, D87, F137 | 
+PASS | README.md | The libomp check, with Homebrew libomp 23.1.3 | F140 | 
+PASS | README.md | The GRIB cache, 39 GB, on an external drive | D102.3 | 
+PASS | README.md | Frozen scripts are never edited | D62.3(a), D62.3, D62.6 | 
+PASS | README.md | Stage names behind "what comes next" | D121.2, D72.2(b), D107.4 | 
+PASS | RESULTS.md | Section 1: GFS, bias, MOS-style correction, the residual, the bar, how looks combine, nothing pooled | SPEC 2, 4.2, 5, 5.0; D22; D71.6 | 
+PASS | RESULTS.md | The three methods and their windows (training 2021-03-24 to 2025-07-31; sealed 2025-08-01 to 2026-07-31; valid | SPEC 4.3, 7.2; D13, D18 | 
+PASS | RESULTS.md | Sealed tests opened once after the lock | D21, D31, D35, D39, D44 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | Section 2: target hour, solar noon, daylight saving ignored | SPEC 4.1 | 
+PASS | RESULTS.md | 12:00 UTC for London City and Paris by design; 18:00, 02:00, 20:00 UTC | D26; D27, D33, D37, D42 | 
+PASS | RESULTS.md | The three inputs and the LightGBM settings | D19; D44.4, D21.4 | 
+PASS | RESULTS.md | 15-minute pairing, offsets 5 to 10 minutes | D14, SPEC 2.2 | 
+PASS | RESULTS.md | The 492-hour shared gap | SPEC 3.2 | 
+PASS | RESULTS.md | The `gfs_global` pin; up to 12.3 degrees C at Des Moines | F40, D16 | 
+PASS | RESULTS.md | The five-airport table (EGLC, LFPG, DSM, YSDU, RNO) | F16, F30, F47, F64, F82 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | Findings 1 to 3 and 6 (feature shares; Dubbo; margin ranges; mean-bias reference) | F16, F30, F47, F64, F82, F61 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | Finding 4: Reno's 68% and 25.0% and -3.1% | F79, F82; D44.12 (written in advance) | 
+PASS | RESULTS.md | Finding 5: the shared year; climatology bias +0.773, +0.918, +0.172 | F46, F48, F65 | 
+PASS | RESULTS.md | Section 3: the richer method, its motivation and design | D48, F81, F85 to F94; D48.4, D48.3, D48.7; D49; SPEC 7, 2.1b | 
+PASS | RESULTS.md | The elevation constants (7.429 degrees C per km; 275 m at Reno; +0.249, -0.170, -0.111, +0.246) | D48.3, F90, F91; SPEC 5.2, 7.2 | 
+PASS | RESULTS.md | Checks before the sealed test (0.062 degrees C) | F89, F90, F91, F86, F87 | 
+PASS | RESULTS.md | The guard error and the lock | F92, F93, D48, D48.13 | 
+PASS | RESULTS.md | The richer-method table; persistence day sets; the 5-against-3 evidence | F94 (and Task 2); D21.8 | 
+PASS | RESULTS.md | The Reno accounting (1.346, 1.512, 1.414, +4.8%, 1.455, 1.458) | F94, F82, D48.12 | 
+PASS | RESULTS.md | Paris: the 1.5-year window against about 4.4 years (+3.3%, +5.3%) | F86, F87, F91, F94 | 
+PASS | RESULTS.md | 5-against-3 margins, +1.8% to +8.2% | F94 | 
+PASS | RESULTS.md | Section 4: 27 variables in five further families | F97 | 
+PASS | RESULTS.md | The reserved year and the experiments | D51; F98 to F105; D52 to D56 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | The sweep and the set `B+D,L,R,T` | D57, F106, D58 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | The five-airport table and +6.02% | F109 | 
+PASS | RESULTS.md | Caveats (a) to (e) | D59.3; F96, D58 item 8 | 
+PASS | RESULTS.md | The pre-registered day basis (1 and 5 days) | D58 item 6, F109 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | Des Moines's expected weaker case | D58 item 7, F96, F106 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | Section 5: why San Francisco; the gate (3.326 degrees C); the follow-up; the decision | D66.1, D67.1, D59.5; F116, F117, D69 | 
+PASS | RESULTS.md | Rehearsal; the band 0.0377; the lock | D67.4, F118, F118.7, D70 | 
+PASS | RESULTS.md | The two looks and the result table | D67.3, D70.3, D70.4, F119, F119.3 | 
+PASS | RESULTS.md | How to read it; the headline; look B's poor raw year; unstable bias | D71.2, D71.3, D71.4, F118.5, F119.3 | 
+PASS | RESULTS.md | The framing | D71.5, F117.3 | 
+PASS | RESULTS.md | Section 6: the intervals | SPEC 5.4; D72.3, D75.2; F125, F125.2 to F125.9; F96 | 
+PASS | RESULTS.md | Section 7.1 to 7.2: the curve, the drift weight, the build choices | SPEC 9.1 to 9.4; D88.4, D94, F143, D97, F146, D98, F147, D99, F148, D83.2 | 
+PASS | RESULTS.md | The claim, its airports and rules | D82.7, D100, D100.3 to D100.7; SPEC 9.5 | 
+PASS | RESULTS.md | Section 7.3: all margins and counts | F150 (F150.1, F150.2); SPEC 9.5; `data/processed/session107_claim_verdicts.csv` | 
+PASS | RESULTS.md | Section 7.4: the running correction's effect; Chicago's three MAEs; raw GFS daily-maximum MAEs at Chicago | D100.8, D102.2, F150.6; SPEC 9.5 | 
+PASS | RESULTS.md | Section 7.5: caveats | D100.10, F132.3, SPEC 9.6 | 
+PASS | RESULTS.md | Section 8.1: the one-hour comparison, mixed, 1 of 4 | F127, D78.1 | 
+PASS | RESULTS.md | Section 8.2: the rules and the sources; counts by formal test | D107.2, D107.3, D107.9, D108; ANALYSIS.md Part 1 item 4 (Tables 2a, 2b); F157.3, | 
+PASS | RESULTS.md | IFS reads cold; no fault found | F160.4, F162.8, ANALYSIS.md Part 1 item 4 | 
+PASS | RESULTS.md | Read with care: distances, AIFS steps, NBS's extra hour | D108.3, F157.7(2), F157.7(3) | 
+PASS | RESULTS.md | Section 8.3: the official maximum | D107.8; ANALYSIS.md Part 1 item 3; Tables E8, E9 | 
+PASS | RESULTS.md | Section 9: the descriptive readings | ANALYSIS.md Part 1 items 1, 2, 3, 5, 6 | no number to find; the cited entry or file exists
+PASS | RESULTS.md | The candidates for later and their status | ANALYSIS.md Part 3; D121.3 | 
+PASS | RESULTS.md | Section 10: the live tool (49 airports, frozen models, the log, page) | D103, D103.2 to D103.9, D105.2, D105.3, F153.6 | 
+PASS | RESULTS.md | The twice-an-hour schedule (at 15 and 40 minutes past) and the 24-hour catch-up | D112.6(d), D113.4, D118.2; D103.9 | 
+PASS | RESULTS.md | The pre-registered test of the live forecasts | D105.5 | 
+PASS | RESULTS.md | No accuracy figure for the live tool | D103.2, D105.6 | 
+PASS | RESULTS.md | The 2026-27 forward test | D73, D73.8, D77.6, D79, F122, F128, F129 | 
+PASS | RESULTS.md | Section 11: limitations | D52, D57, D58, D72.9, D59.5, D71.1, D103.10, D59.3(c), SPEC 5.2 | 
+PASS | RESULTS.md | Section 12: what comes next | D121.2, D121.3, D72.2(b), D81.2 to D81.5, D107.4, D115.6 | 
+PASS | data/README.md | Raw data is never changed in place; each raw pull has its pull date and query | SPEC 2.3 | 
+PASS | data/README.md | IEM observations are the truth data; the 45 further airports | SPEC 3.1; F132.4 | 
+PASS | data/README.md | Open-Meteo forecasts behind the minimal method | SPEC 3.2 | 
+PASS | data/README.md | The bulk GRIB cache: not committed, the external drive, sessions 37 to 89 | D47, D62.7, D102.3 | 
+PASS | data/README.md | The raw MAV responses | F127.3 | 
+PASS | data/README.md | The best one-hour method's results file; stage C's build-choice scores | F109; F139 | no number to find; the cited entry or file exists
+PASS | data/README.md | The frozen models of the 2026-27 forward test; never refit | F122; D73.2 | 
+PASS | data/README.md | The rebuild checks | D64, D65, F112 to F114 (Reno); F115 (column order); F117, F118 (San Francisco) | no number to find; the cited entry or file exists
+PASS | data/README.md | The Release `stagec-grib-pull-v1` and `MLwx-pull/` | F137 | no number to find; the cited entry or file exists
+PASS | data/README.md | `MLwx-stagec/` and its SHA-256 file | D88.8, F138 | 
+PASS | data/README.md | `MLwx-pull-f025-048/` | D98, F147 | 
+PASS | data/README.md | The claim airports' tables | D100, F149 | no number to find; the cited entry or file exists
+PASS | docs/README.md | Session prompts and commit messages are kept in `sessions/` and `commits/` | D92.2 | 
+PASS | docs/README.md | PROJECT-INSTRUCTIONS.md was moved here from the repository root | D91.3 | 
+PASS | notes/README.md | The audit reports were triaged | D62 | no number to find; the cited entry or file exists
+PASS | notes/README.md | The health check registers | D114.7 | 
+PASS | notes/README.md | The archive manifest | D46 | no number to find; the cited entry or file exists
+PASS | notes/README.md | The folder and its file names stay as they are, because the record cites them by path | D91.2 | 
+PASS | notes/README.md | Some files contain file paths from the author's machine | F126.2 | 
+PASS | scripts/README.md | Scripts are never renamed or edited, because the record cites them by path and later scripts check earlier one | D91.2 | 
+PASS | scripts/README.md | `session97_stagec_cv.py` checks `session62_reserved_confirm.py` against its recorded fingerprint | D70.2 | 
