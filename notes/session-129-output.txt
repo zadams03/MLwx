@@ -1,0 +1,736 @@
+SESSION 129 SUMMARY: the live test's scoring script, gated, and session 86's gate wrapper. Run 2026-11-14.
+What was done: D123 recorded first. scripts/session129_live_score.py written (--inventory, --gate, --score), gated
+three ways and tested. scripts/session129_stageb_gate.py written, tested, and run once by the owner's ruling.
+No observation valid on or after 2026-10-12 was read; no obs/ file opened; no live error computed; --score not run.
+Checks:
+  PASS  Step 1 start checks (HEAD 73370ed, clean, 268 tests OK, SPEC 3.4 span unchanged, 18 of 18 stage C
+        analysis files equal, three --guard-check modes exit 0)
+  PASS  Step 2 D123 byte-equal by diff and cmp, 0 em-dashes (one stray line copied and removed at once)
+  PASS  Step 3 design note written before any code: D105.5 (a) to (l), and 19 readings; none judged a new rule
+  PASS  Step 4 gate (a): scores 122,100 cells and verdicts 624 cells all equal to session 107's; both files
+        byte-equal; extra: 78,732 day cells equal. 2,920 synthetic cycle files, 804,864 rows. Differences 0
+  PASS  Step 5 gate (c): fresh clone f214d549, 163 commits, 132 log files each added once, 0 missing cycles
+        (the 12: 132 of 132; the 37: 127 of 127); 125 obs/ names listed, 0 opened
+  PASS  Step 6 tests: 54 new for the script; ten deliberate breaks each caught
+  PASS  Step 7 wrapper: 11 tests; --check PASS; gate run once (owner: "Run it once now"), equal to F128.5 in
+        every field (54 of 54 station-days, 783 messages, 674,387,577 bytes, 0 mismatches)
+  PASS  Step 8 tests/README.md: three lines
+  PASS  Step 9: 333 tests OK (1 skipped); SPEC unchanged; 0 em-dashes in added lines and new files
+  PASS  archive step (4 checks); --citations 222 resolved, 0 unresolved; DECISIONS.md 38,933 bytes (limit 80,000)
+  PASS  scope: only files on the scope list changed
+Headline numbers: script SHA-256 0c12c621e8f48d2e218c444967030becec1d0136a377fad5ee306eb7aa30bf80; wrapper
+9b9d636fa4b7321f6936e1a27febe26abdf5b4cd5576f544b3c483c454801f94. Live issue lag: median 6.50 h, maximum 12.82 h.
+Readings for the owner: (1) one cycle (2026-11-09 06z) was issued 12.82 h late, above D118.4's 12 h mark for
+reopening the outside scheduler. (2) Rows issued after their valid time reach lead 12, not only leads 3 and 4.
+(3) The 19 readings in the design note (F172.3) are for review before the script is committed and frozen.
+(4) The prompt's "GitHub only" network rule and D123.5's "run once" disagreed; the owner ruled in chat.
+(5) meta.txt holds only the pred_ hashes; obs_ and refs_ are in refs_meta.txt. (6) session112_analysis.py
+differs from both SHA-256 in its meta files, so its edge rule is checked by a test, not imported.
+Open items: tests/README.md still lacks test_mosmix_saver.py and older test files (out of scope). Nothing is
+committed. The script must be committed before any observation valid on or after 2026-10-12 is read.
+
+==================================================================================================
+CHECKPOINTS
+==================================================================================================
+
+Step 1 (start checks): HEAD 73370ed "Session 128: the MOSMIX saver, as a template (D122, F171)". `git status
+--porcelain` empty (the prompt docs/sessions/session-129.md is already tracked, so the tree is fully clean).
+Tests 268 OK (1 skipped). SPEC 3.4 span l.256 to l.287, 2,050 bytes, SHA-256 a02cbe9e...9ef9, equal.
+../MLwx-stagec/analysis112/: 18 of 18 files (pred_, obs_, refs_ of EDDM, KORD, CYYZ, ZGSZ, ZUCK, NZWN) equal to
+their recorded SHA-256. Note: meta.txt holds only the pred_ hashes; the obs_ and refs_ hashes are in
+refs_meta.txt in the same folder, so that file was read too (not on the Read first list). Stage B's three
+--guard-check modes (session86_forward_build, session87_forward_competitors, session87_forward_score) exit 0.
+Files changed: none. PASS.
+
+Step 2 (D123): appended to DECISIONS.md with sed from the prompt's l.77 to l.89 (13 lines, after one blank
+line). A first attempt used l.77 to l.90 and so also copied the prompt's closing code fence; that one line was
+removed with sed straight away, before any other edit. Then: last 13 lines byte-equal to the prompt's block by
+diff and cmp; the first 36,174 bytes equal to HEAD's file; 14 lines added, 0 removed; 0 em-dashes in the added
+lines. DECISIONS.md 36,174 -> 40,495 bytes. Files changed: DECISIONS.md. PASS.
+
+Extra reading (CLAUDE.md, "a step needs a rule not read"): for Step 3, F153.6 and F154.2 (the 37 airports and
+their first cycle), D106.7 (edge-of-day days, "D105.5(i)'s quantity"), src/mlwx/state.py and the header and
+issue_cycle of src/mlwx/runner.py (the state file's stop list), src/mlwx/records.py l.50 to l.92, session 97's
+mae, mean_error, fmt, csv_text and write_new, and session 112's peak_index and is_edge.
+
+==================================================================================================
+STEP 3. DESIGN NOTE (written before any code)
+==================================================================================================
+
+The script is scripts/session129_live_score.py. "Imported" means the rule is existing code and is called
+unchanged. "New" means new code in this script, with a test.
+
+A. D105.5 point by point
+
+(a) What is scored. The `corrected` column, as issued. NEW: `history_events` runs
+    `git log --root --no-renames -c --name-status` over every commit reachable from the clone's HEAD and
+    collects every event on a path under log/. The write-once check passes only if every such path has exactly
+    one event and it is an add. A shallow clone is refused. Each cycle's file is the path
+    log/YYYY/MM/gfs_YYYYMMDDHH.csv; its text is read from the commit that added it (`git cat-file`), parsed
+    with the same columns as `mlwx.prediction_log` (LOG_COLUMNS, parse_time, imported). Any other file under
+    log/ is reported (as a second file for its cycle if its name holds a ten-digit stamp) and never scored.
+(b) Outputs. Hourly: logged rows at leads 3 to 48. Daily maximum: IMPORTED `mlwx.dailymax.local_day`,
+    `day_cycle`, `read_off` (D98.10(b), (c)) on the logged `corrected` and `raw_gfs`; observed maximum by
+    session 106's `observed_max` (D98.10(a)); each airport's time zone from `mlwx.config.load_airports`.
+(c) The bar. IMPORTED from session 106: `persistence_k`, `hourly_persistence`, `daily_persistence`, `margin`,
+    `half_pass`, `look_pass`; session 97's `mae` and `mean_error` (the NumPy mean, in session 106's row order:
+    cycle hour, lead, cycle). Raw GFS is the log's `raw_gfs`.
+(d) Airports. The 12: `mlwx.records.has_stagec_tables` (D103.4). The 37: the airports of
+    data/processed/session111_new_tables.csv, read by `mlwx.records.new_tables` after its SHA-256 check
+    (D105.8). So the list is fixed and an airport added later to gfs_airports.csv is not in the test. Starts:
+    the 12 at 2026-10-12T12; the 37 at 2026-10-13T18, held as a constant from F154.2 ("First 49-airport cycle"),
+    checked by a test against the DECISIONS files and at run time against the log.
+(e) Periods. NEW: `period_window(period, first_v17)`. A: to the cycle 6 hours before the v17 cycle, or to
+    2027-07-31T18. B: from the v17 cycle to 2027-07-31T18. A row or local day belongs to the period of its
+    cycle. Nothing valid after 2027-07-31T23:00 is used: such rows are counted and left out; a day whose last
+    hour is later is not used (D98.10(a)); the observation lookup refuses a later time.
+(f) Observations. IMPORTED `mlwx.observations.fetch_reports` and `ReportSet(live=True)`; `.nearest(valid)` at
+    each valid hour needed. NEW: the request list (one request per airport and calendar month), the raw
+    responses saved with URL, time and SHA-256, and the 7-day refusal. The snapshot comparison runs only after
+    the score files are written.
+(g) Verdicts and the claim. PASS or FAIL per airport, period and output (both halves must pass). Printed per
+    output and group: "passes at N of 12 airports", "at N of 37 airports", with the smallest margin first
+    (D79.1). Nothing is averaged across airports.
+(h) Counted, never excluded. NEW: cycles in the window with no log file, with the reason from the state
+    file's stop list; each cycle's issue lag; rows issued after their valid time, by lead; rows and days with
+    no observation.
+(i) Descriptive. NEW (simple groupings of the same errors): the baseline without b, mean errors, leads 3 to 24
+    and 25 to 48, per cycle hour, per model manifest and code commit, and edge-of-day days counted and scored
+    separately.
+(j) Expectation. Printed with the result for period A and the 12: met or not met.
+(k) Changes during the window. No code: see reading 3.
+(l) The look. `--score` refuses unless the script is tracked by git and equal to its committed version.
+
+B. Places where D105.5 leaves a choice open, the reading taken, and why
+
+ 1. Persistence when a cycle is issued late. The reference time is the cycle, never the issue time (D123.2;
+    D100.5 says "before the run's cycle c").
+ 2. Which cycle's rows make a local day's forecast. Only the cycle of D98.10(b): the latest cycle c with
+    c + 4 hours at or before the day's start. If that cycle has no log file, or lacks one of the day's hours,
+    the day has no forecast and is counted; no other cycle stands in (D98.10(c)). A day whose cycle was in fact
+    issued after the day began still counts: lateness is counted, never excluded (D105.5(h)).
+ 3. A model SHA-256 or code commit that changes mid-period. Every row is scored as logged, in the bar. The
+    split by manifest and commit is descriptive only (D105.5(i)). The script has no switch to leave rows out:
+    if an entry under D105.5(k) ever says rows after a change are treated differently, that needs a new script
+    (D116.10).
+ 4. The window per group. The 12: every cycle from 2026-10-12T12. The 37: every cycle from 2026-10-13T18
+    (F154.2). If any of the 37 has a logged row before that, or none in that cycle, the script stops: the
+    record and the log would disagree, and the owner rules.
+ 5. `--first-v17-cycle`. Must be `none` or a 00, 06, 12 or 18 UTC hour after 2026-10-12T12 (D123.3) and not
+    after 2027-07-31T18. A later v17 start is outside the window, which is the "none" case of D105.5(e), so
+    the script asks for `none` instead of guessing. `--period B` with `none` is refused (period B exists only
+    if v17 starts in the window).
+ 6. The 7 days. The period's last valid hour is the earlier of its last cycle plus 48 hours and
+    2027-07-31T23:00. `--score` refuses until 7 days after it (D105.5(f)).
+ 7. The common sets. Hourly: every logged row of the period's cycles, at an airport in the test, valid on or
+    before 2027-07-31T23:00, with an observation (D100.5(a): "the look's scored rows"). Daily: days with a
+    usable observed maximum and both forecast maxima. Persistence half: the subset with a persistence value,
+    both sides on that subset (D100.5(b)).
+ 8. A half with no rows. It cannot pass (session 106's `half_pass`), and has no margin.
+ 9. "A later file for the same cycle". Any file under log/ that is not the cycle's own path. D103.8 does not
+    fix a correction's name, so everything else is reported and nothing else is scored.
+10. "Added once and never modified or deleted". Read as: over all commits reachable from HEAD, each path under
+    log/ has one event, an add. A merge that itself changes a log file is an extra event and fails. Limit: a
+    clone cannot show history that was rewritten and force-pushed before the clone was made.
+11. The reason for a missing cycle. The state file keeps only its last 100 stops (`MAX_STOPS`), so the script
+    reads the stop list from every committed version of state/tracker_gfs.json and takes each cycle's reasons
+    from there. A missing cycle with no stop gets "no reason in the state file".
+12. A logged cycle that lacks rows for an airport or lead. Counted per airport ("rows missing in a logged
+    cycle"); nothing is filled (SPEC 2.2).
+13. Issue lag. The file's issue time is its rows' `issued_utc`. If a file holds more than one, it is reported
+    and the latest is used for that cycle's lag; "issued after its valid time" is judged row by row.
+14. Edge-of-day days (D105.5(i)). D106.7(f) calls its own definition "D105.5(i)'s quantity", so the same
+    reading is used: the maximum's hour is the first hour holding it (a tie goes to the first hour), and the
+    day is an edge day if that hour is the first or last hour of the local day; for the observed maximum the
+    first usable hour holding it. NEW code (three lines), checked by a test against session 112's `peak_index`
+    and `is_edge`. Session 112 is not imported because its file is not frozen at a recorded SHA-256.
+15. Observation requests. From 4 days before the group's first cycle (persistence goes back at most 3 days
+    hourly, and to the local day before a day's cycle daily) to the day after the period's last valid hour.
+    Observations from before 2026-10-12 are therefore read at the look, for persistence only.
+16. Snapshot agreement (D105.5(f)). After the score files are written: for every row of every obs/ file of
+    the period's cycles, the snapshot's `obs_c` against the fresh pairing at that airport and hour. Counts
+    only: equal, different, snapshot empty and fresh present, snapshot present and fresh empty. No forecast is
+    involved.
+17. What "--inventory passes" means. The clone is not shallow, the write-once check holds, and every cycle
+    file parses as a log file whose rows fit its name (reading 18). Second files, missing cycles and late rows
+    are counted and do not fail it.
+18. Integrity stops. A cycle file whose columns are not the log's, whose rows name another cycle, a valid time
+    that is not cycle plus lead, a lead outside 3 to 48, or the same airport and lead twice: the inventory
+    fails and `--score` stops. Such a file is not in D103.8's form, and choosing how to score it would be a
+    new rule; the owner rules.
+19. The GFS version column. Counted per period, never used: the period comes from the cycle and
+    `--first-v17-cycle` (D105.5(e)), and the config's label can lag the real change (D103.10).
+
+C. New rule or reading?
+
+None of the 19 is taken to be a new rule. Each either follows from the entry's words or the rule it cites
+(1 to 3, 6 to 8, 11 to 16, 19), is the stricter of two ways to read the words (9, 10), or is a stop that hands
+the case to the owner instead of settling it (4, 5, 17, 18). So the session did not stop here. They are listed
+for the owner's review before the script is committed; no live observation has been read.
+
+Step 3 checkpoint: design note written above, before any code. Files changed: notes/session-129-output.txt.
+PASS (no stop).
+
+==================================================================================================
+STEPS 4 TO 6
+==================================================================================================
+
+Step 4 (the script and gate (a)): scripts/session129_live_score.py written, with --inventory, --gate and
+--score. New code (not an existing rule's code), each tested: the git history check, the log reader, the
+windows and periods, D105.5(h)'s counts, D105.5(i)'s groupings and the edge-of-day rule, the observation
+requests, the snapshot comparison, the refusals, the gate's comparison. Imported: session 106's persistence,
+observed maximum, margin, pass functions and row sets; session 97's mae and mean_error; mlwx's live pairing,
+daily-maximum reading, log columns and writer, airports and records.
+Template check: a fresh clone of MLwx-live (HEAD f214d54, 2026-11-14T14:11Z) into a temporary folder; one log
+file (log/2026/11/gfs_2026111406.csv, 2,254 rows) read for its form only, no value printed: its header equals
+mlwx.prediction_log.LOG_COLUMNS, each of its 9,016 float cells equals repr(float(cell)), line ends are LF.
+The synthetic logs are written by the live writer itself (mlwx.prediction_log.write_log). Clone deleted.
+Gate (a) was run twice: once when the script was first complete, and again with the final script after
+Step 6's tests led to three small changes that change no number (a pipe closed at the end, the expectation
+line printed only for the group of 12, one message reworded). Both runs gave the same result. The final run:
+    SESSION 129 --gate (D123.4(a); spent data and synthetic logs only), start 2026-11-14T15:20Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+    SPENT YEARS (stage C's two looks, F150). Not a new result.
+    temporary folder (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session129_gate_pmcn4otn
+    synthetic logs: 2920 cycle files, 804864 rows; rows left out (no curve value): none; SHA-256 over the list of file names and hashes: 904d3d710f6496f86061b71731c86cd776f58d64df74054bf44bf562be4cea40
+    
+    look A as a period: cycles 2024-08-01T00:00Z to 2025-07-31T18:00Z
+      clone HEAD ce67cfd36fcb22fa4573351b5b6d773f79f456f0 (committed 2026-11-14T15:20Z); commits 1; shallow clone: False
+      log files at HEAD: 2920 cycle files, 0 other files; paths under log/ in the history: 2920
+      write-once (every log path added once, never changed or deleted): PASS (0 paths fail)
+      problems with a cycle file's form or an airport's recorded first cycle: 0
+      state file versions read: 0 (0 unreadable); cycles with a stop reason: 0
+      rows of airports not in this test: 0 (0 airports)
+      group of claim (6 airports): window 2024-08-01T00:00Z to 2025-07-31T18:00Z; first logged cycle 2024-08-01T00:00Z; cycles 1460, with a log file 1460, without 0
+        issue lag in hours: median 4.17, maximum 4.17 (cycle 2024-08-01T00:00Z); the five latest cycles: 2025-07-30T18:00Z 4.17, 2025-07-31T00:00Z 4.17, 2025-07-31T06:00Z 4.17, 2025-07-31T12:00Z 4.17, 2025-07-31T18:00Z 4.17
+        rows issued after their valid time, by lead: lead 3: 8760, lead 4: 8760
+        logged cycles that lack rows for an airport: 0 airport-cycles at 0 airports; rows before an airport's first cycle: 0; cycle files with more than one issue time: 0
+      names listed under obs/: 0; obs/ files opened: 0; files read: log 2920, state 0
+      INVENTORY: PASS
+      period A, hourly, group of claim: smallest margin +14.390 % (+0.1932 degrees C), KORD against raw_gfs; passes at 6 of 6 airports
+      period A, daily, group of claim: smallest margin +9.317 % (+0.1095 degrees C), KORD against raw_gfs; passes at 6 of 6 airports
+    
+    look B as a period: cycles 2025-08-01T00:00Z to 2026-07-31T18:00Z
+      clone HEAD ce67cfd36fcb22fa4573351b5b6d773f79f456f0 (committed 2026-11-14T15:20Z); commits 1; shallow clone: False
+      log files at HEAD: 2920 cycle files, 0 other files; paths under log/ in the history: 2920
+      write-once (every log path added once, never changed or deleted): PASS (0 paths fail)
+      problems with a cycle file's form or an airport's recorded first cycle: 0
+      state file versions read: 0 (0 unreadable); cycles with a stop reason: 0
+      rows of airports not in this test: 0 (0 airports)
+      group of claim (6 airports): window 2025-08-01T00:00Z to 2026-07-31T18:00Z; first logged cycle 2024-08-01T00:00Z; cycles 1460, with a log file 1460, without 0
+        issue lag in hours: median 4.17, maximum 4.17 (cycle 2025-08-01T00:00Z); the five latest cycles: 2026-07-30T18:00Z 4.17, 2026-07-31T00:00Z 4.17, 2026-07-31T06:00Z 4.17, 2026-07-31T12:00Z 4.17, 2026-07-31T18:00Z 4.17
+        rows issued after their valid time, by lead: lead 3: 8760, lead 4: 8760
+        logged cycles that lack rows for an airport: 48 airport-cycles at 6 airports; rows before an airport's first cycle: 402960; cycle files with more than one issue time: 0
+      names listed under obs/: 0; obs/ files opened: 0; files read: log 5840, state 0
+      INVENTORY: PASS
+      period B, hourly, group of claim: smallest margin +8.216 % (+0.1093 degrees C), KORD against raw_gfs; passes at 6 of 6 airports
+      period B, daily, group of claim: smallest margin +2.589 % (+0.0297 degrees C), KORD against raw_gfs; passes at 6 of 6 airports
+    
+    scores: recorded rows 11100, recomputed rows 11100; cells compared 122100, equal 122100, different 0; whole file byte-equal: True
+    verdicts: recorded rows 48, recomputed rows 48; cells compared 624, equal 624, different 0; whole file byte-equal: True
+    days: recorded rows 4374, recomputed rows 4374; cells compared 78732, equal 78732, different 0; whole file byte-equal: True (extra check, not part of D123.4(a); the three forecast reason columns are not compared: their wording differs by design)
+    
+    GATE (a): PASS (scores and verdicts); days extra check: PASS
+    files read from the synthetic clone: {'log': 5840}
+    wrote data/processed/session129_gate/claim_scores_recomputed.csv: SHA-256 2918fff42ab17ff2fce55260d7d0d757638b989943324ddceb3e1a7ff59488ca
+    wrote data/processed/session129_gate/claim_verdicts_recomputed.csv: SHA-256 0a9c1dc80a1e052c5b98a117b6c42cbd9811c160a944be959dca0e4575e319da
+    wrote data/processed/session129_gate/comparison.txt: SHA-256 07a0f7ea898580799fcb625712589c421f180c13f9555de444d38ec8fe323f36
+    temporary folder deleted: True; run time 46 s
+Result: scores 11,100 rows and 122,100 cells, verdicts 48 rows and 624 cells: every cell equal, and both
+recomputed files byte-equal to session 107's (same SHA-256 as F150.4). Extra check, not required by D123.4(a):
+the 4,374 days (78,732 cells) also equal. First ten differing cells: none. Files changed:
+scripts/session129_live_score.py, data/processed/session129_gate/ (3 files). PASS.
+Synthetic logs' SHA-256 (over the sorted list of file names and file hashes): 904d3d71...cea40; the folder was
+deleted by the script. The issue time in the synthetic logs is cycle + 4 h 10 min, so leads 3 and 4 count as
+issued late, as live. The 48 airport-cycles that "lack rows" in look B are the last eight cycles, whose later
+leads are valid after 2026-07-31T23:00 and are not in the spent data.
+
+Step 5 (gate (c), the real inventory): a second fresh clone of https://github.com/zadams03/MLwx-live into a
+temporary folder, deleted after. Run with the final script:
+    SESSION 129 --inventory (no observation is read), 2026-11-14T15:20Z; clone /tmp/session129_inv.BLjCVh/live
+    clone HEAD f214d549f45ae9d977758025ab7e8121bd53ca63 (committed 2026-11-14T14:11Z); commits 163; shallow clone: False
+    log files at HEAD: 132 cycle files, 0 other files; paths under log/ in the history: 132
+    write-once (every log path added once, never changed or deleted): PASS (0 paths fail)
+    problems with a cycle file's form or an airport's recorded first cycle: 0
+    state file versions read: 158 (0 unreadable); cycles with a stop reason: 1
+    rows of airports not in this test: 0 (0 airports)
+    group of 12 (12 airports): window 2026-10-12T12:00Z to 2026-11-14T06:00Z; first logged cycle 2026-10-12T12:00Z; cycles 132, with a log file 132, without 0
+      issue lag in hours: median 6.50, maximum 12.82 (cycle 2026-11-09T06:00Z); the five latest cycles: 2026-11-13T06:00Z 5.50, 2026-11-13T12:00Z 6.73, 2026-11-13T18:00Z 6.33, 2026-11-14T00:00Z 7.00, 2026-11-14T06:00Z 8.15
+      rows issued after their valid time, by lead: lead 3: 1584, lead 4: 1584, lead 5: 1356, lead 6: 972, lead 7: 624, lead 8: 420, lead 9: 252, lead 10: 144, lead 11: 84, lead 12: 36
+      logged cycles that lack rows for an airport: 0 airport-cycles at 0 airports; rows before an airport's first cycle: 0; cycle files with more than one issue time: 0
+    group of 37 (37 airports): window 2026-10-13T18:00Z to 2026-11-14T06:00Z; first logged cycle 2026-10-13T18:00Z; cycles 127, with a log file 127, without 0
+      issue lag in hours: median 6.47, maximum 12.82 (cycle 2026-11-09T06:00Z); the five latest cycles: 2026-11-13T06:00Z 5.50, 2026-11-13T12:00Z 6.73, 2026-11-13T18:00Z 6.33, 2026-11-14T00:00Z 7.00, 2026-11-14T06:00Z 8.15
+      rows issued after their valid time, by lead: lead 3: 4699, lead 4: 4699, lead 5: 3996, lead 6: 2886, lead 7: 1813, lead 8: 1221, lead 9: 777, lead 10: 444, lead 11: 259, lead 12: 111
+      logged cycles that lack rows for an airport: 0 airport-cycles at 0 airports; rows before an airport's first cycle: 0; cycle files with more than one issue time: 0
+    names listed under obs/: 125; obs/ files opened: 0; files read: log 132, state 158
+    INVENTORY: PASS
+No file under obs/ was opened: 125 names listed, 0 opened (the reader refuses any path outside log/ and
+state/; a test checks it). No error, MAE or difference involving a live forecast was computed or printed.
+Reading for the owner: the largest issue lag is 12.82 h (cycle 2026-11-09 06z), above D118.4's 12 h mark.
+Rows issued after their valid time reach lead 12 (leads 3 and 4 were expected; the others follow from lags
+above 5 h). Files changed: none. PASS.
+Full table (every cycle's lag) from the same run:
+    lag 2026-10-12T12:00Z 8.00 h
+    lag 2026-10-12T18:00Z 8.98 h
+    lag 2026-10-13T00:00Z 8.35 h
+    lag 2026-10-13T06:00Z 5.68 h
+    lag 2026-10-13T12:00Z 5.57 h
+    lag 2026-10-13T18:00Z 5.42 h
+    lag 2026-10-14T00:00Z 7.98 h
+    lag 2026-10-14T06:00Z 5.08 h
+    lag 2026-10-14T12:00Z 6.85 h
+    lag 2026-10-14T18:00Z 4.58 h
+    lag 2026-10-15T00:00Z 6.38 h
+    lag 2026-10-15T06:00Z 6.03 h
+    lag 2026-10-15T12:00Z 5.32 h
+    lag 2026-10-15T18:00Z 5.25 h
+    lag 2026-10-16T00:00Z 6.33 h
+    lag 2026-10-16T06:00Z 5.85 h
+    lag 2026-10-16T12:00Z 4.92 h
+    lag 2026-10-16T18:00Z 4.47 h
+    lag 2026-10-17T00:00Z 6.10 h
+    lag 2026-10-17T06:00Z 5.13 h
+    lag 2026-10-17T12:00Z 5.52 h
+    lag 2026-10-17T18:00Z 4.58 h
+    lag 2026-10-18T00:00Z 5.07 h
+    lag 2026-10-18T06:00Z 8.13 h
+    lag 2026-10-18T12:00Z 5.53 h
+    lag 2026-10-18T18:00Z 6.45 h
+    lag 2026-10-19T00:00Z 5.23 h
+    lag 2026-10-19T06:00Z 5.20 h
+    lag 2026-10-19T12:00Z 5.73 h
+    lag 2026-10-19T18:00Z 4.43 h
+    lag 2026-10-20T00:00Z 6.53 h
+    lag 2026-10-20T06:00Z 6.07 h
+    lag 2026-10-20T12:00Z 5.48 h
+    lag 2026-10-20T18:00Z 5.18 h
+    lag 2026-10-21T00:00Z 6.57 h
+    lag 2026-10-21T06:00Z 6.35 h
+    lag 2026-10-21T12:00Z 5.63 h
+    lag 2026-10-21T18:00Z 4.35 h
+    lag 2026-10-22T00:00Z 4.75 h
+    lag 2026-10-22T06:00Z 4.18 h
+    lag 2026-10-22T12:00Z 4.73 h
+    lag 2026-10-22T18:00Z 4.73 h
+    lag 2026-10-23T00:00Z 6.47 h
+    lag 2026-10-23T06:00Z 6.07 h
+    lag 2026-10-23T12:00Z 5.12 h
+    lag 2026-10-23T18:00Z 5.48 h
+    lag 2026-10-24T00:00Z 7.30 h
+    lag 2026-10-24T06:00Z 6.22 h
+    lag 2026-10-24T12:00Z 6.80 h
+    lag 2026-10-24T18:00Z 5.70 h
+    lag 2026-10-25T00:00Z 4.70 h
+    lag 2026-10-25T06:00Z 8.37 h
+    lag 2026-10-25T12:00Z 5.85 h
+    lag 2026-10-25T18:00Z 5.28 h
+    lag 2026-10-26T00:00Z 7.80 h
+    lag 2026-10-26T06:00Z 9.20 h
+    lag 2026-10-26T12:00Z 8.52 h
+    lag 2026-10-26T18:00Z 6.07 h
+    lag 2026-10-27T00:00Z 5.08 h
+    lag 2026-10-27T06:00Z 4.57 h
+    lag 2026-10-27T12:00Z 5.95 h
+    lag 2026-10-27T18:00Z 6.53 h
+    lag 2026-10-28T00:00Z 6.27 h
+    lag 2026-10-28T06:00Z 7.50 h
+    lag 2026-10-28T12:00Z 7.10 h
+    lag 2026-10-28T18:00Z 5.23 h
+    lag 2026-10-29T00:00Z 8.88 h
+    lag 2026-10-29T06:00Z 10.13 h
+    lag 2026-10-29T12:00Z 9.13 h
+    lag 2026-10-29T18:00Z 6.98 h
+    lag 2026-10-30T00:00Z 7.12 h
+    lag 2026-10-30T06:00Z 8.13 h
+    lag 2026-10-30T12:00Z 7.37 h
+    lag 2026-10-30T18:00Z 5.20 h
+    lag 2026-10-31T00:00Z 8.85 h
+    lag 2026-10-31T06:00Z 9.33 h
+    lag 2026-10-31T12:00Z 7.53 h
+    lag 2026-10-31T18:00Z 4.82 h
+    lag 2026-11-01T00:00Z 9.37 h
+    lag 2026-11-01T06:00Z 10.35 h
+    lag 2026-11-01T12:00Z 4.35 h
+    lag 2026-11-01T18:00Z 6.75 h
+    lag 2026-11-02T00:00Z 7.68 h
+    lag 2026-11-02T06:00Z 12.37 h
+    lag 2026-11-02T12:00Z 6.37 h
+    lag 2026-11-02T18:00Z 7.22 h
+    lag 2026-11-03T00:00Z 7.97 h
+    lag 2026-11-03T06:00Z 10.25 h
+    lag 2026-11-03T12:00Z 4.25 h
+    lag 2026-11-03T18:00Z 8.33 h
+    lag 2026-11-04T00:00Z 9.83 h
+    lag 2026-11-04T06:00Z 11.98 h
+    lag 2026-11-04T12:00Z 5.98 h
+    lag 2026-11-04T18:00Z 5.67 h
+    lag 2026-11-05T00:00Z 12.33 h
+    lag 2026-11-05T06:00Z 6.33 h
+    lag 2026-11-05T12:00Z 8.25 h
+    lag 2026-11-05T18:00Z 6.98 h
+    lag 2026-11-06T00:00Z 7.92 h
+    lag 2026-11-06T06:00Z 9.93 h
+    lag 2026-11-06T12:00Z 9.48 h
+    lag 2026-11-06T18:00Z 7.18 h
+    lag 2026-11-07T00:00Z 7.20 h
+    lag 2026-11-07T06:00Z 8.07 h
+    lag 2026-11-07T12:00Z 6.80 h
+    lag 2026-11-07T18:00Z 4.77 h
+    lag 2026-11-08T00:00Z 9.52 h
+    lag 2026-11-08T06:00Z 10.30 h
+    lag 2026-11-08T12:00Z 4.30 h
+    lag 2026-11-08T18:00Z 6.92 h
+    lag 2026-11-09T00:00Z 7.98 h
+    lag 2026-11-09T06:00Z 12.82 h
+    lag 2026-11-09T12:00Z 6.82 h
+    lag 2026-11-09T18:00Z 8.15 h
+    lag 2026-11-10T00:00Z 9.83 h
+    lag 2026-11-10T06:00Z 11.83 h
+    lag 2026-11-10T12:00Z 5.83 h
+    lag 2026-11-10T18:00Z 5.35 h
+    lag 2026-11-11T00:00Z 10.95 h
+    lag 2026-11-11T06:00Z 4.95 h
+    lag 2026-11-11T12:00Z 6.75 h
+    lag 2026-11-11T18:00Z 7.53 h
+    lag 2026-11-12T00:00Z 8.82 h
+    lag 2026-11-12T06:00Z 11.60 h
+    lag 2026-11-12T12:00Z 5.60 h
+    lag 2026-11-12T18:00Z 4.85 h
+    lag 2026-11-13T00:00Z 11.50 h
+    lag 2026-11-13T06:00Z 5.50 h
+    lag 2026-11-13T12:00Z 6.73 h
+    lag 2026-11-13T18:00Z 6.33 h
+    lag 2026-11-14T00:00Z 7.00 h
+    lag 2026-11-14T06:00Z 8.15 h
+    lag 2026-10-13T18:00Z 5.42 h
+    lag 2026-10-14T00:00Z 7.98 h
+    lag 2026-10-14T06:00Z 5.08 h
+    lag 2026-10-14T12:00Z 6.85 h
+    lag 2026-10-14T18:00Z 4.58 h
+    lag 2026-10-15T00:00Z 6.38 h
+    lag 2026-10-15T06:00Z 6.03 h
+    lag 2026-10-15T12:00Z 5.32 h
+    lag 2026-10-15T18:00Z 5.25 h
+    lag 2026-10-16T00:00Z 6.33 h
+    lag 2026-10-16T06:00Z 5.85 h
+    lag 2026-10-16T12:00Z 4.92 h
+    lag 2026-10-16T18:00Z 4.47 h
+    lag 2026-10-17T00:00Z 6.10 h
+    lag 2026-10-17T06:00Z 5.13 h
+    lag 2026-10-17T12:00Z 5.52 h
+    lag 2026-10-17T18:00Z 4.58 h
+    lag 2026-10-18T00:00Z 5.07 h
+    lag 2026-10-18T06:00Z 8.13 h
+    lag 2026-10-18T12:00Z 5.53 h
+    lag 2026-10-18T18:00Z 6.45 h
+    lag 2026-10-19T00:00Z 5.23 h
+    lag 2026-10-19T06:00Z 5.20 h
+    lag 2026-10-19T12:00Z 5.73 h
+    lag 2026-10-19T18:00Z 4.43 h
+    lag 2026-10-20T00:00Z 6.53 h
+    lag 2026-10-20T06:00Z 6.07 h
+    lag 2026-10-20T12:00Z 5.48 h
+    lag 2026-10-20T18:00Z 5.18 h
+    lag 2026-10-21T00:00Z 6.57 h
+    lag 2026-10-21T06:00Z 6.35 h
+    lag 2026-10-21T12:00Z 5.63 h
+    lag 2026-10-21T18:00Z 4.35 h
+    lag 2026-10-22T00:00Z 4.75 h
+    lag 2026-10-22T06:00Z 4.18 h
+    lag 2026-10-22T12:00Z 4.73 h
+    lag 2026-10-22T18:00Z 4.73 h
+    lag 2026-10-23T00:00Z 6.47 h
+    lag 2026-10-23T06:00Z 6.07 h
+    lag 2026-10-23T12:00Z 5.12 h
+    lag 2026-10-23T18:00Z 5.48 h
+    lag 2026-10-24T00:00Z 7.30 h
+    lag 2026-10-24T06:00Z 6.22 h
+    lag 2026-10-24T12:00Z 6.80 h
+    lag 2026-10-24T18:00Z 5.70 h
+    lag 2026-10-25T00:00Z 4.70 h
+    lag 2026-10-25T06:00Z 8.37 h
+    lag 2026-10-25T12:00Z 5.85 h
+    lag 2026-10-25T18:00Z 5.28 h
+    lag 2026-10-26T00:00Z 7.80 h
+    lag 2026-10-26T06:00Z 9.20 h
+    lag 2026-10-26T12:00Z 8.52 h
+    lag 2026-10-26T18:00Z 6.07 h
+    lag 2026-10-27T00:00Z 5.08 h
+    lag 2026-10-27T06:00Z 4.57 h
+    lag 2026-10-27T12:00Z 5.95 h
+    lag 2026-10-27T18:00Z 6.53 h
+    lag 2026-10-28T00:00Z 6.27 h
+    lag 2026-10-28T06:00Z 7.50 h
+    lag 2026-10-28T12:00Z 7.10 h
+    lag 2026-10-28T18:00Z 5.23 h
+    lag 2026-10-29T00:00Z 8.88 h
+    lag 2026-10-29T06:00Z 10.13 h
+    lag 2026-10-29T12:00Z 9.13 h
+    lag 2026-10-29T18:00Z 6.98 h
+    lag 2026-10-30T00:00Z 7.12 h
+    lag 2026-10-30T06:00Z 8.13 h
+    lag 2026-10-30T12:00Z 7.37 h
+    lag 2026-10-30T18:00Z 5.20 h
+    lag 2026-10-31T00:00Z 8.85 h
+    lag 2026-10-31T06:00Z 9.33 h
+    lag 2026-10-31T12:00Z 7.53 h
+    lag 2026-10-31T18:00Z 4.82 h
+    lag 2026-11-01T00:00Z 9.37 h
+    lag 2026-11-01T06:00Z 10.35 h
+    lag 2026-11-01T12:00Z 4.35 h
+    lag 2026-11-01T18:00Z 6.75 h
+    lag 2026-11-02T00:00Z 7.68 h
+    lag 2026-11-02T06:00Z 12.37 h
+    lag 2026-11-02T12:00Z 6.37 h
+    lag 2026-11-02T18:00Z 7.22 h
+    lag 2026-11-03T00:00Z 7.97 h
+    lag 2026-11-03T06:00Z 10.25 h
+    lag 2026-11-03T12:00Z 4.25 h
+    lag 2026-11-03T18:00Z 8.33 h
+    lag 2026-11-04T00:00Z 9.83 h
+    lag 2026-11-04T06:00Z 11.98 h
+    lag 2026-11-04T12:00Z 5.98 h
+    lag 2026-11-04T18:00Z 5.67 h
+    lag 2026-11-05T00:00Z 12.33 h
+    lag 2026-11-05T06:00Z 6.33 h
+    lag 2026-11-05T12:00Z 8.25 h
+    lag 2026-11-05T18:00Z 6.98 h
+    lag 2026-11-06T00:00Z 7.92 h
+    lag 2026-11-06T06:00Z 9.93 h
+    lag 2026-11-06T12:00Z 9.48 h
+    lag 2026-11-06T18:00Z 7.18 h
+    lag 2026-11-07T00:00Z 7.20 h
+    lag 2026-11-07T06:00Z 8.07 h
+    lag 2026-11-07T12:00Z 6.80 h
+    lag 2026-11-07T18:00Z 4.77 h
+    lag 2026-11-08T00:00Z 9.52 h
+    lag 2026-11-08T06:00Z 10.30 h
+    lag 2026-11-08T12:00Z 4.30 h
+    lag 2026-11-08T18:00Z 6.92 h
+    lag 2026-11-09T00:00Z 7.98 h
+    lag 2026-11-09T06:00Z 12.82 h
+    lag 2026-11-09T12:00Z 6.82 h
+    lag 2026-11-09T18:00Z 8.15 h
+    lag 2026-11-10T00:00Z 9.83 h
+    lag 2026-11-10T06:00Z 11.83 h
+    lag 2026-11-10T12:00Z 5.83 h
+    lag 2026-11-10T18:00Z 5.35 h
+    lag 2026-11-11T00:00Z 10.95 h
+    lag 2026-11-11T06:00Z 4.95 h
+    lag 2026-11-11T12:00Z 6.75 h
+    lag 2026-11-11T18:00Z 7.53 h
+    lag 2026-11-12T00:00Z 8.82 h
+    lag 2026-11-12T06:00Z 11.60 h
+    lag 2026-11-12T12:00Z 5.60 h
+    lag 2026-11-12T18:00Z 4.85 h
+    lag 2026-11-13T00:00Z 11.50 h
+    lag 2026-11-13T06:00Z 5.50 h
+    lag 2026-11-13T12:00Z 6.73 h
+    lag 2026-11-13T18:00Z 6.33 h
+    lag 2026-11-14T00:00Z 7.00 h
+    lag 2026-11-14T06:00Z 8.15 h
+
+Step 6 (tests): tests/test_session129_live_score.py, 54 tests, all OK, 7.5 s, no network, temporary git
+repositories only, every value made up. Gate (b)'s cases: a log file changed, changed and put back, deleted
+or renamed fails the inventory and stops --score (also a shallow clone, and a file not in the log's form); a
+second file for one cycle is reported and the scores are unchanged; the v17 boundary splits rows and local
+days by their cycle; nothing valid after 2027-07-31T23:00 is used (rows counted, the day dropped, the lookup
+refuses); a tie fails; a day with a maximum at a local-day edge is counted, stays in the bar and is scored
+apart; a missing cycle (with its reason, even after it has dropped off the state file's list) and a late row
+are counted, never dropped; the 12 and the 37 are reported apart. --score's refusals, with a fetch function
+that fails the test if called: script edited or not committed, period not ended (both period ends), bad
+--first-v17-cycle, period B with none, failed inventory, output folder present. --inventory never opens an
+obs/ file. One end-to-end test runs --score on a made-up clone of 49 airports with a made-up IEM: 49
+requests, seven result files, obs/ opened only after scores.csv exists.
+Deliberate breaks of the script, each caught by the tests, file restored byte-equal each time: write-once
+check always passes (3 failures); the reader may open obs/ (1); rows after the last valid hour kept (1); the
+record's pairing in place of the live one (1); an edited script not refused (4); persistence from the issue
+time (3); period A runs up to the v17 cycle itself (5); the 7-day wait dropped (2 errors); a second file
+scored as the cycle's file (2); a missing cycle's day read from the cycle before (2). A first form of the
+last break (the cycle after) was not caught, because that cycle cannot cover the day in any case.
+Files changed: tests/test_session129_live_score.py; the script (the three small changes above). PASS.
+
+==================================================================================================
+STEPS 7 AND 8
+==================================================================================================
+
+Step 7 (session 86's wrapper): scripts/session129_stageb_gate.py and tests/test_session129_stageb_gate.py
+written (D123.5). The wrapper checks session 86's SHA-256 (da2ff50c..., as tests/test_frozen_scripts.py),
+imports it, and swaps its DECISIONS_FILE at run time for a stand-in whose text is built from constants:
+F122.3's training-set SHA-256 from session 91's TRAINING_SET_SHA256, and F122.5's manifest SHA-256 and twelve
+model SHA-256 held in the wrapper. Session 86 is not edited. Modes: --check (offline) and --gate.
+What session 86's gate needs (from its run_gate and plumbing): SPEC.md (3.4's table), the two elevation
+params CSVs, data/processed/session81_training_set.csv, data/models/session81/ (manifest.json and twelve
+models), eccodes, requests, numpy, lightgbm, and the network: NOAA's AWS archive (GRIB by byte range) and IEM,
+for 54 spent-year station-days. It does not need the GRIB drive (/Volumes/MY PASSPORT/ was not mounted, and
+was not needed).
+Tests: 11, all OK, offline: each constant against both DECISIONS files and the committed files; session 86's
+two pattern lookups and its plumbing's table lookup run against the stand-in; a wrong constant stops
+plumbing; without the swap the lookup fails (D96.3). --check: PASS (2 files and 12 models equal).
+STOP AND OWNER'S RULING. The prompt's rule says "Network: GitHub only", while D123.5 and Step 7 say to run the
+gate once if its inputs are present, and the gate needs AWS and IEM. The owner was asked in chat and ruled:
+"Run it once now". It was run once, 2026-11-14T15:27:45Z to 15:53:01Z, exit 0. Nothing valid on or after
+2026-08-01 was requested (session 86's own guard); nothing was written under data/.
+Against F128.5 (run 3), field by field:
+  sample 9 dates x 6 airports = 54 station-days, none without a committed row      equal
+  size trial 514,601 / 845,948 / 952,479 bytes, mean 771,009, projected 0.56 GiB    equal
+  requests 978; GRIB messages 783 of 783 OK; bytes 674,387,577                      equal
+  rows built 54 of 54, 0 drops, 0 tie days                                          equal
+  IEM reports read per airport 430 to 432, none unusable                            equal
+  all 12 columns 54 of 54; all 7 groups 54 of 54; every airport 9 of 9              equal
+  mismatches 0; pairing-only differences 0; station-days not rebuilt 0              equal
+  plumbing: 12 model files equal F122.5 and manifest.json; max difference 0         equal
+  writer exercise: rows read back equal; a second write refused; folder deleted     equal
+  run time: 25 min 16 s here, about 6 min in F128 (a slower network; no failure)    differs, not a result
+The gate's output without its 978 request lines:
+    SESSION 129: session 86's --gate with constants in place of its DECISIONS lookups (D123.5).
+    F122.3 from session 91's TRAINING_SET_SHA256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.5's manifest 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298 and twelve model SHA-256 held in this script.
+    SESSION 86 --gate (network; spent years only)
+    gate start (UTC): 2026-11-14T15:27:45Z
+    Per-airport parameters (SPEC 3.4 tables and the two params CSVs; nothing typed in):
+    station hour cycle lead    grid lat     grid lon grid elev const degC reports     offset  R at this lead
+    EGLC      12   12z f024   51.487137     0.000000        4m    +0.2486   `:50` 10 minutes  de-accumulate
+    LFPG      12   12z f024   49.027008     2.578125      109m    -0.1697   `:00`  0 minutes  de-accumulate
+    DSM       18   18z f024   41.529450   -93.632810      285m    -0.1106   `:54`  6 minutes  de-accumulate
+    YSDU       2    0z f026  -32.274643   148.593750      279m    +0.2461   `:00`  0 minutes  native window
+    RNO       20   18z f026   39.537918  -119.765625     1344m    +2.0436   `:55`  5 minutes  native window
+    SFO       20   18z f026   37.546370  -122.343750        1m    +0.6944   `:56`  4 minutes  native window
+    
+    --- checks on the committed inputs
+    training set SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; F122.3 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a; equal: True
+    models manifest.json SHA-256 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; F122.5 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298; equal: True
+    target hour per airport, training set vs SPEC 3.4: EGLC [12] vs 12, LFPG [12] vs 12, DSM [18] vs 18, YSDU [2] vs 2, RNO [20] vs 20, SFO [20] vs 20
+    
+    sample: 9 dates x 6 airports = 54 station-days
+    dates: 2021-04-15 (v16 window), 2022-01-10 (v16 window), 2023-07-20 (v16 window), 2023-10-05 (v16 window), 2024-11-12 (reserved year), 2025-02-18 (reserved year), 2025-09-03 (sealed year), 2026-04-22 (sealed year), 2026-07-31 (sealed year, last day)
+    station-days with no committed row: 0
+    
+    --- 5.2 size trial
+    messages per station-day: EGLC 15, LFPG 15, DSM 15, YSDU 14, RNO 14, SFO 14; total messages 783
+      trial message tmp2m (TMP:2 m above ground:24 hour fcst) EGLC 2021-04-15: 514,601 bytes
+      trial message t850 (TMP:850 mb:24 hour fcst) EGLC 2021-04-15: 845,948 bytes
+      trial message dswrf (DSWRF:surface:18-24 hour ave fcst) EGLC 2021-04-15: 952,479 bytes
+    bytes per message (mean of 3): 771,009; projected total 603,700,308 bytes (0.56 GiB); limit 5 GiB
+    
+    --- 5.3 rebuild from fresh GRIB and IEM pulls
+    temporary directory (outside the repo, deleted at the end): /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_n0bjl6gl
+    pull started 2026-11-14T15:27:53Z, ended 2026-11-14T15:53:00Z
+    
+    gate rebuild: rows per airport against the expected full count
+      EGLC  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      LFPG  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      DSM   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      YSDU  rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      RNO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      SFO   rows    9 of    9; dropped 0; drops by reason none; tie days 0; rows with no previous-day obs 0
+      total rows 54 of 54
+      GRIB messages: 783 requested, 783 OK, 0 failed; bytes 674,387,577
+      IEM EGLC: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+      IEM LFPG: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+      IEM DSM: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+      IEM YSDU: reports read 430, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+      IEM RNO: reports read 432, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+      IEM SFO: reports read 431, no usable tmpc 0 (non-finite 0), duplicate timestamps skipped 0
+    
+    Pass counts per column (exact equality; observation columns include the listed pairing-only differences):
+      temp                               54 of 54
+      season_sin                         54 of 54
+      season_cos                         54 of 54
+      cloud_cover                        54 of 54
+      wind_speed_10m                     54 of 54
+      dewpoint_depression_t2m_floored    54 of 54
+      lapse_rate_t2_t850                 54 of 54
+      dswrf_2h_wm2                       54 of 54
+      pressure_tendency_3h_hpa           54 of 54
+      temperature_grib_c                 54 of 54
+      obs_c                              54 of 54
+      prev_obs_c                         54 of 54
+    Pass counts per feature group (a station-day passes if all its columns are equal):
+      B: 54 of 54
+      L: 54 of 54
+      D: 54 of 54
+      T: 54 of 54
+      R: 54 of 54
+      obs: 54 of 54
+      prev_obs: 54 of 54
+    Pass counts per airport and group:
+                     B         L         D         T         R       obs  prev_obs
+      EGLC     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+      LFPG     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+      DSM      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+      YSDU     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+      RNO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+      SFO      9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9     9 of 9  
+    
+    station-days not rebuilt although a committed row exists: 0 
+    pairing-only observation differences (nearest vs the record's last report; not failures): 0
+    mismatches: 0
+    
+    --- 5.4 frozen-model plumbing check (no error is computed)
+      EGLC_bdlrt.txt   SHA-256 d6a85e45cf948107d45601fca71388102128d1172ddedbf83840f6ee82d15110  equals F122.5 and manifest.json: True
+      EGLC_b.txt       SHA-256 fa299dd54908f7d98211bbd1edf2955e8acb493997564c6b30b174522f23a461  equals F122.5 and manifest.json: True
+      LFPG_bdlrt.txt   SHA-256 ed3f90b604c9b48a2a50923fd2a67439b25a21255c77d80ae9ca13789e8c8c8e  equals F122.5 and manifest.json: True
+      LFPG_b.txt       SHA-256 257c153fec745954f9f2917fe9f4a51d6c8fd662233f5fb5dcb94c2b8b987022  equals F122.5 and manifest.json: True
+      DSM_bdlrt.txt    SHA-256 260d6187f8efa4850790528027ee0d3f726a0c4c6b679511bfa891f2de4dff3b  equals F122.5 and manifest.json: True
+      DSM_b.txt        SHA-256 e9cb30bacaf38f9a6b0a602cedc3d9bf2fd2b457bf883d5914316b759264fc9c  equals F122.5 and manifest.json: True
+      YSDU_bdlrt.txt   SHA-256 12acbb185d5b927014373a0197b3e6e0ba0be206ff4f434e812bc191976613c3  equals F122.5 and manifest.json: True
+      YSDU_b.txt       SHA-256 6e85d56bcead9111f0198b2842ffca8cc308909cc63eea6b36820ead66614a51  equals F122.5 and manifest.json: True
+      RNO_bdlrt.txt    SHA-256 c809ccfe9863741d715e8b7167a172d6826cfe6ea78e47a943779d7a7bcb5819  equals F122.5 and manifest.json: True
+      RNO_b.txt        SHA-256 8ce348a6ca583fd3bf203c993f0c10887212e5968cf4d925d05de2b8baf4cb0d  equals F122.5 and manifest.json: True
+      SFO_bdlrt.txt    SHA-256 c25da039bfbf99db1fd222b171f93a2ea332aaedd828823ed1e09c4d691125f6  equals F122.5 and manifest.json: True
+      SFO_b.txt        SHA-256 2649548311f3e396de933d1a78650fc6df9001719bab97b929e2002c9af42ca3  equals F122.5 and manifest.json: True
+    maximum absolute difference between the predictions on the committed and the rebuilt row (expected 0.0):
+      airport  station-days      B+D,L,R,T              B
+      EGLC                9              0              0
+      LFPG                9              0              0
+      DSM                 9              0              0
+      YSDU                9              0              0
+      RNO                 9              0              0
+      SFO                 9              0              0
+    
+    --- exercising the --build writers in the temporary directory (nothing is written under data/)
+    wrote rows, manifest, drop log and 54 raw IEM files; rows read back equal: True
+    a second write refused, as required: STOP: /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/session86_gate_n0bjl6gl/rows.csv already exists; not overwriting (SPEC 8.7 item 5)
+    
+    --- every request made (pull time UTC, kind, URL, byte range, bytes)
+    requests: 978; GRIB manifest rows: 783
+    
+    temporary directory deleted: True
+    gate end (UTC): 2026-11-14T15:53:01Z
+Files changed: scripts/session129_stageb_gate.py, tests/test_session129_stageb_gate.py. PASS.
+
+Step 8 (tests/README.md): three one-line entries added before "## Notes": test_session127_figures.py,
+test_session129_live_score.py, test_session129_stageb_gate.py (6 lines added with their blank lines).
+Not added, out of scope: test_mosmix_saver.py and the other test files the README does not list. PASS.
+
+==================================================================================================
+STEP 9 AND THE END-OF-SESSION STEPS
+==================================================================================================
+
+Step 9 (final checks, run after F172 was written): tests 333 OK (1 skipped) = 268 + 54 + 11. SPEC.md unchanged;
+3.4's span SHA-256 a02cbe9e...9ef9 unchanged. 0 em-dashes in added lines and in the eight new files.
+SHA-256: scripts/session129_live_score.py 0c12c621e8f48d2e218c444967030becec1d0136a377fad5ee306eb7aa30bf80;
+scripts/session129_stageb_gate.py 9b9d636fa4b7321f6936e1a27febe26abdf5b4cd5576f544b3c483c454801f94;
+tests/test_session129_live_score.py 2c4f6563...0c3d and tests/test_session129_stageb_gate.py aa8af89b...41db
+(both re-hashed at the very end, unchanged since their last test run);
+data/processed/session129_gate/comparison.txt 07a0f7ea...3f36 (it records the script's SHA-256 above).
+Confirmed again: no observation valid on or after 2026-10-12 was read, fetched or opened. The only IEM
+requests of the session were session 86's gate's 54, for spent-year days (the owner's ruling, Step 7). No
+obs/ file was opened: both clones' obs/ folders were only listed (125 names, 0 opened); the first clone was
+used only to read one log file's form. ../MLwx-live (an older local copy) was not touched. --score was never
+run; the only full run of its code was the test on a made-up clone. PASS.
+Note before the full suite at Step 8: 332 of 333 passed; the one failure was the citations test, because
+D123 cites F172, which did not exist yet. It passes now.
+
+End 1 (F172): appended to DECISIONS.md, 14 lines with its heading, 0 em-dashes.
+End 2 (STATUS.md): overwritten as a snapshot (nine edits to the current text; 188 lines); ends with the
+prompt's "Next planning session" line.
+End 3 (archive): Live index changed as D123.7 (D122 and F171 out; D123 and F172 in; now D93, D103, D105,
+D118, D123, F172). `archive_decisions.py --apply --session 129`: moved 2 spans (8,029 bytes), kept 6; its
+four checks PASS. DECISIONS.md 46,970 -> 38,933 bytes; archive 1,604,439 -> 1,612,513 bytes.
+End 4 (checks): --citations 222 cited, 222 resolved, 0 unresolved, 0 in both files, 0 duplicated openings, 0
+headings out of order. DECISIONS.md 38,933 bytes (limit 80,000). Scope: `git status --porcelain` shows
+DECISIONS-archive.md, DECISIONS.md, STATUS.md, tests/README.md (changed) and data/processed/session129_gate/,
+notes/session-129-output.txt, the two scripts and the two tests (new): all on the scope list, nothing else.
+Re-read of what changed in STATUS and DECISIONS: nothing found that disagrees with the rest of the record.
+One tool note: a combined shell command for End 2 and End 3 was refused by the permission checker before it
+ran; the STATUS edits were then made one by one and the archive step run on its own. Nothing was lost.

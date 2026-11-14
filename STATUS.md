@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 14 November 2026, after session 128._
+_Last updated: 14 November 2026, after session 129._
 
 ---
 
@@ -29,7 +29,9 @@ daily maximum; version 1 is live and public (D103.9).
 - **Stage B: the 2026-27 GFS forward test (D73, D77.6, D79; archived,
   still binding).** Pre-registered, models frozen, scripts gated. **None
   has been run.** The hold rule (D73.8) stands. Its three `--guard-check`
-  modes pass (F167.5).
+  modes pass (F167.5). Session 86's gate can be run again through
+  `scripts/session129_stageb_gate.py` (D123.5); run once on 2026-11-14, it
+  equals F128 in every field (F172.7).
 - **Stage C: done (D100, F150).** The look is not run again (D101.2).
 - **Descriptive analysis on spent data and the comparisons (D106 to D108,
   D111; F155, F157, F160): done, ECMWF IFS included and closed (D113,
@@ -70,6 +72,19 @@ daily maximum; version 1 is live and public (D103.9).
 - **A pre-registered test of the live forecasts (D105.5, amended by
   D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
   shown until its look (D103.2, D105.6).
+- **The live test's scoring script (D105.5(l), D123, F172): written and
+  gated; frozen once committed.** `scripts/session129_live_score.py`
+  (SHA-256 `0c12c621...bf80`) has three modes: `--inventory`, `--gate` and
+  `--score`. Gate (a): on synthetic logs built from stage C's claim
+  predictions it reproduces session 107's scores and verdicts byte for
+  byte. Gate (b): 54 tests on made-up logs. Gate (c): the real inventory on
+  a fresh clone passes (132 log files, each added once; none missing). It
+  must be committed before any observation valid on or after 2026-10-12 is
+  read; after that it is never edited, and a fix goes in a new script
+  recorded in DECISIONS before its look (D123.2, D116.10). `--score`
+  refuses to run until the file is committed and unchanged, the period
+  ended 7 days ago, and the inventory passes. It has not been run. The
+  readings it takes where D105.5 leaves a choice are in F172.3.
 - **Project knowledge (D118.8).** After the owner commits and pushes, the
   planning chat clones MLwx fresh from GitHub, checks HEAD is the pushed
   commit, and writes each changed file with project_write's `local_path`;
@@ -81,12 +96,12 @@ daily maximum; version 1 is live and public (D103.9).
   127 added a new script, a new test, five SVG files (about 114 KB) and
   rewritten documents (README.md and RESULTS.md grew by about 27 KB). Session
   128 adds the folder `deploy/mlwx-mosmix/` (about 40 KB), a new test and
-  about 4 KB to DECISIONS.md.
+  about 4 KB to DECISIONS.md. Session 129 adds two scripts, two tests and
+  `data/processed/session129_gate/` (about 1 MB, mostly a byte-equal copy
+  of session 107's scores).
 - **The session order (D122.2; D121.2's content unchanged).** 128: the MOSMIX
-  saver (built, see below). 129: the live test's scoring script (D105.5(l)),
-  written and gated on spent data and synthetic logs and committed before any
-  observation valid on or after 2026-10-12 is read, together with session 86's
-  gate wrapper (D118.10). 130: an independent, read-only code review of the
+  saver (built, see below). 129: the live test's scoring script and session
+  86's gate wrapper (done, see above). 130: an independent, read-only code review of the
   live tool (`src/mlwx/`, the workflow template), stage B's scoring path and
   session 129's script, as a findings register. 131: fixes from that register,
   Gates C and D (F154.9(4)), the iem-position rows for AIFS and the NBM grid at
@@ -118,10 +133,13 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Open questions (live)
 
-- **Session 86's gate (S06): deferred (D118.10).** If stage B needs
-  `session86_forward_build.py --gate` before period A is scored, the
-  session that prepares stage B's run builds a wrapper with constants
-  checked by a test, as D116.3 did; the frozen script is not edited.
+- **Readings from session 129 (F172.8).** One cycle's issue lag was
+  12.82 h (2026-11-09 06z), above D118.4's 12 h mark for reopening the
+  outside scheduler: the owner decides. Rows issued after their valid time
+  reach lead 12, not only leads 3 and 4 (counted by the live test, never
+  excluded). F172.3's readings are for review before the script is
+  committed. `scripts/session112_analysis.py` differs from both SHA-256 in
+  its meta files.
 - **Readings carried (F163.11, F165.11, F168.6).** Session 63's two check
   scripts rewrite their committed notes outputs when run (noted in
   `scripts/README.md`, with session 76b's write-once checks). The first
@@ -132,8 +150,9 @@ daily maximum; version 1 is live and public (D103.9).
   (`scripts.csv`) was not counted as such a record. Session 117's
   `--subset` stops if session 114's script changes, by design.
 - **Readings from session 127 (F170.8), accepted (D122.1).** `tests/README.md`
-  does not yet list `tests/test_session127_figures.py` (nor, now,
-  `tests/test_mosmix_saver.py`); fixed in a later session.
+  now lists `tests/test_session127_figures.py` and session 129's two test
+  files; it still does not list `tests/test_mosmix_saver.py` or several
+  older test files.
 - **Readings from session 128 (F171.9).** The saver's workflow has been
   checked by text only; the first by-hand run on GitHub is the real test.
   `--check-fresh` would not catch one station that stops updating while its
@@ -159,11 +178,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  268 tests (one skipped when no YAML parser is installed).
+  333 tests (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 128 and commit; the owner deploys the MOSMIX saver; the planning chat syncs Project knowledge (D118.8); then session 129 (D122.2).
+**Next planning session:** Review session 129 and commit; the planning chat syncs Project knowledge (D118.8); then session 130, the independent code review (D122.2).

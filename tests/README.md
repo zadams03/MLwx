@@ -45,6 +45,12 @@ folders, deleted after), and finish in under a minute.
   rows gives the recorded MAE exactly, using the functions in
   `scripts/session81_freeze_forward_models.py`.
 
+`test_session127_figures.py`: the README figure script's input files, its gate, and the values and dates it holds.
+
+`test_session129_live_score.py`: the live test's scoring script on small made-up logs and observations: its history check, periods, counts, bar and refusals (D123.4(b)).
+
+`test_session129_stageb_gate.py`: the constants in session 86's gate wrapper against both DECISIONS files and the committed files, and session 86's own lookups run against them (D123.5).
+
 ## Notes
 
 - Some record scripts restart Python on import to set a library path

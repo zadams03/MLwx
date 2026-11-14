@@ -1,0 +1,33 @@
+Session 129: the live test's scoring script, gated and frozen, and session 86's gate wrapper (D123, F172)
+
+The script that will judge the live test (D105.5) is written, gated on
+spent data and synthetic logs, and committed here before any observation
+valid on or after 2026-10-12 is read (D105.5(l)). From this commit it is
+not edited (D123.2). No observation valid on or after 2026-10-12 was
+read, no obs/ snapshot was opened, no live error was computed, and its
+--score mode was not run.
+
+scripts/session129_live_score.py has three modes. --inventory checks
+MLwx-live's history (every log file added once, never changed), counts
+missing cycles with their reasons, issue lags and late rows, and opens no
+observation. --gate reproduces stage C's claim. --score is the look; it
+refuses to run before a period has ended plus 7 days, or if the script
+differs from this commit. It imports session 106's scoring rules and the
+live tool's pairing and daily-maximum code. The design note's 19 readings
+(F172.3) were taken before any code; none was a new rule.
+
+Gates: (a) synthetic logs written by the live writer from session 112's
+claim predictions reproduce session 107's scores and verdicts exactly
+(122,100 and 624 cells, both files byte-equal; 0 differences); (b) 54
+tests of edge cases, ten deliberate breaks caught; (c) the real inventory
+on a fresh clone of MLwx-live: 132 log files each added once, no cycle
+missing, no obs/ file opened.
+
+scripts/session129_stageb_gate.py runs session 86's frozen --gate with
+its DECISIONS lookups replaced by test-checked constants (D118.10,
+D123.5). Run once by the owner's ruling (spent years only, network to
+AWS and IEM): equal to F128.5 in every field.
+
+Tests: 333 OK (1 skipped). Citations 222 of 222 resolve. D123 archives
+D122 and F171. Live index: D93, D103, D105, D118, D123, F172.
+DECISIONS.md is 38,933 bytes.

@@ -1,0 +1,9 @@
+Session 129 gate (a) (D123.4(a)): the live scoring script on synthetic logs built from session 112's claim predictions,
+against session 107's files (F150.4). Cell by cell, as text at full precision.
+run 2026-11-14T15:20Z; script SHA-256 0c12c621e8f48d2e218c444967030becec1d0136a377fad5ee306eb7aa30bf80; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+
+scores: recorded rows 11100, recomputed rows 11100; cells compared 122100, equal 122100, different 0; whole file byte-equal: True
+verdicts: recorded rows 48, recomputed rows 48; cells compared 624, equal 624, different 0; whole file byte-equal: True
+days: recorded rows 4374, recomputed rows 4374; cells compared 78732, equal 78732, different 0; whole file byte-equal: True (extra check, not part of D123.4(a); the three forecast reason columns are not compared: their wording differs by design)
+
+GATE (a): PASS (scores and verdicts); days extra check: PASS
