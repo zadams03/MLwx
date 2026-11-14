@@ -1,0 +1,37 @@
+Session 130: an independent, read-only code review (D124, F173)
+
+A fresh-eyes review of the code that runs live (the live tool, its
+workflow, the MOSMIX saver template) and the code that will judge a
+result (stage B's build and scoring path, and the live test's frozen
+scoring script), with the outside scheduler's numbers and options and a
+light efficiency pass. Nothing was fixed: no file under scripts/, src/,
+tests/, deploy/, data/ or figures/ changed. No observation valid on or
+after 2026-10-12 was read, no obs/ file was opened, and --score was not
+run.
+
+D124 records the MOSMIX saver's deployment (owner, 2026-11-14: private
+repository zadams03/MLwx-mosmix, first run green, Release tag
+mosmix-2026-11) and reopens the outside scheduler (D118.4): cycle
+2026-11-09 06z was issued 12.82 h after its cycle.
+
+notes/session-130-register.csv holds 97 checks: 42 OK, 1 critical, 7
+major, 15 minor, 26 notes and 6 efficiency. Critical, LT09: a cycle
+first tried 12 h or more after it starts gets one try, so one fetch
+error loses it although it is inside the 24-hour catch-up (three cycles
+since the redeploy were first tried after 12 h; none lost). Major: WF05
+(a runner crash gives a green job), LT16 (the guard cannot see GFS v17,
+so v17 cycles would be labelled v16 until a redeploy), LS09 (the frozen
+scoring script imports src/mlwx as it is at the look, unpinned), LS10
+(the log's format must not change before the looks), LS11 (a fetch
+failing part-way at the look leaves a folder that refuses every rerun),
+SB07 (stage B's build turns a network failure into a dropped day) and
+SB11 (a changed NBM or MOS layout reads as "no value"). Each has a
+proposed fix; those in frozen scripts leave them unedited.
+
+Scheduler since the redeploy: 72 cycles, none missing; issue lag median
+7.44 h, 90th percentile 10.89 h, maximum 12.82 h; GitHub started 71 of
+856 schedule slots (8.3 %).
+
+Tests 333 OK (1 skipped), unchanged. Citations 224 of 224 resolve. D124
+archives D123 and F172. Live index: D93, D103, D105, D118, D124, F173.
+DECISIONS.md is 36,988 bytes.

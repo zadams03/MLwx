@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 14 November 2026, after session 129._
+_Last updated: 14 November 2026, after session 130._
 
 ---
 
@@ -54,8 +54,28 @@ daily maximum; version 1 is live and public (D103.9).
   00z: every cycle logged, none missing; the 00z cycle's issue lag was
   about 9.4 h (D118.3). D112.8's rule on manual runs stays: none between
   :35 and :55 past the hour.
-- **The outside scheduler: closed for v1 (D118.4).** Reopened only by a
-  new entry, if any cycle's issue lag exceeds 12 h.
+- **The outside scheduler: reopened (D124.3), for the owner to rule.** Since the
+  2026-10-27 redeploy (F173.6): 72 cycles, none missing; issue lag median
+  7.44 h, 90th percentile 10.89 h, maximum 12.82 h; three cycles above 12 h
+  (2026-11-02 06z, 2026-11-05 00z, 2026-11-09 06z). GitHub started 71 of 856
+  schedule slots (8.3 %), about 3.9 runs a day. Options set out in F173.6
+  and `notes/session-130-output.txt`: (a) keep; (b) more slots (the record
+  says it does not help); (c) an outside trigger calling `workflow_dispatch`;
+  (d) a second scheduled workflow, the owner's machine, or a sleeping chain.
+- **The independent code review (D124.4, F173): done, nothing fixed.**
+  `notes/session-130-register.csv` holds 97 checks of the live tool, its
+  workflow, the MOSMIX saver template, stage B's path and the live test's
+  scoring script: 42 OK, 1 critical, 7 major, 15 minor, 26 notes, 6
+  efficiency. Critical: LT09, a cycle first tried after 12 hours gets one
+  try and one fetch error loses it (no cycle has been lost). Major: WF05 (a
+  runner crash gives a green job), LT16 (the first v17 cycles would be
+  labelled v16), LS09 (the frozen scoring script imports `src/mlwx` as it
+  is at the look), LS10 (the log's format cannot change before the looks),
+  LS11 (a failed fetch at the look blocks every later run), SB07 (a network
+  failure becomes a dropped day in stage B's build), SB11 (a changed NBM or
+  MOS layout reads as no value). The findings wait for session 131, in the
+  order of F173.7; its first group (a test pinning what the frozen scoring
+  script imports, and three rulings) comes before any edit of `src/mlwx`.
 - **Project health check (D112.2 item 3, D114 to D120): done (D120.3).**
   Both audits done (F163, F164). All fix groups done: (1) and (2) (D116,
   F165), (8) by the owner (D116.1), (3) live (D117, F166, D118.2), (7) the
@@ -72,16 +92,15 @@ daily maximum; version 1 is live and public (D103.9).
 - **A pre-registered test of the live forecasts (D105.5, amended by
   D112.6 as D113.4 names).** Locked. No accuracy figure is computed or
   shown until its look (D103.2, D105.6).
-- **The live test's scoring script (D105.5(l), D123, F172): written and
-  gated; frozen once committed.** `scripts/session129_live_score.py`
+- **The live test's scoring script (D105.5(l), D123, F172): written, gated
+  and frozen from commit `3bf156f` (D124.1).** `scripts/session129_live_score.py`
   (SHA-256 `0c12c621...bf80`) has three modes: `--inventory`, `--gate` and
   `--score`. Gate (a): on synthetic logs built from stage C's claim
   predictions it reproduces session 107's scores and verdicts byte for
   byte. Gate (b): 54 tests on made-up logs. Gate (c): the real inventory on
   a fresh clone passes (132 log files, each added once; none missing). It
-  must be committed before any observation valid on or after 2026-10-12 is
-  read; after that it is never edited, and a fix goes in a new script
-  recorded in DECISIONS before its look (D123.2, D116.10). `--score`
+  is never edited; a fix goes in a new script recorded in DECISIONS before
+  its look (D123.2, D116.10). No test yet holds its SHA-256 (F173, TE02). `--score`
   refuses to run until the file is committed and unchanged, the period
   ended 7 days ago, and the inventory passes. It has not been run. The
   readings it takes where D105.5 leaves a choice are in F172.3.
@@ -98,12 +117,12 @@ daily maximum; version 1 is live and public (D103.9).
   128 adds the folder `deploy/mlwx-mosmix/` (about 40 KB), a new test and
   about 4 KB to DECISIONS.md. Session 129 adds two scripts, two tests and
   `data/processed/session129_gate/` (about 1 MB, mostly a byte-equal copy
-  of session 107's scores).
+  of session 107's scores). Session 130 adds only
+  `notes/session-130-register.csv` (about 43 KB) and its output file.
 - **The session order (D122.2; D121.2's content unchanged).** 128: the MOSMIX
   saver (built, see below). 129: the live test's scoring script and session
-  86's gate wrapper (done, see above). 130: an independent, read-only code review of the
-  live tool (`src/mlwx/`, the workflow template), stage B's scoring path and
-  session 129's script, as a findings register. 131: fixes from that register,
+  86's gate wrapper (done, see above). 130: the independent, read-only code review
+  (done, see above). 131: fixes from that register (F173.7),
   Gates C and D (F154.9(4)), the iem-position rows for AIFS and the NBM grid at
   the development airports, and D115.6's question, each with its rules fixed in
   that session's entry first. 132: stage H's design and build choices. A GFS
@@ -119,27 +138,33 @@ daily maximum; version 1 is live and public (D103.9).
   maximum at US airports may be added later only as a separate, labelled
   output, by its own entry.
 - Stages D, E, F and H follow stage G.
-- **MOSMIX saver (D81.2 to D81.5, D122, F171): built, not deployed.** The
-  template is `deploy/mlwx-mosmix/` (38 stations, D122.3; standard library
-  only; schedule every three hours at :50; one tar per issue as a monthly
-  Release asset, manifest committed). It waits for the owner to create the
-  private repository `zadams03/MLwx-mosmix`, copy the template, allow Actions
-  to write, and run it once by hand (D122.5; its README has the steps). Days
-  before it starts are lost, which is accepted. No MOSMIX test is
-  pre-registered and no saved value is compared with anything (D122.7).
+- **MOSMIX saver (D81.2 to D81.5, D122, F171): live (D124.2).** Deployed by
+  the owner on 2026-11-14 to the private repository `zadams03/MLwx-mosmix`
+  from the template `deploy/mlwx-mosmix/` at `73370ed` (38 stations; every
+  three hours at :50; one tar per issue as an asset of the month's Release,
+  manifest committed). One run by hand was green: Release `mosmix-2026-11`
+  and `manifest/2026-11.csv`. Days before it started are lost, which is
+  accepted (D81.5). No MOSMIX test is pre-registered and no saved value is
+  compared with anything (D122.7). The private repository was not read by
+  session 130; the review's findings on the template are MS04 to MS09.
 - **GRIB cache.** On an external drive (D102.3).
 
 ---
 
 ## Open questions (live)
 
-- **Readings from session 129 (F172.8).** One cycle's issue lag was
-  12.82 h (2026-11-09 06z), above D118.4's 12 h mark for reopening the
-  outside scheduler: the owner decides. Rows issued after their valid time
-  reach lead 12, not only leads 3 and 4 (counted by the live test, never
-  excluded). F172.3's readings are for review before the script is
-  committed. `scripts/session112_analysis.py` differs from both SHA-256 in
-  its meta files.
+- **Readings from session 130 (F173.8).** Three cycles, not one, passed
+  D118.4's 12 h mark. LT09 is rated critical because its condition has
+  occurred three times, though nothing was lost. Step 8b's timed re-issue of
+  a real cycle was not run (it needs NOAA's archive; the session's network
+  rule allowed GitHub only); the parts were timed on synthetic input. The
+  owner rules on the scheduler, on the new give-up rule (LT09), on the v17
+  label (LT16), on the log's format and a failed fetch at the look (LS10,
+  LS11), and on stage B's build (SB07, SB09, SB11).
+- **Readings carried from session 129 (F172.8), accepted (D124.1).** Rows
+  issued after their valid time reach lead 12 (counted by the live test,
+  never excluded). `scripts/session112_analysis.py` differs from both
+  SHA-256 in its meta files.
 - **Readings carried (F163.11, F165.11, F168.6).** Session 63's two check
   scripts rewrite their committed notes outputs when run (noted in
   `scripts/README.md`, with session 76b's write-once checks). The first
@@ -153,9 +178,8 @@ daily maximum; version 1 is live and public (D103.9).
   now lists `tests/test_session127_figures.py` and session 129's two test
   files; it still does not list `tests/test_mosmix_saver.py` or several
   older test files.
-- **Readings from session 128 (F171.9).** The saver's workflow has been
-  checked by text only; the first by-hand run on GitHub is the real test.
-  `--check-fresh` would not catch one station that stops updating while its
+- **Readings from session 128 (F171.9).** The saver's first by-hand run on
+  GitHub was green (D124.2). `--check-fresh` would not catch one station that stops updating while its
   directory stays. DWD's terms were read on a "Legal notice" page that does
   not name MOSMIX (CC BY 4.0 with credit; reading unconfirmed with DWD).
 - **MMMX coverage (F159.8).** 28,950 usable hours and 104 usable days.
@@ -185,4 +209,4 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Next
 
-**Next planning session:** Review session 129 and commit; the planning chat syncs Project knowledge (D118.8); then session 130, the independent code review (D122.2).
+**Next planning session:** Review session 130 and commit; the planning chat syncs Project knowledge (D118.8); the owner rules on the scheduler; then session 131, the fixes (D122.2).

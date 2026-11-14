@@ -1,0 +1,611 @@
+SESSION 130 OUTPUT: an independent, read-only code review (D124, F173). Run 2026-11-14.
+
+SUMMARY
+ 1. Done: D124 recorded; a read-only review of the live tool, its workflow, the MOSMIX saver template, stage B's path and the live test's scoring script; the scheduler's numbers and options; a register of 97 checks; F173. Nothing was fixed.
+ 2. Start checks PASS: HEAD 3bf156f, tree clean, 333 tests OK (1 skipped), SPEC 3.4 span a02cbe9e... unchanged, three --guard-check modes exit 0.
+ 3. D124 byte-equal (diff, cmp), 0 em-dashes: PASS.
+ 4. Deployed code equals reviewed code (MLWX_COMMIT d6ca3e4; src/mlwx diff empty): PASS. Deployed workflow equals the template apart from the two SET-AT-DEPLOY values (fresh clone f214d549): PASS.
+ 5. --inventory on a fresh clone: PASS, equal to F172.5 in every field (132 log files, each added once).
+ 6. Register: 97 rows: 42 OK, 1 critical, 7 major, 15 minor, 26 notes, 6 efficiency.
+ 7. CRITICAL LT09: a cycle first tried 12 h or more after it starts gets one try; one fetch error (GFS or IEM) loses it for good, inside the 24 h catch-up. Three cycles since the redeploy were first issued after 12 h. None lost so far.
+ 8. MAJOR WF05: only exit code 3 fails the job; a runner crash (exit 1) with nothing issued is a green job, at every run.
+ 9. MAJOR LT16: the guard cannot see v17; the first v17 cycles would be logged as v16 until a config redeploy (the live test's periods do not use the label).
+10. MAJOR LS09: the frozen scoring script imports src/mlwx as it is at the look; nothing pins it, and session 131 edits src.
+11. MAJOR LS10: the log's columns and time format cannot change before the looks, or --score refuses.
+12. MAJOR LS11: a fetch failing part-way at the look leaves the raw folder; every later run is refused; no rule says what then.
+13. MAJOR SB07: stage B's --build turns a transient network failure into a dropped day in a write-once output.
+14. MAJOR SB11: a changed NBM or MOS layout (HTTP 403 or 404) reads as "no value", day after day.
+15. Scheduler since the redeploy: 72 cycles, none missing; lag median 7.44, p90 10.89, max 12.82 h; above 6 h 56, above 9 h 20, above 12 h 3 (D124.3 names one).
+16. GitHub started 71 of 856 schedule slots (8.3 %): 3.94 runs a day (5.6 in session 123, 6.2 on the hourly schedule); gaps median 6.40, max 10.84 h.
+17. Scheduler options (none binding): (a) keep; (b) more slots (the record says no gain); (c) an outside trigger for workflow_dispatch, lag about 4.4 h, needs a token; (d) a second workflow, the owner's machine, or a sleeping chain.
+18. Efficiency: suite 55 s; a cycle's largest fixed cost is 73.5 s of IEM pauses; model load 5.3 s. Proposed (outputs unchanged): a pip cache, a shared test fixture.
+19. Proposed order for session 131: (1) pin test and rulings before any src edit; (2) runner and workflow, one redeploy; (3) v17 label ruling; (4) scheduler; (5) MOSMIX template; (6) stage B preparation; (7) efficiency.
+20. Reading: LT09 is rated critical because its condition occurred three times, though nothing was lost.
+21. Reading: Step 8b's real cycle was NOT re-issued (it needs NOAA's archive; the network rule allows GitHub only); timed on synthetic input instead.
+22. Reading: between D124 and F173 the citation test failed on D124.5's forward citation of F173, by design; MLwx-mosmix (private) was not read.
+23. obs/ files opened: 0. No observation valid on or after 2026-10-12 read; no error involving a live forecast computed; --score not run. Network: GitHub only.
+24. End checks: tests 333 OK (1 skipped); citations 224 of 224 resolved, 0 duplicated, 0 out of order; archive step moved D123 and F172, checks PASS.
+25. Size: DECISIONS.md 36,988 bytes (limit 80,000).
+26. Scope: PASS. Changed: DECISIONS.md, DECISIONS-archive.md, STATUS.md; new: notes/session-130-register.csv, this file. Nothing else.
+27. Open for the owner: the scheduler; the new give-up rule; the v17 label; the log format and a failed fetch at the look; stage B's build rules; whether session 131 may time one real cycle from NOAA's archive.
+
+CHECKPOINTS (one line per step)
+
+Step 1. Start checks. HEAD 3bf156f; tree clean apart from docs/sessions/session-130.md; tests 333 OK (1 skipped), 55.3 s; SPEC 3.4 span lines 256 to 287, 2,050 bytes, SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 (unchanged); stage B's three --guard-check modes exit 0, each ending "all cases behaved as the session prompt's Step ... says". Files changed: none. Check: PASS.
+Step 2. D124 appended to DECISIONS.md with sed (prompt lines 79 to 89, after one blank separator line, as earlier entries have); diff and cmp against the prompt's lines: byte-equal; 0 em-dashes. Files changed: DECISIONS.md. Check: PASS.
+Step 3. The live tool: all 15 modules of src/mlwx and deploy/mlwx-live read in full; throwaway lt_checks.py run on synthetic input (text below); deployed workflow compared with the template in a fresh clone. 22 LT rows and 7 WF rows: 19 OK, LT09 critical, LT16 and WF05 major, LT14 minor, 6 notes. Extra reading, noted as CLAUDE.md asks: none beyond the Read first list. Files changed: none. Check: done.
+Step 4. The MOSMIX saver template: saver.py, save.yml, README.md, stations.csv, .gitignore read; `git add manifest` with no folder tried in a temporary repository (exit 128). 10 MS rows: 5 OK, 3 minor, 2 notes. The deployed private repository was not read. Files changed: none. Check: done.
+Step 5. Stage B's path: session86_forward_build.py, session129_stageb_gate.py, session87_forward_score.py (its --gate part skimmed by function, the rest in full), session87_forward_competitors.py read against D73, D77.6, D79; the three --guard-check modes run again (exit 0). 17 SB rows: 9 OK, SB07 and SB11 major, 3 minor, 3 notes. Files changed: none. Check: done.
+Step 6. The live test's scoring script read (its --gate part from line 1010 on was not read line by line: it is spent-data only and reproduced session 107 in F172.4); --inventory run on a fresh clone made with --no-checkout (no obs/ file on disk at all): PASS, equal to F172.5. 15 LS rows: 7 OK, LS09, LS10, LS11 major, 1 minor, 4 notes. Files changed: none. Check: PASS.
+Step 7. Tests: the test names of all files read against the rules above. 10 TE rows: 2 OK, 7 minor gaps, 1 note. Files changed: none. Check: done.
+Step 8. The scheduler: lags from the inventory's detail (the log's issued_utc; no observation), the public run list by `gh api` (76 runs since 2026-10-27, read-only). 9 SC rows (numbers and options). Files changed: none. Check: done.
+Step 8b. Efficiency: suite timed (55.3 s, 49.6 s with --durations); the runner's parts timed on synthetic GFS input with the real models (ef_timing.py, text below); run lengths from the run list. The real-cycle re-issue was NOT run: it needs NOAA's archive and the rules allow GitHub only; Step 8b's own alternative (profile by reading) was taken and the conflict is reported (EF07). 7 EF rows. Files changed: none. Check: done.
+Step 9. The register: notes/session-130-register.csv, 97 rows, 14 columns (session 121's 11 plus line, confirmed_by, fix_before), every id unique, 0 em-dashes; line numbers looked up with grep and corrected before the final write. The grouping for session 131 is below. Files changed: notes/session-130-register.csv (new). Check: PASS.
+Step 10. Final checks. git status --porcelain: M DECISIONS-archive.md, M DECISIONS.md, M STATUS.md, ?? docs/sessions/session-130.md, ?? notes/session-130-output.txt, ?? notes/session-130-register.csv: no file outside the scope list. Tests 333 OK (1 skipped) after F173 (before F173, 332 passed and the citation test failed on D124.5's forward citation of F173). obs/ files opened: 0; no observation valid on or after 2026-10-12 read. Check: PASS.
+End 1. F173 appended to DECISIONS.md (16 long lines), 0 em-dashes.
+End 2. STATUS.md overwritten as a snapshot (the review done, findings wait for session 131, the scheduler reopened, the MOSMIX saver live, D122.2's order; the Next line as the prompt gives it), 0 em-dashes.
+End 3. Live index: D123 and F172 removed, D124 and F173 added (D124.5). archive_decisions.py --apply --session 130: moved 2 spans, kept 6; checks 2 to 4 PASS; DECISIONS.md 47,749 to 36,988 bytes; archive 1,612,513 to 1,623,311 bytes. D124's block still byte-equal to the prompt's lines 79 to 89 afterwards (cmp).
+End 4. --citations: 224 distinct entry numbers cited, 224 resolved, 0 unresolved, 0 in both files, 0 duplicated openings, 0 headings out of order. DECISIONS.md 36,988 bytes (below 80,000). Re-read of what this session changed (D124, F173, the Live index, STATUS's changed bullets): one thing to report: D124.3 and F172 name one cycle above 12 h; there are three (SC04). Scope check: PASS.
+
+DETAIL
+
+A. THE CRITICAL AND MAJOR FINDINGS (the register has every row; ids as there)
+
+LT09, critical. src/mlwx/runner.py line 41 (GIVE_UP_AFTER = 12 h) and 223-232. On a FetchError or ObsFetchError the runner
+  asks only "is the cycle 12 hours old?". If yes, the cycle is stopped for good on that try. The catch-up window is 24
+  hours (line 40). So a cycle whose first try is after +12 h has exactly one try. lt_checks.py T1: first try at +12 h 49
+  min with one FetchError: stopped; an hour later with a healthy fetch: not tried again, not logged. Since the redeploy
+  three cycles were first issued after 12 h (12.37, 12.33, 12.82 h). The GFS fetch retries 5 times per request and IEM
+  3 times, so a single bad request rarely fails a cycle; an IEM outage of some minutes would. An IEM outage alone also
+  takes this branch at any age: with GFS fine, cycles wait and are stopped at 12 h. D112.4 says a cycle is lost only if
+  no run happens between +4 h 10 min and +24 h; the code does not do that.
+WF05, major. live.yml 97-106: `set +e`, the code is saved, `exit 0`; 183-187: only code 3 fails the job. runner.run
+  catches GuardStop, FetchError and ObsFetchError only (215-232). Anything else is a traceback and exit code 1. With
+  nothing issued the tree is unchanged, the skip step says "nothing changed", and the job is green. lt_checks.py T2: an
+  IEM body that is an HTML page raises KeyError('station') out of the runner.
+LT16, major. gfs.py's guard checks GRIB identity, steps, run, validity and grid. None of these says which GFS version
+  made the file. config.py 117 holds one version row (v16). page.py 98 flags "not validated on v17" from the label.
+LS09, major. session129_live_score.py 100: `from mlwx import config, dailymax, observations, prediction_log, records`.
+  Used for: the airports, stations and time zones (186-197), the log's columns and time format (332-338), the fetch
+  and the live pairing (565-581), the local day and its cycle (644-647), the 12 and the 37. Line 78-80 checks session
+  106's SHA-256 only. The script's own freeze (0c12c621...bf80) is not in tests/test_frozen_scripts.py either (TE02).
+LS10, major. 332: `if next(rd, None) != prediction_log.LOG_COLUMNS: return rows, ["its columns are not the log's"]`;
+  337-338 unpack exactly 12 fields. Any problem fails the inventory (466) and --score refuses (951-952).
+LS11, major. 570 creates the raw folder with exist_ok=False; 572-586 make one request per airport and month; 938-941
+  refuse if either output folder exists. observations.fetch_reports raises ObsFetchError after 3 tries (not caught).
+SB07, major. session86_forward_build.py 510-548: each failure is caught and stored in `fails`; 742-744: a day with any
+  fail is dropped as "no GRIB message"; 842-843: a second run is refused if any output exists.
+SB11, major. session87_forward_competitors.py 157-159: HTTP 403 or 404 raises Missing; 404-406, 428-430, 497-499: Missing
+  becomes a counted drop for every day in that file.
+
+B. GFS v17, walked through with no code change
+  1. The cycle becomes available at +4 h 10 min. The runner asks for gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF.idx.
+  2. If the path, the .idx texts, the eight fields' identity keys, the 6-hour averaging windows and the 0.25 degree grid
+     are as now: every message passes the guard; the features are built; the v16-trained models predict; the rows are
+     written with gfs_version "v16". The page shows "GFS v16" and no v17 flag. Nothing stops. This repeats every cycle
+     until the config gets a v17 row and MLWX_COMMIT is redeployed. The rows already logged keep "v16" for good.
+  3. If any key, step window or grid value differs: GuardStop on that cycle, recorded as a stop, exit code 3, a failed
+     job (the owner is told), nothing logged. The stop is final for that cycle. Every later cycle is tried and stops
+     the same way. The stop list keeps 100 entries (25 days at four a day); the live test reads every committed
+     version of the state file, so no reason is lost.
+  4. If the path changes or the files land later than +4 h 10 min: HTTP 404 is a FetchError; the cycle waits (exit
+     code 2, a green job) and blocks later cycles until it is 12 hours old, then it is stopped (exit code 3).
+  5. Nothing is ever logged under a wrong label in cases 3 and 4. In case 2 the label is wrong (LT16).
+  6. The live test is not touched by the label: its periods come from --first-v17-cycle (session129_live_score.py
+     219-236). Stage B's periods come from its own --first-v17-cycle too.
+
+C. THE SCHEDULER (Step 8). Sources: the fresh clone's log files (issued_utc) through --inventory --detail, and the
+   public Actions run list (gh api repos/zadams03/MLwx-live/actions/runs, created >= 2026-10-27, 76 runs).
+
+issue lag, cycles since the redeploy (2026-10-27 12z on): n 72, min 4.25, median 7.44, mean 7.80, p90 10.89, max 12.82 h; above 6 h 56, above 9 h 20, above 12 h 3
+issue lag, every logged cycle (2026-10-12 12z on): n 132, min 4.18, median 6.50, mean 6.96, p90 9.83, max 12.82 h; above 6 h 81, above 9 h 21, above 12 h 3
+  since the redeploy, 00z cycles: n 18, min 6.27, median 8.84, mean 8.83, p90 11.12, max 12.33 h; above 6 h 18, above 9 h 7, above 12 h 1
+  since the redeploy, 06z cycles: n 18, min 4.95, median 10.03, mean 9.42, p90 12.10, max 12.82 h; above 6 h 16, above 9 h 11, above 12 h 2
+  since the redeploy, 12z cycles: n 18, min 4.25, median 6.74, mean 6.59, p90 8.51, max 9.48 h; above 6 h 11, above 9 h 2, above 12 h 0
+  since the redeploy, 18z cycles: n 18, min 4.77, median 6.64, mean 6.38, p90 7.72, max 8.33 h; above 6 h 11, above 9 h 0, above 12 h 0
+cycles above 9 h since the redeploy (cycle, lag, issue time UTC, weekday of issue): 10-29 06z 10.13 h, issued Thu 16:07; 10-29 12z 9.13 h, issued Thu 21:07; 10-31 06z 9.33 h, issued Sat 15:19; 11-01 00z 9.37 h, issued Sun 09:22; 11-01 06z 10.35 h, issued Sun 16:21; 11-02 06z 12.37 h, issued Mon 18:22; 11-03 06z 10.25 h, issued Tue 16:15; 11-04 00z 9.83 h, issued Wed 09:49; 11-04 06z 11.98 h, issued Wed 17:58; 11-05 00z 12.33 h, issued Thu 12:19; 11-06 06z 9.93 h, issued Fri 15:55; 11-06 12z 9.48 h, issued Fri 21:28; 11-08 00z 9.52 h, issued Sun 09:31; 11-08 06z 10.30 h, issued Sun 16:18; 11-09 06z 12.82 h, issued Mon 18:49; 11-10 00z 9.83 h, issued Tue 09:49; 11-10 06z 11.83 h, issued Tue 17:49; 11-11 00z 10.95 h, issued Wed 10:57; 11-12 06z 11.60 h, issued Thu 17:36; 11-13 00z 11.50 h, issued Fri 11:30
+  above 9 h by cycle hour {'00z': 7, '06z': 11, '12z': 2}; by weekday of issue {'Thu': 4, 'Sat': 1, 'Sun': 4, 'Mon': 2, 'Tue': 3, 'Wed': 3, 'Fri': 3}
+runs since the redeploy's manual run (2026-10-27 17:56Z to 2026-11-14 14:08Z, 17.8 days): 72 runs (71 scheduled, 1 manual), all {'success'}; schedule slots 856; scheduled runs started 71 of 856 slots (8.3 %), not started 785
+gaps between run starts: median 6.40, p90 8.00, max 10.84 h; gaps above 6 h 38, above 8 h 8, above 12 h 0
+delay from the latest slot to the run's start (scheduled runs): median 14.3, max 34.9 min
+scheduled runs per full UTC day: 10-28 5, 10-29 4, 10-30 5, 10-31 5, 11-01 4, 11-02 3, 11-03 4, 11-04 4, 11-05 3, 11-06 4, 11-07 5, 11-08 4, 11-09 3, 11-10 4, 11-11 3, 11-12 4, 11-13 3; mean 3.94 of 48 slots
+scheduled run starts by UTC hour: 00h 6, 01h 3, 02h 7, 03h 2, 04h 0, 05h 0, 06h 2, 07h 6, 08h 3, 09h 4, 10h 1, 11h 1, 12h 1, 13h 1, 14h 3, 15h 2, 16h 4, 17h 3, 18h 5, 19h 3, 20h 4, 21h 3, 22h 3, 23h 4
+run duration (start to last update): median 3.31, min 0.62, max 9.27 min
+five longest gaps (h, from, to): 10.84 11-09 Mon 07:58 to 11-09 Mon 18:48; 10.69 11-02 Mon 07:40 to 11-02 Mon 18:21; 8.78 11-12 Thu 08:48 to 11-12 Thu 17:35; 8.60 11-05 Thu 03:44 to 11-05 Thu 12:20; 8.28 11-03 Tue 07:57 to 11-03 Tue 16:14
+
+Every cycle since the redeploy: cycle, issue lag (h), issue time
+2026-10-27T12z  5.95 2026-10-27 Tue 17:57Z
+2026-10-27T18z  6.53 2026-10-28 Wed 00:31Z
+2026-10-28T00z  6.27 2026-10-28 Wed 06:16Z
+2026-10-28T06z  7.50 2026-10-28 Wed 13:30Z
+2026-10-28T12z  7.10 2026-10-28 Wed 19:06Z
+2026-10-28T18z  5.23 2026-10-28 Wed 23:13Z
+2026-10-29T00z  8.88 2026-10-29 Thu 08:52Z
+2026-10-29T06z 10.13 2026-10-29 Thu 16:07Z
+2026-10-29T12z  9.13 2026-10-29 Thu 21:07Z
+2026-10-29T18z  6.98 2026-10-30 Fri 00:58Z
+2026-10-30T00z  7.12 2026-10-30 Fri 07:07Z
+2026-10-30T06z  8.13 2026-10-30 Fri 14:07Z
+2026-10-30T12z  7.37 2026-10-30 Fri 19:22Z
+2026-10-30T18z  5.20 2026-10-30 Fri 23:12Z
+2026-10-31T00z  8.85 2026-10-31 Sat 08:51Z
+2026-10-31T06z  9.33 2026-10-31 Sat 15:19Z
+2026-10-31T12z  7.53 2026-10-31 Sat 19:31Z
+2026-10-31T18z  4.82 2026-10-31 Sat 22:49Z
+2026-11-01T00z  9.37 2026-11-01 Sun 09:22Z
+2026-11-01T06z 10.35 2026-11-01 Sun 16:21Z
+2026-11-01T12z  4.35 2026-11-01 Sun 16:21Z
+2026-11-01T18z  6.75 2026-11-02 Mon 00:45Z
+2026-11-02T00z  7.68 2026-11-02 Mon 07:40Z
+2026-11-02T06z 12.37 2026-11-02 Mon 18:22Z
+2026-11-02T12z  6.37 2026-11-02 Mon 18:22Z
+2026-11-02T18z  7.22 2026-11-03 Tue 01:13Z
+2026-11-03T00z  7.97 2026-11-03 Tue 07:58Z
+2026-11-03T06z 10.25 2026-11-03 Tue 16:15Z
+2026-11-03T12z  4.25 2026-11-03 Tue 16:15Z
+2026-11-03T18z  8.33 2026-11-04 Wed 02:19Z
+2026-11-04T00z  9.83 2026-11-04 Wed 09:49Z
+2026-11-04T06z 11.98 2026-11-04 Wed 17:58Z
+2026-11-04T12z  5.98 2026-11-04 Wed 17:58Z
+2026-11-04T18z  5.67 2026-11-04 Wed 23:40Z
+2026-11-05T00z 12.33 2026-11-05 Thu 12:19Z
+2026-11-05T06z  6.33 2026-11-05 Thu 12:19Z
+2026-11-05T12z  8.25 2026-11-05 Thu 20:15Z
+2026-11-05T18z  6.98 2026-11-06 Fri 00:58Z
+2026-11-06T00z  7.92 2026-11-06 Fri 07:55Z
+2026-11-06T06z  9.93 2026-11-06 Fri 15:55Z
+2026-11-06T12z  9.48 2026-11-06 Fri 21:28Z
+2026-11-06T18z  7.18 2026-11-07 Sat 01:10Z
+2026-11-07T00z  7.20 2026-11-07 Sat 07:12Z
+2026-11-07T06z  8.07 2026-11-07 Sat 14:04Z
+2026-11-07T12z  6.80 2026-11-07 Sat 18:48Z
+2026-11-07T18z  4.77 2026-11-07 Sat 22:46Z
+2026-11-08T00z  9.52 2026-11-08 Sun 09:31Z
+2026-11-08T06z 10.30 2026-11-08 Sun 16:18Z
+2026-11-08T12z  4.30 2026-11-08 Sun 16:18Z
+2026-11-08T18z  6.92 2026-11-09 Mon 00:55Z
+2026-11-09T00z  7.98 2026-11-09 Mon 07:58Z
+2026-11-09T06z 12.82 2026-11-09 Mon 18:49Z
+2026-11-09T12z  6.82 2026-11-09 Mon 18:49Z
+2026-11-09T18z  8.15 2026-11-10 Tue 02:09Z
+2026-11-10T00z  9.83 2026-11-10 Tue 09:49Z
+2026-11-10T06z 11.83 2026-11-10 Tue 17:49Z
+2026-11-10T12z  5.83 2026-11-10 Tue 17:49Z
+2026-11-10T18z  5.35 2026-11-10 Tue 23:21Z
+2026-11-11T00z 10.95 2026-11-11 Wed 10:57Z
+2026-11-11T06z  4.95 2026-11-11 Wed 10:57Z
+2026-11-11T12z  6.75 2026-11-11 Wed 18:45Z
+2026-11-11T18z  7.53 2026-11-12 Thu 01:31Z
+2026-11-12T00z  8.82 2026-11-12 Thu 08:49Z
+2026-11-12T06z 11.60 2026-11-12 Thu 17:36Z
+2026-11-12T12z  5.60 2026-11-12 Thu 17:36Z
+2026-11-12T18z  4.85 2026-11-12 Thu 22:51Z
+2026-11-13T00z 11.50 2026-11-13 Fri 11:30Z
+2026-11-13T06z  5.50 2026-11-13 Fri 11:30Z
+2026-11-13T12z  6.73 2026-11-13 Fri 18:43Z
+2026-11-13T18z  6.33 2026-11-14 Sat 00:19Z
+2026-11-14T00z  7.00 2026-11-14 Sat 07:00Z
+2026-11-14T06z  8.15 2026-11-14 Sat 14:09Z
+
+Every run since the redeploy: start (UTC), event, conclusion, minutes, delay from slot (min, scheduled only)
+2026-10-27 Tue 17:56:51Z workflow_dispatch success  3.40
+2026-10-27 Tue 20:41:32Z schedule          success  0.68   1.5
+2026-10-28 Wed 00:31:33Z schedule          success  3.48  16.6
+2026-10-28 Wed 06:15:51Z schedule          success  3.07   0.8
+2026-10-28 Wed 13:29:58Z schedule          success  2.73  15.0
+2026-10-28 Wed 19:05:09Z schedule          success  3.28  25.1
+2026-10-28 Wed 23:13:53Z schedule          success  2.95  33.9
+2026-10-29 Thu 02:29:08Z schedule          success  7.48  14.1
+2026-10-29 Thu 08:53:20Z schedule          success  3.15  13.3
+2026-10-29 Thu 16:07:17Z schedule          success  3.33  27.3
+2026-10-29 Thu 21:07:25Z schedule          success  3.25  27.4
+2026-10-30 Fri 00:58:59Z schedule          success  4.30  19.0
+2026-10-30 Fri 07:06:16Z schedule          success  3.28  26.3
+2026-10-30 Fri 14:07:48Z schedule          success  3.05  27.8
+2026-10-30 Fri 19:22:10Z schedule          success  2.75   7.2
+2026-10-30 Fri 23:11:50Z schedule          success  2.65  31.8
+2026-10-31 Sat 02:25:04Z schedule          success  0.72  10.1
+2026-10-31 Sat 08:50:58Z schedule          success  2.72  11.0
+2026-10-31 Sat 15:19:41Z schedule          success  2.55   4.7
+2026-10-31 Sat 19:31:39Z schedule          success  2.93  16.6
+2026-10-31 Sat 22:49:03Z schedule          success  2.97   9.1
+2026-11-01 Sun 02:14:14Z schedule          success  0.83  34.2
+2026-11-01 Sun 09:21:50Z schedule          success  2.58   6.8
+2026-11-01 Sun 16:20:41Z schedule          success  5.43   5.7
+2026-11-01 Sun 20:48:14Z schedule          success  0.62   8.2
+2026-11-02 Mon 00:44:32Z schedule          success  2.67   4.5
+2026-11-02 Mon 07:40:34Z schedule          success  3.48   0.6
+2026-11-02 Mon 18:21:49Z schedule          success  5.10   6.8
+2026-11-03 Tue 01:13:06Z schedule          success  3.33  33.1
+2026-11-03 Tue 07:57:36Z schedule          success  2.98  17.6
+2026-11-03 Tue 16:14:34Z schedule          success  4.72  34.6
+2026-11-03 Tue 21:49:25Z schedule          success  1.37   9.4
+2026-11-04 Wed 02:20:13Z schedule          success  3.32   5.2
+2026-11-04 Wed 09:49:45Z schedule          success  5.70   9.8
+2026-11-04 Wed 17:58:52Z schedule          success  6.32  18.9
+2026-11-04 Wed 23:39:37Z schedule          success  3.30  24.6
+2026-11-05 Thu 03:44:20Z schedule          success  0.87   4.3
+2026-11-05 Thu 12:20:15Z schedule          success  6.87   5.2
+2026-11-05 Thu 20:14:56Z schedule          success  4.57  34.9
+2026-11-06 Fri 00:58:46Z schedule          success  3.62  18.8
+2026-11-06 Fri 07:55:18Z schedule          success  3.63  15.3
+2026-11-06 Fri 15:55:31Z schedule          success  6.30  15.5
+2026-11-06 Fri 21:29:16Z schedule          success  4.18  14.3
+2026-11-07 Sat 01:10:20Z schedule          success  3.13  30.3
+2026-11-07 Sat 07:11:28Z schedule          success  3.13  31.5
+2026-11-07 Sat 14:03:48Z schedule          success  3.23  23.8
+2026-11-07 Sat 18:47:38Z schedule          success  4.08   7.6
+2026-11-07 Sat 22:45:39Z schedule          success  3.77   5.7
+2026-11-08 Sun 02:29:19Z schedule          success  0.77  14.3
+2026-11-08 Sun 09:31:02Z schedule          success  3.77  11.7
+2026-11-08 Sun 16:17:40Z schedule          success  6.77   2.7
+2026-11-08 Sun 20:44:41Z schedule          success  0.82   4.7
+2026-11-09 Mon 00:55:04Z schedule          success  3.53  15.1
+2026-11-09 Mon 07:58:09Z schedule          success  4.40  18.1
+2026-11-09 Mon 18:48:24Z schedule          success  5.43   8.4
+2026-11-10 Tue 02:08:16Z schedule          success  5.62  28.3
+2026-11-10 Tue 09:50:16Z schedule          success  3.23  10.3
+2026-11-10 Tue 17:49:48Z schedule          success  5.93   9.8
+2026-11-10 Tue 23:21:13Z schedule          success  3.25   6.2
+2026-11-11 Wed 02:58:59Z schedule          success  0.92  19.0
+2026-11-11 Wed 10:56:50Z schedule          success  5.73  16.8
+2026-11-11 Wed 18:41:48Z schedule          success  9.27   1.8
+2026-11-12 Thu 01:32:05Z schedule          success  3.38  17.1
+2026-11-12 Thu 08:48:54Z schedule          success  3.30   8.9
+2026-11-12 Thu 17:35:37Z schedule          success  5.63  20.6
+2026-11-12 Thu 22:51:09Z schedule          success  3.72  11.2
+2026-11-13 Fri 03:25:17Z schedule          success  0.72  10.3
+2026-11-13 Fri 11:29:55Z schedule          success  5.98  14.9
+2026-11-13 Fri 18:44:01Z schedule          success  3.18   4.0
+2026-11-14 Sat 00:19:56Z schedule          success  3.98   4.9
+2026-11-14 Sat 06:59:14Z schedule          success  3.28  19.2
+2026-11-14 Sat 14:08:44Z schedule          success  3.35  28.7
+
+Options, with costs, risks and what each needs from the owner (none is binding):
+  (a) Keep as is. Cost: none. At the present rate about 4 % of cycles pass 12 h and the runs started per day have
+      fallen at each measurement (6.2, 5.6, 3.9). A cycle is lost if no run starts for about 20 hours (longest gap so
+      far 10.84 h) or, today, on one fetch error after 12 h (LT09). Needs: nothing; LT09 fixed either way.
+  (b) More schedule slots. Cost: a template edit and a redeploy. The record says no gain: 24 slots a day gave 6.2
+      runs, 48 slots gave 5.6 and now 3.9. Needs: a ruling only if the owner wants to try other minutes.
+  (c) An outside trigger calling workflow_dispatch. A free cron service, a Cloudflare Worker or a Google Cloud
+      Scheduler job sends POST /repos/zadams03/MLwx-live/actions/workflows/live.yml/dispatches with {"ref":"main"} at
+      about 04:20, 10:20, 16:20 and 22:20 UTC, and again 40 minutes later as a retry (outside D112.8's :35 to :55
+      band). Expected lag about 4.4 h. The schedule stays as the fallback; the workflow file does not change; the
+      one-run-at-a-time rule already queues overlaps. Risks: the token sits at a third party; with only "Actions: read
+      and write" on MLwx-live a leak lets someone start, cancel or re-run this workflow and delete run logs, not push;
+      a fine-grained token lasts at most a year, and when it expires the tool falls back to today's lags with no
+      message. No code that makes a logged value changes; issue times get earlier, which the live test counts and
+      never excludes (D105.5(h)), so the start date is recorded in DECISIONS. Needs: an account, the token, a renewal
+      reminder, an entry.
+  (d1) A second scheduled workflow inside MLwx-live that runs `gh workflow run live.yml` with the built-in token
+      (`actions: write`). No outside party, no stored secret. Gain unknown: if GitHub drops runs per repository it
+      adds nothing. Needs: a template file, a redeploy, a week's trial.
+  (d2) The owner's own computer runs `gh workflow run` four times a day. No third party, no new token; stops when the
+      computer sleeps (D86.5).
+  (d3) A workflow that sleeps until the next cycle, then dispatches the runner and itself. No outside party; holds a
+      hosted runner around the clock and breaks on any failure. Not recommended.
+  The reviewer's view, for what it is worth: fix LT09 first; then (c) gives the shortest lag for the least change.
+
+D. EFFICIENCY (Step 8b). Output of ef_timing.py (synthetic GFS input, the real frozen models, no network):
+  build 391 synthetic messages (not part of the tool): 1.24 s
+  fetch_cycle on synthetic files: 49 idx + 391 messages, decode and guard, 8 threads (no network): 0.55 s
+  check_message, one message (whole 1,038,240-point grid decoded for 196 points): 1.5 ms; x 391 = 0.6 s
+    the same 196 values by element index (codes_get_double_element): 1.2 ms; equal values: True
+  build_cycle_rows: features for 49 airports x 46 leads: 0.16 s
+  ModelSet: read and check the manifest: 0.00 s
+  load one cycle hour's packs: 49 files, 2,254 boosters (gunzip, JSON, Booster(model_str)): 5.29 s
+  predict 2,254 rows, one predict call each (as the runner does): 0.42 s
+  runner.run end to end, synthetic GFS, real models, no earlier log so no IEM request, with page: 0.37 s
+  read_log of one cycle file (2,254 rows): 0.04 s
+  save_state with 9,016 cells: 0.02 s
+  write_page: 0.04 s
+  sizes: log file 495,646 bytes; state 620,897 bytes; page 139,626 bytes
+  by reading: IEM, one request per airport with a 1.5 s pause after each: 49 x 1.5 = 73.5 s of sleep per issued cycle
+  From the run list: a whole job takes a median 3.31 min, 0.62 min when nothing is due, 9.27 min at most.
+  Slow parts, largest first: the IEM pauses and requests; the GFS fetch (391 range requests, not timed here); the job's
+  set-up (two checkouts, pip install, the models' cache); the model load; everything else is under a second.
+  Test suite: 55.3 s (start check), 49.6 s (with --durations). Slowest: five tests in tests/test_onboard.py, 3.9 to 5.8 s
+  each; test_live.SnapshotTests 3.2 s.
+  Proposed for session 131 (every output byte-identical): EF05 (pip cache) and EF01 (a shared fixture). Not proposed:
+  EF02 (IEM batching: equal output cannot be shown without live observations, and observations.py is pinned by LS09),
+  EF03, EF04 (no gain shown), EF06 (frozen or recorded scripts).
+
+E. OUTPUT OF lt_checks.py (Step 3)
+  T1 first try at c+12h49 with one FetchError: stopped [('2026-10-12 06:00:00', 'fetch problem, gave up after 12 hours: o')] waiting None
+  T1 next run, fetch healthy: cycle tried again: False ; logged: False ; age h: 13.82 (inside the 24 h catch-up)
+  T2 html page: uncaught KeyError: KeyError('station') (the CLI would exit 1)
+  T2 empty body: issued 1, waiting None, stopped 0, errors applied (sum of n) 0
+  T2 header only: issued 1, waiting None, stopped 0, errors applied (sum of n) 0
+  T3 airports 49, zones 31; local-day lengths {23: 15, 24: 9548, 25: 16}; errors 0; days wholly inside a cycle (count of cycle-zones) {0: 254, 1: 36016}
+  T4 version_of(2027-03-01 00z) with today's config: v16 ; versions table: ((datetime.datetime(2021, 3, 22, 12, 0), 'v16'),)
+  T5 2027-03-28 start 2027-03-28 00:00:00 hours 23 cycle 2027-03-27 18:00:00 leads 6.0 to 28.0
+  T5 2026-10-25 start 2026-10-24 23:00:00 hours 25 cycle 2026-10-24 18:00:00 leads 5.0 to 29.0
+  T5 2027-03-29 start 2027-03-28 23:00:00 hours 24 cycle 2027-03-28 18:00:00 leads 5.0 to 28.0
+
+F. --inventory ON A FRESH CLONE (Step 6), 2026-11-14T16:57Z, 5.6 s
+  clone HEAD f214d549f45ae9d977758025ab7e8121bd53ca63 (committed 2026-11-14T14:11Z); commits 163; shallow clone: False
+  log files at HEAD: 132 cycle files, 0 other files; paths under log/ in the history: 132
+  write-once (every log path added once, never changed or deleted): PASS (0 paths fail)
+  problems with a cycle file's form or an airport's recorded first cycle: 0
+  state file versions read: 158 (0 unreadable); cycles with a stop reason: 1 (2026-10-12 06z, tracker order, before the window)
+  group of 12: window 2026-10-12T12:00Z to 2026-11-14T06:00Z; cycles 132, with a log file 132, without 0
+    issue lag: median 6.50, maximum 12.82 h (2026-11-09T06:00Z); five latest 5.50, 6.73, 6.33, 7.00, 8.15
+    rows issued after their valid time, by lead 3 to 12: 1584, 1584, 1356, 972, 624, 420, 252, 144, 84, 36
+  group of 37: window 2026-10-13T18:00Z to 2026-11-14T06:00Z; cycles 127, with a log file 127, without 0
+    issue lag: median 6.47, maximum 12.82 h; rows issued after their valid time, by lead 3 to 12: 4699, 4699, 3996, 2886,
+    1813, 1221, 777, 444, 259, 111
+  names listed under obs/: 125; obs/ files opened: 0; files read: log 132, state 158
+  INVENTORY: PASS
+  Against F172.5: equal in every field given there.
+  Also from the clone: pack size 17.65 MiB after 132 cycles; log files at HEAD 68,052,519 bytes; state file 913,283 bytes.
+
+G. TESTS (Step 7): what is covered and the gaps that matter
+  Live tool (tests/test_live.py, 1,680 lines; test_onboard.py; test_live_template.py): covered: config against its
+    sources, the idx lookup, the guard key by key, HTTP retries, features and bilinear against sessions 91 and 96, the
+    table format, pairing (record and live), the baseline and its manifest, the tracker against session 103, the daily
+    maximum, the log, the state, the runner (catch-up order, each error once, a guard stop, a waiting fetch, tracker
+    order, exit codes 0, 2, 3, write-once), the snapshot, the page, the recorded constants, the refit, the skip step.
+    Gaps: TE04 (the push check and the exit-code rule run in no test; nothing tests exit code 1), TE06 (a first try
+    after 12 h; an IEM body that is not CSV; all 49 time zones), TE09 (a test to change with v17).
+  MOSMIX (tests/test_mosmix_saver.py): saver.py well covered; the workflow by text only. Gap: TE07.
+  Stage B (tests/test_guards.py, test_frozen_scripts.py, test_record.py, test_session129_stageb_gate.py): covered: the
+    gate date guard, the three scripts' SHA-256, the DECISIONS lookups, the wrapper. Gaps: TE05 (no test calls the
+    scoring core or runs the --guard-check modes), SB09 (the build mode has never run).
+  Live scoring (tests/test_session129_live_score.py, 54 tests): the rules of D123.4(b) and the refusals. Gaps: TE02
+    (its SHA-256 is in no test), TE03 (what it imports is not pinned), TE08 (a fetch that fails part-way).
+
+H. PROPOSED GROUPING FOR SESSION 131, by severity. D105.5(k) = does it change a logged value.
+  Group 1, first, before any edit of src/mlwx (major: LS09, LS10, LS11; minor: LS12, TE02, TE03).
+    Files: tests/test_frozen_scripts.py, one new test file; DECISIONS (three rulings: the log's format is fixed until
+    the looks; what happens after a failed fetch at the look; the 49 rows stay). D105.5(k): not engaged; it protects
+    the test.
+  Group 2, the runner and the workflow, one redeploy (critical: LT09; major: WF05; minor: LT14, TE04, TE06; note: WF07;
+    efficiency: EF05). Files: src/mlwx/runner.py, deploy/mlwx-live/.github/workflows/live.yml, deploy/mlwx-live/
+    .gitignore and README.md, tests/test_live.py, tests/test_live_template.py. Not observations.py, prediction_log.py,
+    dailymax.py, config.py or records.py (pinned by group 1). D105.5(k): no value of an issued row changes; which
+    cycles can be issued after a fetch problem changes, and code_commit changes at the redeploy, so it is recorded
+    before it goes live as D117.6 was. Needs a ruling on the new give-up rule.
+  Group 3, GFS v17 (major: LT16; note: TE09). Files now: DECISIONS (a ruling on the label). At the notice: src/mlwx/
+    config.py (one row; pinned by group 1, so recorded first), tests/test_live.py, a redeploy. D105.5(k): engaged at
+    that redeploy (gfs_version is a logged value).
+  Group 4, the scheduler (SC05 to SC09), by the owner's choice. (c) changes no file; (d1) adds a template file.
+    D105.5(k): no logged value's code changes; issue times move, recorded with the date.
+  Group 5, the MOSMIX template (minor: MS05, MS06, MS08, TE07; note: MS04). Files: deploy/mlwx-mosmix/saver.py,
+    save.yml, README.md, tests/test_mosmix_saver.py; then the owner copies them to the private repository.
+    D105.5(k): not engaged.
+  Group 6, stage B's preparation, before its build (major: SB07, SB11; minor: SB08, SB09, SB10, TE05). Files: new
+    scripts only (a build wrapper, a rehearsal, a scoring wrapper with constants), new tests, DECISIONS rulings. No
+    frozen script is edited. D105.5(k): not engaged. A v17 notice brings this forward (period A ends at v17).
+  Group 7, efficiency (EF01, and EF05 if not done in group 2). Tests and the workflow only; every output unchanged.
+
+I. NOT DONE, AND LIMITS OF THIS REVIEW
+  No fix. No real GFS fetch, no IEM call, no --gate, no --score, no wrapper --gate. The deployed MLwx-mosmix
+  repository (private) was not read. GitHub's Release limits and DWD's terms were not re-read. Real GFS messages were
+  not decoded, so EF04's time is a lower bound. session87_forward_score.py's --gate functions (lines 762 to 1061) and
+  session129_live_score.py's --gate functions (from line 1010) were read by structure, not line by line: both run on
+  spent data only and neither is used at a look. session 106 and session 97, which the live scoring script imports
+  for its bar and row sets, were not in this session's reading list and were not read; gate (a) (F172.4) is the
+  evidence that they are used correctly.
+
+J. THE THROWAWAY SCRIPTS (each was written in a `mktemp -d` folder, run, and the folder deleted)
+
+--- lt_checks.py (Step 3)
+# Throwaway (session 130, Step 3). Calls the live runner on synthetic inputs only; no network.
+import sys, datetime as dt, tempfile, shutil, collections
+from pathlib import Path
+ROOT = Path(sys.argv[1]); sys.path.insert(0, str(ROOT / "src")); sys.path.insert(0, str(ROOT / "tests"))
+import test_live as tl
+from mlwx import runner, gfs, observations, prediction_log, config, dailymax, state as state_mod
+
+def run_at(tmp, now, **kw):
+    kw.setdefault("models", tl.FakeModels()); kw.setdefault("fetch_gfs", tl.fake_gfs())
+    kw.setdefault("fetch_obs", tl.fake_obs_for(tmp)); kw.setdefault("commit", "deadbeef"); kw.setdefault("log", lambda *a: None)
+    return runner.run(tmp, tmp / "models", now, write_page=False, **kw)
+
+# T1: a cycle first tried after cycle + 12 h gets one try; one fetch error is final.
+tmp = Path(tempfile.mkdtemp()); c = dt.datetime(2026, 10, 12, 6)
+now = c + dt.timedelta(hours=12, minutes=49)          # like the 12.82 h lag of 2026-11-09 06z
+res = run_at(tmp, now, latest_only=False, fetch_gfs=tl.fake_gfs(fail={c: gfs.FetchError("one transient error")}))
+print("T1 first try at c+12h49 with one FetchError: stopped", [(str(x), r[:40]) for x, r in res["stopped"] if x == c], "waiting", res["waiting"])
+calls = []
+res2 = run_at(tmp, now + dt.timedelta(hours=1), fetch_gfs=tl.fake_gfs(calls=calls))
+print("T1 next run, fetch healthy: cycle tried again:", c in calls, "; logged:", c in prediction_log.logged_cycles(tmp, "gfs"), "; age h:", 13.82, "(inside the 24 h catch-up)")
+shutil.rmtree(tmp)
+
+# T2: odd IEM bodies with HTTP 200.
+tmp = Path(tempfile.mkdtemp()); d1, d2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+run_at(tmp, d1 + dt.timedelta(hours=4, minutes=30), latest_only=True)
+for name, body in (("html page", "<html>\n<body>Service notice</body>\n</html>\n"), ("empty body", ""), ("header only", "station,valid,lon,lat,elevation,tmpc,dwpc\n")):
+    t2 = Path(tempfile.mkdtemp()); shutil.copytree(tmp, t2, dirs_exist_ok=True)
+    try:
+        r = run_at(t2, d2 + dt.timedelta(hours=4, minutes=30), latest_only=True, fetch_obs=lambda s, a, b, body=body: body)
+        st = state_mod.load_state(t2, "gfs")
+        print(f"T2 {name}: issued {len(r['issued'])}, waiting {r['waiting']}, stopped {len(r['stopped'])}, errors applied (sum of n) {sum(cl.n for cl in st.cells.values())}")
+    except Exception as e:
+        print(f"T2 {name}: uncaught {type(e).__name__}: {e!r} (the CLI would exit 1)")
+    shutil.rmtree(t2)
+shutil.rmtree(tmp)
+
+# T3: every live time zone, every local day 2026-10-01 to 2027-08-05, and every cycle's days_inside.
+airports = config.load_airports(config.GFS); zones = sorted({a.time_zone for a in airports})
+lens = collections.Counter(); bad = 0
+d = dt.date(2026, 10, 1)
+while d <= dt.date(2027, 8, 5):
+    for z in zones:
+        try:
+            lens[len(dailymax.local_day(d, z)[2])] += 1
+        except Exception as e:
+            bad += 1; print("T3 FAIL", z, d, e)
+    d += dt.timedelta(days=1)
+nd = collections.Counter(); cyc = dt.datetime(2026, 10, 12, 12)
+while cyc <= dt.datetime(2027, 7, 31, 18):
+    for z in zones:
+        nd[len(dailymax.days_inside(cyc, z))] += 1
+    cyc += dt.timedelta(hours=6)
+print(f"T3 airports {len(airports)}, zones {len(zones)}; local-day lengths {dict(sorted(lens.items()))}; errors {bad}; days wholly inside a cycle (count of cycle-zones) {dict(sorted(nd.items()))}")
+
+# T4: the version label of a cycle after any v17 start, with today's config.
+print("T4 version_of(2027-03-01 00z) with today's config:", config.GFS.version_of(dt.datetime(2027, 3, 1)), "; versions table:", config.GFS.versions)
+# T5: day_cycle on a 23 h and a 25 h day (Europe/London 2027-03-28, 2026-10-25)
+for day in (dt.date(2027, 3, 28), dt.date(2026, 10, 25), dt.date(2027, 3, 29)):
+    s, e, h = dailymax.local_day(day, "Europe/London"); cy = dailymax.day_cycle(s)
+    print("T5", day, "start", s, "hours", len(h), "cycle", cy, "leads", (h[0]-cy).total_seconds()/3600, "to", (h[-1]-cy).total_seconds()/3600)
+
+--- ef_timing.py (Step 8b)
+# Throwaway (session 130, Step 8b). Times the live runner's parts on synthetic GFS input, with the real
+# frozen models read from ../MLwx-live-build/models-49. No network, no observation, nothing written
+# outside a temporary folder. Synthetic messages use simple packing, so the decode time is a lower bound.
+import sys, time, datetime as dt, tempfile, shutil, cProfile, pstats, io
+from pathlib import Path
+ROOT = Path(sys.argv[1]); sys.path.insert(0, str(ROOT / "src")); sys.path.insert(0, str(ROOT / "tests"))
+import test_live as tl
+from mlwx import runner, gfs, baseline, config, features, prediction_log, page, state as state_mod
+model = config.GFS; airports = config.load_airports(model); cycle = dt.datetime(2026, 10, 12, 12)
+def timed(label, fn):
+    t = time.perf_counter(); r = fn(); print(f"{label}: {time.perf_counter() - t:.2f} s"); return r
+http = tl.FakeHttp(cycle)
+timed("build 391 synthetic messages (not part of the tool)", lambda: [http._file(fh) for fh in range(0, 49)])
+cv = timed("fetch_cycle on synthetic files: 49 idx + 391 messages, decode and guard, 8 threads (no network)",
+           lambda: gfs.fetch_cycle(model, airports, cycle, http=http))
+import eccodes as ec
+f0 = model.live_fields()[0]; msg = tl.make_message(f0, 6, cycle)
+def one():
+    gid = ec.codes_new_from_message(msg)
+    try: return gfs.check_message(gid, f0, 6, cycle, airports, model.grid)
+    finally: ec.codes_release(gid)
+t = time.perf_counter(); [one() for _ in range(20)]; per = (time.perf_counter() - t) / 20
+print(f"check_message, one message (whole 1,038,240-point grid decoded for 196 points): {per * 1000:.1f} ms; x 391 = {per * 391:.1f} s")
+def idx_only():
+    gid = ec.codes_new_from_message(msg)
+    try: return [ec.codes_get_double_element(gid, "values", i) for a in airports for i in a.indices]
+    finally: ec.codes_release(gid)
+t = time.perf_counter(); v2 = [idx_only() for _ in range(20)][0]; per2 = (time.perf_counter() - t) / 20
+print(f"  the same 196 values by element index (codes_get_double_element): {per2 * 1000:.1f} ms; equal values: {v2 == one()}")
+cv2 = tl.synthetic_cycle(cycle)
+per_rows = timed("build_cycle_rows: features for 49 airports x 46 leads", lambda: runner.build_cycle_rows(model, airports, cycle, cv2))
+mdir = ROOT.parent / "MLwx-live-build" / "models-49"
+ms = timed("ModelSet: read and check the manifest", lambda: baseline.ModelSet(mdir))
+timed("load one cycle hour's packs: 49 files, 2,254 boosters (gunzip, JSON, Booster(model_str))",
+      lambda: [ms._pack(a.icao, cycle.hour) for a in airports])
+def predict_all():
+    return [ms.baseline(a.icao, cycle.hour, n, *per_rows[a.icao][n]) for a in airports for n in range(3, 49)]
+p1 = timed("predict 2,254 rows, one predict call each (as the runner does)", predict_all)
+import numpy as np
+def predict_batched():
+    out = []
+    for a in airports:
+        pack = ms._pack(a.icao, cycle.hour)
+        for n in range(3, 49):
+            x, temp = per_rows[a.icao][n]; out.append(temp + float(pack[n].predict(np.array([x], dtype=float))[0]))
+    return out
+tmp = Path(tempfile.mkdtemp())
+res = timed("runner.run end to end, synthetic GFS, real models, no earlier log so no IEM request, with page",
+            lambda: runner.run(tmp, mdir, cycle + dt.timedelta(hours=4, minutes=30), latest_only=True, commit="x" * 40,
+                               fetch_gfs=lambda m, a, c: cv2, models=ms, log=lambda *a: None))
+p = next(iter(prediction_log.logged_cycles(tmp, "gfs").values()))
+timed("read_log of one cycle file (2,254 rows)", lambda: prediction_log.read_log(p))
+st = state_mod.load_state(tmp, "gfs")
+for a in airports:
+    for h in (0, 6, 12, 18):
+        for n in range(3, 49): st.cell(a.icao, h, n)
+timed("save_state with 9,016 cells", lambda: state_mod.save_state(tmp, st))
+timed("write_page", lambda: page.write_page(tmp, model, airports, st, cycle + dt.timedelta(hours=5)))
+print("sizes: log file", p.stat().st_size, "bytes; state", state_mod.state_path(tmp, "gfs").stat().st_size, "bytes; page", (tmp / "site" / "index.html").stat().st_size, "bytes")
+shutil.rmtree(tmp)
+print("by reading: IEM, one request per airport with a 1.5 s pause after each (observations.py:26,53; runner.py:119-128): 49 x 1.5 = 73.5 s of sleep per issued cycle, plus the requests")
+
+--- sched.py (Step 8; reads the inventory detail and the run list only)
+# Throwaway (session 130, Step 8). Reads the inventory's lag lines (log files' issued_utc; no observation)
+# and the public Actions run list. Prints the scheduler numbers; full tables to sched_tables.txt.
+import sys, re, datetime as dt, statistics as st, collections
+S = sys.argv[1]
+REDEPLOY_FIRST_CYCLE = dt.datetime(2026, 10, 27, 12)     # D118.2: the manual run issued 2026-10-27 12z
+P = lambda s: dt.datetime.strptime(s, "%Y-%m-%dT%H:%MZ")
+lags, seen = [], set()
+for ln in open(f"{S}/inventory_detail.txt"):
+    m = re.match(r"\s+lag (\S+) ([0-9.]+) h", ln)
+    if m and m.group(1) not in seen:
+        seen.add(m.group(1)); lags.append((P(m.group(1)), float(m.group(2))))
+lags.sort()
+allc = lags; lags = [(c, x) for c, x in lags if c >= REDEPLOY_FIRST_CYCLE]
+def q(v, p):
+    v = sorted(v); k = (len(v) - 1) * p; f = int(k); return v[f] + (v[min(f + 1, len(v) - 1)] - v[f]) * (k - f)
+out = []
+def show(name, rows):
+    v = [x for _, x in rows]
+    line = (f"{name}: n {len(v)}, min {min(v):.2f}, median {st.median(v):.2f}, mean {st.mean(v):.2f}, p90 {q(v, .9):.2f}, "
+            f"max {max(v):.2f} h; above 6 h {sum(x > 6 for x in v)}, above 9 h {sum(x > 9 for x in v)}, above 12 h {sum(x > 12 for x in v)}")
+    print(line); out.append(line)
+show("issue lag, cycles since the redeploy (2026-10-27 12z on)", lags)
+show("issue lag, every logged cycle (2026-10-12 12z on)", allc)
+for h in (0, 6, 12, 18):
+    show(f"  since the redeploy, {h:02d}z cycles", [(c, x) for c, x in lags if c.hour == h])
+late = [(c, x) for c, x in lags if x > 9]
+line = "cycles above 9 h since the redeploy (cycle, lag, issue time UTC, weekday of issue): " + "; ".join(
+    f"{c:%m-%d %Hz} {x:.2f} h, issued {(c + dt.timedelta(hours=x)):%a %H:%M}" for c, x in late)
+print(line); out.append(line)
+wd = collections.Counter((c + dt.timedelta(hours=x)).strftime("%a") for c, x in late)
+ch = collections.Counter(f"{c.hour:02d}z" for c, x in late)
+line = f"  above 9 h by cycle hour {dict(sorted(ch.items()))}; by weekday of issue {dict(wd)}"
+print(line); out.append(line)
+# runs
+runs = []
+for ln in open(f"{S}/runs.tsv"):
+    f = ln.rstrip("\n").split("\t")
+    T = lambda s: dt.datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
+    runs.append({"id": f[0], "event": f[1], "concl": f[3], "created": T(f[4]), "started": T(f[5]), "updated": T(f[6])})
+runs.sort(key=lambda r: r["started"])
+first_manual = next(r for r in runs if r["event"] == "workflow_dispatch")["started"]
+win = [r for r in runs if r["started"] >= first_manual]
+sched = [r for r in win if r["event"] == "schedule"]
+t0, t1 = first_manual, win[-1]["started"]
+slots = 0; t = t0.replace(minute=0, second=0)
+while t <= t1:
+    for m in (15, 40):
+        s = t.replace(minute=m)
+        if t0 < s <= t1: slots += 1
+    t += dt.timedelta(hours=1)
+line = (f"runs since the redeploy's manual run ({t0:%Y-%m-%d %H:%M}Z to {t1:%Y-%m-%d %H:%M}Z, {(t1 - t0).total_seconds() / 86400:.1f} days): "
+        f"{len(win)} runs ({len(sched)} scheduled, {len(win) - len(sched)} manual), all {set(r['concl'] for r in win)}; schedule slots {slots}; "
+        f"scheduled runs started {len(sched)} of {slots} slots ({100 * len(sched) / slots:.1f} %), not started {slots - len(sched)}")
+print(line); out.append(line)
+gaps = [(b["started"] - a["started"]).total_seconds() / 3600 for a, b in zip(win, win[1:])]
+line = f"gaps between run starts: median {st.median(gaps):.2f}, p90 {q(gaps, .9):.2f}, max {max(gaps):.2f} h; gaps above 6 h {sum(g > 6 for g in gaps)}, above 8 h {sum(g > 8 for g in gaps)}, above 12 h {sum(g > 12 for g in gaps)}"
+print(line); out.append(line)
+def delay(r):
+    c = r["created"]; cands = [c.replace(minute=m, second=0) for m in (15, 40)] + [(c - dt.timedelta(hours=1)).replace(minute=40, second=0)]
+    return min((c - s).total_seconds() / 60 for s in cands if s <= c)
+dl = [delay(r) for r in sched]
+line = f"delay from the latest slot to the run's start (scheduled runs): median {st.median(dl):.1f}, max {max(dl):.1f} min"
+print(line); out.append(line)
+perday = collections.Counter(r["started"].date() for r in sched)
+full = [d for d in perday if t0.date() < d < t1.date()]
+line = "scheduled runs per full UTC day: " + ", ".join(f"{d:%m-%d} {perday[d]}" for d in sorted(full)) + f"; mean {st.mean(perday[d] for d in full):.2f} of 48 slots"
+print(line); out.append(line)
+hod = collections.Counter(r["started"].hour for r in sched)
+line = "scheduled run starts by UTC hour: " + ", ".join(f"{h:02d}h {hod.get(h, 0)}" for h in range(24))
+print(line); out.append(line)
+dur = [(r["updated"] - r["started"]).total_seconds() / 60 for r in win]
+line = f"run duration (start to last update): median {st.median(dur):.2f}, min {min(dur):.2f}, max {max(dur):.2f} min"
+print(line); out.append(line)
+# what a trigger at cycle + 4 h 20 min would give, and the worst gap's cause
+big = sorted(((b["started"] - a["started"]).total_seconds() / 3600, a["started"], b["started"]) for a, b in zip(win, win[1:]))[-5:]
+line = "five longest gaps (h, from, to): " + "; ".join(f"{g:.2f} {a:%m-%d %a %H:%M} to {b:%m-%d %a %H:%M}" for g, a, b in reversed(big))
+print(line); out.append(line)
+with open(f"{S}/sched_tables.txt", "w") as f:
+    f.write("\n".join(out) + "\n\nEvery cycle since the redeploy: cycle, issue lag (h), issue time\n")
+    for c, x in lags:
+        f.write(f"{c:%Y-%m-%dT%H}z {x:5.2f} {(c + dt.timedelta(hours=x)):%Y-%m-%d %a %H:%M}Z\n")
+    f.write("\nEvery run since the redeploy: start (UTC), event, conclusion, minutes, delay from slot (min, scheduled only)\n")
+    for r in win:
+        f.write(f"{r['started']:%Y-%m-%d %a %H:%M:%S}Z {r['event']:17s} {r['concl']} {(r['updated'] - r['started']).total_seconds() / 60:5.2f}"
+                + (f" {delay(r):5.1f}" if r["event"] == "schedule" else "") + "\n")
+
+--- the first-run check (Step 4), in a temporary repository
+T=$(mktemp -d); cd "$T" && git init -q . && git commit -q --allow-empty -m init && (git add manifest; echo "exit $?")
+  fatal: pathspec 'manifest' did not match any files
+  exit 128
+
+--- the DECISIONS lookups of session87_forward_score.py, repeated by reading only (Step 5)
+  both files joined: first match of `manifest\.json`, SHA-256 ...: 03830586c64039814b3d697b414e29ed18a359d9798d87451e8aa3575365c298
+  F122.5 table rows found by the script's pattern: 6 (EGLC, LFPG, DSM, YSDU, RNO, KSFO (SFO))
