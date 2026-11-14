@@ -1,0 +1,28 @@
+Session 128: the MOSMIX saver, as a template (D122, F171)
+
+A small saver for DWD's MOSMIX_L station forecasts, which DWD keeps for
+only about two days. It is written as a template for a new private
+repository, zadams03/MLwx-mosmix, in deploy/mlwx-mosmix/, and is not
+deployed by this commit. No model, data file, logged value or live file
+changed; no MOSMIX value was compared with anything; no 2026-27 value was
+read or scored.
+
+D122 records the order of the next sessions (128 to 132) and the saver's
+design: 38 stations, every live airport with a MOSMIX station within 10
+km (YSDU has none); every issue saved unchanged, each file checked (a
+valid zip with one KML whose issue time and station match its name);
+one tar per issue and run, uploaded to a monthly Release, with only the
+manifest committed; nothing overwritten or deleted; a run every three
+hours, failing loudly on any error or if the newest issue held is more
+than 12 hours behind the server.
+
+The template: saver.py (standard library only), stations.csv (checked by
+a test against its two sources), the workflow, README and .gitignore.
+One real dry run on three stations saved and checked six files; a second
+run downloaded nothing. Measured size: about 2.5 MB a day, under 1 GB a
+year for 38 stations. DWD's terms (Legal notice, read 2026-11-14): open
+data under CC BY 4.0 with DWD credited; nothing forbids keeping copies.
+
+Tests: 62 new (one skipped, no YAML parser installed), 268 in all, OK.
+Citations 220 of 220 resolve. D122 archives D121 and F170. Live index:
+D93, D103, D105, D118, D122, F171. DECISIONS.md is 36,174 bytes.

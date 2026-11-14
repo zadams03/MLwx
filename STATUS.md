@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 2 November 2026, after session 127._
+_Last updated: 14 November 2026, after session 128._
 
 ---
 
@@ -78,24 +78,25 @@ daily maximum; version 1 is live and public (D103.9).
   (D115.2). Size rule: `knowledge_size` against `max_knowledge_size`
   from project_info (one unit, not bytes); above 80 % (1,600,000 of
   2,000,000) is ACTION NEEDED. On 2026-11-01: 668,149 of 2,000,000. Session
-  127 adds a new script, a new test, five SVG files (about 114 KB) and
-  rewritten documents (README.md and RESULTS.md grew by about 27 KB).
-- **The longer-term plan (D121.2, D121.3).** In this order: (1) session
-  127, the rewrite (done); (2) the MOSMIX saver (D81.2 to D81.5), in its
-  own session; (3) one session for three small items: Gates C and D in
-  `scripts/session109_gates.py` (F154.9(4)), by a new script under D116.10;
-  rows at the airport's own position (iem set) for AIFS and the NBM grid at
-  the development airports, descriptive; and D115.6's question, with its
-  rows, pairing and statistics fixed in its own entry first; (4) stage H on
-  GFS, with its build choices on the development airports (D89); whether
-  to pre-register a range test on 2026-27 is decided early, while no
-  2026-27 value has been scored (SPEC 2.5); (5) stage D, starting with
-  AIFS, then stage E; whether raw AIFS goes straight into the GFS model as
-  inputs is decided when stage D is planned (D72.2(b)); (6) WeatherNext
-  stays deferred (D107.4). A GFS v17 Service Change Notice goes ahead of
-  all of these: one session for the live tool's v17 handling (D103.10) and
-  for preparing stage B's scoring (D73.4, D118.10). Stage B and the live
-  test are scored only when their periods end (D73.8, D105.5).
+  127 added a new script, a new test, five SVG files (about 114 KB) and
+  rewritten documents (README.md and RESULTS.md grew by about 27 KB). Session
+  128 adds the folder `deploy/mlwx-mosmix/` (about 40 KB), a new test and
+  about 4 KB to DECISIONS.md.
+- **The session order (D122.2; D121.2's content unchanged).** 128: the MOSMIX
+  saver (built, see below). 129: the live test's scoring script (D105.5(l)),
+  written and gated on spent data and synthetic logs and committed before any
+  observation valid on or after 2026-10-12 is read, together with session 86's
+  gate wrapper (D118.10). 130: an independent, read-only code review of the
+  live tool (`src/mlwx/`, the workflow template), stage B's scoring path and
+  session 129's script, as a findings register. 131: fixes from that register,
+  Gates C and D (F154.9(4)), the iem-position rows for AIFS and the NBM grid at
+  the development airports, and D115.6's question, each with its rules fixed in
+  that session's entry first. 132: stage H's design and build choices. A GFS
+  v17 Service Change Notice goes ahead of any of these. Later (D121.2): stage H
+  on GFS, whether to pre-register a range test on 2026-27 decided early, while
+  no 2026-27 value has been scored (SPEC 2.5); stage D, starting with AIFS,
+  then stage E; WeatherNext stays deferred (D107.4). Stage B and the live test
+  are scored only when their periods end (D73.8, D105.5).
 - **Rulings on ANALYSIS.md's Part 3 (D121.3).** Candidate 6 (station
   guidance where it exists) is parked to stage E; any use first needs an
   owner's ruling on the same-at-every-airport rule (SPEC 2.5). Candidate 7:
@@ -103,8 +104,14 @@ daily maximum; version 1 is live and public (D103.9).
   maximum at US airports may be added later only as a separate, labelled
   output, by its own entry.
 - Stages D, E, F and H follow stage G.
-- **MOSMIX (D81.2 to D81.5).** No saver exists yet; days before it starts
-  are lost, which is accepted.
+- **MOSMIX saver (D81.2 to D81.5, D122, F171): built, not deployed.** The
+  template is `deploy/mlwx-mosmix/` (38 stations, D122.3; standard library
+  only; schedule every three hours at :50; one tar per issue as a monthly
+  Release asset, manifest committed). It waits for the owner to create the
+  private repository `zadams03/MLwx-mosmix`, copy the template, allow Actions
+  to write, and run it once by hand (D122.5; its README has the steps). Days
+  before it starts are lost, which is accepted. No MOSMIX test is
+  pre-registered and no saved value is compared with anything (D122.7).
 - **GRIB cache.** On an external drive (D102.3).
 
 ---
@@ -124,12 +131,14 @@ daily maximum; version 1 is live and public (D103.9).
   recorded goes in a new script; the session 120 audit inventory
   (`scripts.csv`) was not counted as such a record. Session 117's
   `--subset` stops if session 114's script changes, by design.
-- **Readings from session 127 (F170.8).** `tests/README.md` does not yet
-  list `tests/test_session127_figures.py` (out of scope for session 127).
-  The older figures reused in RESULTS.md carry record numbers in their own
-  text. Figure (c) says the live test's rules were written on 14 October
-  2026 and its forecasts logged from 12 October 2026: the lock came after the
-  first cycles and before any scoring.
+- **Readings from session 127 (F170.8), accepted (D122.1).** `tests/README.md`
+  does not yet list `tests/test_session127_figures.py` (nor, now,
+  `tests/test_mosmix_saver.py`); fixed in a later session.
+- **Readings from session 128 (F171.9).** The saver's workflow has been
+  checked by text only; the first by-hand run on GitHub is the real test.
+  `--check-fresh` would not catch one station that stops updating while its
+  directory stays. DWD's terms were read on a "Legal notice" page that does
+  not name MOSMIX (CC BY 4.0 with credit; reading unconfirmed with DWD).
 - **MMMX coverage (F159.8).** 28,950 usable hours and 104 usable days.
   Seen, not examined.
 
@@ -150,11 +159,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  206 tests.
+  268 tests (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 127 and commit; the planning chat syncs Project knowledge (D118.8); then plan the MOSMIX saver (D121.2 item 2).
+**Next planning session:** Review session 128 and commit; the owner deploys the MOSMIX saver; the planning chat syncs Project knowledge (D118.8); then session 129 (D122.2).

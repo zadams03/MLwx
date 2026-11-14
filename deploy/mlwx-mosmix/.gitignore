@@ -1,0 +1,9 @@
+# MLwx-mosmix: what must not enter the git history. The manifest does; the forecast files do not
+# (they are kept as Release assets).
+out/
+*.tar
+*.kmz
+*.kmz.part
+__pycache__/
+*.pyc
+.DS_Store

@@ -260,6 +260,7 @@ The 2026-27 forward test and the live test are scored only when their periods en
 | Code and data | [scripts/](scripts/README.md) | The code, named by the session that wrote it. |
 | | [src/mlwx/](src/mlwx/) | The live tool's code, a Python package. |
 | | [deploy/mlwx-live/](deploy/mlwx-live/) | The template for the MLwx-live repository's files and workflow. |
+| | [deploy/mlwx-mosmix/](deploy/mlwx-mosmix/) | The template for a private repository that keeps the German weather service's MOSMIX station forecasts, which its server holds for only about two days. |
 | | [tests/](tests/README.md) | Offline checks of the leakage guards, the archive tool and recorded figures. |
 | | [data/](data/README.md) | Raw pulls, built tables, frozen models and rebuild checks. |
 | | [requirements.txt](requirements.txt) | The pinned Python packages, with setup notes. |
