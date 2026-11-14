@@ -1,0 +1,35 @@
+Session 131: fixes from the code review, and stage B's preparation (D125, F174)
+
+D125 records the owner's rulings on session 130's findings, keeps the
+outside scheduler as it is (D125.7), and sets the next sessions. No
+logged value of an issued row changes. No observation valid on or after
+2026-10-12 was read, no obs/ file was opened, and the live test's
+--score was not run.
+
+The live test protected first: tests/test_pinned_files.py holds the
+seven files the frozen scoring script imports or reads at their bytes at
+3bf156f (D125.4), and both session 129 scripts join the frozen list (ten
+scripts).
+
+The live tool: runner.py now retries a cycle with a fetch problem at
+every run until it is 20 hours old, instead of giving up at 12 hours
+(LT09, D125.2); an IEM reply without its header makes the cycle wait
+(LT14); each run prints the lookups that found no report. The workflow
+template fails the job on any runner exit code other than 0 and 2
+(WF05), caches pip, and ignores partial files. A dry run re-issued cycle
+2026-10-12 12z with the new runner: 552 of 552 rows equal to the live
+log as text. Takes effect at the owner's redeploy.
+
+The MOSMIX template: a guarded first commit (MS05), a per-station
+freshness rule (MS06), README notes.
+
+Stage B, by new scripts only (no frozen script edited): a build check
+that passes only if no day was lost to a fetch failure (D125.5(b)); a
+scoring wrapper with F122.5's values as test-checked constants (SB10);
+18 tests of stage B's rules through the frozen code; and a rehearsal of
+session 86's never-run --build path on 2025-06-01 to 14 at the six
+airports: 84 of 84 rows equal to the committed training set, 0 drops.
+
+Tests 395 OK (1 skipped); the suite takes 61 s instead of 73 s (EF01).
+Citations 226 of 226 resolve. D125 archives D124 and F173. Live index:
+D93, D103, D105, D118, D125, F174. DECISIONS.md is 40,383 bytes.

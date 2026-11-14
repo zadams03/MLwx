@@ -1,4 +1,4 @@
-"""The MOSMIX saver template (DECISIONS D122; session 128, Step 5).
+"""The MOSMIX saver template (DECISIONS D122; session 128, Step 5; session 131, Step 5: MS05, MS06, TE07).
 Offline only: small synthetic .kmz files are built in a temporary folder and a fake server stands in for DWD.
 No network, no real MOSMIX file. No YAML parser is installed in this project, so the workflow is checked by
 text (and also parsed if a parser is ever installed).
@@ -10,7 +10,9 @@ import contextlib
 import csv
 import importlib.util
 import io
+import os
 import re
+import subprocess
 import sys
 import tarfile
 import tempfile
@@ -417,6 +419,48 @@ class TestFreshness(unittest.TestCase):
     def test_check_fresh_fails_on_an_empty_manifest(self):
         self.assertFalse(self.check([], ["2026111409"])[0])
 
+    def check_many(self, held, listed):
+        """held: {station: [issues]}; listed: {station: [issues]} (two stations)."""
+        stations = [("EDDM", "10870"), ("EGLC", "03779")]
+        with tempfile.TemporaryDirectory() as d:
+            server = FakeServer(listed)
+            man = Path(d) / "manifest"
+            rows = [{"station": st, "icao": ic, "issue": saver.issue_text(utc(i)), "url": "u", "bytes": 1,
+                     "sha256": "0", "saved_utc": "t", "asset": "a", "run_id": "r"}
+                    for ic, st in stations for i in held.get(st, [])]
+            if rows:
+                saver.append_rows(man, rows)
+            out = []
+            return saver.check_fresh(stations, man, server, out.append), out
+
+    def test_one_station_behind_fails_while_the_newest_overall_is_fresh(self):
+        """MS06: EGLC's directory stays but its newest issue held is 18 h behind the newest listed."""
+        listed = {"10870": ["2026111403", "2026111409", "2026111415"], "03779": ["2026111321"]}
+        (ok, failures), out = self.check_many({"10870": ["2026111415"], "03779": ["2026111321"]}, listed)
+        self.assertFalse(ok)
+        self.assertEqual(failures, [])
+        self.assertIn("EGLC 03779: newest issue held 2026-11-13T21:00Z, more than 12 h behind the newest issue listed", out)
+        self.assertIn("stations more than 12 h behind: 1 of 2: FAIL", out)
+        self.assertTrue(any("rule: held no more than 12 h behind listed: PASS" in line for line in out))
+
+    def test_per_station_boundary_is_12_hours(self):
+        listed = {"10870": ["2026111415"], "03779": ["2026111403"]}
+        (ok, _), out = self.check_many({"10870": ["2026111415"], "03779": ["2026111403"]}, listed)
+        self.assertTrue(ok)
+        self.assertIn("stations more than 12 h behind: 0 of 2: PASS", out)
+        listed = {"10870": ["2026111416"], "03779": ["2026111403"]}
+        (ok, _), _ = self.check_many({"10870": ["2026111416"], "03779": ["2026111403"]}, listed)
+        self.assertFalse(ok)
+
+    def test_a_station_with_nothing_held_is_behind(self):
+        listed = {"10870": ["2026111415"], "03779": ["2026111415"]}
+        (ok, _), out = self.check_many({"10870": ["2026111415"]}, listed)
+        self.assertFalse(ok)
+        self.assertIn("EGLC 03779: newest issue held none, more than 12 h behind the newest issue listed", out)
+
+    def test_stale_stations_with_nothing_listed_is_empty(self):
+        self.assertEqual(saver.stale_stations([], [("EDDM", "10870")], None), [])
+
     def test_command_exit_code(self):
         with tempfile.TemporaryDirectory() as d:
             st = Path(d) / "stations.csv"
@@ -612,6 +656,53 @@ class TestWorkflow(unittest.TestCase):
         self.assertEqual(doc["on"]["schedule"][0]["cron"], CRON)
         self.assertIn("workflow_dispatch", doc["on"])
         self.assertEqual(doc["jobs"]["save"]["permissions"], {"contents": "write"})
+
+
+def git(cwd, *args):
+    return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+
+
+class TestCommitStep(unittest.TestCase):
+    """TE07, MS05: the step 'Commit and push the manifest' from the YAML, run under GitHub's default bash
+    (bash --noprofile --norc -eo pipefail) in a clone of a temporary bare repository, with and without
+    manifest/."""
+
+    def run_step(self, make_manifest):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            git(d, "init", "-q", "--bare", "-b", "main", "origin.git")
+            git(d, "clone", "-q", str(d / "origin.git"), "work")
+            work = d / "work"
+            (work / "saver.py").write_text("# seed\n")
+            git(work, "add", ".")
+            git(work, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "seed")
+            git(work, "push", "-q", "origin", "HEAD:main")
+            git(work, "branch", "--set-upstream-to=origin/main")
+            if make_manifest:
+                (work / "manifest").mkdir()
+                (work / "manifest" / "2026-11.csv").write_text(",".join(saver.MANIFEST_COLUMNS) + "\n")
+            body = dict(steps(WORKFLOW.read_text()))["Commit and push the manifest"]
+            i = body.index("        run: |")
+            script = d / "step.sh"
+            script.write_text("\n".join(ln[10:] for ln in body[i + 1:]) + "\n")
+            r = subprocess.run(["bash", "--noprofile", "--norc", "-eo", "pipefail", str(script)], cwd=work,
+                               capture_output=True, text=True, env={**os.environ, "GIT_CONFIG_NOSYSTEM": "1"})
+            files = git(d / "origin.git", "ls-tree", "-r", "--name-only", "main").splitlines()
+            return r, files
+
+    def test_without_manifest_folder_exits_0_and_commits_nothing(self):
+        r, files = self.run_step(False)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("The manifest did not change: nothing to commit.", r.stdout)
+        self.assertEqual(files, ["saver.py"])
+
+    def test_with_manifest_folder_commits_and_pushes(self):
+        r, files = self.run_step(True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(files, ["manifest/2026-11.csv", "saver.py"])
+
+    def test_the_guard_line(self):
+        self.assertIn("if [ -d manifest ]; then git add manifest; fi", WORKFLOW.read_text())
 
 
 class TestFiles(unittest.TestCase):

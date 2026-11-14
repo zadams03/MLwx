@@ -50,7 +50,9 @@ both sources.
   - `python saver.py --list` prints, for each station, the issues on the server, newest first.
   - `python saver.py --save out --manifest-dir manifest` saves what the manifest does not hold.
   - `python saver.py --check-fresh --manifest-dir manifest` fails if the newest issue held is
-    more than 12 hours older than the newest issue on the server.
+    more than 12 hours older than the newest issue on the server. It also fails if any one
+    station's newest issue held is more than 12 hours older than that, so a station that stops
+    getting new files is noticed even while the others keep coming.
   - `--only EGLC,LFPG` limits any mode to some airports; `--newest 2` limits `--save` to each
     station's newest two issues (both are for trials).
   - A request that fails is tried three times, with a longer wait each time. Any failure makes
@@ -76,6 +78,10 @@ both sources.
    a Release `mosmix-YYYY-MM` appeared with tar assets, and that `manifest/` was committed.
 5. Leave it running. If GitHub emails you a failed run, look at the run's log: it names the
    station and issue that failed and why.
+6. After about a week, open the Actions tab and read the list of runs. GitHub does not always
+   start scheduled runs on time, and it sends no message when it starts none at all. If the gaps
+   between runs come near 24 hours, look again: DWD keeps about 40 hours of issues, so a longer
+   gap loses files.
 
 ## Getting files back
 
@@ -89,6 +95,11 @@ tar -xf MOSMIX_L_2026111409_run*.tar
 `manifest/YYYY-MM.csv` has one row per saved file: `station`, `icao`, `issue`, `url`, `bytes`,
 `sha256`, `saved_utc`, `asset` (the tar's name) and `run_id`. The `sha256` is of the `.kmz` file
 exactly as it was downloaded.
+
+A tar in a Release with no row in the manifest is a leftover of a run that failed part-way: its
+upload worked, but the run stopped before the manifest was committed. Nothing is lost or
+overwritten. The next run downloads those issues again (if DWD still has them), uploads them in
+a tar named with its own run id, and records that tar. Use the tars the manifest names.
 
 ## DWD's terms and credit
 

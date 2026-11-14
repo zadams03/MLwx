@@ -8,3 +8,7 @@ mlwx/
 models/
 # the page is built by each run and published to GitHub Pages
 site/
+# partial and temporary files are never committed: a log or snapshot file is written under a
+# temporary name first (WF07, D125.8)
+*.partial
+*.tmp

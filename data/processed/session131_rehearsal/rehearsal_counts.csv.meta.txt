@@ -1,0 +1,16 @@
+Session 131, Step 7: a rehearsal of session 86's --build path on spent data (D125.8; SB09, SB08).
+Counts only: no forecast, observation or error value is in this file or its CSV.
+session 86: scripts/session86_forward_build.py, SHA-256 da2ff50c8baa9a7bcbe1c5a6d4787d02e042de250143d3b067d10fcd27594125, imported unchanged
+called: build_rows(six airports, 84 station-days, GATE_LIMIT 2026-08-01 00:00:00, workers 4, 'range', first v17 cycle 2025-06-15 00:00:00); write_outputs into a temporary folder
+window: 2025-06-01 to 2025-06-14
+compared with: data/processed/session81_training_set.csv, SHA-256 ab8f25f2f2368b8a8bf7b96eb0adc74a0c23bd089fa22ea4791fb9a28ca28d4a
+run started (UTC): 2026-11-14T22:01:34Z; pull 2026-11-14T22:01:34Z to 2026-11-14T22:08:13Z
+run time: build 399.0 s, total 399.1 s; peak memory (ru_maxrss) 158,449,664 bytes
+requests: 1434; idx 210 requests, 8,664,305 bytes; iem 6 requests, 121,918 bytes; message 1218 requests, 1,038,231,428 bytes
+GRIB messages: 1218 requested, 1218 OK; IEM requests 6
+totals: expected 84, rows 84, dropped 0, cells_compared 840, cells_equal 840, obs_compared 84, obs_equal 84, prev_obs_compared 84, prev_obs_equal 84
+strict differences (every shared cell, exact): 0
+session 86's compare (pairing-only observation differences not counted): failures 0
+build check (scripts/session131_stageb_build_check.py): PASS; drop log rows 0
+verdict: PASS
+python 3.12.2

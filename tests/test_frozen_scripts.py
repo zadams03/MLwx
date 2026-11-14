@@ -1,5 +1,6 @@
-"""The frozen scripts' SHA-256 (DECISIONS D116.4; F163.4, register rows S02 to S04).
-Offline; reads only the eight frozen scripts.
+"""The frozen scripts' SHA-256 (DECISIONS D116.4; F163.4, register rows S02 to S04;
+the two session 129 scripts added by D125.4, register row TE02).
+Offline; reads only the ten frozen scripts.
 
 The scripts are never edited (D62.3(a), D70.6, D80.1); this test shows they
 have not changed. Each value is held as a constant (D98.2), with where it is
@@ -42,14 +43,20 @@ FROZEN_SHA256 = {
     # F129.7
     "session87_forward_score.py":
         "5a6f32c505a5c0a39577a05f2ac82bfac31994f600fe6edbba3f1e936171de6a",
+    # F172.2; frozen from commit 3bf156f (D123.2, D124.1, D125.4)
+    "session129_live_score.py":
+        "0c12c621e8f48d2e218c444967030becec1d0136a377fad5ee306eb7aa30bf80",
+    # F172.7 (D123.5, D125.4)
+    "session129_stageb_gate.py":
+        "9b9d636fa4b7321f6936e1a27febe26abdf5b4cd5576f544b3c483c454801f94",
 }
 
 
 class FrozenScripts(unittest.TestCase):
     """Each frozen script's SHA-256 equals its recorded value."""
 
-    def test_eight_frozen_scripts(self):
-        self.assertEqual(len(FROZEN_SHA256), 8)
+    def test_ten_frozen_scripts(self):
+        self.assertEqual(len(FROZEN_SHA256), 10)
 
     def test_sha256_unchanged(self):
         for name, want in FROZEN_SHA256.items():

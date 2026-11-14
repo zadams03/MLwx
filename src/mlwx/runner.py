@@ -20,10 +20,12 @@ A cycle is only issued if it is newer than every cycle already in the log, so a 
 holds an error from after a forecast it helped to make. A cycle that cannot be issued is recorded
 in the state file with the reason, and the page says so. A cycle passed over because a later cycle
 is already in the log is its own outcome: shown as before, but it does not fail the run (D104.4).
-A network or file-not-there-yet problem
-is tried again at the next run, and later cycles wait, until the cycle is 12 hours old; a guard
-failure is final for that cycle and later cycles go on. Errors older than 7 days in the log are not
-used (a gap that long is skipped, like a missing observation).
+A network or file-not-there-yet problem (GFS or IEM) makes the cycle wait: it is tried again at every
+run, and later cycles wait behind it, until the cycle is 20 hours old; from then on the problem is final
+for that cycle and later cycles go on (D125.2). A guard failure is final at once and later cycles go
+on. An IEM reply without the expected header is an observation fetch problem (D125.3). Each run prints
+how many tracker lookups found no report (D125.3). Errors older than 7 days in the log are not used (a
+gap that long is skipped, like a missing observation).
 """
 
 import argparse
@@ -38,10 +40,12 @@ from . import state as state_mod
 
 AVAILABLE_AFTER = dt.timedelta(hours=4, minutes=10)    # D103.9: a run is used about cycle + 4 h 10 min
 CATCH_UP = dt.timedelta(hours=24)                      # D103.9: any cycle of the past 24 hours missing from the log
-GIVE_UP_AFTER = dt.timedelta(hours=12)                 # a fetch problem older than this is final for the cycle
+GIVE_UP_AFTER = dt.timedelta(hours=20)                 # D125.2: a fetch problem at this age or older is final
 LOOKBACK = dt.timedelta(days=7)
 HOUR = dt.timedelta(hours=1)
 OBS_COLUMNS = ["airport", "valid_utc", "obs_c", "report_utc"]    # D105.7
+# D125.3: the first line of every IEM reply to observations.iem_query (data=tmpc, data=dwpc, latlon, elev)
+IEM_HEADER = "station,valid,lon,lat,elevation,tmpc,dwpc"
 
 
 def utc_now():
@@ -104,6 +108,15 @@ def pending_baselines(root, model_name, cycle, lookback=LOOKBACK):
     return out
 
 
+def check_iem_reply(text, station):
+    """D125.3: a reply whose first line is not IEM_HEADER (an empty body, an error page) is an
+    observation fetch problem, so the cycle waits (D125.2) instead of being issued with no updates.
+    A header with no rows is a real reply: no report for any lookup."""
+    first = text.split("\n", 1)[0].rstrip("\r")
+    if first != IEM_HEADER:
+        raise observations.ObsFetchError(f"{station}: IEM reply without the expected header: {first[:80]!r}")
+
+
 def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
     """Apply the arrived errors to every cell of this cycle hour, up to the cycle. Returns the number applied.
     Every (icao, valid) looked up, with what ReportSet.nearest gave, goes into stats["lookups"] (D105.7)."""
@@ -125,6 +138,7 @@ def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
         last_day = cycle.date()
         text = fetch_obs(a.station, first_day, last_day)
         stats["obs_requests"] += 1
+        check_iem_reply(text, a.station)
         reports = observations.ReportSet.from_text(text, a.station, live=True)   # owner's ruling at the Step 6 stop
         for lead, rows in leads.items():
             errors = []
@@ -195,7 +209,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
     models = models or baseline.ModelSet(models_dir, model_name)
     state = state_mod.load_state(root, model_name)
     result = {"issued": [], "stopped": [], "out_of_order": [], "waiting": None, "skipped": [],
-              "snapshot_problems": []}
+              "snapshot_problems": [], "lookups": 0, "no_report": 0}
 
     cycles = available_cycles(model, now)
     if latest_only and cycles:
@@ -222,7 +236,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
             continue
         except (gfs.FetchError, observations.ObsFetchError) as e:
             if now - cycle >= GIVE_UP_AFTER:
-                reason = f"fetch problem, gave up after 12 hours: {e}"
+                reason = f"fetch problem, gave up after 20 hours: {e}"
                 state.add_stop(cycle, reason, now)
                 result["stopped"].append((cycle, reason))
                 log(f"{cycle:%Y-%m-%dT%H}z: ISSUED NOTHING. {reason}")
@@ -233,14 +247,19 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
         state = work
         state_mod.save_state(root, state)
         result["issued"].append(cycle)
+        no_report = sum(1 for o, _ in issued.lookups.values() if o is None)
+        result["lookups"] += len(issued.lookups)
+        result["no_report"] += no_report
         log(f"{cycle:%Y-%m-%dT%H}z: issued {len(issued.rows)} rows to {issued.path}; errors applied "
-            f"{issued.applied}; IEM requests {issued.obs_requests}")
+            f"{issued.applied}; IEM requests {issued.obs_requests}; lookups with no report {no_report} of "
+            f"{len(issued.lookups)}")
         try:
             n = write_snapshot(snapshot_path(root, model_name, cycle), issued.lookups)
             log(f"{cycle:%Y-%m-%dT%H}z: observation snapshot {n} rows")
         except Exception as e:      # D105.7: never blocks or changes the log file
             result["snapshot_problems"].append((cycle, repr(e)))
             log(f"{cycle:%Y-%m-%dT%H}z: OBSERVATION SNAPSHOT NOT WRITTEN: {e!r}")
+    log(f"tracker lookups with no report: {result['no_report']} of {result['lookups']}")     # D125.3
     state.last_run = {"at": state_mod.iso(now), "status": ("waiting" if result["waiting"] else
                                                           "stopped" if result["stopped"] else "ok")}
     state_mod.save_state(root, state)
@@ -263,7 +282,8 @@ def main(argv=None):
     print(f"issued {len(res['issued'])}, stopped {len(res['stopped'])}, not issued (tracker order) "
           f"{len(res['out_of_order'])}, waiting {res['waiting'] is not None}, already done {len(res['skipped'])}")
     # D104.4: 3 for a cycle that should have issued and did not (a guard stop, or a fetch that never
-    # succeeded), 2 for a fetch still waiting; a tracker-order skip sets no failing code.
+    # succeeded by 20 hours, D125.2), 2 for a fetch still waiting; a tracker-order skip sets no failing
+    # code. The workflow fails the job on any code other than 0 and 2 (D125.3).
     if res["stopped"]:
         return 3
     if res["waiting"]:

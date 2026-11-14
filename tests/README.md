@@ -51,6 +51,14 @@ folders, deleted after), and finish in under a minute.
 
 `test_session129_stageb_gate.py`: the constants in session 86's gate wrapper against both DECISIONS files and the committed files, and session 86's own lookups run against them (D123.5).
 
+`test_pinned_files.py`: the seven files the live test's frozen scoring script imports or reads, held at their bytes at commit 3bf156f, and all 49 airports kept (D125.4).
+
+`test_stageb_rules.py`: stage B's rules through the frozen scripts' own code on made-up numbers: a tie fails, the day basis, "no verdict (0 days)", the split at a first GFS v17 cycle, the rows file's date checks; and the three `--guard-check` modes exit 0 (D73, D79).
+
+`test_session131_stageb.py`: stage B's build check on drop logs written by session 86's own code with fake requests, and the constants in the stage B scoring wrapper against both DECISIONS files and the committed models (D125.5).
+
+`test_mosmix_saver.py`: the MOSMIX saver template with a fake DWD server: the listing, the file check, saving once, the manifest, the freshness rule for all stations and for each one, retries, the station list, and the workflow (its commit step run in a temporary repository, with and without `manifest/`) (D122).
+
 ## Notes
 
 - Some record scripts restart Python on import to set a library path

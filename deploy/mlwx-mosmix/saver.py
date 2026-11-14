@@ -8,7 +8,8 @@ Modes (exactly one):
   --save OUTDIR --manifest-dir DIR        download every issue the manifest does not hold, check each file,
                                           make one tar per issue, and append the new rows to the manifest
   --check-fresh --manifest-dir DIR        fail if the newest issue held is more than 12 hours older than the
-                                          newest issue listed
+                                          newest issue listed, or if any one station's newest issue held is
+                                          more than 12 hours older than it
 
 Options for a trial: --only ICAO,ICAO (a few stations) and --newest N (only each station's newest N issues).
 
@@ -354,8 +355,24 @@ def fresh_ok(held, listed, hours=FRESH_HOURS):
     return listed - held <= timedelta(hours=hours)
 
 
+def stale_stations(rows, stations, listed, hours=FRESH_HOURS):
+    """[(icao, station, newest held or None)] for each station whose own newest issue held is more than
+    `hours` older than the newest issue listed over all stations (MS06: one station that stops getting
+    new issues while its directory stays). Nothing listed means nothing to be late for."""
+    if listed is None:
+        return []
+    newest = {}
+    for r in rows:
+        t = datetime.strptime(r["issue"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
+        if r["station"] not in newest or t > newest[r["station"]]:
+            newest[r["station"]] = t
+    return [(icao, station, newest.get(station)) for icao, station in stations
+            if not fresh_ok(newest.get(station), listed, hours)]
+
+
 def check_fresh(stations, manifest_dir, get=http_get, log=print):
-    """(ok, failures): D122.6's rule against the newest issue listed over `stations`."""
+    """(ok, failures): D122.6's rule against the newest issue listed over `stations`, overall and for
+    each station (MS06)."""
     failures, listed = [], None
     for icao, station in stations:
         try:
@@ -369,12 +386,19 @@ def check_fresh(stations, manifest_dir, get=http_get, log=print):
         if issues:
             top = max(issues)
             listed = top if listed is None or top > listed else listed
-    held = newest_held(read_manifest(manifest_dir))
-    ok = fresh_ok(held, listed)
+    rows = read_manifest(manifest_dir)
+    held = newest_held(rows)
+    overall = fresh_ok(held, listed)
+    stale = stale_stations(rows, stations, listed)
     log(f"newest issue listed: {issue_text(listed) if listed else 'none'}; "
         f"newest issue held: {issue_text(held) if held else 'none'}; "
-        f"rule: held no more than {FRESH_HOURS} h behind listed: {'PASS' if ok else 'FAIL'}")
-    return ok, failures
+        f"rule: held no more than {FRESH_HOURS} h behind listed: {'PASS' if overall else 'FAIL'}")
+    for icao, station, h in stale:
+        log(f"{icao} {station}: newest issue held {issue_text(h) if h else 'none'}, more than {FRESH_HOURS} h "
+            "behind the newest issue listed")
+    log(f"stations more than {FRESH_HOURS} h behind: {len(stale)} of {len(stations)}: "
+        f"{'PASS' if not stale else 'FAIL'}")
+    return overall and not stale, failures
 
 
 # ---------------------------------------------------------------- the command line

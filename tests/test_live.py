@@ -22,6 +22,7 @@ import urllib.error
 from fractions import Fraction
 from pathlib import Path
 from unittest import mock
+from zoneinfo import ZoneInfo
 
 sys.dont_write_bytecode = True
 os.environ.setdefault("MLWX_LIBOMP_PATH_SET", "1")
@@ -956,6 +957,40 @@ class DailyMaxTests(Case):
         self.assertIsNone(dailymax.read_off(hours, curve))
         self.assertEqual(dailymax.daily_maxima(cycle, "Europe/London", curve), {})
 
+    def test_every_live_time_zone_over_the_live_test_window(self):
+        """TE06 (session 130's lt_checks.py T3): for each of the 49 airports' time zones and every local day
+        2026-10-12 to 2027-07-31, the local day is midnight to midnight local time, 23, 24 or 25 whole UTC
+        hours, with both clock changes seen; its cycle (D98.10(b)) starts at least 4 hours before it; and
+        for every cycle 2026-10-12 12z to 2027-07-31 18z, each day wholly inside leads 3 to 48 is that
+        local day, inside the leads."""
+        zones = sorted({a.time_zone for a in AIRPORTS})
+        self.assertEqual(len(AIRPORTS), 49)
+        lengths = {}
+        d = dt.date(2026, 10, 12)
+        while d <= dt.date(2027, 7, 31):
+            for z in zones:
+                s, e, hours = dailymax.local_day(d, z)
+                tz = ZoneInfo(z)
+                local = [h.replace(tzinfo=dt.timezone.utc).astimezone(tz) for h in hours]
+                self.assertTrue(all(t.date() == d for t in local), (z, d))
+                self.assertEqual((local[0].hour, local[0].minute), (0, 0), (z, d))
+                before = (s - HOUR).replace(tzinfo=dt.timezone.utc).astimezone(tz)
+                self.assertEqual(before.date(), d - dt.timedelta(days=1), (z, d))
+                self.assertEqual(e, hours[-1] + HOUR)
+                self.assertEqual(hours, [s + k * HOUR for k in range(len(hours))])
+                c = dailymax.day_cycle(s)
+                self.assertTrue(c.hour % 6 == 0 and c + 4 * HOUR <= s < c + 10 * HOUR, (z, d))
+                lengths[len(hours)] = lengths.get(len(hours), 0) + 1
+            d += dt.timedelta(days=1)
+        self.assertEqual(set(lengths), {23, 24, 25})
+        cycle = dt.datetime(2026, 10, 12, 12)
+        while cycle <= dt.datetime(2027, 7, 31, 18):
+            for z in zones:
+                for day, hours in dailymax.days_inside(cycle, z):
+                    self.assertEqual(hours, dailymax.local_day(day, z)[2])
+                    self.assertTrue(cycle + 3 * HOUR <= hours[0] and hours[-1] <= cycle + 48 * HOUR)
+            cycle += 6 * HOUR
+
     def test_usable_day(self):
         self.assertTrue(dailymax.usable_day(24, 22))
         self.assertFalse(dailymax.usable_day(24, 21))
@@ -1181,18 +1216,144 @@ class RunnerTests(Case):
         self.run_at(now, fetch_gfs=fake_gfs(calls))
         self.assertNotIn(c6, calls)
 
-    def test_a_fetch_problem_waits_and_blocks_later_cycles_until_12_hours(self):
+    def test_a_fetch_problem_waits_and_blocks_later_cycles_until_20_hours(self):
+        """D125.2 (amends F152.8's 12 h): a fetch problem waits, and blocks later cycles, until the cycle is
+        20 hours old; from then on it is final and later cycles go on."""
         c0, c6 = dt.datetime(2026, 10, 12, 0), dt.datetime(2026, 10, 12, 6)
         now = dt.datetime(2026, 10, 12, 10, 30)
         res = self.run_at(now, fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
         self.assertEqual(res["issued"], [c for c in res["issued"] if c < c0])          # nothing from c0 on
         self.assertEqual(res["waiting"][0], c0)
         self.assertNotIn(c6, prediction_log.logged_cycles(self.tmp, "gfs"))
-        # at c0 + 12 h the problem is final for that cycle and c6 goes ahead
-        later = dt.datetime(2026, 10, 12, 12, 30)
+        # at c0 + 12 h 30 min it still waits (the old rule stopped it here, LT09)
+        res = self.run_at(dt.datetime(2026, 10, 12, 12, 30), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertEqual((res["stopped"], res["waiting"][0]), ([], c0))
+        self.assertNotIn(c6, prediction_log.logged_cycles(self.tmp, "gfs"))
+        # at c0 + 19 h 59 min it still waits
+        res = self.run_at(dt.datetime(2026, 10, 12, 19, 59), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertEqual((res["stopped"], res["waiting"][0]), ([], c0))
+        # at c0 + 20 h 30 min the problem is final for that cycle and c6 goes ahead
+        later = dt.datetime(2026, 10, 12, 20, 30)
         res = self.run_at(later, fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
         self.assertIn(c0, [c for c, _ in res["stopped"]])
         self.assertIn(c6, res["issued"])
+
+    def test_a_first_try_after_12_hours_that_fails_is_tried_again_and_issued(self):
+        """LT09, D125.2: a cycle first tried at c + 12 h 49 min with one fetch error waits; the next run
+        (an hour later, fetch healthy) tries it again and issues it, then the later cycle, in time order."""
+        c0, c6 = dt.datetime(2026, 10, 12, 0), dt.datetime(2026, 10, 12, 6)
+        first = dt.datetime(2026, 10, 12, 12, 49)
+        res = self.run_at(first, fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 503")}))
+        self.assertEqual((res["stopped"], res["waiting"][0]), ([], c0))
+        self.assertNotIn(c0, state_mod.load_state(self.tmp, "gfs").stopped())
+        calls = []
+        res = self.run_at(first + HOUR, fetch_gfs=fake_gfs(calls))
+        self.assertEqual(res["issued"], [c0, c6])
+        self.assertEqual(calls, [c0, c6])
+        self.assertEqual(res["stopped"], [])
+
+    def test_an_observation_fetch_error_after_12_hours_also_waits_then_is_issued(self):
+        day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+        self.run_at(day1 + dt.timedelta(hours=4, minutes=30), latest_only=True)
+
+        def broken(station, d1, d2):
+            raise observations.ObsFetchError("IEM down")
+
+        # at day2 + 13 h the catch-up reaches day1 18z (no 18z log before it, so no IEM call), then day2 00z
+        res = self.run_at(day2 + dt.timedelta(hours=13), fetch_obs=broken)
+        self.assertEqual((res["issued"], res["stopped"], res["waiting"][0]), ([day1 + 18 * HOUR], [], day2))
+        res = self.run_at(day2 + dt.timedelta(hours=14))
+        self.assertEqual(res["issued"], [day2, day2 + 6 * HOUR])          # 12z arrives at 16:10
+
+    def test_a_cycle_20_hours_old_with_a_fetch_problem_is_stopped(self):
+        """D125.2: from 20 h on, a GFS or an IEM fetch problem is a final stop, recorded, not tried again."""
+        c0 = dt.datetime(2026, 10, 12, 0)
+        now = c0 + dt.timedelta(hours=20, minutes=10)
+        res = self.run_at(now, latest_only=False, fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertIn((c0, "fetch problem, gave up after 20 hours: HTTP 404"), res["stopped"])
+        self.assertIn(c0, state_mod.load_state(self.tmp, "gfs").stopped())
+        calls = []
+        self.run_at(now + HOUR, fetch_gfs=fake_gfs(calls))
+        self.assertNotIn(c0, calls)
+        # an IEM problem at 20 h is final too
+        other = Path(tempfile.mkdtemp(prefix="test_live_"))
+        self.addCleanup(shutil.rmtree, other, True)
+        day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+        kw = {"models": FakeModels(), "fetch_gfs": fake_gfs(), "commit": "deadbeef", "log": lambda *a: None}
+        runner.run(other, other / "models", day1 + dt.timedelta(hours=4, minutes=30), latest_only=True,
+                   fetch_obs=fake_obs_for(other), **kw)
+
+        def broken(station, d1, d2):
+            raise observations.ObsFetchError("IEM down")
+
+        res = runner.run(other, other / "models", day2 + dt.timedelta(hours=20), fetch_obs=broken, **kw)
+        self.assertIn((day2, "fetch problem, gave up after 20 hours: IEM down"), res["stopped"])
+
+    def test_order_is_kept_while_a_cycle_waits(self):
+        """F152.8, D125.2: a waiting cycle blocks every later one; none is tried or logged before it."""
+        c0, c6, c12 = (dt.datetime(2026, 10, 12, h) for h in (0, 6, 12))
+        now = dt.datetime(2026, 10, 12, 17, 0)
+        calls = []
+        res = self.run_at(now, fetch_gfs=fake_gfs(calls, fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertEqual(res["waiting"][0], c0)
+        self.assertNotIn(c6, calls)
+        self.assertNotIn(c12, calls)
+        logged = prediction_log.logged_cycles(self.tmp, "gfs")
+        self.assertFalse(any(c >= c0 for c in logged))
+        calls = []
+        res = self.run_at(now + HOUR, fetch_gfs=fake_gfs(calls))
+        self.assertEqual(res["issued"], [c0, c6, c12])
+        self.assertEqual(calls, [c0, c6, c12])
+
+    def test_an_iem_reply_that_is_not_csv_makes_the_cycle_wait(self):
+        """LT14, D125.3: an HTML page or an empty body is an observation fetch problem (the cycle waits,
+        nothing is logged, no crash); a header with no rows is a real reply (issued, no update)."""
+        day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+        self.run_at(day1 + dt.timedelta(hours=4, minutes=30), latest_only=True)
+        for name, body in (("html", "<html>\n<body>Service unavailable</body>\n</html>\n"), ("empty", ""),
+                           ("other header", "station,valid,tmpc\nEGLC,2026-10-11 03:00,9.00\n")):
+            with self.subTest(body=name):
+                res = self.run_at(day2 + dt.timedelta(hours=4, minutes=30), latest_only=True,
+                                  fetch_obs=lambda st, d1, d2, b=body: b)
+                self.assertEqual((res["issued"], res["stopped"], res["waiting"][0]), ([], [], day2))
+                self.assertIn("IEM reply without the expected header", res["waiting"][1])
+                self.assertNotIn(day2, prediction_log.logged_cycles(self.tmp, "gfs"))
+        res = self.run_at(day2 + dt.timedelta(hours=4, minutes=30), latest_only=True,
+                          fetch_obs=lambda st, d1, d2: runner.IEM_HEADER + "\n")
+        self.assertEqual(res["issued"], [day2])
+        self.assertEqual(res["no_report"], res["lookups"])
+        self.assertEqual(res["lookups"], len(AIRPORTS) * 21)
+
+    def test_iem_header_is_the_committed_replies_first_line(self):
+        """D125.3's header equals the first line of a committed IEM reply to the same query form, and of
+        the test's own fake replies."""
+        raw = sorted((ROOT / "data" / "raw").glob("iem_asos_*_routine.csv"))[0]
+        with open(raw, newline="") as f:
+            self.assertEqual(f.readline().rstrip("\n"), runner.IEM_HEADER)
+        self.assertEqual(obs_text("EGLC", []).splitlines()[0], runner.IEM_HEADER)
+
+    def test_the_count_of_lookups_with_no_report_is_printed(self):
+        """D125.3: each run prints how many tracker lookups found no report."""
+        day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+        out = []
+        self.run_at(day1 + dt.timedelta(hours=4, minutes=30), latest_only=True, log=out.append)
+        self.assertIn("tracker lookups with no report: 0 of 0", out)
+        full = fake_obs_for(self.tmp)
+
+        def holes(station, d1, d2):
+            text = full(station, d1, d2).splitlines()
+            return "\n".join(l for l in text if not l.startswith(f"{station},2026-10-11 05:")) + "\n"
+
+        out = []
+        res = self.run_at(day2 + dt.timedelta(hours=4, minutes=30), latest_only=True, fetch_obs=holes, log=out.append)
+        n = len(AIRPORTS)
+        self.assertEqual((res["no_report"], res["lookups"]), (n, n * 21))
+        self.assertIn(f"tracker lookups with no report: {n} of {n * 21}", out)
+        self.assertTrue(any(f"lookups with no report {n} of {n * 21}" in line for line in out))
+        # a run that issues nothing prints it too
+        out = []
+        self.run_at(day2 + dt.timedelta(hours=4, minutes=30), latest_only=True, log=out.append)
+        self.assertIn("tracker lookups with no report: 0 of 0", out)
 
     def test_an_observation_fetch_error_issues_nothing_yet(self):
         day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
@@ -1257,9 +1418,33 @@ class RunnerTests(Case):
 
     def test_a_fetch_that_never_succeeded_exits_3(self):
         c0 = dt.datetime(2026, 10, 12, 0)
-        code, out = self.main_at(dt.datetime(2026, 10, 12, 12, 30), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        code, out = self.main_at(dt.datetime(2026, 10, 12, 20, 30), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
         self.assertEqual(code, 3)
-        self.assertIn("gave up after 12 hours", out)
+        self.assertIn("gave up after 20 hours", out)
+        self.assertIn("tracker lookups with no report:", out)
+
+    def test_a_fetch_problem_at_12_and_a_half_hours_exits_2_not_3(self):
+        """LT09, D125.2: under the old rule this run exited 3 and lost the cycle."""
+        c0 = dt.datetime(2026, 10, 12, 0)
+        code, out = self.main_at(dt.datetime(2026, 10, 12, 12, 30), fetch_gfs=fake_gfs(fail={c0: gfs.FetchError("HTTP 404")}))
+        self.assertEqual(code, 2)
+        self.assertNotIn("gave up", out)
+
+    def test_an_iem_page_that_is_not_csv_exits_2_not_1(self):
+        """LT14, WF05: the KeyError('station') crash of session 130's T2 is now a wait (exit code 2)."""
+        day1, day2 = dt.datetime(2026, 10, 11, 0), dt.datetime(2026, 10, 12, 0)
+        self.main_at(day1 + dt.timedelta(hours=4, minutes=30), latest_only=True)
+        page_text = "<html>\n<head><title>502</title></head>\n<body>Bad gateway</body>\n</html>\n"
+        with mock.patch.object(observations, "fetch_reports", lambda *a, **k: page_text):
+            args = ["--root", str(self.tmp), "--models", str(self.tmp / "models"),
+                    "--now", f"{day2 + dt.timedelta(hours=4, minutes=30):%Y-%m-%dT%H:%M}", "--commit", "deadbeef",
+                    "--latest-only"]
+            out = io.StringIO()
+            with mock.patch.object(baseline, "ModelSet", lambda *a, **k: FakeModels()), \
+                    mock.patch.object(gfs, "fetch_cycle", fake_gfs()), mock.patch("sys.stdout", out):
+                code = runner.main(args)
+        self.assertEqual(code, 2)
+        self.assertIn("IEM reply without the expected header", out.getvalue())
 
     def test_a_waiting_fetch_still_exits_2(self):
         c6 = dt.datetime(2026, 10, 12, 6)

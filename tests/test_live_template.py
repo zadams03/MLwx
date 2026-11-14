@@ -1,6 +1,8 @@
-"""MLwx-live's workflow template (DECISIONS D117.5; session 123, Steps 4 and 5).
+"""MLwx-live's workflow template (DECISIONS D117.5; session 123, Steps 4 and 5;
+D125.3 and session 131, Step 4: the exit-code step, the pip cache, .gitignore).
 Offline; reads deploy/mlwx-live/.github/workflows/live.yml as text (no YAML
-parser is installed) and runs its skip step in temporary git repos.
+parser is installed) and runs its skip step and its exit-code step in temporary
+git repos.
 
 The action majors are held as constants (D98.2), each the first major whose
 action.yml runs on Node.js 24, confirmed from its tag in session 123.
@@ -33,6 +35,8 @@ ACTION_MAJORS = {                       # D117.5(a); notes/session-123-output.tx
     "actions/deploy-pages": "v5",
 }
 SKIP_IF = "if: steps.changes.outputs.commit == 'true'"
+EXIT_STEP = "Fail the job unless the runner's exit code was 0 or 2"      # D125.3
+GITIGNORE = WORKFLOW.parent.parent.parent / ".gitignore"
 GATED_STEPS = ["Commit the log and the tracker state", "Prepare the page", "Upload the page", "Publish the page"]
 STATE = "state/tracker_gfs.json"
 STATE0 = {"version": 1, "model": "gfs", "last_cycle": "2026-10-27T06:00Z",
@@ -90,7 +94,56 @@ class TestTemplateText(unittest.TestCase):
         self.assertIn("        id: changes", s["Decide whether anything besides last_run.at changed"])
         for name in GATED_STEPS:
             self.assertIn("        " + SKIP_IF, s[name], name)
-        self.assertNotIn("        " + SKIP_IF, s["Fail the job if a cycle issued nothing (exit code 3)"])
+        self.assertNotIn("        " + SKIP_IF, s[EXIT_STEP])
+
+    def test_exit_code_step_is_last_and_reads_the_runner_code(self):
+        """D125.3: after the commit step as before; it takes the code the runner step recorded."""
+        s = steps(text())
+        names = list(s)
+        self.assertEqual(names[-1], EXIT_STEP)
+        self.assertLess(names.index("Commit the log and the tracker state"), names.index(EXIT_STEP))
+        self.assertIn("          CODE: ${{ steps.runner.outputs.code }}", s[EXIT_STEP])
+        self.assertFalse(any(ln.strip().startswith("if:") for ln in s[EXIT_STEP]))
+        self.assertIn('          echo "code=$?" >> "$GITHUB_OUTPUT"', s["Run the runner"])
+
+    def test_pip_cache(self):
+        """EF05: setup-python caches pip downloads keyed on requirements.txt; the version is unchanged."""
+        body = steps(text())["Set up Python"]
+        self.assertIn("          cache: pip", "\n".join(body))
+        self.assertIn("          cache-dependency-path: requirements.txt", body)
+
+    def test_gitignore_has_partial_and_tmp(self):
+        """WF07: a log or snapshot file's temporary name is never committed."""
+        lines = GITIGNORE.read_text().splitlines()
+        for pattern in ("*.partial", "*.tmp", "mlwx/", "models/", "site/"):
+            self.assertIn(pattern, lines)
+
+
+def exit_script(t):
+    """The shell of the exit-code step (D125.3)."""
+    body = steps(t)[EXIT_STEP]
+    i = body.index("        run: |")
+    return textwrap.dedent("\n".join(body[i + 1:])) + "\n"
+
+
+class TestExitCodeStep(unittest.TestCase):
+    """D125.3, TE04: the exit-code step from the YAML, run in a temporary git repo as GitHub's default
+    bash shell runs it (bash --noprofile --norc -eo pipefail), with each runner exit code."""
+
+    def run_step(self, code):
+        with tempfile.TemporaryDirectory() as d:
+            git(d, "init", "-q")
+            script = Path(d) / "step.sh"
+            script.write_text(exit_script(text()))
+            return subprocess.run(["bash", "--noprofile", "--norc", "-eo", "pipefail", str(script)], cwd=d,
+                                  capture_output=True, text=True, env={**os.environ, "CODE": code})
+
+    def test_only_0_and_2_pass(self):
+        for code, fails in (("0", False), ("1", True), ("2", False), ("3", True), ("", True), ("137", True)):
+            with self.subTest(code=code):
+                r = self.run_step(code)
+                self.assertEqual(r.returncode != 0, fails, r.stdout + r.stderr)
+                self.assertIn(f"exit code {code}" if code in ("0", "2", "3") else f"exit code '{code}'", r.stdout)
 
 
 class TestSkipStep(unittest.TestCase):

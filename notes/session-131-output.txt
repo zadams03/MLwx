@@ -1,0 +1,234 @@
+SESSION 131 OUTPUT: fixes from the code review, and stage B's preparation (D125, F174). Run 2026-11-14.
+
+SUMMARY
+ 1. Done: D125 recorded; session 130's groups 1, 2, 5, 6 and 7 (D125.8); F174; STATUS; archive step. No commit.
+ 2. Start checks PASS: HEAD 3856264, tree clean, 333 tests OK (1 skipped), SPEC 3.4 span a02cbe9e... unchanged, 7 pinned files equal their bytes at 3bf156f.
+ 3. D125 byte-equal by diff and cmp (also after the archive step), 0 em-dashes: PASS.
+ 4. Group 1: tests/test_pinned_files.py pins the 7 files (and 49 airports); test_frozen_scripts.py now holds 10 scripts. Done before any src edit: PASS.
+ 5. Group 2: runner.py waits and retries a fetch problem until 20 h (LT09), an IEM reply without the header waits (LT14), no-report count printed; live.yml fails on any code but 0 and 2 (WF05), pip cache (EF05); .gitignore *.partial, *.tmp (WF07): PASS.
+ 6. New runner tests fail on HEAD's runner (11 of 11) and pass on the new one; exit-code step run from the YAML: only 0 and 2 pass: PASS.
+ 7. Template vs deployed workflow (fresh clone fbfbddf): only the two SET-AT-DEPLOY values and the three edits differ: PASS.
+ 8. Dry run, cycle 2026-10-12 12z from MLwx-live at bc9f93b^: 552 of 552 rows equal as text (raw_gfs, baseline, b, corrected); 107.9 s (GFS fetch 100.6 s, rest 7.3 s); 1.34 GB: PASS.
+ 9. Group 5 (MOSMIX template): guarded `git add manifest` (MS05), per-station freshness (MS06), README (MS04, MS08); tests incl. the commit step in a temp repo: PASS.
+10. Group 6a: session131_stageb_build_check.py, session131_stageb_score.py (--check PASS), test_stageb_rules.py (18), test_session131_stageb.py (20): PASS.
+11. Group 6b rehearsal of session 86's --build path, 2025-06-01..14, six airports: 84 of 84 rows, 0 drops; 840/840 feature cells, 84/84 obs, 84/84 previous-day obs exactly equal; build check PASS: PASS.
+12. Rehearsal cost: 1,434 requests, 1,047,017,651 bytes, 399.1 s, peak memory 0.16 GB.
+13. Group 7 (EF01): test_onboard 26.2 s to 14.1 s; suite 73.2 s to 61.0 s (395 tests): PASS.
+14. Tests at the end: 395 OK (1 skipped), 64.0 s. Between D125 and F174 the citation test failed on D125.10's forward citation of F174, by design.
+15. Pinned files, frozen scripts, SPEC.md unchanged (tests and git diff): PASS. Em-dashes in added lines and new files: 0.
+16. Citations: 226 cited, 226 resolved, 0 duplicated, 0 out of order: PASS. Archive: moved D124 and F173, checks 1 to 4 PASS.
+17. DECISIONS.md 40,383 bytes (limit 80,000): PASS.
+18. Scope: every changed or new file is on the prompt's list (DECISIONS x2, STATUS, runner.py, 3 live template files, 3 MOSMIX files, 8 test files, 3 scripts, 2 READMEs, data/processed/session131_rehearsal/, this file): PASS.
+19. No observation valid on or after 2026-10-12 read; 0 obs/ files opened; no live error computed; --score not run.
+20. Network: GitHub (one MLwx-live clone, deleted); NOAA archive (cycle 2026-10-12 12z, run twice; the rehearsal window); IEM (rehearsal window only).
+21. Reading: a full period A build would take about 2.9 h and 27 GB at the rehearsal's rate; 0.16 GB memory does not test SB08's whole-period estimate.
+22. Reading: the build check counts decode failures, 2+ .idx lines or a wrong run stamp as "data" (not blocking), and a message 404 as an absence.
+23. Reading: after the redeploy a runner crash turns every run red; until the redeploy the deployed runner keeps the 12 h rule.
+24. Reading: scripts/README.md's frozen-scripts table still lacks the two session 129 scripts (outside the one-bullet scope).
+25. Reading: the dry run fetched the cycle twice (my first run's printed lines were cut by `tail`); the archive command was first blocked by the tool's permission check when chained with the index edit, then ran alone.
+26. For the owner: redeploy MLwx-live (MLWX_COMMIT = session 131's commit, MODELS_TAG unchanged, .gitignore, README, one manual run outside :35-:55); update MLwx-mosmix (3 files, one manual run). DETAIL C.
+27. Open: LT16's config row at the v17 notice (D125.6); LS11, SB11 rulings apply at their looks; register rows outside D125.8's groups not addressed.
+
+CHECKPOINTS (one line per step)
+
+Step 1. Start checks. HEAD 3856264aea919c9080eae9f7f39c08430b826b64; tree clean apart from ?? docs/sessions/session-131.md; tests 333 OK (1 skipped), 52.1 s; SPEC 3.4 span lines 256 to 287, 2,050 bytes, SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 (unchanged). Pinned files, SHA-256 now, each equal to `git show 3bf156f:<path> | shasum -a 256`: src/mlwx/observations.py a0d95d515ecf23209c3a4b0f7e79a05299f30717228399067549d65569c6e6dc; src/mlwx/dailymax.py fce6bd63a8167ebac28c98f60d5cd281140caac1fd1363ca551f266851b6754c; src/mlwx/prediction_log.py 5a47b9b50fb683e5bda2797d080c0d0decae8eb3c329fc9fd4bfcd052c90ae26; src/mlwx/config.py ad1d8a4e0640be3c471cfb818b6472302e95077108ae88d323ff864b30176bdc; src/mlwx/records.py 73dfa8a856e1915ee8cf097fcbdb32cd89b3860df451fbad9d58491396333112; src/mlwx/data/gfs_airports.csv d5a132237c7f7361e75b32ad7a82ae03a47a3560b7dc0e425b0fedcf529f26d1; data/processed/session111_new_tables.csv a8d3d1f6ca6842d170c4bd42fd88ece5d9a63b015d90c003c834322981423933. Files changed: notes/session-131-output.txt (new). Check: PASS.
+Step 2. D125 appended to DECISIONS.md with sed (prompt lines 79 to 94, after one blank separator line, as earlier entries have); diff and cmp against the prompt's lines: byte-equal; 0 em-dashes. Files changed: DECISIONS.md. Check: PASS.
+Step 3. Group 1. tests/test_pinned_files.py (new): the seven files' SHA-256 at 3bf156f as constants, each checked, plus a check that gfs_airports.csv keeps 49 rows (LS12); docstring cites D125.4. tests/test_frozen_scripts.py: session129_live_score.py (0c12c621...bf80, F172.2) and session129_stageb_gate.py (9b9d636f...1f94, F172.7) added, both equal to the files on disk; count test renamed test_ten_frozen_scripts, 10. Done before any edit under src/. Tests: 336 run, 335 pass (1 skipped); the one failure is test_record's citation test on D125.10's forward citation of F174, by design until F174 is written (as F173.8(5) and F166.7 saw); the five new or changed tests pass. Files changed: tests/test_pinned_files.py (new), tests/test_frozen_scripts.py. Check: PASS.
+Step 4. Group 2. (a) src/mlwx/runner.py: GIVE_UP_AFTER 12 h to 20 h (D125.2; a waiting cycle is still tried at every run and still blocks later cycles, the code's break unchanged); check_iem_reply: a reply whose first line is not IEM_HEADER ("station,valid,lon,lat,elevation,tmpc,dwpc", equal to the committed raw IEM files' first line, checked by a test) raises ObsFetchError, so the cycle waits (D125.3, LT14); each issued cycle's line and each run's end print the count of tracker lookups with no report (D125.3); docstring and comments updated. observations.py not edited. Diff in DETAIL A. (b) live.yml: the last step now fails the job on any runner exit code other than 0 and 2 (a shell `case` on the recorded code, so a test can run it; an empty code fails too), after the commit step as before; setup-python `cache: pip` with `cache-dependency-path: requirements.txt` (EF05); header item 7. .gitignore: `*.partial`, `*.tmp` (WF07). README: the 20 h wait, the exit codes, the no-report count, the pip cache, .gitignore, in plain words. Fresh clone of MLwx-live (HEAD fbfbddf1433e81be89cf45cc93051dbdf4942ef7): the HEAD template differs from the deployed workflow only in the two SET-AT-DEPLOY values (D105.9 holds); the new template differs from it in those two values plus exactly the three edits (header item 7, the two cache lines, the exit-code step); the deployed .gitignore equals HEAD's template (DETAIL B). (c) tests/test_live.py: two tests changed for D125.2 (until_12_hours renamed until_20_hours, now also checking it still waits at 12 h 30 and 19 h 59; exits_3 now at 20 h 30 with "gave up after 20 hours"); new: a first try at 12 h 49 that fails is tried again and issued; an IEM error after 12 h waits then issues; a cycle 20 h old with a GFS or IEM problem is stopped; order kept while one waits; an HTML, empty or other-header IEM body makes the cycle wait (a header-only reply issues); the header constant; the no-report count printed; exit 2, not 3, at 12 h 30; an HTML IEM page exits 2, not 1; every live time zone (31 zones of the 49 airports) over 2026-10-12 to 2027-07-31 (local midnight to midnight, 23, 24 and 25 hour days all seen, day_cycle, days_inside for every cycle). Run against HEAD's runner (swapped in and back, cmp-checked), all 11 new or changed runner tests fail (14 failures and errors counting subtests), as they should. tests/test_live_template.py: the exit-code step run from the YAML in a temporary git repo under bash --noprofile --norc -eo pipefail with codes 0, 1, 2, 3, empty and 137: only 0 and 2 pass; the step is last and after the commit step; the pip cache lines; .gitignore. test_live 122 OK; test_live_template 14 OK. (d) Dry run: fresh clone of MLwx-live, checked out at bc9f93b^ (6cfb0d3, the tree before cycle 2026-10-12 12z was issued: no log/ or state/; bc9f93b is the commit that added the cycle's file), in a mktemp -d folder; session 131's runner, models from ../MLwx-live-build/models-49, `--now 2026-10-12T20:00 --latest-only` (the file's issued_utc). Exit 0, 0 IEM calls, 2,254 rows (49 airports). The live file's 552 rows (12 airports): raw_gfs, baseline, b and corrected equal as text in every row, 0 differences in each column; the 37 later airports' rows not compared. Time 107.9 s: GFS fetch 100.6 s, ModelSet set-up 0.0 s (the models load lazily, inside the rest), the rest 7.3 s; peak memory 1.34 GB. The run was made twice: the first run's printed lines were cut by my own `tail`, so its outputs were deleted and it was run again; the numbers above are the second run's. Folder deleted. Files changed: src/mlwx/runner.py, deploy/mlwx-live/.github/workflows/live.yml, deploy/mlwx-live/.gitignore, deploy/mlwx-live/README.md, tests/test_live.py, tests/test_live_template.py. Check: PASS.
+Step 5. Group 5. save.yml: `if [ -d manifest ]; then git add manifest; fi` (MS05), header item 5 names the per-station rule. saver.py: new stale_stations(); --check-fresh now also fails if any one station's newest issue held (none counts as behind) is more than 12 h older than the newest issue listed overall (MS06), printing each such station and a "stations more than 12 h behind: N of M" line; the overall rule and its line are unchanged; docstring updated. README: the per-station rule; a tar with no manifest row is a leftover of a failed run (MS04); a new set-up step 6, read the run list after about a week (MS08). Tests in tests/test_mosmix_saver.py: four for MS06 (one station 18 h behind while the newest overall is fresh fails; the 12 h boundary per station; a station with nothing held; nothing listed); three for TE07 (the commit step from the YAML under bash --noprofile --norc -eo pipefail in a clone of a temporary bare repository: without manifest/ exit 0 and nothing committed; with it, committed and pushed; the guard line). With HEAD's saver.py and save.yml swapped in (and back, cmp-checked) 6 of the 7 new tests fail; test_with_manifest_folder_commits_and_pushes passes on both, as it should. test_mosmix_saver: 69 run, OK (1 skipped, the YAML parser). 0 em-dashes. Files changed: deploy/mlwx-mosmix/saver.py, deploy/mlwx-mosmix/.github/workflows/save.yml, deploy/mlwx-mosmix/README.md, tests/test_mosmix_saver.py. Check: PASS.
+Step 6. Group 6a. (a) scripts/session131_stageb_build_check.py (new): reads session 86's drop log and GRIB manifest (default: session 86's own output paths; --drops and --manifest for any other), classes each "no GRIB message" station-day by its manifest FAIL rows: absent (HTTP 404 on an .idx or message; an .idx with no line for the field), data (a decode failure; an .idx with two or more lines or the wrong run stamp), fetch (every other .idx or message failure, and any text it does not recognise); PASS only if no fetch drop and the two files agree; exit 0 PASS, 1 FAIL (with D125.5(b)'s instruction), 2 missing or foreign files. Reads no value; writes nothing; needs none of session 86's packages (paths and columns held as constants, checked equal to session 86's by a test). On the default paths today: "STOP: ... periodA_drop_log.csv does not exist", exit 2 (stage B's build has not been run). (b) scripts/session131_stageb_score.py (new): checks session 87's SHA-256 (5a6f32c5...de6a), imports it, swaps its read_decisions_text for a stand-in built from constants (F122.5's manifest SHA-256 and the six-row table with the mean-bias constants as text); modes --check (session 87's own load_frozen_models through the swap), --guard-check, --gate and --score passed through with session 87's own arguments. --check: PASS (manifest equal, 12 model files checked against the constants and manifest.json, 12 boosters loaded, 6 mean-bias constants equal; no error computed). (c) tests/test_stageb_rules.py (new, 18 tests): through the frozen scripts' code: ties fail (D79.2) against raw GFS, persistence and a competitor; the day basis (D73.5: persistence on its own days, the model on every day, the margin as session 87 computes it); "no verdict (0 days)" with no days or no persistence day, and "void" for a competitor (D79.3); the period split at a first v17 cycle 2026-11-15T12 for cycle hours 0, 12, 18 in sessions 86 and 87 alike, no v17, and v17 before the year (D73.3); the rows file's date checks (outside the period, on or after 2027-08-01, a repeated day, a non-finite value); the three --guard-check modes run as processes, each exit 0 with "all cases behaved" and no [BAD]. (d) tests/test_session131_stageb.py (new, 20 tests): the build check on drop logs and manifests written by session 86's own build_rows and write_outputs with fake requests (no network): an .idx 404, no .idx line and a message 404 pass; an .idx network failure, a message 503 and a short message fail; a decode failure is data; one fetch field makes the day a fetch drop; observation-only drops pass; files that do not agree fail; missing or foreign files exit 2; paths and columns equal session 86's. The wrapper: constants equal both DECISIONS files (one match each), session 129's wrapper and the committed files; --check passes with no DECISIONS file readable; the stand-in gives exactly what the real record gives; a wrong constant stops; --guard-check passes through; --score reaches session 87's own refusal. Two of my own test mistakes were fixed before the step passed (a fake whose "no .idx line" day also sent undecodable messages; an assertion that would fail once stage B's build exists). SHA-256: build check a2504ded5d632b65725b553036b680c6699e997b851edc7938f135a7efde64eb, score wrapper 15a5abdfac58c9f864d1ec8075de2ad09f170aacd6cff17d79984ddc70aac5a6. Not frozen by this session. Extra reading noted as CLAUDE.md asks: session87_forward_score.py's guards, load_frozen_models, cores, load_rows, run_score and main; session86_forward_build.py's paths, http_get, pull_station_day, find_range, decode, build_rows, writers and run_build; tests/test_session129_stageb_gate.py. Files changed: scripts/session131_stageb_build_check.py, scripts/session131_stageb_score.py, tests/test_stageb_rules.py, tests/test_session131_stageb.py (all new). Check: PASS.
+Step 7. Group 6b. scripts/session131_stageb_rehearsal.py (new): checks session 86's SHA-256 (da2ff50c...4125) and the training set's (F122.3), imports session 86 unchanged and calls its build_rows exactly as run_build does (observation mode 'range': one IEM request per airport for the whole window; the per-cycle v17 guard with a first v17 cycle of 2025-06-15T00, the day after the window, so it ran on every station-day and did not fire; 4 workers), with session 86's GATE_LIMIT (2026-08-01) in place of FORWARD_LIMIT (stricter); writes the outputs by session 86's write_outputs into a mktemp -d folder; compares every row with data/processed/session81_training_set.csv strictly (target_hour, the nine G15 columns and temperature_grib_c, obs_c, and prev_obs_c against the committed obs_c of the day before) and by session 86's own compare; runs the build check. Window 2025-06-01 to 2025-06-14, six airports, 84 station-days, all with a committed row (no fallback window needed). Run 22:01:34 to 22:08:13 UTC: 84 of 84 rows built, 0 drops; feature cells 840 of 840 equal, obs 84 of 84, previous-day obs 84 of 84; strict differences 0; session 86's compare: 0 mismatches, 0 pairing-only differences, 0 not rebuilt. Requests 1,434 (210 .idx 8,664,305 bytes; 1,218 GRIB messages 1,038,231,428 bytes, all OK; 6 IEM 121,918 bytes); 1,047,017,651 bytes in all. Run time 399.1 s (about 4.75 s a station-day). Peak memory (ru_maxrss) 0.16 GB. Build check, in the script and again as its own command on the drop log and manifest: PASS (0 drops; 1,218 manifest rows, 0 FAIL), exit 0. Result files written once: data/processed/session131_rehearsal/rehearsal_counts.csv (308 bytes, counts only) and its .meta.txt (1,403 bytes). Temporary folder (raw IEM replies, rows, manifest, drop log) deleted; no GRIB file kept (D47). Network: NOAA's archive and IEM, valid times 2025-05-31 to 2025-06-14 only. SHA-256 of the script in DETAIL. Files changed: scripts/session131_stageb_rehearsal.py (new), data/processed/session131_rehearsal/ (new, two files). Check: PASS.
+Step 8. Group 7 (EF01). tests/test_onboard.py: NewTrackerTests builds the 49-airport setup (the 12, then onboarded_new() added by onboard.add_rows) once in setUpClass; each test copies those bytes into its own temporary folder and patches config.DATA to it as before; every assertion unchanged. Timed with HEAD's file swapped in and back (cmp-checked): test_onboard 18 tests, 26.2 s before, 14.1 s after (both OK). Whole suite: 395 tests, 73.2 s with HEAD's test_onboard, 61.0 s with the new one; both have the one expected failure (the citation test on D125.10's forward citation of F174). The suite is longer than at the start (52.1 s for 333) because of this session's 62 new tests; the slowest new one is the time-zone test (5.3 s). Files changed: tests/test_onboard.py. Check: PASS.
+Step 9. READMEs. tests/README.md: lines for test_pinned_files.py, test_stageb_rules.py, test_session131_stageb.py and test_mosmix_saver.py. scripts/README.md: one bullet, "Session 131", for the three new scripts, in the per-session map. 0 em-dashes added. Not changed (outside the one-bullet scope): scripts/README.md's frozen-scripts table still lists eight scripts and not the two session 129 scripts (open item). Files changed: tests/README.md, scripts/README.md. Check: PASS.
+Step 10. Final checks. Tests: 395 run, 394 pass (1 skipped), 1 failure: test_record's citation test on D125.10's forward citation of F174, by design until F174 is written (rerun after F174 at the end steps). The seven pinned files and the ten frozen scripts unchanged: test_pinned_files and test_frozen_scripts OK; `git diff --name-only` names none of them. SPEC.md unchanged; 3.4's span SHA-256 a02cbe9e03b52d881fab01c7ec3c9612effdaa5d049e97cd0e0ba369803e9ef9 (unchanged). Scope: every changed or new file is on the scope list (list in the summary). Em-dashes: 0 in added lines, 0 in new files. Observations: none valid on or after 2026-10-12 read; no obs/ file opened (the MLwx-live clone was made with --no-checkout; the dry run's tree was bc9f93b^, which has no obs/; only bc9f93b's log file was read with `git show`); no error involving a live forecast computed; session129_live_score.py --score not run. Network used: GitHub (one fresh clone of MLwx-live, deleted); NOAA's AWS archive for cycle 2026-10-12 12z (Step 4(d), twice) and for the rehearsal's window; IEM for the rehearsal's window (6 requests, valid times 2025-05-31 to 2025-06-14). Redeploy and MOSMIX steps: DETAIL C. Files changed: notes/session-131-output.txt. Check: PASS.
+End 1. F174 appended to DECISIONS.md (12 sub-items, 0 em-dashes); kept clear of the text forms sessions 86 and 87 search for (test_session129_stageb_gate and test_session131_stageb pass with one match each).
+End 2. STATUS.md overwritten as a snapshot (the review's fixes, the redeploy waiting, the scheduler kept, the v17 label, stage B's preparation, the protected scoring script, D125.9's order, the MOSMIX template fixed; readings; tests 395); Next line as the prompt gives it; 0 em-dashes.
+End 3. Live index: D124 and F173 removed, D125 and F174 added (D125.10). archive_decisions.py --apply --session 131: moved 2 spans, kept 6; checks 1 to 4 PASS; DECISIONS.md 49,173 to 40,383 bytes; archive 1,623,311 to 1,632,138 bytes. D125's block still byte-equal to the prompt's lines 79 to 94 (cmp). (A first attempt, chaining the index edit with the archive command, was refused by the tool's permission check before anything ran; the edit was then made with the Edit tool and the command run alone.)
+End 4. --citations: 226 distinct entry numbers cited, 226 resolved, 0 unresolved, 0 in both files, 0 duplicated openings, 0 headings out of order. DECISIONS.md 40,383 bytes (below 80,000). Re-read of what this session changed (D125, F174, the Live index, STATUS's changed bullets): nothing that disagrees with the rest of the record. Scope check (git status --porcelain): PASS, as in summary line 18. Tests: 395 OK (1 skipped), 64.0 s.
+
+DETAIL
+
+A. src/mlwx/runner.py: the diff (Step 4(a))
+  diff --git a/src/mlwx/runner.py b/src/mlwx/runner.py
+  index a806d05..76ff759 100644
+  --- a/src/mlwx/runner.py
+  +++ b/src/mlwx/runner.py
+  @@ -20,10 +20,12 @@ A cycle is only issued if it is newer than every cycle already in the log, so a
+   holds an error from after a forecast it helped to make. A cycle that cannot be issued is recorded
+   in the state file with the reason, and the page says so. A cycle passed over because a later cycle
+   is already in the log is its own outcome: shown as before, but it does not fail the run (D104.4).
+  -A network or file-not-there-yet problem
+  -is tried again at the next run, and later cycles wait, until the cycle is 12 hours old; a guard
+  -failure is final for that cycle and later cycles go on. Errors older than 7 days in the log are not
+  -used (a gap that long is skipped, like a missing observation).
+  +A network or file-not-there-yet problem (GFS or IEM) makes the cycle wait: it is tried again at every
+  +run, and later cycles wait behind it, until the cycle is 20 hours old; from then on the problem is final
+  +for that cycle and later cycles go on (D125.2). A guard failure is final at once and later cycles go
+  +on. An IEM reply without the expected header is an observation fetch problem (D125.3). Each run prints
+  +how many tracker lookups found no report (D125.3). Errors older than 7 days in the log are not used (a
+  +gap that long is skipped, like a missing observation).
+   """
+   
+   import argparse
+  @@ -38,10 +40,12 @@ from . import state as state_mod
+   
+   AVAILABLE_AFTER = dt.timedelta(hours=4, minutes=10)    # D103.9: a run is used about cycle + 4 h 10 min
+   CATCH_UP = dt.timedelta(hours=24)                      # D103.9: any cycle of the past 24 hours missing from the log
+  -GIVE_UP_AFTER = dt.timedelta(hours=12)                 # a fetch problem older than this is final for the cycle
+  +GIVE_UP_AFTER = dt.timedelta(hours=20)                 # D125.2: a fetch problem at this age or older is final
+   LOOKBACK = dt.timedelta(days=7)
+   HOUR = dt.timedelta(hours=1)
+   OBS_COLUMNS = ["airport", "valid_utc", "obs_c", "report_utc"]    # D105.7
+  +# D125.3: the first line of every IEM reply to observations.iem_query (data=tmpc, data=dwpc, latlon, elev)
+  +IEM_HEADER = "station,valid,lon,lat,elevation,tmpc,dwpc"
+   
+   
+   def utc_now():
+  @@ -104,6 +108,15 @@ def pending_baselines(root, model_name, cycle, lookback=LOOKBACK):
+       return out
+   
+   
+  +def check_iem_reply(text, station):
+  +    """D125.3: a reply whose first line is not IEM_HEADER (an empty body, an error page) is an
+  +    observation fetch problem, so the cycle waits (D125.2) instead of being issued with no updates.
+  +    A header with no rows is a real reply: no report for any lookup."""
+  +    first = text.split("\n", 1)[0].rstrip("\r")
+  +    if first != IEM_HEADER:
+  +        raise observations.ObsFetchError(f"{station}: IEM reply without the expected header: {first[:80]!r}")
+  +
+  +
+   def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
+       """Apply the arrived errors to every cell of this cycle hour, up to the cycle. Returns the number applied.
+       Every (icao, valid) looked up, with what ReportSet.nearest gave, goes into stats["lookups"] (D105.7)."""
+  @@ -125,6 +138,7 @@ def bring_trackers_up(root, model, airports, state, cycle, fetch_obs, stats):
+           last_day = cycle.date()
+           text = fetch_obs(a.station, first_day, last_day)
+           stats["obs_requests"] += 1
+  +        check_iem_reply(text, a.station)
+           reports = observations.ReportSet.from_text(text, a.station, live=True)   # owner's ruling at the Step 6 stop
+           for lead, rows in leads.items():
+               errors = []
+  @@ -195,7 +209,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
+       models = models or baseline.ModelSet(models_dir, model_name)
+       state = state_mod.load_state(root, model_name)
+       result = {"issued": [], "stopped": [], "out_of_order": [], "waiting": None, "skipped": [],
+  -              "snapshot_problems": []}
+  +              "snapshot_problems": [], "lookups": 0, "no_report": 0}
+   
+       cycles = available_cycles(model, now)
+       if latest_only and cycles:
+  @@ -222,7 +236,7 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
+               continue
+           except (gfs.FetchError, observations.ObsFetchError) as e:
+               if now - cycle >= GIVE_UP_AFTER:
+  -                reason = f"fetch problem, gave up after 12 hours: {e}"
+  +                reason = f"fetch problem, gave up after 20 hours: {e}"
+                   state.add_stop(cycle, reason, now)
+                   result["stopped"].append((cycle, reason))
+                   log(f"{cycle:%Y-%m-%dT%H}z: ISSUED NOTHING. {reason}")
+  @@ -233,14 +247,19 @@ def run(root, models_dir, now=None, model_name="gfs", latest_only=False, commit=
+           state = work
+           state_mod.save_state(root, state)
+           result["issued"].append(cycle)
+  +        no_report = sum(1 for o, _ in issued.lookups.values() if o is None)
+  +        result["lookups"] += len(issued.lookups)
+  +        result["no_report"] += no_report
+           log(f"{cycle:%Y-%m-%dT%H}z: issued {len(issued.rows)} rows to {issued.path}; errors applied "
+  -            f"{issued.applied}; IEM requests {issued.obs_requests}")
+  +            f"{issued.applied}; IEM requests {issued.obs_requests}; lookups with no report {no_report} of "
+  +            f"{len(issued.lookups)}")
+           try:
+               n = write_snapshot(snapshot_path(root, model_name, cycle), issued.lookups)
+               log(f"{cycle:%Y-%m-%dT%H}z: observation snapshot {n} rows")
+           except Exception as e:      # D105.7: never blocks or changes the log file
+               result["snapshot_problems"].append((cycle, repr(e)))
+               log(f"{cycle:%Y-%m-%dT%H}z: OBSERVATION SNAPSHOT NOT WRITTEN: {e!r}")
+  +    log(f"tracker lookups with no report: {result['no_report']} of {result['lookups']}")     # D125.3
+       state.last_run = {"at": state_mod.iso(now), "status": ("waiting" if result["waiting"] else
+                                                             "stopped" if result["stopped"] else "ok")}
+       state_mod.save_state(root, state)
+  @@ -263,7 +282,8 @@ def main(argv=None):
+       print(f"issued {len(res['issued'])}, stopped {len(res['stopped'])}, not issued (tracker order) "
+             f"{len(res['out_of_order'])}, waiting {res['waiting'] is not None}, already done {len(res['skipped'])}")
+       # D104.4: 3 for a cycle that should have issued and did not (a guard stop, or a fetch that never
+  -    # succeeded), 2 for a fetch still waiting; a tracker-order skip sets no failing code.
+  +    # succeeded by 20 hours, D125.2), 2 for a fetch still waiting; a tracker-order skip sets no failing
+  +    # code. The workflow fails the job on any code other than 0 and 2 (D125.3).
+       if res["stopped"]:
+           return 3
+       if res["waiting"]:
+
+B. The new template against the deployed workflow (fresh clone fbfbddf), diff template deployed
+  16,19c16,17
+  < #   7. fails the job (so the owner is told) on any runner exit code other than 0 and 2 (D125.3): 3 when
+  < #      a cycle issued nothing, 1 or anything else when the runner itself failed. A cycle still waiting
+  < #      for its data (exit code 2) is not a failure; every run tries it again until it is 20 hours old
+  < #      (D125.2).
+  ---
+  > #   7. fails the job (so the owner is told) if any cycle issued nothing (exit code 3). A cycle still
+  > #      waiting (exit code 2) is not a failure; the next run tries again.
+  34,35c32,33
+  <   MLWX_COMMIT: "SET-AT-DEPLOY"     # the 40-character commit of MLwx, set at each deploy
+  <   MODELS_TAG: "SET-AT-DEPLOY"      # the release tag of the models, set at each deploy
+  ---
+  >   MLWX_COMMIT: "d6ca3e4e9bd79d55ffbdfd1cc7a9a5d6e21747bb"     # the 40-character commit of MLwx, set at each deploy
+  >   MODELS_TAG: "gfs-models-49"      # the release tag of the models, set at each deploy
+  78,79d75
+  <           cache: pip                              # EF05: the same pinned versions, downloaded once
+  <           cache-dependency-path: requirements.txt
+  187,191c183,184
+  <       # D125.3: 0 (issued, or nothing due) and 2 (a cycle waiting) pass; every other code fails the job,
+  <       # after the commit step as before. An empty code (the runner step did not record one) fails too.
+  <       - name: Fail the job unless the runner's exit code was 0 or 2
+  <         env:
+  <           CODE: ${{ steps.runner.outputs.code }}
+  ---
+  >       - name: Fail the job if a cycle issued nothing (exit code 3)
+  >         if: steps.runner.outputs.code == '3'
+  193,197c186,187
+  <           case "$CODE" in
+  <             0|2) echo "The runner finished with exit code $CODE: not a failure." ;;
+  <             3) echo "The runner finished with exit code 3 (a cycle issued nothing); see its output above."; exit 1 ;;
+  <             *) echo "The runner finished with exit code '$CODE' (the runner failed); see its output above."; exit 1 ;;
+  <           esac
+  ---
+  >           echo "The runner finished with exit code 3 (a cycle issued nothing); see its output above."
+  >           exit 1
+
+  Dry run output (second run):
+  2026-10-12T12z: issued 2254 rows to <tmp>/root/log/2026/10/gfs_2026101212.csv; errors applied 0; IEM requests 0; lookups with no report 0 of 0
+  2026-10-12T12z: observation snapshot 0 rows
+  tracker lookups with no report: 0 of 0
+  issued 1, stopped 0, not issued (tracker order) 0, waiting False, already done 0
+  exit code 0; IEM calls 0; time total 107.9 s: fetch 100.6 s, model load 0.0 s, the rest 7.3 s
+  live rows 552 (airports 12); re-issued rows 2254 (airports 49); rows compared 552; differences by column {'raw_gfs': 0, 'baseline': 0, 'b': 0, 'corrected': 0}; first []
+  re-issued airports not in the live file: 37 (the 37 onboarded on 2026-10-13, not compared)
+  live file columns other than the four: gfs_version {'v16'} model_sha256 {'16485f38'} code_commit {'0f89f01'}
+  re-issued: gfs_version {'v16'} model_sha256 {'484590bf'}
+
+C. STEPS FOR THE OWNER, after session 131's commit (D125.8)
+
+  MLwx-live redeploy (one redeploy):
+  1. Commit session 131 in MLwx and push. Note its full 40-character commit hash.
+  2. In zadams03/MLwx-live, replace .github/workflows/live.yml with deploy/mlwx-live/.github/workflows/live.yml
+     from that commit, then set the two SET-AT-DEPLOY values:
+       MLWX_COMMIT: "<session 131's 40-character commit>"
+       MODELS_TAG: "gfs-models-49"            (unchanged)
+  3. Replace MLwx-live's .gitignore with deploy/mlwx-live/.gitignore (adds *.partial and *.tmp), and
+     README.md with deploy/mlwx-live/README.md.
+  4. Commit and push to main. requirements.txt is unchanged (the pip cache keys on it).
+  5. Start one run by hand (Actions, live, Run workflow), NOT between :35 and :55 past the hour (D112.8,
+     D118.2). Check: green; the setup-python step mentions the pip cache; the runner prints
+     "tracker lookups with no report: N of M"; the last step prints "The runner finished with exit code 0
+     (or 2): not a failure."
+  6. The next planning session records the deployed values (the MLwx-live commit, MLWX_COMMIT, MODELS_TAG)
+     in its entry. From this redeploy, code_commit in new log rows changes, and D125.2's 20 h rule and
+     D125.3's empty-reply rule apply (D125.8).
+
+  MLwx-mosmix update:
+  1. In zadams03/MLwx-mosmix, replace saver.py, .github/workflows/save.yml and README.md with the three files
+     from deploy/mlwx-mosmix/ at session 131's commit (stations.csv and .gitignore are unchanged).
+  2. Commit and push to main.
+  3. Run "save" once by hand. Check: green; the freshness step prints "stations more than 12 h behind: 0 of
+     38: PASS".
+  4. After about a week, read the run list for gaps (MS08; README set-up step 6).

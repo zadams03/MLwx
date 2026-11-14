@@ -13,8 +13,10 @@
 #      snapshot file is written once and never edited), and pushes them; if the push did not land on main
 #      (a failed rebase is aborted), the job fails here and the page is not published;
 #   6. publishes the static page to GitHub Pages (skipped when only last_run.at changed);
-#   7. fails the job (so the owner is told) if any cycle issued nothing (exit code 3). A cycle still
-#      waiting (exit code 2) is not a failure; the next run tries again.
+#   7. fails the job (so the owner is told) on any runner exit code other than 0 and 2 (D125.3): 3 when
+#      a cycle issued nothing, 1 or anything else when the runner itself failed. A cycle still waiting
+#      for its data (exit code 2) is not a failure; every run tries it again until it is 20 hours old
+#      (D125.2).
 #
 # This is a template: a commit cannot hold its own hash. The two values marked SET-AT-DEPLOY below
 # (MLWX_COMMIT and MODELS_TAG) are set by the owner at each deploy, and the deployed values are recorded
@@ -73,6 +75,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12.15"
+          cache: pip                              # EF05: the same pinned versions, downloaded once
+          cache-dependency-path: requirements.txt
 
       - name: Install the pinned requirements
         run: python -m pip install -r requirements.txt
@@ -180,8 +184,14 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Fail the job if a cycle issued nothing (exit code 3)
-        if: steps.runner.outputs.code == '3'
+      # D125.3: 0 (issued, or nothing due) and 2 (a cycle waiting) pass; every other code fails the job,
+      # after the commit step as before. An empty code (the runner step did not record one) fails too.
+      - name: Fail the job unless the runner's exit code was 0 or 2
+        env:
+          CODE: ${{ steps.runner.outputs.code }}
         run: |
-          echo "The runner finished with exit code 3 (a cycle issued nothing); see its output above."
-          exit 1
+          case "$CODE" in
+            0|2) echo "The runner finished with exit code $CODE: not a failure." ;;
+            3) echo "The runner finished with exit code 3 (a cycle issued nothing); see its output above."; exit 1 ;;
+            *) echo "The runner finished with exit code '$CODE' (the runner failed); see its output above."; exit 1 ;;
+          esac

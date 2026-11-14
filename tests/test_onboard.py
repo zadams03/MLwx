@@ -237,13 +237,23 @@ def synthetic_cycle(cycle, airports):
 
 
 class NewTrackerTests(Case):
+    @classmethod
+    def setUpClass(cls):
+        """The 49-airport setup (the 12, then the onboarded rows by onboard.add_rows) is built once per class
+        (register row EF01); each test gets its own copy of the airports file, in its own folder."""
+        built = Path(tempfile.mkdtemp(prefix="test_onboard_class_"))
+        cls.addClassCleanup(shutil.rmtree, built, True)
+        (built / MODEL.airports_file).write_bytes(TWELVE_BYTES)
+        cls.new_class = onboarded_new()
+        onboard.add_rows(cls.new_class, built / MODEL.airports_file)
+        cls.airports_bytes = (built / MODEL.airports_file).read_bytes()
+
     def setUp(self):
         super().setUp()
         data = self.tmp / "data"
         data.mkdir()
-        (data / MODEL.airports_file).write_bytes(TWELVE_BYTES)
-        self.new = onboarded_new()
-        onboard.add_rows(self.new, data / MODEL.airports_file)
+        (data / MODEL.airports_file).write_bytes(self.airports_bytes)
+        self.new = list(self.new_class)
         p = mock.patch.object(config, "DATA", data)
         p.start()
         self.addCleanup(p.stop)

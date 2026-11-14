@@ -132,6 +132,14 @@ re-run must happen in a clean clone (D62.3, D62.6).
   an audit of the live runs (session 118, F161).
 - **Sessions 120 to 123:** the project health check: two audits (F163,
   F164) and fixes (F165, F166).
+- **Session 131:** three scripts that get stage B (the 2026-27 forward
+  test) ready without editing its frozen scripts:
+  `session131_stageb_build_check.py` says whether a build may be kept (no
+  day lost to a network failure), `session131_stageb_score.py` runs the
+  frozen scoring script with its recorded model fingerprints held as
+  constants, and `session131_stageb_rehearsal.py` tries the build's own
+  path on a spent fortnight and compares it with the training set (D125.5,
+  D125.8).
 - `../src/mlwx/`: the live tool's package (D103.3). It also holds the
   airport onboarding and refit of sessions 110 and 111.
 - `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.

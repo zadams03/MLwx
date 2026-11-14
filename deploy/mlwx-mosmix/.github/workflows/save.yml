@@ -13,7 +13,7 @@
 #   4. commits and pushes the manifest, only if it changed. A rejected push is rebased once and pushed
 #      again; if it still does not land, the job fails;
 #   5. runs saver.py --check-fresh: the job fails if the newest issue held is more than 12 hours older than
-#      the newest issue listed on the server;
+#      the newest issue listed on the server, or if any one station's newest issue held is (MS06);
 #   6. fails the job (so GitHub tells the owner) if step 2 had a failure.
 
 name: save
@@ -79,7 +79,7 @@ jobs:
         run: |
           git config user.name "mlwx-mosmix"
           git config user.email "mlwx-mosmix@users.noreply.github.com"
-          git add manifest
+          if [ -d manifest ]; then git add manifest; fi     # MS05: a first run that saved nothing has no manifest/
           if git diff --cached --quiet; then
             echo "The manifest did not change: nothing to commit."
           else

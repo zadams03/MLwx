@@ -1,0 +1,7 @@
+airport,expected,rows,dropped,cells_compared,cells_equal,obs_compared,obs_equal,prev_obs_compared,prev_obs_equal
+EGLC,14,14,0,140,140,14,14,14,14
+LFPG,14,14,0,140,140,14,14,14,14
+DSM,14,14,0,140,140,14,14,14,14
+YSDU,14,14,0,140,140,14,14,14,14
+RNO,14,14,0,140,140,14,14,14,14
+SFO,14,14,0,140,140,14,14,14,14

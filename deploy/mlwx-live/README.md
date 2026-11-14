@@ -40,6 +40,12 @@ every file is added in a commit made by the automated run, with the time it was 
 If anything is wrong with a run's data, that run issues **nothing**: there is no file for it, and the
 page says so. Nothing is ever filled in.
 
+If the data cannot be fetched yet (a GFS file not there yet, a network error, or an observation reply
+from IEM that is empty or is not the expected table), the GFS run waits. Every later scheduled run
+tries it again, and later GFS runs wait behind it so that runs are always issued in time order. Once
+a GFS run is 20 hours old, a fetch problem is final: that run issues nothing and later runs go on. A
+problem with the data itself (a GRIB message that is not what the code expects) is final at once.
+
 ## The observation snapshot
 
 `obs/YYYY/MM/gfs_YYYYMMDDHH.csv`: for each issued run, named like its log file, the observations the
@@ -62,6 +68,8 @@ It holds no forecast and no error.
 - `state/tracker_gfs.json`: where each bias tracker had got to (b, the last valid time applied, the
   count), the runs that issued nothing and why, and the last run's time and status. A cache; the log
   is the record. Committed when anything in it changes besides the last run's time.
+- `.gitignore`: files that are never committed, including the temporary files a log or snapshot
+  file is first written as (`*.partial`, `*.tmp`).
 - `site/` is built by each run and published with GitHub Pages; it is not committed.
 - `.github/workflows/live.yml`: the schedule (every hour at 15 and 40 minutes past, UTC; GitHub
   starts scheduled runs late or skips some; a GFS run is used from about 4 hours 10 minutes after it
@@ -69,8 +77,11 @@ It holds no forecast and no error.
   the last run's time in `state/`, the run commits `log/`, `obs/` and `state/`, pushes, and publishes
   the page; otherwise it commits nothing and leaves the page as it was, so the page's build time
   shows the last run that changed something. The job fails if the push did not land on `main` (the
-  page is then not published), or if a GFS run should have issued and did not (the runner's exit
-  code 3); a run still waiting for its data (code 2) is tried again at the next run.
+  page is then not published), or if the runner's exit code is anything other than 0 or 2: code 3
+  when a GFS run should have issued and did not, and code 1 or any other when the runner itself
+  failed. Code 0 means a run was issued or nothing was due; code 2 means a GFS run is still waiting
+  for its data and is tried again at the next run. Each run's output also says how many observation
+  lookups found no report. The Python packages are cached between runs; the versions are the same.
 - `requirements.txt`: the exact Python packages.
 
 ## The code
