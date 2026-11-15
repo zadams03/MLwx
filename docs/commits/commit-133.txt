@@ -1,0 +1,35 @@
+Session 133: stage H opened on GFS, and its first build choice: a central 80 % range for each forecast (D128, F177)
+
+D128 records the owner's decisions after session 132: F176 is accepted
+(the caption question for ANALYSIS Part 1 and RESULTS stays with the
+owner); stage H is opened on GFS, with one central 80 % range for the
+hourly curve and for the daily maximum at the 12 record airports; a
+pre-registered range test on 2026-27 is chosen in outline, to be made
+binding in session 134's entry before any 2026-27 value is scored; and
+the rules of the range comparison were fixed before any value was
+computed.
+
+The comparison ran offline on the six development airports' spent,
+out-of-sample errors (session 112's prediction files and session 104's
+daily-maximum days), scored on 2024-25 and 2025-26. Gate: the baseline
+refit equals the stored predictions row for row in 12 of 12 cells.
+Hourly: T1 (one range per airport) stays; T2 (per lead band) was lower
+at 6 of 6 airports but only 0.34 % on the headline interval score, short
+of the 1 % rule; T3 did not pass; the weather-dependent quantile
+LightGBM ranges (4,416 models) were overconfident, holding 65 to 68 %
+of observations, and failed all four parts. Daily maximum: M1 (one range
+per airport) stays. Both winners score lower than their raw-GFS twins
+in 24 of 24 airport-periods. These are build-choice scores, never
+results.
+
+Descriptive: T1's coverage falls with lead (about 0.83 to 0.76) and on
+days when GFS changes its mind between runs; its 95 % coverage interval
+contains 0.80 in 8 of 12 airport-periods, M1's in 9 of 12.
+
+The prompt's D128 block lacked its separator line; by the owner's
+ruling one separator and one blank line were inserted before D128's
+heading, and D128's text is unchanged (F177.11). D127 and F176 are
+archived; the Live index is D93, D103, D105, D118, D128, F177. New:
+scripts/session133_ranges.py, tests/test_session133.py (17 tests),
+data/processed/session133_ranges/. 426 tests OK, 1 skipped. Nothing
+live, in src/, deploy/, SPEC, RESULTS or ANALYSIS changed.

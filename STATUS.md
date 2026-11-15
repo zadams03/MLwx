@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 15 November 2026, after session 132._
+_Last updated: 15 November 2026, after session 133._
 
 ---
 
@@ -51,21 +51,32 @@ daily maximum; version 1 is live and public (D103.9).
   cleaning rule for the historical observations (D111.2). A spike and
   range guard for live observations comes later, each in its own entry
   (D110.7).
-- **Session 132's three items (D127, F176): done, descriptive.** Gates C
-  and D pass on the 12 record airports with today's `src/mlwx/`
-  (`scripts/session132_gates_cd.py`; 18,768 of 18,768 values equal at each
-  of three cycles; pairing 8,639 of 8,640, the one difference by design).
-  AIFS and the NBM grid read at the development airports' own position
-  (`data/processed/session132_iem/`): the competitor's MAE changes by at
-  least 0.05 C at 3 of 6 airports (KDSM, KRNO, KSFO); the largest is the
-  NBM grid at KSFO (hourly 1.404 to 0.920, daily maximum 1.868 to 1.196),
-  where the curve's lead over it becomes a deficit. Whether ANALYSIS.md's
-  Part 1 captions change is for the owner (D127.5(f)). D115.6's question
-  (`data/processed/session132_revision/`): the correction points the way
-  GFS next revises at 11 of 12 airports (Spearman +0.04 to +0.10, interval
-  above 0; NZWN slightly below), small in size; it runs mostly through the
-  baseline's part, not the drift tracker's. ANALYSIS.md has Part 4 with
-  both. Nothing changes because of either (D127.5, D127.6).
+- **Stage H: opened on GFS (D128).** Its first build choice, a central 80 %
+  range around each forecast, is made (F177; build-choice scores on the six
+  development airports' spent errors, never results). Session 133 ran
+  `scripts/session133_ranges.py` (gate PASS: 12 of 12 cells equal row for
+  row, 18 of 18 counts). Winners by D128.8's rule: **T1** for the hourly
+  curve (the curve plus the 10th and 90th percentiles of its past
+  errors, one pair per airport; interval score 5.315 against
+  raw GFS's 7.165; pooled coverage 0.793 and 0.810) and **M1** for the daily
+  maximum (5.071 against 6.201; coverage 0.781 and 0.814). T2 was 0.34 %
+  better, short of the 1 % needed; Q's quantile models were far too narrow
+  (coverage 0.65 to 0.68). The winner's 95 % coverage interval contains
+  0.80 in 8 of 12 airport-periods (T1) and 9 of 12 (M1); coverage falls
+  with lead (0.83 to 0.76 in 2024-25). Tables in
+  `data/processed/session133_ranges/`. Nothing is frozen yet and nothing
+  live changed.
+- **A range test on 2026-27: chosen, in outline (D128.3).** Not yet
+  binding: session 134's entry makes it so, before any 2026-27 value is
+  scored. The 12 airports, both outputs, D105.5(e)'s periods; per airport,
+  period and output, (a) the 95 % coverage interval contains 0.80 and (b)
+  the interval score is below a raw-GFS reference range's. Left to session
+  134: the reference's exact construction, and ranges for forecasts issued
+  before the ranges go live.
+- **Session 132's three items (D127, F176): done, descriptive, accepted
+  (D128).** Gates C and D pass on the 12 record airports; AIFS and the NBM
+  grid read at the airport's own position; the correction points the way
+  GFS next revises at 11 of 12 airports. ANALYSIS.md has Part 4.
 - **Stage G, live product v1: live with 49 airports (D105.2, F154.2).**
   Public repo zadams03/MLwx-live, page at
   https://zadams03.github.io/MLwx-live/. Deployed now (D127.2): MLwx-live
@@ -156,14 +167,19 @@ daily maximum; version 1 is live and public (D103.9).
   about 7 KB to DECISIONS.md and its output file. Session 132 adds three
   scripts, a test, `data/processed/session132_iem/` and
   `data/processed/session132_revision/` (together about 0.8 MB), about 10 KB
-  to ANALYSIS.md and about 14 KB to DECISIONS.md.
-- **The session order (D127.8).** 133: stage H's design and build
-  choices (D125.9), including whether to pre-register a range test on
-  2026-27 while no 2026-27 value has been scored (D121.2(4), SPEC 2.5). The
-  owner chooses each session's model. A GFS v17 Service Change Notice goes
-  ahead of it. Later (D121.2): stage H on GFS; stage D, starting with AIFS,
-  then stage E; WeatherNext stays deferred (D107.4). Stage B and the live
-  test are scored only when their periods end (D73.8, D105.5).
+  to ANALYSIS.md and about 14 KB to DECISIONS.md. Session 133 adds a
+  script, a test, `data/processed/session133_ranges/` (about 0.3 MB) and
+  about 12 KB to DECISIONS.md before the archive step.
+- **The session order (D128.11).** 134: freeze each output's winner at the
+  12 airports (built from each airport's out-of-sample errors), record the range test's
+  pre-registration (D128.3) and add the ranges to the live tool, labelled
+  as not yet verified; then the owner redeploys. The test's scoring script
+  is written and gated in a later session, before the first look of D73 or
+  D105.5. Later: GEFS ranges as a challenger once GEFS's next version is
+  out. A GFS v17 Service Change Notice goes ahead of all of these. Then
+  (D121.2): stage D, starting with AIFS, then stage E; WeatherNext stays
+  deferred (D107.4). Stage B and the live test are scored only when their
+  periods end (D73.8, D105.5).
 - **Rulings on ANALYSIS.md's Part 3 (D121.3).** Candidate 6 (station
   guidance where it exists) is parked to stage E; any use first needs an
   owner's ruling on the same-at-every-airport rule (SPEC 2.5). Candidate 7:
@@ -185,13 +201,18 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Open questions (live)
 
-- **Readings from session 132 (F176.7).** Where D127.6 left a choice,
-  the revision script fixed it before its statistics ran (shared
-  resamples per set, per-period intervals, breakdowns pooled, two
-  extra not-paired reasons); r's ties are broken only by float rounding;
-  the curve is further from the next run than raw GFS because most of its
-  correction is a steady local bias; the iem summary covers D98.10's days
-  only; the NBM grid at KSFO changes Part 1's picture there.
+- **Readings from session 133 (F177.11).** (1) The prompt's D128 block had
+  no `---` separator; one `---` line and a blank line were inserted before
+  its heading by the owner's ruling. (2) D128.6's "15 recipe inputs" was
+  read as G15's nine (gate (a) shows they equal the baseline's). (3) The
+  cloud-cover tercile tie rule was changed after a stubbed rehearsal and
+  before the real run (descriptive only). (4) Pooled coverage for (iv) is
+  all six airports' rows pooled. (5) Other open choices are fixed in the
+  script's docstring. (6) Q's ranges were far too narrow.
+- **F176's caption question (D127.5(f), carried).** The NBM grid read at
+  KSFO's own position (hourly MAE 1.404 to 0.920, daily maximum 1.868 to
+  1.196) turns the curve's lead there into a deficit. Whether ANALYSIS.md's
+  Part 1 captions change is for the owner.
 
 - **Readings from session 131 (F174.11).** (1) At the rehearsal's rate a
   full period A build would take about 2.9 h and about 27 GB of transfer.
@@ -242,11 +263,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  409 tests, about 65 s (one skipped when no YAML parser is installed).
+  426 tests, about 65 s (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 132 and commit; then plan session 133, stage H's design and build choices (D125.9), including whether to pre-register a range test on 2026-27 while no 2026-27 value has been scored (D121.2(4)).
+**Next planning session:** Review session 133 and commit; then plan session 134: freeze each output's winning range method at the 12 airports, record the 2026-27 range test's pre-registration (D128.3), and add the ranges to the live tool (D128.11).

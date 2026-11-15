@@ -1,0 +1,74 @@
+SESSION 133 --score (offline), start 2026-11-15T21:34:19Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+BUILD-CHOICE SCORES ONLY, NEVER RESULTS (SPEC 2.5). Development airports only.
+read the six prediction files and the days file (15 s)
+Gate (b): scored rows with finite obs, curve, raw_gfs and b, per airport and period (meta.txt's count):
+  EGLC: 2023-24 67,337 of 67,337 (meta 67,337) ok; 2024-25 67,128 of 67,128 (meta 67,128) ok; 2025-26 66,939 of 66,939 (meta 66,939) ok
+  LFPG: 2023-24 67,267 of 67,267 (meta 67,267) ok; 2024-25 67,035 of 67,035 (meta 67,035) ok; 2025-26 66,730 of 66,730 (meta 66,730) ok
+  KDSM: 2023-24 67,328 of 67,328 (meta 67,328) ok; 2024-25 67,153 of 67,153 (meta 67,153) ok; 2025-26 66,968 of 66,968 (meta 66,968) ok
+  YSDU: 2023-24 66,806 of 66,806 (meta 66,806) ok; 2024-25 66,752 of 66,752 (meta 66,752) ok; 2025-26 66,323 of 66,323 (meta 66,323) ok
+  KRNO: 2023-24 67,313 of 67,313 (meta 67,313) ok; 2024-25 67,137 of 67,137 (meta 67,137) ok; 2025-26 66,900 of 66,900 (meta 66,900) ok
+  KSFO: 2023-24 67,323 of 67,323 (meta 67,323) ok; 2024-25 67,099 of 67,099 (meta 67,099) ok; 2025-26 66,900 of 66,900 (meta 66,900) ok
+Gate (b): PASS
+Gate (c): the daily-maximum file's common rows per airport and fold (reported):
+  EGLC: 2023-24 366; 2024-25 365; 2025-26 364; total 1,095
+  LFPG: 2023-24 366; 2024-25 365; 2025-26 363; total 1,094
+  KDSM: 2023-24 366; 2024-25 365; 2025-26 364; total 1,095
+  YSDU: 2023-24 363; 2024-25 363; 2025-26 359; total 1,085
+  KRNO: 2023-24 365; 2024-25 365; 2025-26 363; total 1,093
+  KSFO: 2023-24 366; 2024-25 364; 2025-26 363; total 1,093
+Gate (a): baseline refit, fold 2025-26, cycle hour 12, leads 24 and 36, against the file's baseline:
+  EGLC 12z lead 24: train 1,589, test 363, equal 363 of 363 ok
+  EGLC 12z lead 36: train 1,589, test 362, equal 362 of 362 ok
+  LFPG 12z lead 24: train 1,589, test 363, equal 363 of 363 ok
+  LFPG 12z lead 36: train 1,566, test 357, equal 357 of 357 ok
+  KDSM 12z lead 24: train 1,591, test 364, equal 364 of 364 ok
+  KDSM 12z lead 36: train 1,588, test 363, equal 363 of 363 ok
+  YSDU 12z lead 24: train 1,578, test 361, equal 361 of 361 ok
+  YSDU 12z lead 36: train 1,572, test 358, equal 358 of 358 ok
+  KRNO 12z lead 24: train 1,586, test 364, equal 364 of 364 ok
+  KRNO 12z lead 36: train 1,587, test 363, equal 363 of 363 ok
+  KSFO 12z lead 24: train 1,591, test 364, equal 364 of 364 ok
+  KSFO 12z lead 36: train 1,589, test 363, equal 363 of 363 ok
+Gate (a): PASS
+GATE: PASS
+Rows with no earlier partner (left out of the change terciles): EGLC 2024-25 8,756; EGLC 2025-26 8,711; LFPG 2024-25 8,744; LFPG 2025-26 8,684; KDSM 2024-25 8,759; KDSM 2025-26 8,715; YSDU 2024-25 8,707; YSDU 2025-26 8,631; KRNO 2024-25 8,757; KRNO 2025-26 8,706; KSFO 2024-25 8,752; KSFO 2025-26 8,706
+Q: fitting 6 airports x 2 folds x 4 cycle hours x 46 leads x 2 models ...
+  EGLC: Q 736 fits; swaps 2024-25 0, 2025-26 0
+  LFPG: Q 736 fits; swaps 2024-25 0, 2025-26 0
+  KDSM: Q 736 fits; swaps 2024-25 6, 2025-26 1
+  YSDU: Q 736 fits; swaps 2024-25 0, 2025-26 0
+  KRNO: Q 736 fits; swaps 2024-25 0, 2025-26 1
+  KSFO: Q 736 fits; swaps 2024-25 2, 2025-26 0
+Q: 4,416 models, fit time 324 s, wall 367 s; swaps total 10
+Rule, hourly: incumbent T1: pooled coverage 2024-25 0.7934, 2025-26 0.8105; (iv) holds
+  step 1: T2 against T1: headline 5.2966 vs 5.3148 (+0.34 % lower) (i) False; lower at 6 of 6 (ii) True; per period 5.3477 vs 5.3650, 5.2452 vs 5.2643 (iii) True; coverage 0.7931, 0.8103 (iv) True: stays
+  step 2: T3 against T1: headline 5.3133 vs 5.3148 (+0.03 % lower) (i) False; lower at 4 of 6 (ii) True; per period 5.3617 vs 5.3650, 5.2647 vs 5.2643 (iii) False; coverage 0.7876, 0.8032 (iv) True: stays
+  step 3: Q against T1: headline 5.3433 vs 5.3148 (-0.54 % lower) (i) False; lower at 1 of 6 (ii) False; per period 5.4733 vs 5.3650, 5.2127 vs 5.2643 (iii) False; coverage 0.6472, 0.6844 (iv) False: stays
+Rule, hourly: winner T1
+Rule, daily_max: incumbent M1: pooled coverage 2024-25 0.7810, 2025-26 0.8139; (iv) holds
+  step 1: M2 against M1: headline 5.1081 vs 5.0707 (-0.74 % lower) (i) False; lower at 2 of 6 (ii) False; per period 5.1708 vs 5.1515, 5.0445 vs 4.9889 (iii) False; coverage 0.7471, 0.8051 (iv) False: stays
+Rule, daily_max: winner M1
+  hourly T1 EGLC 2024-25: coverage 0.7672 [0.7448, 0.7892] EXCLUDES 0.80; width 2.525, IS 4.145; RT1 coverage 0.7601, width 2.991, IS 4.986
+  hourly T1 EGLC 2025-26: coverage 0.8002 [0.7768, 0.8238] contains 0.80; width 2.636, IS 4.027; RT1 coverage 0.7990, width 3.171, IS 4.962
+  hourly T1 LFPG 2024-25: coverage 0.7576 [0.7337, 0.7795] EXCLUDES 0.80; width 2.859, IS 4.963; RT1 coverage 0.7633, width 3.542, IS 5.945
+  hourly T1 LFPG 2025-26: coverage 0.8211 [0.8030, 0.8373] EXCLUDES 0.80; width 3.029, IS 4.406; RT1 coverage 0.7875, width 3.704, IS 5.798
+  hourly T1 KDSM 2024-25: coverage 0.8252 [0.8100, 0.8438] EXCLUDES 0.80; width 4.111, IS 5.917; RT1 coverage 0.8292, width 6.074, IS 7.883
+  hourly T1 KDSM 2025-26: coverage 0.7912 [0.7649, 0.8133] contains 0.80; width 3.988, IS 6.612; RT1 coverage 0.8112, width 5.864, IS 8.246
+  hourly T1 YSDU 2024-25: coverage 0.8104 [0.7916, 0.8267] contains 0.80; width 3.930, IS 5.924; RT1 coverage 0.8018, width 4.755, IS 7.108
+  hourly T1 YSDU 2025-26: coverage 0.8145 [0.7984, 0.8308] contains 0.80; width 3.875, IS 5.876; RT1 coverage 0.8020, width 4.758, IS 6.870
+  hourly T1 KRNO 2024-25: coverage 0.8081 [0.7752, 0.8380] contains 0.80; width 3.891, IS 6.265; RT1 coverage 0.7362, width 6.441, IS 10.938
+  hourly T1 KRNO 2025-26: coverage 0.8275 [0.7983, 0.8506] contains 0.80; width 3.847, IS 5.825; RT1 coverage 0.8005, width 7.087, IS 10.288
+  hourly T1 KSFO 2024-25: coverage 0.7919 [0.7558, 0.8309] contains 0.80; width 3.132, IS 4.976; RT1 coverage 0.7623, width 3.767, IS 6.320
+  hourly T1 KSFO 2025-26: coverage 0.8085 [0.7749, 0.8360] contains 0.80; width 3.161, IS 4.840; RT1 coverage 0.7707, width 3.914, IS 6.637
+  daily_max M1 EGLC 2024-25: coverage 0.7671 [0.7068, 0.8219] contains 0.80; width 2.478, IS 4.029; RM1 coverage 0.7507, width 2.590, IS 4.630
+  daily_max M1 EGLC 2025-26: coverage 0.7912 [0.7363, 0.8462] contains 0.80; width 2.551, IS 4.201; RM1 coverage 0.7830, width 2.894, IS 5.000
+  daily_max M1 LFPG 2024-25: coverage 0.7205 [0.6685, 0.7644] EXCLUDES 0.80; width 2.870, IS 5.320; RM1 coverage 0.6877, width 3.121, IS 6.841
+  daily_max M1 LFPG 2025-26: coverage 0.8540 [0.8154, 0.8898] EXCLUDES 0.80; width 3.126, IS 4.411; RM1 coverage 0.7906, width 3.637, IS 5.711
+  daily_max M1 KDSM 2024-25: coverage 0.7726 [0.7342, 0.8164] contains 0.80; width 3.566, IS 5.572; RM1 coverage 0.8959, width 6.337, IS 7.287
+  daily_max M1 KDSM 2025-26: coverage 0.7747 [0.7253, 0.8214] contains 0.80; width 3.722, IS 6.225; RM1 coverage 0.8599, width 5.453, IS 7.484
+  daily_max M1 YSDU 2024-25: coverage 0.7658 [0.7080, 0.8154] contains 0.80; width 3.172, IS 5.405; RM1 coverage 0.7769, width 3.134, IS 5.943
+  daily_max M1 YSDU 2025-26: coverage 0.8440 [0.8022, 0.8830] EXCLUDES 0.80; width 3.322, IS 4.797; RM1 coverage 0.8189, width 3.326, IS 5.210
+  daily_max M1 KRNO 2024-25: coverage 0.8301 [0.7753, 0.8795] contains 0.80; width 3.152, IS 4.932; RM1 coverage 0.7315, width 3.039, IS 6.257
+  daily_max M1 KRNO 2025-26: coverage 0.8457 [0.7989, 0.8843] contains 0.80; width 2.993, IS 4.320; RM1 coverage 0.8375, width 3.393, IS 4.982
+  daily_max M1 KSFO 2024-25: coverage 0.8297 [0.7830, 0.8791] contains 0.80; width 3.783, IS 5.651; RM1 coverage 0.7473, width 4.264, IS 7.419
+  daily_max M1 KSFO 2025-26: coverage 0.7741 [0.7080, 0.8320] contains 0.80; width 3.622, IS 5.980; RM1 coverage 0.7879, width 4.674, IS 7.635

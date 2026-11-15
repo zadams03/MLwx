@@ -1,0 +1,35 @@
+Session 133 range comparison (DECISIONS D128), written by scripts/session133_ranges.py --score.
+Build-choice scores only, never results (SPEC 2.5).
+run 2026-11-15T21:41:33Z; run time 434 s; Q 4,416 models, fit time 324 s; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+script SHA-256 4bbe4ceaec5c72057bba0ad8f6f744b7a634016e6fcd935412db3436d28875b2
+imported, SHA-256 checked: session97_stagec_cv.py 987ab6bacc3a4171710e4eb9b10e967108ede52fa572f4611413d24ac5631f91; session104_curve_cv.py 6dcd872791463bf58f6578da35e577441a444562b398385c775749bf5890d4cb; session112_analysis.py bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab
+seed 133; resamples 10000; percentiles (10, 90); penalty 10.0
+winners: hourly T1; daily maximum M1
+inputs (path from MLwx-all, SHA-256):
+  MLwx-stagec/analysis112/pred_EGLC.csv.gz  sha256 57754dbd9abd8c32aa506f76afca4dcdd282c555de4790bedec911565a2fa4a8
+  MLwx-stagec/analysis112/pred_LFPG.csv.gz  sha256 1b3841523365c9c4d2631d257967fa567983e4a9473ac8554d9f71e40e3faffa
+  MLwx-stagec/analysis112/pred_KDSM.csv.gz  sha256 08de86bdc63938d13a16ce9bc2391f0b705582562beace3019837bb041862d9e
+  MLwx-stagec/analysis112/pred_YSDU.csv.gz  sha256 5061befa0e7f9138e9141b3266af4848ec4c01485c56834208c96bf6c6da4f23
+  MLwx-stagec/analysis112/pred_KRNO.csv.gz  sha256 d2a49ecf2f2ea10aa0ed970a25e627525ab9d0eca06386ba80a82d3e8fabb2d8
+  MLwx-stagec/analysis112/pred_KSFO.csv.gz  sha256 1a8707bcb1c16ffb0f523e3efe7933d1a0b7ad446ddce39cf918408bb599c777
+  MLwx/data/processed/session104_dailymax_days.csv  sha256 65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3
+  MLwx-stagec/stagec_dev_EGLC.csv.gz  sha256 af8848e091c79aecac5f809536e4dec20757d288f7ebc1cf3e830d33a69c9126
+  MLwx-stagec/stagec_dev_LFPG.csv.gz  sha256 5b113123c7642eefb8d212cbe5151f43e8ba343a231dc90d4461ed104e6b661f
+  MLwx-stagec/stagec_dev_KDSM.csv.gz  sha256 17461736cd23585781ebf01a842469a1ea6b0e93571bea250869a23271dc0e32
+  MLwx-stagec/stagec_dev_YSDU.csv.gz  sha256 57a11a4f00250304f289de158223eff45f841d572e3c3c7f65e5b6fc6c0fa829
+  MLwx-stagec/stagec_dev_KRNO.csv.gz  sha256 6e2d0779f6b5ea92dc77e3b074030ac3676bd90cffe3b44ab6e3441c06831ec3
+  MLwx-stagec/stagec_dev_KSFO.csv.gz  sha256 11fa6385f05c57cf627734d9caed13927f1e176e07c5fc039f700d30fd1ceff8
+  MLwx-stagec/stagec_dev_f025_048_EGLC.csv.gz  sha256 947bf2f0920e1a1f972ea9297fcc9bdc5c987562e13ee5daa7ae5ab866066ea9
+  MLwx-stagec/stagec_dev_f025_048_LFPG.csv.gz  sha256 04dbd411dbd683dfe3a09597ea8407cc75c8afc86100b31a8396caca0ff52c35
+  MLwx-stagec/stagec_dev_f025_048_KDSM.csv.gz  sha256 bd2d80c01211a3c399d6904068bfb9377b0ad9091e13878621526835434ee2f3
+  MLwx-stagec/stagec_dev_f025_048_YSDU.csv.gz  sha256 b801fcc2d9e2c9dd843ea920e8dd8ac88f33f5db7057bb4ae1ca46a2b16981ac
+  MLwx-stagec/stagec_dev_f025_048_KRNO.csv.gz  sha256 3ca1d4ff8933f14c6e898525ba445af080b92c0545989fe39b3d7bdbfdd6bd58
+  MLwx-stagec/stagec_dev_f025_048_KSFO.csv.gz  sha256 2e355c0146e1bc8923f632d208c084f646ec3ebcd9dfa2bb22e22c363e81b84b
+files:
+  scores.csv  bytes 24,266  sha256 543d4f00e01b731c3220b546266f30986b9b57503f5fd6398d5038795d15507e
+  breakdown.csv  bytes 229,600  sha256 242c02896e60ca2cb18c31056fd41311ff95712f776cff5b6cf2c4bb7c56dc6e
+  ladder.csv  bytes 1,161  sha256 fe3eb9c654d086d444868d8b8b68aa00146ae89cd74146864c5a9165fb205ea8
+  tables.csv  bytes 45,331  sha256 158ad14b3525a051f5ffd0a22297f82a539224c746b565a4c52b4b9ddf0b5caa
+  q_swaps.csv  bytes 280  sha256 83239b503e05bc165fe33d1d6bb294ac85948be144b9746b51e26c88a93dc290
+  terciles.csv  bytes 1,762  sha256 f1609ce5e11958d79072f220d3f7d348fbb28d892437eacbd95b61a213b60f37
+  winner_coverage.csv  bytes 4,737  sha256 ebe510ff0c26cd03ae2381b6ccccdfd8bad1aa27c16fd827a70239a11db59a0e
