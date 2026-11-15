@@ -1,0 +1,34 @@
+Session 132: Gates C and D on the 12 record airports, AIFS and the NBM grid at the airport's own position, and whether the correction predicts GFS's next run (D127, F176)
+
+D127 records the owner's steps of 2026-11-15: the MLwx-live redeploy
+(commit b836748, MLWX_COMMIT dad68db, MODELS_TAG gfs-models-49) with a
+green manual run on the private route; the product models in the private
+repository zadams03/MLwx-models with D105.2's SHA-256; the read-only token
+with no expiry; the public model Releases, tags and old cache removed;
+and MLwx-mosmix updated. It also fixes the rules of this session's three
+items before any value was computed.
+
+Gates C and D (F154.9(4)): a new wrapper runs session 109's gates
+unchanged on the 12 record airports. Both pass against today's
+src/mlwx/: Gate C 18,768 values per cycle at three cycles, none
+different; Gate D pairing differs only at the one hour already ruled
+by design.
+
+AIFS and the NBM grid at the development airports' own position
+(descriptive): session 114's code, imported unchanged, reproduces its 18
+tables byte for byte, then is run with the airport's own position. The
+competitor's error changes by 0.05 C or more at 3 of 6 airports. The
+largest change is the NBM grid at KSFO (hourly MAE 1.404 to 0.920), where
+the formal test now favours the NBM grid hourly. ANALYSIS.md gains Part 4;
+Parts 1 and 2 and RESULTS.md are unchanged.
+
+D115.6's question (descriptive): on spent stage C rows the curve's
+correction and GFS's next revision are positively correlated at 11 of 12
+airports, but weakly (Spearman about +0.04 to +0.10; sign agreement 50 to
+54 per cent). The correction is mostly a steady local bias, not a
+forecast of the next run.
+
+New scripts session132_gates_cd.py, session132_iem_rows.py and
+session132_revision.py; tests/test_session132.py (409 tests pass); data
+in data/processed/session132_iem/ and session132_revision/. Live index:
+D126 and F175 archived; D127 and F176 added.

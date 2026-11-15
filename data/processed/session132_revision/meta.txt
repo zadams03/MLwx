@@ -1,0 +1,11 @@
+Session 132 D115.6's question (D127.6), written by scripts/session132_revision.py (--pairs, --stats).
+stats run 2026-11-15T17:13:22Z; run time 288 s; python 3.12.2; numpy 2.5.2; seed 132; 2000 resamples
+script SHA-256 166c0b948d3d5a36ce2ba8538e05057cddacda0399f4ede5ad335566e0e0414a
+inputs: ../MLwx-stagec/analysis112/pred_<ICAO>.csv.gz, each equal to meta.txt's SHA-256; no observation used; nothing valid after 2026-07-31T23:00 UTC.
+k = curve - raw_gfs; r = raw_gfs(c + 6 h) - raw_gfs(c); k_base = baseline - raw_gfs; b = curve - baseline.
+ratio = mean_abs_r_minus_k / mean_abs_r; _lo and _hi: 95 % percentile block bootstrap over cycle UTC dates.
+D127.6(g): Spearman k,r interval wholly above 0 at 11 of 12 (EDDM, KORD, CYYZ, ZGSZ, ZUCK, EGLC, LFPG, KDSM, YSDU, KRNO, KSFO).
+files:
+  stats.csv  rows 42  sha256 fc8e013f462b44b76854469f19d448da294f33fd0c57ce4dce73ed75e21640a3
+  breakdowns.csv  rows 108  sha256 7369f2d43e66de1de841426ddfec5e4cfa80570f16a955e2c4dde51ac35584c0
+  pair_counts.csv  rows 12  sha256 def81cba4126c738a7adeab5a529de84965a783cc70760f6ca63decb2850dec3

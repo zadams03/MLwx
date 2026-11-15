@@ -1,0 +1,25 @@
+Session 132 iem-position tables (D127.5), written by scripts/session132_iem_rows.py --run.
+run 2026-11-15T17:07:10Z; run time 144 s; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2; seed 114
+script SHA-256 10009d756569fb3725c4c3012d498965f8b733c24b15921e641627e301555f19
+session114_comparisons.py SHA-256 5ff60d328b2a0489de4173c989a5a9a8472b6bdb5ce6cc4c70d7bd543b2ddc52 (imported read-only; OUT_DIR and SET set at run time)
+sets: development airports iem (the airport's own position), claim airports iem (unchanged, D108.3)
+claim-airport check (D127.5(d)): rows compared 1464, different 0: PASS
+files:
+  hourly_aifs.csv  rows 144  sha256 eb53f04cfcdd5db5390c1a7bd251d0f68395b6549a9ad93f7a0adcebc27a727f
+  hourly_aifs_skill.csv  rows 144  sha256 2ba0d45bc845c3f2990bd0a7fd2dd95ef1202c48a0830c1806a54dc772e608bc
+  hourly_aifs_breakdown.csv  rows 720  sha256 76aeb78a99d1a2913e3ee2dbb0208ff752dc061a59701f39727f7b678c7b6015
+  hourly_aifs_dm.csv  rows 12  sha256 bca8f7044ffcdef08e437a6676735872bf4134ee3452ad018e90f46a1c157cc2
+  dailymax_aifs.csv  rows 180  sha256 01cede6fd40cef05ad7f3bbeb7832716be28ea0e84a5d011ea5caa3086296cc6
+  dailymax_aifs_skill.csv  rows 180  sha256 a4a34ec2b699d3bbdcfd6829496f55abf297cdd811ad16cdc8b0c8fb94c3da05
+  dailymax_aifs_breakdown.csv  rows 480  sha256 d9e6f20cd98d739076a4f282ad48c464149510a42b183a542a8127365ef58925
+  dailymax_aifs_dm.csv  rows 12  sha256 28eab567c1ea49513e21c938092d990fea01742399a3cfbf4c739bcf80d2d553
+  dailymax_aifs_every_cycle.csv  rows 240  sha256 0c25be7164e04c1bc3ebeaf962cea2758856416340871ba60a76488fb9611e3a
+  hourly_nbm.csv  rows 72  sha256 c7f92cc6cad44ab3f31961435db091703f49595f0a24185d88bedbac377329eb
+  hourly_nbm_skill.csv  rows 72  sha256 28b0e8a9bff7923fe71b86a50308aaa54a69dc3d62fbdb9291893e94558204e5
+  hourly_nbm_breakdown.csv  rows 332  sha256 62159349c1db260910b6936225f0ca8c1a543bb464d1f6949995caa380cfa46b
+  hourly_nbm_dm.csv  rows 5  sha256 668d63c8140775dc11f5182c391c2b9d1e0a598de171d46ed42570c5df1819c6
+  dailymax_nbm.csv  rows 108  sha256 131a06544bd7543594ef2e66c09b6e8be68991e0cd473e704def9146ac829bc3
+  dailymax_nbm_skill.csv  rows 108  sha256 578fd8ec73602d31236433d7fa74d990b762d201857b1e09f831719f79dbf4e2
+  dailymax_nbm_breakdown.csv  rows 288  sha256 d8411fae47d3f49de538b9c273afdc252983269016025437799c9dc430d452de
+  dailymax_nbm_dm.csv  rows 5  sha256 558a8ce921488f1f04ad72b74afe02e4f5ec8c146ec66e770f722dd5cb83fe4f
+  dailymax_nbm_every_cycle.csv  rows 120  sha256 b87f1245fc671faaad2b7a5fe261f84b29060a73792e6112a74e5752ca04ef1b

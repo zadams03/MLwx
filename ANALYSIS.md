@@ -1646,3 +1646,99 @@ before it could touch the product.
    standard time day (Table E8), and the curve's mean error against CLI is +0.28 (KDSM) to +0.70 (KSFO) (Part 1
    item 3, Table E9). An offset learned on training days against CLI would change the target D82.8 fixed, so it
    needs an owner's decision before any build choice. Seen after the comparisons; any test is a D89 build choice.
+
+## Part 4. Additions after session 114
+
+Two descriptive additions made in session 132 on spent data (D127.5, D127.6). Both are descriptive only (D107.2):
+no verdict, model, setting, rule or bar changes because of them, and nothing in Parts 1 and 2 above is changed.
+Full tables: `data/processed/session132_iem/` and `data/processed/session132_revision/`.
+
+### 4.1 AIFS and the NBM grid read at the airport's own position (descriptive)
+
+In Parts 1 and 2 every competitor at the six development airports was read at the point GFS uses there (the
+positions file's `gfs` set, D108.3), up to 8.53 km from the airport. Here AIFS and the NBM grid are read again at
+the airport's own position (the `iem` set), with everything else unchanged: the same rows, the same days, the
+same seed. AIFS keeps its height adjustment, now with its terrain at the airport's points; the NBM grid has none,
+as before. The curve and raw GFS do not move: they stay at GFS's own point (SPEC 3.4), so the number of pairs and
+the curve's MAE are the same in both readings. The claim airports were already read at their own position; their
+rows are unchanged (checked, 1,464 of 1,464 rows equal).
+
+The mark fixed beforehand (D127.5(f)): the position matters at an airport when the competitor's pooled MAE
+changes by at least 0.05 C between the two readings (marked * below). It is counted, never judged.
+
+Pooled over the test years; degrees C. MAE is mean absolute error; mean error is observation minus forecast.
+Skill of the curve is 1 minus the curve's MAE over the competitor's. The formal test is the curve against the
+competitor, Benjamini-Hochberg at 0.05 across the airports of each family. Daily maximum: D98.10's days, the
+competitor's own maximum (AIFS: the highest of its 6-hourly steps; the NBM grid: TMAX).
+
+| airport | source | output | n | competitor MAE, GFS's point | at the airport | change | competitor mean error, GFS's point | at the airport | curve MAE | skill of the curve, GFS's point | at the airport | formal test, GFS's point | at the airport |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EGLC | AIFS | hourly | 16,644 | 1.129 | 1.108 | -0.021 | +0.487 | +0.520 | 0.875 | +22.5 % | +21.1 % | curve better, significant | curve better, significant |
+| LFPG | AIFS | hourly | 16,572 | 1.107 | 1.105 | -0.002 | +0.710 | +0.696 | 0.954 | +13.8 % | +13.6 % | curve better, significant | curve better, significant |
+| KDSM | AIFS | hourly | 16,660 | 1.083 | 1.082 | -0.001 | +0.222 | +0.218 | 1.346 | -24.3 % | -24.4 % | competitor better, significant | competitor better, significant |
+| YSDU | AIFS | hourly | 16,492 | 1.121 | 1.114 | -0.006 | +0.272 | +0.238 | 1.189 | -6.1 % | -6.7 % | competitor better, significant | competitor better, significant |
+| KRNO | AIFS | hourly | 16,652 | 1.602 | 1.658 | +0.056 * | -0.432 | -0.403 | 1.099 | +31.4 % | +33.7 % | curve better, significant | curve better, significant |
+| KSFO | AIFS | hourly | 16,652 | 0.944 | 0.933 | -0.010 | -0.174 | +0.073 | 0.963 | -2.0 % | -3.2 % | competitor better, not significant | competitor better, not significant |
+| EGLC | AIFS | daily max | 521 | 0.981 | 0.983 | +0.001 | +0.644 | +0.710 | 0.907 | +7.6 % | +7.7 % | curve better, not significant | curve better, not significant |
+| LFPG | AIFS | daily max | 520 | 1.448 | 1.430 | -0.018 | +1.395 | +1.370 | 0.909 | +37.3 % | +36.5 % | curve better, significant | curve better, significant |
+| KDSM | AIFS | daily max | 520 | 1.431 | 1.424 | -0.007 | +1.178 | +1.172 | 1.238 | +13.5 % | +13.1 % | curve better, significant | curve better, significant |
+| YSDU | AIFS | daily max | 515 | 1.478 | 1.441 | -0.037 | +1.369 | +1.326 | 0.968 | +34.5 % | +32.8 % | curve better, significant | curve better, significant |
+| KRNO | AIFS | daily max | 519 | 1.397 | 1.461 | +0.064 * | +1.195 | +1.266 | 0.818 | +41.5 % | +44.0 % | curve better, significant | curve better, significant |
+| KSFO | AIFS | daily max | 518 | 1.453 | 1.776 | +0.323 * | +1.019 | +1.490 | 1.167 | +19.6 % | +34.3 % | curve better, significant | curve better, significant |
+| KDSM | NBM grid | hourly | 169,194 | 1.208 | 1.156 | -0.052 * | +0.072 | +0.008 | 1.270 | -5.1 % | -9.9 % | competitor better, significant | competitor better, significant |
+| KRNO | NBM grid | hourly | 169,107 | 1.444 | 1.470 | +0.026 | +0.620 | +0.522 | 1.188 | +17.7 % | +19.2 % | curve better, significant | curve better, significant |
+| KSFO | NBM grid | hourly | 169,095 | 1.404 | 0.920 | -0.484 * | +0.044 | +0.051 | 0.990 | +29.5 % | -7.6 % | curve better, significant | competitor better, significant |
+| KDSM | NBM grid | daily max | 1,095 | 1.295 | 1.267 | -0.028 | -0.128 | -0.123 | 1.224 | +5.5 % | +3.4 % | curve better, not significant | curve better, not significant |
+| KRNO | NBM grid | daily max | 1,093 | 0.934 | 0.932 | -0.002 | +0.122 | -0.135 | 0.948 | -1.5 % | -1.7 % | competitor better, not significant | competitor better, not significant |
+| KSFO | NBM grid | daily max | 1,093 | 1.868 | 1.196 | -0.671 * | -1.531 | -0.434 | 1.208 | +35.3 % | -0.9 % | curve better, significant | competitor better, not significant |
+
+Counts of the mark: AIFS hourly 1 of 6 (KRNO), AIFS daily maximum 2 of 6 (KRNO, KSFO), NBM grid hourly 2 of 3
+(KDSM, KSFO), NBM grid daily maximum 1 of 3 (KSFO); 3 of 6 airports have the mark somewhere (KDSM, KRNO, KSFO).
+The largest change is the NBM grid at KSFO: its hourly MAE falls from 1.404 to 0.920 and its daily maximum MAE
+from 1.868 to 1.196, so the curve's lead over it there (Part 1) turns into a deficit: significant hourly, small and not significant for the daily maximum (skill -0.9 %). At KSFO,
+GFS's point lies 8.53 km from the airport, and the NBM grid's 2.5 km boxes feel that distance more than GFS's
+0.25 degree grid does. AIFS moves little except at KRNO and, for the daily maximum, KSFO, where it reads worse at
+the airport than at GFS's point. Whether Part 1's captions should change is for the owner to decide later
+(D127.5(f)).
+
+### 4.2 Does the curve's correction predict GFS's next run? (descriptive)
+
+The question (D115.6): when the curve moves a GFS value up or down, does the next GFS run, six hours later, move
+the same way for the same hour? Rows: session 112's regenerated predictions at the 12 airports, every row the
+curve has a value for, valid up to 2026-07-31T23:00 UTC. No observation is used. A row at cycle c and lead L pairs
+with the next cycle's row for the same valid hour (lead L - 6) in the same period, so L runs from 9 to 48.
+
+- k, the correction: the curve minus raw GFS at cycle c.
+- r, the revision: the next run's raw GFS minus this run's, for the same hour.
+- k is split into k_base (the baseline minus raw GFS) and b (the drift tracker's part, the curve minus the
+  baseline).
+- mean abs r: how far raw GFS at c is from the next run's value. mean abs (r - k): how far the curve at c is from
+  it. Ratio: the second over the first.
+
+Intervals: 95 %, block bootstrap over cycle dates, 2,000 resamples, seed 132. Pooled over each airport's periods.
+
+| airport | pairs | Spearman k, r [95 %] | slope of r on k [95 %] | sign agreement | mean abs r | mean abs (r - k) | ratio | Spearman r, k_base | Spearman r, b |
+|---|---|---|---|---|---|---|---|---|---|
+| EDDM | 116,587 | +0.043 [+0.029, +0.058] | +0.009 [+0.004, +0.013] | 0.522 | 0.350 | 1.318 | 3.76 | +0.044 | +0.004 |
+| KORD | 116,587 | +0.068 [+0.054, +0.082] | +0.056 [+0.045, +0.067] | 0.523 | 0.426 | 0.827 | 1.94 | +0.073 | -0.014 |
+| CYYZ | 116,587 | +0.057 [+0.042, +0.072] | +0.038 [+0.029, +0.048] | 0.514 | 0.378 | 1.091 | 2.88 | +0.063 | -0.003 |
+| ZGSZ | 116,587 | +0.064 [+0.048, +0.080] | +0.029 [+0.021, +0.037] | 0.540 | 0.264 | 0.827 | 3.14 | +0.065 | -0.022 |
+| ZUCK | 116,587 | +0.096 [+0.080, +0.112] | +0.043 [+0.035, +0.050] | 0.538 | 0.399 | 1.147 | 2.87 | +0.100 | +0.015 |
+| NZWN | 116,587 | -0.014 [-0.026, -0.001] | -0.006 [-0.010, -0.001] | 0.501 | 0.187 | 0.948 | 5.08 | -0.015 | +0.005 |
+| EGLC | 175,107 | +0.079 [+0.069, +0.089] | +0.065 [+0.058, +0.073] | 0.534 | 0.345 | 0.744 | 2.16 | +0.079 | +0.010 |
+| LFPG | 175,107 | +0.077 [+0.066, +0.089] | +0.049 [+0.043, +0.055] | 0.534 | 0.374 | 0.884 | 2.36 | +0.078 | +0.010 |
+| KDSM | 175,107 | +0.099 [+0.087, +0.111] | +0.049 [+0.044, +0.055] | 0.527 | 0.507 | 1.430 | 2.82 | +0.101 | -0.000 |
+| YSDU | 175,107 | +0.092 [+0.083, +0.102] | +0.061 [+0.055, +0.068] | 0.534 | 0.432 | 1.104 | 2.55 | +0.097 | -0.016 |
+| KRNO | 175,107 | +0.039 [+0.029, +0.050] | +0.007 [+0.005, +0.009] | 0.509 | 0.293 | 1.859 | 6.35 | +0.036 | +0.006 |
+| KSFO | 175,107 | +0.061 [+0.044, +0.079] | +0.019 [+0.014, +0.024] | 0.524 | 0.209 | 0.983 | 4.71 | +0.049 | +0.039 |
+
+The mark fixed beforehand (D127.6(g)): the correction points the way GFS next revises at an airport when the
+interval of Spearman's correlation of k and r lies wholly above 0. It does at 11 of 12 airports (all but NZWN,
+where the interval lies wholly below 0), so at "most airports" (at least 7 of 12). Sizes are described, not
+judged: the correlations are small (-0.01 to +0.10), the sign agrees on 50 to 54 % of pairs, and a 1 degree
+correction goes with a revision of -0.01 to +0.07 degrees on average. The correction is not a forecast of the next
+run: the curve at c is 1.9 to 6.3 times further from the next run's raw GFS than raw GFS itself is, because most
+of the correction is a steady local bias that every run shares. The link runs mostly through the baseline's part
+(k_base); the drift tracker's part (b) shows little (-0.02 to +0.04). Nothing changes because of this; any use, for example
+as an input in a later stage, needs its own entry (D127.6(g)). Per period and breakdowns (lead, cycle hour,
+tercile of the size of k): `data/processed/session132_revision/stats.csv` and `breakdowns.csv`.

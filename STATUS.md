@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 14 November 2026, after session 131b._
+_Last updated: 15 November 2026, after session 132._
 
 ---
 
@@ -51,46 +51,44 @@ daily maximum; version 1 is live and public (D103.9).
   cleaning rule for the historical observations (D111.2). A spike and
   range guard for live observations comes later, each in its own entry
   (D110.7).
+- **Session 132's three items (D127, F176): done, descriptive.** Gates C
+  and D pass on the 12 record airports with today's `src/mlwx/`
+  (`scripts/session132_gates_cd.py`; 18,768 of 18,768 values equal at each
+  of three cycles; pairing 8,639 of 8,640, the one difference by design).
+  AIFS and the NBM grid read at the development airports' own position
+  (`data/processed/session132_iem/`): the competitor's MAE changes by at
+  least 0.05 C at 3 of 6 airports (KDSM, KRNO, KSFO); the largest is the
+  NBM grid at KSFO (hourly 1.404 to 0.920, daily maximum 1.868 to 1.196),
+  where the curve's lead over it becomes a deficit. Whether ANALYSIS.md's
+  Part 1 captions change is for the owner (D127.5(f)). D115.6's question
+  (`data/processed/session132_revision/`): the correction points the way
+  GFS next revises at 11 of 12 airports (Spearman +0.04 to +0.10, interval
+  above 0; NZWN slightly below), small in size; it runs mostly through the
+  baseline's part, not the drift tracker's. ANALYSIS.md has Part 4 with
+  both. Nothing changes because of either (D127.5, D127.6).
 - **Stage G, live product v1: live with 49 airports (D105.2, F154.2).**
   Public repo zadams03/MLwx-live, page at
-  https://zadams03.github.io/MLwx-live/. Deployed now (D118.2): MLwx-live
-  `628df88` copying the template of 2026-10-27, `MLWX_COMMIT` `d6ca3e4`,
-  `MODELS_TAG` `gfs-models-49`, schedule :15 and :40, Python 3.12.15. D112.8's
-  rule on manual runs stays: none between :35 and :55 past the hour.
-- **The review's fixes (D125, F174): done in the repo; the redeploy waits
-  for the owner.** `runner.py`: a fetch problem (GFS or IEM) now waits and is
-  tried again at every run until the cycle is 20 h old, in time order (was
-  12 h, LT09); an IEM reply without the expected header makes the cycle wait
-  (LT14); each run prints the count of lookups with no report. The template
-  fails the job on any runner exit code other than 0 and 2 (WF05), caches
-  pip, and its `.gitignore` drops `*.partial` and `*.tmp`. It differs from
-  the deployed workflow only in the two `SET-AT-DEPLOY` values and these
-  edits. A dry run re-issued cycle 2026-10-12 12z with the new runner: all
-  552 rows equal to the live file. Under D105.5(k) (D125.8) no issued value
-  changes; from the redeploy `code_commit` changes and a cycle that would
-  have been stopped at 12 h may be issued later. Redeploy: `MLWX_COMMIT` set
-  to session 131's commit, `MODELS_TAG` unchanged, the new `.gitignore` and
-  README, one manual run outside :35 to :55, now together with the models'
-  move (next bullet; earlier steps in
-  `notes/session-131-output.txt`, DETAIL C). Until then the deployed runner
-  keeps the 12 h rule.
-- **The product models move to a private repository (D126, F175): done in
-  the template; the move and the redeploy wait for the owner.** The models
-  are the working product; the code, the record, the log and the page stay
-  public. The same `gfs-models.tar` (D105.2's SHA-256), with the same tag
-  `gfs-models-49`, goes as a Release into the private `zadams03/MLwx-models`.
-  The template downloads it with a fine-grained token, read-only on that
-  repository's contents, in MLwx-live's secret `MODELS_TOKEN`; it stops at
-  once if the secret is empty; the cache key is now
-  `gfs-models-private-<tag>`, so the first run after the redeploy proves the
-  private route. One redeploy covers D125.8 and D126.3: `MLWX_COMMIT`
-  session 131's commit (`dad68db`), `MODELS_TAG` `gfs-models-49`, the
-  template files from session 131b's commit. After one green run on the
-  private route the owner deletes MLwx-live's public Releases
-  `gfs-models-49` and `gfs-models-12` and the old caches; fork pull request
-  workflows need the owner's approval. The owner's steps, in order, are in
-  `notes/session-131b-output.txt` (they replace DETAIL C's MLwx-live steps;
-  the MOSMIX update is step 10). Stage B's frozen models stay in MLwx.
+  https://zadams03.github.io/MLwx-live/. Deployed now (D127.2): MLwx-live
+  `b836748` copying the template of session 131b's commit, `MLWX_COMMIT`
+  `dad68db` (session 131), `MODELS_TAG` `gfs-models-49`, schedule :15 and
+  :40, Python 3.12.15. Manual run 43733122333 on 2026-11-15 was green and
+  issued a cycle. The deployed runner has the review's fixes (D125, F174):
+  a fetch problem waits and is tried again until the cycle is 20 h old, an
+  IEM reply without the expected header makes the cycle wait, and the job
+  fails on any runner exit code other than 0 and 2. From this redeploy
+  `code_commit` changes; D125.8 says how the live test treats the rows
+  after it. D112.8's rule on manual runs stays: none between :35 and :55
+  past the hour.
+- **The product models are in a private repository (D126, D127.2): done.**
+  `zadams03/MLwx-models` holds Release `gfs-models-49`, whose
+  `gfs-models.tar` has D105.2's SHA-256, checked before upload and on a
+  fresh download. MLwx-live downloads it with the fine-grained token in its
+  secret `MODELS_TOKEN` (Contents read-only on that repository, no expiry,
+  owner's choice), under the cache key `gfs-models-private-gfs-models-49`.
+  MLwx-live's public model Releases, their tags and the old cache are
+  deleted; fork pull request workflows need approval for all outside
+  contributors. The code, the record, the log and the page stay public.
+  Stage B's frozen models stay in MLwx.
 - **The outside scheduler: kept as it is (D125.7).** No outside trigger is
   built. It is reopened, by a new entry, if any cycle is lost or any issue
   lag exceeds 18 h. To F173.6: 72 cycles since the 2026-10-27 redeploy, none
@@ -155,17 +153,17 @@ daily maximum; version 1 is live and public (D103.9).
   Session 131 adds three scripts, three test files, two small files in
   `data/processed/session131_rehearsal/` and about 9 KB to DECISIONS.md.
   Session 131b changes the live template, its README and its test, and adds
-  about 7 KB to DECISIONS.md and its output file.
-- **The session order (D125.9, amends D122.2).** 132: Gates C and D
-  (F154.9(4)), the iem-position rows for AIFS and the NBM grid at the
-  development airports, and D115.6's question, each with its rules fixed in
-  that session's entry first. 133: stage H's design and build choices. The
+  about 7 KB to DECISIONS.md and its output file. Session 132 adds three
+  scripts, a test, `data/processed/session132_iem/` and
+  `data/processed/session132_revision/` (together about 0.8 MB), about 10 KB
+  to ANALYSIS.md and about 14 KB to DECISIONS.md.
+- **The session order (D127.8).** 133: stage H's design and build
+  choices (D125.9), including whether to pre-register a range test on
+  2026-27 while no 2026-27 value has been scored (D121.2(4), SPEC 2.5). The
   owner chooses each session's model. A GFS v17 Service Change Notice goes
-  ahead of any of these. Later (D121.2): stage H on GFS, whether to
-  pre-register a range test on 2026-27 decided early, while no 2026-27 value
-  has been scored (SPEC 2.5); stage D, starting with AIFS, then stage E;
-  WeatherNext stays deferred (D107.4). Stage B and the live test are scored
-  only when their periods end (D73.8, D105.5).
+  ahead of it. Later (D121.2): stage H on GFS; stage D, starting with AIFS,
+  then stage E; WeatherNext stays deferred (D107.4). Stage B and the live
+  test are scored only when their periods end (D73.8, D105.5).
 - **Rulings on ANALYSIS.md's Part 3 (D121.3).** Candidate 6 (station
   guidance where it exists) is parked to stage E; any use first needs an
   owner's ruling on the same-at-every-airport rule (SPEC 2.5). Candidate 7:
@@ -175,27 +173,25 @@ daily maximum; version 1 is live and public (D103.9).
 - Stages D, E, F and H follow stage G.
 - **MOSMIX saver (D81.2 to D81.5, D122, F171): live (D124.2).** Deployed by
   the owner on 2026-11-14 to the private repository `zadams03/MLwx-mosmix`
-  from the template `deploy/mlwx-mosmix/` at `73370ed` (38 stations; every
-  three hours at :50; one tar per issue as an asset of the month's Release,
-  manifest committed). Days before it started are lost, which is accepted
-  (D81.5). No MOSMIX test is pre-registered and no saved value is compared
-  with anything (D122.7). **Session 131 fixed the template (MS04 to MS06,
-  MS08):** the commit step adds `manifest/` only if it exists, the freshness
-  check also fails if any one station falls more than 12 h behind, and the
-  README explains leftover assets and a one-week check of the run list. The
-  owner copies `saver.py`, `save.yml` and `README.md` to the repository,
-  pushes and runs it once by hand (steps in `notes/session-131-output.txt`).
+  (38 stations; every three hours at :50; one tar per issue as an asset of
+  the month's Release, manifest committed). Days before it started are
+  lost, which is accepted (D81.5). No MOSMIX test is pre-registered and no
+  saved value is compared with anything (D122.7). Session 131's template
+  fixes (MS04 to MS06, MS08) are deployed: MLwx-mosmix commit `09418d0`
+  on 2026-11-15, one manual run green (D127.3).
 - **GRIB cache.** On an external drive (D102.3).
 
 ---
 
 ## Open questions (live)
 
-- **Readings from session 131b (F175.6).** (1) Session 131b's prompt listed
-  D103.5, D105.2 and D105.9 as archived; they are live. (2) The owner copies
-  the template from session 131b's commit while `MLWX_COMMIT` stays session
-  131's. (3) When the token expires, a run fails at the download only when
-  the models cache is empty.
+- **Readings from session 132 (F176.7).** Where D127.6 left a choice,
+  the revision script fixed it before its statistics ran (shared
+  resamples per set, per-period intervals, breakdowns pooled, two
+  extra not-paired reasons); r's ties are broken only by float rounding;
+  the curve is further from the next run than raw GFS because most of its
+  correction is a steady local bias; the iem summary covers D98.10's days
+  only; the NBM grid at KSFO changes Part 1's picture there.
 
 - **Readings from session 131 (F174.11).** (1) At the rehearsal's rate a
   full period A build would take about 2.9 h and about 27 GB of transfer.
@@ -246,11 +242,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  400 tests, about 61 s (one skipped when no YAML parser is installed).
+  409 tests, about 65 s (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 131b and commit; the owner moves the models, redeploys MLwx-live and updates MLwx-mosmix; the planning chat records the redeploy and syncs Project knowledge (D118.8); then session 132 (D125.9).
+**Next planning session:** Review session 132 and commit; then plan session 133, stage H's design and build choices (D125.9), including whether to pre-register a range test on 2026-27 while no 2026-27 value has been scored (D121.2(4)).

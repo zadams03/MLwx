@@ -140,6 +140,10 @@ re-run must happen in a clean clone (D62.3, D62.6).
   constants, and `session131_stageb_rehearsal.py` tries the build's own
   path on a spent fortnight and compares it with the training set (D125.5,
   D125.8).
+- **Session 132:** Gates C and D run again on the 12 record airports
+  (`session132_gates_cd.py`), AIFS and the NBM grid read at the airport's
+  own position (`session132_iem_rows.py`), and whether the curve's
+  correction predicts GFS's next run (`session132_revision.py`) (D127).
 - `../src/mlwx/`: the live tool's package (D103.3). It also holds the
   airport onboarding and refit of sessions 110 and 111.
 - `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.

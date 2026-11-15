@@ -1,0 +1,7 @@
+Session 132 summary (D127.5(e), (f)), written by scripts/session132_iem_rows.py --summary.
+run 2026-11-15T17:09:40Z; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0; matplotlib 3.11.2
+script SHA-256 10009d756569fb3725c4c3012d498965f8b733c24b15921e641627e301555f19
+gfs-set values from data/processed/session114_comparisons/ (session 114's committed tables); iem-set values from this folder. Pooled rows (test_year all); daily maximum: D98.10's days (primary), the competitor's primary maximum (forecast comp).
+dm_diff: mean daily difference of |curve error| minus |competitor error|; negative is the curve better.
+position_matters: |mae_comp_change| >= 0.05 C (D127.5(f)).
+summary.csv  rows 18  sha256 530b66cd7f6d1b28b3d438a52adced03d1aab341314f9eb65507caf12e45b6fd
