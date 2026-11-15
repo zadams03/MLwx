@@ -1,0 +1,23 @@
+Session 131b: the live tool's models move to a private repository (D126, F175)
+
+The 49-airport product models were a public Release asset of MLwx-live.
+From the next redeploy the live workflow downloads the same file, same
+SHA-256 and same tag (gfs-models-49), from the private repository
+zadams03/MLwx-models with a read-only token stored as the secret
+MODELS_TOKEN. The code, the record, the log and the page stay public;
+stage B's frozen models stay in MLwx as part of D73's test.
+
+The workflow template stops at once with a plain message if the secret
+is empty, and uses a new cache key (gfs-models-private-<tag>) so the
+first run after the redeploy proves the private route. The models' own
+manifest check in the code is unchanged. README: a section on where the
+models live. Five new template tests (four fail on the old template).
+No file under src/, scripts/ or data/ changed; no logged value changes.
+
+D126 records why and how, and that one redeploy covers session 131's
+fixes and this move (MLWX_COMMIT dad68db, MODELS_TAG unchanged). The
+owner's eleven steps are in notes/session-131b-output.txt.
+
+Tests 400 OK (1 skipped). Citations 228 of 228 resolve. D126 archives
+D125 and F174. Live index: D93, D103, D105, D118, D126, F175.
+DECISIONS.md is 33,709 bytes.

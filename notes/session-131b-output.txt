@@ -1,0 +1,115 @@
+SESSION 131b OUTPUT: the live tool's models move to a private repository (D126, F175). Run 2026-11-14.
+
+SUMMARY
+1. Done: D126 recorded first (byte-equal to the prompt). MLwx-live's workflow template now downloads
+   gfs-models.tar from the private repo zadams03/MLwx-models with the secret MODELS_TOKEN, stops at
+   once with a plain message if the secret is empty, and uses the new cache key
+   gfs-models-private-<tag>. The README has a new section, "The models". 5 new tests. The owner's
+   11 steps are at the end of this file.
+2. Unchanged: the models, MODELS_TAG, both SET-AT-DEPLOY lines, every logged value; no file under
+   src/, scripts/ or data/; no network used.
+3. Checks:
+   - Start: HEAD dad68db (session 131), tree clean, 395 OK (1 skipped): PASS.
+   - D126 byte-equal by diff and cmp, 0 em-dashes; still byte-equal after archiving: PASS.
+   - New template tests: 4 of 5 fail on HEAD's template (the SET-AT-DEPLOY one passes on both, as it
+     should): PASS.
+   - Tests at the end: 400 OK (skipped=1), 60.4 s: PASS. (Before F175 existed: 1 expected failure,
+     the citation test on D126.5's forward citation of F175.)
+   - --citations: 228 cited, 228 resolved, 0 unresolved, 0 duplicates, 0 out of order: PASS.
+   - DECISIONS.md 33,709 bytes (below 80,000): PASS.
+   - Scope list against git status --porcelain: PASS. src/ untouched: PASS. Em-dashes added: 0: PASS.
+   - Archive step: moved D125 and F174, checks 1 to 4 PASS.
+4. Readings for the owner:
+   (1) The prompt listed D103.5, D105.2, D105.9 as archived; they are live and were read there.
+   (2) Copy the template from session 131b's commit; MLWX_COMMIT stays session 131's
+       (dad68db3ccbdfa930b7af6220d6df585a3cea2bd), per D126.4.
+   (3) When the token expires, runs fail at the download only when the models cache is empty, so
+       an expired token could go unnoticed for a while; set the renewal reminder (owner's step 4).
+5. Open: the move, the token, the secret, the redeploy, the deletions and the MOSMIX update all wait
+   for the owner (steps below). Nothing committed.
+
+CHECKPOINTS
+Read first: STATUS.md, SPEC section 2, D125, F174, D103.5, D105.2, D105.9 (these three are in the live DECISIONS.md, not the archive as the prompt said; read there), F152.5 (archive), live.yml, the template README and tests/test_live_template.py in full.
+Step 1: HEAD dad68db3ccbdfa930b7af6220d6df585a3cea2bd "Session 131: ..."; git status --porcelain empty (the prompt file is already tracked); tests 395 OK (skipped=1). Files changed: none. PASS.
+Step 2: D126 appended with sed from the prompt's lines 44 to 54, after one blank line; diff and cmp against the prompt text: byte-equal; DECISIONS.md's earlier bytes unchanged; 0 em-dashes. Files changed: DECISIONS.md. PASS.
+Step 3: live.yml: env MODELS_REPO: zadams03/MLwx-models; new step "Stop if the secret MODELS_TOKEN is empty" just before the cache restore (reads the secret into env, exits 1 with a plain message if empty); cache key gfs-models-private-${{ env.MODELS_TAG }}; download step uses GH_TOKEN ${{ secrets.MODELS_TOKEN }} and --repo "$MODELS_REPO"; the lines from mkdir to rm unchanged; header item 3 updated. README: new section "The models" (where they live, why, the token, the missing-secret stop, the cache, the manifest check, outside pull requests). Checked in the code: a manifest mismatch raises in baseline.ModelSet, so the run fails and issues nothing (the README says so). Files changed: live.yml, README.md. PASS (diff read; tests in Step 4).
+Step 4: tests/test_live_template.py: constants MODELS_REPO, SECRET_STEP, CACHE_STEP, DOWNLOAD_STEP; new tests: test_models_from_the_private_repo (the download step names MODELS_REPO and secrets.MODELS_TOKEN, keeps its cache-hit condition, and names neither GITHUB_REPOSITORY nor github.token; github.token is nowhere in the file); test_cache_key_is_private (one key, gfs-models-private-${{ env.MODELS_TAG }}); test_secret_check_before_the_cache (the step exists, has no if:, reads the secret, and comes before the cache step, which comes before the download); test_set_at_deploy_lines_exact (the two SET-AT-DEPLOY lines, comments included, equal HEAD's); TestSecretStep.test_empty_fails_set_passes (the step's shell from the YAML under bash --noprofile --norc -eo pipefail: empty token exits non-zero with the message and the repo name; a set token exits 0). Docstring updated. test_live_template: 19 OK (was 14). On HEAD's template (git show HEAD:..., WORKFLOW pointed at it): 4 of the 5 new tests fail (3 failures, 1 error), and test_set_at_deploy_lines_exact passes, as it should since those lines are unchanged. Whole suite: 400 run, 1 failure (skipped=1): test_record's citation test on D126.5's forward citation of F175, by design until F175 is written (as F174.9 and F173.8(5) saw); rerun after F175 at the end steps. Files changed: tests/test_live_template.py. PASS (apart from that expected failure).
+Step 5: the owner's steps written below (OWNER'S STEPS). Files changed: notes/session-131b-output.txt. PASS.
+Step 6: tests 400 run, 399 pass (skipped=1), 1 failure: the expected citation test on D126.5's forward citation of F175 (rerun after F175). git status --porcelain: M DECISIONS.md, M live.yml, M deploy README, M tests/test_live_template.py, ?? notes/session-131b-output.txt: all on the scope list. Files under src/, scripts/, data/: 0 changed. Em-dashes in added lines: 0. No network used. Files changed: notes/session-131b-output.txt. PASS.
+End 1: F175 appended to DECISIONS.md after one blank line and a separator (7 sub-items, 9 lines, 0 em-dashes).
+End 2: STATUS.md: "after session 131b"; a new bullet on the models' move (D126, F175) after the review's-fixes bullet, which now points to it; session 131b's Project-knowledge growth; a "Readings from session 131b" open question; tests 400; the Next line as the prompt gives it. 0 em-dashes added.
+End 3: Live index: D125 and F174 removed, D126 and F175 added (D126.5). archive_decisions.py --apply --session 131b: plan spans 8, keep 6, move 2 (12,197 bytes); checks 1 to 4 PASS; DECISIONS.md 45,914 to 33,709 bytes; archive 1,632,138 to 1,644,381 bytes. D126's block still byte-equal to the prompt's lines 44 to 54 (cmp).
+End 4: --citations: 228 distinct entry numbers cited, 228 resolved, 0 unresolved, 0 in both files; 0 duplicated openings; 0 headings out of order. DECISIONS.md 33,709 bytes (below 80,000). Live entries now D93, D103, D105, D118, D126, F175. Re-read of what this session changed (D126, F175, the Live index, STATUS's changed lines): nothing that disagrees with the rest of the record (the one prompt mismatch, D103.5/D105.2/D105.9 listed as archived, is reading F175.6(1)). Scope (git status --porcelain): M DECISIONS-archive.md, M DECISIONS.md, M STATUS.md, M live.yml, M deploy/mlwx-live/README.md, M tests/test_live_template.py, ?? notes/session-131b-output.txt: all on the scope list, PASS. Tests: 400 OK (skipped=1), 60.4 s.
+
+OWNER'S STEPS (D126.3, D126.4), in this order
+
+Session 131's commit (MLWX_COMMIT): dad68db3ccbdfa930b7af6220d6df585a3cea2bd
+D105.2's SHA-256 of gfs-models.tar: e30f8fb99e275fd410bcc37a41686deb26bf61ccb658cb0acbb419da9769f284
+Copy the template files from MLwx after session 131b is committed (the template's new download route
+is in session 131b's commit; MLWX_COMMIT stays session 131's commit, D126.4).
+
+1. On GitHub, create the private repository zadams03/MLwx-models. Leave every "initialize" box
+   unticked (no README, no .gitignore, no licence).
+
+2. Get the tar from MLwx-live's public Release, in a new empty folder:
+     gh release download gfs-models-49 --repo zadams03/MLwx-live --pattern gfs-models.tar
+     shasum -a 256 gfs-models.tar
+   The printed value must equal e30f8fb99e275fd410bcc37a41686deb26bf61ccb658cb0acbb419da9769f284.
+   If it does not, stop and tell the planning chat.
+
+3. Put it in the private repository as a Release with the same tag:
+     gh release create gfs-models-49 gfs-models.tar --repo zadams03/MLwx-models --title "Frozen GFS product models, 49 airports" --notes "Same file as MLwx-live's former public Release (DECISIONS D105.2, D126)."
+   Then check the uploaded asset by downloading it again into another new empty folder:
+     gh release download gfs-models-49 --repo zadams03/MLwx-models --pattern gfs-models.tar
+     shasum -a 256 gfs-models.tar
+   The value must again equal e30f8fb9...f284 (in full, as above).
+
+4. Create a fine-grained personal access token (GitHub, Settings, Developer settings, Personal access
+   tokens, Fine-grained tokens, Generate new token):
+   - Resource owner: zadams03. Repository access: "Only select repositories", and only
+     zadams03/MLwx-models.
+   - Repository permissions: Contents: Read-only. Nothing else (Metadata: Read-only is added by
+     GitHub itself and cannot be removed).
+   - Expiration: a date you choose. Put a reminder in your calendar to make a new token and replace
+     the secret (step 5) a week before then: when the token expires, every run fails at the download
+     whenever the models cache is empty.
+
+5. In zadams03/MLwx-live: Settings, Secrets and variables, Actions, New repository secret.
+   Name: MODELS_TOKEN. Secret: the token from step 4.
+
+6. In zadams03/MLwx-live: Settings, Actions, General, "Approval for running fork pull request
+   workflows from contributors": choose "Require approval for all external contributors" (the
+   setting that covers every outside collaborator). Save.
+
+7. Redeploy MLwx-live from the template in MLwx (deploy/mlwx-live/), as at earlier redeploys:
+   - .github/workflows/live.yml: copy the template, then change only the two SET-AT-DEPLOY values:
+       MLWX_COMMIT: "dad68db3ccbdfa930b7af6220d6df585a3cea2bd"
+       MODELS_TAG: "gfs-models-49"
+   - .gitignore and README.md: copy the template's files unchanged.
+   - requirements.txt: unchanged.
+   Commit and push to main. Note the commit's hash.
+
+8. Run the workflow by hand once (Actions, live, Run workflow), at any time except between :35 and
+   :55 past the hour (D112.8). It must:
+   - be green;
+   - pass "Stop if the secret MODELS_TOKEN is empty";
+   - show "Download the models (one Release asset of the private repo)" running (not skipped: the
+     cache key is new) and downloading from zadams03/MLwx-models;
+   - reach "Run the runner" and show the runner's output.
+   If any of these fails, stop here, change nothing on the public Releases, and tell the planning chat.
+
+9. Only after step 8 is green:
+   - delete the Releases gfs-models-49 and gfs-models-12 from zadams03/MLwx-live (Releases page, or
+       gh release delete gfs-models-49 --repo zadams03/MLwx-live
+       gh release delete gfs-models-12 --repo zadams03/MLwx-live
+     and, if you want the tags gone too, add --cleanup-tag to each);
+   - in MLwx-live, Actions, Caches: delete the entries whose key starts gfs-models-gfs-models-
+     (the old public route's keys, for example gfs-models-gfs-models-49). Keep
+     gfs-models-private-gfs-models-49 and the pip cache.
+
+10. MLwx-mosmix (session 131's fixes): copy deploy/mlwx-mosmix/saver.py,
+    deploy/mlwx-mosmix/.github/workflows/save.yml and deploy/mlwx-mosmix/README.md from MLwx into
+    zadams03/MLwx-mosmix at the same paths, commit, push, and run its workflow by hand once.
+
+11. Tell the planning chat: the commit hash of MLwx-live's redeploy (step 7), the time (UTC) of the
+    green run (step 8), and whether every step went as written (and what differed, if anything).

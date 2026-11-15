@@ -6,7 +6,9 @@
 #   1. checks out the latest commit of this repo's main (the log and the tracker state), even if the run
 #      waited in the queue, and the MLwx code at ONE pinned commit;
 #   2. installs the pinned requirements;
-#   3. gets the frozen models (one Release asset, D103.5), checked against the manifest SHA-256 held in the code;
+#   3. gets the frozen models (one Release asset, D103.5) from the private repo MODELS_REPO, read with the
+#      read-only token in the secret MODELS_TOKEN (D126.3; the job stops at once if the secret is empty),
+#      checked against the manifest SHA-256 held in the code;
 #   4. runs the runner: every cycle of the past 24 hours that has arrived and is not yet logged, in time order;
 #   5. if anything besides last_run.at changed (a log or snapshot file, a stop, last_run.status), commits
 #      the log files, the observation snapshots (obs/, D105.7) and the tracker state (each log and
@@ -34,6 +36,7 @@ env:
   MLWX_COMMIT: "SET-AT-DEPLOY"     # the 40-character commit of MLwx, set at each deploy
   MODELS_TAG: "SET-AT-DEPLOY"      # the release tag of the models, set at each deploy
   MODELS_FILE: gfs-models.tar
+  MODELS_REPO: zadams03/MLwx-models  # the private repo that holds the models' Release (D126.3)
 
 # One run at a time: the log and the tracker state are written in time order.
 concurrency:
@@ -81,19 +84,30 @@ jobs:
       - name: Install the pinned requirements
         run: python -m pip install -r requirements.txt
 
+      # D126.3: the models are in a private repo; without the token the download cannot work.
+      - name: Stop if the secret MODELS_TOKEN is empty
+        env:
+          MODELS_TOKEN: ${{ secrets.MODELS_TOKEN }}
+        run: |
+          if [ -z "$MODELS_TOKEN" ]; then
+            echo "The secret MODELS_TOKEN is empty or missing. Add it under Settings, Secrets and variables, Actions:"
+            echo "a fine-grained token, read-only on the contents of $MODELS_REPO only."
+            exit 1
+          fi
+
       - name: Restore the models from the cache
         id: models
         uses: actions/cache@v5
         with:
           path: models
-          key: gfs-models-${{ env.MODELS_TAG }}
+          key: gfs-models-private-${{ env.MODELS_TAG }}
 
-      - name: Download the models (one Release asset)
+      - name: Download the models (one Release asset of the private repo)
         if: steps.models.outputs.cache-hit != 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.MODELS_TOKEN }}
         run: |
-          gh release download "$MODELS_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$MODELS_FILE" --dir .
+          gh release download "$MODELS_TAG" --repo "$MODELS_REPO" --pattern "$MODELS_FILE" --dir .
           mkdir -p models
           tar -xf "$MODELS_FILE" -C models
           rm "$MODELS_FILE"

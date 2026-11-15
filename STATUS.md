@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 14 November 2026, after session 131._
+_Last updated: 14 November 2026, after session 131b._
 
 ---
 
@@ -70,9 +70,27 @@ daily maximum; version 1 is live and public (D103.9).
   changes; from the redeploy `code_commit` changes and a cycle that would
   have been stopped at 12 h may be issued later. Redeploy: `MLWX_COMMIT` set
   to session 131's commit, `MODELS_TAG` unchanged, the new `.gitignore` and
-  README, one manual run outside :35 to :55 (exact steps in
+  README, one manual run outside :35 to :55, now together with the models'
+  move (next bullet; earlier steps in
   `notes/session-131-output.txt`, DETAIL C). Until then the deployed runner
   keeps the 12 h rule.
+- **The product models move to a private repository (D126, F175): done in
+  the template; the move and the redeploy wait for the owner.** The models
+  are the working product; the code, the record, the log and the page stay
+  public. The same `gfs-models.tar` (D105.2's SHA-256), with the same tag
+  `gfs-models-49`, goes as a Release into the private `zadams03/MLwx-models`.
+  The template downloads it with a fine-grained token, read-only on that
+  repository's contents, in MLwx-live's secret `MODELS_TOKEN`; it stops at
+  once if the secret is empty; the cache key is now
+  `gfs-models-private-<tag>`, so the first run after the redeploy proves the
+  private route. One redeploy covers D125.8 and D126.3: `MLWX_COMMIT`
+  session 131's commit (`dad68db`), `MODELS_TAG` `gfs-models-49`, the
+  template files from session 131b's commit. After one green run on the
+  private route the owner deletes MLwx-live's public Releases
+  `gfs-models-49` and `gfs-models-12` and the old caches; fork pull request
+  workflows need the owner's approval. The owner's steps, in order, are in
+  `notes/session-131b-output.txt` (they replace DETAIL C's MLwx-live steps;
+  the MOSMIX update is step 10). Stage B's frozen models stay in MLwx.
 - **The outside scheduler: kept as it is (D125.7).** No outside trigger is
   built. It is reopened, by a new entry, if any cycle is lost or any issue
   lag exceeds 18 h. To F173.6: 72 cycles since the 2026-10-27 redeploy, none
@@ -136,6 +154,8 @@ daily maximum; version 1 is live and public (D103.9).
   `notes/session-130-register.csv` (about 43 KB) and its output file.
   Session 131 adds three scripts, three test files, two small files in
   `data/processed/session131_rehearsal/` and about 9 KB to DECISIONS.md.
+  Session 131b changes the live template, its README and its test, and adds
+  about 7 KB to DECISIONS.md and its output file.
 - **The session order (D125.9, amends D122.2).** 132: Gates C and D
   (F154.9(4)), the iem-position rows for AIFS and the NBM grid at the
   development airports, and D115.6's question, each with its rules fixed in
@@ -170,6 +190,12 @@ daily maximum; version 1 is live and public (D103.9).
 ---
 
 ## Open questions (live)
+
+- **Readings from session 131b (F175.6).** (1) Session 131b's prompt listed
+  D103.5, D105.2 and D105.9 as archived; they are live. (2) The owner copies
+  the template from session 131b's commit while `MLWX_COMMIT` stays session
+  131's. (3) When the token expires, a run fails at the download only when
+  the models cache is empty.
 
 - **Readings from session 131 (F174.11).** (1) At the rehearsal's rate a
   full period A build would take about 2.9 h and about 27 GB of transfer.
@@ -220,11 +246,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  395 tests, about 61 s (one skipped when no YAML parser is installed).
+  400 tests, about 61 s (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 131 and commit; the owner redeploys MLwx-live and updates MLwx-mosmix; the planning chat syncs Project knowledge (D118.8); then session 132 (D125.9).
+**Next planning session:** Review session 131b and commit; the owner moves the models, redeploys MLwx-live and updates MLwx-mosmix; the planning chat records the redeploy and syncs Project knowledge (D118.8); then session 132 (D125.9).

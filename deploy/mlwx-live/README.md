@@ -91,6 +91,23 @@ The code is not in this repo. Each run checks out
 and written in every log row. The reasons for every design choice are in that repo's `DECISIONS.md`
 (entry D103) and `SPEC.md` (section 9).
 
+## The models
+
+The frozen models are one file, `gfs-models.tar`, kept as a Release in a **private** repository,
+`zadams03/MLwx-models`. The models are the working product, so they are not public; the code, the
+record of every decision, the prediction log and the page all stay public. The file is the same one
+this repository once held as a public Release: same tag (`gfs-models-49`), same bytes, same SHA-256.
+
+Each run downloads the file with a token kept in this repository's secret `MODELS_TOKEN`. The token
+can only read that one private repository's contents and nothing else. If the secret is missing, the
+run stops at once with a message saying so. The download is cached between runs, so it happens only
+when the cache is empty. After the download the code checks the models against the fingerprint
+(SHA-256) of their manifest held in the code; if they do not match, the run fails and issues nothing.
+Every log row names that fingerprint in `model_sha256`.
+
+Runs started by a pull request from someone outside need the owner's approval, so no outside
+workflow can read the cache.
+
 ## GFS version 17
 
 When NOAA starts running GFS version 17, the code keeps going only if every GRIB message still has the

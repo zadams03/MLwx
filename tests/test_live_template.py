@@ -1,8 +1,9 @@
 """MLwx-live's workflow template (DECISIONS D117.5; session 123, Steps 4 and 5;
-D125.3 and session 131, Step 4: the exit-code step, the pip cache, .gitignore).
+D125.3 and session 131, Step 4: the exit-code step, the pip cache, .gitignore;
+D126.3 and session 131b, Step 4: the models from a private repo).
 Offline; reads deploy/mlwx-live/.github/workflows/live.yml as text (no YAML
-parser is installed) and runs its skip step and its exit-code step in temporary
-git repos.
+parser is installed) and runs its skip step, its exit-code step and its
+empty-secret step in temporary folders.
 
 The action majors are held as constants (D98.2), each the first major whose
 action.yml runs on Node.js 24, confirmed from its tag in session 123.
@@ -36,6 +37,10 @@ ACTION_MAJORS = {                       # D117.5(a); notes/session-123-output.tx
 }
 SKIP_IF = "if: steps.changes.outputs.commit == 'true'"
 EXIT_STEP = "Fail the job unless the runner's exit code was 0 or 2"      # D125.3
+MODELS_REPO = "zadams03/MLwx-models"                                      # D126.3
+SECRET_STEP = "Stop if the secret MODELS_TOKEN is empty"                   # D126.3
+CACHE_STEP = "Restore the models from the cache"
+DOWNLOAD_STEP = "Download the models (one Release asset of the private repo)"
 GITIGNORE = WORKFLOW.parent.parent.parent / ".gitignore"
 GATED_STEPS = ["Commit the log and the tracker state", "Prepare the page", "Upload the page", "Publish the page"]
 STATE = "state/tracker_gfs.json"
@@ -112,6 +117,43 @@ class TestTemplateText(unittest.TestCase):
         self.assertIn("          cache: pip", "\n".join(body))
         self.assertIn("          cache-dependency-path: requirements.txt", body)
 
+    def test_set_at_deploy_lines_exact(self):
+        """D126.4: the two SET-AT-DEPLOY lines are as before, comments included."""
+        lines = text().splitlines()
+        self.assertEqual([ln for ln in lines if "SET-AT-DEPLOY" in ln and ln.startswith("  M")], [
+            '  MLWX_COMMIT: "SET-AT-DEPLOY"     # the 40-character commit of MLwx, set at each deploy',
+            '  MODELS_TAG: "SET-AT-DEPLOY"      # the release tag of the models, set at each deploy',
+        ])
+
+    def test_models_from_the_private_repo(self):
+        """D126.3: the models come from MODELS_REPO with the secret MODELS_TOKEN, not this repo's token."""
+        t = text()
+        self.assertIn(f"  MODELS_REPO: {MODELS_REPO}", t)
+        body = "\n".join(steps(t)[DOWNLOAD_STEP])
+        self.assertIn("GH_TOKEN: ${{ secrets.MODELS_TOKEN }}", body)
+        self.assertIn('--repo "$MODELS_REPO"', body)
+        self.assertIn("if: steps.models.outputs.cache-hit != 'true'", body)
+        for old in ("GITHUB_REPOSITORY", "github.token"):
+            self.assertNotIn(old, body)
+        self.assertNotIn("github.token", t)
+
+    def test_cache_key_is_private(self):
+        """D126.3: a new cache key, so the first run after the redeploy downloads by the private route."""
+        body = steps(text())[CACHE_STEP]
+        keys = [ln.strip() for ln in body if ln.strip().startswith("key:")]
+        self.assertEqual(keys, ["key: gfs-models-private-${{ env.MODELS_TAG }}"])
+        self.assertIn("private", keys[0])
+
+    def test_secret_check_before_the_cache(self):
+        """D126.3: the empty-secret check exists and comes before the cache restore and the download."""
+        s = steps(text())
+        names = list(s)
+        self.assertIn(SECRET_STEP, names)
+        self.assertLess(names.index(SECRET_STEP), names.index(CACHE_STEP))
+        self.assertLess(names.index(CACHE_STEP), names.index(DOWNLOAD_STEP))
+        self.assertIn("          MODELS_TOKEN: ${{ secrets.MODELS_TOKEN }}", s[SECRET_STEP])
+        self.assertFalse(any(ln.strip().startswith("if:") for ln in s[SECRET_STEP]))
+
     def test_gitignore_has_partial_and_tmp(self):
         """WF07: a log or snapshot file's temporary name is never committed."""
         lines = GITIGNORE.read_text().splitlines()
@@ -144,6 +186,27 @@ class TestExitCodeStep(unittest.TestCase):
                 r = self.run_step(code)
                 self.assertEqual(r.returncode != 0, fails, r.stdout + r.stderr)
                 self.assertIn(f"exit code {code}" if code in ("0", "2", "3") else f"exit code '{code}'", r.stdout)
+
+
+class TestSecretStep(unittest.TestCase):
+    """D126.3: the empty-secret step from the YAML, run as GitHub's default bash shell runs it."""
+
+    def run_step(self, token):
+        body = steps(text())[SECRET_STEP]
+        i = body.index("        run: |")
+        script = textwrap.dedent("\n".join(body[i + 1:])) + "\n"
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "step.sh").write_text(script)
+            return subprocess.run(["bash", "--noprofile", "--norc", "-eo", "pipefail", "step.sh"], cwd=d,
+                                  capture_output=True, text=True,
+                                  env={**os.environ, "MODELS_TOKEN": token, "MODELS_REPO": MODELS_REPO})
+
+    def test_empty_fails_set_passes(self):
+        r = self.run_step("")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("MODELS_TOKEN is empty or missing", r.stdout)
+        self.assertIn(MODELS_REPO, r.stdout)
+        self.assertEqual(self.run_step("github_pat_example").returncode, 0)
 
 
 class TestSkipStep(unittest.TestCase):
