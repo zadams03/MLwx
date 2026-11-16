@@ -147,6 +147,9 @@ re-run must happen in a clean clone (D62.3, D62.6).
 - **Session 133:** stage H's first build choice: candidate ways to put a
   central 80 % range around each forecast, compared on the six development
   airports by a rule fixed beforehand (`session133_ranges.py`) (D128).
+- **Session 134:** the chosen ranges frozen at the 12 airports, with a
+  raw-GFS reference, into `../src/mlwx/data/gfs_ranges.csv`, written once
+  after a gate (`session134_freeze_ranges.py`) (D129).
 - `../src/mlwx/`: the live tool's package (D103.3). It also holds the
   airport onboarding and refit of sessions 110 and 111.
 - `archive_decisions.py`: standing tool. Moves every DECISIONS entry outside the Live index to the archive and checks citations (D93.8). Run at the end of every session.

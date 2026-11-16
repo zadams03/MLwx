@@ -1,0 +1,45 @@
+Session 134: the 80 % ranges frozen at the 12 airports, their 2026-27 test pre-registered, and shown on the live page as not yet verified (D129, F178)
+
+D129 accepts F177 and makes the range test outlined in D128.3 binding,
+with the owner's three rulings: part (a), honest odds, passes if the 95 %
+interval of the share of observations inside the range overlaps 0.75 to
+0.85; part (b), useful, needs a lower interval score than a reference
+range on raw GFS built from raw GFS's own past errors (RT1 and RM1); and
+every logged forecast at the 12 airports since 2026-10-12 12z is scored,
+the ranges applied to the log as issued. Both parts are needed, per
+airport, period and output. The expectation, stated before any value is
+seen: part (b) passes at all 12 airports in period A for both outputs;
+none is stated for part (a) or period B. The scoring script comes in a
+later session, committed before any observation valid on or after
+2026-10-12 is read and before the first look of stage B or the live test.
+
+scripts/session134_freeze_ranges.py froze one pair (10th and 90th
+percentiles of past out-of-sample errors) per airport and output, for the
+range (T1 hourly, M1 daily maximum) and its raw-GFS reference, from spent
+data only: the development airports' three test years, the claim
+airports' two look years. Its gate rebuilt 24 of 24 of session 133's
+table rows exactly and matched every row count to session 112's meta
+file. The 48 rows are in src/mlwx/data/gfs_ranges.csv, SHA-256
+e8ab9438b390c3c45de0821c8823a98e2ffa9adc42d6a4f19b396af11e2c9eba, held
+as a constant in src/mlwx/ranges.py and by a test. Hourly range widths
+run from 2.46 C (NZWN) to 4.23 C (EDDM); each range is narrower than its
+reference at all 24 airport-outputs. Build values, never results.
+
+The live page now draws a shaded 8-in-10 band around the corrected curve
+and adds a range column to the daily maximum table at the 12 airports,
+labelled "not yet verified". The words avoid a percent sign, because the
+page's no-accuracy-figure test forbids one (owner's ruling in the
+session). If the file is missing or altered the page shows no range and
+says so; a run is never stopped by it. Only page.py and the two new
+files change: no logged value, log column, pinned file or runner.py
+changes, so the live test treats every row after the redeploy as before.
+
+Readings for the look are in F178.9: cold live trackers, models refit on
+more data than the errors came from, one pair for all leads, and later
+local days on the page shown at longer leads than the daily maximum's
+errors (the test scores only the evening-before forecast for each day).
+
+Tests: 449 run, 1 skipped, OK. Citations 233 of 233 resolve. D128 and
+F177 archived; Live index D93, D103, D105, D118, D129, F178. DECISIONS.md
+is 40,162 bytes. The owner redeploys MLwx-live with MLWX_COMMIT set to
+this commit.

@@ -1,0 +1,39 @@
+Session 134: the frozen 80 % ranges at the 12 airports (D129.2 to D129.4). Build values, never results.
+written by scripts/session134_freeze_ranges.py --freeze
+run 2026-11-15T23:53:15Z; run time 10 s; python 3.12.2; numpy 2.5.2; lightgbm 4.7.0
+script SHA-256 e240f4bb0f99273587a4f289a45c162a3f1b00c77a1f98a06406c4caec15546d
+output src/mlwx/data/gfs_ranges.csv  rows 48  sha256 e8ab9438b390c3c45de0821c8823a98e2ffa9adc42d6a4f19b396af11e2c9eba
+gate: PASS ((a) 24 of 24 rows equal session 133's tables.csv; (b) scored rows equal meta.txt; (c) nothing valid after 2026-07-31T23:00Z)
+percentiles: numpy.percentile(e, [10, 90]), linear, by session 133's build_table
+inputs (SHA-256):
+  scripts/session133_ranges.py  4bbe4ceaec5c72057bba0ad8f6f744b7a634016e6fcd935412db3436d28875b2
+  scripts/session112_analysis.py  bf1fadbfe434264a76c48eb79120f6d684c540263edf423387d6e715c0a71aab
+  ../MLwx-stagec/analysis112/meta.txt  983135e26d69e07c8a19a02ea82b76bbe736f32be28a952d07d7affc54a60a52
+  ../MLwx-stagec/analysis112/pred_EGLC.csv.gz  57754dbd9abd8c32aa506f76afca4dcdd282c555de4790bedec911565a2fa4a8
+  ../MLwx-stagec/analysis112/pred_LFPG.csv.gz  1b3841523365c9c4d2631d257967fa567983e4a9473ac8554d9f71e40e3faffa
+  ../MLwx-stagec/analysis112/pred_KDSM.csv.gz  08de86bdc63938d13a16ce9bc2391f0b705582562beace3019837bb041862d9e
+  ../MLwx-stagec/analysis112/pred_YSDU.csv.gz  5061befa0e7f9138e9141b3266af4848ec4c01485c56834208c96bf6c6da4f23
+  ../MLwx-stagec/analysis112/pred_KRNO.csv.gz  d2a49ecf2f2ea10aa0ed970a25e627525ab9d0eca06386ba80a82d3e8fabb2d8
+  ../MLwx-stagec/analysis112/pred_KSFO.csv.gz  1a8707bcb1c16ffb0f523e3efe7933d1a0b7ad446ddce39cf918408bb599c777
+  ../MLwx-stagec/analysis112/pred_EDDM.csv.gz  787ad4462fc5af9abf8ea3fccfb9d06ca7df072565e185a8441b4c730899a83f
+  ../MLwx-stagec/analysis112/pred_KORD.csv.gz  fd0538334adcfb3f0224cb3b9d39e441dba700779a299a97511d77fbc085dece
+  ../MLwx-stagec/analysis112/pred_CYYZ.csv.gz  44cdd38036e04d0ca73026b6a84b4748b4568f39aace9c9b637cd414906145cd
+  ../MLwx-stagec/analysis112/pred_ZGSZ.csv.gz  3c0c840a8fc4f30aa673901fa5ddfd636304665ba0b40ab5fa61793c5eb8364e
+  ../MLwx-stagec/analysis112/pred_ZUCK.csv.gz  71b466a574c923bf937476aee91c48909f6b918b61afc649b37fa41508678b3f
+  ../MLwx-stagec/analysis112/pred_NZWN.csv.gz  cc1f51923a2347b256341d1b52a70c6265bda841fb921f773ff5e725236b7262
+  data/processed/session104_dailymax_days.csv  65cb6d75d42ed8f1017c0117b1703f835c66ae5b1df1947f3535974112c37dd3
+  data/processed/session107_claim_days.csv  3ef112935585e03245238dedbdc521063db81e486e61c55021f7026a03f8a297
+  data/processed/session133_ranges/tables.csv  158ad14b3525a051f5ffd0a22297f82a539224c746b565a4c52b4b9ddf0b5caa  (gate (a) only)
+rows used (scored hourly rows; common days):
+  EGLC  periods 2023-24, 2024-25, 2025-26  hourly 201404  daily_max 1095
+  LFPG  periods 2023-24, 2024-25, 2025-26  hourly 201032  daily_max 1094
+  KDSM  periods 2023-24, 2024-25, 2025-26  hourly 201449  daily_max 1095
+  YSDU  periods 2023-24, 2024-25, 2025-26  hourly 199881  daily_max 1085
+  KRNO  periods 2023-24, 2024-25, 2025-26  hourly 201350  daily_max 1093
+  KSFO  periods 2023-24, 2024-25, 2025-26  hourly 201322  daily_max 1093
+  EDDM  periods A, B  hourly 134128  daily_max 729
+  KORD  periods A, B  hourly 133886  daily_max 726
+  CYYZ  periods A, B  hourly 134043  daily_max 728
+  ZGSZ  periods A, B  hourly 134128  daily_max 729
+  ZUCK  periods A, B  hourly 134136  daily_max 729
+  NZWN  periods A, B  hourly 134105  daily_max 728

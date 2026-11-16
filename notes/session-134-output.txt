@@ -1,0 +1,169 @@
+SESSION 134 OUTPUT: freeze the 80 % ranges at the 12 airports, pre-register their 2026-27 test, show them on the live page
+Run 2026-11-15 (UTC), offline. Build values, never results. No 2026-27 value read; nothing from MLwx-live opened; no commit.
+
+SUMMARY
+What was done: D129 recorded (byte-equal); the ranges (T1 hourly, M1 daily maximum) and raw-GFS references frozen at
+  the 12 airports; the page shows them at those airports, labelled "not yet verified"; F178; STATUS; archive step.
+Checks:
+  Step 1 start checks (HEAD ff8c074, clean tree, 5 SHA-256, 12 prediction files, 426 tests OK, 1 skipped): PASS
+  Step 2 D129 appended with sed, byte-equal by diff and cmp, 0 em-dashes (still byte-equal after the archive): PASS
+  Step 3 gate (a) 24 of 24 rows equal session 133's tables.csv at full precision: PASS
+         gate (b) scored rows equal meta.txt at 12 of 12 airports; common days 726 to 1,095; every e finite: PASS
+         gate (c) latest valid time used 2026-07-31T23:00Z: PASS
+         freeze run once; a second run refuses to overwrite: PASS
+  Step 4 page: 12 bands, 12 legends, 12 columns, 49 sections; with the file missing 0 bands and 1 status line: PASS
+  Step 5 tests/test_session134.py 23 tests; PageTests and test_pinned_files unchanged and OK: PASS
+  Step 6 all tests: 449 run, 1 skipped, OK (before F178 only the citation test failed, on D129's forward citation)
+         pinned files and runner.py unchanged from HEAD: PASS; em-dashes in added lines: 0
+  Citations: 233 of 233 resolved, 0 duplicated, 0 out of order: PASS
+  Scope list against git status: PASS (no breach). DECISIONS.md 40,162 bytes (under 80,000): PASS
+Headline numbers (build values):
+  src/mlwx/data/gfs_ranges.csv: 48 rows, SHA-256 e8ab9438b390c3c45de0821c8823a98e2ffa9adc42d6a4f19b396af11e2c9eba
+  hourly range width 2.46 (NZWN) to 4.23 C (EDDM); reference 2.96 (NZWN) to 7.225 C (KRNO)
+  daily maximum range width 2.36 (NZWN) to 3.90 C (EDDM); reference 2.76 (NZWN) to 5.24 C (KDSM)
+  the range is narrower than its reference in 24 of 24 airport-outputs
+Readings for the owner:
+  1. Owner's ruling in Step 4: the page says "8-in-10 range (not yet verified)" and "8-in-10 range, C", because the
+     prompt's "80 % range" would put a % on the page, which PageTests forbids (it had to pass unchanged).
+  2. deploy/mlwx-live/README.md had no section on the page; a short section "The page" was added.
+  3. For the look (F178.9): cold live trackers; live models fit on more data than the errors behind the pairs; one pair
+     for all leads; the page also shows ranges for later local days at longer leads than M1's errors; NZWN's daily
+     maximum reference [+0.315, +3.075] lies wholly above raw GFS's maximum.
+Open items: the owner's redeploy (MLWX_COMMIT = session 134's commit); the range test's scoring script (D129.9);
+  F176's caption question (carried). STATUS is dated 16 November; the freeze ran at 23:53Z on 15 November.
+
+CHECKPOINTS (one line per step; detail below each where needed)
+
+Step 1. Start checks: PASS. HEAD ff8c074 ("Session 133: ..."), tree clean apart from docs/sessions/session-134.md. Tests: 426 run, 1 skipped, OK. SHA-256 at HEAD and on disk equal the prompt's for session133_ranges.py, session112_analysis.py, session104_dailymax_days.csv, session107_claim_days.csv and src/mlwx/page.py. 12 of 12 prediction files equal meta.txt's SHA-256. Files changed: none. Read beyond the list: scripts/session106_claim_look.py's CLAIM, DEV_ICAO, LOOKS and T_TRAIN constants (session 112's STATION is built from them); src/mlwx/config.py's loader and src/mlwx/dailymax.py's daily_maxima (page.py calls them); tests/test_live.py's header and log_rows (PageTests uses them).
+Step 2. D129 recorded: PASS. Lines 83 to 101 of the prompt appended to DECISIONS.md with sed after its last line; the 19 lines read back are byte-equal by diff and cmp; the earlier bytes of DECISIONS.md are unchanged (cmp); 0 em-dashes in the block. Files changed: DECISIONS.md.
+Step 3. The freeze script and its gate: PASS. scripts/session134_freeze_ranges.py written (modes --gate and --freeze). Code path read before each run: it reads the 12 prediction files, meta.txt, the two days files and session 133's tables.csv, makes no network call (no network module is imported by it; session 112's one URL constant belongs to a mode not called), and writes only src/mlwx/data/gfs_ranges.csv and data/processed/session134_ranges/meta.txt (and the --detail file under $TMPDIR). --gate: (a) 24 of 24 rows equal session 133's tables.csv at full precision; (b) scored rows equal meta.txt's summed counts at 12 of 12 airports, common days 726 to 1,095 per airport, every e finite; (c) latest valid time used 2026-07-31T23:00Z. --freeze run once: 48 rows, SHA-256 e8ab9438b390c3c45de0821c8823a98e2ffa9adc42d6a4f19b396af11e2c9eba; a second run stops ("already exists"). Script SHA-256 e240f4bb0f99273587a4f289a45c162a3f1b00c77a1f98a06406c4caec15546d (recorded in meta.txt, so the script is not edited after this, D116.10). Mappings checked: the 12 airports equal session 112's DEV_ICAO then CLAIM_ICAO; each prediction row's icao, station and group; session 104's station column (DSM, RNO, SFO) and session 107's icao and station columns (KORD is ORD). Files changed: the script, the CSV, the meta file.
+Step 4. The page: PASS. Owner's ruling during the step (asked in chat): the legend reads "8-in-10 range (not yet verified)" and the column "8-in-10 range, &#176;C", because the prompt's "80 % range" would put a literal % on the page, which PageTests' test_no_accuracy_figure_anywhere forbids and PageTests must pass unchanged. New src/mlwx/ranges.py (RANGES_SHA256 and a loader that returns the table only if the file exists with that SHA-256, else None; it never raises). src/mlwx/page.py: a shaded band from corrected + P10 to corrected + P90, drawn after the grid and before the two lines, with a colour for light and dark themes; the y-axis takes in the band; the legend and the daily maximum column as ruled; one sentence in the top note; with no table, no band or column and one status line. Sample page from a made-up log (kept): $TMPDIR/s134_page_x5eihq/site/index.html (12 bands, 12 legends, 12 columns, 49 sections, 1 note) and index_no_ranges.html (0 bands, 0 columns, 1 status line); a thumbnail was looked at. Existing PageTests and test_pinned_files: 10 tests OK, unchanged. Files changed: src/mlwx/ranges.py (new), src/mlwx/page.py.
+Step 5. Tests and documents: PASS. tests/test_session134.py (23 tests, all OK): the file's SHA-256 against ranges.RANGES_SHA256, the test's own constant and meta.txt; 48 rows in D103.4's order, p10 < p90, floats by repr; the freeze on made-up errors (percentiles, periods, row order, a non-finite error stops, read-back, refusing to overwrite); the page on a made-up log (band ends within the page's 0.1 pixel rounding of corrected + P10 and + P90 at EGLC, KORD and NZWN; the y-axis takes in the band; the band before the lines; the chart is given the hourly pair at exactly the 12; the daily maximum column equals the read-off maximum plus the pair at all 12; the 37 other sections equal the no-ranges build's; a missing or altered file, or a folder, gives no band, one status line, no exception; the label; no percent sign or accuracy word); sessions 133's and 112's SHA-256. Existing PageTests and test_pinned_files pass unchanged. One entry each in tests/README.md and scripts/README.md's map; deploy/mlwx-live/README.md gains a short section "The page" (it had no section on the page; plain words, no D numbers). Files changed: tests/test_session134.py, tests/README.md, scripts/README.md, deploy/mlwx-live/README.md.
+Step 6. Final checks: PASS, with one expected failure cleared at the end steps. Tests before F178: 449 run, 1 skipped, 1 failure: test_record's citation test, on D129's forward citations of F178 (as in session 133 before F177). Scope: every changed or new file is on the scope list (docs/sessions/session-134.md is the prompt). Pinned files (seven) and runner.py unchanged from HEAD (git diff --quiet). Under src/ only page.py changed, and ranges.py and data/gfs_ranges.csv are new; under deploy/ only its README. Nothing in figures/, ../MLwx-stagec/ or ../MLwx-live/ written. 0 em-dashes in added lines and new files. Nothing valid after 2026-07-31T23:00 UTC read (gate (c); the loaders stop on any later row or day). Nothing from MLwx-live opened; the page was built on made-up logs only. No network call.
+End steps. F178 appended to DECISIONS.md (10 items). STATUS.md overwritten as a snapshot (dated 16 November 2026, after session 134). Live index: D128 and F177 removed, D129 and F178 added (D129.12). `python3 scripts/archive_decisions.py --apply --session 134`: moved 2 spans (D128, F177), kept 6; check 4 (every moved span verbatim in the archive) PASS; DECISIONS.md 52,652 to 40,162 bytes; DECISIONS-archive.md 1,664,138 to 1,676,665 bytes. `--citations`: 233 cited, 233 resolved, 0 unresolved, 0 in both files, 0 duplicated openings, 0 headings out of order. D129's 19 lines still byte-equal to the prompt's after the archive step (cmp, lines 274 to 292). Tests after F178: 449 run, 1 skipped, OK. Scope check: PASS (list below). Files changed: DECISIONS.md, DECISIONS-archive.md, STATUS.md, this file.
+
+SCOPE CHECK (git status --porcelain --untracked-files=all, at the end)
+ M DECISIONS-archive.md
+ M DECISIONS.md
+ M STATUS.md
+ M deploy/mlwx-live/README.md
+ M scripts/README.md
+ M src/mlwx/page.py
+ M tests/README.md
+?? data/processed/session134_ranges/meta.txt
+?? docs/sessions/session-134.md        (the prompt, written by the owner)
+?? notes/session-134-output.txt
+?? scripts/session134_freeze_ranges.py
+?? src/mlwx/data/gfs_ranges.csv
+?? src/mlwx/ranges.py
+?? tests/test_session134.py
+Every file is on the scope list. No scope breach.
+
+TEMPORARY FOLDERS KEPT (under $TMPDIR)
+  /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/s134/  (D129 block copies, DECISIONS.md before, the gate's and the freeze's detail files)
+  /var/folders/4r/jd3fwx291wl9gpj3njqsw3k00000gn/T/s134_page_x5eihq/  (made-up log; site/index.html, site/index_no_ranges.html, site/index.html.png)
+
+DETAIL: --gate (run 2026-11-15T23:52:45Z)
+Gate (a): session 133's tables for scoring period 2025-26, rebuilt
+  T1  EGLC equal: p10 -1.3319105139449225 p90 1.304080345742831 n 134465
+  RT1 EGLC equal: p10 -1.2920000000000016 p90 1.8789999999999996 n 134465
+  M1  EGLC equal: p10 -1.2001204200990223 p90 1.3509807925807502 n 731
+  RM1 EGLC equal: p10 -1.3490000000000002 p90 1.5450000000000017 n 731
+  T1  LFPG equal: p10 -1.5073164460136708 p90 1.5218477615054657 n 134302
+  RT1 LFPG equal: p10 -1.3930000000000007 p90 2.311 n 134302
+  M1  LFPG equal: p10 -1.5289163411016347 p90 1.597573506403858 n 731
+  RM1 LFPG equal: p10 -1.6759999999999984 p90 1.9609999999999985 n 731
+  T1  KDSM equal: p10 -2.0290020019726036 p90 1.9586673687234146 n 134481
+  RT1 KDSM equal: p10 -2.266 p90 3.597999999999999 n 134481
+  M1  KDSM equal: p10 -1.8564734516993084 p90 1.8652002391371774 n 731
+  RM1 KDSM equal: p10 -2.198999999999998 p90 3.2539999999999996 n 731
+  T1  YSDU equal: p10 -1.995853041833468 p90 1.8792259572301404 n 133558
+  RT1 YSDU equal: p10 -3.062999999999999 p90 1.6950000000000003 n 133558
+  M1  YSDU equal: p10 -1.508655622368945 p90 1.812905111587158 n 726
+  RM1 YSDU equal: p10 -1.6774999999999993 p90 1.6489999999999991 n 726
+  T1  KRNO equal: p10 -1.931593070639025 p90 1.915454579994485 n 134450
+  RT1 KRNO equal: p10 -4.139 p90 2.947999999999997 n 134450
+  M1  KRNO equal: p10 -1.3179288890820018 p90 1.6755482389212544 n 730
+  RM1 KRNO equal: p10 -0.2660999999999987 p90 3.1271999999999984 n 730
+  T1  KSFO equal: p10 -1.665982649168646 p90 1.494920383154956 n 134422
+  RT1 KSFO equal: p10 -1.7909999999999986 p90 2.1229999999999993 n 134422
+  M1  KSFO equal: p10 -1.4805159885547183 p90 2.1417997587560857 n 730
+  RM1 KSFO equal: p10 -1.3304999999999985 p90 3.3435 n 730
+Gate (b): scored rows used against meta.txt, and common days used
+  EGLC: scored rows 201,404 (2023-24 67,337; 2024-25 67,128; 2025-26 66,939), meta.txt 201,404: equal; common days 1,095 (2023-24 366; 2024-25 365; 2025-26 364); every e finite: yes
+  LFPG: scored rows 201,032 (2023-24 67,267; 2024-25 67,035; 2025-26 66,730), meta.txt 201,032: equal; common days 1,094 (2023-24 366; 2024-25 365; 2025-26 363); every e finite: yes
+  KDSM: scored rows 201,449 (2023-24 67,328; 2024-25 67,153; 2025-26 66,968), meta.txt 201,449: equal; common days 1,095 (2023-24 366; 2024-25 365; 2025-26 364); every e finite: yes
+  YSDU: scored rows 199,881 (2023-24 66,806; 2024-25 66,752; 2025-26 66,323), meta.txt 199,881: equal; common days 1,085 (2023-24 363; 2024-25 363; 2025-26 359); every e finite: yes
+  KRNO: scored rows 201,350 (2023-24 67,313; 2024-25 67,137; 2025-26 66,900), meta.txt 201,350: equal; common days 1,093 (2023-24 365; 2024-25 365; 2025-26 363); every e finite: yes
+  KSFO: scored rows 201,322 (2023-24 67,323; 2024-25 67,099; 2025-26 66,900), meta.txt 201,322: equal; common days 1,093 (2023-24 366; 2024-25 364; 2025-26 363); every e finite: yes
+  EDDM: scored rows 134,128 (A 67,160; B 66,968), meta.txt 134,128: equal; common days 729 (A 365; B 364); every e finite: yes
+  KORD: scored rows 133,886 (A 67,137; B 66,749), meta.txt 133,886: equal; common days 726 (A 365; B 361); every e finite: yes
+  CYYZ: scored rows 134,043 (A 67,075; B 66,968), meta.txt 134,043: equal; common days 728 (A 364; B 364); every e finite: yes
+  ZGSZ: scored rows 134,128 (A 67,160; B 66,968), meta.txt 134,128: equal; common days 729 (A 365; B 364); every e finite: yes
+  ZUCK: scored rows 134,136 (A 67,160; B 66,976), meta.txt 134,136: equal; common days 729 (A 365; B 364); every e finite: yes
+  NZWN: scored rows 134,105 (A 67,153; B 66,952), meta.txt 134,105: equal; common days 728 (A 365; B 363); every e finite: yes
+Gate (c): the latest valid time used (hourly row; last hour of a day)
+  EGLC: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T22:00Z
+  LFPG: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T21:00Z
+  KDSM: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T04:00Z
+  YSDU: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T13:00Z
+  KRNO: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T06:00Z
+  KSFO: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T06:00Z
+  EDDM: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T21:00Z
+  KORD: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T04:00Z
+  CYYZ: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T03:00Z
+  ZGSZ: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T15:00Z
+  ZUCK: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T15:00Z
+  NZWN: hourly 2026-07-31T23:00Z; daily_max 2026-07-31T11:00Z
+
+DETAIL: --freeze (run 2026-11-15T23:53:04Z; its gate lines are the same as above, then the 48 rows)
+The frozen file's 48 rows (build values, never results); width = p90 - p10, degrees C
+  airport output    kind      p10                     p90                     n        width
+  EGLC    hourly    range     -1.3377738088508087     1.2997477415864733      201404   2.6375
+  EGLC    hourly    reference -1.375                  1.8149999999999995      201404   3.1900
+  EGLC    daily_max range     -1.2521308768491266     1.3206467594519573      1095     2.5728
+  EGLC    daily_max reference -1.4960000000000013     1.4256000000000004      1095     2.9216
+  LFPG    hourly    range     -1.500953645778015      1.4752558982541355      201032   2.9762
+  LFPG    hourly    reference -1.498                  2.2489999999999997      201032   3.7470
+  LFPG    daily_max range     -1.5056170496856875     1.4532823901876801      1094     2.9589
+  LFPG    daily_max reference -1.8625999999999987     1.8832000000000018      1094     3.7458
+  KDSM    hourly    range     -2.0635790868639816     1.9583349036538746      201449   4.0219
+  KDSM    hourly    reference -2.29                   3.522000000000002       201449   5.8120
+  KDSM    daily_max range     -1.9816813712660923     1.8629149875889006      1095     3.8446
+  KDSM    daily_max reference -2.222999999999997      3.0152                  1095     5.2382
+  YSDU    hourly    range     -1.949048131210887      1.874444730349924       199881   3.8235
+  YSDU    hourly    reference -2.9639999999999986     1.7579999999999991      199881   4.7220
+  YSDU    daily_max range     -1.397516059332507      1.7696668577911567      1085     3.1672
+  YSDU    daily_max reference -1.606000000000001      1.6680000000000008      1085     3.2740
+  KRNO    hourly    range     -1.9096297562086433     1.837549369747952       201350   3.7472
+  KRNO    hourly    reference -4.432                  2.7929999999999993      201350   7.2250
+  KRNO    daily_max range     -1.2791551377991912     1.6146087750595308      1093     2.8938
+  KRNO    daily_max reference -0.3687999999999988     2.8968000000000016      1093     3.2656
+  KSFO    hourly    range     -1.6411870317622133     1.4971011381334187      201322   3.1383
+  KSFO    hourly    reference -2.0138999999999974     2.021000000000001       201322   4.0349
+  KSFO    daily_max range     -1.5343489571494386     2.1865928793658984      1093     3.7209
+  KSFO    daily_max reference -1.6014000000000004     3.1774000000000022      1093     4.7788
+  EDDM    hourly    range     -2.1544664779356295     2.079143087352163       134128   4.2336
+  EDDM    hourly    reference -3.244999999999999      2.646000000000001       134128   5.8910
+  EDDM    daily_max range     -2.055868297399564      1.8440464360899234      729      3.8999
+  EDDM    daily_max reference -2.2304                 2.8320000000000003      729      5.0624
+  KORD    hourly    range     -1.8490105337893779     1.8001527267829498      133886   3.6492
+  KORD    hourly    reference -2.029                  2.164999999999999       133886   4.1940
+  KORD    daily_max range     -1.532392633907488      1.8590965655862974      726      3.3915
+  KORD    daily_max reference -1.3780000000000001     2.1770000000000014      726      3.5550
+  CYYZ    hourly    range     -1.7455398961012822     1.756740524336092       134043   3.5023
+  CYYZ    hourly    reference -1.237                  2.959                   134043   4.1960
+  CYYZ    daily_max range     -1.4631466100140003     1.7170117082651541      728      3.1802
+  CYYZ    daily_max reference -1.0357000000000014     2.812700000000001       728      3.8484
+  ZGSZ    hourly    range     -1.4647264671554558     1.3759630039040869      134128   2.8407
+  ZGSZ    hourly    reference -1.6630000000000003     1.911999999999999       134128   3.5750
+  ZGSZ    daily_max range     -1.224052275900847      1.6892732587062456      729      2.9133
+  ZGSZ    daily_max reference -0.3980000000000004     2.6922000000000006      729      3.0902
+  ZUCK    hourly    range     -1.6851801141455676     1.684930371436602       134136   3.3701
+  ZUCK    hourly    reference -2.4559999999999995     2.1880000000000006      134136   4.6440
+  ZUCK    daily_max range     -1.597890665033807      1.9815232436337584      729      3.5794
+  ZUCK    daily_max reference -1.9916000000000007     2.3079999999999994      729      4.2996
+  NZWN    hourly    range     -1.2323850262943405     1.2302209707614693      134105   2.4626
+  NZWN    hourly    reference -0.8200000000000003     2.1419999999999995      134105   2.9620
+  NZWN    daily_max range     -1.026210676883031      1.3376004464678117      728      2.3638
+  NZWN    daily_max reference 0.31480000000000086     3.0753                  728      2.7605

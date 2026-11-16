@@ -63,6 +63,16 @@ run's output.
 
 It holds no forecast and no error.
 
+## The page
+
+For each airport the page shows the latest run's raw GFS and corrected curves and the daily maxima.
+At 12 airports it also shows a shaded band around the corrected curve, and a range beside each
+daily maximum: where the temperature is expected to fall about 8 times in 10, built from the
+method's past errors up to 31 July 2026 and then frozen. The ranges are **not yet verified**: they
+are being tested on this season's forecasts, by a test written down before any of them was scored.
+They are worked out when the page is built and are not in the log, so no logged value changes. If
+the ranges file is missing or is not the frozen one, the page shows no range and says so.
+
 ## The other folders
 
 - `state/tracker_gfs.json`: where each bias tracker had got to (b, the last valid time applied, the

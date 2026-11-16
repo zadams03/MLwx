@@ -5,22 +5,32 @@ inline SVG chart), the daily maxima read off the curve, and a status line: cycle
 time, any stop, "drift warming up" while a tracker cell has fewer than 50 errors, and "not validated
 on v17" when the version is v17. No accuracy figure is shown anywhere (D103.2): the page holds
 temperatures, dates and counts of nothing but status.
+
+At the 12 airports with a frozen range (D129.10; `ranges.py`), the chart also has a shaded band from
+corrected + P10 to corrected + P90, and the daily maximum table a column with the maximum's range.
+Both are labelled "not yet verified". If the ranges file is missing or is not the frozen one, no
+band or column is drawn and one status line says so. No logged value is read differently or changed.
 """
 
 import datetime as dt
 import html
 from pathlib import Path
 
-from . import dailymax, prediction_log
+from . import dailymax, prediction_log, ranges
 from . import state as state_mod
 
 WARMUP_ERRORS = 50          # a cell with fewer errors than this is still warming up
+RANGE_LABEL = "8-in-10 range (not yet verified)"    # the legend's words (D129.10); no percent sign on the page
+RANGE_NOTE = ("At 12 airports the shaded band shows where the temperature is expected to fall about 8 times in 10, "
+              "built from the method's past errors; it is being tested on this season's forecasts and is not yet "
+              "verified.")
+NO_RANGES = "The 8-in-10 ranges are not available in this build, so none is shown."
 W, H = 720, 260
 ML, MR, MT, MB = 46, 12, 12, 40
 STYLE = """
-:root { --bg:#fbfbf9; --fg:#1d2326; --muted:#5d6a70; --card:#ffffff; --line:#d5dadc; --raw:#6a7a85; --cor:#c2410c; --warn:#92400e; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15191b; --fg:#e8ecee; --muted:#9aa7ad; --card:#1d2326; --line:#37424a; --raw:#9db0bc; --cor:#fb923c; --warn:#fbbf24; } }
-:root[data-theme="dark"] { --bg:#15191b; --fg:#e8ecee; --muted:#9aa7ad; --card:#1d2326; --line:#37424a; --raw:#9db0bc; --cor:#fb923c; --warn:#fbbf24; }
+:root { --bg:#fbfbf9; --fg:#1d2326; --muted:#5d6a70; --card:#ffffff; --line:#d5dadc; --raw:#6a7a85; --cor:#c2410c; --warn:#92400e; --band:rgba(194,65,12,.16); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15191b; --fg:#e8ecee; --muted:#9aa7ad; --card:#1d2326; --line:#37424a; --raw:#9db0bc; --cor:#fb923c; --warn:#fbbf24; --band:rgba(251,146,60,.22); } }
+:root[data-theme="dark"] { --bg:#15191b; --fg:#e8ecee; --muted:#9aa7ad; --card:#1d2326; --line:#37424a; --raw:#9db0bc; --cor:#fb923c; --warn:#fbbf24; --band:rgba(251,146,60,.22); }
 * { box-sizing: border-box; }
 body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; }
 main { max-width: 800px; margin: 0 auto; padding: 16px; }
@@ -35,9 +45,11 @@ svg text { fill: var(--muted); font-size: 11px; }
 svg .grid { stroke: var(--line); stroke-width: 1; }
 svg .raw { fill:none; stroke: var(--raw); stroke-width: 1.6; stroke-dasharray: 4 3; }
 svg .cor { fill:none; stroke: var(--cor); stroke-width: 2; }
+svg .band { fill: var(--band); stroke: none; }
 .legend { font-size:.85rem; color:var(--muted); margin:4px 0; }
 .legend b { display:inline-block; width:18px; height:0; border-top:2px solid var(--cor); vertical-align:middle; margin-right:4px; }
 .legend b.r { border-top:2px dashed var(--raw); margin-left:12px; }
+.legend b.g { border-top:8px solid var(--band); margin-left:12px; }
 table { border-collapse: collapse; width:100%; font-size:.9rem; }
 th, td { text-align:right; padding:3px 8px; border-bottom:1px solid var(--line); }
 th:first-child, td:first-child { text-align:left; }
@@ -56,11 +68,15 @@ def _nice_ticks(lo, hi, n=5):
     return [t for t in ticks if lo - step <= t <= hi + step], step
 
 
-def chart_svg(rows):
-    """Raw GFS and corrected curve against valid time. rows: log rows of one airport, one cycle."""
+def chart_svg(rows, band=None):
+    """Raw GFS and corrected curve against valid time. rows: log rows of one airport, one cycle.
+    band: None, or the airport's hourly pair (P10, P90); the band runs from corrected + P10 to
+    corrected + P90, is drawn before the two lines, and the y-axis takes it in."""
     rows = sorted(rows, key=lambda r: r["valid"])
     t0, t1 = rows[0]["valid"], rows[-1]["valid"]
     ys = [r["raw_gfs"] for r in rows] + [r["corrected"] for r in rows]
+    if band is not None:
+        ys += [r["corrected"] + band[0] for r in rows] + [r["corrected"] + band[1] for r in rows]
     ticks, step = _nice_ticks(min(ys), max(ys))
     lo, hi = min(ticks), max(ticks)
     span_s = max((t1 - t0).total_seconds(), 1.0)
@@ -71,7 +87,10 @@ def chart_svg(rows):
     def y(v):
         return MT + (H - MT - MB) * (hi - v) / (hi - lo)
 
-    out = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Raw GFS and corrected 2 m temperature, degrees C">']
+    label = "Raw GFS and corrected 2 m temperature, degrees C"
+    if band is not None:
+        label += f", with the corrected curve's {RANGE_LABEL}"
+    out = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{label}">']
     for tk in ticks:
         out.append(f'<line class="grid" x1="{ML}" x2="{W - MR}" y1="{y(tk):.1f}" y2="{y(tk):.1f}"/>'
                    f'<text x="{ML - 6}" y="{y(tk) + 4:.1f}" text-anchor="end">{tk:g}</text>')
@@ -82,6 +101,10 @@ def chart_svg(rows):
             out.append(f'<line class="grid" x1="{x(t):.1f}" x2="{x(t):.1f}" y1="{MT}" y2="{H - MB}"/>'
                        f'<text x="{x(t):.1f}" y="{H - MB + 14}" text-anchor="middle">{label}</text>')
         t += dt.timedelta(hours=1)
+    if band is not None:
+        upper = [f"{x(r['valid']):.1f},{y(r['corrected'] + band[1]):.1f}" for r in rows]
+        lower = [f"{x(r['valid']):.1f},{y(r['corrected'] + band[0]):.1f}" for r in reversed(rows)]
+        out.append(f'<polygon class="band" points="{" ".join(upper + lower)}"/>')
     for cls, key in (("raw", "raw_gfs"), ("cor", "corrected")):
         pts = " ".join(f"{x(r['valid']):.1f},{y(r[key]):.1f}" for r in rows)
         out.append(f'<polyline class="{cls}" points="{pts}"/>')
@@ -115,19 +138,24 @@ def stop_notes(state, latest_cycle, now):
     return notes
 
 
-def build_page(root, model, airports, state, now):
+def build_page(root, model, airports, state, now, ranges_path=None):
+    """The page's HTML. ranges_path: the ranges file to use (the frozen one when None)."""
     root = Path(root)
+    table = ranges.load(ranges_path)        # None if the file is missing or not the frozen one
     logs = prediction_log.logged_cycles(root, model.name)
     latest = max(logs) if logs else None
     rows = prediction_log.read_log(logs[latest]) if latest else []
     notes = stop_notes(state, latest, now)
     body = ["<main>", "<h1>MLwx live: corrected GFS temperature</h1>",
             '<p class="note">Version 1, GFS only. For each GFS run, a corrected 2 m temperature for the next 3 to 48 hours '
-            "and the daily maximum read off that curve. No accuracy figure is shown for these live forecasts.</p>"]
+            "and the daily maximum read off that curve. No accuracy figure is shown for these live forecasts."
+            + (" " + html.escape(RANGE_NOTE) if table is not None else "") + "</p>"]
     if latest:
         body.append(f'<p class="status">Latest cycle issued: {latest:%Y-%m-%d %H}z. Page built {now:%Y-%m-%d %H:%M} UTC.</p>')
     else:
         body.append(f'<p class="status">No cycle has been issued yet. Page built {now:%Y-%m-%d %H:%M} UTC.</p>')
+    if table is None:
+        body.append(f'<p class="status">{html.escape(NO_RANGES)}</p>')
     for n in notes:
         body.append(f'<p class="status"><span class="flag">{html.escape(n)}</span></p>')
     for a in airports:
@@ -144,13 +172,19 @@ def build_page(root, model, airports, state, now):
         body.append(f'<section><h2>{html.escape(a.icao)}</h2>')
         flag_html = "".join(f' <span class="flag">{html.escape(f)}.</span>' for f in flags)
         body.append(f'<p class="status">{html.escape(text)}.{flag_html}</p>')
-        body.append(chart_svg(mine))
-        body.append('<p class="legend"><b></b>corrected<b class="r"></b>raw GFS</p>')
+        band = table.get((a.icao, "hourly", "range")) if table else None
+        band_max = table.get((a.icao, "daily_max", "range")) if table else None
+        body.append(chart_svg(mine, band))
+        body.append('<p class="legend"><b></b>corrected<b class="r"></b>raw GFS'
+                    + (f'<b class="g"></b>{html.escape(RANGE_LABEL)}' if band is not None else "") + "</p>")
         if mx_cor:
             body.append(f"<table><tr><th>Local day ({html.escape(a.time_zone)})</th><th>Raw GFS max, &#176;C</th>"
-                        "<th>Corrected max, &#176;C</th></tr>")
+                        "<th>Corrected max, &#176;C</th>"
+                        + ("<th>8-in-10 range, &#176;C</th>" if band_max is not None else "") + "</tr>")
             for d in sorted(mx_cor):
-                body.append(f"<tr><td>{d:%Y-%m-%d}</td><td>{mx_raw[d]:.1f}</td><td>{mx_cor[d]:.1f}</td></tr>")
+                cell = (f"<td>{mx_cor[d] + band_max[0]:.1f} to {mx_cor[d] + band_max[1]:.1f}</td>"
+                        if band_max is not None else "")
+                body.append(f"<tr><td>{d:%Y-%m-%d}</td><td>{mx_raw[d]:.1f}</td><td>{mx_cor[d]:.1f}</td>{cell}</tr>")
             body.append("</table>")
         else:
             body.append('<p class="status">No local day lies wholly inside this cycle\'s curve.</p>')
@@ -162,10 +196,10 @@ def build_page(root, model, airports, state, now):
             "<title>MLwx live</title><style>" + STYLE + "</style></head><body>" + "\n".join(body) + "</body></html>\n")
 
 
-def write_page(root, model, airports, state, now):
+def write_page(root, model, airports, state, now, ranges_path=None):
     out = Path(root) / "site" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp")
-    tmp.write_text(build_page(root, model, airports, state, now), encoding="utf-8")
+    tmp.write_text(build_page(root, model, airports, state, now, ranges_path), encoding="utf-8")
     tmp.replace(out)
     return out
