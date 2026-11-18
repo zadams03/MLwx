@@ -1,0 +1,2 @@
+2026-11-17T22:49:43Z chunks ['2025-03-01', '2026-05-20', '2026-07-30', '2026-07-31'] workers 8 requests 1725 bytes 1175907183 seconds 1849.4 failed ['2026-05-20']
+2026-11-17T22:51:14Z chunks ['2026-05-20'] workers 4 requests 328 bytes 233401767 seconds 81.5 failed []

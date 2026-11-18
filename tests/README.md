@@ -63,6 +63,8 @@ folders, deleted after), and finish in under a minute.
 
 `test_session134.py`: session 134's frozen ranges: the file's fingerprint, its 48 rows and their order, the freeze on made-up errors (percentiles, row order, never overwriting), and the page on a made-up log (the band's ends, the daily maximum's range, no range at the other airports or when the file is missing or altered, the "not yet verified" label) (D129).
 
+`test_session135_aifs.py`: session 135's AIFS draw and pull: the pull's guards (first cycle, last valid time, the 18 airports, the operational folder only), the draw reproduced from its eligibility table, the longitude mapping onto the AIFS grid, and that a gap is never written as a value (D130).
+
 `test_mosmix_saver.py`: the MOSMIX saver template with a fake DWD server: the listing, the file check, saving once, the manifest, the freshness rule for all stations and for each one, retries, the station list, and the workflow (its commit step run in a temporary repository, with and without `manifest/`) (D122).
 
 ## Notes

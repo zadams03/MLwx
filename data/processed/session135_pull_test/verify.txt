@@ -1,0 +1,6 @@
+2026-11-17T22:51:21Z
+totals: {'chunks': 4, 'planned': 988, 'kept': 988, 'message_gaps': 0, 'value_gaps': 0, 'rows': 17784, 'bytes': 709180656}
+gaps by reason: none
+gaps by cycle hour: none
+gaps by month: none
+kept plus gaps equals planned in every chunk: PASS

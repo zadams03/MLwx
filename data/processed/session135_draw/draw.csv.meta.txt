@@ -1,0 +1,18 @@
+draw.csv: stage D's six claim airports for AIFS (D130.7(c), (d)).
+written 2026-11-17T20:09:58Z by scripts/session135_aifs_draw.py --draw
+sha256 4db7d1743b2375b2dc5a3629b0f565d73c2ceb17737a7e0a3019cac56b863f13
+python 3.12.2
+random.Random(20261117), one generator; strata [('Europe', 1), ('North America', 2), ('Asia', 2), ('South', 1)]
+script sha256 600c80f9741c3a8a9c983605b492933894fd112d2d696ef5c79e0e4e79fe924b
+input data/processed/session135_draw/eligibility.csv sha256 44f3115aa45a67540790e3a6922c762c9fcb0e35a4729c71ce8bbaf14d45743c
+the draw as printed:
+  python 3.12.2, random.Random(20261117)
+  stratum Europe (size 1): 8 eligible, sorted: ['EFHK', 'EHAM', 'EPWA', 'LEMD', 'LIMC', 'LTAC', 'LTFM', 'UUWW']
+    sample(8 eligible, 1) returned ['EPWA']
+  stratum North America (size 2): 9 eligible, sorted: ['KATL', 'KAUS', 'KBKF', 'KDAL', 'KHOU', 'KLAX', 'KLGA', 'KMIA', 'KSEA']
+    sample(9 eligible, 2) returned ['KATL', 'KDAL']
+  stratum Asia (size 2): 15 eligible, sorted: ['LLBG', 'OEJN', 'OPKC', 'RJTT', 'RKPK', 'RKSI', 'RPLL', 'WMKK', 'WSSS', 'ZBAA', 'ZGGG', 'ZHHH', 'ZSPD', 'ZSQD', 'ZUUU']
+    sample(15 eligible, 2) returned ['RJTT', 'ZUUU']
+  stratum South (size 1): 2 eligible, sorted: ['SAEZ', 'SBGR']
+    sample(2 eligible, 1) returned ['SBGR']
+  THE AIFS CLAIM AIRPORTS (6): ['EPWA', 'KATL', 'KDAL', 'RJTT', 'ZUUU', 'SBGR']

@@ -1,0 +1,19 @@
+eligibility.csv: D130.7(b) for the 36 pool airports (D130.7(a)), and D130.8's grid check.
+written 2026-11-17T20:09:53Z by scripts/session135_aifs_draw.py --eligible
+sha256 44f3115aa45a67540790e3a6922c762c9fcb0e35a4729c71ce8bbaf14d45743c
+rows 36
+python 3.12.2
+script sha256 600c80f9741c3a8a9c983605b492933894fd112d2d696ef5c79e0e4e79fe924b
+session 90 script (imported, unchanged) sha256 c55bab8dc736c2d43a66d640892038e19b2cb517cf5dc2f812e6c9eba6310a8d
+session 113 script (imported, unchanged) sha256 2023b0b017ffdfea63013924e43bdeae897f358cba5a4bd516f9663914dbb958
+input data/processed/session90_airports.csv sha256 b53b689f2226e043228725938ad7c47c2069f4831626cc662118559393465db7
+input data/processed/session91_pull_airports.csv sha256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+input data/processed/session110_onboard_counts.csv sha256 7149245a287b122f51c10451cb221f0a1d264a208b9f812a17b9fa46efdaa101
+input data/raw/iem_asos_<iem_id>_<piece>_routine.csv, six pieces per airport (session 90's PIECES)
+windows: local days starting on or after 2025-02-26T00:00 UTC and ending on or before 2026-07-31T23:59 UTC; the year from local day 2025-08-01. Usable day: D82.8.
+counting: session 90's obs_counts and local_day_counts, with its FIRST_UTC and HELD_OUT_START set to these dates
+eligible: pct_window >= 90 and pct_year >= 90 and grid_ok
+grid message: https://ecmwf-forecasts.s3.eu-central-1.amazonaws.com/20250301/00z/aifs-single/0p25/oper/20250301000000-6h-oper-fc.grib2 bytes 33029714-33602283 sha256 8bac5fbc920a4897228c9a3e0ae46af543ac0e221e4152e0dd90c349662e060b
+grid signature: gridType=regular_ll|Ni=1440|Nj=721|Nx=1440|Ny=721|latitudeOfFirstGridPointInDegrees=90.0|longitudeOfFirstGridPointInDegrees=180.0|latitudeOfLastGridPointInDegrees=-90.0|longitudeOfLastGridPointInDegrees=179.75|iDirectionIncrementInDegrees=0.25|jDirectionIncrementInDegrees=0.25|scanningMode=0|radius=6371229
+grid check: record airports 12 of 12 on the grid; pool 36 of 36
+eligible per stratum: Europe 8, North America 9, Asia 15, South 2

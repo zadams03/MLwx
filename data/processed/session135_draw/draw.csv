@@ -1,0 +1,7 @@
+order,icao,stratum,how
+1,EPWA,Europe,stratum
+2,KATL,North America,stratum
+3,KDAL,North America,stratum
+4,RJTT,Asia,stratum
+5,ZUUU,Asia,stratum
+6,SBGR,South,stratum

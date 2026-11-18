@@ -1,0 +1,13 @@
+AIFS Single pull for stage D (DECISIONS D130.9), by scripts/session135_aifs_pull.py
+written 2026-11-17T22:51:14Z
+python 3.12.2, eccodes 2.48.0, numpy 2.5.2, requests 2.34.2
+script sha256 93db4bb8f083cac02107ea95233f3e44912af5512eac4f8e5ed76463fa5ad6a9
+session 113 script (imported, unchanged) sha256 2023b0b017ffdfea63013924e43bdeae897f358cba5a4bd516f9663914dbb958
+session 135 draw script (imported) sha256 600c80f9741c3a8a9c983605b492933894fd112d2d696ef5c79e0e4e79fe924b
+draw.csv sha256 4db7d1743b2375b2dc5a3629b0f565d73c2ceb17737a7e0a3019cac56b863f13
+session91_pull_airports.csv sha256 cf86c692ffb631c28b387d2a7f13c78fa801ec015e5434fee1b03f63cc18fd08
+airports (18): EGLC LFPG KDSM YSDU KRNO KSFO EDDM KORD CYYZ ZGSZ ZUCK NZWN EPWA KATL KDAL RJTT ZUUU SBGR
+source https://ecmwf-forecasts.s3.eu-central-1.amazonaws.com/<YYYYMMDD>/<HH>z/aifs-single/0p25/oper/, from 2025-02-26T00:00Z; steps [0, 6, 12, 18, 24, 30, 36, 42, 48] valid on or before 2026-07-31T23:00Z
+fields: 2t sfc steps all; 2d sfc steps all; tcc sfc steps all; 10u sfc steps all; 10v sfc steps all; t 850 steps all; msl sfc steps all; sp sfc steps all; ssrd sfc steps all; z sfc steps (0,)
+chunks: 2025-03-01 2026-05-20 2026-07-30 2026-07-31
+files per chunk: plan.csv.gz, aifs_<ICAO>.csv.gz, manifest.csv.gz, gaps.csv.gz, done.txt

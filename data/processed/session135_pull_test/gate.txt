@@ -1,0 +1,29 @@
+2026-11-17T22:51:24Z
+(a) EGLC: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(a) LFPG: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(a) KDSM: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(a) YSDU: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(a) KRNO: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(a) KSFO: 92 (cycle, step) pairs compared, 92 equal in every bit, 0 not; this pull's 2t steps 6 to 48: 92; session 113 rows for these cycles: 92 PASS
+(b) b4b24011d57fd837 2026-05-20T06:00Z step 48 ssrd: sha256 equal
+(b) 5de703577a418b43 2025-03-01T00:00Z step 12 2d: sha256 equal
+(b) a6b5e4be6430a35c 2026-05-20T12:00Z step 48 sp: sha256 equal
+(b) aaaa8cfdaa17180e 2026-07-30T18:00Z step 24 tcc: sha256 equal
+(b) 99c63e9e32e90b38 2025-03-01T12:00Z step 6 10v: sha256 equal
+(c) totals: {'chunks': 4, 'planned': 988, 'kept': 988, 'message_gaps': 0, 'value_gaps': 0, 'rows': 17784, 'bytes': 709180656}
+(c) gaps by reason: none
+(c) gaps by cycle hour: none
+(c) gaps by month: none
+(c) kept plus gaps equals planned in every chunk: PASS
+(d) 2t sfc: v1 [('2t', '2 metre temperature', 'K', 'heightAboveGround', '2', '3')]; v2 [('2t', '2 metre temperature', 'K', 'heightAboveGround', '2', '5')]
+(d) 2d sfc: v1 [('2d', '2 metre dewpoint temperature', 'K', 'heightAboveGround', '2', '3')]; v2 [('2d', '2 metre dewpoint temperature', 'K', 'heightAboveGround', '2', '5')]
+(d) tcc sfc: v1 [('tcc', 'Total Cloud Cover', '%', 'entireAtmosphere', '0', '3')]; v2 [('tcc', 'Total Cloud Cover', '%', 'entireAtmosphere', '0', '5')]
+(d) 10u sfc: v1 [('10u', '10 metre U wind component', 'm s**-1', 'heightAboveGround', '10', '3')]; v2 [('10u', '10 metre U wind component', 'm s**-1', 'heightAboveGround', '10', '5')]
+(d) 10v sfc: v1 [('10v', '10 metre V wind component', 'm s**-1', 'heightAboveGround', '10', '3')]; v2 [('10v', '10 metre V wind component', 'm s**-1', 'heightAboveGround', '10', '5')]
+(d) t 850: v1 [('t', 'Temperature', 'K', 'isobaricInhPa', '850', '3')]; v2 [('t', 'Temperature', 'K', 'isobaricInhPa', '850', '5')]
+(d) msl sfc: v1 [('msl', 'Mean sea level pressure', 'Pa', 'meanSea', '0', '3')]; v2 [('msl', 'Mean sea level pressure', 'Pa', 'meanSea', '0', '5')]
+(d) sp sfc: v1 [('sp', 'Surface pressure', 'Pa', 'surface', '0', '3')]; v2 [('sp', 'Surface pressure', 'Pa', 'surface', '0', '5')]
+(d) ssrd sfc: v1 [('ssrd', 'Surface short-wave (solar) radiation downwards', 'J m**-2', 'surface', '0', '3')]; v2 [('ssrd', 'Surface short-wave (solar) radiation downwards', 'J m**-2', 'surface', '0', '5')]
+(d) z sfc: v1 [('z', 'Geopotential', 'm**2 s**-2', 'surface', '0', '3')]; v2 [('z', 'Geopotential', 'm**2 s**-2', 'surface', '0', '5')]
+(e) rows valid after 2026-07-31T23:00Z: 0 PASS
+GATE: (a) PASS, (b) PASS, (c) PASS, (d) PASS, (e) PASS

@@ -3,7 +3,7 @@
 _This file is a snapshot, overwritten each session. It is not an
 accumulating log. History of every earlier STATUS.md is in git._
 
-_Last updated: 16 November 2026, after session 134._
+_Last updated: 17 November 2026, after session 135._
 
 ---
 
@@ -63,15 +63,10 @@ daily maximum; version 1 is live and public (D103.9).
   hourly 2.46 to 4.23 C, daily maximum 2.36 to 3.90 C; narrower than the
   reference in 24 of 24 airport-outputs. Build values, never results. The
   file is not changed before the range test's looks (D129.4).
-- **The ranges are on the page in the code, waiting for the owner's
-  redeploy (D129.10).** At the 12 airports: a shaded band around the
-  corrected curve and a range beside each daily maximum, labelled "8-in-10
-  range (not yet verified)" (owner's ruling: no percent sign on the page).
-  If the file is missing or altered the page shows no range and says so;
-  a run is never stopped by it. Only `page.py`, the new `ranges.py` and the
-  data file changed: no logged value, log column, pinned file or
-  `runner.py`. The owner redeploys with `MLWX_COMMIT` set to session 134's
-  commit, `MODELS_TAG` unchanged, and checks the page. The live test
+- **The ranges are on the live page (D129.10, D130.2).** At the 12
+  airports: a shaded band around the corrected curve and a range beside
+  each daily maximum, labelled "8-in-10 range (not yet verified)". The
+  owner redeployed on 2026-11-16 and checked the page. The live test
   treats every row after the redeploy exactly as before it.
 - **The range test on 2026-27: pre-registered and binding (D129.5 to
   D129.9).** The 12 airports, both outputs, D105.5(e)'s periods, every
@@ -90,11 +85,11 @@ daily maximum; version 1 is live and public (D103.9).
   GFS next revises at 11 of 12 airports. ANALYSIS.md has Part 4.
 - **Stage G, live product v1: live with 49 airports (D105.2, F154.2).**
   Public repo zadams03/MLwx-live, page at
-  https://zadams03.github.io/MLwx-live/. Deployed now (D127.2): MLwx-live
-  `b836748` copying the template of session 131b's commit, `MLWX_COMMIT`
-  `dad68db` (session 131), `MODELS_TAG` `gfs-models-49`, schedule :15 and
-  :40, Python 3.12.15. Manual run 43733122333 on 2026-11-15 was green and
-  issued a cycle. The deployed runner has the review's fixes (D125, F174):
+  https://zadams03.github.io/MLwx-live/. Deployed now (D130.2): MLwx-live
+  `afc970b` (2026-11-16), `MLWX_COMMIT` `9f22ade` (session 134),
+  `MODELS_TAG` `gfs-models-49`, schedule :15 and :40. The scheduled run at
+  00:18Z (MLwx-live `b7f27ef`) issued 2026-11-15 18z with `code_commit`
+  `9f22ade` on all 2,254 rows. The deployed runner has the review's fixes (D125, F174):
   a fetch problem waits and is tried again until the cycle is 20 h old, an
   IEM reply without the expected header makes the cycle wait, and the job
   fails on any runner exit code other than 0 and 2. From this redeploy
@@ -183,8 +178,28 @@ daily maximum; version 1 is live and public (D103.9).
   about 12 KB to DECISIONS.md before the archive step. Session 134 adds
   a script, a test, `src/mlwx/ranges.py`, `src/mlwx/data/gfs_ranges.csv`
   and a meta file (about 45 KB together) and about 12 KB to the archive.
-- **The session order (D129.11).** The owner's redeploy comes next. Then
-  stage D, starting with AIFS, then stage E (D121.2); WeatherNext stays
+  Session 135 adds two scripts, a test, `data/processed/session135_draw/`
+  (about 16 KB), `data/processed/session135_pull_test/` (about 0.7 MB)
+  and about 12 KB to the archive.
+- **Stage D: opened on ECMWF AIFS (D130, F179).** AIFS is corrected on
+  its own fields; GFS is not an input. Its claim is one look at six new
+  airports over 2025-08-01 to 2026-07-31, refit monthly on all earlier
+  data (D130.4, D130.5): the hourly curve at 6-hourly steps (leads 6 to
+  48) against raw AIFS and persistence; the daily maximum descriptive
+  only. **The claim airports, drawn once (D130.7): EPWA, KATL, KDAL,
+  RJTT, ZUUU, SBGR.** They are not scored before the lock (session 137).
+  The pull (`scripts/session135_aifs_pull.py`) is built and its test
+  chunk passed the gate (988 of 988 messages, values bit-equal to session
+  113's). **Next: the owner runs the full pull by hand** (about 170,564
+  messages, about 122 GB transferred, about 8 h at 8 workers unthrottled,
+  more under ECMWF's throttling):
+  `caffeinate -i .venv/bin/python scripts/session135_aifs_pull.py --pull --months 2025-02..2026-07 --workers 8 --outdir ../MLwx-aifs-pull`,
+  re-run until "failed chunks none", then `--verify --outdir
+  ../MLwx-aifs-pull`. One chunk form per folder (F179.8(2)). Session 136
+  fixes the feature mapping by an owner ruling and screens at the six
+  development airports; 137 locks; 138 runs the look (D130.10).
+- **The session order (D130.10, D129.11).** Stage D's AIFS sessions 136
+  to 138, then stage E (D121.2); WeatherNext stays
   deferred (D107.4). The range test's scoring script comes in a later
   session, possibly with the GFS v17 session. Later: GEFS ranges as a
   challenger once GEFS's next version is out. A GFS v17 Service Change
@@ -196,7 +211,7 @@ daily maximum; version 1 is live and public (D103.9).
   the daily maximum's target (D82.8) is not changed; an official-figure
   maximum at US airports may be added later only as a separate, labelled
   output, by its own entry.
-- Stages D, E, F and H follow stage G.
+- Stages E and F follow; stage D and stage H are open.
 - **MOSMIX saver (D81.2 to D81.5, D122, F171): live (D124.2).** Deployed by
   the owner on 2026-11-14 to the private repository `zadams03/MLwx-mosmix`
   (38 stations; every three hours at :50; one tar per issue as an asset of
@@ -211,6 +226,19 @@ daily maximum; version 1 is live and public (D103.9).
 
 ## Open questions (live)
 
+- **Readings from session 135 (F179.8).** (1) ECMWF's bucket refused
+  most object reads (S3 "SlowDown") for about 1 h 45 min; the test chunk
+  needed three runs. (2) A month chunk (about 9,500 messages) succeeds
+  or fails whole; under such throttling it may fail repeatedly. Day
+  chunks (`--days 2025-02-26..2026-07-31`) are the alternative; one form
+  per folder, since `--verify` does not check overlaps or coverage. The
+  owner chooses. (3) No field name or unit changes at AIFS v2; only
+  `generatingProcessIdentifier` (3, then 4 from 2025-08-28, then 5 from
+  2026-05-13 00z). (4) A second grid geometry (first longitude 0) is used
+  on 2026-05-12 06z to 2026-05-13 00z only; the test chunk did not reach
+  it. (5) Session 90's counting window was set through two module
+  constants. (6) Planning is serial, about half the time. (7) The three
+  operational cycles before 2025-02-26 00z are not pulled (D130.9).
 - **Readings from session 134 (F178.8, F178.9).** (1) The page says
   "8-in-10 range", not "80 % range" (owner's ruling in the session). (2)
   The live README had no section on the page; a short one was added. (3)
@@ -273,11 +301,11 @@ daily maximum; version 1 is live and public (D103.9).
 - **The planning chat's repo access (D118.11).** Through the linked
   computer; writes only into `docs/sessions/` and `docs/commits/`.
 - **Tests (D116.2).** `.venv/bin/python -m unittest discover -s tests`;
-  449 tests, about 70 s (one skipped when no YAML parser is installed).
+  466 tests, about 65 s (one skipped when no YAML parser is installed).
 - **Laptop sleep (D86.5)**: unchanged.
 
 ---
 
 ## Next
 
-**Next planning session:** Review session 134 and commit; the owner redeploys MLwx-live with MLWX_COMMIT set to session 134's commit and checks the page; then plan the next session: stage D, starting with AIFS (D121.2), unless a GFS v17 notice has arrived, which goes first and may carry the range test's scoring script (D129.9).
+**Next planning session:** Review session 135 and commit; the owner runs the AIFS pull by hand (F179.7) and its `--verify`; then plan session 136 (check the owner's pull, the owner's ruling on the feature mapping of D130.9, screening at the six development airports).
